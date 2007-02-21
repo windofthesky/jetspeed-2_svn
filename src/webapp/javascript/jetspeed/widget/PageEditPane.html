@@ -1,14 +1,34 @@
 <div class="pageEditPane">
     <div dojoAttachPoint="containerNode" class="container"></div>
 
-    <fieldset>
-        <div dojoAttachPoint="detail" class="detail">
-            <div>Page Configuration</div>
-            <div class="buttonContainer">
-                <button dojoType="Button" dojoAttachEvent="onClick:deletePage">Delete Page</button>
-                <button dojoType="Button" dojoAttachEvent="onClick:createPage">Create New Page</button>
-                <div class="buttonContainerRight"><button dojoType="Button" dojoAttachEvent="onClick:addPortlet">Add Portlet</button></div>
-            </div>
+    <fieldset class="pageEditorPaneContainer" dojoAttachPoint="pageEditContainer">
+        <div class="detail">
+            <div><img src="${this.layoutImagesRoot}customizer.png">&nbsp;<span class="pageEditorName">Jetspeed Customizer</span></div>
+            <div class="rowContainer">
+               <fieldset class="pageEditorDetailContainer" dojoAttachPoint="pageEditLDContainer">
+                   <div class="layoutDecoratorContainer">
+                       <select class="layoutDecorator" name="layoutDecoratorSelect" dojoAttachPoint="layoutDecoratorSelect" dojoType="Select" autocomplete="false"></select>
+                   </div>
+                   <button dojoType="Button" dojoAttachPoint="changeLayoutDecoratorButton" dojoAttachEvent="onClick:changeLayoutDecorator"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;Change Layout Theme</button>
+               </fieldset>
+               <fieldset class="pageEditorDetailContainer" dojoAttachPoint="pageEditPDContainer">
+                   <div class="portletDecoratorContainer">
+                       <select class="portletDecorator" name="portletDecoratorSelect" dojoAttachPoint="portletDecoratorSelect" dojoType="Select" autocomplete="false"></select>
+                   </div>
+                   <button dojoType="Button" dojoAttachPoint="changePortletDecoratorButton" dojoAttachEvent="onClick:changePortletDecorator"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;Change Portlet Theme</button>
+               </fieldset>
+               <div class="buttonContainerRight">
+                   <table cellpadding="0" cellspacing="6" border="0">
+                   <!-- height on images is currently needed to size the button properly, especially when button is inside a table -->
+                   <tr align="right">
+                   <td><button dojoType="Button" dojoAttachEvent="onClick:createPage"><img height="16" src="${this.layoutImagesRoot}page_new.png">&nbsp;Create New Page&#133;</button></td>
+                   </tr>
+                   <tr align="right">
+                   <td><button dojoType="Button" dojoAttachEvent="onClick:deletePage"><img height="16" src="${this.layoutImagesRoot}page_delete.png">&nbsp;Delete Page&#133;</button></td>
+                   </tr>
+                   </table>
+               </div>
+           </div>
         </div>
     </fieldset>
 

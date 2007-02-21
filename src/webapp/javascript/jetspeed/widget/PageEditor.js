@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * author: Steve Milek
  */
 
 dojo.provide("jetspeed.widget.PageEditor");
@@ -42,6 +44,10 @@ dojo.widget.defineWidget(
 		deletePortletDialogBg: null,
 		deletePortletDialogFg: null,
 
+        deleteLayoutDialog: null,
+		deleteLayoutDialogBg: null,
+		deleteLayoutDialogFg: null,
+
         columnSizeDialog: null,
 		columnSizeDialogBg: null,
 		columnSizeDialogFg: null,
@@ -51,6 +57,8 @@ dojo.widget.defineWidget(
 
         
         // fields
+        editorInitiatedFromDesktop: false,
+
 		isContainer: true,
         widgetsInTemplate: true,
 
@@ -71,8 +79,9 @@ dojo.widget.defineWidget(
 
             this.deletePortletDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePortletConfirmed: function() { this.hide(); self.deletePortletConfirmed( this.portletEntityId ); } }, this.deletePortletDialog );
 			this.deletePortletDialog.setCloseControl( this.deletePortletDialog.deletePortletCancel.domNode );
-			dojo.html.setOpacity( this.deletePortletDialogBg, 0.8 );
-			dojo.html.setOpacity( this.deletePortletDialogFg, 1 );
+
+            this.deleteLayoutDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deleteLayoutConfirmed: function() { this.hide(); self.deleteLayoutConfirmed( this.portletEntityId ); } }, this.deleteLayoutDialog );
+			this.deleteLayoutDialog.setCloseControl( this.deleteLayoutDialog.deleteLayoutCancel.domNode );
 
             var columnSizeParams = {};
             columnSizeParams.widgetsInTemplate = true;
@@ -101,8 +110,6 @@ dojo.widget.defineWidget(
 
             this.columnSizeDialog = dojo.widget.createWidget( "dialog", columnSizeParams, this.columnSizeDialog );
             this.columnSizeDialog.setCloseControl( this.columnSizeDialog.columnSizeCancel.domNode );
-			dojo.html.setOpacity(this.columnSizeDialogBg, 0.8);
-			dojo.html.setOpacity(this.columnSizeDialogFg, 1);
 
             jetspeed.widget.PageEditor.superclass.fillInTemplate.call( this );
 		},
@@ -115,21 +122,30 @@ dojo.widget.defineWidget(
         // initialization
         editPageInitiate: function()
         {
-            var themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, true, true, true, true );
+            var themesContentManager = null;
+            if ( this.editorInitiatedFromDesktop )
+                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, false, false, true, true, true );
+            else
+                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, true, true, true, false, false );
             themesContentManager.getContent();
         },
         editPageBuild: function()
         {
+            //actionButton.style.backgroundImage = "url(" + jetspeed.prefs.getLayoutRootUrl() + "/images/desktop/" + actionName + ".gif)";
+            var layoutImagesUrl = jetspeed.prefs.getLayoutRootUrl() + "/images/desktop/"; 
+
             var pageEditorWidgets = new Array();
-            var pageEditPaneWidget = dojo.widget.createWidget( "jetspeed:PageEditPane" );
+            var layoutEditPaneWidgets = new Array();
+            var pageEditPaneWidget = dojo.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jetspeed.page.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jetspeed.page.themeDefinitions.portletDecorations, layoutImagesRoot: layoutImagesUrl } );
             pageEditPaneWidget.pageEditorWidget = this;
             dojo.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
             pageEditorWidgets.push( pageEditPaneWidget );
 
-            var rootLayoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutRootEditPane", { layoutId: jetspeed.page.rootFragmentId, layoutDefinitions: jetspeed.page.themeDefinitions.layouts, layoutDecoratorDefinitions: jetspeed.page.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jetspeed.page.themeDefinitions.portletDecorations, desktopThemeDefinitions: jetspeed.page.themeDefinitions.desktopThemes } );
+            var rootLayoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jetspeed.page.rootFragmentId, isRootLayout: true, layoutDefinitions: jetspeed.page.themeDefinitions.layouts, layoutImagesRoot: layoutImagesUrl } );
             rootLayoutEditPaneWidget.pageEditorWidget = this;
             dojo.dom.insertAfter( rootLayoutEditPaneWidget.domNode, pageEditPaneWidget.domNode );
             pageEditorWidgets.push( rootLayoutEditPaneWidget );
+            layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
             
             if ( jetspeed.prefs.windowTiling )
             {
@@ -138,14 +154,20 @@ dojo.widget.defineWidget(
                     var col = jetspeed.page.columns[i];
                     if ( col.layoutHeader )
                     {
-                        var layoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { layoutId: col.layoutId, layoutDefinitions: jetspeed.page.themeDefinitions.layouts } );
+                        var layoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutId: col.layoutId, layoutDefinitions: jetspeed.page.themeDefinitions.layouts, layoutImagesRoot: layoutImagesUrl } );
                         layoutEditPaneWidget.pageEditorWidget = this;
-                        col.domNode.appendChild( layoutEditPaneWidget.domNode );
+                        if ( col.domNode.firstChild != null )
+                            col.domNode.insertBefore( layoutEditPaneWidget.domNode, col.domNode.firstChild );
+                        else
+                            col.domNode.appendChild( layoutEditPaneWidget.domNode );
+                        layoutEditPaneWidget.initializeDrag();
                         pageEditorWidgets.push( layoutEditPaneWidget );
+                        layoutEditPaneWidgets.push( layoutEditPaneWidget );
                     }
                 }
             }
             this.pageEditorWidgets = pageEditorWidgets;
+            this.layoutEditPaneWidgets = layoutEditPaneWidgets;
             this.editPageSyncPortletActions();
         },
         editPageSyncPortletActions: function()
@@ -197,6 +219,18 @@ dojo.widget.defineWidget(
         deletePortletConfirmed: function( portletEntityId )
         {
             var removePortletContentManager = new jetspeed.widget.RemovePortletContentManager( portletEntityId, this );
+            removePortletContentManager.getContent();
+        },
+        deleteLayout: function( layoutId )
+        {
+            this.deleteLayoutDialog.layoutId = layoutId;
+            this.deleteLayoutDialog.layoutTitle = layoutId;
+            this.deleteLayoutTitle.innerHTML = layoutId;
+            this.deleteLayoutDialog.show();
+        },
+        deleteLayoutConfirmed: function()
+        {
+            var removePortletContentManager = new jetspeed.widget.RemoveLayoutContentManager( this.deleteLayoutDialog.layoutId, this );
             removePortletContentManager.getContent();
         },
         openColumnSizesEditor: function( layoutId )
@@ -263,26 +297,74 @@ dojo.widget.defineWidget(
         _doRefreshPage: function()
         {
             var pageUrl = jetspeed.page.getPageUrl();
-            pageUrl += "?" + jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER + "=true";
-            window.location.href = pageUrl;
+            pageUrl = jetspeed.url.addQueryParameter( pageUrl, "editPage", "true", true );
+            window.location.href = pageUrl.toString();
+        },
+
+        editModeNormal: function()
+        {
+            // restore all portlets (that were not previously minimized)
+            var portletArray = jetspeed.page.getPortletArray();
+            for ( var i = 0; i < portletArray.length; i++ )
+            {
+                var portletWindow = portletArray[i].getPortletWindow();
+                if ( portletWindow != null )
+                {
+                    portletWindow.restoreFromMinimizeWindowTemporarily();
+                }
+            }
+            if ( this.layoutEditPaneWidgets != null )
+            {
+                for ( var i = 0 ; i < this.layoutEditPaneWidgets.length ; i++ )
+                {
+                    var lepWidget = this.layoutEditPaneWidgets[i];
+                    if ( lepWidget.layoutMoveContainer != null )
+                        lepWidget.layoutMoveContainer.domNode.style.display = "none";
+                }
+            }           
+        },
+        editModeLayoutMove: function()
+        {
+            // minimize all portlets
+            var portletArray = jetspeed.page.getPortletArray();
+            for ( var i = 0; i < portletArray.length; i++ )
+            {
+                var portletWindow = portletArray[i].getPortletWindow();
+                if ( portletWindow != null )
+                {
+                    portletWindow.minimizeWindowTemporarily();
+                }
+            }
+            // display layout-move-handle widget
+            if ( this.layoutEditPaneWidgets != null )
+            {
+                for ( var i = 0 ; i < this.layoutEditPaneWidgets.length ; i++ )
+                {
+                    var lepWidget = this.layoutEditPaneWidgets[i];
+                    if ( ! lepWidget.isRootLayout && lepWidget.layoutMoveContainer != null )
+                        lepWidget.layoutMoveContainer.domNode.style.display = "block"
+                }
+            }
         }
 	}
 );
 
 
 // ... jetspeed.widget.EditPageGetThemesContentManager
-jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pageDecorations, portletDecorations, layouts, desktopThemes )
+jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pageDecorations, portletDecorations, layouts, desktopPageDecorations, desktopPortletDecorations )
 {
     this.pageEditorWidget = pageEditorWidget;
     var getThemeTypes = new Array();
     if ( pageDecorations )
-        getThemeTypes.push( "pageDecorations" );
+        getThemeTypes.push( [ "pageDecorations" ] );
     if ( portletDecorations )
-        getThemeTypes.push( "portletDecorations" );
+        getThemeTypes.push( [ "portletDecorations" ] );
     if ( layouts )
-        getThemeTypes.push( "layouts" );
-    if ( desktopThemes )
-        getThemeTypes.push( "desktopThemes" );
+        getThemeTypes.push( [ "layouts" ] );
+    if ( desktopPageDecorations )
+        getThemeTypes.push( [ "desktopPageDecorations", "pageDecorations" ] );
+    if ( desktopPortletDecorations )
+        getThemeTypes.push( [ "desktopPortletDecorations", "portletDecorations" ] );
     this.getThemeTypes = getThemeTypes;
     this.getThemeTypeNextIndex = 0;
 };
@@ -292,7 +374,7 @@ jetspeed.widget.EditPageGetThemesContentManager.prototype =
     {
         if ( this.getThemeTypes != null && this.getThemeTypes.length > this.getThemeTypeNextIndex )
         {
-            var queryString = "?action=getthemes&type=" + this.getThemeTypes[ this.getThemeTypeNextIndex ] + "&format=json";
+            var queryString = "?action=getthemes&type=" + this.getThemeTypes[ this.getThemeTypeNextIndex ][0] + "&format=json";
             var getThemesUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + queryString ;
             var ajaxApiContext = new jetspeed.om.Id( "getthemes", { } );
             var bindArgs = {};
@@ -309,7 +391,8 @@ jetspeed.widget.EditPageGetThemesContentManager.prototype =
     {
         if ( jetspeed.page.themeDefinitions == null )
             jetspeed.page.themeDefinitions = {};
-        jetspeed.page.themeDefinitions[ this.getThemeTypes[ this.getThemeTypeNextIndex ] ] = getThemesData;
+        var themeDefKey = ( ( this.getThemeTypes[ this.getThemeTypeNextIndex ].length > 1 ) ? this.getThemeTypes[ this.getThemeTypeNextIndex ][1] : this.getThemeTypes[ this.getThemeTypeNextIndex ][0]);
+        jetspeed.page.themeDefinitions[ themeDefKey ] = getThemesData;
         this.getThemeTypeNextIndex++;
         this.getContent();
     },
@@ -404,6 +487,48 @@ jetspeed.widget.AddPageContentManager.prototype =
     }
 };
 
+
+// ... jetspeed.widget.MoveLayoutContentManager
+jetspeed.widget.MoveLayoutContentManager = function( layoutId, moveToLayoutId, column, row, pageEditorWidget )
+{
+    this.layoutId = layoutId;
+    this.moveToLayoutId = moveToLayoutId;
+    this.column = column;
+    this.row = row;
+    this.pageEditorWidget = pageEditorWidget;
+};
+jetspeed.widget.MoveLayoutContentManager.prototype =
+{
+    getContent: function()
+    {
+        if ( this.layoutId != null && this.moveToLayoutId != null )
+        {
+            var queryString = "?action=moveabs&id=" + this.layoutId + "&layoutid=" + this.moveToLayoutId;
+            if ( this.column != null )
+                queryString += "&col=" + this.column;
+            if ( this.row != null )
+                queryString += "&row=" + this.row;
+            var psmlMoveActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString ;
+            var ajaxApiContext = new jetspeed.om.Id( "moveabs-layout", this.layoutId );
+            var bindArgs = {};
+            bindArgs.url = psmlMoveActionUrl;
+            bindArgs.mimetype = "text/xml";
+            jetspeed.url.retrieveContent( bindArgs, this, ajaxApiContext, jetspeed.debugContentDumpIds );
+        }
+    },
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "moveabs-layout" ) )
+        {
+            
+        }
+    },
+    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        dojo.raise( "MoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+    }
+};
+
 // ... jetspeed.widget.UpdateFragmentContentManager
 jetspeed.widget.UpdateFragmentContentManager = function( layoutId, layoutName, layoutSizes, pageEditorWidget )
 {
@@ -445,12 +570,11 @@ jetspeed.widget.UpdateFragmentContentManager.prototype =
 };
 
 // ... jetspeed.widget.UpdateFragmentContentManager
-jetspeed.widget.UpdatePageInfoContentManager = function( layoutDecorator, portletDecorator, desktopTheme, pageEditorWidget )
+jetspeed.widget.UpdatePageInfoContentManager = function( layoutDecorator, portletDecorator, pageEditorWidget )
 {
-    this.refreshPage = false;
+    this.refreshPage = ( ( pageEditorWidget.editorInitiatedFromDesktop ) ? true : false ) ;
     this.layoutDecorator = layoutDecorator;
     this.portletDecorator = portletDecorator;
-    this.desktopTheme = desktopTheme;
     this.pageEditorWidget = pageEditorWidget;
 };
 jetspeed.widget.UpdatePageInfoContentManager.prototype =
@@ -462,11 +586,6 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
             queryString += "&layout-decorator=" + escape( this.layoutDecorator );
         if ( this.portletDecorator != null )
             queryString += "&portlet-decorator=" + escape( this.portletDecorator );
-        if ( this.desktopTheme != null )
-        {
-            queryString += "&theme=" + escape( this.desktopTheme );
-            this.refreshPage = true;
-        }
         var updatePageUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString ;
         var ajaxApiContext = new jetspeed.om.Id( "updatepage-info", { } );
         var bindArgs = {};
@@ -519,5 +638,74 @@ jetspeed.widget.RemovePortletContentManager.prototype =
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
         dojo.raise( "RemovePortletContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+    }
+};
+
+// ... jetspeed.widget.RemoveLayoutContentManager
+jetspeed.widget.RemoveLayoutContentManager = function( layoutId, pageEditorWidget )
+{
+    this.layoutId = layoutId;
+    this.pageEditorWidget = pageEditorWidget;
+};
+jetspeed.widget.RemoveLayoutContentManager.prototype =
+{
+    getContent: function()
+    {
+        if ( this.layoutId != null )
+        {
+            var queryString = "?action=updatepage&method=remove-fragment&id=" + this.layoutId;
+            var removeLayoutUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString ;
+            var ajaxApiContext = new jetspeed.om.Id( "removelayout", { } );
+            var bindArgs = {};
+            bindArgs.url = removeLayoutUrl;
+            bindArgs.mimetype = "text/xml";
+            jetspeed.url.retrieveContent( bindArgs, this, ajaxApiContext, jetspeed.debugContentDumpIds );
+        }
+    },
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "removeportlet" ) )
+        {
+            this.pageEditorWidget.refreshPage();
+        }
+    },
+    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        dojo.raise( "RemoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+    }
+};
+
+// ... jetspeed.widget.AddLayoutContentManager
+jetspeed.widget.AddLayoutContentManager = function( parentLayoutId, layoutName, pageEditorWidget )
+{
+    this.parentLayoutId = parentLayoutId;
+    this.layoutName = layoutName;
+    this.pageEditorWidget = pageEditorWidget;
+};
+jetspeed.widget.AddLayoutContentManager.prototype =
+{
+    getContent: function()
+    {
+        if ( this.parentLayoutId != null )
+        {
+            var queryString = "?action=updatepage&method=add-fragment&layoutid=" + this.parentLayoutId + ( this.layoutName != null ? ( "&layout=" + this.layoutName ) : "" );
+            var addLayoutUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString ;
+            var ajaxApiContext = new jetspeed.om.Id( "addlayout", { } );
+            var bindArgs = {};
+            bindArgs.url = addLayoutUrl;
+            bindArgs.mimetype = "text/xml";
+            jetspeed.url.retrieveContent( bindArgs, this, ajaxApiContext, jetspeed.debugContentDumpIds );
+        }
+    },
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "addportlet" ) )
+        {
+            this.pageEditorWidget.refreshPage();
+        }
+    },
+    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
+    {
+        dojo.raise( "AddLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };

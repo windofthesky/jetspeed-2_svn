@@ -1,11 +1,6 @@
 <div class="pageEditorPane">
     <div dojoAttachPoint="containerNode" class="container"></div>
 
-    <fieldset>
-        <div class="pageEditorPaneLeft"><b>Jetspeed Customizer</b></div>
-        <div class="pageEditorPaneRight"></div>
-    </fieldset>
-
     <div dojoAttachPoint="deletePortletDialog">
 		<div class="container" dojoAttachPoint="deletePortletDialogBg">
 			<div class="deletePortletDialog" dojoAttachPoint="deletePortletDialogFg">
@@ -13,6 +8,18 @@
                 <div dojoAttachPoint="deletePortletTitle">&nbsp;</div>
                 <button dojoType="Button" dojoAttachEvent="onClick:deletePortletConfirmed">OK</button>
                 <button dojoType="Button" dojoAttachPoint="deletePortletCancel">Cancel</button>
+				<p></p>
+			</div>
+		</div>
+	</div>
+
+    <div dojoAttachPoint="deleteLayoutDialog">
+		<div class="container" dojoAttachPoint="deleteLayoutDialogBg">
+			<div class="deleteLayoutDialog" dojoAttachPoint="deleteLayoutDialogFg">
+				<h2>Are you sure you want to delete this layout?</h2>
+                <div dojoAttachPoint="deleteLayoutTitle">&nbsp;</div>
+                <button dojoType="Button" dojoAttachEvent="onClick:deleteLayoutConfirmed">OK</button>
+                <button dojoType="Button" dojoAttachPoint="deleteLayoutCancel">Cancel</button>
 				<p></p>
 			</div>
 		</div>

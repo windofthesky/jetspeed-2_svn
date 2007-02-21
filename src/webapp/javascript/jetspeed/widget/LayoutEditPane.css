@@ -14,24 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.layoutEditPane { }
+.layoutEditPane { position: relative; width: 100% }  
+/*   ^^^ width: 100% is need to avoid IE auto-containing bug: http://www.satzansatz.de/cssd/rpfloat.html */
 
 .layoutEditPane .container{ }
 
-
+.layoutEditPane label,
+.layoutEditPane input,
 .layoutEditPane select
 {
   font-size: 8pt;
   color: blue;
 }
 
-
 .layoutEditPane .detail { }
-.layoutEditPane .detail .layoutNameContainer{ width: 92%; max-width: 300px; float:left; vertical-align: middle }
-.layoutEditPane .detail .layoutName { font-size: xx-small; width: 100%; max-width: 300px; float:left }
-.layoutEditPane .detail .selectSpacer { float: left; width: 20px; visibility: hidden }
-.layoutEditPane .detail .operationSpacer { float: left; width: 28px; visibility: hidden }
-.layoutEditPane .detail .dojoButton { float: left; margin-right: 5px }
-.layoutEditPane .detail .buttonContainerRight .dojoButton { float: right; margin-right: 5px }
+
+.layoutEditPane .detail .rowContainer { margin-top: 7px; float: left }
+
+.layoutEditPane .detail .layoutNameContainer{ width: 270px; float:left; vertical-align: middle; margin-right: 20px; margin-bottom: 10px }
+.layoutEditPane .detail .layoutName { font-size: xx-small; width: 100% }
+
+.layoutEditPane .detail .buttonContainerLeft { float: left; clear: both }
+.layoutEditPane .detail .buttonContainerLeft .dojoButton { float: left; margin-right: 5px }
+
+.layoutEditPane .detail .buttonContainerRight { float: right }
+.layoutEditPane .detail .buttonContainerRight .dojoButton { }
+
+.layoutEditPane .layoutMoveContainer  { position: absolute; right: 2px; top: 2px; width: 26px; height: 25px; display: none; cursor: move }
 
 .dojoComboBoxOptions { font-size: xx-small; }

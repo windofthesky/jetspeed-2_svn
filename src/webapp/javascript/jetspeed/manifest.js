@@ -29,7 +29,7 @@ dojo.require("dojo.ns");
             "pageeditor": "jetspeed.widget.PageEditor",
             "pageeditpane": "jetspeed.widget.PageEditPane",
             "layouteditpane": "jetspeed.widget.LayoutEditPane",
-            "layoutrooteditpane": "jetspeed.widget.LayoutRootEditPane",
+            "layouteditpanemovebutton": "jetspeed.widget.LayoutEditPaneMoveHandle",
             "sitemanagertreerpccontroller": "jetspeed.widget.SiteManagerTreeRPCController"
         }
     };

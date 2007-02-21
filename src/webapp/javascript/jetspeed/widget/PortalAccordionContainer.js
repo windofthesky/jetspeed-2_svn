@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * author: Steve Milek
  */
 
 dojo.provide("jetspeed.widget.PortalAccordionContainer");
@@ -37,7 +39,7 @@ dojo.lang.extend( jetspeed.widget.PortalAccordionContainer,
     // dojo.widget.Widget create protocol
     postMixInProperties: function( args, fragment, parentComp )
     {
-        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getDesktopThemeRootUrl() + "/css/PortalAccordionContainer.css" ) ;
+        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getLayoutRootUrl() + "/css/PortalAccordionContainer.css" ) ;
         jetspeed.widget.PortalAccordionContainer.superclass.postMixInProperties.call( this, args, fragment, parentComp );
     },
     createAndAddPane: function( /* jetspeed.om.MenuOption */ labelMenuOption, accordionPaneProps )

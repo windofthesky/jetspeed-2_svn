@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * author: Steve Milek
  */
 
 // jetspeed javascript to help support portlets in both /portal and /desktop
@@ -323,15 +325,50 @@ jetspeed.url.parse = function( url )
         return null;
     if ( window.dojo && window.dojo.uri )
         return new dojo.uri.Uri( url );
-    var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
-    var r = url.toString().match( new RegExp( regexp ) );
-    var parsedUrl = {};
-    parsedUrl.scheme = r[2] || (r[1] ? "" : null);
-    parsedUrl.authority = r[4] || (r[3] ? "" : null);
-    parsedUrl.path = r[5]; // can never be undefined
-    parsedUrl.query = r[7] || (r[6] ? "" : null);
-    parsedUrl.fragment  = r[9] || (r[8] ? "" : null);
-    return parsedUrl;
+    return new jetspeed.url.JSUri( url );
+};
+jetspeed.url.JSUri = function( url )
+{
+    if ( url != null )
+    {
+        if ( ! url.path )
+        {
+            var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
+            var r = url.toString().match( new RegExp( regexp ) );
+            var parsedUrl = {};
+            this.scheme = r[2] || (r[1] ? "" : null);
+            this.authority = r[4] || (r[3] ? "" : null);
+            this.path = r[5]; // can never be undefined
+            this.query = r[7] || (r[6] ? "" : null);
+            this.fragment  = r[9] || (r[8] ? "" : null);
+        }
+        else
+        {
+            this.scheme = url.scheme;
+            this.authority = url.authority;
+            this.path = url.path;
+            this.query= url.query;
+            this.fragment = url.fragment;
+        }
+    }
+};
+jetspeed.url.JSUri.prototype =
+{
+    scheme: null,
+    authority: null,
+    path: null,
+    query: null,
+    fragment: null,
+    toString: function()
+    {
+        var uri = "";
+        uri += ( this.scheme != null && this.scheme.length > 0 ) ? ( this.scheme + "://" ) : "";
+        uri += ( this.authority != null && this.authority.length > 0 ) ? this.authority : "";
+        uri += ( this.path != null && this.path.length > 0 ) ? this.path : "";
+        uri += ( this.query != null && this.query.length > 0 ) ? ( "?" + this.query ) : "";
+        uri += ( this.fragment != null && this.fragment > 0 ) ? ( "#" + this.fragment ) : "";
+        return uri;
+    }
 };
 jetspeed.url.scheme =
 {   // used to make jetspeed.url.validateUrlStartsWithHttp cleaner
@@ -373,10 +410,6 @@ jetspeed.url.basePortalDesktopUrl = function()
         jetspeed.url.pathInitialize();
     return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED ;
 };
-jetspeed.url.basePortalWindowThemeUrl = function( windowtheme )
-{
-    return jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/windowthemes/" + windowtheme;
-};
 
 jetspeed.url.validateUrlStartsWithHttp = function( url )
 {
@@ -395,6 +428,126 @@ jetspeed.url.validateUrlStartsWithHttp = function( url )
     }
     return false;
 };
+jetspeed.url.addQueryParameter = function( urlObj, paramname, paramvalue, removeExisting )
+{
+    if ( urlObj == null )
+        return urlObj;
+    if ( ! urlObj.path )
+        urlObj = jetspeed.url.parse( urlObj );
+    if ( urlObj == null )
+        return null;
+    if ( paramname == null )
+        return urlObj;
+    urlObj.jsQParamN = null;
+    if ( removeExisting )
+        urlObj = jetspeed.url.removeQueryParameter( urlObj, paramname, false );
+    
+    var urlQuery = urlObj.query;
+    if ( urlQuery == null )
+        urlQuery = "";
+    var urlQueryLen = urlQuery.length;
+    if ( urlQueryLen > 0 )
+        urlQuery += "&";
+    urlQuery += paramname + "=" + ( paramvalue != null ? paramvalue : "" );
+    urlObj.query = urlQuery;
+    var modUri = new jetspeed.url.JSUri( urlObj );        
+    urlObj = jetspeed.url.parse( modUri );
+    return urlObj;
+};
+jetspeed.url.removeAllQueryParameters = function( urlObj )
+{
+    return jetspeed.url.removeQueryParameter( urlObj, null, true );
+};
+jetspeed.url.removeQueryParameter = function( urlObj, paramname, removeAllParameters )
+{
+    if ( urlObj == null )
+        return urlObj;
+    if ( ! urlObj.path )
+        urlObj = jetspeed.url.parse( urlObj );
+    if ( urlObj == null )
+        return null;
+    urlObj.jsQParamN = null;
+    var urlQuery = urlObj.query;
+    var urlQueryLen = ( ( urlQuery != null ) ? urlQuery.length : 0 );
+    if ( urlQueryLen > 0 )
+    {
+        if ( removeAllParameters )
+            urlQuery = null;
+        else if ( paramname == null )
+            return urlObj;
+        else
+        {
+            var matchParam = paramname;
+            var matchPos = urlQuery.indexOf( matchParam );
+            if ( matchPos == 0 )
+                urlQuery = jetspeed.url._removeQP( urlQuery, urlQueryLen, matchParam, matchPos );
+            
+            matchParam = "&" + paramname;
+            while ( true )
+            {
+                urlQueryLen = ( ( urlQuery != null ) ? urlQuery.length : 0 );
+                matchPos = urlQuery.indexOf( matchParam, 0 );
+                if ( matchPos == -1 )
+                    break;
+                var modUrlQuery = jetspeed.url._removeQP( urlQuery, urlQueryLen, matchParam, matchPos );
+                if ( modUrlQuery == urlQuery )
+                    break;
+                urlQuery = modUrlQuery;
+            }
+            if ( urlQuery.length > 0 )
+            {
+                if ( urlQuery.charCodeAt( 0 ) == 38 ) // "&"
+                    urlQuery = ( ( urlQuery.length > 1 ) ? urlQuery.substring( 1 ) : "" );
+                if ( urlQuery.length > 0 && urlQuery.charCodeAt( 0 ) == 63 ) // "?"
+                    urlQuery = ( ( urlQuery.length > 1 ) ? urlQuery.substring( 1 ) : "" );
+            }
+        }
+        urlObj.query = urlQuery;
+        var modUri = new jetspeed.url.JSUri( urlObj );        
+        urlObj = jetspeed.url.parse( modUri );
+    }
+    return urlObj;
+};
+
+jetspeed.url._removeQP = function( urlQuery, urlQueryLen, matchParam, matchPos )
+{
+    if ( matchPos == -1 ) return urlQuery;
+    if ( urlQueryLen > ( matchPos + matchParam.length ) )
+    {
+        var nextCh = urlQuery.charCodeAt( matchPos + matchParam.length );
+        if ( nextCh == 61 )  // "="
+        {
+            var ampPos = urlQuery.indexOf( "&", matchPos + matchParam.length + 1 );
+            if ( ampPos != -1 )
+            {
+                if ( matchPos > 0 )
+                    urlQuery = urlQuery.substring( 0, matchPos ) + urlQuery.substring( ampPos );
+                else
+                    urlQuery = ( ( ampPos < (urlQueryLen -1) ) ? urlQuery.substring( ampPos ) : "" );
+            }
+            else
+            {
+                if ( matchPos > 0 )
+                    urlQuery = urlQuery.substring( 0, matchPos )
+                else
+                    urlQuery = "";
+            }
+        }
+        else if ( nextCh == 38 ) // "&"
+        {
+            if ( matchPos > 0 )
+                urlQuery = urlQuery.substring( 0, matchPos ) + urlQuery.substring( matchPos + matchParam.length );
+            else
+                urlQuery = urlQuery.substring( matchPos + matchParam.length );
+        }
+    }
+    else if ( urlQueryLen == ( matchPos + matchParam.length ) )
+    {
+        urlQuery = "";
+    }
+    return urlQuery;
+};
+
 jetspeed.url.getQueryParameter = function( urlObj, paramname )
 {
     if ( urlObj == null )

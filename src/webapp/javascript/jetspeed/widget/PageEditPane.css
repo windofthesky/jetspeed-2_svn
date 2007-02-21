@@ -14,11 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.pageEditPane { }
-
-.pageEditPane .container { }
-
-
 .pageEditPane
 {
   width: 100%;
@@ -28,47 +23,43 @@ limitations under the License.
   clip: auto;
 }
 
-.pageEditPane label, 
-.pageEditPane input, 
+.pageEditPane .container { }
+
+.pageEditPane label,
+.pageEditPane input,
 .pageEditPane select 
 {
   font-size: 8pt;
   color: blue;
 }
 
-.pageEditPane input
-{
-  font-size: 8pt;
-}
+.pageEditPane .detail .pageEditorName { font-weight: bold; vertical-align: 50% }
 
-.pageEditPaneLeft
-{
-  display:inline;
-  float:left;
-}
+.pageEditPane .detail .rowContainer { margin-top: 7px; float: left; clear: both }
 
-.pageEditPaneRight
-{
-  display:inline;
-  float:right;
-  padding-right: 5px;
-}
+.pageEditPane .detail .layoutDecoratorContainer{ width: 80px; float: left; margin-right: 20px }
+.pageEditPane .detail .layoutDecorator { font-size: xx-small; width: 100% }
 
-.pageEditPane .detail .buttonContainer { margin-top: 5px }
+.pageEditPane .detail .portletDecoratorContainer{ width: 150px; float: left; margin-right: 20px }
+.pageEditPane .detail .portletDecorator { font-size: xx-small; width: 100% }
 
-.pageEditPane .detail .dojoButton { float: left; margin-right: 5px }
-.pageEditPane .detail .buttonContainerRight .dojoButton { float: right; margin-right: 5px }
+.pageEditPane .detail .pageEditorDetailContainer .dojoButton { float: left; margin-right: 5px }
+.pageEditPane .detail .buttonContainerRight { float: right }
+.pageEditPane .detail .buttonContainerRight .dojoButton { }
 
 .dojoDialog .container { padding: 0.5em; background: #fff; border: 2px solid #333; -moz-border-radius : 5px; }
 
-.dojoDialog .deletePageDialog { background: transparent; width: 20em; }
+.dojoDialog .deletePageDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
 .dojoDialog .deletePageDialog h2 { margin-top: 0; padding-top: 0; }
 .dojoDialog .deletePageDialog p { clear: both; }
 .dojoDialog .deletePageDialog .dojoButton { float: right; margin-right: 5px }
 
-.dojoDialog .createPageDialog { background: transparent; width: 20em; }
+.dojoDialog .createPageDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
 .dojoDialog .createPageDialog h2 { margin-top: 0; padding-top: 0; }
 .dojoDialog .createPageDialog p { clear: both; }
 .dojoDialog .createPageDialog .dojoButton { float: right; margin-right: 5px }
 .dojoDialog .createPageDialog .createPageField { margin-bottom: 5px }
 
+	
+	
+	

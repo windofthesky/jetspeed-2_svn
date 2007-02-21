@@ -14,56 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.pageEditorPane { }
-
-.pageEditorPane .container { }
-
-
-.pageEditorPane
-{
-  width: 100%;
-  padding-top: 5px;
-  font-size: 8pt;
-  color: blue;
-  overflow: hidden;
-  clip: auto;
-}
-
-.pageEditorPane label, 
-.pageEditorPane input, 
-.pageEditorPane select 
-{
-  font-size: 8pt;
-  color: blue;
-}
-
-.pageEditorPane input
-{
-  font-size: 8pt;
-}
-
-.pageEditorPaneLeft
-{
-  display:inline;
-  float:left;
-}
-
-.pageEditorPaneRight
-{
-  display:inline;
-  float:right;
-  padding-right: 5px;
-}
-
-
 .dojoDialog .container { padding: 0.5em; background: #fff; border: 2px solid #333; -moz-border-radius : 5px; }
 
-.dojoDialog .deletePortletDialog { background: transparent; width: 20em; }
+.dojoDialog .deletePortletDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
 .dojoDialog .deletePortletDialog h2 { margin-top: 0; padding-top: 0; }
 .dojoDialog .deletePortletDialog p { clear: both; }
 .dojoDialog .deletePortletDialog .dojoButton { float: right; margin-right: 5px }
 
-.dojoDialog .columnSizeDialog { background: transparent; width: 20em; }
+.dojoDialog .deleteLayoutDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
+.dojoDialog .deleteLayoutDialog h2 { margin-top: 0; padding-top: 0; }
+.dojoDialog .deleteLayoutDialog p { clear: both; }
+.dojoDialog .deleteLayoutDialog .dojoButton { float: right; margin-right: 5px }
+
+.dojoDialog .columnSizeDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
 .dojoDialog .columnSizeDialog h2{ margin-top: 0; padding-top: 0; }
 .dojoDialog .columnSizeDialog p{ clear: both; }
 .dojoDialog .columnSizeDialog .dojoButton { float: right; margin-right: 5px }
@@ -72,5 +35,29 @@ limitations under the License.
 .dojoDialog .columnSizeDialog .columnSizeField .missing { font-size: 8pt; color: red }
 .dojoDialog .columnSizeDialog .columnSizeField .invalid { font-size: 8pt; color: red }
 
-.pageEditorPane .detail { }
+.pageEditorPaneContainer {
+    padding: 0.35em 0.625em 0.75em 0.625em;
+    /*background-color: #d3d3d3;*/
+    /*  ^^ set conditionally in code - in IE6, if fieldset background-color is set, fieldset is rendered poorly */
+    -moz-border-radius: 5px;
+    -moz-border-top-colors: ThreeDLightShadow ThreeDHighlight;
+    -moz-border-right-colors: ThreeDDarkShadow ThreeDShadow;
+    -moz-border-bottom-colors: ThreeDDarkShadow ThreeDShadow;
+    -moz-border-left-colors: ThreeDLightShadow ThreeDHighlight;
+}
+
+.pageEditorDetailContainer {
+    padding: 0.35em 0.625em 0.75em 0.625em;
+    /*background-color: #eeeeee;*/
+    /*  ^^ set conditionally in code - in IE6, if fieldset background-color is set, fieldset is rendered poorly */
+    -moz-border-radius: 5px;
+    -moz-border-top-colors: ThreeDLightShadow ThreeDHighlight;
+    -moz-border-right-colors: ThreeDDarkShadow ThreeDShadow;
+    -moz-border-bottom-colors: ThreeDDarkShadow ThreeDShadow;
+    -moz-border-left-colors: ThreeDLightShadow ThreeDHighlight;
+
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
 

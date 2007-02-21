@@ -46,7 +46,7 @@ dojo.lang.extend(jetspeed.widget.PortalTaskBar, {
         //    this.widgetId = jetspeed.id.TASKBAR;
 
         var tbProps = {};
-        tbProps.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getDesktopThemeRootUrl() + "/css/PortalTaskBar.css" ) ;
+        tbProps.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getLayoutRootUrl() + "/css/PortalTaskBar.css" ) ;
         tbProps.templatePath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/HtmlTaskBarItemTemplate.html" ) ;
         // BOZO: improve this junk ^^^ 
 

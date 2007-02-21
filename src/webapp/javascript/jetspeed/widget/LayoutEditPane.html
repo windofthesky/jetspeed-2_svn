@@ -1,16 +1,32 @@
 <div class="layoutEditPane">
     <div dojoAttachPoint="containerNode" class="container"></div>
 
-    <fieldset>
-        <div dojoAttachPoint="detail" class="detail">
-           <div class="layoutNameContainer">
-            <select name="layoutNameSelect" dojoAttachPoint="layoutNameSelect" dojoType="Select" class="layoutName" autocomplete="false">
-            </select></div>
-            <div class="selectSpacer">&nbsp;</div>
-            <button dojoType="Button" dojoAttachPoint="changeLayoutButton" dojoAttachEvent="onClick:changeLayout">Change Layout</button>
-            <div class="operationSpacer">&nbsp;</div>
-            <button dojoType="Button" dojoAttachEvent="onClick:openColumnSizeEditor">Column Sizes</button>
-            <div class="buttonContainerRight"><button dojoType="Button" dojoAttachEvent="onClick:addPortlet">Add Portlet</button></div>
+    <fieldset class="pageEditorPaneContainer" dojoAttachPoint="pageEditContainer">
+        <div class="detail">
+            <div class="rowContainer">
+                <fieldset class="pageEditorDetailContainer" dojoAttachPoint="pageEditLNContainer">
+                    <div class="layoutNameContainer">
+                        <select class="layoutName" name="layoutNameSelect" dojoAttachPoint="layoutNameSelect" dojoType="Select" autocomplete="false"></select>
+                    </div>
+                    <div class="buttonContainerLeft">
+                        <button dojoType="Button" dojoAttachPoint="changeLayoutButton" dojoAttachEvent="onClick:changeLayout"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;Change Layout</button>
+                    </div>
+                </fieldset>
+                <div style="float: right; width: 18px">&nbsp;</div>  <!-- allowing room for layout-move image -->
+                <div class="buttonContainerRight">
+                    <table cellpadding="0" cellspacing="6" border="0">
+                    <!-- height on images is currently needed to size the button properly, especially when button is inside a table -->
+                    <tr>
+                    <td><button dojoType="Button" dojoAttachEvent="onClick:addPortlet"><img height="16" src="${this.layoutImagesRoot}portlet_add.png">&nbsp;Add Portlet&#133;</button></td>
+                    <td><button dojoType="Button" dojoAttachEvent="onClick:openColumnSizeEditor"><img height="16" src="${this.layoutImagesRoot}column_resize.png">&nbsp;Column Sizes&#133;</button></td>
+                    </tr>
+                    <tr>
+                    <td><button dojoType="Button" dojoAttachEvent="onClick:addLayout"><img height="16" src="${this.layoutImagesRoot}layout_new.png">&nbsp;Add Layout&#133;</button></td>
+                    <td><button dojoType="Button" dojoAttachPoint="deleteLayoutButton" dojoAttachEvent="onClick:deleteLayout"><img height="16" src="${this.layoutImagesRoot}layout_delete.png">&nbsp;Delete Layout&#133;</button><button dojoType="Button" dojoAttachPoint="editModeLayoutMoveButton" dojoAttachEvent="onClick:editModeLayoutMove"><img height="16" src="${this.layoutImagesRoot}edit_mode_layout_move.png">&nbsp;Move Mode</button><button dojoType="Button" dojoAttachPoint="editModeNormalButton" dojoAttachEvent="onClick:editModeNormal"><img height="16" src="${this.layoutImagesRoot}edit_mode_normal.png">&nbsp;Normal Mode</button></td>
+                    </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </fieldset>
 

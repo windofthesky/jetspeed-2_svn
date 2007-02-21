@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * author: Steve Milek
  */
 
 dojo.provide("jetspeed.widget.PortletDefContainer");
@@ -34,14 +36,14 @@ dojo.lang.extend(jetspeed.widget.PortletDefContainer, {
     // dojo.widget.Widget create protocol
     postMixInProperties: function( args, fragment, parentComp )
     {
-        this.templatePath = new dojo.uri.dojoUri( jetspeed.url.basePortalWindowThemeUrl( jetspeed.page.getWindowThemeDefault() ) + "/templates/PortletDefContainer.html");
-        this.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalWindowThemeUrl( jetspeed.page.getWindowThemeDefault() ) + "/css/PortletDefContainer.css" );
+        this.templatePath = new dojo.uri.dojoUri( jetspeed.prefs.getPortletDecorationBaseUrl( jetspeed.page.getPortletDecorationDefault() ) + "/templates/PortletDefContainer.html");
+        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getPortletDecorationBaseUrl( jetspeed.page.getPortletDecorationDefault() ) + "/css/PortletDefContainer.css" );
 
         jetspeed.widget.PortletDefContainer.superclass.postMixInProperties.call( this );
 
         var pdcProps = {};
-        pdcProps.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalWindowThemeUrl( jetspeed.page.getWindowThemeDefault() ) + "/css/PortletDefContainer.css" ) ;
-        pdcProps.templatePath = new dojo.uri.Uri( jetspeed.url.basePortalWindowThemeUrl( jetspeed.page.getWindowThemeDefault() ) + "/templates/PortletDefContainerItemTemplate.html" ) ;
+        pdcProps.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getPortletDecorationBaseUrl( jetspeed.page.getPortletDecorationDefault() ) + "/css/PortletDefContainer.css" ) ;
+        pdcProps.templatePath = new dojo.uri.Uri( jetspeed.prefs.getPortletDecorationBaseUrl( jetspeed.page.getPortletDecorationDefault() ) + "/templates/PortletDefContainerItemTemplate.html" ) ;
 
         this.portletDefContainerProps = pdcProps ;
     },
@@ -159,7 +161,7 @@ dojo.lang.extend( jetspeed.widget.PortletDefDragSource, {
 
         var windowParams = {};
         windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ] = true;
-        windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_THEME ] = jetspeed.page.getWindowThemeDefault();
+        windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_DECORATION ] = jetspeed.page.getPortletDecorationDefault();
         windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_TITLE ] = this.portletDef.getPortletDisplayName();
         windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = widgetId;
         windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = jetspeed.prefs.windowWidth;
@@ -192,7 +194,7 @@ dojo.lang.extend(jetspeed.widget.PortletDefDragObject, {
 
         var windowParams = {};
         windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ] = false;
-        windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_THEME ] = "tigris";
+        windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_DECORATION ] = "tigris";
         windowParams[ jetspeed.id.PORTLET_PROP_WINDOW_TITLE ] = this.portletDef.getPortletDisplayName();
         windowParams[ jetspeed.id.PORTLET_PROP_WIDGET_ID ] = jetspeed.id.PORTLET_WINDOW_ID_PREFIX + "bleep";
         windowParams[ jetspeed.id.PORTLET_PROP_WIDTH ] = jetspeed.prefs.windowWidth;

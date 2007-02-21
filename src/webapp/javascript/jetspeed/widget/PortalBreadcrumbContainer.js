@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * author: Steve Milek
  */
 
 dojo.provide("jetspeed.widget.PortalBreadcrumbContainer");
@@ -39,8 +41,8 @@ dojo.lang.extend( jetspeed.widget.PortalBreadcrumbContainer,
     // dojo.widget.Widget create protocol
     postMixInProperties: function( args, fragment, parentComp )
     {
-        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getDesktopThemeRootUrl() + "/css/PortalBreadcrumbContainer.css" ) ;
-        this.templatePath = new dojo.uri.dojoUri( jetspeed.prefs.getDesktopThemeRootUrl() + "/templates/PortalBreadcrumbContainer.html");
+        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getLayoutRootUrl() + "/css/PortalBreadcrumbContainer.css" ) ;
+        this.templatePath = new dojo.uri.dojoUri( jetspeed.prefs.getLayoutRootUrl() + "/templates/PortalBreadcrumbContainer.html");
         jetspeed.widget.PortalBreadcrumbContainer.superclass.postMixInProperties.call( this, args, fragment, parentComp );
     },
 
@@ -132,6 +134,6 @@ jetspeed.widget.PortalBreadcrumbLinkSeparator = function()
 	dojo.widget.HtmlWidget.call(this);
     
     this.widgetType = "PortalBreadcrumbLinkSeparator";
-    this.templatePath = new dojo.uri.dojoUri( jetspeed.prefs.getDesktopThemeRootUrl() + "/templates/PortalBreadcrumbLinkSeparator.html");
+    this.templatePath = new dojo.uri.dojoUri( jetspeed.prefs.getLayoutRootUrl() + "/templates/PortalBreadcrumbLinkSeparator.html");
 };
 dojo.inherits(jetspeed.widget.PortalBreadcrumbLinkSeparator, dojo.widget.HtmlWidget);

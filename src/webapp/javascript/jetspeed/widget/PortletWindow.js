@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * author: Steve Milek
  */
 
 dojo.provide("jetspeed.widget.PortletWindow");
@@ -42,8 +44,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     hasShadow: false,
     nextIndex: 1,
 
-    windowTheme: null,
-    windowThemeConfig: null,
+    windowDecorationName: null,
+    windowDecorationConfig: null,
 
     windowPositionStatic: false,
     windowHeightToFit: false,
@@ -60,6 +62,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     lastUntiledPositionInfo: null,
     lastTiledPositionInfo: null,
+
+    minimizeWindowTemporarilyRestoreTo: null,
 
     // see setPortletContent for info on these ContentPane settings:
     executeScripts: false,
@@ -139,27 +143,21 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
-    initWindowTheme: function( fragment )
+    initWindowDecoration: function( fragment )
     {
-        var windowtheme = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_THEME );
-        if ( ! windowtheme )
+        var decorationName = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_DECORATION );
+        if ( ! decorationName )
         {
-            if ( this.portletWindowTheme )
-                windowtheme = this.portletWindowTheme;
+            if ( this.portletDecorationName )
+                decorationName = this.portletDecorationName;
             else
-                windowtheme = jetspeed.page.getWindowThemeDefault();
+                decorationName = jetspeed.page.getPortletDecorationDefault();
         }
-        this.windowTheme = windowtheme ;
-        this.windowThemeConfig = jetspeed.prefs.getWindowThemeConfig( windowtheme );
+        this.windowDecorationName = decorationName ;
+        var pdConfig = jetspeed.loadPortletDecorationStyles( decorationName );
+        this.windowDecorationConfig = pdConfig;
 
-        var prevCssPath = ( this.templateCssPath == null ? null : this.templateCssPath.toString() );
-        this.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalWindowThemeUrl( windowtheme ) + "/css/styles.css" );
-
-        if ( this.portletInitialized )
-        {   // load new stylesheet    // BOZO: it would be nice to check if this were necessary
-            if ( prevCssPath == null || prevCssPath != this.templateCssPath.toString() )
-                dojo.html.insertCssFile( this.templateCssPath, null, true );
-        }
+        this.templateCssPath = "";   // clear this so dojo default will not be loaded
     },
     initWindowTitle: function( fragment )
     {
@@ -168,7 +166,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     },
     initWindowIcon: function( fragment )
     {
-        if ( this.windowThemeConfig != null && this.windowThemeConfig.windowIconEnabled && this.windowThemeConfig.windowIconPath != null )
+
+        if ( this.windowDecorationConfig != null && this.windowDecorationConfig.windowIconEnabled && this.windowDecorationConfig.windowIconPath != null )
         {
             var windowicon = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_ICON );
             if ( ! windowicon )
@@ -182,7 +181,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                     windowicon = "document.gif";
                 }
             }
-            this.iconSrc = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl() + this.windowThemeConfig.windowIconPath + windowicon ) ;
+            this.iconSrc = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl() + this.windowDecorationConfig.windowIconPath + windowicon ) ;
             if ( this.portletInitialized && this.titleBarIcon )
             {
                 this.titleBarIcon.src = this.iconSrc.toString();
@@ -304,7 +303,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     portletMixinProperties: function( fragment )
     {
-        this.initWindowTheme( fragment );
+        this.initWindowDecoration( fragment );
         this.initWindowTitle( fragment );
         this.initWindowIcon( fragment );
 
@@ -406,7 +405,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 		}
 
 		// <img src=""> can hang IE!  better get rid of it
-		if ( this.iconSrc == "" )
+		if ( this.iconSrc == null || this.iconSrc == "" )
         {
 			dojo.dom.removeNode( this.titleBarIcon );
 		}
@@ -424,20 +423,20 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
             var windowTitleBarButtons = null;
 
-            if ( this.windowThemeConfig != null )
+            if ( this.windowDecorationConfig != null )
             {
                 var menuActionNames = new Array();
                 var menuActionNoImage = false;
-                if ( this.windowThemeConfig.windowActionButtonOrder != null )
+                if ( this.windowDecorationConfig.windowActionButtonOrder != null )
                 {
                     // all possible button actions must be added here (no support for adding action buttons after init)
                     // this including buttons for the current mode and state (which will be initially hidden)
                     var btnActionNames = new Array();
                     if ( this.portlet )
                     {
-                        for ( var actionIdx = (this.windowThemeConfig.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
+                        for ( var actionIdx = (this.windowDecorationConfig.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
                         {
-                            var actionName = this.windowThemeConfig.windowActionButtonOrder[ actionIdx ];
+                            var actionName = this.windowDecorationConfig.windowActionButtonOrder[ actionIdx ];
                             var includeAction = false;
                             if ( this.portlet.getAction( actionName ) != null || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
                             {
@@ -455,9 +454,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                     }
                     else
                     {
-                        for ( var actionIdx = (this.windowThemeConfig.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
+                        for ( var actionIdx = (this.windowDecorationConfig.windowActionButtonOrder.length-1) ; actionIdx >= 0 ; actionIdx-- )
                         {
-                            var actionName = this.windowThemeConfig.windowActionButtonOrder[ actionIdx ];
+                            var actionName = this.windowDecorationConfig.windowActionButtonOrder[ actionIdx ];
                             var includeAction = false;
                             if ( actionName == jetspeed.id.ACTION_NAME_MINIMIZE || actionName == jetspeed.id.ACTION_NAME_MAXIMIZE || actionName == jetspeed.id.ACTION_NAME_RESTORE || actionName == jetspeed.id.ACTION_NAME_MENU || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
                             {
@@ -469,7 +468,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                             }
                         }
                     }   // if ( this.portlet )
-                    var btnMax = ( this.windowThemeConfig.windowActionButtonMax == null ? -1 : this.windowThemeConfig.windowActionButtonMax );
+                    var btnMax = ( this.windowDecorationConfig.windowActionButtonMax == null ? -1 : this.windowDecorationConfig.windowActionButtonMax );
                     if ( btnMax != -1 && btnActionNames.length >= btnMax )
                     {
                         var removedBtns = 0;
@@ -484,11 +483,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                             }
                         }
                     }
-                    if ( this.windowThemeConfig.windowActionNoImage != null )
+                    if ( this.windowDecorationConfig.windowActionNoImage != null )
                     {
                         for ( var i = 0 ; i < btnActionNames.length ; i++ )
                         {
-                            if ( this.windowThemeConfig.windowActionNoImage[ btnActionNames[ i ] ] != null )
+                            if ( this.windowDecorationConfig.windowActionNoImage[ btnActionNames[ i ] ] != null )
                             {
                                 if ( btnActionNames[ i ] == jetspeed.id.ACTION_NAME_MENU )
                                 {
@@ -509,15 +508,15 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                             this._createActionButtonNode( btnActionNames[i] );
                         }
                     }
-                }   // if ( this.windowThemeConfig.windowActionButtonOrder != null )
+                }   // if ( this.windowDecorationConfig.windowActionButtonOrder != null )
     
-                if ( this.windowThemeConfig.windowActionMenuOrder != null )
+                if ( this.windowDecorationConfig.windowActionMenuOrder != null )
                 {
                     if ( this.portlet )
                     {
-                        for ( var actionIdx = 0 ; actionIdx < this.windowThemeConfig.windowActionMenuOrder.length ; actionIdx++ )
+                        for ( var actionIdx = 0 ; actionIdx < this.windowDecorationConfig.windowActionMenuOrder.length ; actionIdx++ )
                         {
-                            var actionName = this.windowThemeConfig.windowActionMenuOrder[ actionIdx ];
+                            var actionName = this.windowDecorationConfig.windowActionMenuOrder[ actionIdx ];
                             var includeAction = false;
                             if ( this.portlet.getAction( actionName ) != null || jetspeed.prefs.windowActionDesktop[ actionName ] != null )
                             {
@@ -531,16 +530,16 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                     }
                     else
                     {
-                        for ( var actionIdx = 0 ; actionIdx < this.windowThemeConfig.windowActionMenuOrder.length ; actionIdx++ )
+                        for ( var actionIdx = 0 ; actionIdx < this.windowDecorationConfig.windowActionMenuOrder.length ; actionIdx++ )
                         {
-                            var actionName = this.windowThemeConfig.windowActionMenuOrder[ actionIdx ];
+                            var actionName = this.windowDecorationConfig.windowActionMenuOrder[ actionIdx ];
                             if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
                             {
                                 menuActionNames.push( actionName );
                             }
                         }
                     }   // if ( this.portlet )
-                }   // if ( this.windowThemeConfig.windowActionMenuOrder != null )
+                }   // if ( this.windowDecorationConfig.windowActionMenuOrder != null )
                 
                 if ( menuActionNames.length > 0 )
                 {
@@ -618,7 +617,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             var actionButton = document.createElement( "div" );
             actionButton.className = "portletWindowActionButton";
-            actionButton.style.backgroundImage = "url(" + jetspeed.url.basePortalWindowThemeUrl( this.windowTheme ) + "/images/desktop/" + actionName + ".gif)";
+            actionButton.style.backgroundImage = "url(" + jetspeed.prefs.getPortletDecorationBaseUrl( this.windowDecorationName ) + "/images/desktop/" + actionName + ".gif)";
             actionButton.actionName = actionName;
 
             this.actionButtons[ actionName ] = actionButton;
@@ -626,7 +625,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
             dojo.event.connect( actionButton, "onclick", this, "windowActionButtonClick" );
 
-            if ( this.windowThemeConfig != null && this.windowThemeConfig.windowActionButtonTooltip )
+            if ( this.windowDecorationConfig != null && this.windowDecorationConfig.windowActionButtonTooltip )
             {   // setting isContainer=false and fastMixIn=true to avoid recursion hell when connectId is a node (could give each an id instead)
                 var tooltip = dojo.widget.createWidget( "Tooltip", { isContainer: false, fastMixIn: true, caption: this._getActionLabel( actionName ), connectId: actionButton, delay: "100" } );
                 document.body.appendChild( tooltip.domNode );
@@ -805,7 +804,21 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     _isWindowActionEnabled: function( actionName, currentPortletActionState, currentPortletActionMode )
     {
         var enabled = false;
-        if ( actionName == jetspeed.id.ACTION_NAME_MENU )
+        if ( this.minimizeWindowTemporarilyRestoreTo != null )
+        {
+            if ( this.portlet )
+            {
+                var actionDef = this.portlet.getAction( actionName );
+                if ( actionDef != null )
+                {
+                    if ( actionDef.id == jetspeed.id.ACTION_NAME_REMOVEPORTLET )
+                    {
+                        enabled = true;
+                    }
+                }
+            }
+        }
+        else if ( actionName == jetspeed.id.ACTION_NAME_MENU )
         {
             enabled = true;
         }
@@ -862,7 +875,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {   // adjust visible action buttons - BOZO:NOW: this non-portlet case needs more attention
             if ( actionName == jetspeed.id.ACTION_NAME_MAXIMIZE )
             {
-                if ( actionName != this.windowState )
+                if ( actionName != this.windowState && this.minimizeWindowTemporarilyRestoreTo == null )
                 {
                     enabled = true;
                 }
@@ -887,7 +900,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
     windowActionButtonSync: function()
     {
-        var hideButtons = this.windowThemeConfig.windowActionButtonHide;
+        var hideButtons = this.windowDecorationConfig.windowActionButtonHide;
         var currentPortletActionState = null;
         var currentPortletActionMode = null;
         if ( this.portlet )
@@ -915,9 +928,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( ! this.templateDomNodeClassName )
             this.templateDomNodeClassName = this.domNode.className;
         var domNodeClassName = this.templateDomNodeClassName;
-        if ( this.windowTheme )
+        if ( this.windowDecorationName )
         {
-            domNodeClassName = this.windowTheme + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
+            domNodeClassName = this.windowDecorationName + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
         }
         this.domNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( domNodeClassName ? ( " " + domNodeClassName ) : "" );
         
@@ -926,9 +939,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             if ( ! this.templateContainerNodeClassName )
                 this.templateContainerNodeClassName = this.containerNode.className;
             var containerNodeClassName = this.templateContainerNodeClassName;
-            if ( this.windowTheme )
+            if ( this.windowDecorationName )
             {
-                containerNodeClassName = this.windowTheme + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
+                containerNodeClassName = this.windowDecorationName + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
             }
             this.containerNode.className = jetspeed.id.PORTLET_STYLE_CLASS + ( containerNodeClassName ? ( " " + containerNodeClassName ) : "" );
         }
@@ -986,6 +999,32 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         return this.portletInitialized;
     },
 
+    minimizeWindowTemporarily: function()
+    {
+        if ( this.minimizeWindowTemporarilyRestoreTo == null )
+        {
+            this.minimizeWindowTemporarilyRestoreTo = this.windowState;
+            if ( this.windowState != jetspeed.id.ACTION_NAME_MINIMIZE )
+            {
+                this.minimizeWindow();
+            }
+            this.windowActionButtonSync();
+        }
+    },
+    restoreFromMinimizeWindowTemporarily: function()
+    {
+        var restoreToWindowState = this.minimizeWindowTemporarilyRestoreTo;
+        this.minimizeWindowTemporarilyRestoreTo = null;
+        if ( restoreToWindowState )
+        {
+            if ( restoreToWindowState != jetspeed.id.ACTION_NAME_MINIMIZE )
+            {
+                this.restoreWindow();
+            }
+            this.windowActionButtonSync();
+        }
+    },
+    
     minimizeWindow: function( evt )
     {
         this._setLastPositionInfo();
@@ -1047,14 +1086,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.containerNode.style.display = "";
         this.resizeBar.style.display = "";
 
-        if ( this.windowPositionStatic )
-        {
-            lastPositionInfo = this.lastTiledPositionInfo;
-        }
-        else
-        {
-            lastPositionInfo = this.lastUntiledPositionInfo;
-        }
+        var lastPositionInfo = this.getLastPositionInfo();
 
         var lpiWidth = null;
         var lpiHeight = null;
@@ -1095,7 +1127,12 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
 		this.windowState = jetspeed.id.ACTION_NAME_RESTORE;  // "normal"
 	},
-
+    getLastPositionInfo: function()
+    {
+        if ( this.windowPositionStatic )
+            return this.lastTiledPositionInfo;
+        return this.lastUntiledPositionInfo;
+    },
     _setLastPositionInfo: function( tiledStateIsChanging, changingToMaximized )
     {
         if ( changingToMaximized )
@@ -1466,17 +1503,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     
     getPageColumnIndex: function()
     {
-        var inColIndex = null;
-        if ( ! jetspeed.page.columns ) return inColIndex;
-        for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
-        {
-            if ( jetspeed.page.columns[i].containsNode( this.domNode ) )
-            {
-                inColIndex = i;
-                break;
-            }
-        }
-        return inColIndex;
+        return jetspeed.page.getColumnIndexContainingNode( this.domNode );
     },
     getResizeHandleWidget: function()
     {
@@ -1561,7 +1588,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     },
     titleMouseOver: function( evt )
     {
-        if ( this.windowThemeConfig.windowActionButtonHide )
+        if ( this.windowDecorationConfig.windowActionButtonHide )
         {
             var self = this ;
             this.titleMouseIn = 1 ;   // was ++
@@ -1571,7 +1598,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     },
     titleMouseOut: function( evt )
     {
-        if ( this.windowThemeConfig.windowActionButtonHide )
+        if ( this.windowDecorationConfig.windowActionButtonHide )
         {
             var self = this ;
             var nTitleMouseIn = this.titleMouseIn ;
@@ -1734,7 +1761,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 				var regexDojoJs = /.*(\bdojo\b\.js(?:\.uncompressed\.js)?)$/;
 				var regexInvalid = /(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo\.hostenv\.writeIncludes\(\s*\);?/g;
 				var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix|registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
-
+                // " - trick emacs here after regex
 				while(match = regex.exec(s)){
 					if(forcingExecuteScripts && match[1]){
 						if(attr = regexSrc.exec(match[1])){
@@ -1851,7 +1878,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveSource, {
 	onDragStart: function()
     {
         // BOZO: code copied from dojo.dnd.HtmlDragMoveSource.onDragStart to change dragObject
-        var dragObj = new jetspeed.widget.PortletWindowDragMoveObject( this.portletWindow, this.dragObject, this.type );
+        var dragObj = new jetspeed.widget.PortletWindowDragMoveObject( this.dragObject, this.type, this.portletWindow );
 
 		if ( this.constrainToContainer )
         {
@@ -1865,16 +1892,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveSource, {
     }
 });
 
-jetspeed.widget.PortletWindowDragMoveObject = function( portletWindow, node, type )
-{
-    this.portletWindow = portletWindow;
-    this.windowPositionStatic = this.portletWindow.windowPositionStatic;
-	dojo.dnd.HtmlDragMoveObject.call( this, node, type );
-}
-
-dojo.inherits( jetspeed.widget.PortletWindowDragMoveObject, dojo.dnd.HtmlDragMoveObject );
-
-dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
+dojo.declare( "jetspeed.widget.PortletWindowDragMoveObject", dojo.dnd.HtmlDragMoveObject, {
+    qualifyTargetColumn: function( /* jetspeed.om.Column */ column )
+    {
+        return true;
+    },
     onDragStart: function( e )
     {
         this.portletWindow.isDragging = true;
@@ -1931,9 +1953,12 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
                 var col = jetspeed.page.columns[i];
                 if ( ! col.columnContainer && ! col.layoutHeader )
                 {
-                    var colAbsPos = dojo.html.getAbsolutePosition( col.domNode, true );
-                    var marginBox = dojo.html.getMarginBox( col.domNode );
-                    this.columnDimensions[ i ] = { left: (colAbsPos.x), right: (colAbsPos.x + marginBox.width), top: (colAbsPos.y), bottom: (colAbsPos.y + marginBox.height) };
+                    if ( this.qualifyTargetColumn( col ) )
+                    {
+                        var colAbsPos = dojo.html.getAbsolutePosition( col.domNode, true );
+                        var marginBox = dojo.html.getMarginBox( col.domNode );
+                        this.columnDimensions[ i ] = { left: (colAbsPos.x), right: (colAbsPos.x + marginBox.width), top: (colAbsPos.y), bottom: (colAbsPos.y + marginBox.height) };
+                    }
                 }
             }
             
@@ -2113,4 +2138,11 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveObject, {
         this.portletWindow.endDragging();
         //dojo.debug( "jetspeed.widget.PortletWindowDragMoveSource.onDragEnd" );
 	}
-});
+    },
+    function( node, type, portletWindow )
+    {
+        this.portletWindow = portletWindow;
+        this.windowPositionStatic = ( (this.portletWindow != null) ? this.portletWindow.windowPositionStatic : false );
+        //dojo.dnd.HtmlDragMoveObject.call( this, node, type );        
+    }
+);
