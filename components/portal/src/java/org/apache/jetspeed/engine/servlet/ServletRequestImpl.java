@@ -74,6 +74,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     
     private boolean included;
 
+    private static Boolean mergePortalParametersWithPortletParameters;
+    private static Boolean mergePortalParametersBeforePortletParameters;
+
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
         super(servletRequest);
@@ -89,6 +92,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         {
             // This happens when an entity is referencing a non-existent portlet
             webAppId = window.getId();
+        }
+        if (mergePortalParametersWithPortletParameters == null )
+        {
+            mergePortalParametersWithPortletParameters = Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.with.portlet.parameters", Boolean.FALSE);
+            mergePortalParametersBeforePortletParameters = Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.before.portlet.parameters", Boolean.FALSE);
         }
     }
 
@@ -148,46 +156,57 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
                 }
             }
-
-            String encoding = (String) getRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
-            boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
-                    && encoding != null;
-            if (decode)
+            
+            if ( mergePortalParametersWithPortletParameters.booleanValue() )
             {
-                getRequest().setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
-                        new Boolean(true));
-            }
-
-            //get servlet params
-            for (Enumeration parameters = getRequest().getParameterNames(); parameters.hasMoreElements();)
-            {
-                String paramName = (String) parameters.nextElement();
-                String[] paramValues = (String[]) getRequest().getParameterValues(paramName);
-                String[] values = (String[]) portletParameters.get(paramName);
-
+                String encoding = (String) getRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
+                boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
+                        && encoding != null;
                 if (decode)
                 {
-                    for (int i = 0; i < paramValues.length; i++)
-                    {
-                        try
-                        {
-                            paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
-                        }
-                        catch (UnsupportedEncodingException e)
-                        {
-                            ;
-                        }
-                    }
+                    getRequest().setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
+                            new Boolean(true));
                 }
 
-                if (values != null)
+                //get servlet params
+                for (Enumeration parameters = getRequest().getParameterNames(); parameters.hasMoreElements();)
                 {
-                    String[] temp = new String[paramValues.length + values.length];
-                    System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
-                    System.arraycopy(values, 0, temp, paramValues.length, values.length);
-                    paramValues = temp;
+                    String paramName = (String) parameters.nextElement();
+                    String[] paramValues = (String[]) getRequest().getParameterValues(paramName);
+                    String[] values = (String[]) portletParameters.get(paramName);
+
+                    if (decode)
+                    {
+                        for (int i = 0; i < paramValues.length; i++)
+                        {
+                            try
+                            {
+                                paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
+                            }
+                            catch (UnsupportedEncodingException e)
+                            {
+                                ;
+                            }
+                        }
+                    }
+
+                    if (values != null)
+                    {
+                        String[] temp = new String[paramValues.length + values.length];
+                        if ( this.mergePortalParametersBeforePortletParameters.booleanValue() )
+                        {
+                            System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
+                            System.arraycopy(values, 0, temp, paramValues.length, values.length);
+                        }
+                        else
+                        {
+                            System.arraycopy(values, 0, temp, 0, values.length);
+                            System.arraycopy(paramValues, 0, temp, values.length, paramValues.length);
+                        }
+                        paramValues = temp;
+                    }
+                    portletParameters.put(paramName, paramValues);
                 }
-                portletParameters.put(paramName, paramValues);
             }
         }
         return Collections.unmodifiableMap(portletParameters);
