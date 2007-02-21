@@ -80,14 +80,14 @@ function addPortletToPage(theNewPortlet,pID)
 {                                                      
    //dojo.widget.byId("AddPortletDialog").hide();   
    var portletDef = new jetspeed.om.PortletDef( theNewPortlet );   
-   var pagePath = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + getReturnPagePath();
+   var pagePath = jetspeed.url.removeAllQueryParameters( jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + getReturnPagePath() );
    jetspeed.addNewPortletDefinition( portletDef, null, pagePath, getAddToLayoutId() );
    selectorPortlets[pID].count = parseInt(selectorPortlets[pID].count) + 1;
    var cell = document.getElementById(theNewPortlet);
    if (cell != null)
    {
       cell.innerHTML = "Count: " + selectorPortlets[pID].count; // TODO: localize
-   }   
+   }
 }
 function performSearch()
 {
