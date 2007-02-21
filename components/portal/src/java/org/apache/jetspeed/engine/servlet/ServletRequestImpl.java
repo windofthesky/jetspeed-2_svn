@@ -142,11 +142,14 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
             currentRequest = getRequest();            
             portletParameters = new HashMap();
 
+            boolean actionRequest = false;
+            
             // get portlet params
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
             if (context != null)
             {
                 PortalURL url = context.getPortalURL();
+                actionRequest = context.getActionWindow() != null;
                 Iterator iter = url.getNavigationalState().getParameterNames(portletWindow);
                 while (iter.hasNext())
                 {
@@ -157,7 +160,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 }
             }
             
-            if ( mergePortalParametersWithPortletParameters.booleanValue() )
+            if ( actionRequest || mergePortalParametersWithPortletParameters.booleanValue() )
             {
                 String encoding = (String) getRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
                 boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
@@ -193,7 +196,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                     if (values != null)
                     {
                         String[] temp = new String[paramValues.length + values.length];
-                        if ( this.mergePortalParametersBeforePortletParameters.booleanValue() )
+                        if ( actionRequest || this.mergePortalParametersBeforePortletParameters.booleanValue() )
                         {
                             System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
                             System.arraycopy(values, 0, temp, paramValues.length, values.length);
