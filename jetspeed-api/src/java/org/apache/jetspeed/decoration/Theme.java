@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.decoration;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.apache.jetspeed.om.page.Fragment;
@@ -45,6 +46,18 @@ public interface Theme
      * @see Fragment
      */
     Decoration getDecoration(Fragment fragment);
+    
+    /**
+     * Get a list of portlet decoration names used by 
+     * portlets on the current page.
+     * 
+     * @return unmodifiable list for portlet decoration names.
+     * 
+     * @see Decoration
+     * @see Fragment
+     */
+    Collection getPortletDecorationNames();
+    
     
     /**
      * Returns the the top most, "root" layout fragment's

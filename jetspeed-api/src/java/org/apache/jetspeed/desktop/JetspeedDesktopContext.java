@@ -24,13 +24,21 @@ import org.apache.jetspeed.headerresource.HeaderResource;
  * Jetspeed Desktop 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: JetspeedDesktopContext.java $
  */
 public interface JetspeedDesktopContext
 {
-    String DESKTOP_ATTRIBUTE = "jetspeedDesktop";
+    String DESKTOP_CONTEXT_ATTRIBUTE = "jetspeedDesktop";
+    String DESKTOP_REQUEST_CONTEXT_ATTRIBUTE = "JS2RequestContext";
+    String DESKTOP_COMPONENT_MANAGER_ATTRIBUTE = "JS2ComponentManager";
     
-    String RESOURCES_DIRECTORY_NAME = "resources";
+    String LAYOUT_TEMPLATE_EXTENSION_PROP = "template.extension";
+
+    String LAYOUT_TEMPLATE_ID_PROP = "template.id";
+    
+    String LAYOUT_TEMPLATE_ID_DEFAULT = "desktop";
+
     
     /**
      * Portal base url ( e.g. http://localhost:8080/jetspeed )
@@ -89,36 +97,80 @@ public interface JetspeedDesktopContext
     public String getPortalUrl( String relativePath, boolean encode );
 
     /**
-     * Gets the desktop-theme name
+     * Gets the layout decoration name
      * 
      * @return
      */
-    public String getDesktopTheme();
+    public String getLayoutDecorationName();
+    
+    /**
+     * <p>
+     * Get the path to the layout decoration desktop template file.
+     * </p>
+     * 
+     * @return the desktop template file path.
+     */
+    public String getLayoutTemplatePath();
 
     /**
-     * Gets an absolute resource url to the desktop-theme directory
+     * <p>
+     * Get the path to the layout decoration desktop template file.
+     * The property name parameter is provided to allow for an alternate
+     * property value to be used as the filename (without extension)
+     * of the desktop template file.
+     * </p>
      * 
-     * @return
+     * @return the desktop template file path.
      */
-    public String getDesktopThemeRootUrl();
-
-    /**
-     * Gets an absolute resource url to a desktop-theme resource
-     * 
-     * @param relativePath
-     * @return
-     */
-    public String getDesktopThemeResourceUrl( String relativePath );
+    public String getLayoutTemplatePath( String layoutTemplateIdPropertyName );
     
     /**
-     * Gets an relative resource url to a desktop-theme resource
+     * <p>
+     * Returns the base path for the layout decoration.
+     * </p>
+     * 
+     * @return the base path for the layout decoration.
+     */
+    public String getLayoutBasePath();
+    
+    /**
+     * <p>
+     * Returns the base path for the layout decoration
+     * with the relativePath argument added.
+     * </p>
      * 
      * @param relativePath
-     * @return
+     * @return the base path for the layout decoration with the relativePath argument added.
      */
-    public String getDesktopThemeResource( String relativePath );
+    public String getLayoutBasePath( String relativePath );
     
-    public ResourceBundle getResourceBundle(Locale locale);
+    /**
+     * <p>
+     * Returns the base url for the layout decoration.
+     * </p>
+     * 
+     * @return the base url for the layout decoration.
+     */
+    public String getLayoutBaseUrl();
     
+    /**
+     * <p>
+     * Returns the base url for the layout decoration
+     * with the relativePath argument added.
+     * </p>
+     * 
+     * @param relativePath
+     * @return the base url for the layout decoration with the relativePath argument added.
+     */
+    public String getLayoutBaseUrl( String relativePath );
+    
+    /**
+     * @return the layout decoration resource bundle for the given Locale.
+     */
+    public ResourceBundle getLayoutResourceBundle( Locale locale );
+    
+    /**
+     * @return the HeaderResource component.
+     */
     public HeaderResource getHeaderResource();
 }

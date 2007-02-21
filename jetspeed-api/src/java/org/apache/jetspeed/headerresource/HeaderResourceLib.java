@@ -15,6 +15,10 @@
  */
 package org.apache.jetspeed.headerresource;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.url.BasePortalURL;
@@ -28,6 +32,10 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class HeaderResourceLib
 {
+    protected final static String EOL = "\r\n";   // html eol
+    private final static String MAILTO_URL_SCHEME = "mailto";
+    private final static int MAILTO_URL_SCHEME_LEN = MAILTO_URL_SCHEME.length();
+    
     public static int getHeaderTypeId( String headerType )
     {
         int headerTypeNumber = -1;
@@ -178,6 +186,20 @@ public class HeaderResourceLib
     }
     
     /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * Expects portalBaseUrl argument to be defined (ie. it does not call getPortalBaseUrl)
+     * Also expects servletPath argument to be defined
+     * 
+     * @return portal base servlet url
+     */
+    public static String getPortalUrl( String portalBaseUrl, RequestContext requestContext, String servletPath )
+    {
+        HttpServletRequest request = requestContext.getRequest();
+        StringBuffer portalurl = new StringBuffer();
+        return portalurl.append( portalBaseUrl ).append( ( servletPath == null ) ? request.getServletPath() : servletPath ).toString();
+    }
+    
+    /**
      * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
      * Expects portalUrl argument to be defined (ie. it does not call getPortalUrl)
      * 
@@ -243,10 +265,24 @@ public class HeaderResourceLib
     {
         if ( relativePath == null )
             relativePath = "";
-        if ( relativePath.indexOf( "://" ) == -1 && relativePath.indexOf( "mailto:" ) == -1 )
+        boolean isPathRelative = true;
+        int colonPos = relativePath.indexOf( ':' );
+        if ( colonPos != -1 )
+        {
+            int pathLen = relativePath.length();
+            if ( colonPos <= ( pathLen - 3 ) && relativePath.charAt( colonPos + 1 ) == '/' && relativePath.charAt( colonPos + 2 ) == '/' )
+            {
+                isPathRelative = false;
+            }
+            else if ( colonPos >= MAILTO_URL_SCHEME_LEN && relativePath.substring( colonPos - MAILTO_URL_SCHEME_LEN, colonPos ).equals( MAILTO_URL_SCHEME ) )
+            {
+                isPathRelative = false;
+            }
+        }
+        if ( isPathRelative )
         {
             StringBuffer path = new StringBuffer();
-            String resourceurl = path.append( portalBaseUrl ).append( relativePath ).toString();
+            String resourceurl = path.append( portalBaseUrl ).append( relativePath.startsWith( "/" ) ? "" : "/" ).append( relativePath ).toString();
             if ( encode && requestContext != null )
             {
                 return requestContext.getResponse().encodeURL( resourceurl );
@@ -257,5 +293,103 @@ public class HeaderResourceLib
             }
         }
         return relativePath;
+    }
+    
+    
+    public static String makeJavascriptStatement( String statement, String indent, boolean addEOL )
+    {
+        StringBuffer statementOut = new StringBuffer();
+        if ( statement != null )
+        {
+            statement = statement.trim();
+            if ( statement.length() > 0 )
+            {
+                if ( indent != null )
+                {
+                    statementOut.append( indent );
+                }
+                statementOut.append( statement );
+                if ( statement.charAt( statement.length()-1 ) != ';' )
+                {
+                    statementOut.append( ";" );
+                }
+                if ( addEOL )
+                {
+                    statementOut.append( EOL );
+                }
+            }
+        }
+        return statementOut.toString();
+    }
+    public static String makeJSONStringArray( Collection stringList )
+    {
+        return makeJSONStringArray( stringList, null );
+    }
+    public static String makeJSONStringArray( Collection stringList, List compiledUniqueValues )
+    {
+        if ( stringList != null && stringList.size() > 0 )
+        {
+            StringBuffer stringListContent = new StringBuffer();
+            Iterator stringListIter = stringList.iterator();
+            while ( stringListIter.hasNext() )
+            {
+                String value = (String)stringListIter.next();
+                if ( value != null && value.length() > 0 )
+                {
+                    if ( stringListContent.length() > 0 )
+                    {
+                        stringListContent.append( ", " );
+                    }
+                    else
+                    {
+                        stringListContent.append( "[ " );
+                    }
+                    stringListContent.append( "\"" ).append( value ).append( "\"" );
+                    if ( compiledUniqueValues != null )
+                    {
+                        if ( ! compiledUniqueValues.contains( value ) )
+                        {
+                            compiledUniqueValues.add( value );
+                        }
+                    }
+                }
+            }
+            if ( stringListContent.length() > 0 )
+            {
+                stringListContent.append( " ]" );
+                return stringListContent.toString();
+            }
+        }
+        return null;
+    }
+    public static String makeJSONInteger( Object source, boolean quote )
+    {
+        String sourceStr = ( ( source == null ) ? (String)null : source.toString() );
+        if ( sourceStr != null )
+        {
+            try
+            {
+                Integer.parseInt( sourceStr );
+                if ( quote )
+                {
+                    sourceStr = "\"" + sourceStr + "\"";
+                }
+            }
+            catch ( NumberFormatException nex )
+            {
+                sourceStr = null;
+            }
+        }
+        return sourceStr;
+    }
+    
+    public static String makeJSONBoolean( Object source )
+    {
+        String boolStr = ( ( source == null ) ? (String)null : source.toString() );
+        if ( boolStr != null && ( ! boolStr.equals( "false" ) ) && ( ! boolStr.equals( "true" ) ) )
+        {
+            boolStr = null;
+        }
+        return boolStr;
     }
 }

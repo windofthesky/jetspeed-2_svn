@@ -103,6 +103,17 @@ public interface DecorationFactory
     Decoration getDecoration(Page page, Fragment fragment, RequestContext requestContext);
     
     /**
+     * Indicates whether /desktop is enabled for the current portal request.
+     * Located here due to range of jetspeed components which need this information and
+     * already have a DecorationFactory reference.
+     * 
+     * @param requestContext current portal request.
+     * 
+     * @return true if /desktop is enabled for the current portal request, otherwise false
+     */
+    boolean isDesktopEnabled( RequestContext requestContext );
+    
+    /**
      * Clears the lookup cache of all previous located pathes.  This only
      * clears the cache the <code>RequestContext</code>'s current user.  This
      * will generally delegate the cache operation to the <code>PathResolverCache</code>
@@ -115,7 +126,6 @@ public interface DecorationFactory
      */
     void clearCache(RequestContext requestContext);
     
-        
     /**
      * Get the portal-wide list of page decorations.
      * 
@@ -138,10 +148,58 @@ public interface DecorationFactory
     List getLayouts(RequestContext request);
     
     /**
-     * Get the portal-wide list of available desktop skins.
+     * Get the portal-wide list of available desktop page decorations.
      * 
      * @return A list of desktop skins of type <code>String</code>
      */    
-    Set getDesktopThemes(RequestContext request);
+    Set getDesktopPageDecorations(RequestContext request);
     
+    /**
+     * Get the portal-wide list of desktop portlet decorations.
+     * 
+     * @return A list of desktop skins of type <code>String</code>
+     */
+    Set getDesktopPortletDecorations(RequestContext request);
+    
+    /**
+     * Get the path to the layout decorations directory.
+     * 
+     * @return path to layout decorations directory
+     */
+    String getLayoutDecorationsBasePath();
+    
+    /**
+     * Get the path to the portlet decorations directory.
+     * 
+     * @return path to portlet decorations directory
+     */
+    String getPortletDecorationsBasePath();
+    
+    /**
+     * Get the default desktop layout decoration to be used when
+     * selected layout decoration does not support /desktop.
+     * 
+     * @return default desktop layout decoration.
+     */
+    String getDefaultDesktopLayoutDecoration();
+    
+    /**
+     * Set the default desktop layout decoration to be used when
+     * selected layout decoration does not support /desktop.
+     */
+    void setDefaultDesktopLayoutDecoration( String newOne );
+    
+    /**
+     * Get the default desktop portlet decoration to be used when
+     * selected portlet decoration does not support /desktop.
+     * 
+     * @return default desktop portlet decoration.
+     */
+    String getDefaultDesktopPortletDecoration();
+    
+    /**
+     * Set the default desktop portlet decoration to be used when
+     * selected portlet decoration does not support /desktop.
+     */
+    void setDefaultDesktopPortletDecoration( String newOne );
 }

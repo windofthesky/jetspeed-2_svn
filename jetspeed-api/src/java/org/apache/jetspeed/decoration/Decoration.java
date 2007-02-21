@@ -16,6 +16,8 @@
 package org.apache.jetspeed.decoration;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * 
@@ -25,12 +27,31 @@ import java.util.List;
 public interface Decoration
 {
     /** Default style sheet location */
-    String DEFAULT_STYLE_SHEET = "css/styles.css";
+    String DEFAULT_COMMON_STYLE_SHEET = "css/styles.css";
+    String DEFAULT_PORTAL_STYLE_SHEET = "css/portal.css";
+    String DEFAULT_DESKTOP_STYLE_SHEET = "css/desktop.css";
     
-    /** Decoration configruation filename */
+    /** Decoration configuration filename */
     String CONFIG_FILE_NAME = "decorator.properties";
+    
+    /** Decoration desktop configuration filename */
+    String CONFIG_DESKTOP_FILE_NAME = "decoratordesktop.properties";
+    
+    /** Property which indicates whether or not decoration supports desktop mode */
+    String DESKTOP_SUPPORTED_PROPERTY = "desktop.supported";
 
-    public static final String BASE_CSS_CLASS_PROP = "base.css.class";
+    /**
+     * Property for specifying the base CSS class to be used to
+     * create a proper CSS cascade and style isolation for a decoration.
+     */
+    String BASE_CSS_CLASS_PROP = "base.css.class";
+
+    /** Property which specifies the resource bundle locator prefix */
+    String RESOURCE_BUNDLE_PROP = "resource.file";
+    
+    /** Property which specifies the directory name for resource bundle */
+    String RESOURCES_DIRECTORY_NAME = "resources";
+
     
     /**
      * The name of this Decoration.
@@ -38,6 +59,26 @@ public interface Decoration
      * @return Name of this decoration.
      */
     String getName();
+    
+    /**
+     * <p>
+     * Returns the base path for the decoration.
+     * </p>
+     * 
+     * @return the base path for the decoration.
+     */
+    String getBasePath();
+    
+    /**
+     * <p>
+     * Returns the base path for the decoration
+     * with the relativePath argument added.
+     * </p>
+     * 
+     * @param relativePath
+     * @return the base path for the decoration with the relativePath argument added.
+     */
+    String getBasePath( String relativePath );
     
     /**
      * <p>
@@ -78,7 +119,8 @@ public interface Decoration
      * </pre>
      * 
      * @param path
-     * @return
+     * @return the correct path to the resource based on the
+     * relative <code>path</code> argument.
      */
     String getResource(String path);
     
@@ -87,8 +129,22 @@ public interface Decoration
      * @return The appropriate stylesheet to be used with this 
      * decoration.
      */
-    String getStyleSheet();    
+    String getStyleSheet();
     
+    /**
+     * 
+     * @return the /portal specific stylesheet to be used with this 
+     * decoration; defined only when decoration supports /desktop.
+     */
+    String getStyleSheetPortal();
+    
+    /**
+     * 
+     * @return the /desktop specific stylesheet to be used with this 
+     * decoration; defined only when decoration supports /desktop.
+     */
+    String getStyleSheetDesktop();
+            
     /**
      * Returns the list of <code>DecoratorAction</code>s to be displayed
      * within the portlet window.
@@ -114,7 +170,7 @@ public interface Decoration
      * within your <code>decorator.properties</code> config
      * file.
      * @param name
-     * @return
+     * @return value of decoration property which matches name argument.
      */
     String getProperty(String name);
     
@@ -152,4 +208,20 @@ public interface Decoration
      * 
      */
     void setCurrentStateAction( String currentStateAction );
+    
+    /**
+     * @return the resource bundle locator prefix.
+     */
+    String getResourceBundleName();
+    
+    /**
+     * @return the resource bundle for the given Locale and RequestContext.
+     */
+    ResourceBundle getResourceBundle( Locale locale, org.apache.jetspeed.request.RequestContext context );
+
+    /**
+     * Indicates whether the decorator supports /desktop
+     * 
+     */
+    boolean supportsDesktop();
 }

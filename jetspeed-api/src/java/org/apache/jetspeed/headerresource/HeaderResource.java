@@ -21,6 +21,7 @@ import java.util.Map;
  * HeaderResource has tags information to put them into &lt;head&gt; tag.
  * 
  * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: HeaderResource.java 188569 2005-05-13 13:35:18Z weaver $
  */
 public interface HeaderResource
@@ -70,7 +71,7 @@ public interface HeaderResource
     public final static String HEADER_SECTION_DOJO_MODULES_NAMESPACE = "header.dojo.modules.namespace";
     public final static String HEADER_SECTION_DOJO_STYLE_BODYEXPAND = "header.dojo.style.bodyexpand";
     public final static String HEADER_SECTION_DOJO_STYLE_BODYEXPAND_NOSCROLL = "header.dojo.style.bodyexpand.noscroll";
-    public final static String HEADER_SECTION_DESKTOP_STYLE_DESKTOPTHEME = "header.desktop.style.desktoptheme";
+    public final static String HEADER_SECTION_DESKTOP_STYLE_LAYOUT = "header.desktop.style.layout";
     public final static String HEADER_SECTION_DESKTOP_INIT = "header.desktop.init";
     
     public final static String HEADER_INTERNAL_JETSPEED_VAR_NAME = "jetspeed";
@@ -88,6 +89,8 @@ public interface HeaderResource
     public final static String HEADER_CONFIG_DOJO_REQUIRES_MODULES = "dojo.requires.modules";
     
     // header configuration - desktop
+    public final static String HEADER_CONFIG_DESKTOP_LAYOUT_DECORATION_DEFAULT = "desktop.decoration.layout";
+    public final static String HEADER_CONFIG_DESKTOP_PORTLET_DECORATION_DEFAULT = "desktop.decoration.portlet";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_TILING = "desktop.window.tiling";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND = "desktop.window.heightexpand";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT = "desktop.window.height";
@@ -100,8 +103,6 @@ public interface HeaderResource
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX = "desktop.window.action.button.maximum";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED = "desktop.window.icon.enabled";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_ICON_PATH = "desktop.window.icon.path";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_THEME = "desktop.window.theme";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_THEME_ALLOWED = "desktop.window.theme.allowed";
     public final static String HEADER_CONFIG_DESKTOP_PAGE_ACTION_BUTTON_TOOLTIP = "desktop.page.action.button.tooltip";
     
     public final static String HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION = "desktop.window.action";

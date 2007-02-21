@@ -26,7 +26,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface JetspeedDesktop 
 {
-    String CONFIG_FILE_NAME = "theme.properties";
+    String DESKTOP_ENABLED_REQUEST_ATTRIBUTE = "desktop.enabled";
 
     /**
      * Render a desktop theme.
@@ -36,11 +36,15 @@ public interface JetspeedDesktop
     void render(RequestContext request);
     
     /**
-     * Retrieve the default theme for this portal 
+     * Indicates whether /desktop is enabled for the current portal request.
+     * Located here due to range of jetspeed components which need this information and
+     * already have a DecorationFactory reference.
      * 
-     * @return default theme for portal
+     * @param requestContext current portal request.
+     * 
+     * @return true if /desktop is enabled for the current portal request, otherwise false
      */
-    String getDefaultTheme();
+    boolean isDesktopEnabled( RequestContext requestContext );
     
     /**
      * Retrieve the header resource factory
@@ -48,5 +52,68 @@ public interface JetspeedDesktop
      * @return header resource factory
      */
     HeaderResourceFactory getHeaderResourceFactory();
+    
+    /**
+     * Desktop servlet path ( e.g. /desktop )
+     * 
+     * @return portal base url
+     */
+    public String getDesktopServletPath();
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl( RequestContext requestContext );
+    
+    /**
+     * Portal base url ( e.g. http://localhost:8080/jetspeed )
+     * 
+     * @return portal base url
+     */
+    public String getPortalBaseUrl( RequestContext requestContext, boolean encode );
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( RequestContext requestContext, String relativePath );
+    
+    /**
+     * Portal base url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/javascript/dojo/ )
+     * 
+     * @return portal base url with relativePath argument appended
+     */
+    public String getPortalResourceUrl( RequestContext requestContext, String relativePath, boolean encode );
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( RequestContext requestContext );
+    
+    /**
+     * Portal base servlet url ( e.g. http://localhost:8080/jetspeed/desktop/ )
+     * 
+     * @return portal base servlet url
+     */
+    public String getPortalUrl( RequestContext requestContext, boolean encode );
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( RequestContext requestContext, String relativePath );
+    
+    /**
+     * Portal base servlet url with relativePath argument appended ( e.g. http://localhost:8080/jetspeed/desktop/default-page.psml )
+     * 
+     * @return portal base servlet url with relativePath argument appended
+     */
+    public String getPortalUrl( RequestContext requestContext, String relativePath, boolean encode );
             
 }
