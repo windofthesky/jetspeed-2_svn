@@ -47,7 +47,7 @@ public abstract class AbstractPortalURL implements PortalURL
     protected NavigationalState navState;
     protected BasePortalURL base = null;
     
-    protected boolean relativeOnly;
+    protected static Boolean relativeOnly;
     protected String contextPath;
     protected String basePath;
     protected String path;
@@ -71,8 +71,11 @@ public abstract class AbstractPortalURL implements PortalURL
                 portalContext.getConfigurationProperty("portalurl.navigationalstate.parameter.name", 
                         DEFAULT_NAV_STATE_PARAMETER);
         }
-        this.navState = navState;        
-        relativeOnly = Boolean.valueOf(portalContext.getConfigurationProperty("portalurl.relative.only", "false")).booleanValue();
+        this.navState = navState;
+        if ( relativeOnly == null )
+        {
+            relativeOnly = portalContext.getConfiguration().getBoolean("portalurl.relative.only", Boolean.FALSE);
+        }
     }
     
     
@@ -90,7 +93,7 @@ public abstract class AbstractPortalURL implements PortalURL
     
     public boolean isRelativeOnly()
     {
-        return relativeOnly;
+        return relativeOnly.booleanValue();
     }
     
     public static String getNavigationalStateParameterName()
@@ -134,7 +137,7 @@ public abstract class AbstractPortalURL implements PortalURL
             base.setServerPort(request.getServerPort());
             base.setSecure(request.isSecure());            
         }
-        if ( relativeOnly )
+        if ( relativeOnly.booleanValue() )
         {
             this.secureBaseURL = this.nonSecureBaseURL = "";
         }
