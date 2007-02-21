@@ -65,6 +65,14 @@ public interface JetspeedCache
     boolean remove(Object key);
     
     /**
+     * Remove object from cache, do not notify listeners
+     * 
+     * @param key
+     * @return trie if the object was removed, false otherwise
+     */
+    boolean removeQuiet(Object key);
+    
+    /**
      * 
      * @return the default idle time in seconds for this cache
      */
@@ -93,11 +101,12 @@ public interface JetspeedCache
     String createCacheKey(String primary, String secondary);
     
     /**
-     * Add a cache listener for supported cache events
+     * Add a cache listener for supported cache events, either for local or remote cache events
      * 
      * @param listener
+     * @param local if true, listen to local events, if false, listen to remote 
      */         
-    void addEventListener(JetspeedCacheEventListener listener);
+    void addEventListener(JetspeedCacheEventListener listener, boolean local);
     
-    void removeEventListener(JetspeedCacheEventListener listener);
+    void removeEventListener(JetspeedCacheEventListener listener, boolean local);
 }

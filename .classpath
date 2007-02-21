@@ -120,5 +120,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-20061115.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.5.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/ehcache/jars/ehcache-1.2.4.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/pluto"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

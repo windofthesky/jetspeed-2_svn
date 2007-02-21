@@ -19,76 +19,27 @@ import java.io.Serializable;
 
 import net.sf.ehcache.Element;
 
-import org.apache.jetspeed.cache.DistributedCacheElement;
+import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 
 
-public class EhCacheDistributedElementImpl implements DistributedCacheElement
+public class EhCacheDistributedElementImpl extends EhCacheElementImpl 
 {
-	Element element;
-	
 	public EhCacheDistributedElementImpl(Element element)
     {
-        this.element = element;
+        super(element);
     }
 
 	public EhCacheDistributedElementImpl(Serializable key, DistributedCacheObject value)
     {
-        this.element = new Element(key,value);
+		super(key, value);
         
     }
-
-
-	public Object getKey()
-	    {
-	        return element.getObjectKey();
-	    }
 	    
-	    
-	    public DistributedCacheObject getContent()
-	    {
-	        return (DistributedCacheObject)element.getObjectValue();
-	    }
-
-	    public int getTimeToIdleSeconds()
-	    {
-	        return element.getTimeToIdle();
-	    }
-
-	    public int getTimeToLiveSeconds()
-	    {
-	        return element.getTimeToLive();
-	    }
-
-	    public boolean isEternal()
-	    {
-	        return element.isEternal();
-	    }
-
-	    public Element getImplElement()
-	    {
-	        return element;
-	    }
-
-	    public void setEternal(boolean eternal)
-	    {
-	        element.setEternal(eternal);
-	    }
-
-	    public void setTimeToIdleSeconds(int timeToIdle)
-	    {
-	        element.setTimeToIdle(timeToIdle);
-	    }
-
-	    public void setTimeToLiveSeconds(int timeToLive)
-	    {
-	        element.setTimeToLive(timeToLive);
-	    }
-	    
-	    public void notifyChange(int action)
-	    {
-	    	getContent().notifyChange(action);
-	    }
+    public void notifyChange(int action)
+    {
+    	((DistributedCacheObject)getContent()).notifyChange(action);
+    }
 
 	    
 }

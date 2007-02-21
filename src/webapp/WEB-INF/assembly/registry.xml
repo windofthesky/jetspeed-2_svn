@@ -35,6 +35,12 @@
         <constructor-arg index="3">
             <ref bean="portletDefinitionOidCache" />
         </constructor-arg>
+        <constructor-arg index="4">
+            <ref bean="portletApplicationNameCache" />
+        </constructor-arg>
+        <constructor-arg index="5">
+            <ref bean="portletDefinitionNameCache" />
+        </constructor-arg>        
     </bean>
 
     <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry" parent="baseTransactionProxy">
@@ -56,45 +62,6 @@
         </property>
     </bean>
 
-    <!-- Portlet Entity Access DAO-->
-    <!--
-        <bean id="systemCache" class="org.apache.jetspeed.cache.general.SimpleHashMapCache" />
-        
-        <bean id="systemCachingInterceptor" class="org.apache.jetspeed.components.interceptors.CachingInterceptor" >
-        <constructor-arg>
-        <ref bean="systemCache"/>
-        </constructor-arg>
-        </bean>
-        
-        <bean id="systemRemoveFromCacheInterceptor" class="org.apache.jetspeed.components.interceptors.RemoveFromCacheInterceptor" >
-        <constructor-arg>
-        <ref bean="systemCache"/>
-        </constructor-arg>
-        </bean>   	
-        
-        <bean id="portletEntityCachingAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
-        <property name="advice">
-        <ref bean="systemCachingInterceptor"/>
-        </property>
-        <property name="patterns">
-        <list>
-        <value>.*getPortletEntity.*</value>
-        </list>
-        </property>
-        </bean>
-        
-        <bean id="portletEntityRemoveFromCacheAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
-        <property name="advice">
-        <ref bean="systemRemoveFromCacheInterceptor"/>
-        </property>
-        <property name="patterns">
-        <list>
-        <value>.*removePortletEntity.*</value>
-        </list>
-        </property>
-        </bean>
-        
-    -->
     <!--
         - PortletEntity business object: OJB implementation, as an inner bean wrapped
         - by an outer transactional proxy. The two bean definitions could have been separate,

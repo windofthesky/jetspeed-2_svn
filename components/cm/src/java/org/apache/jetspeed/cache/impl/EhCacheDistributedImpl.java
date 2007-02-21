@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,27 +30,34 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.event.CacheEventListener;
 import net.sf.ehcache.event.RegisteredEventListeners;
 
-import org.apache.jetspeed.cache.DistributedCacheElement;
+import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
-import org.apache.jetspeed.cache.DistributedJetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 
-public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEventListener
+public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache, CacheEventListener
 {
-	private Cache ehcache;
+
+
 	private Map refList = Collections.synchronizedMap(new HashMap());
-    protected List listeners = new ArrayList();
+
 
 	public EhCacheDistributedImpl(Cache ehcache)
 	{
-		this.ehcache = ehcache;
+		super(ehcache);
 		RegisteredEventListeners listeners = ehcache
 				.getCacheEventNotificationService();
 		listeners.registerListener(this);
 
 	}
 
-	public DistributedCacheElement get(Serializable key)
+	public CacheElement get(Object key)
+	{
+		return get((Serializable)key);
+	}
+
+
+	public CacheElement get(Serializable key)
 	{
 		Element element = ehcache.get(key);
 		if (element == null)
@@ -57,18 +65,12 @@ public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEv
 		return new EhCacheDistributedElementImpl(element);
 	}
 
-	public void clear()
-	{
-		ehcache.removeAll();
-	}
-	public int getTimeToIdleSeconds()
-	{
-		return (int) ehcache.getTimeToIdleSeconds();
-	}
 
-	public int getTimeToLiveSeconds()
+	public boolean isKeyInCache(Object key)
 	{
-		return (int) ehcache.getTimeToLiveSeconds();
+		if ((key == null) || (!(key instanceof Serializable)))
+			return false;
+		return ehcache.isKeyInCache((Serializable)key);
 	}
 
 	public boolean isKeyInCache(Serializable key)
@@ -76,16 +78,28 @@ public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEv
 		return ehcache.isKeyInCache(key);
 	}
 
-	public void put(DistributedCacheElement element)
+	public void put(CacheElement element)
 	{
 		EhCacheDistributedElementImpl impl = (EhCacheDistributedElementImpl) element;
 		ehcache.put(impl.getImplElement());
 		refList.put(impl.getKey(), impl);
+		notifyListeners(true, CacheElement.ActionAdded,impl.getKey(),impl.getContent());
 	}
 
-	public DistributedCacheElement createElement(Serializable key, DistributedCacheObject content)
+	public CacheElement createElement(Object key, Object content)
+	{
+		return new EhCacheDistributedElementImpl((Serializable)key, (DistributedCacheObject)content);
+	}
+
+	public CacheElement createElement(Serializable key, DistributedCacheObject content)
 	{
 		return new EhCacheDistributedElementImpl(key, content);
+	}
+
+
+	public boolean remove(Object key)
+	{
+		return remove ((Serializable) key);
 	}
 
 	public boolean remove(Serializable key)
@@ -94,7 +108,10 @@ public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEv
 		refList.remove(key);
 		if (element == null)
 			return false;
-		return ehcache.remove(key);
+        boolean isRemoved = ehcache.remove(key);
+        if (isRemoved)
+    		notifyListeners(true, CacheElement.ActionRemoved,key,null);
+        return isRemoved;
 	}
 
 	public boolean removeQuiet(Object key)
@@ -138,19 +155,13 @@ public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEv
 		}
     }
 	
-    public void addEventListener(JetspeedCacheEventListener listener)
-    {
-        listeners.add(listener);
-    }
-    
-    public void removeEventListener(JetspeedCacheEventListener listener)
-    {
-        listeners.remove(listener);
-    }
-
-	
-	public void notifyElement(Element arg1, int action)
+	public void notifyElement( Ehcache cache, boolean local,Element arg1, int action)
 	{
+		if (cache != this.ehcache)
+		{
+			System.out.println ("Cache=" + cache.getName() + " is not my cache=" + this.ehcache.getName());
+			return;
+		}
 		try
 		{
 			EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl) refList
@@ -159,7 +170,10 @@ public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEv
 			{
 				if (action < 0)
 					refList.remove(arg1.getKey());
+				else if (action == CacheElement.ActionAdded)
+					refList.put(arg1.getKey(), arg1);
 				e.notifyChange(action);
+				notifyListeners(local, action,arg1.getKey(),arg1.getObjectValue());
 			}
 		} catch (Exception e)
 		{
@@ -169,74 +183,55 @@ public class EhCacheDistributedImpl implements DistributedJetspeedCache, CacheEv
 
 	public void notifyElementEvicted(Ehcache cache, Element arg1)
 	{
-		try
-		{
-			notifyElement(arg1, DistributedCacheElement.ActionEvicted);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+			notifyElement(cache, false, arg1,CacheElement.ActionEvicted);
 	}
 
 	public void notifyElementExpired(Ehcache cache, Element arg1)
 	{
-		try
-		{
-			notifyElement(arg1, DistributedCacheElement.ActionExpired);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		notifyElement(cache, false, arg1,CacheElement.ActionExpired);
 	}
 
 	public void notifyElementPut(Ehcache cache, Element arg1)
 			throws CacheException
 	{
-		try
-		{
-			notifyElement(arg1, DistributedCacheElement.ActionAdded);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		
+			notifyElement(cache, false, arg1, CacheElement.ActionAdded);
 	}
 
 	public void notifyElementRemoved(Ehcache cache, Element arg1)
 			throws CacheException
 	{
-		try
-		{
-			EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl) refList
-					.get(arg1.getKey());
-			if (e != null)
-			{
-				refList.remove(arg1.getKey());
-				e.notifyChange(DistributedCacheElement.ActionRemoved);
-			}
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		notifyElement(cache, false, arg1,CacheElement.ActionRemoved);
 	}
 
 	public void notifyElementUpdated(Ehcache cache, Element arg1)
 			throws CacheException
 	{
+		notifyElement(cache, false,arg1,CacheElement.ActionChanged);
+	}
+	public void notifyRemoveAll(Ehcache cache)
+	{
+		if (cache != this.ehcache)
+		{
+			System.out.println ("Cache=" + cache.getName() + " is not my cache=" + this.ehcache.getName());
+			return;
+		}
 		try
 		{
-			notifyElement(arg1, DistributedCacheElement.ActionChanged);
+			Iterator it = refList.entrySet().iterator();
+			while (it.hasNext())
+			{
+				EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl)it.next();
+				notifyListeners(false, CacheElement.ActionRemoved,e.getKey(),e);
+				e.notifyChange(CacheElement.ActionRemoved);
+			}
+			refList.clear();
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-	}
-	public void notifyRemoveAll(Ehcache cache)
-	{
-//		if (ehcache == cache)
-//			System.out.println("notifyRemoveAll cache=" + cache.getName());
-//		else
-//			System.out.println("NOT MINE 	notifyRemoveAll cache="
-//					+ cache.getName());
+
+	
 	}
 
 }

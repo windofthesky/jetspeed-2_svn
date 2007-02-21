@@ -15,9 +15,13 @@
 
 package org.apache.jetspeed.cache.impl;
 
+import java.util.StringTokenizer;
+
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 
 /**
  * Wrapper around actual cache element implementation
@@ -30,11 +34,17 @@ public class EhPortletContentCacheElementImpl implements CacheElement
     Element element;
     public static final String KEY_SEPARATOR = "/";
     
-    public EhPortletContentCacheElementImpl(Element element)
+    
+ 
+
+	public EhPortletContentCacheElementImpl(Element element)
     {
         this.element = element;
     }
-    
+
+
+
+	
     public Object getKey()
     {
         return element.getObjectKey();

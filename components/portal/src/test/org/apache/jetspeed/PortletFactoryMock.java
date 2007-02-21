@@ -39,4 +39,6 @@ public final class PortletFactoryMock implements PortletFactory
     public boolean isPortletApplicationRegistered(PortletApplication pa){return true;}
     
     public static final PortletFactoryMock instance = new PortletFactoryMock();
+    
+    public void updatePortletConfig(PortletDefinition pd) {}
 }

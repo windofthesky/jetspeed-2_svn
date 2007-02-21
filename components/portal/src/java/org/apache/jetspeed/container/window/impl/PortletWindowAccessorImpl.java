@@ -27,12 +27,16 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.portletregistry.RegistryEventListener;
 import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.util.ArgUtil;
@@ -46,13 +50,13 @@ import org.apache.pluto.om.window.PortletWindowCtrl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: PortletWindowAccessorImpl.java,v 1.12 2005/04/29 14:01:57 weaver Exp $
  */
-public class PortletWindowAccessorImpl implements PortletWindowAccessor 
+public class PortletWindowAccessorImpl implements PortletWindowAccessor, RegistryEventListener
 {
     protected final static Log log = LogFactory.getLog(PortletWindowAccessorImpl.class);
    
     private Map windows = Collections.synchronizedMap(new HashMap());    
-        
     private PortletEntityAccessComponent entityAccessor;
+    private PortletRegistry registry = null;
     private PortletFactory portletFactory;
     private boolean validateWindows = false;
     
@@ -64,6 +68,18 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         this.validateWindows = validateWindows;
     }
 
+    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, 
+                                     PortletFactory portletFactory, 
+                                     PortletRegistry registry,
+                                     boolean validateWindows)
+    {
+        this.entityAccessor = entityAccessor;
+        this.portletFactory = portletFactory;
+        this.registry = registry;
+        this.validateWindows = validateWindows;
+        registry.addRegistryListener(this);
+    }
+    
     public PortletWindow createPortletWindow(PortletEntity entity, String windowId)
     {
         if(entity == null)
@@ -230,7 +246,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         
         if ( !temporaryWindow )
         {
-            windows.put(fragment.getId(), portletWindow);       
+            windows.put(fragment.getId(), portletWindow);   
         }
         
         return portletWindow;
@@ -243,13 +259,13 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
         for(int i = 0; i < tmpWindows.size(); i++)
         {
             PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
-            
-
-            if(portletEntity.getId().equals(window.getPortletEntity().getId()))
+            if (portletEntity.getId().equals(window.getPortletEntity().getId()))
             {
                 removeWindow(window);
             }
         }        
+        tmpWindows.clear();
+
     }
     
     public void removeWindow(PortletWindow window)
@@ -289,5 +305,81 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor
     public Set getPortletWindows()
     {
         return this.windows.entrySet();
+    }
+
+    protected void removeForPortletDefinition(PortletDefinitionComposite def)
+    {
+        List tmpWindows = new ArrayList(windows.entrySet());
+        for (int i = 0; i < tmpWindows.size(); i++)
+        {
+            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
+            PortletDefinitionComposite windowDef = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
+            if(def.getUniqueName().equals(windowDef.getUniqueName()))
+            {
+                removeWindow(window);
+            }
+        }        
+        tmpWindows.clear(); 
+        portletFactory.updatePortletConfig(def);
+    }
+
+    protected void removeForPortletApplication(MutablePortletApplication app)
+    {
+        List tmpWindows = new ArrayList(windows.entrySet());
+        for (int i = 0; i < tmpWindows.size(); i++)
+        {
+            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
+            MutablePortletApplication windowApp = (MutablePortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();            
+            if(app.getName().equals(windowApp.getName()))
+            {
+                removeWindow(window);
+            }
+        }        
+        tmpWindows.clear();        
+    }
+    
+    public void applicationRemoved(MutablePortletApplication app)
+    {
+        if (app == null)
+        {
+            //System.out.println("@@@ receiving APP REMOVED message with NULL");
+            return;
+        }
+        //System.out.println("@@@ receiving APP REMOVED message: " + app.getName());
+        removeForPortletApplication(app);
+    }
+
+ 
+    public void applicationUpdated(MutablePortletApplication app)
+    {
+        if (app == null)
+        {
+            //System.out.println("@@@ receiving APP UPDATED message with NULL");
+            return;
+        }
+        //System.out.println("@@@ receiving APP UPDATED message: " + app.getName()); 
+        removeForPortletApplication(app);
+    }
+
+    public void portletRemoved(PortletDefinitionComposite def)
+    {
+        if (def == null)
+        {
+            //System.out.println("@@@ receiving DEF REMOVED message with NULL");
+            return;
+        }
+        //System.out.println("@@@ receiving DEF REMOVED message: " + def.getName()); 
+        removeForPortletDefinition(def);
+    }
+ 
+    public void portletUpdated(PortletDefinitionComposite def)
+    {
+        if (def == null)
+        {
+            //System.out.println("@@@ receiving DEF UPDATED message with NULL");
+            return;
+        }
+        //System.out.println("@@@ receiving DEF UPDATED message: " + def.getName());
+        removeForPortletDefinition(def);
     }
 }

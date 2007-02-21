@@ -337,11 +337,13 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
+<!-- 
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicateAsynchronously=false, replicatePuts=false,
-                            replicateUpdates=true, replicateUpdatesViaCopy=false,
+                properties="replicateAsynchronously=true, replicatePuts=false,
+                            replicateUpdates=false, replicateUpdatesViaCopy=false,
                             replicateRemovals=true"/>
+  -->
    </cache>
 
 
@@ -352,8 +354,25 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
-            />
+           memoryStoreEvictionPolicy="LFU">
+   </cache>
+
+   <cache name="portletApplicationNameCache"
+           maxElementsInMemory="500"
+           maxElementsOnDisk="1000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="28800"
+           timeToLiveSeconds="28800"
+           memoryStoreEvictionPolicy="LFU">
+<!-- 
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true, replicatePuts=false,
+                            replicateUpdates=false, replicateUpdatesViaCopy=false,
+                            replicateRemovals=true"/>
+ -->                            
+   </cache>
 
    <cache name="portletDefinitionOidCache"
            maxElementsInMemory="2000"
@@ -362,18 +381,8 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
-            />
-            
-   <cache name="portletApplicationNameCache"
-           maxElementsInMemory="500"
-           maxElementsOnDisk="1000"
-           eternal="false"
-           overflowToDisk="false"
-           timeToIdleSeconds="28800"
-           timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
-            />
+           memoryStoreEvictionPolicy="LFU">
+            </cache>
 
    <cache name="portletDefinitionNameCache"
            maxElementsInMemory="2000"
@@ -382,9 +391,16 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
-            />
-
+           memoryStoreEvictionPolicy="LFU">
+ <!-- 
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true, replicatePuts=false,
+                            replicateUpdates=false, replicateUpdatesViaCopy=false,
+                            replicateRemovals=true"/>
+  -->                           
+            </cache>
+            
     <!--
     Sample distributed cache named sampleDistributedCache1.
     This cache replicates using defaults.

@@ -116,6 +116,11 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     }
 
+    public void setPortletDefinition(PortletDefinition pd)
+    {
+        this.portletDefinition = pd;        
+    }
+    
     //  internal portlet config implementation
     public PortletDefinition getPortletDefinition()
     {

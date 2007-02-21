@@ -15,11 +15,16 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.impl.EhCacheDistributedElementImpl;
 import org.apache.jetspeed.cache.impl.EhCacheElementImpl;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.cache.ObjectCache;
@@ -33,16 +38,20 @@ import org.apache.ojb.broker.cache.ObjectCache;
 public class RegistryApplicationCache implements ObjectCache
 {
     private static JetspeedCache oidCache;
+    private static JetspeedCache nameCache;    
     private static PortletRegistry registry;
+    private static List listeners = null;
 
     public RegistryApplicationCache(PersistenceBroker broker, Properties props)
     {
     }
-   
-    public synchronized static void cacheInit(PortletRegistry r, JetspeedCache o)
+       
+    public synchronized static void cacheInit(PortletRegistry r, JetspeedCache o, JetspeedCache n, List l)
     {
         registry = r;
         oidCache = o;
+        nameCache = n;
+        listeners = l;
     }
 
     public Object lookup(Identity oid)
@@ -67,19 +76,24 @@ public class RegistryApplicationCache implements ObjectCache
         cacheAdd(oid, obj);
     }
     public synchronized static void cacheAdd(Identity oid, Object obj)
-    {
-        CacheElement entry = (CacheElement)oidCache.get(oid);
-        if (entry != null)
-        {
-            oidCache.remove(oid);
-            entry = new EhCacheElementImpl(oid, obj);
-            oidCache.put(entry);
-        }
-        else
-        {
-            //MutablePortletApplication proxy = MutablePortletApplicationProxy.createProxy((MutablePortletApplication)obj);
-            entry = new EhCacheElementImpl(oid, obj);
-            oidCache.put(entry);
+    {        
+        oidCache.remove(oid);
+        CacheElement entry = new EhCacheElementImpl(oid, obj);
+        oidCache.put(entry);
+        
+        MutablePortletApplication pa = (MutablePortletApplication)obj;
+        DistributedCacheObject wrapper = new RegistryCacheObjectWrapper(oid, pa.getName());
+        nameCache.remove(pa.getName());
+        CacheElement nameEntry = nameCache.createElement(pa.getName(), wrapper);
+        nameCache.put(nameEntry);
+               
+        if (listeners != null)
+        {        
+            for (int ix=0; ix < listeners.size(); ix++)
+            {
+                RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                listener.applicationUpdated((MutablePortletApplication)obj);
+            }
         }
     }
     
@@ -93,6 +107,7 @@ public class RegistryApplicationCache implements ObjectCache
     public synchronized static void cacheClear()
     {
         oidCache.clear();
+        nameCache.clear();
     }
 
 
@@ -112,7 +127,41 @@ public class RegistryApplicationCache implements ObjectCache
      */
     public synchronized static void cacheRemove(Identity oid)
     {
+        MutablePortletApplication pd = (MutablePortletApplication)cacheLookup(oid);
+        if (pd == null)
+            return;
+        
         oidCache.remove(oid);
+        nameCache.remove(pd.getName());
+        
+        if (listeners != null)
+        {
+            for (int ix=0; ix < listeners.size(); ix++)
+            {
+                RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                listener.applicationRemoved(pd);
+            }        
+        }
+
     }
-    
+
+    public synchronized static void cacheRemoveQuiet(String key, RegistryCacheObjectWrapper w)
+    {
+        RegistryCacheObjectWrapper wrapper = w;
+        if (wrapper == null)
+        {
+            wrapper = (RegistryCacheObjectWrapper)nameCache.get(key);
+            if (wrapper == null)
+                return;
+        }
+        Identity oid = wrapper.getId();      
+        
+        MutablePortletApplication pd = (MutablePortletApplication)cacheLookup(oid);
+        if (pd == null)
+            return;
+        
+        oidCache.removeQuiet(oid);
+        nameCache.removeQuiet(pd.getName());        
+    }
+   
 }

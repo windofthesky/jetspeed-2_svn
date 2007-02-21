@@ -17,7 +17,7 @@ package org.apache.jetspeed.cache;
 
 /**
  * <p>
- *  Provides interface to Jetspeed for cache events
+ * Provides interface to Jetspeed for cache events
  * </p>
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -25,5 +25,85 @@ package org.apache.jetspeed.cache;
  */
 public interface JetspeedCacheEventListener
 {
-    void notifyElementRemoved(JetspeedCache cache, Object o);
+
+	/**
+	 * REMOVE notification for cache listeners
+	 * 
+	 * @param cache
+	 *            the Cache repoorting the change
+	 * @param local
+	 *            true if action was local, false if initiated by remote cache
+	 * @param key
+	 *            key of object
+	 * @param element
+	 *            content of object
+	 * 
+	 */
+	void notifyElementRemoved(JetspeedCache cache, boolean local, Object key,
+			Object element);
+
+	/**
+	 * ADDED notification for cache listeners
+	 * 
+	 * @param cache
+	 *            the Cache repoorting the change
+	 * @param local
+	 *            true if action was local, false if initiated by remote cache
+	 * @param key
+	 *            key of object
+	 * @param element
+	 *            content of object
+	 * 
+	 */
+	void notifyElementAdded(JetspeedCache cache, boolean local, Object key,
+			Object element);
+
+	/**
+	 * CHANGE notification for cache listeners
+	 * 
+	 * @param cache
+	 *            the Cache repoorting the change
+	 * @param local
+	 *            true if action was local, false if initiated by remote cache
+	 * @param key
+	 *            key of object
+	 * @param element
+	 *            content of object
+	 * 
+	 */
+	void notifyElementChanged(JetspeedCache cache, boolean local, Object key,
+			Object element);
+
+	/**
+	 * EVICTED notification for cache listeners
+	 * 
+	 * @param cache
+	 *            the Cache repoorting the change
+	 * @param local
+	 *            true if action was local, false if initiated by remote cache
+	 * @param key
+	 *            key of object
+	 * @param element
+	 *            content of object
+	 * 
+	 */
+	void notifyElementEvicted(JetspeedCache cache, boolean local, Object key,
+			Object element);
+
+	/**
+	 * EXPIRED notification for cache listeners
+	 * 
+	 * @param cache
+	 *            the Cache repoorting the change
+	 * @param local
+	 *            true if action was local, false if initiated by remote cache
+	 * @param key
+	 *            key of object
+	 * @param element
+	 *            content of object
+	 * 
+	 */
+	void notifyElementExpired(JetspeedCache cache, boolean local, Object key,
+			Object element);
+
 }

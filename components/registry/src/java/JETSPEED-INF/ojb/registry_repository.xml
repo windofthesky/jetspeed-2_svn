@@ -396,7 +396,7 @@ limitations under the License.
         name="app"
         class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl"
         auto-delete="false"
-        auto-update = "true"
+        auto-update = "false"
         auto-retrieve = "true"
      >
          <foreignkey field-ref="appId"/>

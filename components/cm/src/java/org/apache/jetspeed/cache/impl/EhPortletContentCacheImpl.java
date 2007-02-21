@@ -19,12 +19,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 
 /**
  * Wrapper around actual cache implementation
@@ -32,9 +34,82 @@ import org.apache.jetspeed.cache.JetspeedCache;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCache
+public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCache, JetspeedCacheEventListener
 {
-   
+	
+    public static final String KEY_ENTITY_KEY = EhPortletContentCacheElementImpl.KEY_SEPARATOR + "portlet_entity" + EhPortletContentCacheElementImpl.KEY_SEPARATOR ;
+    public static final int KEY_ENTITY_KEY_LENGTH = KEY_ENTITY_KEY.length();
+
+	   JetspeedCache preferenceCache = null;
+
+	   public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void notifyElementChanged(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void notifyElementEvicted(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+		// TODO Auto-generated method stub
+		
+		notifyElementRemoved(cache,local,key,element);
+	}
+
+	public void notifyElementExpired(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+		// TODO Auto-generated method stub
+		notifyElementRemoved(cache,local,key,element);
+		
+	}
+
+	public void notifyElementRemoved(JetspeedCache cache, boolean local, Object key, Object element)
+		{
+		   if (local)
+			   return; //not interested in local changes
+			   
+		   	//System.out.println("notifying PortletContent that element " + key.toString() + " has been removed");		   
+			if (!(key instanceof String))
+				return;
+			String s = (String) key;
+			if (!(s.startsWith(KEY_ENTITY_KEY)))
+				return;
+			StringTokenizer st = new StringTokenizer(s,EhPortletContentCacheElementImpl.KEY_SEPARATOR);
+			int count = 0;
+			String pe = null; String user = null;
+		     while (st.hasMoreTokens()) 
+		     {
+		    	 String temp = st.nextToken();
+		    	 switch (count)
+		    	 {
+		    		 case 0: 
+		    			 break;
+		    		 case 1: 	pe = temp;
+		    	 		break;
+		    		 case 2: 	user = temp;
+		    		 break;
+		    	 }
+		    	 count++;
+		    	 if (count> 2)
+		    		 break;
+		     }
+			 if ((pe != null) && (user != null))
+				 removeOneEntry(user,pe);
+		}
+	    
+	public EhPortletContentCacheImpl(Cache ehcache,JetspeedCache preferenceCache )
+    {
+        this(ehcache);
+        this.preferenceCache = preferenceCache;
+        preferenceCache.addEventListener(this,false); //only listen to remote events
+    }
+
+	    
     public EhPortletContentCacheImpl(Cache ehcache)
     {
         super(ehcache);
@@ -112,6 +187,24 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
             }
         }
         return removed;
+    }
+    
+    public void removeOneEntry(String pe, String user)
+    {
+        String key = createCacheKey(pe,user);
+        if (ehcache.remove(key))
+        {
+        	Element userElement = ehcache.get(user);
+	        	
+	        if (userElement != null)
+	        {
+	            Map map = (Map)userElement.getObjectValue();
+	            if (map != null)
+	            {
+	            	map.remove(pe);
+	            }
+	        }
+        }
     }
     
     public void evictContentForUser(String user)

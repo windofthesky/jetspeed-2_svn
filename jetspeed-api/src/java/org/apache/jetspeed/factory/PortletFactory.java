@@ -42,4 +42,5 @@ public interface PortletFactory
     ClassLoader getPortletApplicationClassLoader(PortletApplication pa);
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
     PreferencesValidator getPreferencesValidator(PortletDefinition pd );
+    void updatePortletConfig(PortletDefinition pd);
 }

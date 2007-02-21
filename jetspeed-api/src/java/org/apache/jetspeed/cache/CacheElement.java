@@ -28,6 +28,13 @@ package org.apache.jetspeed.cache;
  */
 public interface CacheElement
 {
+	public static int ActionAdded  = 1;
+	public static int ActionChanged = 2;
+	public static int ActionRemoved = -1;
+	public static int ActionEvicted = -2;
+	public static int ActionExpired = -3;
+	
+     
     /**
      * 
      * @return the idle time in seconds for this cache element

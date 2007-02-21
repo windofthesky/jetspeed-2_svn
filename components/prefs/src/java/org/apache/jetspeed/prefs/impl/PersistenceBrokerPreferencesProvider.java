@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.jetspeed.cache.DistributedCacheElement;
+import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
-import org.apache.jetspeed.cache.DistributedJetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
@@ -130,38 +130,38 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
 	    	switch (action)
 	    	{
-	    		case DistributedCacheElement.ActionAdded:
-					//System.out.println("CacheObject Added =" + this.getKey());
+	    		case CacheElement.ActionAdded:
+//					System.out.println("CacheObject Added =" + this.getKey());
 	    			break;
-	    		case DistributedCacheElement.ActionChanged:
-					//System.out.println("CacheObject Changed =" + this.getKey());
+	    		case CacheElement.ActionChanged:
+//					System.out.println("CacheObject Changed =" + this.getKey());
 					if (this.node != null)
 						this.node.invalidate();
 	    			break;
-	    		case DistributedCacheElement.ActionRemoved:
-					//System.out.println("CacheObject Removed =" + this.getKey());
+	    		case CacheElement.ActionRemoved:
+//					System.out.println("CacheObject Removed =" + this.getKey());
 					if (this.node != null)
 						this.node.invalidate();
 	    			break;
-	    		case DistributedCacheElement.ActionEvicted:
-					//System.out.println("CacheObject Evicted =" + this.getKey());
+	    		case CacheElement.ActionEvicted:
+//					System.out.println("CacheObject Evicted =" + this.getKey());
 					if (this.node != null)
 						this.node.invalidate();
 	    			break;
-	    		case DistributedCacheElement.ActionExpired:
-					//System.out.println("CacheObject Expired =" + this.getKey());
+	    		case CacheElement.ActionExpired:
+//					System.out.println("CacheObject Expired =" + this.getKey());
 					if (this.node != null)
 						this.node.invalidate();
 	    			break;
 	    		default:
-					//System.out.println("CacheObject - UNKOWN OPRERATION =" + this.getKey());
+					System.out.println("CacheObject - UNKOWN OPRERATION =" + this.getKey());
 	    			return;
 	    	}
 	    	return;
 		}
     }
 
-    private DistributedJetspeedCache preferenceCache;
+    private JetspeedCache preferenceCache;
     
     
     /**
@@ -193,7 +193,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
      *             if the <code>prefsFactoryImpl</code> argument does not reperesent a Class that exists in the
      *             current classPath.
      */
-    public PersistenceBrokerPreferencesProvider(String repositoryPath, DistributedJetspeedCache preferenceCache)
+    public PersistenceBrokerPreferencesProvider(String repositoryPath, JetspeedCache preferenceCache)
             throws ClassNotFoundException
     {
         this(repositoryPath);
@@ -202,7 +202,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 
     protected void addToCache(NodeCache content)
     {
-        DistributedCacheElement cachedElement = preferenceCache.createElement(content.getCacheKey(), content);
+        CacheElement cachedElement = preferenceCache.createElement(content.getCacheKey(), content);
         cachedElement.setTimeToIdleSeconds(preferenceCache.getTimeToIdleSeconds());
         cachedElement.setTimeToLiveSeconds(preferenceCache.getTimeToLiveSeconds());
         preferenceCache.put(cachedElement);        
@@ -210,7 +210,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
   
     private NodeCache getNode(String cacheKey)
     {
-        DistributedCacheElement cachedElement = preferenceCache.get(cacheKey);
+    	CacheElement cachedElement = preferenceCache.get(cacheKey);
         if (cachedElement != null)
          return (NodeCache)cachedElement.getContent();  
         return null;

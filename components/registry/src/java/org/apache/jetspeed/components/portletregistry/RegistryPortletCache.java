@@ -15,10 +15,13 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.impl.EhCacheDistributedElementImpl;
 import org.apache.jetspeed.cache.impl.EhCacheElementImpl;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.ojb.broker.Identity;
@@ -34,16 +37,20 @@ import org.apache.ojb.broker.cache.ObjectCache;
 public class RegistryPortletCache implements ObjectCache
 {
     private static JetspeedCache oidCache;
+    private static JetspeedCache nameCache;
     private static PortletRegistry registry;
-
+    private static List listeners = null;
+    
     public RegistryPortletCache(PersistenceBroker broker, Properties props)
     {
     }
     
-    public synchronized static void cacheInit(PortletRegistry r, JetspeedCache o)
+    public synchronized static void cacheInit(PortletRegistry r, JetspeedCache o, JetspeedCache n, List l)
     {
         registry = r;
         oidCache = o;
+        nameCache = n;
+        listeners = l;
     }
 
     public Object lookup(Identity oid)
@@ -69,18 +76,23 @@ public class RegistryPortletCache implements ObjectCache
     }
     public synchronized static void cacheAdd(Identity oid, Object obj)
     {
-        CacheElement entry = (CacheElement)oidCache.get(oid);
-        if (entry != null)
-        {
-            oidCache.remove(oid);
-            entry = new EhCacheElementImpl(oid, obj);
-            oidCache.put(entry);
-        }
-        else
-        {
-            //PortletDefinitionComposite proxy = PortletDefinitionCompositeProxy.createProxy((PortletDefinitionComposite)obj);            
-            entry = new EhCacheElementImpl(oid, entry);
-            oidCache.put(entry);
+        oidCache.remove(oid);
+        CacheElement entry = new EhCacheElementImpl(oid, obj);
+        oidCache.put(entry);
+        
+        PortletDefinitionComposite pd = (PortletDefinitionComposite)obj;
+        DistributedCacheObject wrapper = new RegistryCacheObjectWrapper(oid, pd.getUniqueName());
+        nameCache.remove(pd.getUniqueName());
+        CacheElement nameEntry = nameCache.createElement(pd.getUniqueName(), wrapper);
+        nameCache.put(nameEntry);
+               
+        if (listeners != null)
+        {        
+            for (int ix=0; ix < listeners.size(); ix++)
+            {
+                RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                listener.portletUpdated((PortletDefinitionComposite)obj);
+            }
         }
     }
     
@@ -94,6 +106,7 @@ public class RegistryPortletCache implements ObjectCache
     public synchronized static void cacheClear()
     {
         oidCache.clear();
+        nameCache.clear();
     }
 
 
@@ -113,7 +126,40 @@ public class RegistryPortletCache implements ObjectCache
      */
     public synchronized static void cacheRemove(Identity oid)
     {
+        PortletDefinitionComposite pd = (PortletDefinitionComposite)cacheLookup(oid);
+        if (pd == null)
+            return;
+        
         oidCache.remove(oid);
+        nameCache.remove(pd.getUniqueName());
+        
+        if (listeners != null)
+        {
+            for (int ix=0; ix < listeners.size(); ix++)
+            {
+                RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                listener.portletRemoved(pd);
+            }        
+        }
+    }
+
+    public synchronized static void cacheRemoveQuiet(String key, RegistryCacheObjectWrapper w)
+    {
+        RegistryCacheObjectWrapper wrapper = w;
+        if (wrapper == null)
+        {
+            wrapper = (RegistryCacheObjectWrapper)nameCache.get(key);
+            if (wrapper == null)
+                return;
+        }
+        Identity oid = wrapper.getId();
+
+        PortletDefinitionComposite pd = (PortletDefinitionComposite)cacheLookup(oid);
+        if (pd == null)
+            return;
+     
+        oidCache.removeQuiet(oid);       
+        nameCache.removeQuiet(pd.getUniqueName());        
     }
     
 }

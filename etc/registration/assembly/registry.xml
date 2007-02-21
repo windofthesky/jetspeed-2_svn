@@ -35,6 +35,12 @@
         <constructor-arg index="3">
             <ref bean="portletDefinitionOidCache" />
         </constructor-arg>
+        <constructor-arg index="4">
+            <ref bean="portletApplicationNameCache" />
+        </constructor-arg>
+        <constructor-arg index="5">
+            <ref bean="portletDefinitionNameCache" />
+        </constructor-arg>        
     </bean>
 
     <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry" parent="baseTransactionProxy">

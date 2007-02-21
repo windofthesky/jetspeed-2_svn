@@ -104,14 +104,17 @@
     <!-- Portlet Window Component -->
     <bean id="PortletWindowAccessor" class="org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl"
         name="org.apache.jetspeed.container.window.PortletWindowAccessor">
-        <constructor-arg>
+        <constructor-arg index='0'>
             <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
         </constructor-arg>
-        <constructor-arg>
+        <constructor-arg index='1'>
             <ref bean="portletFactory" />
         </constructor-arg>
+        <constructor-arg index='2'>
+            <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
+        </constructor-arg>        
         <!-- enable window validation -->
-        <constructor-arg type="boolean">
+        <constructor-arg type="boolean" index='3'>
             <value>false</value>
         </constructor-arg>
     </bean>

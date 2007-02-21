@@ -189,6 +189,9 @@ public interface PortletRegistry
      */
     void savePortletDefinition(PortletDefinition portlet) throws FailedToStorePortletDefinitionException;
 	
+    void addRegistryListener(RegistryEventListener listener);
+    
+    void removeRegistryEventListner(RegistryEventListener listener);
 	
 
 }

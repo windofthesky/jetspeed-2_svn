@@ -15,8 +15,10 @@
  */
 package org.apache.jetspeed.factory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
@@ -28,6 +30,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.PortalAccessor;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -47,20 +50,20 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 public class JetspeedPortletFactory implements PortletFactory
 {
 
-    private HashMap portletCache;
-    private HashMap validatorCache;
+    private Map portletCache;
+    private Map validatorCache;
     
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
-    private final HashMap classLoaderMap;
+    private final Map classLoaderMap;
 
     /**
      * 
      */
     public JetspeedPortletFactory()
     {
-        this.portletCache = new HashMap();
-        this.validatorCache = new HashMap();
-        classLoaderMap = new HashMap();
+        this.portletCache =  Collections.synchronizedMap(new HashMap());
+        this.validatorCache = Collections.synchronizedMap(new HashMap());
+        classLoaderMap = Collections.synchronizedMap(new HashMap());
     }
 
     public void registerPortletApplication(PortletApplication pa, ClassLoader cl)
@@ -248,6 +251,21 @@ public class JetspeedPortletFactory implements PortletFactory
             throw new UnavailableException( "Failed to load portlet " + pd.getClassName() +": "+e.toString());
         }
         return portlet;
+    }
+    
+    public void updatePortletConfig(PortletDefinition pd)
+    {
+        if (pd != null)
+        {
+            //System.out.println("$$$$ updating portlet config for " + pd.getName());
+            String key = pd.getId().toString();
+            PortletInstance instance = (PortletInstance)portletCache.get(key);
+            if (instance != null)
+            {
+                JetspeedPortletConfig config = (JetspeedPortletConfig)instance.getConfig();
+                config.setPortletDefinition(pd);
+            }
+        }
     }
     
     public ClassLoader getPortletApplicationClassLoader(PortletApplication pa)

@@ -15,9 +15,11 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
@@ -66,32 +68,38 @@ public class PersistenceBrokerPortletRegistry
 
     private JetspeedCache applicationOidCache = null;
     private JetspeedCache portletOidCache = null;
+    private JetspeedCache applicationNameCache = null;
+    private JetspeedCache portletNameCache = null;
     private Map nameCache = new HashMap(); // work in progress (switch to JetspeedCache)
+    private List listeners = new ArrayList();
     
     // for testing purposes only: no need for the portletFactory then
     public PersistenceBrokerPortletRegistry(String repositoryPath)
     {
-        this(repositoryPath, null, null, null);
+        this(repositoryPath, null, null, null, null, null);
     }
     
     /**
      *  
      */
     public PersistenceBrokerPortletRegistry(String repositoryPath, PortletFactory portletFactory, 
-            JetspeedCache applicationOidCache, JetspeedCache portletOidCache)
+            JetspeedCache applicationOidCache, JetspeedCache portletOidCache, 
+            JetspeedCache applicationNameCache, JetspeedCache portletNameCache)
     {
         super(repositoryPath);
         PortletDefinitionImpl.setPortletRegistry(this);
         PortletDefinitionImpl.setPortletFactory(portletFactory);
         this.applicationOidCache = applicationOidCache;
         this.portletOidCache = portletOidCache;
+        this.applicationNameCache = applicationNameCache;
+        this.portletNameCache = portletNameCache;
         MutablePortletApplicationProxy.setRegistry(this);
-        RegistryApplicationCache.cacheInit(this, applicationOidCache);
-        RegistryPortletCache.cacheInit(this, applicationOidCache);
-        this.applicationOidCache.addEventListener(this);
-        this.portletOidCache.addEventListener(this);
+        RegistryApplicationCache.cacheInit(this, applicationOidCache, applicationNameCache, listeners);
+        RegistryPortletCache.cacheInit(this, portletOidCache, portletNameCache, listeners);
+        this.applicationNameCache.addEventListener(this, false);
+        this.portletNameCache.addEventListener(this, false);        
     }
-
+    
     public Language createLanguage( Locale locale, String title, String shortTitle, String description,
             Collection keywords ) throws RegistryException
     {
@@ -326,26 +334,66 @@ public class PersistenceBrokerPortletRegistry
         return portlet;
     }
     
-    public void notifyElementRemoved(JetspeedCache cache, Object o)
+    public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
     {
-        //System.out.println("--- Registry: notification element is a " + o);
-        // update nameCache
     }
-    
-    protected MutablePortletApplication getProxiedObject(MutablePortletApplication app)
+
+    public void notifyElementChanged(JetspeedCache cache, boolean local, Object key, Object element)
     {
-        PortletApplicationProxy cached = (PortletApplicationProxy)nameCache.get(app.getName());
-        if (cached != null)
+    }
+
+    public void notifyElementEvicted(JetspeedCache cache, boolean local, Object key, Object element)
+    {
+        //notifyElementRemoved(cache,local,key,element);
+    }
+
+    public void notifyElementExpired(JetspeedCache cache, boolean local, Object key, Object element)
+    {
+        //notifyElementRemoved(cache,local,key,element);           
+    }
+
+    public void notifyElementRemoved(JetspeedCache cache, boolean local, Object key, Object element)
+    {    
+       
+        if (cache == this.portletNameCache)
         {
-            cached.setRealApplication(app);
-            return (MutablePortletApplication)cached;            
+            //System.out.println("%%% portlet remote removed " + key);            
+            RegistryPortletCache.cacheRemoveQuiet((String)key, (RegistryCacheObjectWrapper)element);
+            PortletDefinitionComposite pd = this.getPortletDefinitionByUniqueName((String)key);
+            if (listeners != null)
+            {
+                for (int ix=0; ix < listeners.size(); ix++)
+                {
+                    RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                    listener.portletRemoved(pd);
+                }        
+            }           
         }
         else
         {
-            MutablePortletApplication proxy = MutablePortletApplicationProxy.createProxy(app);
-            nameCache.put(app.getName(), proxy);
-            return (MutablePortletApplication)cached;
+            //System.out.println("%%% PA remote removed " + key);
+            RegistryApplicationCache.cacheRemoveQuiet((String) key, (RegistryCacheObjectWrapper)element);
+            MutablePortletApplication pa = this.getPortletApplication((String)key);
+            if (listeners != null)
+            {
+                for (int ix=0; ix < listeners.size(); ix++)
+                {
+                    RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                    listener.applicationRemoved(pa);
+                }        
+            }
+            
         }
+    }
+        
+    public void addRegistryListener(RegistryEventListener listener)
+    {
+        this.listeners.add(listener);
+    }
+
+    public void removeRegistryEventListner(RegistryEventListener listener)
+    {
+        this.listeners.remove(listener);
     }
     
 }

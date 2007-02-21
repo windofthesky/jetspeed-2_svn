@@ -26,6 +26,6 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public interface InternalPortletConfig
 {
-     public PortletDefinition getPortletDefinition();
-    
+     PortletDefinition getPortletDefinition();
+     void setPortletDefinition(PortletDefinition pd);
 }
