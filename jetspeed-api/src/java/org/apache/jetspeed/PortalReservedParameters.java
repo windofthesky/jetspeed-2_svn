@@ -83,4 +83,47 @@ public interface PortalReservedParameters
      * The timeout value is in milliseconds 
      */
     public static final String PORTLET_EXTENDED_DESCRIPTOR_RENDER_TIMEOUT = "timeout";
+    
+    /**
+     *  Until version 2.1, Jetspeed merged portal request parameters with portlet specific
+     *  parameters, effectively allowing "shared" parameters.
+     *  <p>
+     *  This is not compliant with the JSR-168 PLT.11, so by default this is now disabled
+     *  through global settings in jetspeed.properties:
+     *  <pre>
+     *    merge.portal.parameters.with.portlet.parameters=false
+     *    merge.portal.parameters.before.portlet.parameters=false
+     *  </pre>
+     *  <p>
+     *  To support legacy portlets still relying on the "old" behavior these default global
+     *  settings can be overridden by defining these values in the portlet Metadata too.
+     *  </p>
+     *  <p>
+     *  Setting merge.portal.parameters.with.portlet.parameters=true will "restore" the old behavior and
+     *  merge the portal parameters with the portlet parameters.
+     *  </p>
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_WITH_PORTLET_PARAMETERS = "merge.portal.parameters.with.portlet.parameters";
+
+    /**
+     *  Until version 2.1, Jetspeed merged portal request parameters with portlet specific
+     *  parameters, effectively allowing "shared" parameters.
+     *  <p>
+     *  This is not compliant with the JSR-168 PLT.11, so by default this is now disabled
+     *  through global settings in jetspeed.properties:
+     *  <pre>
+     *    merge.portal.parameters.with.portlet.parameters=false
+     *    merge.portal.parameters.before.portlet.parameters=false
+     *  </pre>
+     *  <p>
+     *  To support legacy portlets still relying on the "old" behavior these default global
+     *  settings can be overridden by defining these values in the portlet Metadata too.
+     *  </p>
+     *  <p>
+     *  In the situation of portal and portlet parameters with the same name, by default
+     *  the portlet parameters will be provided first in the values array, but this
+     *  can be overridden by setting merge.portal.parameters.before.portlet.parameters=true.
+     *  </p>
+     */
+     public static final String PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_BEFORE_PORTLET_PARAMETERS = "merge.portal.parameters.before.portlet.parameters";
 }

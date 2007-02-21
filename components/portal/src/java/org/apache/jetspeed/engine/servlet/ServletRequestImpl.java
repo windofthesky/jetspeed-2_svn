@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +41,9 @@ import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.Worker;
@@ -48,7 +52,6 @@ import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.util.Enumerator;
 
@@ -76,6 +79,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
     private static Boolean mergePortalParametersWithPortletParameters;
     private static Boolean mergePortalParametersBeforePortletParameters;
+    
+    private boolean portletMergePortalParametersWithPortletParameters;
+    private boolean portletMergePortalParametersBeforePortletParameters;
 
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
@@ -83,21 +89,59 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         nameSpaceMapper = ((JetspeedNamespaceMapperFactory) Jetspeed.getComponentManager().getComponent(
                 org.apache.pluto.util.NamespaceMapper.class)).getJetspeedNamespaceMapper();
         this.portletWindow = window;        
-        PortletDefinition portletDef = portletWindow.getPortletEntity().getPortletDefinition();
+        
+        if (mergePortalParametersWithPortletParameters == null )
+        {
+            mergePortalParametersWithPortletParameters = 
+                Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.with.portlet.parameters", Boolean.FALSE);
+            mergePortalParametersBeforePortletParameters = 
+                Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.before.portlet.parameters", Boolean.FALSE);
+        }
+                
+        
+        PortletDefinitionComposite portletDef = (PortletDefinitionComposite)portletWindow.getPortletEntity().getPortletDefinition();
         if(portletDef != null)
         {
             webAppId = portletDef.getPortletApplicationDefinition().getWebApplicationDefinition().getId();
+            GenericMetadata metaData = portletDef.getMetadata();
+
+            portletMergePortalParametersWithPortletParameters = 
+                getMetaDataBooleanValue(
+                    metaData,
+                    PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_WITH_PORTLET_PARAMETERS,
+                    mergePortalParametersWithPortletParameters.booleanValue());
+            portletMergePortalParametersBeforePortletParameters = 
+                getMetaDataBooleanValue(
+                    metaData,
+                    PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_BEFORE_PORTLET_PARAMETERS,
+                    mergePortalParametersBeforePortletParameters.booleanValue());
+            
         }
         else
         {
             // This happens when an entity is referencing a non-existent portlet
             webAppId = window.getId();
+            portletMergePortalParametersWithPortletParameters = mergePortalParametersWithPortletParameters.booleanValue();
+            portletMergePortalParametersBeforePortletParameters = mergePortalParametersBeforePortletParameters.booleanValue();
         }
-        if (mergePortalParametersWithPortletParameters == null )
+    }
+    
+    private boolean getMetaDataBooleanValue(GenericMetadata metaData, String fieldName, boolean defaultValue )
+    {
+        String value = null;
+        if ( metaData != null )
         {
-            mergePortalParametersWithPortletParameters = Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.with.portlet.parameters", Boolean.FALSE);
-            mergePortalParametersBeforePortletParameters = Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.before.portlet.parameters", Boolean.FALSE);
+            Collection fields = metaData.getFields(fieldName);
+            if ( fields != null && !fields.isEmpty() )
+            {
+                value = ((LocalizedField)fields.iterator().next()).getValue();
+            }
         }
+        if ( value != null )
+        {
+            return Boolean.valueOf(value).booleanValue();
+        }
+        return defaultValue;
     }
 
     protected HttpServletRequest _getHttpServletRequest()
@@ -160,7 +204,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 }
             }
             
-            if ( actionRequest || mergePortalParametersWithPortletParameters.booleanValue() )
+            if ( actionRequest || portletMergePortalParametersWithPortletParameters )
             {
                 String encoding = (String) getRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
                 boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
@@ -196,7 +240,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                     if (values != null)
                     {
                         String[] temp = new String[paramValues.length + values.length];
-                        if ( actionRequest || this.mergePortalParametersBeforePortletParameters.booleanValue() )
+                        if ( actionRequest || portletMergePortalParametersBeforePortletParameters )
                         {
                             System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
                             System.arraycopy(values, 0, temp, paramValues.length, values.length);
