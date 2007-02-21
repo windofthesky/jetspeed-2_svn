@@ -1287,7 +1287,7 @@ limitations under the License.
     </init-param>        
     <init-param>
         <name>portlet-icon</name>
-        <value>preferences-system.png</value>
+        <value>portlet-add.png</value>
     </init-param>              
     <supports>
         <mime-type>text/html</mime-type>
