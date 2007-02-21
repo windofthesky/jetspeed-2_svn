@@ -37,6 +37,7 @@ import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.decoration.PageEditAccess;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -63,13 +64,16 @@ public class MultiColumnPortlet extends LayoutPortlet
     private String columnSizes = null;
     private String portletName = null;
     private String layoutType;
+    private String editorType = null;
     protected DecorationFactory decorators;
+    protected JetspeedDesktop desktop;
 
     public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
         this.portletName = config.getPortletName();
         this.layoutType = config.getInitParameter("layoutType");
+        this.editorType = config.getInitParameter("editorType");
         if (this.layoutType == null)
         {
             throw new PortletException("Layout type not specified for " + this.portletName);
@@ -99,7 +103,9 @@ public class MultiColumnPortlet extends LayoutPortlet
         if (null == this.decorators)
         {
             throw new PortletException("Failed to find the Decoration Factory on portlet initialization");
-        }        
+        }
+        
+        this.desktop = (JetspeedDesktop)getPortletContext().getAttribute(CommonPortletServices.CPS_DESKTOP);
     }
 
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
@@ -125,7 +131,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             super.doView(request, response);
             return;
         }
-
+        
         // get fragment column sizes
         Fragment f = getFragment(request, false);
         String fragmentColumnSizes = columnSizes;
@@ -190,7 +196,16 @@ public class MultiColumnPortlet extends LayoutPortlet
             }
             else if ( "edit".equals(pageMode) && pageEditAccess.isEditAllowed() )
             {
-                pageEditAccess.setEditing(true);
+                if ( this.editorType != null && this.editorType.equals( "desktop" ) )
+                {
+                    String redirectUrl = this.desktop.getPortalUrl( requestContext, requestContext.getPath() );
+                    redirectUrl += "?editPage=true&portal=true";
+                    response.sendRedirect( redirectUrl );
+                }
+                else
+                {
+                    pageEditAccess.setEditing(true);
+                }
             }
             return;
         }

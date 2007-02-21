@@ -150,6 +150,10 @@ limitations under the License.
       <name>layoutType</name>
       <value>TwoColumns</value>
     </init-param>
+    <!-- <init-param>
+      <name>editorType</name>
+      <value>desktop</value>
+    </init-param> -->
     <portlet-class>org.apache.jetspeed.portlets.layout.MultiColumnPortlet</portlet-class>
     <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
     <expiration-cache>0</expiration-cache>
