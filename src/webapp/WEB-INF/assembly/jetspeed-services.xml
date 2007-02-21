@@ -82,7 +82,10 @@ limitations under the License.
           </entry>		  
 		  <entry key="DecorationFactory">
             <ref bean="DecorationFactory"/>
-          </entry>		  				 				 
+          </entry>
+		  <entry key="Desktop">
+            <ref bean="JetspeedDesktop"/>
+          </entry>
 		  <entry key="PermissionManager">
             <ref bean="org.apache.jetspeed.security.PermissionManager"/>
           </entry>		            
