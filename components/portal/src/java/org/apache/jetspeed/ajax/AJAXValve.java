@@ -15,8 +15,9 @@
  */
 package org.apache.jetspeed.ajax;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -30,27 +31,48 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class AJAXValve extends AbstractValve
 {
-    private static final Log log = LogFactory.getLog( AJAXValve.class );
-    private AjaxRequestService ajaxService;
+    private AJAXService ajaxService;
+    private PortletActionSecurityBehavior securityBehavior;
     
-    public AJAXValve(AJAXService service)
+    public AJAXValve(AJAXService service, PortletActionSecurityBehavior securityBehavior)
     {
         super();
+        this.ajaxService = service;
+        this.securityBehavior = securityBehavior;
     }
         
     public void invoke( RequestContext request, ValveContext context )
         throws PipelineException
     {
+        HttpServletResponse response = request.getResponse(); 
         try
         {
-            ajaxService.process(request);
+            response.setContentType("text/xml");  
+            if (!securityBehavior.checkAccess(request, "edit"))
+            {
+                throw new AJAXException("Access Denied.");
+            }
+            AJAXRequest ajaxRequest = new AJAXRequestImpl(request.getRequest(), response, request.getConfig().getServletContext());
+            ajaxService.processRequest(ajaxRequest);
         }
-        catch (Exception e)
+        catch (AJAXException e)
         {
-            throw new PipelineException(e.toString(), e);
+            try
+            {
+                response.sendError(500, e.getMessage());
+            }
+            catch (Exception e2)
+            {
+                throw new PipelineException(e2.getMessage(), e2);
+            }
         }
+        catch(Exception e)
+        {
+            throw new PipelineException(e.getMessage(), e);
+        }
+        
         // Pass control to the next Valve in the Pipeline
-        context.invokeNext( request );
+        context.invokeNext(request);
     }
 
     public String toString()

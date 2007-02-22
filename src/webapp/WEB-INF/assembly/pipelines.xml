@@ -231,8 +231,11 @@ limitations under the License.
         init-method="initialize"
   >
    <constructor-arg>
-       <ref bean="AJAXService"/>
+       <ref bean="AJAXService"/>     
    </constructor-arg>
+    <constructor-arg>
+        <ref bean="RolesSecurityBehavior"/>        
+    </constructor-arg>    	
   </bean> 
   
   <bean id="DecorationValve"
@@ -378,8 +381,28 @@ limitations under the License.
         <ref bean="localizationValve"/>
         <ref bean="profilerValve"/>                        
         <ref bean="containerValve"/>
-        <!-- TODO: replace layout valve with Ajax valve -->
+        <!--  this is the standard Jetspeed API entry point -->
         <ref bean="layoutValve"/>
+    </list>
+    </constructor-arg>
+  </bean> 
+
+  <bean id="ajax-direct-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <value>AjaxDirectPipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+        <ref bean="capabilityValve"/>
+        <ref bean="portalURLValve"/>                
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="containerValve"/>
+        <ref bean="AJAXValve"/>
     </list>
     </constructor-arg>
   </bean> 
@@ -449,6 +472,9 @@ limitations under the License.
             <entry key='/action'>
                 <value>desktop-action-pipeline</value>
             </entry>                                                
+            <entry key='/ajax'>
+                <value>ajax-direct-pipeline</value>
+            </entry>
         </map>        
     </constructor-arg>        
   </bean>

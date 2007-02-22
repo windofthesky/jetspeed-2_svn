@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -41,8 +45,8 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
 {
-
     private Map serviceToBeans;
+    private Map serviceToTemplates;
 
     private BeanFactory beanFactory;
     private VelocityEngine engine;
@@ -52,10 +56,11 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
         this.serviceToBeans = serviceToBeans;        
     }
 
-    public AJAXServiceImpl(Map serviceToBeans, VelocityEngine engine)
+    public AJAXServiceImpl(Map serviceToBeans, VelocityEngine engine, Map serviceToTemplates)
     {
         this.serviceToBeans = serviceToBeans; 
         this.engine = engine;
+        this.serviceToTemplates = serviceToTemplates;
     }
 
     public AJAXResponse processRequest(AJAXRequest request)
@@ -63,7 +68,7 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
     {
         final String serviceName = request.getServiceName();
         final String methodName = request.getMethodName();
-        final String templateName = request.getServletRequest().getServletPath();
+ //       final String templateName = request.getServletRequest().getServletPath();
 
         final String mappedServiceName = (serviceName+"."+methodName).trim();
         try
@@ -92,7 +97,8 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
             Context context = new VelocityContext();
             context.put("ajaxRequest", request);
             context.put("result", result);            
-            
+   
+            String templateName =  ((String)serviceToTemplates.get(mappedServiceName)).trim();
             final InputStream templateResource = request.getContext().getResourceAsStream(templateName);
             
             if(templateResource == null)
@@ -102,7 +108,21 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
             }
             Reader template = new InputStreamReader(templateResource);
             
-            return new AJAXResponseImpl(context, engine, template, request.getServletResponse().getWriter());
+            StringWriter stringWriter = new StringWriter();
+
+            AJAXResponse ajaxResponse = new AJAXResponseImpl(context, engine, template, stringWriter);            
+            ajaxResponse.complete();
+    
+            String buffer = stringWriter.getBuffer().toString();
+            System.out.println("debug: " + buffer);
+            //log.debug("output from AjaxService:" + buffer);
+
+            // Put the response XML on the response object            
+            HttpServletResponse response = request.getServletResponse();
+            ServletOutputStream sos = response.getOutputStream();
+            sos.print(buffer);
+            sos.flush();
+            return ajaxResponse;
         }
         catch(AJAXException ae)
         {

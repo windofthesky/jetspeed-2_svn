@@ -30,12 +30,7 @@ limitations under the License.
     <param-name>log4j.config.webApplicationRoot.key</param-name>
     <param-value>applicationRoot</param-value>
   </context-param>
-  
-  <filter>
-    <filter-name>AJAXFilter</filter-name>
-    <filter-class>org.apache.jetspeed.ajax.AJAXFilter</filter-class>   
-  </filter>
-    
+      
   <filter>
       <filter-name>staticResourceCachingFilter</filter-name>
       <filter-class>org.apache.jetspeed.engine.servlet.StaticResourceCachingFilter</filter-class>
@@ -55,10 +50,6 @@ limitations under the License.
     <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
   </filter>
   -->
-  <filter-mapping>
-    <filter-name>AJAXFilter</filter-name>
-    <url-pattern>*.ajax</url-pattern>    
-  </filter-mapping>  
 <!--      
     
   <filter-mapping>
@@ -180,6 +171,14 @@ limitations under the License.
        </servlet-name>
        <url-pattern>
          /ajaxapi/*
+       </url-pattern>
+    </servlet-mapping>            
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /ajax/*
        </url-pattern>
     </servlet-mapping>            
     <servlet-mapping>

@@ -58,6 +58,22 @@ limitations under the License.
         <property name="overrideLogging"><value>false</value></property>
       </bean>
     </constructor-arg>
+  <constructor-arg>
+      <map>
+		<entry key="portletRegistry.getPortletApplications">
+			<value>/ajax/portlet_apps.ajax</value>
+		</entry>
+		<entry key="portletRegistry.getPortletApplication">
+			<value>/ajax/portlet_definitions.ajax</value>
+		</entry>
+		<entry key="entityAccess.getPortletEntities">
+			<value>/ajax/portlet_entities.ajax</value>
+		</entry>
+		<entry key="entityAccess.getPortletEntity">
+			<value>/ajax/portlet_entity.ajax</value>
+		</entry>
+	  </map>
+    </constructor-arg>    
   </bean>  
 	
 </beans>
