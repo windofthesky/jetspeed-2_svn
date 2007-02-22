@@ -657,7 +657,7 @@ public class JetspeedRequestContext implements RequestContext
             PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)getSessionAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
             PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, true, true);
             ContentPage cpage = new ContentPageImpl(requestContext.getManagedPage());
-            System.out.println("page is " + cpage.getPath());
+            //System.out.println("page is " + cpage.getPath());
             this.setPage(realPage);            
             this.setPath(pathSave);
             return cpage;
