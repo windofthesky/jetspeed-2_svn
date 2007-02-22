@@ -114,8 +114,6 @@ public class AJAXServiceImpl implements AJAXService, BeanFactoryAware
             ajaxResponse.complete();
     
             String buffer = stringWriter.getBuffer().toString();
-            System.out.println("debug: " + buffer);
-            //log.debug("output from AjaxService:" + buffer);
 
             // Put the response XML on the response object            
             HttpServletResponse response = request.getServletResponse();
