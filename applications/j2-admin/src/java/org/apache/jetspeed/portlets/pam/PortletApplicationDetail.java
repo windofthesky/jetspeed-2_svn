@@ -530,6 +530,17 @@ public class PortletApplicationDetail extends GenericServletPortlet
                     }
                     index++;
                 }
+                String expirationCache = actionRequest.getParameter("expirationCache");
+                if (expirationCache != null)
+                {
+                    try
+                    {
+                        Integer.parseInt(expirationCache);
+                        portlet.setExpirationCache(expirationCache);
+                    }
+                    catch (NumberFormatException e)
+                    {}
+                }
             }
             else
             {

@@ -48,7 +48,7 @@ limitations under the License.
                 <fmt:message key="pam.details.expiration_cache"/>
             </td>
             <td class="portlet-section-body">
-                <c:out value="${selectedPDef.expirationCache}"/>
+                <input type="text" name="expirationCache" size="6" value="<c:out value="${selectedPDef.expirationCache}"/>" class="portlet-form-field-label"/>
             </td>
         </tr>
         </tr>
