@@ -329,10 +329,14 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         for (int i = 0; i < tmpWindows.size(); i++)
         {
             PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
-            MutablePortletApplication windowApp = (MutablePortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();            
-            if(app.getName().equals(windowApp.getName()))
+            PortletDefinitionComposite pd =  (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();
+            if (pd != null)
             {
-                removeWindow(window);
+                MutablePortletApplication windowApp = (MutablePortletApplication)pd.getPortletApplicationDefinition();            
+                if (app.getName().equals(windowApp.getName()))
+                {
+                    removeWindow(window);
+                }
             }
         }        
         tmpWindows.clear();        
