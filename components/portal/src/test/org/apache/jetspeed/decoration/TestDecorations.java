@@ -38,6 +38,7 @@ import org.jmock.core.InvocationMatcher;
 public class TestDecorations extends MockObjectTestCase
 {
     private Path testPathHtmlEn;
+    private Path testPath;
     private Mock prcMock;
     private Mock rvMock;
     private PathResolverCache prc;
@@ -106,6 +107,7 @@ public class TestDecorations extends MockObjectTestCase
         config = new Properties();
         config.setProperty("name", "test");
         
+        testPath = new Path("/decorations/test");
         testPathHtmlEn = new Path("/decorations/test/html/en");
     }
 
@@ -116,7 +118,7 @@ public class TestDecorations extends MockObjectTestCase
         String expectedResult = testPathHtmlEn.getChild("/images/myimage.gif").toString();
         rvMock.expects(once()).method("resourceExists").with(eq(expectedResult)).will(returnValue(true));
 
-        BaseDecoration decoration = new BaseDecoration(config, rv, testPathHtmlEn, prc);
+        BaseDecoration decoration = new BaseDecoration(config, rv, testPath, testPathHtmlEn, prc );
         
         String result = decoration.getResource("/images/myimage.gif");
 
