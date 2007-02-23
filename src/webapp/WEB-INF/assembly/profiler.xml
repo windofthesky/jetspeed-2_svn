@@ -126,6 +126,12 @@
           <entry key="ip">
             <ref bean="IPCriterionResolver" />
           </entry>          
+          <entry key="hostname">
+            <ref bean="HostnameCriterionResolver" />
+          </entry>          
+          <entry key="domain">
+            <ref bean="DomainCriterionResolver" />
+          </entry>          
         </map>
         </constructor-arg>                  
     </bean>
@@ -148,6 +154,8 @@
     <bean id='NavigationCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.NavigationCriterionResolver'></bean>
     <bean id='UserAgentCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.UserAgentCriterionResolver'></bean>
     <bean id='IPCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.IPCriterionResolver'></bean>
+    <bean id='HostnameCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.HostnameCriterionResolver'></bean>    
+    <bean id='DomainCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.DomainCriterionResolver'></bean>      
 
 	<!-- Profiling Rules -->
 
