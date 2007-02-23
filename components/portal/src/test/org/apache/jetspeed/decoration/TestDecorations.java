@@ -82,6 +82,8 @@ public class TestDecorations extends MockObjectTestCase
         ArrayList list = new ArrayList(1);
         list.add(childFragment);
         
+        expectAndReturn(fragmentMock, "getType", "layout");
+        
         expectAndReturn(fragmentMock, "getFragments", list);
           
         expectAndReturn(atLeastOnce(), fragmentMock, "getId", "001");
@@ -89,6 +91,7 @@ public class TestDecorations extends MockObjectTestCase
         expectAndReturn(atLeastOnce(), childFragmentMock, "getId", "002");   
 
         expectAndReturn(childFragmentMock, "getFragments", null);
+        expectAndReturn(childFragmentMock, "getType", "portlet");
     }
 
     protected void setUp1() throws Exception
@@ -144,7 +147,7 @@ public class TestDecorations extends MockObjectTestCase
         rvMock.expects(atLeastOnce()).method("resourceExists").with(new OnConsecutiveInvokes(constraints))
               .will(onConsecutiveCalls(returnValue(false), returnValue(false), returnValue(true)));
         
-        BaseDecoration decoration = new BaseDecoration(config, rv, testPathHtmlEn, prc);
+        BaseDecoration decoration = new BaseDecoration(config, rv, testPath, testPathHtmlEn, prc);
         
         String result = decoration.getResource("/images/myimage.gif");
         
@@ -162,19 +165,26 @@ public class TestDecorations extends MockObjectTestCase
         expectAndReturn(pageMock, "getRootFragment", fragment);
 
         expectAndReturn(factoryMock, 
-                        "getDecoration", 
-                        new Constraint[] {eq(page), eq(fragment), eq(requestContext)}, 
-                        layout);
+                        "isDesktopEnabled", 
+                        new Constraint[] {eq(requestContext)}, 
+                        Boolean.FALSE);
         
+        expectAndReturn(factoryMock, 
+                "getDecoration", 
+                new Constraint[] {eq(page), eq(fragment), eq(requestContext)}, 
+                layout);
+            
         expectAndReturn(factoryMock, 
                 "getDecoration", 
                 new Constraint[] {eq(page), eq(childFragment), eq(requestContext)}, 
                 portletDecor);
-            
+        
         expectAndReturn(layoutMock, "getStyleSheet", "/decorations/layout/test/html/css/styles.css");
+        expectAndReturn(layoutMock, "getStyleSheetPortal", null);
         
         expectAndReturn(portletDecorMock, "getStyleSheet", "/decorations/portlet/test/html/css/styles.css");
-        
+        expectAndReturn(portletDecorMock, "getStyleSheetPortal", null);
+        portletDecorMock.expects(atLeastOnce()).method("getName").withNoArguments().will(returnValue("tigris"));
         
         fragmentMock.expects(once()).method("getId")
                                     .withNoArguments()
@@ -213,11 +223,13 @@ public class TestDecorations extends MockObjectTestCase
         // Define expected behavior
         Mock servletContextMock = new Mock(ServletContext.class);
         
-        DecorationFactoryImpl testFactory = new DecorationFactoryImpl("/decorations", rv, "tigris", "tigris");
+        DecorationFactoryImpl testFactory = new DecorationFactoryImpl("/decorations", rv);
         testFactory.setServletContext((ServletContext)servletContextMock.proxy());
         
         themeInitExpectations();
         
+        expectAndReturn(atLeastOnce(),requestContextMock, "getAttribute", new Constraint[] {eq("desktop.enabled")}, Boolean.FALSE);
+
         expectAndReturn(fragmentMock, "getDecorator", "myLayoutDecorator");
          
         expectAndReturn(fragmentMock, "getType", Fragment.LAYOUT);
@@ -230,12 +242,14 @@ public class TestDecorations extends MockObjectTestCase
         
         expectAndReturn(atLeastOnce(), requestContextMock, "getLocale", Locale.ENGLISH);   
         
-        StringReaderInputStream is1 = new StringReaderInputStream("id=myLayoutDecoration");
+        StringReaderInputStream is1 = new StringReaderInputStream("id=myLayoutDecorator");
         StringReaderInputStream is2 = new StringReaderInputStream("id=myPortletDecoration");
         
         expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/layout/myLayoutDecorator/decorator.properties")}, is1);
         expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/portlet/myPortletDecoration/decorator.properties")}, is2);
-        
+        expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/layout/myLayoutDecorator/decoratordesktop.properties")}, is1);
+        expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/portlet/myPortletDecoration/decoratordesktop.properties")}, is2);
+                
         Mock servletRequestMock = new Mock(HttpServletRequest.class);
         Mock sessionMock = new Mock(HttpSession.class);
         
