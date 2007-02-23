@@ -82,11 +82,7 @@ limitations under the License.
     <div class="layout-edit-bar-right">
       #if($allowAddPortlet)
         <label>$messages.getString("portal.page.editing.portlet")</label>
-################## OLD portlet selector ####
-##        #set ($chooser = "${jetspeed.basePath}/system/customizer/portlet-selector.psml")
-##        <a href="#" onClick="portletform.action='$formAction';openWindow('$response.encodeURL($chooser)');return false">
-############################################
-          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${rc.Path}")
+          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${rc.Page.Path}")
           <a href="$response.encodeURL($chooser)">
           <img src="#GetPageResource('images/select.gif')" border="0" title="$messages.getString("portal.page.editing.addportlet")"/>
         </a>
