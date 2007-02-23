@@ -50,8 +50,8 @@ public class FragmentPortletPreferenceSet implements PreferenceSetComposite
         // construct merged portlet definition prefs map;
         // note that user specific preferences accessed via
         // the portlet entity should override these defaults
-        int prefsSize = preferenceSet.size() + 1;
-        if (fragment.getPreferences() != null)
+        int prefsSize = preferenceSet.size() + 1;        
+        if (fragment != null && fragment.getPreferences() != null)
         {
             prefsSize += fragment.getPreferences().size();
         }
@@ -67,7 +67,7 @@ public class FragmentPortletPreferenceSet implements PreferenceSetComposite
 
         // add/override global portlet definition defaults
         // using more specific fragment preferences
-        if (fragment.getPreferences() != null)
+        if (fragment != null && fragment.getPreferences() != null)
         {
             Iterator itr = fragment.getPreferences().iterator();        
             while(itr.hasNext())
