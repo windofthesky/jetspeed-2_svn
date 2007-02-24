@@ -21,4 +21,9 @@ limitations under the License.
     <class name="org.apache.jetspeed.portlets.rpad.simple.SimpleRepository"/>
     <property name="configPath">http://pal.sourceforge.jp/portlet-repository.xml</property>
   </repository>
+ <repository>
+    <name>Apache Portals</name>
+    <class name="org.apache.jetspeed.portlets.rpad.simple.SimpleRepository"/>
+    <property name="configPath">http://www.bluesunrise.com/rpa/portlet-repository.xml</property>
+  </repository>  
 </repositories>
