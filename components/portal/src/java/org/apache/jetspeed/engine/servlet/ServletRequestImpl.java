@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -48,7 +49,6 @@ import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -73,7 +73,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     private ServletRequest currentRequest = null;
 
     private Map portletParameters;
-    private ObjectID webAppId;
     
     private boolean included;
 
@@ -82,6 +81,8 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     
     private boolean portletMergePortalParametersWithPortletParameters;
     private boolean portletMergePortalParametersBeforePortletParameters;
+    
+    private Map portalParameters;
 
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
@@ -89,6 +90,40 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         nameSpaceMapper = ((JetspeedNamespaceMapperFactory) Jetspeed.getComponentManager().getComponent(
                 org.apache.pluto.util.NamespaceMapper.class)).getJetspeedNamespaceMapper();
         this.portletWindow = window;        
+        
+        
+        String encoding = (String) servletRequest.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
+        boolean decode = servletRequest.getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
+                && encoding != null;
+        if (decode)
+        {
+            servletRequest.setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
+                    new Boolean(true));
+        }
+
+        //get portal servlet params
+        portalParameters = new HashMap();
+        for (Enumeration parameters = servletRequest.getParameterNames(); parameters.hasMoreElements();)
+        {
+            String paramName = (String) parameters.nextElement();
+            String[] paramValues = (String[]) servletRequest.getParameterValues(paramName);
+
+            if (decode)
+            {
+                for (int i = 0; i < paramValues.length; i++)
+                {
+                    try
+                    {
+                        paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
+                    }
+                    catch (UnsupportedEncodingException e)
+                    {
+                        ;
+                    }
+                }
+            }
+            portalParameters.put(paramName, paramValues);
+        }
         
         if (mergePortalParametersWithPortletParameters == null )
         {
@@ -102,7 +137,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         PortletDefinitionComposite portletDef = (PortletDefinitionComposite)portletWindow.getPortletEntity().getPortletDefinition();
         if(portletDef != null)
         {
-            webAppId = portletDef.getPortletApplicationDefinition().getWebApplicationDefinition().getId();
             GenericMetadata metaData = portletDef.getMetadata();
 
             portletMergePortalParametersWithPortletParameters = 
@@ -120,7 +154,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         else
         {
             // This happens when an entity is referencing a non-existent portlet
-            webAppId = window.getId();
             portletMergePortalParametersWithPortletParameters = mergePortalParametersWithPortletParameters.booleanValue();
             portletMergePortalParametersBeforePortletParameters = mergePortalParametersBeforePortletParameters.booleanValue();
         }
@@ -183,12 +216,40 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
             // this one (the getRequest() object).
             // So, when that one has changed since the last time the parameters have 
             // been accessed, flush the cache and rebuild the map.
-            currentRequest = getRequest();            
-            portletParameters = new HashMap();
+            currentRequest = getRequest();
 
             boolean actionRequest = false;
             
-            // get portlet params
+            // determine the possible additional query string parameters provided on the RequestDispatcher include path
+            // per the specs, these are prepended to existing parameters or altogether new parameters
+            // as we save the original "portal" parameters, we can find those query string parameters by comparing against those
+            HashMap queryParameters = new HashMap();
+            for ( Iterator iter = getRequest().getParameterMap().entrySet().iterator(); iter.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry)iter.next();
+                String[] values = (String[])entry.getValue();
+                String[] original = (String[])portalParameters.get(entry.getKey());
+                String[] diff = null;
+                if ( original == null )
+                {
+                    // a new parameter
+                    diff = new String[values.length];
+                    System.arraycopy(values,0,diff,0,values.length);
+                }
+                else if ( values.length > original.length )
+                {
+                    // we've got some additional query string parameter value(s)
+                    diff = new String[values.length - original.length];
+                    System.arraycopy(values,0,diff,0,values.length-original.length);
+                }
+                if ( diff != null )
+                {
+                    queryParameters.put(entry.getKey(), diff);
+                }
+            }
+
+            // get portlet navigational params
+            HashMap navParameters = new HashMap();
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
             if (context != null)
             {
@@ -199,60 +260,92 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 {
                     String name = (String) iter.next();
                     String[] values = url.getNavigationalState().getParameterValues(portletWindow, name);
-                    portletParameters.put(name, values);
-
+                    navParameters.put(name, values);
                 }
             }
             
-            if ( actionRequest || portletMergePortalParametersWithPortletParameters )
+            // now first merge the keys we have into one unique set
+            HashSet keys = new HashSet();
+            keys.addAll(portalParameters.keySet());
+            keys.addAll(queryParameters.keySet());
+            keys.addAll(navParameters.keySet());
+            
+            // now "merge" the parameters
+            // there are three different options:
+            // 1) query parameters + nav parameters:
+            //        portletMergePortalParametersWithPortletParameters == false && !actionRequest
+            // 2) query parameters + nav parameters + portal parameters
+            //           portletMergePortalParametersWithPortletParameters == true || actionRequest
+            //        && portletMergePortalParametersBeforePortletParameters == false
+            // 3) query parameters + portal parameters + nav parameters (odd use-case but provided because this was the "old" pre-2.1 behavior
+            //           portletMergePortalParametersWithPortletParameters == true || actionRequest
+            //        && portletMergePortalParametersBeforePortletParameters == true
+            portletParameters = new HashMap();
+            for ( Iterator iter = keys.iterator(); iter.hasNext(); )
             {
-                String encoding = (String) getRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
-                boolean decode = getRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
-                        && encoding != null;
-                if (decode)
+                String key = (String)iter.next();
+                String[] first = (String[])queryParameters.get(key);
+                String[] next = null, last = null, result = null;
+                
+                if ( portletMergePortalParametersWithPortletParameters == false && !actionRequest )
                 {
-                    getRequest().setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
-                            new Boolean(true));
+                    next = (String[])navParameters.get(key);
                 }
-
-                //get servlet params
-                for (Enumeration parameters = getRequest().getParameterNames(); parameters.hasMoreElements();)
+                else if ( portletMergePortalParametersBeforePortletParameters )
                 {
-                    String paramName = (String) parameters.nextElement();
-                    String[] paramValues = (String[]) getRequest().getParameterValues(paramName);
-                    String[] values = (String[]) portletParameters.get(paramName);
-
-                    if (decode)
+                    next = (String[])portalParameters.get(key);
+                    last = (String[])navParameters.get(key);
+                }
+                else
+                {
+                    next = (String[])navParameters.get(key);
+                    last = (String[])portalParameters.get(key);
+                }
+                if ( first == null )
+                {
+                    if ( next == null )
                     {
-                        for (int i = 0; i < paramValues.length; i++)
-                        {
-                            try
-                            {
-                                paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
-                            }
-                            catch (UnsupportedEncodingException e)
-                            {
-                                ;
-                            }
-                        }
+                        first = last;
+                        last = null;
                     }
-
-                    if (values != null)
+                    else
                     {
-                        String[] temp = new String[paramValues.length + values.length];
-                        if ( actionRequest || portletMergePortalParametersBeforePortletParameters )
-                        {
-                            System.arraycopy(paramValues, 0, temp, 0, paramValues.length);
-                            System.arraycopy(values, 0, temp, paramValues.length, values.length);
-                        }
-                        else
-                        {
-                            System.arraycopy(values, 0, temp, 0, values.length);
-                            System.arraycopy(paramValues, 0, temp, values.length, paramValues.length);
-                        }
-                        paramValues = temp;
+                        first = next;
+                        next = last;
+                        last = null;
                     }
-                    portletParameters.put(paramName, paramValues);
+                }
+                else if ( next == null )
+                {
+                    next = last;
+                    last = null;
+                }
+                
+                if ( last == null )
+                {
+                    if ( next == null && first != null )
+                    {
+                        result = new String[first.length];
+                        System.arraycopy(first,0,result,0,first.length);
+                    }
+                    else if (next != null )
+                    {
+                        result = new String[first.length + next.length];
+                        System.arraycopy(first,0,result,0,first.length);
+                        System.arraycopy(next,0,result,first.length,next.length);
+                    }
+                }
+                else
+                {
+                    result = new String[first.length + next.length + last.length];
+                    System.arraycopy(first,0,result,0,first.length);
+                    System.arraycopy(next,0,result,first.length,next.length);
+                    System.arraycopy(last,0,result,first.length+next.length,last.length);
+                    
+                }
+                if ( result != null )
+                {
+                    portletParameters.put(key, result);
                 }
             }
         }
