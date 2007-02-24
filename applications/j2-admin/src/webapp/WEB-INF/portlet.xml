@@ -1141,6 +1141,12 @@ limitations under the License.
         <short-title>User Registration</short-title>
         <keywords>admin,password,register,signup,user</keywords>
     </portlet-info>
+	<portlet-preferences>
+        <preference>
+            <name>SendEmail</name>
+            <value>false</value>
+        </preference>    
+    </portlet-preferences>
  </portlet>
     
 <portlet id="PortalLoginPortlet">    
@@ -1499,6 +1505,31 @@ limitations under the License.
       <short-title>Tracking</short-title>
       <keywords>admin,tracking,out of service</keywords>
     </portlet-info>
+  </portlet>
+
+ <portlet>
+    <description>Welcome to Jetspeed</description>
+    <portlet-name>WelcomeToJetspeed</portlet-name>
+    <display-name>Welcome to Jetspeed</display-name>
+    <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <!-- resource-bundle></resource-bundle -->
+    <portlet-info>
+      <title>Welcome to Jetspeed</title>
+      <short-title>Welcome</short-title>
+      <keywords>welcome</keywords>
+    </portlet-info>
+    <portlet-preferences>
+         <preference>
+             <name>file</name>
+             <value>/info/welcome.html</value>
+         </preference>
+     </portlet-preferences>   
   </portlet>
 
 </portlet-app>

@@ -92,10 +92,6 @@ limitations under the License.
                                               value="${org.apache.portals.bridges.jpetstore.version}"/>
                                     <property name="org.apache.portals.bridges.jsf-demo.version"
                                               value="${org.apache.portals.bridges.jsf-demo.version}"/>
-                                    <property name="org.apache.portals.bridges.perl.version"
-                                              value="${org.apache.portals.bridges.perl.version}"/>
-                                    <property name="org.apache.portals.bridges.php.version"
-                                              value="${org.apache.portals.bridges.php.version}"/>
                                     <property name="org.apache.pluto.version"
                                               value="${org.apache.pluto.version}"/>
                                     <property name="portlet-api.version"
@@ -128,10 +124,6 @@ limitations under the License.
                                               value="${org.apache.portals.bridges.jpetstore.version}"/>
                                     <property name="org.apache.portals.bridges.jsf-demo.version"
                                               value="${org.apache.portals.bridges.jsf-demo.version}"/>
-                                    <property name="org.apache.portals.bridges.perl.version"
-                                              value="${org.apache.portals.bridges.perl.version}"/>
-                                    <property name="org.apache.portals.bridges.php.version"
-                                              value="${org.apache.portals.bridges.php.version}"/>
                                     <property name="org.apache.pluto.version"
                                               value="${org.apache.pluto.version}"/>
                                     <property name="portlet-api.version"
@@ -214,16 +206,6 @@ limitations under the License.
         <dependency>
             <groupId>org.apache.portals.bridges</groupId>
             <artifactId>jsf-demo</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>perl</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>php</artifactId>
             <type>war</type>
         </dependency>
 

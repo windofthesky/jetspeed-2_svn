@@ -259,6 +259,9 @@ public class PortalAdministrationImpl implements PortalAdministration
                              // in the new user's folder tree
                             Folder source = innerPageManager.getFolder(innerFolderTemplate);                            
                             innerPageManager.deepCopyFolder(source, Folder.USER_FOLDER + innerUserName, innerUser);
+                            Folder newFolder = pageManager.getFolder(Folder.USER_FOLDER + innerUserName);                            
+                            newFolder.setTitle("Home Folder");
+                            newFolder.setShortTitle("Home");
                              
                             return null;
                         }

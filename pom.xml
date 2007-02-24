@@ -186,8 +186,6 @@ limitations under the License.
         <org.apache.portals.bridges.jpetstore.version>1.0.1-dev</org.apache.portals.bridges.jpetstore.version>
         <org.apache.portals.bridges.jsf-demo.version>1.0.1-dev</org.apache.portals.bridges.jsf-demo.version>
         <org.apache.portals.bridges.jsf.version>1.0.1-dev</org.apache.portals.bridges.jsf.version>
-        <org.apache.portals.bridges.perl.version>1.0.1-dev</org.apache.portals.bridges.perl.version>
-        <org.apache.portals.bridges.php.version>1.0.1-dev</org.apache.portals.bridges.php.version>
         <org.apache.portals.bridges.velocity.version>1.0.1-dev</org.apache.portals.bridges.velocity.version>
         <org.apache.portals.bridges.portletfilter.version>1.0.1-dev</org.apache.portals.bridges.portletfilter.version>
         <oro.version>2.0.7</oro.version>
@@ -909,18 +907,6 @@ limitations under the License.
                 <artifactId>jsf-demo</artifactId>
                 <type>war</type>
                 <version>${org.apache.portals.bridges.jsf-demo.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.portals.bridges</groupId>
-                <artifactId>perl</artifactId>
-                <type>war</type>
-                <version>${org.apache.portals.bridges.perl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.portals.bridges</groupId>
-                <artifactId>php</artifactId>
-                <type>war</type>
-                <version>${org.apache.portals.bridges.php.version}</version>
             </dependency>
 
             <!-- MyFaces -->

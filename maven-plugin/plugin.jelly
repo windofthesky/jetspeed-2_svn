@@ -446,16 +446,6 @@
     <attainGoal name="j2:deploy"/>
   </goal>
 
-  <goal name="j2:pam.phpdeploy">
-    <j:set var="maven.war.final.name" value="php"/>
-    <attainGoal name="j2:deploybridgewar"/>
-  </goal>
-
-  <goal name="j2:pam.perldeploy">
-    <j:set var="maven.war.final.name" value="perl"/>
-    <attainGoal name="j2:deploybridgewar"/>
-  </goal>
-
   <goal name="j2:pam.rssdeploy">
     <j:set var="maven.war.final.name" value="rss"/>
     <attainGoal name="j2:deploy"/>
@@ -573,8 +563,6 @@
       <attainGoal name="j2:minDeploy"/>
       <attainGoal name="j2:pam.demodeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
-      <attainGoal name="j2:pam.phpdeploy"/>
-      <attainGoal name="j2:pam.perldeploy"/>
       <attainGoal name="j2:pam.rssdeploy"/>
       <attainGoal name="j2:pam.jpetstoredeploy"/>
   </goal>
@@ -583,8 +571,6 @@
       <attainGoal name="j2:nodbMinDeploy"/>
       <attainGoal name="j2:pam.demodeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
-      <attainGoal name="j2:pam.phpdeploy"/>
-      <attainGoal name="j2:pam.perldeploy"/>
       <attainGoal name="j2:pam.rssdeploy"/>
       <attainGoal name="j2:pam.jpetstoredeploy"/>
   </goal>
@@ -603,10 +589,6 @@
       <delete file="${org.apache.jetspeed.deploy.war.dir}/j2-admin.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/jsf-demo"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/jsf-demo.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/php"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/php.war"/>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/perl"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/perl.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/rss"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/rss.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/jpetstore"/>

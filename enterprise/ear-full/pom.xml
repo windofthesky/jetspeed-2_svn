@@ -73,18 +73,6 @@ limitations under the License.
             <version>1.0</version>            
  		    <type>war</type>
         </dependency>        
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>perl</artifactId>
-            <version>1.0</version>            
- 		    <type>war</type>
-        </dependency>        
-        <dependency>
-            <groupId>org.apache.portals.bridges</groupId>
-            <artifactId>php</artifactId>
-            <version>1.0</version>            
- 		    <type>war</type>
-        </dependency>                
     </dependencies>
 
 	 <build>
@@ -124,16 +112,6 @@ limitations under the License.
 		               <artifactId>jsf-demo</artifactId>
 		               <contextRoot>/jsf-demo</contextRoot>
 		             </webModule>                       
-		             <webModule>
-		               <groupId>org.apache.portals.bridges</groupId>
-		               <artifactId>perl</artifactId>
-		               <contextRoot>/perl</contextRoot>
-		             </webModule>      
-		             <webModule>
-		               <groupId>org.apache.portals.bridges</groupId>
-		               <artifactId>php</artifactId>
-		               <contextRoot>/php</contextRoot>
-		             </webModule>                                                                                      
   				   <javaModule>
                       <groupId>${pom.groupId}</groupId>
                       <artifactId>jetspeed-api</artifactId>

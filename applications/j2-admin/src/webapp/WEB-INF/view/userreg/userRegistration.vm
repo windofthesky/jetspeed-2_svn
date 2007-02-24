@@ -1,8 +1,11 @@
 #set ($MESSAGES = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set ($refreshLink = $renderResponse.createRenderURL())
+$refreshLink.setParameter("reset", "true")
 <div id="UserRegistration"  class="portlet-section-text"> 
 	#if($registeredUserMsg)
 		<table >
 			<tr><td colspan="2" ><p class="portlet-msg-success" >$registeredUserMsg</p></td></tr>
+			<tr><td colspan="2" ><p class="portlet-msg-success"><a href="$refreshLink">Click here to start registration...</a></p></td></tr>
 		</table>
 	#else
 	<form name="userRegistrationForm" action="$renderResponse.createActionURL()" method="post" >

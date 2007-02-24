@@ -1,3 +1,0 @@
---
--- MSSQL drops suppressed... complex drops done in creation scripts
---

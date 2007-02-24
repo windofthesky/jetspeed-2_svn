@@ -29,6 +29,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.sso.SSOContext;
 import org.apache.jetspeed.sso.SSOException;
@@ -183,7 +184,7 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
     {
         String baseSource = super.getURLSource(request, response, prefs);
         String type = prefs.getValue(SSO_TYPE, SSO_TYPE_URL);
-        if (type.equals(SSO_TYPE_URL))
+        if (type.equals(SSO_TYPE_URL) || type.equals(SSO_TYPE_URL_BASE64))
         {
             String userNameParam = prefs.getValue(SSO_TYPE_URL_USERNAME, "user");
             String passwordParam = prefs.getValue(SSO_TYPE_URL_PASSWORD, "password");
@@ -203,6 +204,13 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             if (userName == null) userName = "";
             String password = (String)request.getAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD);
             if (password == null) password = "";
+
+            if (type.equals(SSO_TYPE_URL_BASE64))
+            {
+                Base64 encoder = new Base64() ;
+                userName = new String(encoder.encode(userName.getBytes()));
+                password = new String(encoder.encode(password.getBytes()));
+            }            
             
             source.append(userName);
             source.append("&");

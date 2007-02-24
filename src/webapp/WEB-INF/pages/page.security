@@ -52,7 +52,7 @@ limitations under the License.
   </security-constraints-def>
   <security-constraints-def name="public-edit">
     <security-constraint>
-      <users>*</users>
+      <roles>user</roles>
       <permissions>view, edit</permissions>
     </security-constraint>
   </security-constraints-def>

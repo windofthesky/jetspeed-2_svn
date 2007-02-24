@@ -16,6 +16,7 @@
 package org.apache.jetspeed.demo.servlet;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +48,6 @@ public class SSODemoServlet extends HttpServlet
         
         /*
          * this is not working on Tomcat 5.0.30
-         
         Principal userPrincipal = request.getUserPrincipal();
         if (userPrincipal == null)
         {
@@ -57,7 +57,7 @@ public class SSODemoServlet extends HttpServlet
         {
             authenticatedPrincipal = userPrincipal.toString();
         }
-        */
+ */       
         if (principal == null)
         {
             error403(request, response, "SSO Principal is not valid. Please provide a valid SSO principal.");

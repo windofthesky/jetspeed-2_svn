@@ -640,6 +640,14 @@ limitations under the License.
                 <name>sso.type</name>
                 <value>url</value>
             </preference>
+            <preference>
+                <name>sso.url.Principal</name>
+                <value>sso-principal</value>
+            </preference>
+            <preference>
+                <name>sso.url.Credential</name>
+                <value>sso-credential</value>
+            </preference>            
         </portlet-preferences>
     </portlet>
     
@@ -1065,7 +1073,34 @@ limitations under the License.
             </preference>
         </portlet-preferences>
     </portlet>
-    
+
+    <portlet>
+        <description>SSO Demo help information, contains credentials for SSO demo portlets.</description>
+        <portlet-name>SSODemoHelp</portlet-name>
+        <display-name>SSO Demo Help</display-name>
+        <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
+        <init-param>
+            <name>portlet-icon</name>
+            <value>folder-remote.png</value>
+        </init-param>                                        
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>SSO Demo Help</title>
+            <short-title>SSO Help</short-title>
+            <keywords>SSO,demo,help</keywords>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>file</name>
+                <value>/_content/sso-demo.html</value>
+            </preference>
+        </portlet-preferences>
+    </portlet>
+
     <custom-portlet-mode>
         <description>a Custom Print Mode</description>            
         <portlet-mode>print</portlet-mode>

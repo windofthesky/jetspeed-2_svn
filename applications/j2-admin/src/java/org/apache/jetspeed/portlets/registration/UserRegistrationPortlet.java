@@ -33,6 +33,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
@@ -670,10 +671,15 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                 if (templ == null) { throw new Exception(
                         "email template not available"); }
 
-                admin.sendEmail(getPortletConfig(), (String) userInfo
-                        .get(USER_ATTRIBUTE_EMAIL),
-                        getEmailSubject(actionRequest), templ, userInfo);
-
+                PortletPreferences prefs = actionRequest.getPreferences();
+                boolean sendEmail = prefs.getValue("SendEmail", "true").equals("true");
+                if (sendEmail)
+                {
+                    admin.sendEmail(getPortletConfig(), (String) userInfo
+                            .get(USER_ATTRIBUTE_EMAIL),
+                            getEmailSubject(actionRequest), templ, userInfo);
+                }
+                
                 if ((this.optionForceEmailAsUsername)
                         || (this.optionForceGeneratedPasswords))
                 {
