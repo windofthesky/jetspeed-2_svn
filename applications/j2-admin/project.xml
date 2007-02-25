@@ -396,6 +396,21 @@ limitations under the License.
             </properties>        
         </dependency>      
                                     
+        <dependency>
+            <id>xerces</id>
+            <version>2.3.0</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <id>xml-apis</id>
+            <version>2.0.2</version>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        
     </dependencies>
 
 </project>
