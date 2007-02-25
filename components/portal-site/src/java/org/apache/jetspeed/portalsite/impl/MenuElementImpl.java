@@ -241,7 +241,7 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
         if (node != null)
         {
             GenericMetadata metadata = node.getMetadata();
-            if ((metadata != null) && ((metadata.getFields() == null) || metadata.getFields().isEmpty()))
+            if (metadata != null && metadata.getFields() != null && !metadata.getFields().isEmpty())
             {
                 return metadata;
             }
