@@ -243,12 +243,18 @@
 	<postGoal name="war:webapp">
 		 <available file="${maven.build.dir}/jetspeed/WEB-INF/min-pages/" property="inRightDir"/>
 		  <j:if test="${inRightDir == 'true'}">
-	      <j:if test="${demoBuild != 'true'}">	
-			<delete dir="${maven.build.dir}/jetspeed/WEB-INF/pages"/>
-		    <copy todir="${maven.build.dir}/jetspeed/WEB-INF/pages/">
+	      <j:if test="${demoBuild != 'true'}">	      	
+	        <j:new var="file" className="java.io.File">
+	           <j:arg value="${maven.build.dir}/jetspeed/WEB-INF/min-pages" />
+	        </j:new>
+	        <j:if test="${file.exists()}">	              
+	          <delete dir="${maven.build.dir}/jetspeed/WEB-INF/pages"/>
+		      <copy todir="${maven.build.dir}/jetspeed/WEB-INF/pages/">
 		        <fileset dir="${maven.build.dir}/jetspeed/WEB-INF/min-pages/"/>
-			</copy>
-	     </j:if>
+			  </copy>
+	          <delete dir="${maven.build.dir}/jetspeed/WEB-INF/min-pages"/>
+	        </j:if>
+	      </j:if>
 		 </j:if>
 	</postGoal>
 		
