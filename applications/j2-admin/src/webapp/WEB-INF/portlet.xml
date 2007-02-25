@@ -1522,12 +1522,37 @@ limitations under the License.
     <portlet-info>
       <title>Welcome to Jetspeed</title>
       <short-title>Welcome</short-title>
-      <keywords>welcome</keywords>
+      <keywords>welcome,jetspeed</keywords>
     </portlet-info>
     <portlet-preferences>
          <preference>
              <name>file</name>
-             <value>/info/welcome.html</value>
+             <value>view/info/welcome.html</value>
+         </preference>
+     </portlet-preferences>   
+  </portlet>
+
+<portlet>
+    <description>About Jetspeed</description>
+    <portlet-name>AboutJetspeed</portlet-name>
+    <display-name>About Jetspeed</display-name>
+    <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <!-- resource-bundle></resource-bundle -->
+    <portlet-info>
+      <title>About Jetspeed</title>
+      <short-title>About</short-title>
+      <keywords>about,jetspeed</keywords>
+    </portlet-info>
+    <portlet-preferences>
+         <preference>
+             <name>file</name>
+             <value>view/info/about.html</value>
          </preference>
      </portlet-preferences>   
   </portlet>

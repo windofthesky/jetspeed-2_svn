@@ -198,6 +198,12 @@
         <include name="*seed.xml"/>
       </fileset>
     </copy>        
+    <mkdir dir="${portal.sql.target.dir}/min"/>          
+    <copy todir="${portal.sql.target.dir}/min" overwrite="true" verbose="true" failonerror="false" flatten="true">
+      <fileset dir="${portal.sql.src.dir}/min">
+        <include name="*seed.xml"/>
+      </fileset>
+    </copy>        
     <!-- Copy over custom build seed data -->
 	<util:file var="customExists" name="./src/sql/"/> 
 	<j:if test="${customExists.exists()}">
@@ -333,7 +339,14 @@
 	<goal name="j2:_db.entities">
 		<echo>Running JETSPEED seed scripts...</echo> 
 		<!-- if there is an order file, use it -->
-		<j:set var="DATAFILE" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}/${org.apache.jetspeed.portal.seed.data}"/>
+	    <j:choose>
+    	   <j:when test="${demoBuild == 'true'}">		  					
+		       <j:set var="DATAFILE" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}/${org.apache.jetspeed.portal.seed.data}"/>
+		   </j:when>
+		   <j:otherwise>
+		       <j:set var="DATAFILE" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.sql.dir}/min/${org.apache.jetspeed.portal.seed.data}"/>
+           </j:otherwise>
+	   	</j:choose>
 		<attainGoal name="j2:_db.seed"/>
 	</goal>
     
@@ -546,21 +559,26 @@
     <attainGoal name="j2:catalina.shared"/>
   </goal>
     
-  <goal name="j2:minDeploy">
+  <goal name="j2:baseDeploy">
       <attainGoal name="j2:portal.deploy"/>
       <attainGoal name="j2:pam.layoutdeploy"/>
-      <attainGoal name="j2:pam.admindeploy"/>
+      <attainGoal name="j2:pam.admindeploy"/>  
+  </goal>
+  
+  <goal name="j2:minDeploy">
+      <attainGoal name="j2:baseDeploy"/>
+      <j:set var="demoBuild" value="false"/>     
       <attainGoal name="j2:db.entities"/>
   </goal>
 
   <goal name="j2:nodbMinDeploy">
-      <attainGoal name="j2:portal.deploy"/>
-      <attainGoal name="j2:pam.layoutdeploy"/>
-      <attainGoal name="j2:pam.admindeploy"/>
+      <attainGoal name="j2:baseDeploy"/>
   </goal>
   
   <goal name="j2:fullDeploy">
-      <attainGoal name="j2:minDeploy"/>
+      <attainGoal name="j2:baseDeploy"/>
+      <j:set var="demoBuild" value="true"/>     
+      <attainGoal name="j2:db.entities"/>
       <attainGoal name="j2:pam.demodeploy"/>
       <attainGoal name="j2:pam.jsfdeploy"/>
       <attainGoal name="j2:pam.rssdeploy"/>

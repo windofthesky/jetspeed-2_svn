@@ -18,11 +18,7 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults
-     skin="blue"
-     layout-decorator="tigris"
-     portlet-decorator="tigris"
-  />
+ 
   <title>Profiler Admin</title>
   <metadata name="title" xml:lang="ja">プロファイラ管理</metadata>
   <metadata name="short-title" xml:lang="es">Perfiles</metadata>
@@ -31,9 +27,7 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">Profiler管理</metadata>
   <metadata name="title" xml:lang="ko">프로파일 관리</metadata>
   
-
   <fragment id="pa-site" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="prof-1" type="portlet" name="j2-admin::ProfilerAdmin" >
-    </fragment>
+    <fragment id="prof-1" type="portlet" name="j2-admin::ProfilerAdmin" />
   </fragment>
 </page>

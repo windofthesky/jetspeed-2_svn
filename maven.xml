@@ -182,8 +182,18 @@
 		<maven:reactor basedir="${basedir}/maven-plugin" includes="project.xml" goals="deploy-plugin"
             banner="Build and deploy the Jetspeed 2 Maven plugin" postProcessing="false" ignoreFailures="false" />
     </goal>
-    
-    <goal name="allBuild" description="Build all jars and war">
+ 
+	<goal name="allBuild" description="Build all jars and war plus configures demo">
+		 <j:set var="demoBuild" value="true"/>      
+		 <attainGoal name="commonBuild"/>
+	</goal>
+  
+	<goal name="minBuild" description="Same as allBuild, but with minimal seed and page info">
+		 <j:set var="demoBuild" value="false"/>      
+		 <attainGoal name="commonBuild"/>
+	</goal>
+	
+    <goal name="commonBuild" description="Build all jars and war">
             
       <attainGoal name="j2:portal.conf.sql"/>
       <attainGoal name="j2:portal.conf.ldap"/>
@@ -219,6 +229,7 @@
         
       <attainGoal name='unzip-javascript'/>
           
+  	
       <!-- Build and install pa war files -->
       <attainGoal name="jetspeed2:war:install" />
         
@@ -229,6 +240,18 @@
             banner="Build and deploy the Jetspeed 2 Maven plugin" postProcessing="false" ignoreFailures="false" />
     </goal>
 
+	<postGoal name="war:webapp">
+		 <available file="${maven.build.dir}/jetspeed/WEB-INF/min-pages/" property="inRightDir"/>
+		  <j:if test="${inRightDir == 'true'}">
+	      <j:if test="${demoBuild != 'true'}">	
+			<delete dir="${maven.build.dir}/jetspeed/WEB-INF/pages"/>
+		    <copy todir="${maven.build.dir}/jetspeed/WEB-INF/pages/">
+		        <fileset dir="${maven.build.dir}/jetspeed/WEB-INF/min-pages/"/>
+			</copy>
+	     </j:if>
+		 </j:if>
+	</postGoal>
+		
     <goal name="show.maven.props">
         <echo message="maven.home.local = ${maven.home.local}" />
         <echo message="maven.repo.local = ${maven.repo.local}" />

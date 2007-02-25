@@ -18,22 +18,18 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults
-     skin="blue"
-     layout-decorator="tigris"
-     portlet-decorator="tigris"
-  />
-  <title>Profiler Admin</title>
-  <metadata name="title" xml:lang="ja">プロファイラ管理</metadata>
-  <metadata name="short-title" xml:lang="es">Perfiles</metadata>
-  <metadata name="title" xml:lang="es">Administrador de perfiles</metadata>
-  <metadata name="title" xml:lang="hu">Profil beállítások</metadata>
-  <metadata name="title" xml:lang="zh">Profiler管理</metadata>
-  <metadata name="title" xml:lang="ko">프로파일 관리</metadata>
-  
+ 
+  <title>Portal Site Manager</title>
+  <metadata name="title" xml:lang="ja">ポータルサイト管理</metadata>
+  <metadata name="title" xml:lang="es">Gestor de Páginas del Portal</metadata>
+  <metadata name="short-title" xml:lang="es">Páginas</metadata>
+  <metadata name="title" xml:lang="hu">Portál beállítások</metadata>
+  <metadata name="title" xml:lang="zh">Portal页面管理</metadata>
+  <metadata name="title" xml:lang="zh-TW">Portal頁面管理</metadata>
+      
 
-  <fragment id="pa-site" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="prof-1" type="portlet" name="j2-admin::ProfilerAdmin" >
+  <fragment id="js-site2" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="psm-10" type="portlet" name="j2-admin::PortalSiteManager" >
     </fragment>
   </fragment>
 </page>

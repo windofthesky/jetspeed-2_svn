@@ -14,26 +14,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="site"
+<page id="chooser-users" hidden='true'
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <defaults
-     skin="blue"
-     layout-decorator="tigris"
-     portlet-decorator="tigris"
+     layout-decorator="simple"
+     portlet-decorator="clear"
   />
-  <title>Profiler Admin</title>
-  <metadata name="title" xml:lang="ja">プロファイラ管理</metadata>
-  <metadata name="short-title" xml:lang="es">Perfiles</metadata>
-  <metadata name="title" xml:lang="es">Administrador de perfiles</metadata>
-  <metadata name="title" xml:lang="hu">Profil beállítások</metadata>
-  <metadata name="title" xml:lang="zh">Profiler管理</metadata>
-  <metadata name="title" xml:lang="ko">프로파일 관리</metadata>
-  
+  <title>User Chooser</title>
+  <metadata name="title" xml:lang="ja">ユーザー選択</metadata>
+  <metadata name="title" xml:lang="es">Selector de usuarios</metadata>
+  <metadata name="title" xml:lang="zh">用户选择</metadata>
+  <metadata name="title" xml:lang="zh-TW">用戶選擇</metadata>
 
-  <fragment id="pa-site" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="prof-1" type="portlet" name="j2-admin::ProfilerAdmin" >
+  <fragment id="chooser-users-0" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
+    <fragment id="chooser-users-1" type="portlet" name="j2-admin::UserChooser" >
     </fragment>
   </fragment>
 </page>

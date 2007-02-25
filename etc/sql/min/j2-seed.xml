@@ -243,77 +243,27 @@
 	</Clients>
 	<Roles>
 		<Role>admin</Role>
-		<Role>manager</Role>
-		<Role>user</Role>
 		<Role>guest</Role>
-		<Role>subsite</Role>
-		<Role>subsite2</Role>
+		<Role>user</Role>
 	</Roles>
 	<Groups>
-		<Group>accounting</Group>
-		<Group>engineering</Group>
-		<Group>marketing</Group>
 	</Groups>
 	<Users>
 		<User name="admin">
 			<credentials password="admin" enabled="TRUE" requiresUpdate="TRUE"/>
-			<roles>user,manager,admin</roles>
+			<roles>user,admin</roles>
 			<groups></groups>
-			<preferences>
-				<preference>
-					<name value="org.apache.jetspeed.prefered.locale"/>
-					<value value="en,,"/>
-				</preference>
-			</preferences>
 			<userinfo>
 				<preference>
 					<name value="user.name.given"/>
-					<value value="Test Dude"/>
+					<value value="System"/>
 				</preference>
 				<preference>
 					<name value="user.name.family"/>
-					<value value="Dudley"/>
+					<value value="Administrator"/>
 				</preference>
 			</userinfo>
 			<Rules/>
-		</User>
-		<User name="manager">
-			<credentials password="manager" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>user,manager</roles>
-			<groups></groups>
-			<preferences/>
-			<userinfo/>
-			<Rules/>
-		</User>
-		<User name="user">
-			<credentials password="user" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>user</roles>
-			<groups>accounting</groups>
-			<preferences/>
-			<userinfo/>
-			<Rules>
-				<Rule locator="menu" rule="role-group"/>
-				<Rule locator="page" rule="j2"/>
-			</Rules>
-		</User>
-		<User name="tomcat">
-			<credentials password="tomcat" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles></roles>
-			<groups></groups>
-			<preferences/>
-			<userinfo/>
-			<Rules/>
-		</User>
-		<User name="jetspeed">
-			<credentials password="jetspeed" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>manager</roles>
-			<groups>engineering</groups>
-			<preferences/>
-			<userinfo/>
-			<Rules>
-				<Rule locator="menu" rule="role-group"/>
-				<Rule locator="page" rule="role-fallback"/>
-			</Rules>
 		</User>
 		<User name="guest">
 			<Null/>
@@ -325,134 +275,14 @@
 				<Rule locator="page" rule="j2"/>
 			</Rules>
 		</User>
-		<User name="subsite">
-			<credentials password="subsite" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>user,subsite,subsite2</roles>
-			<groups></groups>
-			<preferences/>
-			<userinfo/>
-			<Rules>
-				<Rule locator="page" rule="subsite-role-fallback-home"/>
-			</Rules>
-		</User>
-		<User name="subsite2">
-			<credentials password="subsite2" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>user,subsite,subsite2</roles>
-			<groups></groups>
-			<preferences/>
-			<userinfo/>
-			<Rules>
-				<Rule locator="page" rule="subsite2-role-fallback-home"/>
-			</Rules>
-		</User>
 	</Users>
 	<Permissions>
-		<Permission type="folder" resource="/" actions="view">
-			<roles>user,guest,subsite,subsite2</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/*" actions="view">
-			<roles>user</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/anotherdir/-" actions="view">
-			<roles>user</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/Public" actions="view, edit">
-			<roles>guest</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/Public/-" actions="view, edit">
-			<roles>user,guest</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/top-links/-" actions="view">
-			<roles>user</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/_user/user" actions="view, edit">
-			<roles></roles>
-			<groups></groups>
-			<users>user</users>
-		</Permission>
-		<Permission type="folder" resource="/_user/user/-" actions="view, edit">
-			<roles></roles>
-			<groups></groups>
-			<users>user</users>
-		</Permission>
-		<Permission type="folder" resource="/__subsite-root" actions="view">
-			<roles>subsite,subsite2</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/__subsite-root/-" actions="view">
-			<roles>subsite,subsite2</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="/__subsite-root/_role/subsite" actions="view, edit">
-			<roles></roles>
-			<groups></groups>
-			<users>subsite</users>
-		</Permission>
-		<Permission type="folder" resource="/__subsite-root/_role/subsite/-" actions="view, edit">
-			<roles></roles>
-			<groups></groups>
-			<users>subsite</users>
-		</Permission>
-		<Permission type="folder" resource="/__subsite-root/_role/subsite2" actions="view, edit">
-			<roles></roles>
-			<groups></groups>
-			<users>subsite2</users>
-		</Permission>
-		<Permission type="folder" resource="/__subsite-root/_role/subsite2/-" actions="view, edit">
-			<roles></roles>
-			<groups></groups>
-			<users>subsite2</users>
-		</Permission>
-		<Permission type="folder" resource="&lt;&lt;ALL FILES&gt;&gt;" actions="view, edit">
-			<roles>admin</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="folder" resource="&lt;&lt;ALL FILES&gt;&gt;" actions="view">
-			<roles>manager</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="page" resource="/default-page.psml" actions="view">
-			<roles>guest</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="page" resource="/rss.psml" actions="view">
-			<roles>guest</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="portal" resource="demo::*" actions="view, edit">
-			<roles>user</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
 		<Permission type="portal" resource="j2-admin::*" actions="view, edit">
 			<roles>admin</roles>
 			<groups></groups>
 			<users></users>
 		</Permission>
 		<Permission type="portal" resource="jetspeed-layouts::*" actions="view, edit">
-			<roles>user</roles>
-			<groups></groups>
-			<users></users>
-		</Permission>
-		<Permission type="portal" resource="rss::*" actions="view, edit">
 			<roles>user</roles>
 			<groups></groups>
 			<users></users>
@@ -592,50 +422,6 @@
 					<type value="hard.coded"/>
 					<value value="/my-account.psml"/>
 					<fallBackOrder value="0"/>
-					<fallBackType value="0"/>
-				</Criterion>
-			</Criteria>
-		</ProfilingRule>
-		<ProfilingRule id="subsite-role-fallback-home" standardRule="false">
-			<description value="A rule based on role fallback algorithm with specified subsite and home page"/>
-			<Criteria>
-				<Criterion name="navigation">
-					<type value="navigation"/>
-					<value value="subsite-root"/>
-					<fallBackOrder value="0"/>
-					<fallBackType value="2"/>
-				</Criterion>
-				<Criterion name="role">
-					<type value="role"/>
-					<fallBackOrder value="1"/>
-					<fallBackType value="2"/>
-				</Criterion>
-				<Criterion name="path">
-					<type value="path"/>
-					<value value="subsite-default-page"/>
-					<fallBackOrder value="2"/>
-					<fallBackType value="0"/>
-				</Criterion>
-			</Criteria>
-		</ProfilingRule>
-		<ProfilingRule id="subsite2-role-fallback-home" standardRule="false">
-			<description value="A rule based on role fallback algorithm with specified subsite and home page"/>
-			<Criteria>
-				<Criterion name="navigation">
-					<type value="navigation"/>
-					<value value="subsite-root"/>
-					<fallBackOrder value="0"/>
-					<fallBackType value="2"/>
-				</Criterion>
-				<Criterion name="role">
-					<type value="role"/>
-					<fallBackOrder value="1"/>
-					<fallBackType value="2"/>
-				</Criterion>
-				<Criterion name="path">
-					<type value="path"/>
-					<value value="subsite2-default-page"/>
-					<fallBackOrder value="2"/>
 					<fallBackType value="0"/>
 				</Criterion>
 			</Criteria>

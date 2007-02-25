@@ -62,6 +62,16 @@ limitations under the License.
          <js:metadata name="merge.portal.parameters.with.portlet.parameters">true</js:metadata>
          <js:metadata name="merge.portal.parameters.before.portlet.parameters">true</js:metadata>
     </portlet>   
+
+    <portlet>
+        <portlet-name>WelcomeToJetspeed</portlet-name>
+        <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+    </portlet>
+
+    <portlet>
+        <portlet-name>AboutJetspeed</portlet-name>
+        <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+    </portlet>
 	
 	<js:services>        
         <js:service name='ApplicationServerManager'/>
