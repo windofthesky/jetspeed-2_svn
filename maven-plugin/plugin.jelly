@@ -383,6 +383,15 @@
       <j:set var="j2.war.groupId" value="${plugin.groupId}"/>
       <j:set var="j2.war.version" value="${jetspeed.version}"/>
       <j:set var="isLocalWarDeploy" value="false"/>            
+      <j:set var="isInfusedWarDeploy" value="false"/>
+      <attainGoal name="j2:warDeploy"/>
+  </goal>
+
+  <goal name="j2:infusedDeploy">
+      <j:set var="j2.war.groupId" value="${plugin.groupId}"/>
+      <j:set var="j2.war.version" value="${jetspeed.version}"/>
+      <j:set var="isLocalWarDeploy" value="false"/>
+      <j:set var="isInfusedWarDeploy" value="true"/>
       <attainGoal name="j2:warDeploy"/>
   </goal>
 
@@ -396,6 +405,8 @@
   <goal name="j2:deploybridgewar">
       <j:set var="j2.war.groupId" value="${bridges.groupId}"/>
       <j:set var="j2.war.version" value="${portals.bridges.version}"/>
+      <j:set var="isLocalWarDeploy" value="false"/>
+      <j:set var="isInfusedWarDeploy" value="true"/>
       <attainGoal name="j2:warDeploy"/>
   </goal>
   
@@ -418,14 +429,38 @@
     <j:if test="${online}">
       <attainGoal name="j2:_check.dep"/>
     </j:if>
-    <j:set var="warDeployDest" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}.war"/>
+    <j:set var="warDeployDest" value="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"/>
     <j:if test='${isLocalWarDeploy == "true"}'>
-      <j:set var="warDeployDest" value="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/${maven.war.final.name}.war"/>
-    </j:if>    
-    <copy file="${maven.repo.local}/${depGroup}/${depType}/${depName}"
-          tofile="${warDeployDest}" 
-          overwrite="true"
-          failonerror="true"/>
+      <j:set var="warDeployDest" value="${org.apache.jetspeed.portal.dir}/WEB-INF/deploy/local/${maven.war.final.name}.war"/>
+      <j:set var="isInfusedWarDeploy" value="false"/>
+    </j:if>
+    <j:choose>
+      <j:when test='${isInfusedWarDeploy == "true"}'>
+        <j:set var="warDeployDest" value="${org.apache.jetspeed.deploy.war.dir}/${maven.war.final.name}.war"/>
+        <j:set var="tmpFileInfused">${systemScope['java.io.tmpdir']}/${maven.war.final.name}-infused.war</j:set>
+        
+        <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy" fork="true">
+          <arg value='${maven.repo.local}/${depGroup}/${depType}/${depName}'/>
+          <arg value='${tmpFileInfused}'/>                         
+          <classpath>
+            <pathelement location="${plugin.getDependencyPath('org.apache.portals.jetspeed-2:jetspeed-api')}"/>
+            <pathelement location="${plugin.getDependencyPath('org.apache.portals.jetspeed-2:jetspeed-deploy-tools')}"/>
+            <pathelement location="${plugin.getDependencyPath('jdom')}"/>
+            <pathelement location="${plugin.getDependencyPath('jaxen')}"/>
+            <pathelement location="${plugin.getDependencyPath('saxpath')}"/>
+            <pathelement location="${plugin.getDependencyPath('commons-lang')}"/>
+          </classpath>
+        </java>
+        <copy file="${tmpFileInfused}" tofile="${warDeployDest}" overwrite="true" failonerror="true"/>        
+        <delete file="${tmpFileInfused}"/>        
+      </j:when>
+      <j:otherwise>
+        <copy file="${maven.repo.local}/${depGroup}/${depType}/${depName}"
+              tofile="${warDeployDest}" 
+              overwrite="true"
+              failonerror="true"/>
+      </j:otherwise>
+    </j:choose>
   </goal>
 
 
@@ -436,7 +471,7 @@
 
   <goal name="j2:pam.demodeploy">
     <j:set var="maven.war.final.name" value="demo"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:infusedDeploy"/>
   </goal>
 
   <goal name="j2:pam.tsdeploy">
@@ -456,12 +491,12 @@
 
   <goal name="j2:pam.admindeploy">
     <j:set var="maven.war.final.name" value="j2-admin"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:infusedDeploy"/>
   </goal>
 
   <goal name="j2:pam.rssdeploy">
     <j:set var="maven.war.final.name" value="rss"/>
-    <attainGoal name="j2:deploy"/>
+    <attainGoal name="j2:infusedDeploy"/>
   </goal>
 
   <!-- ================================================= -->

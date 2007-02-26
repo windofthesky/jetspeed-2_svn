@@ -65,7 +65,45 @@
                 <war.bundle>false</war.bundle>
             </properties>
         </dependency>
-
+        
+        <!-- dependencies for using the Jetspeed-2 offline portlet application infusion DeployTools -->
+        <dependency>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-api</artifactId>
+            <version>2.1-dev</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-deploy-tools</artifactId>
+            <version>2.1-dev</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <id>jdom</id>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <id>jaxen</id>
+            <version>1.0-FCS-full</version>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>saxpath</groupId>		
+            <artifactId>saxpath</artifactId>
+            <version>1.0-FCS</version>
+            <properties>
+                <war.bundle>false</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.0</version>
+        </dependency>
+        
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
