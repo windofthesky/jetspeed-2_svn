@@ -180,7 +180,7 @@ jetspeed.prefs =
 jetspeed.debug =
 {
     pageLoad: true,
-    retrievePsml: true,
+    retrievePsml: false,
     setPortletContent: false,
     doRenderDoAction: false,
     postParseAnnotateHtml: false,
@@ -3037,7 +3037,7 @@ dojo.lang.extend( jetspeed.om.Portlet,
                 modUrl = formAction + queryString;
         }
         if ( modUrl == null )
-            modUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.PORTLET + queryString;
+            modUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.PORTLET + jetspeed.page.getPath() + queryString;
         if ( bindArgs )
             bindArgs.url = modUrl;
         return modUrl;
@@ -3186,8 +3186,11 @@ dojo.lang.extend( jetspeed.om.Portlet,
         var action = this.getAction( actionName );
         if ( action == null ) return;
         if ( action.url == null ) return;
-        var renderActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.PORTLET + "/" + action.url;
-        this.retrieveContent( null, { url: renderActionUrl } );
+        var renderActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.PORTLET + jetspeed.page.getPath() + "/" + action.url;
+        if ( actionName != jetspeed.id.ACTION_NAME_PRINT )
+            this.retrieveContent( null, { url: renderActionUrl } );
+        //else
+        //    window.open( renderActionUrl, "jsportlet_print", "status,scrollbars,resizable" );
     },
     getAction: function( name )
     {

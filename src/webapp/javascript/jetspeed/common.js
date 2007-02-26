@@ -410,7 +410,42 @@ jetspeed.url.basePortalDesktopUrl = function()
         jetspeed.url.pathInitialize();
     return jetspeed.url.basePortalUrl() + jetspeed.url.path.JETSPEED ;
 };
-
+jetspeed.url.addPath = function( url, path )
+{
+    if ( path == null || path.length == 0 )
+        return url;
+    var modUri = new jetspeed.url.JSUri( url );
+    var origPath = modUri.path;
+    if ( origPath != null && origPath.length > 0 )
+    {
+        if ( modUri.path.charCodeAt( origPath.length -1 ) == 47 )
+        {
+            if ( path.charCodeAt( 0 ) == 47 )
+            {
+                if ( path.length > 1 )
+                    modUri.path += path.substring( 1 );
+            }
+            else
+            {
+                modUri.path += path;
+            }
+        }
+        else
+        {
+            if ( path.charCodeAt( 0 ) == 47 )
+            {
+                modUri.path += path;
+            }
+            else
+            {
+                if ( path.length > 1 )
+                    modUri.path += "/" + path;
+            }
+        }
+    }
+    var urlObj = jetspeed.url.parse( modUri );
+    return urlObj.toString();
+};
 jetspeed.url.validateUrlStartsWithHttp = function( url )
 {
     if ( url )
