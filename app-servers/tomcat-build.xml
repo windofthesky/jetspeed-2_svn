@@ -205,12 +205,27 @@ limitations under the License.
                         type="war"/>
         </dependencies>
         <!-- copy only the artifact and ignore dependencies using mapper -->
-        <copy todir="${org.apache.jetspeed.server.home}/webapps/">
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy">
             <fileset refid="portletapp.dependencies.id"/>
             <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
         </copy>
     </target>
 
+    <target name="hot-deploy-infused-war">
+        <!-- hot deploy portlet or layout application -->
+        <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                artifactId="${org.apache.jetspeed.deploy.artifactid}"
+                version="${org.apache.jetspeed.deploy.version}"
+                type="war"/>
+        </dependencies>
+        <!-- copy only the artifact and ignore dependencies using mapper -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps">
+            <fileset refid="portletapp.dependencies.id"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
+        </copy>
+    </target>
+    
     <target name="hot-deploy-local-war">
         <!-- hot deploy portlet or layout application -->
         <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
@@ -220,7 +235,7 @@ limitations under the License.
                         type="war"/>
         </dependencies>
         <!-- copy only the artifact and ignore dependencies using mapper -->
-        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy/">
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/jetspeed/WEB-INF/deploy/local">
             <fileset refid="portletapp.dependencies.id"/>
             <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
         </copy>
@@ -428,7 +443,7 @@ limitations under the License.
 
     <target name="hot-deploy-full-apps" if="org.apache.jetspeed.deploy.full.apps">
         <!-- hot deploy additional set of portlet applications -->
-        <antcall target="hot-deploy-war">
+        <antcall target="hot-deploy-infused-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="demo"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
@@ -443,7 +458,7 @@ limitations under the License.
             <param name="org.apache.jetspeed.deploy.artifactid" value="jsf-demo"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.portals.bridges.jsf-demo.version}"/>
         </antcall>
-        <antcall target="hot-deploy-war">
+        <antcall target="hot-deploy-infused-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="rss"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
@@ -457,7 +472,7 @@ limitations under the License.
             <param name="org.apache.jetspeed.deploy.artifactid" value="jetspeed-layouts"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
         </antcall>
-        <antcall target="hot-deploy-war">
+        <antcall target="hot-deploy-infused-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="j2-admin"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>

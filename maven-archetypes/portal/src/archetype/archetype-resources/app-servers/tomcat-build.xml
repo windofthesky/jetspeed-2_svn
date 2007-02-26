@@ -229,6 +229,21 @@ limitations under the License.
                         type="war"/>
         </dependencies>
         <!-- copy only the artifact and ignore dependencies using mapper -->
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/artifactId}/WEB-INF/deploy/">
+            <fileset refid="portletapp.dependencies.id"/>
+            <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
+        </copy>
+    </target>
+
+    <target name="hot-infused-deploy-war">
+        <!-- hot deploy portlet or layout application -->
+        <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                artifactId="${org.apache.jetspeed.deploy.artifactid}"
+                version="${org.apache.jetspeed.deploy.version}"
+                type="war"/>
+        </dependencies>
+        <!-- copy only the artifact and ignore dependencies using mapper -->
         <copy todir="${org.apache.jetspeed.server.home}/webapps/">
             <fileset refid="portletapp.dependencies.id"/>
             <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
@@ -244,7 +259,7 @@ limitations under the License.
                         type="war"/>
         </dependencies>
         <!-- copy only the artifact and ignore dependencies using mapper -->
-        <copy todir="${org.apache.jetspeed.server.home}/webapps/${artifactId}/WEB-INF/deploy/">            
+        <copy todir="${org.apache.jetspeed.server.home}/webapps/${artifactId}/WEB-INF/deploy/local/">
             <fileset refid="portletapp.dependencies.id"/>
             <mapper type="regexp" from=".*[/\\]([^/\\]*${org.apache.jetspeed.deploy.artifactid})-${org.apache.jetspeed.deploy.version}.war" to="\1.war"/>
         </copy>
@@ -382,7 +397,7 @@ limitations under the License.
             <param name="org.apache.jetspeed.deploy.artifactid" value="jetspeed-layouts"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
         </antcall>
-        <antcall target="hot-deploy-war">
+        <antcall target="hot-deploy-infused-war">
             <param name="org.apache.jetspeed.deploy.groupid" value="${org.apache.jetspeed.groupid}"/>
             <param name="org.apache.jetspeed.deploy.artifactid" value="j2-admin"/>
             <param name="org.apache.jetspeed.deploy.version" value="${org.apache.jetspeed.version}"/>
