@@ -430,7 +430,7 @@ limitations under the License.
     <display-name>SSO Details</display-name>
     <display-name xml:lang="ja">SSO の詳細</display-name>
     <display-name xml:lang="zh">SSO 详情</display-name>
-    <display-name xml:lang="zh-TW ">SSO 詳情</display-name>
+    <display-name xml:lang="zh-TW">SSO 詳情</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.sso.SSODetails</portlet-class>
     <init-param>
         <description>This parameter sets the template used in view mode.</description>
