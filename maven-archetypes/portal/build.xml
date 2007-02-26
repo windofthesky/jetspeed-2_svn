@@ -114,6 +114,7 @@ limitations under the License.
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>    
+            <include name="cache.xml"/>  
            <include name="registry.xml"/>       
             <include name="transaction.xml"/>           
           </fileset>
