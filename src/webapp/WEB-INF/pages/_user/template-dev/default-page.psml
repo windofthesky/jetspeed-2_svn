@@ -11,11 +11,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="_user-template-default-page.psml"
+<page id="_dev-template-default-page.psml"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
- 
+  <defaults
+     skin="blue"
+     layout-decorator="tigris"
+     portlet-decorator="tigris"
+  />
   <title>User Home</title>
   <metadata name="title" xml:lang="ja">ユーザーホーム</metadata>
   <metadata name="title" xml:lang="es">Carpeta de Usuario</metadata>
@@ -24,14 +28,24 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">用戶主頁</metadata>
   <metadata name="title" xml:lang="ko">사용자 홈</metadata>
 
-  <fragment id="uhtemp-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="uhtemp-1001" type="portlet" name="j2-admin::WelcomeToJetspeed">
+  <fragment id="devtemp-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="devtemp-1001" type="portlet" name="rss::RSS">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="uhtemp-1010" type="portlet" name="j2-admin::AboutJetspeed">
+    <fragment id="devtemp-1010" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
+    </fragment>	    
+    <fragment id="devtemp-1011" type="portlet" name="jsf-demo::CalendarPortlet">
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>	
+    <fragment id="devtemp-1012" type="portlet" name="demo::BookmarkPortlet">
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-   </fragment>
+    
+  </fragment>
+
 </page>

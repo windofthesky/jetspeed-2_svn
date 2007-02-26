@@ -28,10 +28,11 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
-import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.portlets.security.SecurityResources;
+import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -137,6 +138,8 @@ public class UserBrowser extends BrowserPortlet
 
     public void getRows(RenderRequest request, String sql, int windowSize, String filter)
     {
+        String roleFilter = request.getPreferences().getValue("FilterByRole", "");
+        boolean filterByRole = !roleFilter.equals("") || roleFilter.equalsIgnoreCase("false");
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
         resultSetTypeList.add(String.valueOf(Types.VARCHAR));
@@ -145,12 +148,26 @@ public class UserBrowser extends BrowserPortlet
         List list = new ArrayList();
         try
         {
-            Iterator users = userManager.getUserNames(filter);
-
-            while (users.hasNext())
+            if (filterByRole)
             {
-                list.add(users.next());
-            }            
+                Iterator users = userManager.getUsersInRole(roleFilter).iterator();
+                while (users.hasNext())
+                {
+                    // NOTE: this can be a bit costly if you have a lot of users in a role
+                    User user = (User)users.next();
+                    Principal pr = getBestPrincipal(user.getSubject(), UserPrincipal.class);
+                    list.add(pr.getName());
+                }                            
+            }
+            else
+            {
+                Iterator users = userManager.getUserNames(filter);
+                while (users.hasNext())
+                {
+                    list.add(users.next());
+                }            
+                
+            }                            
         }
         catch (SecurityException sex)
         {
@@ -159,5 +176,29 @@ public class UserBrowser extends BrowserPortlet
         BrowserIterator iterator = new DatabaseBrowserIterator(list, resultSetTitleList, resultSetTypeList, windowSize);
         setBrowserIterator(request, iterator);
         iterator.sort("user"); // resource bundle key        
+    }    
+    
+    public static Principal getBestPrincipal(Subject subject, Class classe)
+    {
+
+        Principal principal = null;
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = (Principal) principals.next();
+            if (classe.isInstance(p))
+            {
+                principal = p;
+                break;
+            }
+            else
+            {
+                if (principal == null)
+                {
+                    principal = p;
+                }
+            }
+        }
+        return principal;
     }    
 }

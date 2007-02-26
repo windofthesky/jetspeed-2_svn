@@ -154,6 +154,8 @@ limitations under the License.
   <tr>
     <td><input class="portlet-form-button" type="submit" value="$MESSAGES.getString('search')"></td>
     <td><input type="text" name="searchString" size="30" value="" class="portlet-form-field-label"></td>
+  </tr>
+  <tr>
     <td nowrap align="right" style="vertical-align:middle">&nbsp;$MESSAGES.getString('filter')</td>
     <td style="vertical-align:middle"><input type="checkbox"  #if($filtered == "on") checked=1 #end name="filtered"></td>
   </tr>

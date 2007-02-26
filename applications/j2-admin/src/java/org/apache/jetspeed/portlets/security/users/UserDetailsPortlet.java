@@ -1044,6 +1044,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         }
                     }                    
                 }
+                
+                String requiredRole = actionRequest.getPreferences().getValue("requiredRole", "");
+                if (!requiredRole.equals("") && user != null)
+                {
+                    roleManager.addRoleToUser(userName, requiredRole);
+                }
 
                 String role = actionRequest.getParameter(ROLES_CONTROL);
                 if (!SecurityUtil.isEmpty(role) && user != null) 

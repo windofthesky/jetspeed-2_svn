@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="my-account2" hidden="false"
+<page id="my-account3" hidden="false"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
@@ -27,12 +27,12 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">我的帳戶配置</metadata>
   <metadata name="title" xml:lang="ko">내 계정</metadata>
 
-  <fragment id="jp-macc-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="jp-macc-2" type="portlet" name="j2-admin::LoginPortlet">
+  <fragment id="devmgr-macc-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="devmgr-macc-2" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-   <fragment id="jp-macc-3" type="portlet" name="j2-admin::ChangePasswordPortlet">
+   <fragment id="devmgr-macc-3" type="portlet" name="j2-admin::ChangePasswordPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    

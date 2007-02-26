@@ -72,10 +72,25 @@ limitations under the License.
         <portlet-name>AboutJetspeed</portlet-name>
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
     </portlet>
+
+    <portlet>
+        <portlet-name>JetspeedDeveloper</portlet-name>
+        <js:security-constraint-ref>dev</js:security-constraint-ref>       
+    </portlet>
 	
 	<portlet>
 		<portlet-name>ChangePasswordPortlet</portlet-name>
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+	</portlet>
+
+	<portlet>
+		<portlet-name>DevelopersBrowser</portlet-name>
+        <js:security-constraint-ref>devmgr</js:security-constraint-ref>       
+	</portlet>
+
+	<portlet>
+		<portlet-name>DeveloperDetails</portlet-name>
+        <js:security-constraint-ref>devmgr</js:security-constraint-ref>       
 	</portlet>
 			
 	<js:services>        

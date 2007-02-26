@@ -248,6 +248,8 @@
 		<Role>guest</Role>
 		<Role>subsite</Role>
 		<Role>subsite2</Role>
+		<Role>dev</Role>
+		<Role>devmgr</Role>		
 	</Roles>
 	<Groups>
 		<Group>accounting</Group>

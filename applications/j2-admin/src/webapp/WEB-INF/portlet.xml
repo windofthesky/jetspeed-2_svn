@@ -191,6 +191,10 @@ limitations under the License.
             <name>WindowSize</name>
             <value>10</value>
         </preference>
+        <preference>
+        	<name>FilterByRole</name>
+        	<value></value>
+        </preference>
     </portlet-preferences>
 </portlet>
 
@@ -295,6 +299,10 @@ limitations under the License.
         <preference>
             <name>newUserTemplateDirectory</name>
             <value>/_user/template/</value>
+        </preference>        
+        <preference>
+     		<name>requiredRole</name>
+            <value></value>   
         </preference>
     </portlet-preferences>
 </portlet>
@@ -1566,6 +1574,178 @@ limitations under the License.
          </preference>
      </portlet-preferences>   
   </portlet>
+
+  <portlet>
+    <description>Jetspeed Developer Information</description>
+    <portlet-name>JetspeedDeveloper</portlet-name>
+    <display-name>Jetspeed Developer Information</display-name>
+    <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <!-- resource-bundle></resource-bundle -->
+    <portlet-info>
+      <title>About Jetspeed</title>
+      <short-title>About</short-title>
+      <keywords>developer,development,jetspeed</keywords>
+    </portlet-info>
+    <portlet-preferences>
+         <preference>
+             <name>file</name>
+             <value>view/info/developers.html</value>
+         </preference>
+     </portlet-preferences>   
+  </portlet>
+
+ <!--  Delegated Security Example -->
+ <portlet id="DevelopersBrowser">
+    <description>The User Browser displays a list of users filtered by the Developer role managed in this portal. From here you can select users for editing. Place this portlet on the same page as the User Details portlet.</description>
+    <portlet-name>DevelopersBrowser</portlet-name>
+    <display-name>Developer Browser</display-name>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.UserBrowser</portlet-class>        
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+        <value>/WEB-INF/security/users/user-browser.vm</value>
+    </init-param>
+    <init-param>
+        <name>portlet-icon</name>
+        <value>system-users.png</value>
+    </init-param>                            
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>VIEW</portlet-mode>
+        <!--  not implemented yet
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        -->
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.UserBrowserResources</resource-bundle>
+    <portlet-info>
+        <title>Developer Browser</title>
+        <short-title>Developers</short-title>
+        <keywords>admin,security,developers,delegated security</keywords>            
+    </portlet-info>
+    <portlet-preferences>
+        <preference>
+            <name>WindowSize</name>
+            <value>10</value>
+        </preference>
+        <preference>
+        	<name>FilterByRole</name>
+        	<value>dev</value>
+        </preference>
+    </portlet-preferences>
+</portlet>
+
+<portlet id="DeveloperDetails">
+    <description>The User Details portlet displays a Developers details in a tabbed view. From here you can add, edit, and delete User information. Place this portlet on the same page as the User Browser portlet.</description>
+    <portlet-name>DeveloperDetails</portlet-name>
+    <display-name>Developer Details</display-name>
+    <portlet-class>org.apache.jetspeed.portlets.security.users.UserDetailsPortlet</portlet-class>        
+    <init-param>
+        <description>This parameter sets the template used in view mode.</description>
+        <name>ViewPage</name>
+        <value>/WEB-INF/security/users/user-details.jsp</value>
+    </init-param>
+    <init-param>
+        <description>This parameter sets the template used in edit mode.</description>
+        <name>EditPage</name>
+        <value>/WEB-INF/security/users/user-details-edit.jsp</value>
+    </init-param>
+    <init-param>
+        <name>portlet-icon</name>
+        <value>system-users.png</value>
+    </init-param>                                    
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>EDIT</portlet-mode>
+        <portlet-mode>VIEW</portlet-mode>
+        <!-- not implemented yet
+            <portlet-mode>HELP</portlet-mode>
+        -->
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.resources.UserDetailsResources</resource-bundle>
+    <portlet-info>
+        <title>Developer Detail Information</title>
+        <short-title>Developer</short-title>
+        <keywords>admin,security,developers,user,delegated security</keywords>            
+    </portlet-info>        
+    <portlet-preferences>
+        <preference>
+            <name>showUserTab</name>
+            <value>false</value>
+        </preference>
+        <preference>
+            <name>showAttributesTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showPasswordTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showRoleTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showGroupTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showProfileTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showPasswordOnUserTab</name>
+            <value>false</value>
+        </preference>
+        <preference>
+            <name>showPasswordExpiration</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showChangePasswordRequiredForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showRoleForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showProfileForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>defaultChangePasswordRequired</name>
+            <value>false</value>
+        </preference>
+        <preference>
+            <name>defaultRole</name>
+            <value>dev</value>
+        </preference>
+        <preference>
+            <name>defaultProfile</name>
+            <value>user-role-fallback</value>
+        </preference>
+        <preference>
+            <name>newUserTemplateDirectory</name>
+            <value>/_user/template-dev/</value>
+        </preference>        
+        <preference>
+     		<name>requiredRole</name>
+            <value>user</value>   
+        </preference>
+    </portlet-preferences>
+</portlet>
+
 
 </portlet-app>
 
