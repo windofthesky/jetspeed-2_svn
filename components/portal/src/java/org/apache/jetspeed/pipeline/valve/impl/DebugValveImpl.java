@@ -64,7 +64,7 @@ public class DebugValveImpl extends AbstractValve
             String name = (String) e.nextElement();
             String value = req.getHeader(name);
             log.info("http header = " + name + " : " + value);
-            System.out.println("http header = " + name + " : " + value);            
+//            System.out.println("http header = " + name + " : " + value);            
         }
     }
 }

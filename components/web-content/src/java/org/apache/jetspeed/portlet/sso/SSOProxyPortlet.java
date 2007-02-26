@@ -102,7 +102,7 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     throws PortletException, IOException
     {
        	String ssoProxyAction = request.getParameter(ACTION_PARAMETER_SSOPROXY); 
-       	System.out.println("SSOProxy Action value [" + ssoProxyAction + "]");
+//       	System.out.println("SSOProxy Action value [" + ssoProxyAction + "]");
        	
      	if ( ssoProxyAction != null && ssoProxyAction.length() > 0)
      		this.destinationURL = ssoProxyAction;

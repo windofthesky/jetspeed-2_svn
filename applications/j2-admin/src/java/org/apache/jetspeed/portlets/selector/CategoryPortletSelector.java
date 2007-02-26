@@ -738,7 +738,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+//			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 		return map;

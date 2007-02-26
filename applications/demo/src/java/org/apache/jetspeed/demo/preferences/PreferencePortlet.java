@@ -61,7 +61,7 @@ public class PreferencePortlet extends GenericPortlet
      */
     public void init(PortletConfig config) throws PortletException
     {
-        System.out.println("Initializing Preference portlet example. ");
+//        System.out.println("Initializing Preference portlet example. ");
         super.init(config);
     }
 
@@ -87,7 +87,7 @@ public class PreferencePortlet extends GenericPortlet
         String[] patterns = { Integer.toString(count)};
         response.setRenderParameter("invokeMessage", format.format(patterns));
         request.getPortletSession().setAttribute("org.apache.jetspeed.invocationCount", new Integer(count), PortletSession.PORTLET_SCOPE);
-        System.out.println(resource.getString("preference.label.IWasInvoked"));
+//        System.out.println(resource.getString("preference.label.IWasInvoked"));
     }
 
 }

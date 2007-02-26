@@ -47,15 +47,15 @@ public class UserManagerPortlet extends FacesPortlet {
 			throw new PortletException(
 					"Failed to find the User Manager on portlet initialization");
 		}
-		System.out.println("user manager = " + userManager);
+//		System.out.println("user manager = " + userManager);
 		try {
 			Iterator users = userManager.getUsers("");
 			while (users.hasNext()) {
 				User user = (User) users.next();
-				System.out.println("++++ User = " + user);
+//				System.out.println("++++ User = " + user);
 				Principal principal = getPrincipal(user.getSubject(),
 						UserPrincipal.class);
-				System.out.println("principal = " + principal.getName());
+//				System.out.println("principal = " + principal.getName());
 			}
 		} catch (SecurityException se) {
 			throw new PortletException(se);
@@ -63,8 +63,7 @@ public class UserManagerPortlet extends FacesPortlet {
 	}
 
 	protected void preProcessFaces(FacesContext context) {
-		System.out.println("*** pre processing faces for user manager: "
-				+ context);
+//		System.out.println("*** pre processing faces for user manager: " + context);
 	}
 
 	public Principal getPrincipal(Subject subject, Class classe) {

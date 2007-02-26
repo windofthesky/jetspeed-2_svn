@@ -128,7 +128,7 @@ public class MemoryBasedScheduler
 
             if ( jobs != null && jobs.size() > 0 )
             {
-                System.out.println("Starting jobs = " + jobs.size());            
+//                System.out.println("Starting jobs = " + jobs.size());            
                 
                 scheduleQueue.batchLoad(jobs);
                 restart();

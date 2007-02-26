@@ -802,7 +802,7 @@ public class PersistenceBrokerSSOProvider extends
 			// Error checking  -- should have a credential at this point
 			if ( credential == null)
 			{
-				System.out.println("Warning: Remote User " + remotePrincipal.getFullPath() + " doesn't have a credential");
+//				System.out.println("Warning: Remote User " + remotePrincipal.getFullPath() + " doesn't have a credential");
 				return null; 
 			}
 		}

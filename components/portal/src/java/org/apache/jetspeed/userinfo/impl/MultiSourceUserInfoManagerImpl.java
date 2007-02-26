@@ -69,7 +69,7 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
             Subject subject = context.getSubject();
             MutablePortletApplication pa = portletRegistry
                     .getPortletApplication(oid);
-System.out.println("*** PA = " + pa);            
+//System.out.println("*** PA = " + pa);            
             if (null == pa)
             {
                 log.debug(PortletRequest.USER_INFO + " is set to null");

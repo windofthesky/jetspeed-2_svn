@@ -152,7 +152,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
         }
         catch (RuntimeException e)
         {
-            System.out.println("Failed to fully construct Portlet Definition");
+//            System.out.println("Failed to fully construct Portlet Definition");
             e.printStackTrace();
         }
     }

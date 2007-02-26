@@ -150,9 +150,9 @@ public class SaxParserAdaptor implements ParserAdaptor
         public void startElement(String uri, String localName, String qName, MutableAttributes attributes) 
             throws SAXException
         {
-            System.out.println("qName = " + qName);
-            System.out.println("localName = " + localName);
-            System.out.println("uri = " + uri);
+//            System.out.println("qName = " + qName);
+//            System.out.println("localName = " + localName);
+//            System.out.println("uri = " + uri);
             String tag = qName;
             
             if (false == rewriter.enterStartTagEvent(tag.toString(), attributes))

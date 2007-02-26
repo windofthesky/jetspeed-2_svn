@@ -61,7 +61,7 @@ public class HelloWorld extends GenericPortlet
     public void init(PortletConfig config)
     throws PortletException 
     {
-        System.out.println("HelloWorldPortlet: initializing portlet, config = " + config.getPortletName());
+//        System.out.println("HelloWorldPortlet: initializing portlet, config = " + config.getPortletName());
         super.init(config);        
     }
     

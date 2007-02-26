@@ -36,7 +36,7 @@ import org.apache.portals.applications.transform.TransformCacheEntry;
  */
 public class MemoryTransformCache implements TransformCache
 {
-    private boolean debug = true;    
+    private boolean debug = false;    
     private int maxSize = 100;    
     private int evictionPercentage = 10;    
     private boolean enable = true;

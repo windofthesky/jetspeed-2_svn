@@ -177,9 +177,9 @@ public class ParameterImpl implements ParameterComposite, Serializable
      */
     public void setDescription(String desc)
     {
-        System.out.println("Setting description..." + desc);
+//        System.out.println("Setting description..." + desc);
         addDescription(JetspeedLocale.getDefaultLocale(), desc);
-        System.out.println("Description Set " + desc);
+//        System.out.println("Description Set " + desc);
     }
 
     /**

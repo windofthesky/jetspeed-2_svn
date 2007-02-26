@@ -580,7 +580,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         catch (TemplateLocatorException e)
         {
             log.error("Unable to locate template: " + path, e);
-            System.out.println("Unable to locate template: " + path);
+//            System.out.println("Unable to locate template: " + path);
             throw e;
         }
     }

@@ -39,7 +39,7 @@ public abstract class ServletObjectAccess
 {
     public static HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window)
     {
-    	System.out.println("n");
+//    	System.out.println("n");
         return requestFactory.getServletRequest(request, window);
     }
 

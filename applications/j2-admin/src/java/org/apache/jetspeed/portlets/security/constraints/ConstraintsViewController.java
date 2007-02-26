@@ -38,7 +38,7 @@ public class ConstraintsViewController extends AbstractController implements Ini
     
     public void afterPropertiesSet() throws Exception 
     {
-        System.out.println("+++ after property set");
+//        System.out.println("+++ after property set");
         //throw new IllegalArgumentException("A DOMTreeService is required");
     }
     
@@ -69,7 +69,7 @@ public class ConstraintsViewController extends AbstractController implements Ini
                     }
                 }
                 session.setAttribute(ROLES_CACHE_SESSION_ATTRIBUTE_NAME, roles, PortletSession.PORTLET_SCOPE);
-                System.out.println( "roles: " + roles.toString() );
+//                System.out.println( "roles: " + roles.toString() );
             }
             catch(Exception e)
             {
@@ -109,7 +109,7 @@ public class ConstraintsViewController extends AbstractController implements Ini
 	       
     public void setPortletConfig(PortletConfig portletConfig)
     {   
-        System.out.println("+++ in set portlet config");
+//        System.out.println("+++ in set portlet config");
         this.portletConfig = portletConfig;
         pageManager = (PageManager) getPortletContext().getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);        
         if (null == pageManager) 
@@ -126,7 +126,7 @@ public class ConstraintsViewController extends AbstractController implements Ini
         if (gm == null)
             throw new RuntimeException("Could not get instance of portal group manager component");
 
-        System.out.println("--- out set portlet config:" + pageManager);
+//        System.out.println("--- out set portlet config:" + pageManager);
     }
 
 
