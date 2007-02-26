@@ -1125,6 +1125,16 @@ limitations under the License.
         <value>userRegistrationEmail.vm</value>
     </init-param>
     <init-param>
+    	<description>Profiling rules to be assigned at registration.</description>
+    	<name>rulesNames</name>
+    	<value>page</value>
+    </init-param>
+    <init-param>
+    	<description>Profiling rules to be assigned at registration.</description>
+    	<name>rulesValues</name>
+    	<value>j2</value>
+    </init-param>
+    <init-param>
         <name>portlet-icon</name>
         <value>start-here.png</value>
     </init-param>    
