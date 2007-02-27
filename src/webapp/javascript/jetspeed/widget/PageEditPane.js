@@ -173,8 +173,9 @@ dojo.widget.defineWidget(
         {
             if ( pageName != null && pageName.length > 0 )
             {
-                var pagePath = jetspeed.page.getPageRealDirectory() + pageName;
-                var addPageContentManager = new jetspeed.widget.AddPageContentManager( pagePath, pageName, null, pageTitle, pageShortTitle, this.pageEditorWidget );
+                var pageRealPath = jetspeed.page.getPageDirectory( true ) + pageName;
+                var pagePath = jetspeed.page.getPageDirectory() + pageName;
+                var addPageContentManager = new jetspeed.widget.AddPageContentManager( pageRealPath, pagePath, pageName, null, pageTitle, pageShortTitle, this.pageEditorWidget );
                 addPageContentManager.getContent();
             }
         },

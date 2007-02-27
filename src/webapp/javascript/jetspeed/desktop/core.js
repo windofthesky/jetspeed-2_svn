@@ -2577,10 +2577,10 @@ dojo.lang.extend( jetspeed.om.Page,
         this.pagePathAndQuery = pagePath;
         return pagePath;
     },
-    getPageRealDirectory: function()
+    getPageDirectory: function( useRealPath )
     {
         var pageDir = "/";
-        var pagePath = this.getRealPath();
+        var pagePath = ( useRealPath ? this.getRealPath() : this.getPath() );
         if ( pagePath != null )
         {
             var lastSep = pagePath.lastIndexOf( "/" );

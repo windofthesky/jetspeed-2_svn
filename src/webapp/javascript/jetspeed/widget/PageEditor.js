@@ -435,8 +435,9 @@ jetspeed.widget.RemovePageContentManager.prototype =
 };
 
 // ... jetspeed.widget.AddPageContentManager
-jetspeed.widget.AddPageContentManager = function( pagePath, pageName, layoutName, pageTitle, pageShortTitle, pageEditorWidget )
+jetspeed.widget.AddPageContentManager = function( pageRealPath, pagePath, pageName, layoutName, pageTitle, pageShortTitle, pageEditorWidget )
 {
+    this.pageRealPath = pageRealPath;
     this.pagePath = pagePath;
     this.pageName = pageName;
     if ( layoutName == null )
@@ -453,9 +454,9 @@ jetspeed.widget.AddPageContentManager.prototype =
 {
     getContent: function()
     {
-        if ( this.pagePath != null && this.pageName != null )
+        if ( this.pageRealPath != null && this.pageName != null )
         {
-            var queryString = "?action=updatepage&method=add&path=" + escape( this.pagePath ) + "&name=" + escape( this.pageName );
+            var queryString = "?action=updatepage&method=add&path=" + escape( this.pageRealPath ) + "&name=" + escape( this.pageName );
             if ( this.layoutName != null )
                 queryString += "&defaultLayout=" + escape( this.layoutName );
             if ( this.pageTitle != null )
