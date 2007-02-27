@@ -93,6 +93,7 @@ public class GetPageAction
             }
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
+            resultMap.put(PROFILED_PATH, requestContext.getPath());
             putSecurityInformation(resultMap, page);                        
             String fragments = getActionParameter(requestContext, FRAGMENTS);
             if (fragments == null)

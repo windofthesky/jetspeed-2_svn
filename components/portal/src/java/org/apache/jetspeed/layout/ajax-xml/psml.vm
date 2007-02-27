@@ -49,6 +49,7 @@
   />
   <name>$page.Name</name>
   <path>$page.Path</path>
+  <profiledPath>$profiledPath</profiledPath>
   <title>$esc.xml($!page.Title)</title>
   <short-title>$esc.xml($!page.ShortTitle)</short-title>
 #foreach ($meta in $page.Metadata.Fields)

@@ -59,6 +59,7 @@ public interface Constants
     public static final String PORTLETS = "portlets";
     public static final String PAGES = "pages";
     public static final String PAGE = "page";
+    public static final String PROFILED_PATH = "profiledPath";
     public static final String FOLDER = "folder";
     public static final String FOLDERS = "folders";
     public static final String SIZES = "sizes";
