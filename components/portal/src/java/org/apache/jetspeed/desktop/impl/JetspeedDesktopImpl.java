@@ -143,7 +143,11 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             HeaderResource hr = getHeaderResourceFactory().getHeaderResouce( request );
             JetspeedDesktopContext desktopContext = new JetspeedDesktopContextImpl( request, this.baseUrlAccess, theme, hr, defaultLayoutTemplateExtension );
             
-            layoutDecorationTemplatePath = desktopContext.getLayoutTemplatePath();
+            String layoutTemplateIdPropertyName = null;
+            if ( "true".equals( request.getRequest().getParameter( "jsprintmode" ) ) )
+                layoutTemplateIdPropertyName = JetspeedDesktopContext.LAYOUT_PRINT_TEMPLATE_ID_PROP;
+            
+            layoutDecorationTemplatePath = desktopContext.getLayoutTemplatePath( layoutTemplateIdPropertyName );
             layoutDecorationTemplatePathWasAssigned = true;
             
             RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher( layoutDecorationTemplatePath );

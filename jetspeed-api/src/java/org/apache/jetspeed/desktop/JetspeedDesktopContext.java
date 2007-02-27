@@ -36,6 +36,8 @@ public interface JetspeedDesktopContext
     String LAYOUT_TEMPLATE_EXTENSION_PROP = "template.extension";
 
     String LAYOUT_TEMPLATE_ID_PROP = "template.id";
+    String LAYOUT_PRINT_TEMPLATE_ID_PROP = "template.print.id";
+    String LAYOUT_PORTALUSER_TEMPLATE_ID_PROP = "template.portaluser.id";
     
     String LAYOUT_TEMPLATE_ID_DEFAULT = "desktop";
 

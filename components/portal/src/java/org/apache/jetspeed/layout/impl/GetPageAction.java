@@ -16,6 +16,7 @@
 package org.apache.jetspeed.layout.impl;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -110,12 +111,53 @@ public class GetPageAction
                     return success;
                 }
             }
+            
             Map fragSizes = new HashMap();
             Map portletIcons = new HashMap();
-            retrieveFragmentSpecialProperties( requestContext, page.getRootFragment(), fragSizes, portletIcons );
+            
+            String singleLayoutId = getActionParameter(requestContext, LAYOUTID);
+            if ( singleLayoutId != null )
+            {   // build page representation with single layout
+                Fragment currentLayoutFragment = page.getFragmentById( singleLayoutId );
+                if ( currentLayoutFragment == null )
+                {
+                    throw new Exception("layout id not found: " + singleLayoutId );
+                }
+                Fragment currentPortletFragment = null;
+                
+                String singlePortletId = getActionParameter(requestContext, PORTLETENTITY);
+                if ( singlePortletId != null )
+                {
+                    Iterator layoutChildIter = currentLayoutFragment.getFragments().iterator();
+                    while ( layoutChildIter.hasNext() )
+                    {
+                        Fragment childFrag = (Fragment)layoutChildIter.next();
+                        if ( childFrag != null )
+                        {
+                            if ( singlePortletId.equals( childFrag.getId() ) )
+                            {
+                                currentPortletFragment = childFrag;
+                                break;
+                            }
+                        }
+                    }
+                    if ( currentPortletFragment == null )
+                    {
+                        throw new Exception("portlet id " + singlePortletId + " not found in layout " + singleLayoutId );
+                    }
+                    resultMap.put( "portletsingleId", currentPortletFragment.getId() );
+                }
+                
+                retrieveFragmentSpecialProperties( requestContext, currentLayoutFragment, fragSizes, portletIcons );
+                resultMap.put( "layoutsingle", currentLayoutFragment );
+            }
+            else
+            {
+                retrieveFragmentSpecialProperties( requestContext, page.getRootFragment(), fragSizes, portletIcons );
+            }
             resultMap.put( SIZES, fragSizes );
             resultMap.put( "portletIcons", portletIcons );
-        } 
+        }
         catch (Exception e)
         {
             // Log the exception
