@@ -1063,7 +1063,7 @@
     </j:if>    
   </goal>
 
-  <goal name="j2:buildMultiDbSQL" >
+  <goal name="j2:buildDbSQL" >
      <!-- this task builds up ALL the sql for each of the different possible database systems.  The installer may need these -->
      <!-- it's done this way because the portal.conf.sql task clears the directory before running -->
      <delete dir="installer2/temp-portal-sql" />
@@ -1100,16 +1100,18 @@
 
   </goal>
 
-  <goal name="j2:buildDerbyInstaller">
-    <ant:property name="install.name" value="Jetspeed2.1-derby" /> 
-    <ant:copy file="${basedir}/installer2/antinstall-config-derby.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
+  <goal name="j2:buildMinInstaller">
+    <attainGoal name="j2:buildDbSQL" />
+    <ant:property name="install.name" value="Jetspeed2.1-Min" /> 
+    <ant:copy file="${basedir}/installer2/antinstall-config-min.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
+    <ant:property name="install.minOnly" value="true" /> 
     <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />
   </goal> 
  
-  <goal name="j2:buildMultiInstaller">
-    <attainGoal name="j2:buildMultiDbSQL" />
-    <ant:property name="install.name" value="Jetspeed2.1-MultiDB" />
-    <ant:copy file="${basedir}/installer2/antinstall-config-multi.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
+  <goal name="j2:buildFullInstaller">
+    <attainGoal name="j2:buildDbSQL" />
+    <ant:property name="install.name" value="Jetspeed2.1-Full" />
+    <ant:copy file="${basedir}/installer2/antinstall-config-full.xml" tofile="${basedir}/installer2/antinstall-config.xml" overwrite="true" />
     <ant:ant dir="${basedir}/installer2" antfile="build-installer.xml" target="selfextract" />
   </goal>
  

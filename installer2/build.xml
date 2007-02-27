@@ -13,7 +13,15 @@
 	<echo>basic install starting</echo>
         <mkdir dir="${basedir}/temp"/>
         <unzip src="installpack.zip" dest="${basedir}/temp"/>
-	<echo>install unpack done</echo>
+
+    	
+    	<condition property="fork.db" value="true">
+    		<equals arg1="${dbName}" arg2="derby"/> 
+    	</condition>
+	
+   	<property name="DATAFILE" value="${basedir}/database/j2-seed.xml"/>		
+    	
+    <echo>install unpack done</echo>
         
 	<echo> moving stuff from the temp dir </echo>
 	<echo>now configuring</echo>
@@ -43,74 +51,95 @@
 	<chmod perm="700" dir="${installDir}/bin" includes="**/*.sh"/>
 	<echo>basic install finished</echo>
     </target>    
+
+	   <target name="MinInstall">
+	  		
+	   		<property name="DATAFILE" value="${basedir}/database/min/j2-seed.xml"/>		
+			<echo>resetting DATAFILE for seed data to ${DATAFILE}</echo>
+	 	   	
+		</target>
 	
-    <target name="generateDb">
-        <echo>starting Db generation</echo>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/schema/phase1-schema.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/schema/phase2-schema.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/schema/phase3ojb-schema.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/schema/prefs-schema.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/schema/registry-schema.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/schema/security-schema.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/${dbName}/populate-userinfo-for-default-psml.sql"
-            print="yes" output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
-            password="${dbPassword}"
-            src="${basedir}/database/populate-db-default.sql" print="yes"
-            output="outputfile.txt">
-            <classpath>
-                <pathelement location="${jdbcDriverJar}"/>
-            </classpath>
-        </sql>
-        <echo>DB generation done!</echo>
+	   <target name="generateStandardDb" unless="fork.db">
+	        <echo>starting Db generation</echo>
+	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	            password="${dbPassword}"
+	            src="${basedir}/database/${dbName}/schema/phase1-schema.sql"
+	            print="yes" output="outputfile.txt">
+	            <classpath>
+	                <pathelement location="${jdbcDriverJar}"/>
+	            </classpath>
+	        </sql>
+	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	            password="${dbPassword}"
+	            src="${basedir}/database/${dbName}/schema/phase2-schema.sql"
+	            print="yes" output="outputfile.txt">
+	            <classpath>
+	                <pathelement location="${jdbcDriverJar}"/>
+	            </classpath>
+	        </sql>
+	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	            password="${dbPassword}"
+	            src="${basedir}/database/${dbName}/schema/phase3ojb-schema.sql"
+	            print="yes" output="outputfile.txt">
+	            <classpath>
+	                <pathelement location="${jdbcDriverJar}"/>
+	            </classpath>
+	        </sql>
+	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	            password="${dbPassword}"
+	            src="${basedir}/database/${dbName}/schema/prefs-schema.sql"
+	            print="yes" output="outputfile.txt">
+	            <classpath>
+	                <pathelement location="${jdbcDriverJar}"/>
+	            </classpath>
+	        </sql>
+	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	            password="${dbPassword}"
+	            src="${basedir}/database/${dbName}/schema/registry-schema.sql"
+	            print="yes" output="outputfile.txt">
+	            <classpath>
+	                <pathelement location="${jdbcDriverJar}"/>
+	            </classpath>
+	        </sql>
+	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	            password="${dbPassword}"
+	            src="${basedir}/database/${dbName}/schema/security-schema.sql"
+	            print="yes" output="outputfile.txt">
+	            <classpath>
+	                <pathelement location="${jdbcDriverJar}"/>
+	            </classpath>
+	        </sql>
+	        <echo>DB generation done!</echo>
+	    </target>
+	
+	
+
+	
+	
+   <target name="generateDerby" if="fork.db">
+	  <antcall target="createDerbyDB">
+    <param name="databaseScript" value="${basedir}/database/${dbName}/schema/phase1-schema.sql"/>
+	  </antcall>
+	  <antcall target="createDerbyDB">
+    <param name="databaseScript" value="${basedir}/database/${dbName}/schema/phase2-schema.sql"/>
+	  </antcall>
+	  <antcall target="createDerbyDB">
+    <param name="databaseScript" value="${basedir}/database/${dbName}/schema/phase3ojb-schema.sql"/>
+	  </antcall>
+	  <antcall target="createDerbyDB">
+    <param name="databaseScript" value="${basedir}/database/${dbName}/schema/prefs-schema.sql"/>
+	  </antcall>
+	  <antcall target="createDerbyDB">
+    <param name="databaseScript" value="${basedir}/database/${dbName}/schema/registry-schema.sql"/>
+	  </antcall>
+	  <antcall target="createDerbyDB">
+    <param name="databaseScript" value="${basedir}/database/${dbName}/schema/security-schema.sql"/>
+	  </antcall>
+
+   </target>
+	
+	
+    <target name="generateDb" depends="generateStandardDb, generateDerby" >
     </target>
     
 	<target name="layoutPortlets">
@@ -121,7 +150,6 @@
     </target>
 	<target name="j2admin">
 			<copy todir="${installDir}/webapps/jetspeed/WEB-INF/deploy" file="${basedir}/portlet_apps/j2-admin.war" />		   
-                        <delete file="${installDir}/webapps/jetspeed/WEB-INF/deploy/zipsucks" />
 	</target>
 	<target name="jpetstorePortlets">
 			<copy todir="${installDir}/webapps/jetspeed/WEB-INF/deploy" file="${basedir}/portlet_apps/jpetstore.war" />		   
@@ -139,4 +167,117 @@
 	  	<copy todir="${installDir}/webapps/jetspeed/WEB-INF/deploy" file="${basedir}/portlet_apps/rss.war" />		   
 	</target>
 
+	
+	
+    <!-- ============== Data-Serializer for seed data============== -->
+    <target name='populateDB'>
+
+    <mkdir dir="${basedir}/temp/dbseed"/>
+
+    <property name="assemblyDir" value="${basedir}/temp/dbseed/assembly"/>	
+   
+    	
+	<echo> Data-Serializer based on ${assemblyDir}</echo>
+
+    	<!-- copy assembly files -->
+    	<mkdir dir="${assemblyDir}"/>
+    	<copy todir="${assemblyDir}" overwrite="true" failonerror="true">
+    	      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/assembly">
+    	        <include name="security*.xml"/>
+    			<include name="capabilities.xml"/>           
+    			<include name="prefs.xml"/>           
+    			<include name="profiler.xml"/>      
+    			<include name="registry.xml"/>       
+    			<include name="transaction.xml"/>       
+    			<include name="cache.xml"/>    
+    	      </fileset>
+    	     </copy>
+
+
+		<copy todir="${assemblyDir}" overwrite="true" failonerror="true">
+	      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/assembly/alternate/">
+	        <include name="request-context.xml"/> 
+	      </fileset>
+	     </copy>
+
+    	
+    	
+    	<!-- copy boot files -->
+
+    	
+    <mkdir dir="${assemblyDir}/boot"/>
+
+	<copy todir="${assemblyDir}/boot" overwrite="true" failonerror="true">
+      <fileset dir="${jetspeedDir}/WEB-INF/assembly/boot">
+        <include name="*.xml"/>
+      </fileset>
+    </copy>
+
+	<echo> running seed with data: ${DATAFILE}  arguments: -b ${assemblyDir}/boot/ -c ${assemblyDir}/  database-url: ${org.apache.jetspeed.database.url}</echo>
+    	
+  	
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+        <classpath>
+          <pathelement path="${classpath}"/>
+            <fileset dir="${installDir}/shared/lib">
+              <include name="**/*.jar"/>
+            </fileset>
+          <fileset dir="${jetspeedDir}/WEB-INF/lib">
+            <include name="**/*.jar"/>
+          </fileset>
+            <fileset dir="${installDir}/temp_install">
+              <include name="**/*.jar"/>
+            </fileset>
+            <fileset dir="${installDir}/common/lib">
+              <include name="**/*.jar"/>
+            </fileset>
+          <pathelement location="${jdbcDriverJar}"/>
+          <pathelement location="${installDir}/shared/classes"/>
+          <pathelement location="${jetspeedDir}/WEB-INF/classes"/>
+        </classpath>
+		
+        <arg line="-I &quot;${DATAFILE}&quot; -a ${jetspeedDir} -b ${assemblyDir}/boot/ -c ${assemblyDir}/ -dc ${jdbcDriverClass} -ds ${jdbcUrl} -du ${dbUser} -dp ${dbPassword}"/>  
+    </java>
+   </target>
+
+    <!-- ============== Data-Serializer for seed data============== -->
+    <target name='createDerbyDB'>
+
+    	
+	<echo> createDerbyDB for ${databaseScript}</echo>
+    	
+  	
+		
+	     <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
+	        <classpath>
+	          <pathelement path="${classpath}"/>
+	            <fileset dir="${installDir}/shared/lib">
+	              <include name="**/*.jar"/>
+	            </fileset>
+	          <fileset dir="${jetspeedDir}/WEB-INF/lib">
+	            <include name="**/*.jar"/>
+	          </fileset>
+	            <fileset dir="${installDir}/temp_install">
+	              <include name="**/*.jar"/>
+	            </fileset>
+	            <fileset dir="${installDir}/common/lib">
+	              <include name="**/*.jar"/>
+	            </fileset>
+	          <pathelement location="${jdbcDriverJar}"/>
+	          <pathelement location="${installDir}/shared/classes"/>
+	          <pathelement location="${jetspeedDir}/WEB-INF/classes"/>
+	        </classpath>
+
+	     	
+	     	<arg line="driver=${jdbcDriverClass} 
+	      url=${jdbcUrl}
+	      userid=${dbUser} 
+	      password=${dbPassword}
+	      src=&quot;${databaseScript}&quot; autocommit=true
+	      onerror=abort"/>
+	    </java>
+	 
+	  </target>
+	  
+    	
 </project>
