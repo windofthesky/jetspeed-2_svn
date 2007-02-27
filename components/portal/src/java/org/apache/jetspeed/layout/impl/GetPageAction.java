@@ -32,6 +32,8 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
+import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.common.Parameter;
 import org.apache.pluto.om.common.ParameterSet;
@@ -93,7 +95,16 @@ public class GetPageAction
             }
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
-            resultMap.put(PROFILED_PATH, requestContext.getPath());
+            
+            PortalSiteRequestContext siteRequestContext = (PortalSiteRequestContext)requestContext.getAttribute(ProfilerValveImpl.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY);
+            if (siteRequestContext == null)
+            {
+                success = false;
+                resultMap.put(REASON, "Missing portal site request context from ProfilerValve");
+                return success;
+            }
+            
+            resultMap.put(PROFILED_PATH, siteRequestContext.getPage().getPath() );  // requestContext.getPath());
             putSecurityInformation(resultMap, page);                        
             String fragments = getActionParameter(requestContext, FRAGMENTS);
             if (fragments == null)
