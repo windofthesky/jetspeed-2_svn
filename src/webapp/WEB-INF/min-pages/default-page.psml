@@ -29,14 +29,14 @@ limitations under the License.
   <metadata name="title" xml:lang="ko">Jetspeed 2 에 오신 것을 환영합니다</metadata>
 
 <fragment id="jsmin-1" type="layout" name="jetspeed-layouts::VelocityOneColumn"> 
-  	<fragment id="jsmin-2" type="layout" name="jetspeed-layouts::VelocityThreeColumns">
+  	<fragment id="jsmin-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     	<fragment id="jsmin-3" type="portlet" name="j2-admin::LoginPortlet">
-      		<property layout="ThreeColumns" name="row" value="0" />
+      		<property layout="ThreeColumns" name="row" value="1" />
       		<property layout="ThreeColumns" name="column" value="0" />
     	</fragment>                                
     	<fragment id="jsmin-4" type="portlet" name="j2-admin::LocaleSelector">
       		<property layout="ThreeColumns" name="row" value="0" />
-      		<property layout="ThreeColumns" name="column" value="1" />
+      		<property layout="ThreeColumns" name="column" value="0" />
     	</fragment>                                
     	<fragment id="jsmin-5" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
       		<property layout="ThreeColumns" name="row" value="0" />
