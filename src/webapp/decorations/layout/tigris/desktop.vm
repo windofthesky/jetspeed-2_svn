@@ -38,7 +38,7 @@ limitations under the License.
   <table>
     <tr>
       <td>
-        <div>
+        <div class='logo'>
         <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_med.png')" alt="Logo" border="0"/>
         </div>
       </td>
