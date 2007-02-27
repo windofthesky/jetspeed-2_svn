@@ -339,10 +339,18 @@ public class JetspeedDeploy implements Deploy
         String name = file.getName();
         String portletApplicationName = name;
 
-        int index = name.lastIndexOf(".");
+        int index = name.lastIndexOf("-infused.war");
         if (index > -1)
         {
-            portletApplicationName = name.substring(0, index);
+            portletApplicationName = name.substring(0, index);            
+        }
+        else
+        {
+            index = name.lastIndexOf(".");
+            if (index > -1)
+            {
+                portletApplicationName = name.substring(0, index);
+            }            
         }
         return portletApplicationName;
     }
