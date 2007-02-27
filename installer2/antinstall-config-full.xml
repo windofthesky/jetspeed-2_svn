@@ -29,7 +29,7 @@ the installer script should put the locations of these resources on the classpat
 <installer ui="swing,text" verbose="false"
     lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
     name="Jetspeed 2.1 Installer" windowIcon="/resources/feather-small.png"
-    defaultImageResource="/resources/apache-portals.gif" minJavaVersion="1.4">
+    defaultImageResource="/resources/apache-portals.gif" minJavaVersion="1.4" wide="650:250">
     <!--  each page element represents a page of the installer -->
     <page type="input" name="intro" displayText="Jetspeed 2.1">
         <comment displayText="Welcome to Jetspeed 2.1!" title="true"/>
@@ -45,7 +45,7 @@ the installer script should put the locations of these resources on the classpat
         <directory property="installDir" 
             defaultValue="/usr/local/ApacheJetspeed-2.1"
             defaultValueWin="c:/ApacheJetspeed-2.1"
-            displayText="Select an installation directory" create="true"/>
+            displayText="Select an installation directory" create="true" checkExists="true"/>
     </page>
     <page type="input" name="requiredComponents" displayText="Required Components">
         <comment displayText="Required Components - Click Next" bold="true"/>
