@@ -167,7 +167,7 @@
     <goal name="jetspeed2:war:install">
         <maven:reactor basedir="${basedir}"
             includes="applications/**/project.xml,layout-portlets/project.xml"
-            excludes="applications/project.xml" goals="war:install" banner="Build and Install all Jetspeed 2 wars"
+            excludes="applications/project.xml,applications/gems/project.xml" goals="war:install" banner="Build and Install all Jetspeed 2 wars"
             postProcessing="false" ignoreFailures="false" />
     </goal>
     

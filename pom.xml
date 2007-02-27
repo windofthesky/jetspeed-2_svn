@@ -29,7 +29,7 @@ limitations under the License.
 
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <artifactId>jetspeed-2</artifactId>
-    <version>2.1-dev</version>
+    <version>2.1</version>
     <packaging>pom</packaging>
     <name>Jetspeed-2 Enterprise Portal</name>
     <description>
@@ -181,13 +181,13 @@ limitations under the License.
         <ojb.version>1.0.3</ojb.version>
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
-        <org.apache.portals.bridges.common.version>1.0.1-dev</org.apache.portals.bridges.common.version>
-        <org.apache.portals.bridges.frameworks.version>1.0.1-dev</org.apache.portals.bridges.frameworks.version>
-        <org.apache.portals.bridges.jpetstore.version>1.0.1-dev</org.apache.portals.bridges.jpetstore.version>
-        <org.apache.portals.bridges.jsf-demo.version>1.0.1-dev</org.apache.portals.bridges.jsf-demo.version>
-        <org.apache.portals.bridges.jsf.version>1.0.1-dev</org.apache.portals.bridges.jsf.version>
-        <org.apache.portals.bridges.velocity.version>1.0.1-dev</org.apache.portals.bridges.velocity.version>
-        <org.apache.portals.bridges.portletfilter.version>1.0.1-dev</org.apache.portals.bridges.portletfilter.version>
+        <org.apache.portals.bridges.common.version>1.0.1</org.apache.portals.bridges.common.version>
+        <org.apache.portals.bridges.frameworks.version>1.0.1</org.apache.portals.bridges.frameworks.version>
+        <org.apache.portals.bridges.jpetstore.version>1.0.1</org.apache.portals.bridges.jpetstore.version>
+        <org.apache.portals.bridges.jsf-demo.version>1.0.1</org.apache.portals.bridges.jsf-demo.version>
+        <org.apache.portals.bridges.jsf.version>1.0.1</org.apache.portals.bridges.jsf.version>
+        <org.apache.portals.bridges.velocity.version>1.0.1</org.apache.portals.bridges.velocity.version>
+        <org.apache.portals.bridges.portletfilter.version>1.0.1</org.apache.portals.bridges.portletfilter.version>
         <oro.version>2.0.7</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
         <regexp.version>1.2</regexp.version>
@@ -1240,7 +1240,7 @@ limitations under the License.
             <id>ate</id>
             <email>ate@apache.org</email>
             <timezone>+2</timezone>
-            <organization>iWise B.V.</organization>
+            <organization>Hippo</organization>
             <roles>
                 <role>Java Developer</role>
             </roles>

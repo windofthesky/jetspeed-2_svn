@@ -304,7 +304,7 @@ http://dist.codehaus.org/, http://cvs.apache.org/repository]]>
 						install the maven-plugin as follows:
 						<source>
 							<![CDATA[
-maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-2 -Dversion=2.0 plugin:download]]>
+maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-2 -Dversion=2.1 plugin:download]]>
 						</source>
 						<i>
 							Note: you must set the version to the

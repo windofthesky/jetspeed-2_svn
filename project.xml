@@ -22,4 +22,17 @@ limitations under the License.
   <groupId>org.apache.portals.jetspeed-2</groupId>
   <artifactId>jetspeed</artifactId>
   <currentVersion>${jetspeed.version}</currentVersion>
+  
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>../${pom.artifactId}/META-INF</targetPath>
+        <includes>
+          <include>LICENSE.TXT</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+  
 </project>
