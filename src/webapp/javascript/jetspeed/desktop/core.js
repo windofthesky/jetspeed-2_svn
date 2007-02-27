@@ -262,17 +262,46 @@ jetspeed.initializeDesktop = function()
         jetspeed.prefs.windowActionNoImage = noImageMap;
     }
 
+    var docUrlObj = jetspeed.url.parse( document.location.href );
+    var printModeOnly = jetspeed.url.getQueryParameter( docUrlObj, "jsprintmode" ) == "true";
+    if ( printModeOnly )
+    {
+        printModeOnly = {};
+        printModeOnly.action = jetspeed.url.getQueryParameter( docUrlObj, "jsaction" );
+        printModeOnly.entity = jetspeed.url.getQueryParameter( docUrlObj, "jsentity" );
+        printModeOnly.layout = jetspeed.url.getQueryParameter( docUrlObj, "jslayoutid" );
+        jetspeed.prefs.printModeOnly = printModeOnly;
+        jetspeed.prefs.windowTiling = true;
+        jetspeed.prefs.windowHeightExpand = true;
+    }
+
     jetspeed.prefs.portletDecorationsConfig = {};
     for ( var i = 0 ; i < jetspeed.prefs.portletDecorationsAllowed.length ; i++ )
     {
         jetspeed.loadPortletDecorationConfig( jetspeed.prefs.portletDecorationsAllowed[ i ] );
     }
     
+    jetspeed.debugWindowLoad();
+
+    if ( jetspeed.prefs.printModeOnly != null )
+    {
+        for ( var portletDecorationName in jetspeed.prefs.portletDecorationsConfig )
+        {
+            var pdConfig = jetspeed.prefs.portletDecorationsConfig[ portletDecorationName ];
+            if ( pdConfig != null )
+            {
+                pdConfig.windowActionButtonOrder = null;
+                pdConfig.windowActionMenuOrder = null;
+                pdConfig.windowDisableResize = true;
+                pdConfig.windowDisableMove = true;
+            }
+        }
+    }
+
     jetspeed.loadPage();
 };
 jetspeed.loadPage = function()
 {
-    jetspeed.debugWindowLoad();
     jetspeed.page = new jetspeed.om.Page();
     jetspeed.page.retrievePsml();
 };
@@ -1167,7 +1196,13 @@ dojo.lang.extend( jetspeed.om.Page,
         if ( this.psmlPath == null )
             this.setPsmlPathFromDocumentUrl() ;
 
-        return jetspeed.url.basePortalUrl() + this.psmlPath ;
+        var psmlUrl = jetspeed.url.basePortalUrl() + this.psmlPath;
+        if ( jetspeed.prefs.printModeOnly != null )
+        {
+            psmlUrl = jetspeed.url.addQueryParameter( psmlUrl, "layoutid", jetspeed.prefs.printModeOnly.layout );
+            psmlUrl = jetspeed.url.addQueryParameter( psmlUrl, "entity", jetspeed.prefs.printModeOnly.entity ).toString();
+        }
+        return psmlUrl;
     },
     
     retrievePsml: function( pageContentListener )
@@ -1186,7 +1221,6 @@ dojo.lang.extend( jetspeed.om.Page,
 
     loadFromPSML: function( psml )
     {
-        dojo.debug( "loadFromPSML starting" );
         // parse PSML
         var parsedRootLayoutFragment = this._parsePSML( psml );
 
@@ -1230,28 +1264,46 @@ dojo.lang.extend( jetspeed.om.Page,
             }
         }
 
-        // render portlets
-        if ( windowsToRender && windowsToRender.length > 0 )
+        if ( jetspeed.prefs.printModeOnly == null )
         {
-            jetspeed.doRenderAll( null, windowsToRender, true );
+            // render portlets
+            if ( windowsToRender && windowsToRender.length > 0 )
+            {
+                jetspeed.doRenderAll( null, windowsToRender, true );
+            }
+
+            // initialize portlet window state
+            this._portletsInitializeWindowState( portletsByPageColumn[ "z" ] );
+
+            // load menus
+            this.retrieveAllMenus();
+    
+            // render page buttons
+            this.renderPageControls();
+            this.syncPageControls();
+    
+            // detect edit mode force - likely to be temporary
+            var pageEditorInititate = jetspeed.url.getQueryParameter( document.location.href, jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER );
+            if ( ( pageEditorInititate != null && pageEditorInititate == "true" ) || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null )
+            {
+                if ( this.actions != null && ( this.actions[ jetspeed.id.ACTION_NAME_EDIT ] != null || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null ) )
+                    jetspeed.editPageInitiate();
+            }
         }
-
-        // initialize portlet window state
-        this._portletsInitializeWindowState( portletsByPageColumn[ "z" ] );
-
-        // load menus
-        this.retrieveAllMenus();
-
-        // render page buttons
-        this.renderPageControls();
-        this.syncPageControls();
-
-        // detect edit mode force - likely to be temporary
-        var pageEditorInititate = jetspeed.url.getQueryParameter( document.location.href, jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER );
-        if ( ( pageEditorInititate != null && pageEditorInititate == "true" ) || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null )
+        else
         {
-            if ( this.actions != null && ( this.actions[ jetspeed.id.ACTION_NAME_EDIT ] != null || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null ) )
-                jetspeed.editPageInitiate();
+            var portlet = null;
+            for ( var portletIndex in this.portlets )
+            {
+                portlet = this.portlets[portletIndex];
+                break;
+            }
+            if ( portlet != null )
+            {
+                portlet.renderAction( null, jetspeed.prefs.printModeOnly.action );
+
+                this._portletsInitializeWindowState( portletsByPageColumn[ "z" ] );
+            }
         }
     },
     _parsePSML: function( psml )
@@ -1354,16 +1406,23 @@ dojo.lang.extend( jetspeed.om.Page,
                         dojo.raise( "_parsePSMLLayoutFragment called with layout fragment that contains more than one sizes property: " + layoutNode );
                         return null;
                     }
-
-                    propVal = child.getAttribute( "value" );
-                    if ( propVal != null && propVal.length > 0 )
+                    if ( jetspeed.prefs.printModeOnly != null )
                     {
-                        sizes = propVal.split( "," );
-                        for ( var j = 0 ; j < sizes.length ; j++ )
+                        sizes = [ "100" ];
+                        sizesSum = 100;
+                    }
+                    else
+                    {
+                        propVal = child.getAttribute( "value" );
+                        if ( propVal != null && propVal.length > 0 )
                         {
-                            var re = /^[^0-9]*([0-9]+)[^0-9]*$/;
-                            sizes[j] = sizes[j].replace( re, "$1" );
-                            sizesSum += new Number( sizes[j] );
+                            sizes = propVal.split( "," );
+                            for ( var j = 0 ; j < sizes.length ; j++ )
+                            {
+                                var re = /^[^0-9]*([0-9]+)[^0-9]*$/;
+                                sizes[j] = sizes[j].replace( re, "$1" );
+                                sizesSum += new Number( sizes[j] );
+                            }
                         }
                     }
                 }
@@ -1690,7 +1749,7 @@ dojo.lang.extend( jetspeed.om.Page,
                     
                     var portletWindowPositionStatic = jetspeed.prefs.windowTiling;
                     var portletWindowHeightToFit = jetspeed.prefs.windowHeightExpand;
-                    if ( portletWindowExtendedProperty != null && jetspeed.prefs.windowTiling )
+                    if ( portletWindowExtendedProperty != null && jetspeed.prefs.windowTiling && jetspeed.prefs.printModeOnly == null )
                     {
                         var extPropData = portletWindowExtendedProperty.split( jetspeed.id.PORTLET_PROP_DESKTOP_EXTENDED_PAIR_SEPARATOR );
                         var extProp = null, extPropLen = 0, extPropName = null, extPropValue = null, extPropFlag = false;
@@ -3180,17 +3239,27 @@ dojo.lang.extend( jetspeed.om.Portlet,
         delete this.properties[ name ];
     },
 
-    renderAction: function( actionName )
+    renderAction: function( actionName, actionUrlOverride )
     {
-        if ( actionName == null ) return;
-        var action = this.getAction( actionName );
-        if ( action == null ) return;
-        if ( action.url == null ) return;
-        var renderActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.PORTLET + jetspeed.page.getPath() + "/" + action.url;
+        var action = null;
+        if ( actionName != null )
+            action = this.getAction( actionName );
+        var actionUrl = actionUrlOverride;
+        if ( actionUrl == null && action != null )
+            actionUrl = action.url;
+        if ( actionUrl == null ) return;
+        var renderActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.PORTLET + "/" + actionUrl + jetspeed.page.getPath();
         if ( actionName != jetspeed.id.ACTION_NAME_PRINT )
             this.retrieveContent( null, { url: renderActionUrl } );
-        //else
-        //    window.open( renderActionUrl, "jsportlet_print", "status,scrollbars,resizable" );
+        else
+        {
+            var printmodeUrl = jetspeed.page.getPageUrl();
+            printmodeUrl = jetspeed.url.addQueryParameter( printmodeUrl, "jsprintmode", "true" );
+            printmodeUrl = jetspeed.url.addQueryParameter( printmodeUrl, "jsaction", escape( action.url ) );
+            printmodeUrl = jetspeed.url.addQueryParameter( printmodeUrl, "jsentity", this.entityId );
+            printmodeUrl = jetspeed.url.addQueryParameter( printmodeUrl, "jslayoutid", this.lastSavedWindowState.layout );
+            window.open( printmodeUrl.toString(), "jsportlet_print", "status,scrollbars,resizable,menubar" );
+        }
     },
     getAction: function( name )
     {
