@@ -1313,7 +1313,7 @@ dojo.lang.extend( jetspeed.om.Page,
             dojo.raise( "unexpected zero or multiple <page> elements in psml" );
         var pageElement = pageElements[0];
         var children = pageElement.childNodes;
-        var simpleValueLNames = new RegExp( "(name|path|title|short-title)" );
+        var simpleValueLNames = new RegExp( "(name|path|profiledPath|title|short-title)" );
         var rootFragment = null;
         var rootFragmentActions = {};
         for ( var i = 0 ; i < children.length ; i++ )
@@ -2577,10 +2577,10 @@ dojo.lang.extend( jetspeed.om.Page,
         this.pagePathAndQuery = pagePath;
         return pagePath;
     },
-    getPageDirectory: function()
+    getPageRealDirectory: function()
     {
         var pageDir = "/";
-        var pagePath = this.getPath();
+        var pagePath = this.getRealPath();
         if ( pagePath != null )
         {
             var lastSep = pagePath.lastIndexOf( "/" );
@@ -2619,6 +2619,10 @@ dojo.lang.extend( jetspeed.om.Page,
         return this.name;
     },
     getPath: function()
+    {
+        return this.profiledPath;
+    },
+    getRealPath: function()
     {
         return this.path;
     },
