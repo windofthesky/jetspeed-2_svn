@@ -309,7 +309,7 @@ maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-
 						<i>
 							Note: you must set the version to the
 							specific version you want to install,
-							"2.0-M3" is just an example.
+							"2.1" is just an example.
 						</i>
 					</p>
 				</subsection>
