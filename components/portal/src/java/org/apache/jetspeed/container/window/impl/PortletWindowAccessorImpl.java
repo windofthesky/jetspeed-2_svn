@@ -314,7 +314,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         {
             PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
             PortletDefinitionComposite windowDef = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
-            if(def != null && def.getUniqueName().equals(windowDef.getUniqueName()))
+            if(def != null && windowDef != null && def.getUniqueName() != null && def.getUniqueName().equals(windowDef.getUniqueName()))
             {
                 removeWindow(window);
             }

@@ -53,7 +53,7 @@ limitations under the License.
     <tr>
       <td>
         <div class="logo">
-        <img src='<%= desktop.getLayoutBaseUrl("images/logo.gif") %>' alt="Logo" border="0"/>
+        <img src='<%= desktop.getLayoutBaseUrl("images/Jetspeed_white_med.png") %>' alt="Logo" border="0"/>
         </div>
       </td>
       <td>
@@ -84,5 +84,8 @@ limitations under the License.
 <!-- End Taskbar -->
 </div>
 <!-- End Jetspeed Page -->
+  <p>
+     <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
+    </p>
 </body>
 </html>

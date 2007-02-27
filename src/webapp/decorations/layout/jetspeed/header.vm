@@ -56,7 +56,10 @@ limitations under the License.
 </p>
   <p>
   #includeTabsNavigation($site.siblingPages)
-  <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>  
+## <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>  
+#if ($request.getUserPrincipal())
+<span style="position:absolute;right:5em"><a href="#BaseHref()login/logout">Logout</a></span>   
+#end 
   #PageActionBar()
   </p>
 </p>

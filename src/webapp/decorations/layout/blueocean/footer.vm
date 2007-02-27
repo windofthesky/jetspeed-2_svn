@@ -18,5 +18,8 @@ limitations under the License.
         </tr>
       </table> 
     </div>
+     <p>
+      <img src="#GetPageResource('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
+    </p>   
   </body>
 </html>

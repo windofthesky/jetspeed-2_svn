@@ -48,7 +48,7 @@ limitations under the License.
         <table border="0" cellspacing="0" cellpadding="8" width="100%">
           <tr>
             <td>
-              <h1><img src="#GetPageResource('images/jetspeed-logo.gif')" alt="Jetspeed 2 Logo" border="0"/></h1>
+              <h1><img src="#GetPageResource('images/Jetspeed_blue_med.png')" alt="Jetspeed 2 Logo" border="0"/></h1>
             </td>
             <td>
               <div align="right" id="login">
@@ -86,7 +86,10 @@ limitations under the License.
         &nbsp;
 #end
      <!-- Page Action Bar -->
-    <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>    
+##    <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>   
+#if ($request.getUserPrincipal())
+<span style="position:absolute;right:5em"><a href="#BaseHref()login/logout">Logout</a></span>   
+#end 
      #PageActionBar()
 
    </div>
