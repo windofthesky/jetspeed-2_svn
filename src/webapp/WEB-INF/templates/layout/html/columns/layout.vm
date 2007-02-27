@@ -207,7 +207,7 @@ limitations under the License.
                   <select id='decorator' name='decorator' onChange="$form$dcnt$submit">
                     <option value=''>
                     #foreach($pd in $decorationFactory.getPortletDecorations($rc))
-                      <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
+                      <option value='$pd' #if ($pd == $f.Decorator) SELECTED #end>$pd
                     #end
                   </select>
                 #end
