@@ -27,6 +27,7 @@ jetspeed.widget.PortletWindow = function()
     dojo.widget.FloatingPane.call( this );
     this.widgetType = "PortletWindow";
     this.resizable = true;
+    this.movable = true;
     this.portletInitialized = false;
     this.actionButtons = {};
     this.actionMenus = {};
@@ -571,7 +572,13 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 }
     
                 this.windowActionButtonSync();
+
+                if ( this.windowDecorationConfig.windowDisableResize )
+                    this.resizable =  false;
+                if ( this.windowDecorationConfig.windowDisableMove )
+                    this.movable =  false;
             }
+            
 
             // j2o - deletion - initialization of HtmlDragMoveSource and call to setDragHandle
             //                  equivalent is done in postCreate with PortletWindowDragMoveSource
@@ -965,12 +972,13 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     // dojo.widget.Widget create protocol
     postCreate: function( args, fragment, parentComp )
     {   // FloatingPane 0.3.1 essentially calls resizeTo - this is done in portletInitDimensions()
-        this.drag = new jetspeed.widget.PortletWindowDragMoveSource( this );
-        if ( this.constrainToContainer )
+        if ( this.movable )
         {
-            this.drag.constrainTo();
+            this.drag = new jetspeed.widget.PortletWindowDragMoveSource( this );
+            if ( this.constrainToContainer )
+                this.drag.constrainTo();
+            this.drag.setDragHandle( this.titleBar );
         }
-        this.drag.setDragHandle( this.titleBar );
         
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
         
@@ -1516,10 +1524,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( ! this.windowIsSizing )
         {
             var resizeWidget = this.getResizeHandleWidget();
-            if ( ! resizeWidget )
-                dojo.raise( "PortletWindow cannot find its resize widget" );
-        
-            if ( resizeWidget._isSizing )
+            if ( resizeWidget != null && resizeWidget._isSizing )
             {
                 dojo.event.connect( resizeWidget, "_endSizing", this, "endSizing" );
                 // NOTE: connecting directly to document.body onmouseup results in notification for second and subsequent onmouseup
