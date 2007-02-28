@@ -60,7 +60,18 @@
 		</target>
 	
 	   <target name="generateStandardDb" unless="fork.db">
-	        <echo>starting Db generation</echo>
+	   	<echo>cleaning up possible exiting Db</echo>
+  	   	  <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
+	   		  password="${dbPassword}"
+	   		  src="${basedir}/database/drop.sql"
+	   		  autocommit="true"
+	   		  onerror="continue"
+	   		  print="yes" output="outputfile.txt">
+	   		  <classpath>
+	   			  <pathelement location="${jdbcDriverJar}"/>
+	   		  </classpath>
+	   	  </sql>
+	   	<echo>starting Db generation</echo>
 	        <sql driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}"
 	            password="${dbPassword}"
 	            src="${basedir}/database/${dbName}/schema/phase1-schema.sql"
@@ -213,7 +224,7 @@
       </fileset>
     </copy>
 
-	<echo> running seed with data: ${DATAFILE}  arguments: -b ${assemblyDir}/boot/ -c ${assemblyDir}/  database-url: ${org.apache.jetspeed.database.url}</echo>
+	<echo> running seed with data: ${DATAFILE}  arguments: -b ${assemblyDir}/boot/ -c ${assemblyDir}/  database-url: ${jdbcUrl}</echo>
     	
   	
     <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
@@ -236,7 +247,7 @@
           <pathelement location="${jetspeedDir}/WEB-INF/classes"/>
         </classpath>
 		
-        <arg line="-I &quot;${DATAFILE}&quot; -a ${jetspeedDir} -b ${assemblyDir}/boot/ -c ${assemblyDir}/ -dc ${jdbcDriverClass} -ds ${jdbcUrl} -du ${dbUser} -dp ${dbPassword}"/>  
+        <arg line="-I &quot;${DATAFILE}&quot; -a ${jetspeedDir} -b file:${assemblyDir}/boot/ -c file:${assemblyDir}/ -dc ${jdbcDriverClass} -ds ${jdbcUrl} -du ${dbUser} -dp ${dbPassword}"/>  
     </java>
    </target>
 
