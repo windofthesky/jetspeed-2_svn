@@ -318,8 +318,7 @@ ant  -Dmaven.local.repo=XXX   -buildfile build-demo.xml
 		<copy tofile="portlet_apps/jsf-demo.war">
 
 			<fileset dir="${maven.repo.local}/${bridges.groupId}/wars/">
-				<!--                  <filename name="jsf-demo-${portals.bridges.jsf.version}.war" /> -->
-				<filename name="jsf-demo-1.0.war" />
+				<filename name="jsf-demo-${portals.bridges.jsf.version}.war" />
 
 			</fileset>
 
@@ -329,8 +328,7 @@ ant  -Dmaven.local.repo=XXX   -buildfile build-demo.xml
 		<copy tofile="portlet_apps/jpetstore.war">
 
 			<fileset dir="${maven.repo.local}/${bridges.groupId}/wars/">
-				<!--                  <filename name="jpetstore-${portals.bridges.jpetstore.version}.war" /> -->
-				<filename name="jpetstore-1.0.war" />
+				<filename name="jpetstore-${portals.bridges.jpetstore.version}.war" />
 			</fileset>
 
 
