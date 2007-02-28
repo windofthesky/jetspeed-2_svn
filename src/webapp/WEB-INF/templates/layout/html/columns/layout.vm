@@ -49,6 +49,8 @@ limitations under the License.
 #set($columnLayout = $renderRequest.getAttribute("columnLayout"))
 #set($decorationFactory = $renderRequest.getAttribute("decorationFactory"))
 #set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($psrc = $rc.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
+#set($profiledPage = $psrc.Page.Path)
 
 <div id="$renderResponse.namespace" class="${layoutClass} ${layoutClass}-${layoutType}">
 
@@ -82,7 +84,7 @@ limitations under the License.
     <div class="layout-edit-bar-right">
       #if($allowAddPortlet)
         <label>$messages.getString("portal.page.editing.portlet")</label>
-          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${rc.Path}")
+          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${profiledPage}")
           <a href="$response.encodeURL($chooser)">
           <img src="#GetPageResource('images/select.gif')" border="0" title="$messages.getString("portal.page.editing.addportlet")"/>
         </a>

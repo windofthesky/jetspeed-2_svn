@@ -11,19 +11,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="roledevdevelopers.psml"
+<folder
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
- 
-  <title>Jetspeed Dev</title>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
+  <title >Home</title>  
 
-  <fragment id="jetdev-1000" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-     <fragment id="jetdev-1001" type="portlet" name="j2-admin::JetspeedDeveloper"/>
-   </fragment>
-   
- <security-constraints>
-    <security-constraints-ref>dev</security-constraints-ref>
-  </security-constraints>   
-    
-</page>
+  <document-order>default-page.psml</document-order>
+  <document-order>account.psml</document-order>
+  
+  <security-constraints>
+    <owner>devmgr</owner>
+  </security-constraints>  
+</folder>
