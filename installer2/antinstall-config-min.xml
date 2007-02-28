@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN"
-    "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.7.dtd">
+    "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
 <!--
 
 This is an example installer from which you can start a project
@@ -53,14 +53,14 @@ the installer script should put the locations of these resources on the classpat
             force="true"/>
         <target displayText="Create Database" target="generateDb"
             defaultValue="true" force="true"/>
+        <target displayText="MinInstall"
+            target="MinInstall" defaultValue="true" force="true"/>
         <target displayText="Populate Database" target="populateDB"
             defaultValue="true" force="true"/>
         <target displayText="Layout Portlets" target="layoutPortlets"
             defaultValue="true" force="true"/>
         <target displayText="Portal Administration Portlets"
             target="j2admin" defaultValue="true" force="true"/>
-        <target displayText="MinInstall"
-            target="MinInstall" defaultValue="true" force="true"/>
     </page>
     
     <!--  These are some other input types       -->
@@ -82,8 +82,8 @@ the installer script should put the locations of these resources on the classpat
 <!--        <text property="dbName" displayText="Database type"
             defaultValue="derby"/>
 -->
-        <text property="dbUser" displayText="Database User Name"/>
-        <text property="dbPassword" displayText="Database Password"/>
+        <text property="dbUser" displayText="Database User Name" defaultValue=""/>
+        <text property="dbPassword" displayText="Database Password" defaultValue=""/>
         
         <text property="jdbcUrl" displayText="JDBC Connection String"
             defaultValue="jdbc:derby:${installDir}/webapps/jetspeed/WEB-INF/productiondb;create=true"/>
@@ -95,6 +95,7 @@ the installer script should put the locations of these resources on the classpat
             defaultValueWin="${installDir}/shared/lib/derby-10.1.1.0.jar"
             displayText="JDBC driver" checkExists="false"/>
         
+        <hidden property="dataFileDirectory" value="database/min"/> 
     </page> 
     <!--  page type="progress" shows a progress page with the install button 
     

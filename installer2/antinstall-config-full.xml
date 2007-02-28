@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN"
-    "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.7.dtd">
+    "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
 <!--
 
 This is an example installer from which you can start a project
@@ -94,8 +94,8 @@ the installer script should put the locations of these resources on the classpat
 <!--        <text property="dbName" displayText="Database type"
             defaultValue="derby"/>
 -->
-        <text property="dbUser" displayText="Database User Name"/>
-        <text property="dbPassword" displayText="Database Password"/>
+        <text property="dbUser" displayText="Database User Name" defaultValue=""/>
+        <text property="dbPassword" displayText="Database Password" defaultValue=""/>
         
         <text property="jdbcUrl" displayText="JDBC Connection String"
             defaultValue="jdbc:derby:${installDir}/webapps/jetspeed/WEB-INF/productiondb;create=true"/>

@@ -19,7 +19,9 @@
     		<equals arg1="${dbName}" arg2="derby"/> 
     	</condition>
 	
-   	<property name="DATAFILE" value="${basedir}/database/j2-seed.xml"/>		
+    <property name="dataFileDirectory" value="database"/>
+
+    <property name="DATAFILE" value="${basedir}/${dataFileDirectory}/j2-seed.xml"/>		
     	
     <echo>install unpack done</echo>
         
@@ -54,8 +56,9 @@
 
 	   <target name="MinInstall">
 	  		
-	   		<property name="DATAFILE" value="${basedir}/database/min/j2-seed.xml"/>		
-			<echo>resetting DATAFILE for seed data to ${DATAFILE}</echo>
+<!--	   		<property name="DATAFILE" value="${basedir}/database/min/j2-seed.xml"/>		 -->
+ 			<echo>resetting DATAFILE for seed data to ${DATAFILE}</echo>
+			<echo>resetting dataFileDirectory for seed data to ${dataFileDirectory}</echo>
 	 	   	
 		</target>
 	
