@@ -235,7 +235,7 @@ limitations under the License.
         </copy>
     </target>
 
-    <target name="hot-infused-deploy-war">
+    <target name="hot-deploy-infused-war">
         <!-- hot deploy portlet or layout application -->
         <dependencies filesetId="portletapp.dependencies.id" useScope="runtime">
             <dependency groupId="${org.apache.jetspeed.deploy.groupid}"

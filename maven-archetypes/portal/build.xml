@@ -95,6 +95,11 @@ limitations under the License.
         <copy todir="${basedir}/target/classes/archetype-resources/etc/sql">
             <fileset dir="${basedir}/../../etc/sql"/>
         </copy>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/etc/sql/derby"/>
+        <mkdir dir="${basedir}/target/classes/archetype-resources/etc/sql/derby/schema"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/etc/sql/derby/schema">
+            <fileset dir="${basedir}/../../etc/sql/derby/schema"/>
+        </copy>
 
         <!-- Assemble required etc server configuration resources -->
         <delete dir="${basedir}/target/classes/archetype-resources/etc/conf"/>
