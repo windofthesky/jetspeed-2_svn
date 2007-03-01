@@ -1588,8 +1588,8 @@ limitations under the License.
     <supported-locale>en</supported-locale>
     <!-- resource-bundle></resource-bundle -->
     <portlet-info>
-      <title>About Jetspeed</title>
-      <short-title>About</short-title>
+      <title>Jetspeed Development</title>
+      <short-title>Development</short-title>
       <keywords>developer,development,jetspeed</keywords>
     </portlet-info>
     <portlet-preferences>
