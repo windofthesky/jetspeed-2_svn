@@ -212,6 +212,12 @@
 		  <fileset dir="./src/sql/">
 		    <include name="*seed.xml"/>
 		  </fileset>
+		</copy>
+        <copy todir="${portal.sql.target.dir}/min" 		   
+		      overwrite="true" verbose="true" failonerror="false" flatten="true">
+		  <fileset dir="./src/sql/min">
+		    <include name="*seed.xml"/>
+		  </fileset>
 		</copy>                	
     </j:if>    
   </goal>
