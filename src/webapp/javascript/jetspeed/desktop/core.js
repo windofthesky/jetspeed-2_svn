@@ -193,15 +193,14 @@ jetspeed.debug =
 
     debugContainerId: ( djConfig.debugContainerId ? djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId )
 };
-jetspeed.debugInPortletWindow = true;
-//jetspeed.debugPortletEntityIdFilter = [ "dp-7", "dp-3", "dp-12", "dp-18" ]; // NOTE: uncomment causes only the listed portlets to be loaded; all others are ignored; for testing
-//portlets: [dp-3 LocaleSelector, dp-16 RoleSecurityTest, dp-17 UserInfoTest, dp-22 ForgottenPasswordPortlet, dp-18 BookmarkPortlet, dp-23 UserRegistrationPortlet, dp-7 PickANumberPortlet, dp-9 IFramePortlet, dp-12 LoginPortlet]
-jetspeed.debugPortletWindowIcons = [ "text-x-generic.png", "text-html.png", "application-x-executable.png" ];
+jetspeed.debugInPortletWindow = true;                             // dojo debug in portlet window (dojo isDebug must be true)
+//jetspeed.debugPortletEntityIdFilter = [ "dp-7", "dp-3" ];       // load listed portlets only
+//jetspeed.debugPortletEntityIdFilter = [];                       // disable all portlets
 //jetspeed.debugContentDumpIds = [ ".*" ];                        // dump all responses
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
-//jetspeed.debugContentDumpIds = [ "js-cp-selector.2" ];
-jetspeed.debugContentDumpIds = [ "moveabs-layout" ];
+//jetspeed.debugContentDumpIds = [ "js-cp-selector.2" ];          // dump portlet selector content
+//jetspeed.debugContentDumpIds = [ "moveabs-layout" ];            // dump move layout response
 
 // ... load page /portlets
 jetspeed.page = null ;
@@ -1681,21 +1680,19 @@ dojo.lang.extend( jetspeed.om.Page,
     },
 
     _layoutRegisterAndCreateColumnsModel: function( layoutFragment, parentColumn, omitLayoutHeader )
-    {   // columnSizes: sizes, columnSizesSum: sizesSum
+    {
         this.layouts[ layoutFragment.id ] = layoutFragment;
         var addedLayoutHeaderColumn = false;
         var columnsInLayout = new Array();
         if ( jetspeed.prefs.windowTiling && layoutFragment.columnSizes.length > 0 )
         {
             var subOneLast = false;
-            if ( jetspeed.browser_IE )
+            if ( jetspeed.browser_IE ) // IE can't deal with 100% here on any nested column - so subtract 0.1% - bug not fixed in IE7
                 subOneLast = true;
-            //if ( parentColumn == null && layoutFragment.columnSizesSum == 100 )
-            //    subOneLast = true;
             
             if ( parentColumn != null && ! omitLayoutHeader )
             {
-                var layoutHeaderColModelObj = new jetspeed.om.Column( 0, layoutFragment.id, ( subOneLast ? layoutFragment.columnSizesSum-1 : layoutFragment.columnSizesSum ), this.columns.length );
+                var layoutHeaderColModelObj = new jetspeed.om.Column( 0, layoutFragment.id, ( subOneLast ? layoutFragment.columnSizesSum-0.1 : layoutFragment.columnSizesSum ), this.columns.length );
                 layoutHeaderColModelObj.layoutHeader = true;
                 this.columns.push( layoutHeaderColModelObj );
                 if ( parentColumn.columnChildren == null )
@@ -1709,7 +1706,7 @@ dojo.lang.extend( jetspeed.om.Page,
             {
                 var size = layoutFragment.columnSizes[i];
                 if ( subOneLast && i == (layoutFragment.columnSizes.length - 1) )
-                    size = size - 1;
+                    size = size - 0.1;
                 var colModelObj = new jetspeed.om.Column( i, layoutFragment.id, size, this.columns.length );
                 this.columns.push( colModelObj );
                 if ( parentColumn != null )
