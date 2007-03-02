@@ -196,6 +196,7 @@ public class RenderingJobImpl implements RenderingJob
         long start = System.currentTimeMillis();
         boolean isParallelMode = false;
         PortletWindow curWindow = null;
+        boolean failedRender = false;
         
         try
         {
@@ -258,8 +259,11 @@ public class RenderingJobImpl implements RenderingJob
         {
             long end = System.currentTimeMillis();            
             boolean exceededTimeout = portletTracking.exceededTimeout(end - start, window);
-            portletContent.complete();
-
+            if (fragment.getOverriddenContent() != null)
+                portletContent.completeWithError();
+            else
+                portletContent.complete();
+            
             if (isParallelMode)
             {
                 this.renderer.addTitleToHeader(curWindow, fragment,

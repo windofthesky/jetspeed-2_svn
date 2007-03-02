@@ -90,9 +90,9 @@ public class PortletContentImpl implements PortletContent
         return complete;
     }
 
-    void setComplete( boolean state )
+    void setComplete(boolean state, boolean notify)
     {
-        if (renderer != null)
+        if (renderer != null && notify)
             renderer.notifyContentComplete(this);
         this.complete = state;
     }
@@ -111,7 +111,13 @@ public class PortletContentImpl implements PortletContent
      */
     public void complete()
     {
-       setComplete(true);
+       setComplete(true, true);
+    }
+    
+    // error case, don't notify 
+    public void completeWithError()
+    {
+        setComplete(true, false);
     }
     
     public String getCacheKey()

@@ -87,6 +87,12 @@ public class PortletContentImpl implements PortletContent
         return complete;
     }
 
+    // error case, don't notify 
+    public void completeWithError()
+    {
+        setComplete(true);
+    }
+    
     void setComplete( boolean state )
     {
         this.complete = state;

@@ -43,6 +43,12 @@ public interface PortletContent
     void complete();
     
     /**
+     * Notify that this content is complete with error
+     *
+     */
+    void completeWithError();
+    
+    /**
      * Get a writer to the content to stream content into this object
      * @return
      */
