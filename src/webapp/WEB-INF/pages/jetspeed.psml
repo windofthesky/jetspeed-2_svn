@@ -28,10 +28,10 @@ limitations under the License.
     	</fragment>                                
     	<fragment id="jsabout-12" type="portlet" name="j2-admin::AboutJetspeed">
       		<property layout="TwoColumns" name="row" value="0" />
-      		<property layout="TwoColumns" name="column" value="2" />
+      		<property layout="TwoColumns" name="column" value="1" />
     	</fragment>                                
     	<fragment id="jsabout-13" type="portlet" name="j2-admin::JetspeedDeveloper">
-      		<property layout="TwoColumns" name="row" value="0" />
+      		<property layout="TwoColumns" name="row" value="1" />
       		<property layout="TwoColumns" name="column" value="1" />
     	</fragment>                                
     </fragment>

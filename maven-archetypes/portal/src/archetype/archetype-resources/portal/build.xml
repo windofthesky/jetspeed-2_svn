@@ -21,6 +21,7 @@ limitations under the License.
     <!-- Properties -->
 
     <property name="org.apache.jetspeed.catalina.version.major" value=""/>
+    <property name="org.apache.jetspeed.database.psml" value="false"/>
     <property name="org.apache.jetspeed.services.autodeployment.server" value=""/>
     <property name="org.apache.jetspeed.services.autodeployment.port" value=""/>
     <property name="org.apache.jetspeed.services.autodeployment.user" value=""/>
@@ -62,7 +63,8 @@ limitations under the License.
             new version of the archetype plugin is developed and released.
         -->
         <!-- Assemble required portal webapp resources -->        
-        <delete dir="\${basedir}/target/webapp"/>
+        <delete dir="\${basedir}/target"/>
+        <mkdir dir="\${basedir}/target"/>
         <mkdir dir="\${basedir}/target/webapp"/>
         <dependencies filesetId="portal.resources.dependencies.id" useScope="runtime">
             <dependency groupId="${org.apache.jetspeed.groupid}"
@@ -78,7 +80,7 @@ limitations under the License.
                 <exclude name="META-INF/**"/>
             </patternset>
         </unjar>
-        <delete file="\${basedir}/target/portal-archetype-resources-${org.apache.jetspeed.version}.jar"/>
+    	<delete file="\${basedir}/target/portal-archetype-resources-${org.apache.jetspeed.version}.jar"/>
 
         <!-- Merge webapp resource overrides from src -->
         <copy todir="\${basedir}/target/webapp" overwrite="on">
@@ -122,6 +124,7 @@ limitations under the License.
         </copy>
 
         <!-- Add support for dbpsml -->
+        <antcall target="configure-database-psml"/>
                 	
         <!-- Configure runtime portal properties resource -->
         <replace file="\${basedir}/target/webapp/WEB-INF/conf/jetspeed.properties">
@@ -138,5 +141,24 @@ limitations under the License.
         </replace>
 
     </target>
+
+    <target name="configure-database-psml" depends="test-configure-database-psml" if="org.apache.jetspeed.configure.database.psml">
+        <echo message="configure-database-psml."/>
+        <!-- swap spring configurations to configure database psml -->
+        <move file="\${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml"
+              todir="\${basedir}/target/webapp/WEB-INF/assembly/alternate"/>
+        <echo message="moved \${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml to \${basedir}/target/webapp/WEB-INF/assembly/alternate"/>
+    	<delete file="\${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml"/>
+        <move file="\${basedir}/target/webapp/WEB-INF/assembly/alternate/db-page-manager.xml"
+              todir="\${basedir}/target/webapp/WEB-INF/assembly"/>
+        <move file="\${basedir}/target/webapp/WEB-INF/assembly/alternate/interceptors.xml"
+              todir="\${basedir}/target/webapp/WEB-INF/assembly"/>
+    </target>
+	
+	   <target name="test-configure-database-psml">
+	        <condition property="org.apache.jetspeed.configure.database.psml">
+	            <equals arg1="${org.apache.jetspeed.database.psml}" arg2="true"/>
+	        </condition>
+	    </target>
 
 </project>

@@ -50,7 +50,8 @@ limitations under the License.
     <target name="configure" depends="test-deploy-type">
 
         <!-- Build required webapp resources -->        
-        <delete dir="${basedir}/target/webapp"/>
+        <delete dir="${basedir}/target"/>
+        <mkdir dir="${basedir}/target"/>
         <mkdir dir="${basedir}/target/webapp"/>
         <copy todir="${basedir}/target/webapp">
             <fileset dir="${basedir}/../src/webapp">
@@ -115,9 +116,12 @@ limitations under the License.
     </target>
 
     <target name="configure-database-psml" depends="test-configure-database-psml" if="org.apache.jetspeed.configure.database.psml">
+        <echo message="configure-database-psml."/>
         <!-- swap spring configurations to configure database psml -->
         <move file="${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml"
               todir="${basedir}/target/webapp/WEB-INF/assembly/alternate"/>
+        <echo message="moved ${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml to ${basedir}/target/webapp/WEB-INF/assembly/alternate"/>
+    	<delete file="${basedir}/target/webapp/WEB-INF/assembly/page-manager.xml"/>
         <move file="${basedir}/target/webapp/WEB-INF/assembly/alternate/db-page-manager.xml"
               todir="${basedir}/target/webapp/WEB-INF/assembly"/>
         <move file="${basedir}/target/webapp/WEB-INF/assembly/alternate/interceptors.xml"
