@@ -1,0 +1,298 @@
+<!--
+  Copyright 2004 The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  $Id$
+-->
+<project name="JetspeedDatabaseSetup" default="setupDB" basedir=".">
+
+  <property file="${basedir}/database.properties" />
+
+  <condition property="_db.username" value="">
+    <equals arg1="${db.type}" arg2="derby" />
+  </condition>
+  <property name="_db.username" value="${db.username}" />
+  <condition property="_db.password" value="">
+    <equals arg1="${db.type}" arg2="derby" />
+  </condition>
+  <property name="_db.password" value="${db.password}" />
+  <condition property="_jdbc.url" value="jdbc:derby:${basedir}/../webapps/jetspeed/WEB-INF/productiondb;create=true">
+    <equals arg1="${db.type}" arg2="derby" />
+  </condition>
+  <property name="_jdbc.url" value="${jdbc.url}" />
+  <condition property="_jdbc.driver.class" value="org.apache.derby.jdbc.EmbeddedDriver">
+    <equals arg1="${db.type}" arg2="derby" />
+  </condition>
+  <property name="_jdbc.driver.class" value="${jdbc.driver.class}" />
+
+  <target name="setupDB">
+
+    <echo>Setting up the Jetspeed database for ${db.type}</echo>
+
+    <echo>All exiting Jetspeed data is going to be deleted from the database.</echo>
+    <echo></echo>
+    <echo>Selected database configuration:</echo>
+    <echo>database type: ${db.type}</echo>
+    <echo>username: ${db.user}</echo>
+    <echo>jdbc url: ${jdbc.url}</echo>
+    <echo></echo>
+    <echo>Make sure that the appropriate jdbc driver jar is placed in the Tomcat shared/lib folder.</echo>
+    <echo>For using the Derby database, the correct driver jar is provided in the lib folder.</echo>
+    <echo>Also make sure Tomcat is stopped before continuing.</echo>
+    <echo></echo>
+    <input validargs="y,n" defaultvalue="n" addproperty="do.continue">Are you sure to continue?</input>
+    <condition property="failSetup">
+      <equals arg1="n" arg2="${do.continue}" />
+    </condition>
+
+    <antcall target="doSetupDB" />
+
+  </target>
+
+  <target name="noDbSetup" />
+
+  <target name="doSetupDB" unless="failSetup"
+    depends="checkDerby,generateStandardDb, generateDerby, setupSeed, seedStandardDb, seedDerbyDb,copyStandardDbContext,copyDerbyDbContext" />
+
+  <target name="checkDerby">
+    <condition property="_derby">
+      <equals arg1="${db.type}" arg2="derby" />
+    </condition>
+  </target>
+
+  <target name="copyStandardDbContext" unless="_derby">
+    <copy file="jetspeed.xml" tofile="${basedir}/../conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="USERNAME" value="${db.username}" />
+        <filter token="PASSWORD" value="${db.password}" />
+        <filter token="DRIVER" value="${jdbc.driver.class}" />
+        <filter token="URL" value="${jdbc.url}" />
+      </filterset>
+    </copy>
+  </target>
+
+  <target name="copyDerbyDbContext" if="_derby">
+    <copy file="jetspeed.xml" tofile="${basedir}/../conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+      <filterset begintoken="@" endtoken="@">
+        <filter token="USERNAME" value="" />
+        <filter token="PASSWORD" value="" />
+        <filter token="DRIVER" value="org.apache.derby.jdbc.EmbeddedDriver" />
+        <filter token="URL" value="jdbc:derby:${basedir}/derby/productiondb" />
+      </filterset>
+    </copy>
+  </target>
+
+  <target name="generateDerby" if="_derby">
+    <delete dir="${basedir}/derby/productiondb" quiet="true" />
+    <antcall target="createDerbyDB">
+      <param name="databaseScript" value="${basedir}/derby/phase1-schema.sql" />
+    </antcall>
+    <antcall target="createDerbyDB">
+      <param name="databaseScript" value="${basedir}/derby/phase2-schema.sql" />
+    </antcall>
+    <antcall target="createDerbyDB">
+      <param name="databaseScript" value="${basedir}/derby/phase3ojb-schema.sql" />
+    </antcall>
+    <antcall target="createDerbyDB">
+      <param name="databaseScript" value="${basedir}/derby/prefs-schema.sql" />
+    </antcall>
+    <antcall target="createDerbyDB">
+      <param name="databaseScript" value="${basedir}/derby/registry-schema.sql" />
+    </antcall>
+    <antcall target="createDerbyDB">
+      <param name="databaseScript" value="${basedir}/derby/security-schema.sql" />
+    </antcall>
+
+  </target>
+
+  <target name="generateStandardDb" unless="_derby">
+    <echo>cleaning up possible exiting Db</echo>
+
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/drop.sql" autocommit="true" onerror="continue" print="no" output="database.log">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <echo>starting Db generation</echo>
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/${db.type}/phase1-schema.sql">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/${db.type}/phase2-schema.sql" print="yes" output="database.log">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/${db.type}/phase3ojb-schema.sql" print="yes" output="database.log">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/${db.type}/prefs-schema.sql" print="yes" output="database.log">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/${db.type}/registry-schema.sql" print="yes" output="database.log">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <sql driver="${jdbc.driver.class}" url="${jdbc.url}" userid="${db.username}" password="${db.password}"
+      src="${basedir}/${db.type}/security-schema.sql" print="yes" output="database.log">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+    </sql>
+    <echo>DB generation done!</echo>
+
+  </target>
+
+  <target name="setupSeed">
+
+    <delete dir="${basedir}/assembly" />
+    <mkdir dir="${basedir}/assembly" />
+    <echo>Seeding the database</echo>
+
+    <copy todir="${basedir}/assembly" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/assembly">
+        <include name="security*.xml" />
+        <include name="capabilities.xml" />
+        <include name="prefs.xml" />
+        <include name="profiler.xml" />
+        <include name="registry.xml" />
+        <include name="transaction.xml" />
+        <include name="cache.xml" />
+      </fileset>
+    </copy>
+
+
+    <copy todir="${basedir}/assembly" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/assembly/alternate/">
+        <include name="request-context.xml" />
+      </fileset>
+    </copy>
+
+    <mkdir dir="${basedir}/assembly/boot" />
+
+    <copy todir="${basedir}/assembly/boot" overwrite="true" failonerror="true">
+      <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/assembly/boot">
+        <include name="*.xml" />
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="seedStandardDb" unless="_derby">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/../common/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <pathelement location="${basedir}/../shared/classes" />
+        <pathelement location="${basedir}/../webapps/jetspeed/WEB-INF/classes" />
+      </classpath>
+
+      <arg
+        line="-I &quot;${basedir}/j2-seed.xml&quot; -a ${basedir}/../webapps/jetspeed -b file:${basedir}/assembly/boot/ -c file:${basedir}/assembly/ -dc ${jdbc.driver.class} -ds ${jdbc.url} -du ${db.username} -dp ${db.password}" />
+    </java>
+
+  </target>
+
+  <target name="seedDerbyDb" if="_derby">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/../common/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <pathelement location="${basedir}/../shared/classes" />
+        <pathelement location="${basedir}/../webapps/jetspeed/WEB-INF/classes" />
+      </classpath>
+
+      <arg
+        line="-I &quot;${basedir}/j2-seed.xml&quot; -a ${basedir}/../webapps/jetspeed -b file:${basedir}/assembly/boot/ -c file:${basedir}/assembly/ -dc org.apache.derby.jdbc.EmbeddedDriver -ds jdbc:derby:${basedir}/derby/productiondb;create=true -du -dp" />
+    </java>
+
+  </target>
+
+  <target name='createDerbyDB'>
+
+    <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
+      <classpath>
+        <fileset dir="${basedir}/../shared/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/../common/lib">
+          <include name="**/*.jar" />
+        </fileset>
+        <pathelement location="${basedir}/../shared/classes" />
+        <pathelement location="${basedir}/../webapps/jetspeed/WEB-INF/classes" />
+      </classpath>
+      <arg
+        line="driver=org.apache.derby.jdbc.EmbeddedDriver 
+	          url=jdbc:derby:${basedir}/derby/productiondb;create=true
+	          userid= 
+	          password=
+	          src=&quot;${databaseScript}&quot; autocommit=true
+	          onerror=abort" />
+    </java>
+
+  </target>
+
+</project>

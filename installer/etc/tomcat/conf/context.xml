@@ -1,5 +1,5 @@
 <!-- The contents of this file will be loaded for each web application -->
-<Context antiJARLocking="true>
+<Context antiJARLocking="true">
 
     <!-- Default set of monitored resources -->
     <WatchedResource>WEB-INF/web.xml</WatchedResource>
