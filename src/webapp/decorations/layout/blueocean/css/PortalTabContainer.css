@@ -56,7 +56,8 @@ limitations under the License.
 	padding : 4px 15px 4px 6px;
 	background : url(../images/desktop/tabs/tab_top_right.gif) no-repeat right top;
 	color : #333;
-	font-size : 90%;
+	font-size : x-small;
+    font-weight: bold;
 }
 
 .dojoTab .close {
