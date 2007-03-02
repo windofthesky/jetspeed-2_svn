@@ -22,12 +22,18 @@
   <property file="ant.install.properties" />
 
   <target name="install">
-    <echo>basic install starting</echo>
+    <echo>Starting the installation</echo>
 
     <condition property="jdk15Installed">
       <equals arg1="${ant.java.version}" arg2="1.5" />
     </condition>
 
+    <echo>Deleting all content from the installation target directory</echo>
+    <delete includeemptydirs="true">
+      <fileset dir="${installDir}" includes="**/*"/>
+    </delete>
+
+    <echo>Installing Jetspeed-2.1 Enterprise Portal</echo>
     <unzip src="${antinstaller.jar}" dest="${installDir}">
       <patternset>
         <include name="portal.zip" />
@@ -36,17 +42,14 @@
       </patternset>
     </unzip>
     <unzip dest="${installDir}">
-      <fileset dir="${installDir}">
-        <include name="*.zip" />
-      </fileset>
+      <fileset dir="${installDir}" includes="*.zip"/>
     </unzip>
     <delete>
-      <fileset dir="${installDir}">
-        <include name="*.zip" />
-      </fileset>
+      <fileset dir="${installDir}" includes="*.zip"/>
     </delete>
     <chmod perm="700" dir="${installDir}/bin" includes="**/*.sh" />
 
+    <echo>Setting up the database configuration</echo>
     <condition property="jdbcjar" value="${installDir}/database/lib/derby-10.1.1.0.jar">
       <equals arg1="${jdbc.driver.jar}" arg2="" />
     </condition>
@@ -63,7 +66,8 @@
         <filter token="jdbc.driver.class" value="${jdbc.driver.class}" />
       </filterset>
     </move>
-    <ant antfile="${installDir}/database/build.xml" target="${dbSetupAntTarget}" dir="${installDir}/database" />
+    <echo>Setting up the Jetspeed database (if selected)</echo>
+    <ant antfile="${installDir}/database/build.xml" target="${setupDBAntTarget}" dir="${installDir}/database" />
   </target>
 
   <target name="antinstaller-checkdb" depends="">
