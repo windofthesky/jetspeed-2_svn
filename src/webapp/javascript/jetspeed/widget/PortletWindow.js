@@ -172,16 +172,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             var windowicon = this.getInitProperty( jetspeed.id.PORTLET_PROP_WINDOW_ICON );
             if ( ! windowicon )
-            {
-                if ( jetspeed.debugPortletWindowIcons )
-                {
-                    windowicon = jetspeed.debugPortletWindowIcons[Math.floor(Math.random()*jetspeed.debugPortletWindowIcons.length)];
-                }
-                else
-                {
-                    windowicon = "document.gif";
-                }
-            }
+                windowicon = "document.gif";
             this.iconSrc = new dojo.uri.Uri(jetspeed.url.basePortalDesktopUrl() + this.windowDecorationConfig.windowIconPath + windowicon ) ;
             if ( this.portletInitialized && this.titleBarIcon )
             {
@@ -1355,8 +1346,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                     //dojo.lang.setTimeout( this, this._IEPostResize, 10 );
                     // IE will adjust consistently if step is deferred
                     //this.containerNode.style.width = "99%";
-                    this.containerNode.style.width = "100%";
+                    //this.containerNode.style.width = "100%";
                     //this.containerNode.style.marginLeft = "2px";
+                    this.containerNode.style.width = "";
                 }
                 else
                 {
@@ -1394,8 +1386,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         // which fixes the IE problem where part of containerNode scroll bars outside window bounds
         //
         // NOTE: not in use currently from resizeTo - slows down resize too much
-        this.containerNode.style.width = "99%";
-        this.containerNode.style.width = "100%";
+        //this.containerNode.style.width = "99%";
+        //this.containerNode.style.width = "100%";
     },
 
     _adjustPositionToDesktopState: function()
@@ -1453,7 +1445,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             }
             if ( dojo.render.html.ie )
             {
-                this.containerNode.style.width = "100%";
+                //this.containerNode.style.width = "100%";
+                this.containerNode.style.width = "";
             }
             else
             {
