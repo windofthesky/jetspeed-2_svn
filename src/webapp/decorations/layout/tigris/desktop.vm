@@ -13,6 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *#
+#*
+<!--  
+Would prefer: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+Firefox shrinks dojoButton widths when they have images if the XHTML DOCTYPE is used; aside from that it would be the doctype choice
+Primary cause for setting doctype is to prevent IE (including IE7) from using too large of a baseline font-size
+-->
+*#
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html> <!-- .vm --> <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />

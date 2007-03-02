@@ -27,6 +27,7 @@ limitations under the License.
 
     String layoutStyleClass = "layout-" + desktop.getLayoutDecorationName();
 %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html> <!-- .jsp --> <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
