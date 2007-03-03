@@ -38,9 +38,9 @@ New Features in Version 2.1 include:
  
 ----------------------------------------------------------------------------------------
 
-The release is available for download from the Apache Download Mirrors:
+The release is available for download from the Apache Download Mirrors through:
 
-http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/
+     http://portals.apache.org/jetspeed-2/download.html
 
 ----------------------------------------------------------------------------------------
 
