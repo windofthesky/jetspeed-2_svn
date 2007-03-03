@@ -1,0 +1,44 @@
+Email destinations:
+
+* jetspeed-dev@portals.apache.org
+* jetspeed-user@portals.apache.org
+* general@portals.apache.org
+* announce@apache.org
+
+Subject: Jetspeed 2.1 Final Released
+
+Message:
+
+The Apache Portals Jetspeed Team is pleased to announce the final release of the Jetspeed 2.1 Open Source Enterprise Portal. 
+
+Jetspeed is an Open Portal Platform and Enterprise Information Portal, written all in open source under the Apache license in Java and XML. 
+Jetspeed is an open component architecture based on standards. All access to the portal is managed through a robust portal security policy. 
+Within a Jetspeed portal, individual portlets can be aggregated to create a page. Each portlet is an independent application with Jetspeed 
+acting as the central hub making information from multiple sources available in an easy to use manner.
+
+Version 2.1 continues the evolution of the Jetspeed portal technology, with a more stabilized codebase.
+The release includes many new features including Web 2.0 client-side aggregator, portlet and distributed caching, parallel aggregation, and
+many more improvements and bug fixes.
+
+This final release is fully-compliant with the Portlet Specification 1.0 (JSR-168).
+
+The Jetspeed team will be presenting the new 2.1 release at ApacheCon Europe 2007 in Amsterdam.
+
+<Ate: paste in top part of README here>
+
+----------------------------------------------------------------------
+
+The release is available for download from the Apache Download Mirrors:
+
+     http://portals.apache.org/jetspeed-2/download.html
+
+We hope you enjoy using Jetspeed! If you have any questions, please consult:
+
+    * The web site: http://portals.apache.org/jetspeed-2/
+
+    * The jetspeed-user mailing list: http://portals.apache.org/jetspeed-2/mail-lists.html
+
+  For news and information, see:
+
+    * http://portals.apache.org/news.html
+
