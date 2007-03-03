@@ -6,25 +6,27 @@
 The Apache Portals Jetspeed Team is pleased to announce the 2.1 release of 
 the Jetspeed-2 Open Source Enterprise Portal. This release, like the 2.0 release,
 is fully-compliant with the Portlet Specification 1.0 (JSR-168).
-Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully 
-CERTIFIED to the Java Portlet Standard.
+Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully CERTIFIED
+to the Java Portlet Standard.
 
-The Jetspeed 2.1 release is the second major release of the Jetspeed-2 portal.
+The Jetspeed 2.1 release is the second major release of the Jetspeed-2 Portal.
 
 New Features in Version 2.1 include:
 
  * Jetspeed Desktop - Web 2.0 client-side JSR-168 portlet aggregation.
- * Multithreaded Aggregator - multithreaded portlet aggregator with portlet timeout tracking, removal of slow rendering portlets.
+ * Parallel Rendering - multithreaded portlet aggregator with portlet timeout tracking, removal of slow rendering portlets.
  * Jetspeed Distributed Cluster - support for distributed deployments of the portal on multiple application server platforms
  * JSR 168 Caching - full caching support of JSR 168 portlet specification, distributed cache invalidation
  * TCK Compliant as of 2.1 (2.0 was compliant as well)
+ * Custom Portlet Modes and Window States - a "print" PortletMode and "solo" WindowState are now standard supported
+ * Improved LDAP support - full security maintenance using LDAP is now supported for many LDAP providers 
  * New and Improved Administrative and Security Portlets
  * XML Schemas for PSML, jetspeed-portlet.xml, and Jetspeed XML (seed data)
  * Installation choice of either Demo Portal or Minimal Starter Portal
  * New Jetspeed Tutorial
- * Maven-2 Build as well as Maven-1
- * Remote Portal Application Deployer - deploy portlet applications from remote locations on the Web
- * Improved Customizers, Portal and Desktop Customizers, drag and drop moving of portlets, nested fragment customization
+ * Maven-2 build support as well as Maven-1
+ * Remote Portal Application Deployer - hot deploy portlet applications from remote locations on the Web
+ * Improved Customizers - Portal and Desktop Customizers, drag and drop moving of portlets, nested fragment customization
  * New Portlet Category Selector
  * XML Import/Export of all Jetspeed database data and seed data scripts for backup and restore and data migration
  * Improved Security Control - fully swappable Security Constraint or Security Permission support
@@ -38,7 +40,7 @@ New Features in Version 2.1 include:
 
 The release is available for download from the Apache Download Mirrors:
 
-http://www.apache.org/dyn/closer.cgi 
+http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/
 
 ----------------------------------------------------------------------------------------
 
@@ -77,7 +79,6 @@ http://www.apache.org/dyn/closer.cgi
 		mssql
 		mysql
 		oracle
-		hsql
 		postgres
 		sapdb
 		
@@ -95,7 +96,7 @@ http://www.apache.org/dyn/closer.cgi
    
    For Windows:
    
-   cd C:\Apache\Jetspeed-2.1
+   cd C:\Apache\Jetspeed-2.1\bin
    startup.bat
    
 
@@ -105,7 +106,7 @@ http://www.apache.org/dyn/closer.cgi
 
 5. Login 
 
-All users have the same password as username
+All preconfigured users have the same password as username
 
 If you installed with the Minimal installer, two test accounts are available:
 
@@ -115,7 +116,7 @@ devmgr 	  -- Delegated security manager, can manage users with the "dev" (develo
 If you installed with the Full Demo installer, test accounts are available:
 
 admin 	  -- System administrator, super user
-manager   --	Has system administration rights, but not super user
+manager   -  Has system administration rights, but not super user
 user 	  -- A sample user demonstrating with with a home page and advanced profiled menus 
 tomcat 	  -- A sample user demonstrating a user without a home page
 jetspeed  -- A sample user demonstrating discovery of pages by both group and role fallback profiling algorithms
