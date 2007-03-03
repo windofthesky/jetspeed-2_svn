@@ -31,9 +31,9 @@
     	    <item name="From Maven Plugin" href="getting-started-binary.html" />
     	    <item name="From Eclipse" href="jetspeed-eclipse.html" />            
     	</menu>
-    	<menu name="Download">
-    		<item name="Installer" href="download.html" />
-    		<item name="Source" href="source-code.html" />
+    	<menu name="Get Jetspeed-2.1">
+    		<item name="Download" href="download.html" />
+    		<item name="Release Notes" href="release-notes.html" />
     	</menu>
     	<menu name="Documentation">
     		<item name="Documentation Guides" href="guides/index.html" />
