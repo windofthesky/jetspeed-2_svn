@@ -124,6 +124,14 @@ subsite   -- Example of how to setup users with a primary subsite role fallback 
 subsite2  -- Example of how to setup users with a secondary subsite role fallback profiling rules
 devmgr 	  -- Delegated security manager, can manage users with the "dev" (developer) role
 
+6. Desktop
+
+The Jetspeed Desktop is a client-side JSR-168 aggregation engine.
+To accesss the Desktop, navigate your browser to http://localhost:8080/jetspeed/desktop
+When switching between the /desktop and the /portal URLs, logout to start a new session.
+
+
+
 ----------------------------------------------------------------------------
 
 Release Notes - Jetspeed 2 - Version 2.1
