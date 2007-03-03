@@ -32,35 +32,65 @@
 				</a>
 				.
 			</p>
-			<subsection name="Jetspeed-2 Installer Distribution">
-			<table>
+			<subsection name="Jetspeed-2.1 Installer Distribution">
+				<table>
 				<tr>
 					<th>Distribution</th>
 					<th>Mirrors</th>
+					<th>Checksum</th>
+					<th>Signature</th>
 				</tr>
 				<tr>
-					<td>Jetspeed-2 (with embedded Derby database)</td>
-					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></td>
+					<td>Jetspeed-2 Standard with only the required Administrative Portlets</td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1-installer.jar">jetspeed-2.1-installer.jar</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1-installer.jar.md5">here</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1-installer.jar.arc">here</a></td>
 				</tr>
 				<tr>
-					<td>Jetspeed-2 (with your pre-installed database)</td>
-					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDb-install.jar</a></td>
+					<td>Jetspeed-2 Demo With lots of demo Portlets: RSS, JSF, JPetstore and many more</td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1-installer.jar">Jetspeed-2.1-installer.jar</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1-demo-installer.jar.md5">here</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1-demo-installer.jar.arc">here</a></td>
 				</tr>
 			</table>
+				<p>
+					Both the installers support the following databases for Jetspeed: Derby (default), DB2, MySQL, MSSQL, Oracle, PostgreSQL, SapDB,
+					as well as manual (do it yourself) configuration of other databases.
+				</p>
+				<p> Furthermore, through a provided ANT script after installation, reinitializing or switching to another database is a simple one step operation. 
+				</p>
+			</subsection>
+			<subsection name="Jetspeed-2.1 Source Distribution">
+				<table>
+					<tr>
+						<th/>
+						<th>Mirrors</th>
+						<th>Checksum</th>
+						<th>Signature</th>
+					</tr>
+					<tr>
+						<td>jetspeed-2.1-src.tar.bz2</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.tar.bz2">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.tar.bz2.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.tar.bz2.arc">here</a></td>
+					</tr>
+					<tr>
+						<td>jetspeed-2.1-src.tar.gz</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.tar.gz">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.tar.gz.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.tar.gz.arc">here</a></td>
+					</tr>
+					<tr>
+						<td>jetspeed-2.1-src.zip</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.zip">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.zip.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/SOURCES/jetspeed-2.1-src.zip.arc">here</a></td>
+					</tr>
+				</table>
 			</subsection>
 			<subsection name="System Requirements">
 				<p>
 				The list of systems requirements for Jetspeed-2 is available <a href="getting-started.html#Requirements">here</a>.
-				</p>
-			</subsection>
-			<subsection name="Installation Instructions">
-				<p>
-				Jetspeed-2 can be install from the source or from the binary distributions.  See the following guides on:
-					<ul>
-						<li><a href="getting-started-installer.html">Getting Started with Jetspeed-2 Installer</a></li>
-						<li><a href="getting-started-source.html">Getting Started with Building from Jetspeed-2 Source</a></li>
-						<li><a href="getting-started-binary.html">Getting Started with Building from Jetspeed-2 Maven Plugin</a></li>
-					</ul>
 				</p>
 			</subsection>
 		</section>
