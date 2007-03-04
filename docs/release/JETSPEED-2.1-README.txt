@@ -91,7 +91,7 @@ The release is available for download from the Apache Download Mirrors through:
 	
 3. startup Tomcat (depending on where you installed to, the location may vary)
 
-   cd /usr/local/jetspeed-2.1/bin
+   cd ~/jetspeed-2.1/bin
    ./startup.sh
    
    For Windows:
