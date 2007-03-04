@@ -48,6 +48,8 @@
 				<a href="http://cocoon.apache.org">Cocoon</a>
 				,
 				<a href="http://www.webmacro.org/">WebMacro</a>
+				,
+				<a href="http://www.freemarker.org/">FreeMarker</a>
 				and
 				<a href="http://jakarta.apache.org/velocity/">
 					Velocity
