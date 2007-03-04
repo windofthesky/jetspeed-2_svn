@@ -31,19 +31,19 @@
 	   <p>Portlet Preferences are now by default user specific on all pages. In Jetspeed 2.0, for shared pages, the Portlet Preferences were shared as well.</p>
 	   <p>To retain most of the old Jetspeed 2.0 behavior, allowing an administrator to still set/modify <i>initial</i> Preferences for other users,<br/> 
 	   modify the following setting in the registry.xml spring assembly configuration for the portletEntityAccessImpl component:
-	   <pre>
-	    &lt;!-- 
-	     All preferences were shared. With JS2-449, preferences are now
-	     stored 'per user'. The username is stored in the preferences FULL_PATH
-	     To turn on mergeSharedPreferences configure this property to true 
-	     This will NOT turn off per user prefs, 
-	     but instead merge with them, where user prefs override.
-	     boolean
-	    --&gt;    
-	    &lt;constructor-arg type="boolean"&gt;
-	    &lt;value&gt;false&lt;/value&gt;
-	    &lt;/constructor-arg&gt;        
-	   </pre>
+	   <source>
+&lt;!-- 
+  All preferences were shared. With JS2-449, preferences are now
+  stored 'per user'. The username is stored in the preferences FULL_PATH
+  To turn on mergeSharedPreferences configure this property to true 
+  This will NOT turn off per user prefs, 
+  but instead merge with them, where user prefs override.
+  boolean
+--&gt;    
+&lt;constructor-arg type="boolean"&gt;
+&lt;value&gt;false&lt;/value&gt;
+&lt;/constructor-arg&gt;        
+	   </source>
 	   As is commented in the assembly configuration also, setting <i>mergeSharedPreferences</i> to <i>true</i> will <i>NOT</i> turn off per user Preferences.<br/>
 	   Once a user sets its own Preference values (if allowed), those will override the shared Preference values.<br/>
 	   See for further information: <a href="http://issues.apache.org/jira/browse/JS2-449" target="_blank">JS2-449</a>
