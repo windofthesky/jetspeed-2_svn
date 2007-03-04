@@ -59,8 +59,7 @@
 				</p>
 				<p> Furthermore, through a provided Ant script after installation, reinitializing or switching to another database is a simple one step operation. 
 				</p>
-				<p>Complete instructions for getting started using the installer is available <a href="getting-started-installer.html">here</a>.</p> 
-				</p>
+				<p>Complete instructions for getting started using the installer is available <a href="getting-started-installer.html">here</a>.</p> 				
 			</subsection>
 			<subsection name="Jetspeed-2.1 Source Distribution">
 				<table>
