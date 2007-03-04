@@ -72,7 +72,7 @@
 				enhancements and improvements over Jetspeed 1.0. First,
 				Jetspeed-2 is conformant to the
 				<a href="http://www.jcp.org/en/jsr/detail?id=168">Java Portlet Standard</a> 
-				and will provide a standard mechanism for the deployment
+				and provides a standard mechanism for the deployment
 				of portlets. Second, Jetspeed-2 has matured to a more
 				scalable architecture featuring multi-threaded
 				functionality. Third, Jetspeed-2 is decoupled from
@@ -89,11 +89,10 @@
 			</subsection>
 			<subsection name="Jetspeed-2 Status">
 				<p>
-					The first production release of Jetspeed-2 was released
-					on December 8, 2005.  Future development areas include 
-					improved caching and clustering support, further AJAX integration,
-				    new portlet applications, WSRP support, better design
-					and use experience.
+					The latest 2.1 production release of Jetspeed-2 was released
+					on March 3, 2005.  Future development areas include  alignment with the upcoming
+					<a href="http://www.jcp.org/en/jsr/detail?id=286">Java Portlet Standard 2.0, JSR-286</a>
+				    new portlet applications, WSRP support, further improvement of the design and user experience.
 				</p>
 			</subsection>
 			<subsection name="About Jetspeed-2">
@@ -126,14 +125,10 @@
 					Server Pages (JSPs), Velocity and HTML. Jetspeed
 					provides support for templating and content
 					publication frameworks such as
-					<a href="http://cocoon.apache.org">Cocoon</a>
-					,
-					<a href="http://www.webmacro.org">WebMacro</a>
-					and
-					<a href="http://jakarta.apache.org/velocity">
-						Velocity
-					</a>
-					.
+					<a href="http://cocoon.apache.org">Cocoon</a>,
+					<a href="http://www.webmacro.org">WebMacro</a>,
+					<a href="http://www.freemarker.org">FreeMarker</a> and
+					<a href="http://jakarta.apache.org/velocity">Velocity</a>.
 				</p>
 				<p>
 					For more information, see:
