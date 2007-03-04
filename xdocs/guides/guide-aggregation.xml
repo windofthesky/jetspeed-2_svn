@@ -1,70 +1,70 @@
 <?xml version="1.0"?>
 <!--
-	Copyright 2004 The Apache Software Foundation
-	
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-	
-	http://www.apache.org/licenses/LICENSE-2.0
-	
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+    Copyright 2004 The Apache Software Foundation
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 -->
 <document>
-	<properties>
-		<title>Jetspeed 2 Aggregation</title>
-		<subtitle>Guide to Jetspeed Aggregation</subtitle>
-		<authors>
-			<person name="David Sean Taylor" email="taylor@apache.org" />
-		</authors>
-	</properties>
-	<body>
-		<section name="What is Aggregation?">
-			<p>
-			The portal provides a consolidated view of multiple content sources, or portlets, in a single browser display.
-			The process of consolidating and rendering this content together is known as aggregation.	
-			In Jetspeed, the aggregator is made up of several pluggable Spring components that plug into the Jetspeed engine.	 
-			</p>
-		</section>
-        <section name='Supported Aggregators'> 
-        <p>List of Aggregators:</p>
-        <table>
-            <tr>
-                <th>Component Name</th>
-                <th>Description</th>                
-                <th>Multithreaded?</th>
-                <th>JSR-168 Caching?</th>
-            </tr>
-            <tr>
-                <td>PageAggregator</td>
-                <td>Given a PSML page, aggregates the content of all portlets on that page.</td>                
-                <td>no</td>
-                <td>yes</td>
-            </tr>
-            <tr>
-                <td>AsyncPageAggregator</td>
-                <td>A multi-threaded, asynchronous PSML page aggregator.</td>
-                <td>yes</td>
-                <td>yes</td>
-            </tr>
-            <tr>
-                <td>PortletAggregator</td>
-                <td>Renders the content of one single portlet.</td>
-                <td>no*</td>
-                <td>yes</td>
-            </tr>
-        </table>            
-        <i>* multi-threading is accomplished with the Jetspeed Desktop combined with the PortletAggregator</i>
+    <properties>
+        <title>Jetspeed 2 Aggregation</title>
+        <subtitle>Guide to Jetspeed Aggregation</subtitle>
+        <authors>
+            <person name="David Sean Taylor" email="taylor@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="What is Aggregation?">
+            <p>
+                The portal provides a consolidated view of multiple content sources, or portlets, in a single browser display.
+                The process of consolidating and rendering this content together is known as aggregation.	
+                In Jetspeed, the aggregator is made up of several pluggable Spring components that plug into the Jetspeed engine.	 
+            </p>
         </section>
-		<section name="Aggregator Spring Configuration">
-			<p>
-			</p>
-			<source test="">
-				<![CDATA[
+        <section name='Supported Aggregators'> 
+            <p>List of Aggregators:</p>
+            <table>
+                <tr>
+                    <th>Component Name</th>
+                    <th>Description</th>                
+                    <th>Multithreaded?</th>
+                    <th>JSR-168 Caching?</th>
+                </tr>
+                <tr>
+                    <td>PageAggregator</td>
+                    <td>Given a PSML page, aggregates the content of all portlets on that page.</td>                
+                    <td>no</td>
+                    <td>yes</td>
+                </tr>
+                <tr>
+                    <td>AsyncPageAggregator</td>
+                    <td>A multi-threaded, asynchronous PSML page aggregator.</td>
+                    <td>yes</td>
+                    <td>yes</td>
+                </tr>
+                <tr>
+                    <td>PortletAggregator</td>
+                    <td>Renders the content of one single portlet.</td>
+                    <td>no*</td>
+                    <td>yes</td>
+                </tr>
+            </table>            
+            <i>* multi-threading is accomplished with the Jetspeed Desktop combined with the PortletAggregator</i>
+        </section>
+        <section name="Aggregator Spring Configuration">
+            <p>
+            </p>
+            <source test="">
+                <![CDATA[
         <!-- Default portlet timeout in milliseconds:
         Zero means no portlet timeout option by default.
         -->
@@ -72,19 +72,19 @@
             <value>0</value>
         </constructor-arg>				
 ]]>
-			</source>
-			<p>
-			</p>
-
-		</section>
+            </source>
+            <p>
+            </p>
+            
+        </section>
         
-		<section name="Changing the Page Aggregator to Multithreaded">
-			<p>
-			The default aggregator is single-threaded. To switch to multi-threaded,
-			edit the <b>pipelines.xml</b> spring configuration file:
-			</p>
-			<source test="">
-				<![CDATA[
+        <section name="Changing the Page Aggregator to Multithreaded">
+            <p>
+                The default aggregator is single-threaded. To switch to multi-threaded,
+                edit the <b>pipelines.xml</b> spring configuration file:
+            </p>
+            <source test="">
+                <![CDATA[
 <!-- Before -->
   <bean id="aggregatorValve"
         class="org.apache.jetspeed.aggregator.AggregatorValve"
@@ -105,30 +105,30 @@
    </constructor-arg>
   </bean> 
 ]]>
-			</source>
-			<p>
-			</p>
-
-		</section>
-		<section name="jetspeed-portlet.xml Parameters">
-			<p>
-			For the multithreaded aggregator, you can override the default setting
-			for rendering timeout for a specific portlet. This value is set in milliseconds
-			and represents the timeout value that Jetspeed will give the portlet to complete 
-			rendering before it gives up. 
-			</p>
-			<source test="">
-				<![CDATA[
+            </source>
+            <p>
+            </p>
+            
+        </section>
+        <section name="jetspeed-portlet.xml Parameters">
+            <p>
+                For the multithreaded aggregator, you can override the default setting
+                for rendering timeout for a specific portlet. This value is set in milliseconds
+                and represents the timeout value that Jetspeed will give the portlet to complete 
+                rendering before it gives up. 
+            </p>
+            <source test="">
+                <![CDATA[
 <portlet>
         <portlet-name>PickANumberPortlet</portlet-name>
         <js:metadata name="timeout">3000</js:metadata>
 </portlet>
 ]]>
-			</source>
-			<p>
-			</p>
-
-		</section>
-
-	</body>
+            </source>
+            <p>
+            </p>
+            
+        </section>
+        
+    </body>
 </document>
