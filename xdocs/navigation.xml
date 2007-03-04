@@ -24,7 +24,8 @@
         </links>
         <menu name="Essentials">
             <item name="Features" href="features.html" />
-        	<item name="Getting Started" href="getting-started.html" />            
+        	<item name="Getting Started" href="getting-started.html" />  
+        	<item name="Jetspeed for Developers" href="developers.html" />          
         </menu>
     	<menu name="Building">
     	    <item name="From Source" href="getting-started-source.html" />
