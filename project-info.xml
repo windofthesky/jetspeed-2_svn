@@ -20,7 +20,7 @@ limitations under the License.
     <pomVersion>3</pomVersion>
     <name>Jetspeed 2 Enterprise Portal</name>
     <groupId>org.apache.portals.jetspeed-2</groupId>
-    <logo>/images/Jetspeed_blue_med.png</logo>
+    <logo>http://portals.apache.org/images/Jetspeed_blue_med.png</logo>
     <currentVersion>${jetspeed.version}</currentVersion>
     <organization>
         <name>Apache Software Foundation</name>
