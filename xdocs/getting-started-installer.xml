@@ -28,7 +28,7 @@
 		<section name="Jetspeed-2 Installer">
 			<subsection name="Getting Started with the Installer">
 			<p>
-			Once you have <a href="download.html">downloaded</a> the installer.  Jetspeed-2 provides 2 installers:
+			Jetspeed 2.1 provides 2 installers:
 			<ul>
 			<li>The minimal installation, containing only the core portal and administrative portlets: 
 			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1-installer.jar">Standard (Minimal) Installer</a></li>
@@ -49,7 +49,8 @@ To run the Jetspeed Demo installer:
 java -jar jetspeed-2.1-demo-installer.jar
 			</source>
 			<p>	
-			To run the installer interactively, pass in the <b><i>text</i></b> parameter:
+			The installers are capable of running on headless (i.e. no gui) machines, and will detect so automatically.<br/>
+			To force the installer in text mode manually, pass in the <b><i>text</i></b> parameter:
 			</p>
 			<source>
 java -jar jetspeed-2.1-installer.jar text	
@@ -62,7 +63,7 @@ java -jar jetspeed-2.1-installer.jar text
 			If you selected Derby, you can go with the default parameters provided. For all other databases you must first create an area to hold the Jetspeed tables.
 			For some databases this <i>area</i> is called a <i>catalog</i>, others call it a <i>schema</i>, while others call it a <i>database</i>. Consult your
 			database documentation for details on how to create a catalog or schema to hold the Jetspeed tables. Additionally, you may need to create a database user
-			to access the Jetspeed tables. Often is required to grant access to the schemas (catalogs) for the given user.
+			to access the Jetspeed tables. Often it is required to grant access to the schemas (catalogs) for the given user.
 			</p>
 			<p>Jetspeed supported database list:
 			<ul>
@@ -76,27 +77,31 @@ java -jar jetspeed-2.1-installer.jar text
 			<li>Manual database setup </li>
 			</ul>
 			</p>
-			<p>If you choose the manual database setup, then the database scripts will not be run. You can configure the database at a later time.
-			All database scripts are provided in the installation under the <i>database</i> directory. For your specific database, look under the corresponding directory name.
-			During installation, you will be prompted for the following fields after chosing your database types:
+			<p>If you choose the manual database setup, then the database scripts will not be run and you will need to configure the database manually after the installation.
+			All database scripts are provided in the installation under the <i>database</i> directory. For your specific database, look for the corresponding directory name.
+			During installation, you will be prompted for the following fields after chosing your database types (except for Derby):
 			<ul>
 			<li>A username</li>
 			<li>A password</li>
 			<li>A JDBC connection string</li>
 			<li>A JDBC driver name</li>
-			<li>The location of a valid JDBC driver.  The installer will copy the driver to the installed location in Tomcat.</li>
+			<li>The location of a valid JDBC driver.  The installer will copy this driver to the installed location in Tomcat.</li>
 			</ul>
-			Note that only the Derby database has exact values for the JDBC connection string and location of the JDBC driver.
 			The connections strings are only partially completed in the well-known format of the particular databaes.
 			Please take care to complete the values in your connection string for your database. The driver name should be the right
-			driver class for your database at the time of the making of this installation. Please ensure that a newer driver is not required. 
-			Note that the location of the JDBC driver must be selected. We have not provided the file system path to the jar file.
+			driver class for your database at the time of the making of this installation. Please ensure that a newer driver is not required for your database. 
+			Note also that the location of the JDBC driver must be selected. We have not provided the file system path to the jar file but only the likely file name.
 			You may want to check and see if newer versions of the driver are available.
 			</p>
 			<p>
-			Once you have entered all of your parameters, the installer we test the database connection before proceeding.
-			The installer will not continue until it gets a valid connection. Once the installer verifies the database connection,
-			you are ready to proceed with installation process. Please take note of the location where you are installing on your file system.
+			Once you have entered all of your parameters, the installer will test the database connection before proceeding.
+			If the connection fails, please go back to the connection configuration setup and provide the correct parameters.
+			If you choose to continue, the database scripts will not be run and you will need to configure the database manually after the installation.
+			Once the installer verifies the database connection, you are ready to proceed with installation process.
+			</p>
+			<p>
+			Please take note of the location where you are installing on your file system.<br/>
+			Also, on a Windows platform make sure to use a location path without spaces, e.g. <i>NOT</i> under C:\Program Files.
 			</p>
 			</subsection>
 			<subsection name="Starting Jetspeed-2">
@@ -131,7 +136,7 @@ admin 	  -- System administrator, super user
 devmgr 	  -- Delegated security manager, can manage users with the "dev" (developer) role			
 		   </source>
 		   <p>
-If you installed with the Full Demo installer, several test accounts are available:		   
+If you installed with the Demo installer, several additional test accounts are available:		   
  			</p>
  			<source>
 admin 	  -- System administrator, super user
@@ -170,6 +175,9 @@ db.password=abracadabra
 jdbc.url=jdbc:mysql://localhost:3306/prod-2
 jdbc.driver.class=com.mysql.jdbc.Driver			
 			</source>
+			<p>If you are configuring a database for the first time after choosing Manual database setup in the installer, or want to try out
+				a different type of database, make sure to copy the specific JDBC driver for the database to the Tomcat shared/lib folder <i>before</i> running ant.<br/>
+			Note: for Derby, the needed driver is already placed there or available from the database/lib directory of your installed Jetspeed portal.</p>
 			</subsection>
 		</section>
 	</body>
