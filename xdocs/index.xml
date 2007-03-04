@@ -28,7 +28,7 @@
 			<div id="downloadbox">
 				<h5>Get Jetspeed 2.1</h5>
 				<p>
-					<a href="download.html#Jetpseed-2_Binary_Distribution">
+					<a href="download.html">
 						<img valign="top" src="images/folder-open.gif"
 							border="0" alt="" title="download" />
 						Download
@@ -38,14 +38,19 @@
 				</p>
 				<ul>
 					<li>
-						<a href="download.html#System_Requirements">
+						<a href="getting-started.html#System_Requirements">
 							System Requirements
 						</a>
 					</li>
 					<li>
 						<a
-							href="download.html#Installation_Instructions">
+							href="getting-started-installer.html">
 							Installation Instructions
+						</a>
+					</li>
+					<li>
+						<a href="guides/guide-migration.html">
+							Migrating from Jetspeed 2.0 to 2.1
 						</a>
 					</li>
 					<li>
