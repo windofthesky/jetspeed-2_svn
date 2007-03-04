@@ -50,8 +50,6 @@ decorators and layouts, the developers thus far have chosen Velocity as the tool
 templates. There are two types of templates in Jetspeed: layouts and decorators. 
 The process of rendering a page is the combined aggregation of a layout template, 
 a page decorator template, a PSML definition, and one or more portlet decorator templates.
-As of release 2.0, templates can be stored on the file system. In future releases, templates 
-will also be stored in a CMS backend for versioning.
 </p>
 <subsection name='Layout Templates'>
 <p>

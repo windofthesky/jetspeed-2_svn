@@ -72,7 +72,7 @@ Operations Supported:
 <p>
 Jetspeed-2 comes out of the box with several layout components including one, two and three 
 column layouts. Of course you can define and derive your own layouts. The table below lists
-the available layout components in Jetspeed version 2.0. When customizing (editing) a page,
+the available layout components in Jetspeed. When customizing (editing) a page,
 the layout component is selected. One layout may be assigned per PSML page.
 </p>    
 <table>
