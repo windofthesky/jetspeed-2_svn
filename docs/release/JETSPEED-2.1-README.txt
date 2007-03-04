@@ -130,6 +130,11 @@ The Jetspeed Desktop is a client-side JSR-168 aggregation engine.
 To accesss the Desktop, navigate your browser to http://localhost:8080/jetspeed/desktop
 When switching between the /desktop and the /portal URLs, logout to start a new session.
 
+7. Migrating from Jetspeed 2.0 to 2.1
+
+Import information for migrating existing Jetspeed 2.0 installations to 2.1 is provided in the migration guide:
+
+     http://portals.apache.org/jetspeed-2/guides/guide-migration.html
 
 
 ----------------------------------------------------------------------------
