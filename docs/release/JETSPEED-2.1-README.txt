@@ -35,6 +35,7 @@ New Features in Version 2.1 include:
  * Improved Delegation of Security Support
  * New Site Manager
  * Improved Database Page Manager
+ * New binary installers making it very easy to setup a basic or demo Jetspeed Portal
  
 ----------------------------------------------------------------------------------------
 

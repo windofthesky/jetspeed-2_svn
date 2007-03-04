@@ -53,10 +53,11 @@ New Features in Version 2.1 include:
  * Improved Delegation of Security Support
  * New Site Manager
  * Improved Database Page Manager
+ * New binary installers making it very easy to setup a basic or demo Jetspeed Portal
  
 ----------------------------------------------------------------------
 
-The release is available for download from the Apache Download Mirrors through:
+The release and the new binary installers are available for download from the Apache Download Mirrors through:
 
     * http://portals.apache.org/jetspeed-2/download.html
      
