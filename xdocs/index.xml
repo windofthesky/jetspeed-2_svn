@@ -49,20 +49,20 @@
 						</a>
 					</li>
 					<li>
-						<a href="guides/guide-migration.html">
-							Migrating from Jetspeed 2.0 to 2.1
-						</a>
-					</li>
-					<li>
 						<a href="release-notes.html">Release Notes</a>
 					</li>
 					<li>
-						<a href="getting-started.html">
+						<a href="features.html">Features</a>
+					</li>
+					<li>
+						<a href="guides/index.html">
 							Getting Started
 						</a>
 					</li>
 					<li>
-						<a href="guides/index.html">Documentation</a>
+						<a href="guides/guide-migration.html">
+							Migrating from Jetspeed 2.0
+						</a>
 					</li>
 				</ul>
 			</div>
