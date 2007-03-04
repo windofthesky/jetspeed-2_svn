@@ -57,7 +57,9 @@
 					Both the installers support the following databases for Jetspeed: Derby (default), DB2, MySQL, MSSQL, Oracle, PostgreSQL, SapDB,
 					as well as manual (do it yourself) configuration of other databases.
 				</p>
-				<p> Furthermore, through a provided ANT script after installation, reinitializing or switching to another database is a simple one step operation. 
+				<p> Furthermore, through a provided Ant script after installation, reinitializing or switching to another database is a simple one step operation. 
+				</p>
+				<p>Complete instructions for getting started using the installer is available <a href="getting-started-installer.html">here</a>.</p> 
 				</p>
 			</subsection>
 			<subsection name="Jetspeed-2.1 Source Distribution">
@@ -91,6 +93,11 @@
 			<subsection name="System Requirements">
 				<p>
 				The list of systems requirements for Jetspeed-2 is available <a href="getting-started.html#Requirements">here</a>.
+				</p>
+			</subsection>
+			<subsection name="Migrating Guide">
+				<p>
+					Important information for migrating existing Jetspeed-2.0 installations to Jetspeed-2.1 is provided in the <a href="guides/guide-migration.html">migration guide</a>.
 				</p>
 			</subsection>
 		</section>
