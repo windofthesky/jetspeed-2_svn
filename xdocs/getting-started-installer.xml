@@ -28,65 +28,148 @@
 		<section name="Jetspeed-2 Installer">
 			<subsection name="Getting Started with the Installer">
 			<p>
-			Once you have <a href="download.html">downloaded</a> the intaller.  Jetspeed-2 provides 2 installers:
+			Once you have <a href="download.html">downloaded</a> the installer.  Jetspeed-2 provides 2 installers:
 			<ul>
-			<li>An installer with derby as an embedded database: 
-			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-derby-install.jar">Jetspeed2.0-derby-install.jar</a></li>
+			<li>The minimal installation, containing only the core portal and administrative portlets: 
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1-installer.jar">Standard (Minimal) Installer</a></li>
 			<li>An installer for installing Jetspeed-2 on a third party database: 
-			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/Jetspeed2.0-MultiDb-install.jar">Jetspeed2.0-MultiDB-install.jar</a></li>
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1-demo-install.jar">Jetspeed Demo Installer</a></li>
 			</ul>
 			</p>
 			<p>
-			To install Jetspeed-2 with the installer, run depending on which installer you've downloaded:
+			To run the standard (minimal) installer:
+			</p>
 			<source>
-java -jar Jetspeed2.0-MultiDB-install.jar
-or
-java -jar Jetspeed2.0-derby-install.jar
+java -jar jetspeed-2.1-installer.jar
+            </source>
+            <p>
+To run the Jetspeed Demo installer:
+            </p>
+            <source>
+java -jar jetspeed-2.1-demo-installer.jar
 			</source>
-			</p>	
-			<p>
-			For the Multi-DB installer you will need to supply:
+			<p>	
+			To run the installer interactively, pass in the <b><i>text</i></b> parameter:
+			</p>
+			<source>
+java -jar jetspeed-2.1-installer.jar text	
+            </source>
+		    </subsection>
+		    <subsection name="Database Selection">
+		    <p>
+			The installer will ask you to choose a database for storing the Jetspeed database. We provide a default Derby database for demo systems.
+			The Derby database runs in embedded mode inside the Jetspeed/Tomcat JVM. All other databases require additional configuration.
+			If you selected Derby, you can go with the default parameters provided. For all other databases you must first create an area to hold the Jetspeed tables.
+			For some databases this <i>area</i> is called a <i>catalog</i>, others call it a <i>schema</i>, while others call it a <i>database</i>. Consult your
+			database documentation for details on how to create a catalog or schema to hold the Jetspeed tables. Additionally, you may need to create a database user
+			to access the Jetspeed tables. Often is required to grant access to the schemas (catalogs) for the given user.
+			</p>
+			<p>Jetspeed supported database list:
 			<ul>
-			<li>A Database type. Valid values [derby, mssql, mysql, oracle, hsql, postgres, sapdb]</li>
+			<li>DB2</li>
+			<li>Derby (default)</li>
+			<li>MS SQL</li>
+			<li>My SQL</li>
+			<li>PostgreSQL</li>
+			<li>Oracle (9i or higher)</li>
+			<li>SapDB</li>
+			<li>Manual database setup </li>
+			</ul>
+			</p>
+			<p>If you choose the manual database setup, then the database scripts will not be run. You can configure the database at a later time.
+			All database scripts are provided in the installation under the <i>database</i> directory. For your specific database, look under the corresponding directory name.
+			During installation, you will be prompted for the following fields after chosing your database types:
+			<ul>
 			<li>A username</li>
 			<li>A password</li>
 			<li>A JDBC connection string</li>
 			<li>A JDBC driver name</li>
-			<li>The location of a valid JDBC driver.  The installer will copy this to the installed location.</li>
+			<li>The location of a valid JDBC driver.  The installer will copy the driver to the installed location in Tomcat.</li>
 			</ul>
-            With the exception of Derby, you will need to create an empty database schema in 
-            your particular database to store the Jetspeed tables. With the exception of Derby, you can not run the 
-		    installer twice against the same database schema. You have to manually drop the tables yourself before 
-            running the installer a second time.				
+			Note that only the Derby database has exact values for the JDBC connection string and location of the JDBC driver.
+			The connections strings are only partially completed in the well-known format of the particular databaes.
+			Please take care to complete the values in your connection string for your database. The driver name should be the right
+			driver class for your database at the time of the making of this installation. Please ensure that a newer driver is not required. 
+			Note that the location of the JDBC driver must be selected. We have not provided the file system path to the jar file.
+			You may want to check and see if newer versions of the driver are available.
+			</p>
+			<p>
+			Once you have entered all of your parameters, the installer we test the database connection before proceeding.
+			The installer will not continue until it gets a valid connection. Once the installer verifies the database connection,
+			you are ready to proceed with installation process. Please take note of the location where you are installing on your file system.
 			</p>
 			</subsection>
 			<subsection name="Starting Jetspeed-2">
 			<p>
-			Startup Tomcat. On linux, execute :
+			Once you have completed a successful install, you are ready to start the Jetspeed Portal.
+			On linux, here is an example where you have installed to the default location:
 			</p>
 			<source>
-/usr/local/ApacheJetspeed2.0/bin/startup.sh
+cd ~/jetspeed-2.1/bin
+./startup.sh
 			</source>
 			<p>
-			On windows, execute :
+			On windows, here is an example where you have installed to the default location:
 			</p>
    			<source>
-c:\Program Files\Apache Jetspeed 2.0\bin\startup.bat
+   cd C:\Apache\Jetspeed-2.1\bin
+   startup.bat
    			</source>
    			<p>
-   			The very first invocation of the portal requires approximately one minute for initial 
-   			startup and final installation. Please wait one minute, and then start up a web browser 
-			and navigate to <a href="http://localhost:8080/jetspeed/portal">http://localhost:8080/jetspeed/portal</a>.
+ 			The very first invocation of the portal requires anywhere from 10 seconds to 30 seconds for initial 
+   			startup and final installation. After starting the server, start up a web browser 
+   			and navigate to <a href='http://localhost:8080/jetspeed/portal'>http://localhost:8080/jetspeed/portal</a>	   			
 			</p>
 			</subsection>
 			<subsection name="Login to Jetspeed-2">
 			<p>
-			Sample accounts to login as:
+All preconfigured users have the same password as username (for example the <i>admin</i> user has the password <i>admin</i>)
+If you installed with the Minimal installer, two test accounts are available:
+			</p>
 			<source>
-admin/admin
-manager/manager
-user/user</source>
+admin 	  -- System administrator, super user
+devmgr 	  -- Delegated security manager, can manage users with the "dev" (developer) role			
+		   </source>
+		   <p>
+If you installed with the Full Demo installer, several test accounts are available:		   
  			</p>
+ 			<source>
+admin 	  -- System administrator, super user
+manager   -  Has system administration rights, but not super user
+user 	  -- A sample user demonstrating with with a home page and advanced profiled menus 
+tomcat 	  -- A sample user demonstrating a user without a home page
+jetspeed  -- A sample user demonstrating discovery of pages by both group and role fallback profiling algorithms
+subsite   -- Example of how to setup users with a primary subsite role fallback profiling rules
+subsite2  -- Example of how to setup users with a secondary subsite role fallback profiling rules
+devmgr 	  -- Delegated security manager, can manage users with the "dev" (developer) role 			
+ 			</source>
+			</subsection>
+			<subsection name="Jetspeed Desktop">
+			<p>
+The Jetspeed Desktop is a client-side JSR-168 aggregation engine.
+To accesss the Desktop, navigate your browser to <a href='http://localhost:8080/jetspeed/desktop'>http://localhost:8080/jetspeed/desktop</a>
+When switching between the /desktop and the /portal URLs, logout to start a new session.			
+			</p>
+			</subsection>
+			<subsection name="Changing the Database">
+			<p>
+			After running the installation, you can manually reinitialize the database or even switch to another database.
+			To do so, we provide an Ant script found under the <i>database</i> directory of your installed Jetspeed portal.
+			The database configuration is defined in the <i>database.properties</i> file. To reinitialize or change the database,
+			go to the database directory and edit the database.properties file, save it, and then run <b><i>ant</i></b>.
+			</p>
+			<p>Here is a sample database configuration file:
+			</p>
+			<source>
+; Jetspeed Enterprise Portal 2.1 Database setup configuration
+; db.type supported values: db2, derby, mssql, mysql, oracle, postgres, sapdb
+db.type=mysql
+: for db.type other than derby, the properties below need to be specified
+db.username=j2
+db.password=abracadabra
+jdbc.url=jdbc:mysql://localhost:3306/prod-2
+jdbc.driver.class=com.mysql.jdbc.Driver			
+			</source>
 			</subsection>
 		</section>
 	</body>
