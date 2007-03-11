@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.rewriter;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class TestRewriterController extends TestCase
 
         Rewriter basic = component.createRewriter();
         assertNotNull("basic rewriter is null", basic);
-        FileReader reader = getTestReader("test-rewriter-rules.xml");
+        FileReader reader = new FileReader("test/rewriter/test-rewriter-rules.xml");
         Ruleset ruleset = component.loadRuleset(reader);
         assertNotNull("ruleset is null", ruleset);
         RulesetRewriter rewriter = component.createRewriter(ruleset);
@@ -104,7 +105,7 @@ public class TestRewriterController extends TestCase
         assertNotNull("template component is null", component);
 
         assertNotNull("rewriter component is null", component);
-        FileReader reader = getTestReader("test-rewriter-rules.xml");
+        FileReader reader = new FileReader("test/rewriter/test-rewriter-rules.xml");
         Ruleset ruleset = component.loadRuleset(reader);
         assertNotNull("ruleset is null", ruleset);
         assertEquals("ruleset id", "test-set-101", ruleset.getId());
@@ -205,7 +206,7 @@ public class TestRewriterController extends TestCase
 
         assertNotNull("rewriter component is null", component);
 
-        FileReader reader = getTestReader("test-remove-rules.xml");
+        FileReader reader = new FileReader("test/rewriter/test-remove-rules.xml");
 
         Ruleset ruleset = component.loadRuleset(reader);
         reader.close();
@@ -214,7 +215,7 @@ public class TestRewriterController extends TestCase
         assertNotNull("ruleset rewriter is null", rewriter);
         assertNotNull("ruleset is null", rewriter.getRuleset());
 
-        FileReader htmlReader = getTestReader("test-001.html");
+        FileReader htmlReader = new FileReader("test/rewriter/test-001.html");
         FileWriter htmlWriter = getTestWriter("test-001-output.html");
 
         ParserAdaptor adaptor = component.createParserAdaptor("text/html");
@@ -224,7 +225,7 @@ public class TestRewriterController extends TestCase
         htmlReader.close();
 
         // validate result
-        FileReader testReader = getTestReader("test-001-output.html");
+        FileReader testReader = new FileReader("target/test/rewriter/test-001-output.html");
         UnitTestRewriter testRewriter = new UnitTestRewriter();
         testRewriter.parse(component.createParserAdaptor("text/html"), testReader);
         assertTrue("1st rewritten anchor: " + testRewriter.getAnchorValue("1"), testRewriter.getAnchorValue("1")
@@ -245,17 +246,6 @@ public class TestRewriterController extends TestCase
     }
 
     /**
-     * Gets a reader for a given filename in the test directory.
-     * 
-     * @return A file reader to the test rules file
-     * @throws IOException
-     */
-    private FileReader getTestReader(String filename) throws IOException
-    {
-        return new FileReader("test/rewriter/" + filename);
-    }
-
-    /**
      * Gets a writer for a given filename in the test directory.
      * 
      * @return A file reader to the test rules file
@@ -263,9 +253,8 @@ public class TestRewriterController extends TestCase
      */
     private FileWriter getTestWriter(String filename) throws IOException
     {
-        String cwd = System.getProperty("user.dir");
-        String path;
-        return new FileWriter("test/rewriter/" + filename);
+        new File("target/test/rewriter").mkdirs();
+        return new FileWriter("target/test/rewriter/" + filename);
     }
 
 
@@ -290,7 +279,7 @@ public class TestRewriterController extends TestCase
 
         assertNotNull("rewriter component is null", component);
 
-        Reader reader = getTestReader("default-rewriter-rules.xml");
+        Reader reader = new FileReader("test/rewriter/default-rewriter-rules.xml");
 
         Ruleset ruleset = component.loadRuleset(reader);
         reader.close();

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.rewriter;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -216,7 +217,8 @@ public class TestNekoRewriter extends TestCase
      */
     private FileWriter getTestWriter(String filename) throws IOException
     {
-        return new FileWriter("test/rewriter/" + filename);
+        new File("target/test/rewriter").mkdirs();
+        return new FileWriter("target/test/rewriter/" + filename);
     }
     
     
