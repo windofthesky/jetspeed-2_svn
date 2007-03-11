@@ -1,11 +1,3 @@
-<!--
-THIS IS A COPY OF DDL UTILS PATCH APPLIED, and the actual PATCH included below 
-(unfortunately the patch is all or nothing)
-This code is not ready for production usage and requires more thorough testing
-I would like to keep the patch around for when I have more time to investigate the issues
-PLEASE CONTACT taylor@apache.org for more information
--->
-
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
@@ -24,6 +16,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
   $Id:$
+-->
+<!--
+    THIS IS A COPY OF DDL UTILS PATCH APPLIED, and the actual PATCH included below 
+    (unfortunately the patch is all or nothing)
+    This code is not ready for production usage and requires more thorough testing
+    I would like to keep the patch around for when I have more time to investigate the issues
+    PLEASE CONTACT taylor@apache.org for more information
 -->
 <project name="etc" default="help">
 
