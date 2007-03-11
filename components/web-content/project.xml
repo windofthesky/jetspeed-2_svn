@@ -96,4 +96,22 @@ limitations under the License.
     </dependency>	
   </dependencies>
  
+    <build>
+        <sourceDirectory>src/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <targetPath>META-INF</targetPath>
+                <directory>${basedir}/../..</directory>
+                <includes>
+                    <include>NOTICE.txt</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>

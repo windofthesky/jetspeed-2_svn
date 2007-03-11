@@ -186,6 +186,7 @@ limitations under the License.
 				<targetPath>../${pom.artifactId}/META-INF</targetPath>
 				<includes>
 					<include>LICENSE.TXT</include>
+				    <include>NOTICE.txt</include>
 				</includes>
 			</resource>
 		</resources>

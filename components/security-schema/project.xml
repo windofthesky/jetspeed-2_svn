@@ -52,6 +52,13 @@
                     <include>**/*.properties</include>
                 </includes>
             </resource>
+            <resource>
+                <targetPath>META-INF</targetPath>
+                <directory>${basedir}/../..</directory>
+                <includes>
+                    <include>NOTICE.txt</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 
