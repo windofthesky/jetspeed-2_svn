@@ -112,7 +112,7 @@ public class RuleImpl extends IdentifiedImpl implements Rule
             StringTokenizer tokenizer = new StringTokenizer(prefixes, ",");
             while (tokenizer.hasMoreTokens())
             {
-                String token = (String)tokenizer.nextToken();
+                String token = tokenizer.nextToken();
                 ignorePrefixes.add(token);
             }            
             

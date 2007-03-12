@@ -57,7 +57,7 @@ public class PortletParameterSetImpl extends ParameterSetImpl
     protected ParameterComposite newParameterInstance()
     {
 
-        return (ParameterComposite) new PortletInitParameterImpl();
+        return new PortletInitParameterImpl();
 
     }
 

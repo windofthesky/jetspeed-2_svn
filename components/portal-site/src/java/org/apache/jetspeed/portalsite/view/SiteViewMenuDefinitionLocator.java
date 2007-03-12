@@ -83,7 +83,7 @@ public class SiteViewMenuDefinitionLocator
     {
         if (obj instanceof String)
         {
-            return locator.equals((String)obj);
+            return locator.equals(obj);
         }
         return locator.equals(obj.toString());
     }

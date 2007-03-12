@@ -17,18 +17,12 @@
 package org.apache.jetspeed.anttasks;
 
 
-import java.sql.DriverManager;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.SQLExec;
 import java.util.Properties;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.SQLExec;;
+import org.apache.tools.ant.Project;;
 
 public class ExecuteSQL extends SQLExec
 {  

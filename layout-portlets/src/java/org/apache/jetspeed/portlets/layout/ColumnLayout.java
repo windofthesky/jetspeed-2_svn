@@ -415,7 +415,7 @@ public class ColumnLayout implements Serializable
     {
         try
         {
-            return Collections.unmodifiableCollection((Collection) getColumnMap(numberOfColumns - 1).values());
+            return Collections.unmodifiableCollection(getColumnMap(numberOfColumns - 1).values());
         }
         catch (InvalidLayoutLocationException e)
         {
@@ -433,7 +433,7 @@ public class ColumnLayout implements Serializable
     {
         try
         {
-            return Collections.unmodifiableCollection((Collection) getColumnMap(0).values());
+            return Collections.unmodifiableCollection(getColumnMap(0).values());
         }
         catch (InvalidLayoutLocationException e)
         {

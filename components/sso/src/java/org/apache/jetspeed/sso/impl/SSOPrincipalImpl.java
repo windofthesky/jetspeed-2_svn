@@ -18,7 +18,6 @@
 package org.apache.jetspeed.sso.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 

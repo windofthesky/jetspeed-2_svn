@@ -82,8 +82,6 @@ public class SecurityRoleSetImpl implements SecurityRoleSet, MutableSecurityRole
      * @see java.util.Collection#remove(java.lang.Object)
      */
     public boolean remove(Object o) {
-        SecurityRole role = (SecurityRole) o;
-
         return innerCollection.remove(o);
     }
 

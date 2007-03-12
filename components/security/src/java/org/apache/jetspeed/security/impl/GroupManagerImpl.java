@@ -159,7 +159,7 @@ public class GroupManagerImpl implements GroupManager
                 groupSecurityHandler
                         .removeGroupPrincipal(new GroupPrincipalImpl(
                                 GroupPrincipalImpl
-                                        .getPrincipalNameFromFullPath((String) groups[i])));
+                                        .getPrincipalNameFromFullPath(groups[i])));
             } catch (SecurityException se)
             {
                 throw se;
@@ -168,14 +168,14 @@ public class GroupManagerImpl implements GroupManager
                 KeyedMessage msg = 
                     SecurityException.UNEXPECTED.create("GroupManager.removeGroup",
                                                         "GroupSecurityHandler.removeGroupPrincipal("+
-                        GroupPrincipalImpl.getPrincipalNameFromFullPath((String) groups[i])+")", 
+                        GroupPrincipalImpl.getPrincipalNameFromFullPath(groups[i])+")", 
                         e.getMessage());
                 log.error(msg, e);
                 throw new SecurityException(msg, e);
             }
             // Remove preferences
             Preferences groupPref = Preferences.userRoot().node(
-                    (String) groups[i]);
+                    groups[i]);
             try
             {
                 groupPref.removeNode();

@@ -143,7 +143,7 @@ implements JetspeedEngineConstants, HttpSessionListener
                     applicationRoot = webappRoot;
                 }
 
-                Configuration properties = (Configuration) new PropertiesConfiguration(ServletHelper.getRealPath(
+                Configuration properties = new PropertiesConfiguration(ServletHelper.getRealPath(
                         config, propertiesFilename));
 
                 properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);

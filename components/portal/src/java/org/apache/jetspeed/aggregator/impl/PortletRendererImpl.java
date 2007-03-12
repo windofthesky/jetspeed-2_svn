@@ -302,9 +302,6 @@ public class PortletRendererImpl implements PortletRenderer
     public RenderingJob createRenderingJob(ContentFragment fragment, RequestContext requestContext)
     {
         RenderingJob job = null;
-        HttpServletRequest servletRequest =null;
-        HttpServletResponse servletResponse = null;
-        ContentDispatcherCtrl dispatcher = null;  
         boolean contentIsCached = false;       
         try
         {
@@ -327,7 +324,7 @@ public class PortletRendererImpl implements PortletRenderer
             int expirationCache = getExpirationCache(portletDefinition);
             if (expirationCache != 0)
             {
-                portletTracking.setExpiration(portletWindow, (long)expirationCache);
+                portletTracking.setExpiration(portletWindow, expirationCache);
                 contentIsCached = retrieveCachedContent(requestContext, fragment, portletWindow, 
                                                         expirationCache, portletDefinition);
                 if (contentIsCached)

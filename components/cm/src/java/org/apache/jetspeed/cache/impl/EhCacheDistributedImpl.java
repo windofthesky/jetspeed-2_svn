@@ -17,11 +17,9 @@
 package org.apache.jetspeed.cache.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.ehcache.Cache;
@@ -34,7 +32,6 @@ import net.sf.ehcache.event.RegisteredEventListeners;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
-import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 
 public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache, CacheEventListener
 {
@@ -71,7 +68,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 	{
 		if ((key == null) || (!(key instanceof Serializable)))
 			return false;
-		return ehcache.isKeyInCache((Serializable)key);
+		return ehcache.isKeyInCache(key);
 	}
 
 	public boolean isKeyInCache(Serializable key)

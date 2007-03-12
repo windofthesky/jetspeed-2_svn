@@ -96,11 +96,11 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
     {
         Namespace namespace = root.getNamespace();
         Element jetspeedServletElement = new Element("servlet", namespace);
-        Element servletName = (Element) new Element("servlet-name", namespace).addContent(JETSPEED_CONTAINER);
-        Element servletDspName = (Element) new Element("display-name", namespace).addContent(JETSPEED_SERVLET_DISPLAY_NAME);
-        Element servletDesc = (Element) new Element("description", namespace)
+        Element servletName = new Element("servlet-name", namespace).addContent(JETSPEED_CONTAINER);
+        Element servletDspName = new Element("display-name", namespace).addContent(JETSPEED_SERVLET_DISPLAY_NAME);
+        Element servletDesc = new Element("description", namespace)
                 .addContent(JETSPEED_SERVLET_DESCRIPTION);
-        Element servletClass = (Element) new Element("servlet-class", namespace)
+        Element servletClass = new Element("servlet-class", namespace)
                 .addContent(JETSPEED_SERVLET_CLASS);
         jetspeedServletElement.addContent(servletName);
         jetspeedServletElement.addContent(servletDspName);
@@ -122,8 +122,8 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
         Namespace namespace = root.getNamespace();
         Element jetspeedServletMappingElement = new Element("servlet-mapping", namespace);
         
-        Element servletMapName = (Element) new Element("servlet-name", namespace).addContent(JETSPEED_CONTAINER);
-        Element servletUrlPattern = (Element) new Element("url-pattern", namespace).addContent("/container/*");
+        Element servletMapName = new Element("servlet-name", namespace).addContent(JETSPEED_CONTAINER);
+        Element servletUrlPattern = new Element("url-pattern", namespace).addContent("/container/*");
 
         jetspeedServletMappingElement.addContent(servletMapName);
         jetspeedServletMappingElement.addContent(servletUrlPattern);
@@ -141,8 +141,8 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
     {
         Namespace namespace = root.getNamespace();
         Element taglib = new Element ("taglib", namespace);
-        Element taguri = (Element) new Element("taglib-uri", namespace).addContent("http://java.sun.com/portlet");
-        Element taglocation = (Element) new Element("taglib-location", namespace).addContent("/WEB-INF/tld/portlet.tld");
+        Element taguri = new Element("taglib-uri", namespace).addContent("http://java.sun.com/portlet");
+        Element taglocation = new Element("taglib-location", namespace).addContent("/WEB-INF/tld/portlet.tld");
         
         taglib.addContent(taguri);
         taglib.addContent(taglocation);

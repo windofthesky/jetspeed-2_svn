@@ -168,11 +168,11 @@ public class VelocityTag implements BodyTag
              */
             if (strictAccess)
             {
-                vc = (Context) new VelocityContext();
+                vc = new VelocityContext();
             }
             else
             {
-               vc = (Context)  new JSPContext( pageContext );
+               vc = new JSPContext( pageContext );
             }
 
             /*

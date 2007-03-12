@@ -153,19 +153,19 @@ public class RoleManagerImpl implements RoleManager
             try
             {
                 roleSecurityHandler.removeRolePrincipal(new RolePrincipalImpl(RolePrincipalImpl
-                        .getPrincipalNameFromFullPath((String) roles[i])));
+                        .getPrincipalNameFromFullPath(roles[i])));
             }
             catch (Exception e)
             {
                 KeyedMessage msg = 
                     SecurityException.UNEXPECTED.create("RoleManager.removeRole",
-                                                        "RoleSecurityHandler.removeRolePrincipal("+RolePrincipalImpl.getPrincipalNameFromFullPath((String) roles[i])+")",
+                                                        "RoleSecurityHandler.removeRolePrincipal("+RolePrincipalImpl.getPrincipalNameFromFullPath(roles[i])+")",
                                                         e.getMessage());
                 log.error(msg, e);
                 throw new SecurityException(msg, e);
             }
             // Remove preferences
-            Preferences rolePref = Preferences.userRoot().node((String) roles[i]);
+            Preferences rolePref = Preferences.userRoot().node(roles[i]);
             try
             {
                 rolePref.removeNode();

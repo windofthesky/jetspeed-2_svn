@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.portalsite.menu;
 
-import java.util.Locale;
-
 import org.apache.jetspeed.portalsite.view.SiteView;
 
 /**

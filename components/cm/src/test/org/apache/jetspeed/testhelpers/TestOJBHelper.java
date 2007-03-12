@@ -19,7 +19,6 @@ package org.apache.jetspeed.testhelpers;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import junit.framework.TestCase;

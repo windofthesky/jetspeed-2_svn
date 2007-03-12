@@ -16,7 +16,6 @@
 */
 package org.apache.jetspeed.sso;
 
-import java.io.BufferedInputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;

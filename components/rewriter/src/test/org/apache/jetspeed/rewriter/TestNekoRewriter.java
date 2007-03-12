@@ -22,26 +22,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.Arrays;
 
-import javax.portlet.PortletException;
-
-import org.w3c.dom.Node;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.xerces.xni.parser.XMLDocumentFilter;
-import org.apache.xerces.xni.parser.XMLInputSource;
-
-import org.cyberneko.html.HTMLConfiguration ;
-import org.cyberneko.html.parsers.DOMParser;
-import org.cyberneko.html.parsers.SAXParser;
-import org.cyberneko.html.filters.Purifier ;
-import org.cyberneko.html.filters.Writer ;
-
-import org.apache.jetspeed.rewriter.html.SwingParserAdaptor;
 import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;

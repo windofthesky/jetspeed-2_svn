@@ -84,7 +84,7 @@ public class RoleFallbackProfilingRule
                 StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
                 while (tokenizer.hasMoreTokens())
                 {
-                    String token = (String)tokenizer.nextToken();
+                    String token = tokenizer.nextToken();
                     key.append(criterion.getName());
                     key.append(ProfileLocator.PATH_SEPARATOR);
                     key.append(token);
@@ -138,7 +138,7 @@ public class RoleFallbackProfilingRule
                         StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
                         while (tokenizer.hasMoreTokens())
                         {
-                            String token = (String)tokenizer.nextToken();
+                            String token = tokenizer.nextToken();
                             locator.add(criterion, isControl, isNavigation, token);
                         }
                     }

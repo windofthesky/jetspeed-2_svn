@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.Collections;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;

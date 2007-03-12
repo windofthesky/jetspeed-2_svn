@@ -228,7 +228,6 @@ public class TestNavigationalState extends TestCase
       assertEquals("maximized window should equal window 111", maximizedWindow.getId(), "111");
 
       Iterator iter = nav.getParameterNames(target);
-      int parameterCount = 0;
       assertTrue("There should be one parameter",iter.hasNext());
       while ( iter.hasNext() ) {
           assertEquals("parameter name should equals \"test\"", (String)iter.next(), "test");

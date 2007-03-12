@@ -19,11 +19,7 @@ package org.apache.jetspeed.serializer.objects;
 import javolution.xml.*;
 import javolution.xml.stream.XMLStreamException;
 
-import java.util.prefs.Preferences;
-import java.util.*;
-
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.jetspeed.security.Role;
 
 public class JSGroup 
 {

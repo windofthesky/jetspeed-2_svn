@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.security.Principal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;

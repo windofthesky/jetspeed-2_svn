@@ -19,7 +19,6 @@ package org.apache.jetspeed.portlets.security.sso;
 import java.io.IOException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -89,7 +88,6 @@ public class SSODetails extends BrowserPortlet
         try
         {
             SSOSite site = null;
-            Iterator principals = null;
             List list = null;
             resultSetTypeList.add(String.valueOf(Types.VARCHAR));
             resultSetTitleList.add("Principal");

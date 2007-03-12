@@ -16,12 +16,10 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.pluto.om.window.PortletWindow;
 
 /**

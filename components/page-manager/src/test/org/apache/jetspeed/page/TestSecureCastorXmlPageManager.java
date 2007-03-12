@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.page;
 
-import java.io.File;
-import java.io.FileFilter;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

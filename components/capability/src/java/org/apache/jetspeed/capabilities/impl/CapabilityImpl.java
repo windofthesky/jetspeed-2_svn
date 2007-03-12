@@ -18,7 +18,6 @@
 package org.apache.jetspeed.capabilities.impl;
 
 import org.apache.jetspeed.capabilities.Capability;
-import org.apache.jetspeed.capabilities.MimeType;
 
 /**
  * Capability implementation class.

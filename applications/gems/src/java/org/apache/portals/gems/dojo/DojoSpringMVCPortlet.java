@@ -16,8 +16,6 @@
  */
 package org.apache.portals.gems.dojo;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,11 +24,6 @@ import java.util.Map;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,10 +31,6 @@ import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.portlet.PortletHeaderResponse;
 import org.apache.jetspeed.portlet.SupportsHeaderPhase;
-import org.apache.pluto.core.impl.RenderRequestImpl;
-import org.apache.pluto.core.impl.RenderResponseImpl;
-import org.apache.portals.gems.util.HttpBufferedResponse;
-import org.apache.portals.gems.util.PortletContentImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.web.portlet.DispatcherPortlet;
 

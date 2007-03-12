@@ -16,11 +16,9 @@
 */
 package org.apache.jetspeed.portlets.layout;
 
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotUpdatedException;
 
 public class PageManagerLayoutEventListener implements LayoutEventListener
 {

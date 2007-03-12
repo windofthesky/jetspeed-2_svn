@@ -107,8 +107,6 @@ public class PersistenceBrokerSSOProvider extends
 		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
 		String fullPath = principal.getFullPath();
 		
-    	String content = null;
-    	
     	/* ProxyID is used for the cache. The http client object will be cached for a
     	 * given user site url combination
     	 */
@@ -140,8 +138,7 @@ public class PersistenceBrokerSSOProvider extends
      */
     public String useSSO(Subject subject, String url, boolean bRefresh) throws SSOException
     {
-    	String content = null;
-       	// Get the principal from the subject
+    	// Get the principal from the subject
 		BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
 		String fullPath = principal.getFullPath();
 
@@ -575,8 +572,6 @@ public class PersistenceBrokerSSOProvider extends
 		
 		// Initailization
 		InternalUserPrincipal remotePrincipal = null;
-		SSOPrincipal principal = null;
-		
 		//Get the site
 		SSOSite ssoSite = getSSOSiteObject(site);
 		if (ssoSite == null)
@@ -773,9 +768,6 @@ public class PersistenceBrokerSSOProvider extends
 	{
 		InternalCredential credential = null;
 		InternalUserPrincipal remotePrincipal = null;
-		String remoteUser = null;
-		String remoteFullPath = null;
-		
 		//	Get remotePrincipals for Site and match them with the Remote Principal for the Principal attached to site
 		Collection principalsForSite = ssoSite.getPrincipals();
 		Collection remoteForSite = ssoSite.getRemotePrincipals();

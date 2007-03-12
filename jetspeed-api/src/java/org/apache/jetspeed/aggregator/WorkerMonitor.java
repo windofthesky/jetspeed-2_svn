@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import java.util.List;
-
 import org.apache.jetspeed.util.Queue;
 
 /**

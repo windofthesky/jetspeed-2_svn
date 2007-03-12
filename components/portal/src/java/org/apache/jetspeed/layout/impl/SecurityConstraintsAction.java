@@ -290,7 +290,6 @@ public class SecurityConstraintsAction
     throws AJAXException
     {
         int count = 0;
-        boolean found = false;
         String name = getActionParameter(requestContext, "name");
         if (name == null)
             throw new AJAXException("Missing 'name' parameter");

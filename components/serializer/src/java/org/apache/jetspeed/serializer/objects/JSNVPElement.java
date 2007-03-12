@@ -17,23 +17,10 @@
 
 package org.apache.jetspeed.serializer.objects;
 
-/**
- * Serialized Name Value Pairs <info> <name>user.first.name</name> <value>Paul</value>
- * </info>
- * 
- * @author <a href="mailto:hajo@bluesunrsie.com">Hajo Birthelmer</a>
- * @version $Id: $
- */
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.prefs.Preferences;
-
 import javolution.xml.XMLFormat;
-import javolution.xml.sax.Attributes;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.pluto.om.common.Preference;
 
 public class JSNVPElement
 {

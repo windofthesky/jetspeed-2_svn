@@ -235,7 +235,7 @@ public class DatabasePageManagerCache implements ObjectCache
                 cacheLRUList.addFirst(entry);
                 // refresh cache entry and return object
                 entry.touch();
-                return (NodeImpl)entry.getObject();
+                return entry.getObject();
             }
             else
             {

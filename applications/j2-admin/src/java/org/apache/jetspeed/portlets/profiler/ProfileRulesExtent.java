@@ -37,7 +37,7 @@ public class ProfileRulesExtent // implements Serializable
     
     public Collection getExtent()
     {
-        Map appMap = (Map)FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
+        Map appMap = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
         Profiler profiler = (Profiler)appMap.get(CommonPortletServices.CPS_PROFILER_COMPONENT);
         return profiler.getRules(); // TODO: optimize with cache
     }

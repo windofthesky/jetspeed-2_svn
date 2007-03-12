@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.sql.Date;
-import java.util.Iterator;
 import java.util.prefs.Preferences;
 
 import javolution.xml.XMLFormat;

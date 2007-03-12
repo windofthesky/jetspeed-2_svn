@@ -197,8 +197,6 @@ public class RenderingJobImpl implements RenderingJob
         long start = System.currentTimeMillis();
         boolean isParallelMode = false;
         PortletWindow curWindow = null;
-        boolean failedRender = false;
-        
         try
         {
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);

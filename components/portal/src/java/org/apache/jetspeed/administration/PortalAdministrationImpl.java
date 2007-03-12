@@ -128,10 +128,8 @@ public class PortalAdministrationImpl implements PortalAdministration
         this.defaultGroups = 
             config.getList(PortalConfigurationConstants.REGISTRATION_GROUPS_DEFAULT);
     
-        Object[] profileRuleNames = (Object[]) 
-            config.getList(PortalConfigurationConstants.PROFILER_RULE_NAMES_DEFAULT).toArray();
-        Object[] profileRuleValues = (Object[])
-            config.getList(PortalConfigurationConstants.PROFILER_RULE_VALUES_DEFAULT).toArray();
+        Object[] profileRuleNames = config.getList(PortalConfigurationConstants.PROFILER_RULE_NAMES_DEFAULT).toArray();
+        Object[] profileRuleValues = config.getList(PortalConfigurationConstants.PROFILER_RULE_VALUES_DEFAULT).toArray();
         defaultRules = new HashMap();
         if (profileRuleNames != null && profileRuleValues != null)
         {

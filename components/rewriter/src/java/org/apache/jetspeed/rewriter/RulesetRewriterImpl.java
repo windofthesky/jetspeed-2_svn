@@ -16,13 +16,11 @@
  */
 package org.apache.jetspeed.rewriter;
 
-import java.net.URL;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Attribute;
 import org.apache.jetspeed.rewriter.rules.Rule;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
@@ -125,7 +123,7 @@ public class RulesetRewriterImpl extends BasicRewriter implements RulesetRewrite
         {
             Attribute attribute = (Attribute)attribRules.next();
             String name = attribute.getId();
-            String value = (String)attributes.getValue(name);
+            String value = attributes.getValue(name);
  
             if (value != null) // && name.equalsIgnoreCase(attribute.getId()))
             {

@@ -120,7 +120,7 @@ public class UserBrowser extends BrowserPortlet
         }
         
         // TODO: if request parameters were working correctly we could replace this with render parameters
-        String filtered = (String)request.getParameter(FILTERED);
+        String filtered = request.getParameter(FILTERED);
         if (filtered != null)
         {
             PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED, "on");            

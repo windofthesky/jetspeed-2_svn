@@ -17,15 +17,10 @@
 package org.apache.jetspeed.portlets.site;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -40,7 +35,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
-import org.apache.velocity.context.Context;
 
 /**
  * Manage the Portal Site

@@ -107,7 +107,7 @@ public class JetspeedTestSuite extends TestSuite
                 return;
             }
             
-            Configuration properties = (Configuration) new PropertiesConfiguration(propertiesFilename);
+            Configuration properties = new PropertiesConfiguration(propertiesFilename);
 
             properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
             //properties.setProperty(WEBAPP_ROOT_KEY, null);

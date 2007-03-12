@@ -16,10 +16,7 @@
  */
 package org.apache.jetspeed.rewriter.html.neko;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.jetspeed.rewriter.MutableAttributes;
 import org.apache.jetspeed.rewriter.Rewriter;
-import org.apache.jetspeed.rewriter.html.SwingAttributes;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.QName;
 import org.apache.xerces.xni.XMLAttributes;

@@ -250,7 +250,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                 Iterator headerOrderListIter = headerOrderConfigList.iterator();
                 while ( headerOrderListIter.hasNext() )
                 {
-                    Object headerNameObj = (String)headerOrderListIter.next();
+                    Object headerNameObj = headerOrderListIter.next();
                     if ( headerNameObj != null )
                     {
                         String headerName = headerNameObj.toString();

@@ -288,7 +288,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
                 }
             }           
             
-            return (MutablePortletEntity) portletEntity;                
+            return portletEntity;                
         }
     }
 
@@ -318,7 +318,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         PortletEntityImpl portletEntity = new PortletEntityImpl();
         portletEntity.setPortletDefinition(portletDefinition);
         portletEntity.setId(id);
-        return (PortletEntityImpl) portletEntity;
+        return portletEntity;
     }
     
     

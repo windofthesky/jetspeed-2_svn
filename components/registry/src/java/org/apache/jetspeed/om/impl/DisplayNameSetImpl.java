@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.common.DisplayName;
@@ -99,8 +98,6 @@ public class DisplayNameSetImpl  implements MutableDisplayNameSet, Serializable
      */
     public boolean add(Object o)
     {
-        MutableDisplayName name = (MutableDisplayName) o;
-
         return innerCollection.add(o);
     }
 
@@ -109,8 +106,6 @@ public class DisplayNameSetImpl  implements MutableDisplayNameSet, Serializable
      */
     public boolean remove(Object o)
     {
-        DisplayName name = (DisplayName) o;
-        
         return innerCollection.remove(o);
     }
 

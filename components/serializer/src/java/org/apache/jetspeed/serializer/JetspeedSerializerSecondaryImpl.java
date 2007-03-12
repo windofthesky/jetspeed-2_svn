@@ -160,7 +160,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 	private JSPortlet exportPD(PortletDefinition pd) throws SerializerException
 	{
 
-		boolean processedAnyEntities = false;
 		try
 		{
 			Collection col = entityAccess.getPortletEntities(pd);
@@ -250,8 +249,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 	JSEntityPreference processPreferenceNode(MutablePortletEntity entity,
 			String child)
 	{
-		boolean processedAny = false;
-
 		String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/"
 				+ entity.getId() + "/" + child + "/"
 				+ PrefsPreference.PORTLET_PREFERENCES_ROOT;
@@ -278,7 +275,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 				Iterator ii = pref.getValues();
 				while (ii.hasNext())
 				{
-					processedAny = true;
 					Object o = ii.next();
 					v.add(name, o.toString());
 				}

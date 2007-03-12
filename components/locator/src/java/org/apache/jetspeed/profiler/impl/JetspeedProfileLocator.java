@@ -127,7 +127,7 @@ public class JetspeedProfileLocator implements ProfileLocatorControl
         StringTokenizer tokenizer = new StringTokenizer(path, ProfileLocator.PATH_SEPARATOR);
         while (tokenizer.hasMoreTokens())
         {
-            String name = (String)tokenizer.nextToken();
+            String name = tokenizer.nextToken();
             if (tokenizer.hasMoreTokens())
             {
                 String value = tokenizer.nextToken();

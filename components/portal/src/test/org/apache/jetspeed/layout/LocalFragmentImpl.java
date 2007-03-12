@@ -17,8 +17,6 @@
 package org.apache.jetspeed.layout;
 
 import java.util.List;
-import java.util.Map;
-
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import java.util.ArrayList;

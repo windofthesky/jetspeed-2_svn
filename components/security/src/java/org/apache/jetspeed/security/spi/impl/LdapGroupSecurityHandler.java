@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

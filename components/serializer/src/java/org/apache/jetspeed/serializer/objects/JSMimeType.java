@@ -16,11 +16,6 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
-import javolution.xml.XMLFormat;
-import javolution.xml.stream.XMLStreamException;
-
-import org.apache.jetspeed.capabilities.MimeType;
-
 public class JSMimeType extends JSGroup
 {
 }

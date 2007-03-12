@@ -58,9 +58,9 @@ public class ProfileRuleForm
     
     public void listen(ActionEvent event)
     {        
-        Map appMap = (Map)FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
+        Map appMap = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
         profiler = (Profiler)appMap.get(CommonPortletServices.CPS_PROFILER_COMPONENT);
-        Map params = (Map)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String selected = (String)params.get("selectedRule");
         if (selected != null && profiler != null)
         {

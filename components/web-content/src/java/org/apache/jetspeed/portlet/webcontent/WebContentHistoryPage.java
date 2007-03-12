@@ -77,7 +77,7 @@ public class WebContentHistoryPage extends Object
         while ( iter.hasNext() )
         {
             Map.Entry entry = (Map.Entry)iter.next();
-            buff.append("(").append(entry.getKey()).append(" . ").append(ArrayUtils.toString((String[])entry.getKey())).append(")");
+            buff.append("(").append(entry.getKey()).append(" . ").append(ArrayUtils.toString(entry.getKey())).append(")");
         }
         buff.append("}]");
         return buff.toString();

@@ -245,8 +245,8 @@ public class DatabaseBrowserIterator implements BrowserIterator
             
             if (obj1 instanceof String)
             {
-                col1 = (String)obj1;
-                col2 = (String)obj2;                
+                col1 = obj1;
+                col2 = obj2;                
             }
             else if (obj1 instanceof List)
             {

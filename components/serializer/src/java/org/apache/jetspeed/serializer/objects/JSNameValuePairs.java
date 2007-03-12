@@ -33,7 +33,6 @@ import javolution.xml.sax.Attributes;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.pluto.om.common.Preference;
 
 public class JSNameValuePairs
 {

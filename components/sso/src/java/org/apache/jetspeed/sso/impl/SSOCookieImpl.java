@@ -19,8 +19,6 @@
 
 package org.apache.jetspeed.sso.impl;
 
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Vector;

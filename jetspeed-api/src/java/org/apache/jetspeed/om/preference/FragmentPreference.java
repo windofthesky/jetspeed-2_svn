@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.om.preference;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**

@@ -127,8 +127,6 @@ public class TestAggregator extends TestCase
 
         ResourceLocatingServletContext paContext = null;
         File paRootDir = null;
-        File paWebInfDir = null;
-        
         paRootDir = new File("../../layout-portlets/target/jetspeed-layout-portlets");
         paContext = initPA("jetspeed-layouts", "/jetspeed-layouts", paRootDir);
 

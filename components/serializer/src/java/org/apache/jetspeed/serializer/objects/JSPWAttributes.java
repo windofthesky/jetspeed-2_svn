@@ -17,20 +17,6 @@
 
 package org.apache.jetspeed.serializer.objects;
 
-/**
- * Serialized Name Value Pairs
- * <info>
- *   <name>user.first.name</name>
- *   <value>Paul</value>
- * </info>
- * 
- * @author <a href="mailto:hajo@bluesunrsie.com">Hajo Birthelmer</a>
- * @version $Id: $
- */
-import java.util.HashMap;
-import java.util.Map;
-import java.util.prefs.*;
-
 public class JSPWAttributes extends JSNameValuePairs
 {
 

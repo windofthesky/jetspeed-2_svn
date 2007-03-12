@@ -36,7 +36,6 @@ import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 /**
@@ -261,7 +260,7 @@ public class JetspeedRewriterController implements RewriterController
 
             Unmarshaller unmarshaller = new Unmarshaller(this.mapper);
 
-            ruleset = (Ruleset) unmarshaller.unmarshal((Node) doc);
+            ruleset = (Ruleset) unmarshaller.unmarshal(doc);
             ruleset.sync();
             rulesets.put(ruleset.getId(), ruleset);
 

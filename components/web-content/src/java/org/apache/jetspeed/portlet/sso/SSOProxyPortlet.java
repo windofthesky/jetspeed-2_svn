@@ -19,7 +19,6 @@
 
 package org.apache.jetspeed.portlet.sso;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.AccessControlContext;
@@ -142,8 +141,6 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
          * Call into the SSO Proxy and process the result page
          */
         boolean doRefresh = false;
-        BufferedInputStream bis = null;
-        
         if ( (forceRefresh.compareToIgnoreCase("TRUE") == 0) || this.isAuthenticated == false)
         	doRefresh = true;
        

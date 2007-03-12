@@ -22,9 +22,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.jetspeed.PortalContext;
 import org.apache.pluto.services.information.PortalContextProvider;
 
@@ -153,7 +150,7 @@ public class PortalContextProviderImpl
         Enumeration supportedPortletModes = portalContext.getSupportedPortletModes();
         while(supportedPortletModes.hasMoreElements()) 
         {
-            m.add((PortletMode) supportedPortletModes.nextElement());
+            m.add(supportedPortletModes.nextElement());
         }
 
         return m;
@@ -165,7 +162,7 @@ public class PortalContextProviderImpl
         Enumeration supportedWindowStates = portalContext.getSupportedWindowStates();
         while(supportedWindowStates.hasMoreElements()) 
         {
-            s.add((WindowState) supportedWindowStates.nextElement());
+            s.add(supportedWindowStates.nextElement());
         }
 
         return s;

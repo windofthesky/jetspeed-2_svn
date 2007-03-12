@@ -79,7 +79,7 @@ public class StandardDeploymentManager implements DeploymentManager
         int i = 0;
         while (dirTokenizer.hasMoreTokens())
         {
-            this.stagingDirectoriesAsFiles[i] = new File((String) dirTokenizer.nextToken());
+            this.stagingDirectoriesAsFiles[i] = new File(dirTokenizer.nextToken());
             i++;
         }
 

@@ -65,7 +65,7 @@ public class PortalFilter implements Filter
                     Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
                     UserPrincipal userPrincipal = new UserSubjectPrincipalImpl(username, subject);
                     principals.add(userPrincipal);
-                    sRequest = wrapperRequest((HttpServletRequest)request, userPrincipal);
+                    sRequest = wrapperRequest(request, userPrincipal);
                     request.getSession().removeAttribute(LoginConstants.ERRORCODE);
                     HttpSession session = request.getSession(true);
                     session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
@@ -89,7 +89,7 @@ public class PortalFilter implements Filter
                     }
                     else
                     {
-                        sRequest = wrapperRequest((HttpServletRequest)request, principal);
+                        sRequest = wrapperRequest(request, principal);
                     }
                 }                
             }              

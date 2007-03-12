@@ -29,11 +29,7 @@ import java.util.Iterator;
 import java.util.prefs.Preferences;
 
 import javolution.xml.XMLFormat;
-import javolution.xml.sax.Attributes;
 import javolution.xml.stream.XMLStreamException;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.pluto.om.common.Preference;
 
 public class JSNVPElements
 {
@@ -112,10 +108,7 @@ public class JSNVPElements
             try
             {
                 JSNVPElements g = (JSNVPElements) o;
-                Object o1 = null;
-                
-
-				while (xml.hasNext())
+                while (xml.hasNext())
 				{
 					JSNVPElement elem = (JSNVPElement)xml.get("preference",JSNVPElement.class);
                     g.myMap.put(elem.getKey(), elem.getValue());

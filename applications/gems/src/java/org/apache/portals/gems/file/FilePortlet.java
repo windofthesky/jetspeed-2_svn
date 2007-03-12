@@ -99,7 +99,7 @@ public class FilePortlet extends GenericServletPortlet
         
         if (null == path && this.defaultSourceBasePath != null )
         {
-            String filepath = (String)request.getParameter(PARAM_SOURCE_FILE_PATH);
+            String filepath = request.getParameter(PARAM_SOURCE_FILE_PATH);
             if (filepath == null)
             {
                 filepath = (String)request.getAttribute(PARAM_SOURCE_FILE_PATH);

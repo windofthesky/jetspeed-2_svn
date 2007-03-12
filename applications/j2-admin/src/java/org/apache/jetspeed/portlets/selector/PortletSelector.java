@@ -174,12 +174,12 @@ public class PortletSelector extends BrowserPortlet
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
     {
-        String filtered = (String)request.getParameter(FILTERED);
+        String filtered = request.getParameter(FILTERED);
         
         Set checkBoxes = getCheckBoxSet(request);
         PortletMessaging.publish(request, PortletApplicationResources.TOPIC_PORTLET_SELECTOR, PortletApplicationResources.MESSAGE_SELECTED, checkBoxes);            
         
-        String searchString = (String)request.getParameter(SEARCH_STRING);
+        String searchString = request.getParameter(SEARCH_STRING);
         // huh, apparently this messaging API won't basically take a null and assume that's equivalent to a cancel.  In fact the null won't even
         // overwrite the previous value.. it does nothing...
         // So, we'll write some extra code to get around that

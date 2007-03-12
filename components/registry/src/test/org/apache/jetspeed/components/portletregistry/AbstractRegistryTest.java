@@ -26,7 +26,6 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 
@@ -126,7 +125,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
         app = null;
 
-        app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
+        app = registry.getPortletApplication("App_1");
 
         webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         portlet = (PortletDefinitionImpl) app.getPortletDefinitionByName("Portlet 1");
@@ -153,7 +152,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
         }
 
-        portlet = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
+        portlet = registry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
 
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
 

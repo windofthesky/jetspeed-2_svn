@@ -190,7 +190,7 @@ public class MemoryTransformCache implements TransformCache
     
     public Object getDocument(String key)
     {
-        TransformCacheEntry entry = (TransformCacheEntry)get(key);
+        TransformCacheEntry entry = get(key);
         if (entry != null)
         {
             return entry.getDocument();

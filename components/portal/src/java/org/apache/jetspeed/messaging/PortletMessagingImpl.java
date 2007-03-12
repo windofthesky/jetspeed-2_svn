@@ -24,7 +24,6 @@ import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainerServices;

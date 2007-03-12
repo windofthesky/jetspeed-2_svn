@@ -254,8 +254,8 @@ public class TestDecorations extends MockObjectTestCase
         Mock servletRequestMock = new Mock(HttpServletRequest.class);
         Mock sessionMock = new Mock(HttpSession.class);
         
-        expectAndReturn(atLeastOnce(), servletRequestMock, "getSession", (HttpSession) sessionMock.proxy());
-        expectAndReturn(atLeastOnce(), requestContextMock, "getRequest", (HttpServletRequest)servletRequestMock.proxy());
+        expectAndReturn(atLeastOnce(), servletRequestMock, "getSession", sessionMock.proxy());
+        expectAndReturn(atLeastOnce(), requestContextMock, "getRequest", servletRequestMock.proxy());
         
         expectAndReturn(atLeastOnce(), sessionMock, "getAttribute", new Constraint[]{eq(PortalReservedParameters.RESOVLER_CACHE_ATTR)}, new HashMap());
         //expectAndReturn(sessionMock, "getAttribute", PortalReservedParameters.RESOVLER_CACHE_ATTR);

@@ -120,7 +120,7 @@ public class EditRepositoryPage
         Repository repo = (Repository) sessionMap.get(RPADConstants.REPOSITORY);
         if (repo != null)
         {
-            Repository r = (Repository) getRepositoryManager().getRepository(
+            Repository r = getRepositoryManager().getRepository(
                     repo.getName());
 
             //TODO support repositories other than SimpleRepository

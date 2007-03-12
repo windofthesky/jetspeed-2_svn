@@ -107,7 +107,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         for (Enumeration parameters = servletRequest.getParameterNames(); parameters.hasMoreElements();)
         {
             String paramName = (String) parameters.nextElement();
-            String[] paramValues = (String[]) servletRequest.getParameterValues(paramName);
+            String[] paramValues = servletRequest.getParameterValues(paramName);
 
             if (decode)
             {

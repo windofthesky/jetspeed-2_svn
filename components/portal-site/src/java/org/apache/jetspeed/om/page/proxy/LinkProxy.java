@@ -22,7 +22,6 @@ import java.lang.reflect.Proxy;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.portalsite.view.SiteView;
 

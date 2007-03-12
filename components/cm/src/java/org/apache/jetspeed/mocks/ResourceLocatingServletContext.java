@@ -179,8 +179,6 @@ public class ResourceLocatingServletContext extends BaseMockServletContext
 
     protected void loadServlets() 
     {
-        Servlet containerServlet = null;
-
         this.servletInfoList.clear();
         this.servletMappingInfoList.clear();
 

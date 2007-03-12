@@ -39,9 +39,7 @@ import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
-import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToDeleteFolderException;
-import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateFolderException;
 import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.Node;
@@ -327,7 +325,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             Iterator copyIter = folderImpl.getAllNodes().iterator();
             while (copyIter.hasNext())
             {
-                removeNodes.add((Node)copyIter.next());
+                removeNodes.add(copyIter.next());
             }
             
             // remove folder nodes
@@ -531,7 +529,6 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
     protected String[] getChildrenNames( String path, FilenameFilter filter ) throws FolderNotFoundException
     {
         File parent = new File(documentRootDir, path);
-        String[] relativeNames = null;
         if (!parent.exists())
         {
             throw new FolderNotFoundException("No folder exists at the path: " + parent.getAbsolutePath());
@@ -718,7 +715,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             entry.setDocument(getFolder(folder.getPath(), false));
             if (((AbstractNode)folder).getParent(false) != null)
             {
-                FileCacheEntry parentEntry = (FileCacheEntry)fileCache.get(((AbstractNode)folder).getParent(false).getPath());
+                FileCacheEntry parentEntry = fileCache.get(((AbstractNode)folder).getParent(false).getPath());
                 refresh(parentEntry);                
             }
         }

@@ -57,7 +57,7 @@ class FolderMenuDefinitionList extends AbstractList
         // make sure element is unique
         if (folder.accessMenus().contains(definition))
         {
-            throw new IllegalArgumentException("Unable to add duplicate entry to list: " + ((FolderMenuDefinitionImpl)definition).getName());
+            throw new IllegalArgumentException("Unable to add duplicate entry to list: " + (definition).getName());
         }
         // retrieve from removed list to reuse
         // previously removed element copying
@@ -68,7 +68,7 @@ class FolderMenuDefinitionList extends AbstractList
             if (removedIndex >= 0)
             {
                 // reuse menu definition with matching name
-                FolderMenuDefinitionImpl addDefinition = (FolderMenuDefinitionImpl)definition;
+                FolderMenuDefinitionImpl addDefinition = definition;
                 definition = (FolderMenuDefinitionImpl)removedMenuDefinitions.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 // copy menu definition members

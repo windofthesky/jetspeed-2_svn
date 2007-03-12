@@ -433,7 +433,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 			throw new PortletPlacementException("column out of bounds" + fragment.getName());
 		}
 		
-		Vector columnArray = (Vector)this.columnsList[newCol];
+		Vector columnArray = this.columnsList[newCol];
 
 		// Make sure the list has enough room for the set
 		prepareList(columnArray, newRow);
@@ -582,7 +582,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		int oldCol = foundCoordinate.getOldCol();
 		int oldRow = foundCoordinate.getOldRow();
 		
-		Vector columnArray = (Vector)this.columnsList[oldCol];
+		Vector columnArray = this.columnsList[oldCol];
 		
 		// Check the row and column boundaries to make sure there is room
 		// to do the move
@@ -639,7 +639,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 			throw new PortletPlacementException("column out of bounds:" + fragment.getName());
 		}
 		
-		Vector columnArray = (Vector)this.columnsList[col];
+		Vector columnArray = this.columnsList[col];
 		if(row < 0 || row > columnArray.size()) 
         {
 			throw new PortletPlacementException("row out of bounds:" + fragment.getName());

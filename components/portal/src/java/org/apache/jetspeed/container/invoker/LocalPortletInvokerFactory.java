@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.container.invoker;
 
-import org.springframework.beans.factory.config.AbstractFactoryBean;
-
 /**
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $

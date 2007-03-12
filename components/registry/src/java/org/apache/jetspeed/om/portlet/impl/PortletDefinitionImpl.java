@@ -77,7 +77,6 @@ import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.servlet.ServletDefinition;
-import org.odmg.DList;
 
 /**
  * 
@@ -622,7 +621,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void setDisplayNames( DisplayNameSet arg0 )
     {
-        this.displayNames = (DList) ((DisplayNameSetImpl) arg0).getInnerCollection();
+        this.displayNames = ((DisplayNameSetImpl) arg0).getInnerCollection();
     }
 
     /**

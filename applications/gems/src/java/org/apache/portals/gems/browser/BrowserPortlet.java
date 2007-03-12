@@ -303,7 +303,7 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
                 if (searchString != null)
                 {                    
                     String searchColumn = request.getParameter(SEARCH_COLUMN);
-                    String filtered = (String)request.getParameter(FILTERED);                    
+                    String filtered = request.getParameter(FILTERED);                    
                     if (filtered != null)
                     {
                         clearBrowserIterator(request);                        
@@ -448,12 +448,11 @@ public class BrowserPortlet extends GenericVelocityPortlet implements Browser
 
     protected void readUserParameters(RenderRequest request, Context context)
     {
-        List userObjectList;
         Object userObjRead = request.getPortletSession().getAttribute(
                 USER_OBJECTS, PortletSession.PORTLET_SCOPE);
         if (userObjRead != null)
         {
-            context.put(USER_OBJECTS, (List) userObjRead);
+            context.put(USER_OBJECTS, userObjRead);
             // System.out.println("userObjectListSize: "+
             // ((List)userObjRead).size());
         } else

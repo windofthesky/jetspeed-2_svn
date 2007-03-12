@@ -33,7 +33,6 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.statistics.impl.PortalStatisticsImpl;
 import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;

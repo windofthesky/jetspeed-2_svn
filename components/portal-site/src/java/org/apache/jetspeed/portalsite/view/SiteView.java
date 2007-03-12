@@ -34,7 +34,6 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
-import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.menu.StandardBackMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.StandardBreadcrumbsMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.StandardNavigationsMenuDefinition;

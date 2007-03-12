@@ -182,7 +182,6 @@ public class JetspeedTemplateLocator implements TemplateLocator
             path = null;
         }                
                 
-        String basePath = root; 
         String realPath = null;
         String workingPath = null;
         
@@ -255,7 +254,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
         StringTokenizer tok = new StringTokenizer(path, "/");
         while (tok.hasMoreTokens())
         {
-            String name = (String)tok.nextToken();
+            String name = tok.nextToken();
             if (name.equals(LocatorDescriptor.PARAM_TYPE) && tok.hasMoreTokens())
             {
                 locator.setType( tok.nextToken() );
@@ -303,7 +302,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
         int count = 0;
         while (tok.hasMoreTokens())
         {
-            String token = (String)tok.nextToken();
+            String token = tok.nextToken();
             switch (count)
             {
                 case 0:

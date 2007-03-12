@@ -20,7 +20,6 @@ import java.io.Serializable;
 
 import net.sf.ehcache.Element;
 
-import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 
 

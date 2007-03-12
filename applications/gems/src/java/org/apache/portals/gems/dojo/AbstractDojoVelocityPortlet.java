@@ -16,9 +16,6 @@
  */
 package org.apache.portals.gems.dojo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 

@@ -19,8 +19,6 @@ package org.apache.jetspeed.profiler.rules.impl;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
-
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
@@ -75,12 +73,12 @@ public abstract class AbstractProfilingRule implements ProfilingRule
      */
     public RuleCriterionResolver getResolver(String name)
     {
-        return (RuleCriterionResolver)resolvers.get(name);
+        return resolvers.get(name);
     }
 
     public RuleCriterionResolver getDefaultResolver()
     {
-        return (RuleCriterionResolver)resolvers.get(RuleCriterionResolver.REQUEST);
+        return resolvers.get(RuleCriterionResolver.REQUEST);
     }
     
     /* (non-Javadoc)

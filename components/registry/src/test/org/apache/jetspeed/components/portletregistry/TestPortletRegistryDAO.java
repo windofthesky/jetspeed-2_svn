@@ -223,7 +223,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
         app = null;
 
-        app = (PortletApplicationDefinitionImpl) portletRegistry.getPortletApplication("App_1");
+        app = portletRegistry.getPortletApplication("App_1");
 
         assertNotNull(app);
 
@@ -253,7 +253,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
         }
 
-        portlet = (PortletDefinitionComposite) portletRegistry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
+        portlet = portletRegistry.getPortletDefinitionByUniqueName("App_1::Portlet 1");
 
         assertNotNull("Portlet could not be retreived by unique name.", portlet);
 

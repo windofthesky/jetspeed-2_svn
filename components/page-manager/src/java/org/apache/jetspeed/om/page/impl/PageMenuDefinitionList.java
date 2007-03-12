@@ -58,7 +58,7 @@ class PageMenuDefinitionList extends AbstractList
         // make sure element is unique
         if (page.accessMenus().contains(definition))
         {
-            throw new IllegalArgumentException("Unable to add duplicate entry to list: " + ((PageMenuDefinitionImpl)definition).getName());
+            throw new IllegalArgumentException("Unable to add duplicate entry to list: " + (definition).getName());
         }
         // retrieve from removed list to reuse
         // previously removed element copying
@@ -69,7 +69,7 @@ class PageMenuDefinitionList extends AbstractList
             if (removedIndex >= 0)
             {
                 // reuse menu definition with matching name
-                PageMenuDefinitionImpl addDefinition = (PageMenuDefinitionImpl)definition;
+                PageMenuDefinitionImpl addDefinition = definition;
                 definition = (PageMenuDefinitionImpl)removedMenuDefinitions.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 // copy menu definition members

@@ -16,12 +16,9 @@
  */
 package org.apache.jetspeed.anttasks;
 
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
 
 

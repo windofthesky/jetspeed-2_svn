@@ -137,8 +137,8 @@ public abstract class JetspeedWebApplicationRewriter
     protected void insertContextNameParam(Element jetspeedServletElement)
     {
         Namespace namespace = jetspeedServletElement.getNamespace();
-        Element param2Name = (Element) new Element("param-name", namespace).addContent("contextName");
-        Element param2Value = (Element) new Element("param-value", namespace).addContent(portletApplication); 
+        Element param2Name = new Element("param-name", namespace).addContent("contextName");
+        Element param2Value = new Element("param-value", namespace).addContent(portletApplication); 
         Element init2Param = new Element("init-param", namespace);
         init2Param.addContent(param2Name);
         init2Param.addContent(param2Value);
@@ -149,7 +149,7 @@ public abstract class JetspeedWebApplicationRewriter
     protected void insertLoadOnStartup(Element jetspeedServletElement)
     {
         Namespace namespace = jetspeedServletElement.getNamespace();
-        Element loadOnStartup = (Element) new Element("load-on-startup", namespace).addContent("0");
+        Element loadOnStartup = new Element("load-on-startup", namespace).addContent("0");
         jetspeedServletElement.addContent(loadOnStartup);        
     }
     

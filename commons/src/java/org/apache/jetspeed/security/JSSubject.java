@@ -27,22 +27,8 @@ package org.apache.jetspeed.security;
  */
 
 import javax.security.auth.*;
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.text.MessageFormat;
-import java.security.AccessController;
 import java.security.AccessControlContext;
-import java.security.DomainCombiner;
-import java.security.Permission;
-import java.security.PermissionCollection;
-import java.security.Principal;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
-import java.security.ProtectionDomain;
-import sun.security.util.ResourcesMgr;
-import sun.security.util.SecurityConstants;
 
 
 

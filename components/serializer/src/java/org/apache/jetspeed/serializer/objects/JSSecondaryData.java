@@ -20,8 +20,6 @@ package org.apache.jetspeed.serializer.objects;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 public class JSSecondaryData extends JSSnapshot
 {
 

@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.apache.jetspeed.security.RolePrincipal;

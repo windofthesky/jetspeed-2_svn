@@ -21,8 +21,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;

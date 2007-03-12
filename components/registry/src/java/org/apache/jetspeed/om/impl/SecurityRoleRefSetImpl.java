@@ -118,7 +118,6 @@ public class SecurityRoleRefSetImpl implements SecurityRoleRefSet, SecurityRoleR
      */
     public boolean add(Object o)
     {
-        SecurityRoleRef ref = (SecurityRoleRef) o;
         if(innerCollection.contains(o))
         {
         	remove(o);
@@ -131,8 +130,6 @@ public class SecurityRoleRefSetImpl implements SecurityRoleRefSet, SecurityRoleR
      */
     public boolean remove(Object o)
     {
-        SecurityRoleRef ref = (SecurityRoleRef) o;
-        
         return innerCollection.remove(o);
     }
 

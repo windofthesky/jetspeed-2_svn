@@ -17,7 +17,6 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.util.AbstractList;
-import java.util.List;
 
 /**
  * FragmentList

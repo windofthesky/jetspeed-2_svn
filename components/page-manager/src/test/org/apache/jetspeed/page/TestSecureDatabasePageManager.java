@@ -16,30 +16,7 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.Principal;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-                                                                                                     
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.om.common.SecurityConstraint;
-import org.apache.jetspeed.om.common.SecurityConstraints;
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderNotFoundException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.SecurityConstraintsDef;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

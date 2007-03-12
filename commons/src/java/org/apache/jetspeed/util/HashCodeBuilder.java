@@ -361,7 +361,7 @@ public class HashCodeBuilder
      */
     public HashCodeBuilder append(short value)
     {
-        iTotal = iTotal * iConstant + (int) value;
+        iTotal = iTotal * iConstant + value;
         return this;
     }
 
@@ -373,7 +373,7 @@ public class HashCodeBuilder
      */
     public HashCodeBuilder append(char value)
     {
-        iTotal = iTotal * iConstant + (int) value;
+        iTotal = iTotal * iConstant + value;
         return this;
     }
 
@@ -385,7 +385,7 @@ public class HashCodeBuilder
      */
     public HashCodeBuilder append(byte value)
     {
-        iTotal = iTotal * iConstant + (int) value;
+        iTotal = iTotal * iConstant + value;
         return this;
     }
 

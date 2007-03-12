@@ -17,8 +17,6 @@
 package org.apache.jetspeed.desktop.impl;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.List;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 

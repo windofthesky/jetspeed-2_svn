@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;

@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.List;
-
 /**
  * BaseSecurityConstraintsRef
  *

@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.apache.jetspeed.serializer.objects.JSSecondaryData;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 
 public abstract class JetspeedSerializerBase
@@ -131,7 +130,7 @@ public abstract class JetspeedSerializerBase
         SpringComponentManager cm = new SpringComponentManager(bootConfig,
                 appConfig, appRoot);
         cm.start();
-        Configuration properties = (Configuration) new PropertiesConfiguration();
+        Configuration properties = new PropertiesConfiguration();
         properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY,
                 appRoot);
         this.setComponentManager(cm);

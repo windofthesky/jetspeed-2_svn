@@ -156,7 +156,6 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         {
             windowId = (String)iter.next();
             requestState = requestStates.getPortletWindowNavigationalState(windowId);
-            PortletWindow portletWindow = null;
             if ( requestState == null )
             {
                 requestState = new PortletWindowRequestNavigationalState(windowId);

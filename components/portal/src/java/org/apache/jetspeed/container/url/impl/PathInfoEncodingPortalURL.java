@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;

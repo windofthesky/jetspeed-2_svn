@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.capabilities;
 
-import java.util.Vector;
 import java.util.Collection;
 
 /**

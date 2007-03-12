@@ -78,7 +78,7 @@ public class SiteViewSearchPath
     {
         if (obj instanceof String)
         {
-            return searchPath.equals((String)obj);
+            return searchPath.equals(obj);
         }
         return searchPath.equals(obj.toString());
     }

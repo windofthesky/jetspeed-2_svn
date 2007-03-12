@@ -153,7 +153,7 @@ public class RoleBrowser extends BrowserPortlet
             }
         }
         
-        String filtered = (String)request.getParameter(FILTERED);
+        String filtered = request.getParameter(FILTERED);
         if (filtered != null)
         {
             PortletMessaging.publish(request, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_FILTERED, "on");            

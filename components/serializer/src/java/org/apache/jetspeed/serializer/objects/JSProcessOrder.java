@@ -17,11 +17,6 @@
 
 package org.apache.jetspeed.serializer.objects;
 
-import java.util.ArrayList;
-
-import org.apache.commons.lang.StringEscapeUtils;
-
-import javolution.xml.XMLBinding;
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 

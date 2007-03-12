@@ -17,7 +17,6 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
-import java.util.List;
 
 /**
  * FragmentList

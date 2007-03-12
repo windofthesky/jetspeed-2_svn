@@ -18,9 +18,6 @@ package org.apache.jetspeed;
 
 import java.util.Locale;
 
-import javax.servlet.ServletConfig;
-
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.ComponentManager;

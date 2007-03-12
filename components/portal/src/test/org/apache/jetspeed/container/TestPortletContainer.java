@@ -21,7 +21,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerImpl;
 
 /**
  * TestPortletContainer

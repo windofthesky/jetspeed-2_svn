@@ -33,7 +33,6 @@ import org.xml.sax.SAXException ;
 import org.cyberneko.html.parsers.SAXParser;
 import org.cyberneko.html.filters.DefaultFilter;
 import org.cyberneko.html.filters.Purifier;
-import org.cyberneko.html.filters.Writer;
 
 
 /**

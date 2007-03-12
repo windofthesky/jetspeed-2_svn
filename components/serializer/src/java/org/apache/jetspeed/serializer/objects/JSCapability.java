@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.serializer.objects;
-import org.apache.jetspeed.capabilities.Capability;
 /**
  * Jetspeed Serializer - Capability Wrapper
  * <p>

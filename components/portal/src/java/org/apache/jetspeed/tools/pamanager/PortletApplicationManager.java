@@ -213,7 +213,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             
             try
             {
-                pa = (MutablePortletApplication) registry.getPortletApplication(paName);
+                pa = registry.getPortletApplication(paName);
             }
             catch (Exception e)
             {
@@ -439,7 +439,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 register = false;
             }
 
-			MutablePortletApplication pa = (MutablePortletApplication) registry.getPortletApplication(contextName);
+			MutablePortletApplication pa = registry.getPortletApplication(contextName);
 
             if (pa != null)
             {
@@ -576,7 +576,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         
         try
         {
-            pa = (MutablePortletApplication) registry.getPortletApplication(contextName);
+            pa = registry.getPortletApplication(contextName);
         }
         catch (Exception e)
         {

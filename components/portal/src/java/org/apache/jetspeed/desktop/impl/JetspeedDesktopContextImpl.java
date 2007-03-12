@@ -16,20 +16,10 @@
  */
 package org.apache.jetspeed.desktop.impl;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.decoration.LayoutDecoration;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;

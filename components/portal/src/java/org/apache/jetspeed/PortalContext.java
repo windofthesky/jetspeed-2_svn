@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed;
 
-import java.util.List;
-
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 

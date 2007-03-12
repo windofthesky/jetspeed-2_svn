@@ -207,7 +207,7 @@ public class SecurityPermissionAction
             StringTokenizer toke = new StringTokenizer(roleNames, ",");
             while (toke.hasMoreTokens())
             {
-                String roleName = (String)toke.nextToken();
+                String roleName = toke.nextToken();
                 Principal role = new RolePrincipalImpl(roleName);
                 principals.add(role);
             }                

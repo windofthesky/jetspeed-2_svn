@@ -17,9 +17,7 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
@@ -36,8 +34,6 @@ import org.apache.jetspeed.security.impl.GeneralizationHierarchyResolver;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.om.InternalGroupPrincipal;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;

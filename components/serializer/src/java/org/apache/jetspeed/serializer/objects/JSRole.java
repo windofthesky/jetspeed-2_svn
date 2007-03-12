@@ -16,14 +16,6 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
-import javolution.xml.XMLFormat;
-import javolution.xml.stream.XMLStreamException;
-
-import java.util.prefs.Preferences;
-import java.util.*;
-
-import org.apache.jetspeed.security.Role;
-
 public class JSRole extends JSGroup
 {
 }

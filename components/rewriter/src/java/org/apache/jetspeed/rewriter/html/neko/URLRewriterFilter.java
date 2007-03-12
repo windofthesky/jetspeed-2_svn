@@ -159,9 +159,6 @@ public class URLRewriterFilter extends DefaultFilter
      */
     public void endElement( QName element, Augmentations augs ) throws XNIException
     {
-        String elementName = element.rawname;
-        
-        
         super.endElement(element, augs);
     }
     /**

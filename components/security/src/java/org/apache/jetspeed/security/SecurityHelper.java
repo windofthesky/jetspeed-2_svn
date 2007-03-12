@@ -127,7 +127,7 @@ public class SecurityHelper
         Principal principal = null;
         for (int i = 0; i < principals.length; i++)
         {
-            Principal p = (Principal) principals[i];
+            Principal p = principals[i];
             if (classe.isInstance(p))
             {
                 principal = p;

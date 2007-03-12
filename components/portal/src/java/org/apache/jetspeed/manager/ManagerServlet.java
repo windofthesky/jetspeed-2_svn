@@ -203,7 +203,6 @@ public class ManagerServlet extends HttpServlet
         }
         else
         {
-            String response = null;
             try
             {
                 ApplicationServerManagerResult result = asm.start(pa.getWebApplicationDefinition().getContextRoot());
@@ -258,7 +257,6 @@ public class ManagerServlet extends HttpServlet
         }
         else
         {
-            String response = null;
             try
             {
                 ApplicationServerManagerResult result = asm.stop(pa.getWebApplicationDefinition().getContextRoot());
@@ -298,7 +296,6 @@ public class ManagerServlet extends HttpServlet
         }
 
         PortletApplication pa = registry.getPortletApplication(paName);
-        String response = null;
         try
         {
             ApplicationServerManagerResult result = asm.undeploy(pa.getWebApplicationDefinition().getContextRoot());

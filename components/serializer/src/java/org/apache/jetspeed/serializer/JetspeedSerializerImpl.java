@@ -66,7 +66,6 @@ import org.apache.jetspeed.serializer.objects.JSMediaTypes;
 import org.apache.jetspeed.serializer.objects.JSMimeType;
 import org.apache.jetspeed.serializer.objects.JSMimeTypes;
 import org.apache.jetspeed.serializer.objects.JSNVPElements;
-import org.apache.jetspeed.serializer.objects.JSNameValuePairs;
 import org.apache.jetspeed.serializer.objects.JSPWAttributes;
 import org.apache.jetspeed.serializer.objects.JSPermission;
 import org.apache.jetspeed.serializer.objects.JSPermissions;

@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.datasource.BoundDBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DBCPDatasourceComponent;
 import org.apache.jetspeed.components.datasource.DatasourceComponent;
 import org.apache.jetspeed.components.util.DatasourceTestCase;
@@ -69,7 +68,7 @@ public class TestRDBMS extends DatasourceTestCase
         assertNotNull(conn);
         assertFalse(conn.isClosed());
         conn.close();
-        ((BoundDBCPDatasourceComponent)datasourceComponent).stop();
+        (datasourceComponent).stop();
         
         
         try
