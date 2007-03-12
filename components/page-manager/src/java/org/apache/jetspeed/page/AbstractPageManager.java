@@ -61,8 +61,6 @@ public abstract class AbstractPageManager
     private final static String PAGE_NODE_TYPE = "page";
     private final static String FRAGMENT_NODE_TYPE = "fragment";
     private final static String LINK_NODE_TYPE = "link";
-    private final static String PAGE_SECURITY_NODE_TYPE = "pageSecurity";
-
     protected Class fragmentClass;
     protected Class pageClass;
     protected Class folderClass;

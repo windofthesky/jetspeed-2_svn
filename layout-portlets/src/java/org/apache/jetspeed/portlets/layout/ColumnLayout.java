@@ -85,12 +85,6 @@ public class ColumnLayout implements Serializable
     /** Width settings for eacah column */
     private final String[] columnWidths;
     
-    /** 
-     * The type of layout this is, required for extract row/column properties
-     * from a fragment.
-     */
-    private final String layoutType;
-
     /** Efficent way to always be aware of the next available row in a column */
     private final int[] nextRowNumber;
     
@@ -118,7 +112,6 @@ public class ColumnLayout implements Serializable
     public ColumnLayout(int numberOfColumns, String layoutType, String[] columnWidths)
     {
         this.numberOfColumns = numberOfColumns;
-        this.layoutType = layoutType;
         this.columnWidths = columnWidths;
         eventListeners = new ArrayList();
 

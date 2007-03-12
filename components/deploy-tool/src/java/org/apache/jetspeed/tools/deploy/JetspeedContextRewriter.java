@@ -29,8 +29,6 @@ public class JetspeedContextRewriter
 {
     private Document document;
     private String portletApplication;
-    private boolean changed = false;
-    
     public JetspeedContextRewriter(Document doc, String portletApplication)
     {
         this.document = doc;
@@ -61,7 +59,6 @@ public class JetspeedContextRewriter
                 if ((pathAttribute == null) || !pathAttribute.equals("/" + portletApplication))
                 {
                     root.setAttribute("path", "/" + portletApplication);
-                    changed = true;
                 }
                 
                 // set Context docBase
@@ -69,7 +66,6 @@ public class JetspeedContextRewriter
                 if ((docBaseAttribute == null) || !docBaseAttribute.equals(portletApplication))
                 {
                     root.setAttribute("docBase", portletApplication);
-                    changed = true;
                 }
             }
             catch (Exception e)

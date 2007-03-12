@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AjaxRequestService;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.Valve;
@@ -29,9 +27,6 @@ public class LayoutValve implements Valve
 
     // Ajax service handler
     AjaxRequestService ajaxService = null;
-
-    /** Logger */
-    private Log log = LogFactory.getLog(LayoutValve.class);
 
     public LayoutValve(AjaxRequestService ajaxService)
     {

@@ -63,8 +63,6 @@ public class DBCPDatasourceComponent implements DatasourceComponent
     
     private byte whenExhausted;
     
-    private boolean autoCommit;
-
     private PoolableConnectionFactory dsConnectionFactory;
     /**
      * 
@@ -114,7 +112,6 @@ public class DBCPDatasourceComponent implements DatasourceComponent
 		this.connectURI = connectURI;
 		this.maxActive = maxActive;
 		this.maxWait = maxWait;
-		this.autoCommit = autoCommit;
     }
 
     /**

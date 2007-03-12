@@ -19,8 +19,6 @@ package org.apache.portals.gems.dojo;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.portlet.PortletHeaderResponse;
@@ -35,11 +33,6 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
  */
 public abstract class AbstractDojoVelocityPortlet extends GenericVelocityPortlet implements SupportsHeaderPhase 
 {    
-    /*
-     * Class specific logger.
-     */
-    private final static Log log = LogFactory.getLog(AbstractDojoVelocityPortlet.class);
-    
     protected String headerPage;
 
     /*

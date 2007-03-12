@@ -27,8 +27,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.PortletSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.PageManager;
@@ -41,8 +39,6 @@ import org.springframework.web.portlet.mvc.AbstractController;
 
 public class ConstraintsViewController extends AbstractController implements InitializingBean, PortletConfigAware
 {	
-    private static final Log log = LogFactory.getLog( ConstraintsViewController.class);
-
     private static final String     ROLES_CACHE_SESSION_ATTRIBUTE_NAME = "j2Roles";
     private static final String     GROUPS_CACHE_SESSION_ATTRIBUTE_NAME = "j2Groups";
 

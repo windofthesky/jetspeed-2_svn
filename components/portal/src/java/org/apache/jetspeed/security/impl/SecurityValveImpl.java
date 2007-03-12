@@ -46,20 +46,17 @@ import org.apache.jetspeed.statistics.PortalStatistics;
 public class SecurityValveImpl extends AbstractSecurityValve implements SecurityValve
 {
     private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
-    private Profiler profiler;
     private UserManager userMgr;
     private PortalStatistics statistics;
 
     public SecurityValveImpl( Profiler profiler, UserManager userMgr, PortalStatistics statistics )
     {
-        this.profiler = profiler;
         this.userMgr = userMgr;
         this.statistics = statistics;
     }
 
     public SecurityValveImpl(Profiler profiler, UserManager userMgr)
     {
-        this.profiler = profiler;
         this.userMgr = userMgr;
         this.statistics = null;
     }

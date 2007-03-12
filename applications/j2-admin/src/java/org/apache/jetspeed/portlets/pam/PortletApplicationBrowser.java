@@ -54,7 +54,6 @@ import org.apache.webapp.admin.TreeControlNode;
  */
 public class PortletApplicationBrowser extends GenericServletPortlet
 {
-    private String template;
     private PortletContext context;
     private PortletRegistry registry;
     private SearchEngine searchEngine;

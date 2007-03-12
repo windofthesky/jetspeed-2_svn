@@ -20,8 +20,6 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -63,8 +61,6 @@ public class PortletInvokerFactoryImpl
     public final static String INVOKER_SERVLET_MAPPING_NAME = "factory.invoker.servlet.mapping.name";
     public final static String DEFAULT_MAPPING_NAME = "/container";
     
-    private final static Log log = LogFactory.getLog(PortletInvokerFactoryImpl.class);
-
     /** The servlet configuration for the Jetspeed portal */
     private final ServletConfig servletConfig;
 

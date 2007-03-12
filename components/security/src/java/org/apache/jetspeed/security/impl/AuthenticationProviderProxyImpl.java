@@ -44,9 +44,6 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     private String defaultAuthenticationProvider = null;
 
     
-    /** The default authentication provider name for raw passwords. */
-    private String defaultRawAuthenticationProvider = null;
-
     /**
      * <p>
      * Constructor given a list of {@link AuthenticationProvider}.

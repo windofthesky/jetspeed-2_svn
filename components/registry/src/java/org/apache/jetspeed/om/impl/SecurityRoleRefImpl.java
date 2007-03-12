@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
 import org.apache.jetspeed.util.HashCodeBuilder;
@@ -48,8 +46,6 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     private String name;
     private Collection descriptions;
     private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_SEC_ROLE_REF);
-
-    private static final Log log = LogFactory.getLog(SecurityRoleRefImpl.class);
 
     /**
      * @see org.apache.pluto.om.common.SecurityRoleRef#getRoleLink()

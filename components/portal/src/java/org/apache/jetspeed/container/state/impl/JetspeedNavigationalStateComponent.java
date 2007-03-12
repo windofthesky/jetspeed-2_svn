@@ -25,8 +25,6 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.FailedToCreateNavStateException;
 import org.apache.jetspeed.container.state.NavigationalState;
@@ -54,7 +52,6 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     private final Map supportedPortletModes = Collections.synchronizedMap(new HashMap());
     private final Map supportedWindowStates = Collections.synchronizedMap(new HashMap());
 
-    private final static Log log = LogFactory.getLog(JetspeedNavigationalStateComponent.class);
     private BeanFactory beanFactory;
     
 

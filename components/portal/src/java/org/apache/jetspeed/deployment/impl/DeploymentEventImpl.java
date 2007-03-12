@@ -32,24 +32,11 @@ import org.apache.jetspeed.deployment.DeploymentObject;
 public class DeploymentEventImpl implements DeploymentEvent
 {
 	private DeploymentObject handler;
-	private String deploymentRoot;
 	private int status = STATUS_EVAL;
 	protected String name;
 	protected String path;
 	
 
-    /**
-     * 
-     */
-    public DeploymentEventImpl(DeploymentObject handler, String depRoot)
-    {
-        super();
-        this.handler = handler;
-        this.deploymentRoot = depRoot;
-        this.name = handler.getName();
-		this.path = handler.getPath();       
-    }
-    
 	public DeploymentEventImpl(DeploymentObject handler)
 	{
 		super();

@@ -17,8 +17,6 @@
 
 package org.apache.jetspeed.aggregator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -33,7 +31,6 @@ import org.apache.jetspeed.request.RequestContext;
 public class AggregatorValve
        extends AbstractValve
 {
-    private static final Log log = LogFactory.getLog( AggregatorValve.class );
     private Aggregator aggregator;
     
     public AggregatorValve(Aggregator aggregator)

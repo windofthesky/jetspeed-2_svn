@@ -19,8 +19,6 @@ package org.apache.jetspeed.aggregator.impl;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -38,8 +36,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PortletAggregatorImpl implements PortletAggregator
 {
-    private final static Log log = LogFactory.getLog(PortletAggregatorImpl.class);    
-    
     private PortletRenderer renderer;
 
     public PortletAggregatorImpl(PortletRenderer renderer) 

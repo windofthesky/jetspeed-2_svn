@@ -18,8 +18,6 @@ package org.apache.jetspeed;
 
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -37,8 +35,6 @@ import org.apache.jetspeed.request.RequestContext;
 public class Jetspeed
 {
     private static Engine engine = null;
-    private static final Log log = LogFactory.getLog(Jetspeed.class);
-
     /**
      * Shuts down the currently running instance of the portal
      * Engine.

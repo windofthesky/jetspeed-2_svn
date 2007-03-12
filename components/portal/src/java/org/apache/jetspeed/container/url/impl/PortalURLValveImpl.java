@@ -17,8 +17,6 @@
 
 package org.apache.jetspeed.container.url.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -33,7 +31,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PortalURLValveImpl extends AbstractValve
 {
-    private static final Log log = LogFactory.getLog(PortalURLValveImpl.class);
     private NavigationalStateComponent navComponent;
 
     public PortalURLValveImpl(NavigationalStateComponent navComponent)

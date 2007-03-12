@@ -18,9 +18,6 @@ package org.apache.jetspeed.util;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /*
  * File System Directory Utilities. Some utilities that java.io doesn't give us.
@@ -33,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DirectoryUtils
 {
-    private final static Log log = LogFactory.getLog(DirectoryUtils.class);
-            
     public static void main(String[] args)
     {
         DirectoryUtils.rmdir(new File(args[0]));

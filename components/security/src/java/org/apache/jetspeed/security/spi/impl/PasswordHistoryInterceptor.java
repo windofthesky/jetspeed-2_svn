@@ -105,7 +105,7 @@ public class PasswordHistoryInterceptor extends AbstractInternalPasswordCredenti
             Collections.sort(historicalPasswordCredentials,internalCredentialCreationDateComparator);
         }
         
-        int historyCount = historyCount = historicalPasswordCredentials.size();
+        int historyCount = historicalPasswordCredentials.size();
         InternalCredential historicalPasswordCredential;
         if ( authenticated )
         {

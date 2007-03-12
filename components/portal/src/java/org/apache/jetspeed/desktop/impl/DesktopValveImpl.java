@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.desktop.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -32,7 +30,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class DesktopValveImpl extends AbstractValve
 {
-    private static final Log log = LogFactory.getLog(DesktopValveImpl.class);
     private JetspeedDesktop desktop;
     
     public DesktopValveImpl(JetspeedDesktop desktop)

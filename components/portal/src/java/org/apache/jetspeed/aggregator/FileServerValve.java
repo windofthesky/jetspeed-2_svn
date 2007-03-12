@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -32,7 +30,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class FileServerValve extends AbstractValve
 {
-    private static final Log log = LogFactory.getLog( PortletValve.class );
     private String portletName;
     private String portletEntity;
     

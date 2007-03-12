@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.container;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -39,8 +36,6 @@ import org.apache.pluto.om.window.PortletWindow;
 public class ContainerValve
        extends AbstractValve
 {
-    private static final Log log = LogFactory.getLog( ContainerValve.class );
-        
     public void invoke( RequestContext request, ValveContext context )
         throws PipelineException
     {

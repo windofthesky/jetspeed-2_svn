@@ -20,8 +20,6 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.InformationProviderService;
@@ -36,7 +34,6 @@ import org.apache.pluto.services.information.StaticInformationProvider;
 public class InformationProviderServiceImpl implements Factory, InformationProviderService
 {
     private javax.servlet.ServletConfig servletConfig;
-    private static final Log log = LogFactory.getLog(InformationProviderServiceImpl.class);
     private final StaticInformationProvider staticInformationProvider;
     
     public InformationProviderServiceImpl(StaticInformationProvider staticInformationProvider, ServletConfig config)

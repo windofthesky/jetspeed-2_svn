@@ -30,8 +30,6 @@ import java.util.prefs.Preferences;
 
 import javax.portlet.PreferencesValidator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.factory.PortletFactory;
@@ -88,8 +86,6 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  */
 public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support
 {
-    private static final Log log = LogFactory.getLog(PortletDefinitionImpl.class);
-    
     /**
      * This is a static instance of the PortletREgistry that can be used by
      * all instances of the PortletDefinitionImpl to support the 

@@ -49,8 +49,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport implements Capabilities ,BeanFactoryAware 
 {
-    private String originalAlias;
-
     private static final Log log =
         LogFactory.getLog(JetspeedCapabilities.class);
 

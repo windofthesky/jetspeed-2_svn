@@ -23,7 +23,6 @@ import java.util.Map;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentTypeAlreadyRegisteredException;
-import org.apache.jetspeed.page.document.FolderHandler;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.util.ArgUtil;
 
@@ -44,8 +43,6 @@ import org.apache.jetspeed.page.document.Node;
 public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
 {
     private Map handlers;
-
-    private FolderHandler folderHanlder;
 
     private boolean permissionsEnabled;
 

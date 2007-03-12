@@ -28,8 +28,6 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
@@ -70,7 +68,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected static PortletRegistry registry;
     protected static RequestContextComponent rcc;
     
-    private static final Log log = LogFactory.getLog(PortletEntityImpl.class);
     protected Map perPrincipalPrefs = new HashMap();
     protected Map originalValues;
     private PortletApplicationEntity applicationEntity = null;
