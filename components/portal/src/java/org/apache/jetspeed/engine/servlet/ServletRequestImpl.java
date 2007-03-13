@@ -50,7 +50,6 @@ import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
@@ -403,8 +402,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 {
                     entityID = entity.getId().toString();
                 }
-                PortletApplicationEntity portletAppEntity = portletWindow.getPortletEntity()
-                        .getPortletApplicationEntity();
                 PortletApplicationDefinition portletAppDef = entity.getPortletDefinition()
                         .getPortletApplicationDefinition();
 
@@ -484,7 +481,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         {
             locales.add(localeEnums.nextElement());
         }
-        Iterator i = locales.iterator();
         return new Enumerator(locales);
     }
 

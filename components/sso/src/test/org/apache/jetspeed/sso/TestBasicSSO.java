@@ -75,7 +75,7 @@ public class TestBasicSSO extends TestCase
             {
                 throw new Exception("Failed to create authentication headers to HTTP Connection");
             }
-            int status = client.executeMethod(get);
+            client.executeMethod(get);
             System.out.println("response = [" + get.getResponseBodyAsString() + "]");
 
             Cookie[] cookies = client.getState().getCookies();
@@ -97,7 +97,7 @@ public class TestBasicSSO extends TestCase
             client.setState(initialState);
             get = new GetMethod(server);
             
-            status = client.executeMethod(get);
+            client.executeMethod(get);
             System.out.println("response = [" + get.getResponseBodyAsString() + "]");
 
             cookies = client.getState().getCookies();

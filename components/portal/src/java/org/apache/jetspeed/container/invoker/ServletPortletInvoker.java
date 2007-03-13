@@ -41,7 +41,6 @@ import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
@@ -184,8 +183,6 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             portletDefinition = this.portletDefinition;
         }
         
-        ClassLoader paClassLoader = portletFactory.getPortletApplicationClassLoader((PortletApplication)portletDefinition.getPortletApplicationDefinition());
-
         MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
 
         WebApplicationDefinition webApplicationDefinition = app.getWebApplicationDefinition();

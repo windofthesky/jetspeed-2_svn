@@ -171,7 +171,7 @@ public abstract class BatchedStatistics implements Runnable
 
                 stm.addBatch();
             }
-            int[] updateCounts = stm.executeBatch();
+            stm.executeBatch();
             con.commit();
             // only clear the records if we actually store them...
             logRecords.clear();

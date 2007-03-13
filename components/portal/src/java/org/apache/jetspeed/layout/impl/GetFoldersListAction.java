@@ -66,7 +66,6 @@ public class GetFoldersListAction
                     return success;
             }                     
             String folderName = getActionParameter(requestContext, "data");            
-            String format = getActionParameter(requestContext, FORMAT);
             if (folderName == null)
             {
                 success = false;

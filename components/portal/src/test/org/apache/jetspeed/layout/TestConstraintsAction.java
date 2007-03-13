@@ -26,7 +26,6 @@ import javax.security.auth.Subject;
 
 import junit.framework.TestCase;
 
-import org.apache.jetspeed.ajax.AjaxRequestService;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -42,8 +41,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.velocity.app.VelocityEngine;
-
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
@@ -62,10 +59,6 @@ public class TestConstraintsAction extends TestCase
     private ComponentManager cm;
 
     private LayoutValve valve;
-    
-    private VelocityEngine velocity;
-    
-    private AjaxRequestService ajax;
     
     private PageManager pageManager;
 
@@ -99,8 +92,6 @@ public class TestConstraintsAction extends TestCase
         cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");
         cm.start();
         valve = (LayoutValve) cm.getComponent("layoutValve");
-        velocity = (VelocityEngine) cm.getComponent("AjaxVelocityEngine");
-        ajax = (AjaxRequestService) cm.getComponent("AjaxRequestService");
         pageManager = (PageManager) cm.getComponent("pageManager");
     }
 
@@ -269,7 +260,7 @@ public class TestConstraintsAction extends TestCase
         principals.add(new RolePrincipalImpl("admin"));
         Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
         
-        PipelineException pe = (PipelineException) JSSubject.doAsPrivileged(subject, new PrivilegedAction()
+        JSSubject.doAsPrivileged(subject, new PrivilegedAction()
                 {
                     public Object run() 
                     {

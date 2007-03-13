@@ -63,7 +63,6 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 public class FileSystemFolderHandler implements FolderHandler, FileCacheEventListener
 {
 
-    private String documentRoot;
     private File documentRootDir;
     private DocumentHandler metadataDocHandler;
     private DocumentHandlerFactory handlerFactory;
@@ -101,7 +100,6 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             throws FileNotFoundException, UnsupportedDocumentTypeException
     {
         super();
-        this.documentRoot = documentRoot;
         this.documentRootDir = new File(documentRoot);
         verifyPath(documentRootDir);
         this.handlerFactory = handlerFactory;

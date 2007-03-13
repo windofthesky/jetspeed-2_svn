@@ -27,7 +27,6 @@ import org.apache.jetspeed.capabilities.UnableToBuildCapabilityMapException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.CapabilityValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -57,8 +56,6 @@ public class CapabilityValveImpl implements CapabilityValve
 
     public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
-
-        String requestMediaType = request.getRequestParameter(ProfilingRule.STANDARD_MEDIATYPE);
         String agent = request.getRequest().getHeader("User-Agent");
 
         // Get capability map

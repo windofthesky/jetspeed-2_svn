@@ -36,7 +36,7 @@ public class TestPBEPasswordTool extends TestCase
     {
         PBEPasswordTool pbe = new PBEPasswordTool("123");
         // check the same password is encoded differently for different usernames
-        this.assertNotSame("Encoded password should not be the same for different users", pbe.encode("user1","abc123"), pbe.encode("user2","abc123"));
+        assertNotSame("Encoded password should not be the same for different users", pbe.encode("user1","abc123"), pbe.encode("user2","abc123"));
     }
 
     /*
@@ -46,7 +46,7 @@ public class TestPBEPasswordTool extends TestCase
     {
         PBEPasswordTool pbe = new PBEPasswordTool("123");
         // check the same password is encoded differently for different usernames
-        this.assertEquals("Decoded password doesn't match original", "abc123", pbe.decode("user1", pbe.encode("user1","abc123")));
+        assertEquals("Decoded password doesn't match original", "abc123", pbe.decode("user1", pbe.encode("user1","abc123")));
     }
 
 }

@@ -400,7 +400,6 @@ public class PortletRendererImpl implements PortletRenderer
             fragment.setPortletContent(portletContent);
             ContentDispatcherCtrl dispatcher = new ContentDispatcherImpl(portletContent);
             HttpServletRequest servletRequest = requestContext.getRequestForWindow(portletWindow);
-            HttpServletResponse servletResponse = dispatcher.getResponseForWindow(portletWindow, requestContext);
 
             this.addTitleService.setDynamicTitle(portletWindow, servletRequest, dispatcher.getPortletContent(fragment).getTitle());
             return true;

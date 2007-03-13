@@ -17,9 +17,6 @@
 package org.apache.jetspeed.portlets.tags;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
@@ -113,11 +110,8 @@ public class PortletTreeControlTag extends TreeControlTag
         HttpServletResponse response =
             (HttpServletResponse) pageContext.getResponse();
         
-        PortletRequest renderRequest = (PortletRequest)pageContext.getRequest().getAttribute("javax.portlet.request");
         RenderResponse renderResponse = (RenderResponse)pageContext.getRequest().getAttribute("javax.portlet.response");
-        PortletConfig portletConfig = (PortletConfig)pageContext.getRequest().getAttribute("javax.portlet.config");
-        
-   
+
         // if the node is root node and the label value is
         // null, then do not render root node in the tree.
         
@@ -157,25 +151,9 @@ public class PortletTreeControlTag extends TreeControlTag
 
         // Render the tree state image for this node
 
-        // HACK to take into account special characters like = and &
-        // in the node name, could remove this code if encode URL
-        // and later request.getParameter() could deal with = and &
-        // character in parameter values. 
-        String encodedNodeName = URLEncoder.encode(node.getName());
-
         PortletURL treeActionUrl = renderResponse.createActionURL();
         treeActionUrl.setParameter("node", node.getName());
         String treeAction = treeActionUrl.toString();
-//        String action = replace(getAction(), "${name}", encodedNodeName);
-
-        
-//        String updateTreeAction =
-//            replace(getAction(), "tree=${name}", "select=" + encodedNodeName);
-//        updateTreeAction =
-//            ((HttpServletResponse) pageContext.getResponse()).
-//            encodeURL(updateTreeAction);
-
-        
         out.print("    <td>");
         
         

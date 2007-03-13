@@ -119,7 +119,7 @@ public class PageImporter
     throws JetspeedException
     {
         Folder fsRoot = sourceManager.getFolder(rootFolder);                
-        Folder root = importFolder(fsRoot);
+        importFolder(fsRoot);
         
         
         // create the root page security
@@ -144,7 +144,7 @@ public class PageImporter
     throws JetspeedException
     {
         Folder fsRoot = sourceManager.getFolder(rootFolder);                
-        Folder root = importFolder(fsRoot);                            
+        importFolder(fsRoot);                            
     }
     
     private Folder importFolder(Folder srcFolder)

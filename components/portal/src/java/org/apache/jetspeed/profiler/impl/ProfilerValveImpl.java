@@ -87,11 +87,6 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     private PortalSite portalSite;
 
     /**
-     * pageManager - page manager component
-     */
-    private PageManager pageManager;
-   
-    /**
      * requestFallback - flag indicating whether request should fallback to root folder
      *                   if locators do not select a page or access is forbidden
      */
@@ -117,7 +112,6 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     {
         this.profiler = profiler;
         this.portalSite = portalSite;
-        this.pageManager = pageManager;
         this.requestFallback = requestFallback;
         this.useHistory = useHistory;
     }

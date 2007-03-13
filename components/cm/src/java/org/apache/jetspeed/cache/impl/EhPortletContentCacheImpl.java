@@ -176,7 +176,6 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
             return false;
         removed = ehcache.remove(key);
         EhPortletContentCacheElementImpl impl = (EhPortletContentCacheElementImpl)element;
-        Element ehl = impl.getImplElement();
         String userKey = impl.getUserKey();
         String entity = impl.getEntityKey();
         Element userElement = ehcache.get(userKey);

@@ -21,10 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
@@ -45,7 +42,6 @@ import org.apache.jetspeed.statistics.PortalStatistics;
  */
 public class SecurityValveImpl extends AbstractSecurityValve implements SecurityValve
 {
-    private static final Log log = LogFactory.getLog(SecurityValveImpl.class);
     private UserManager userMgr;
     private PortalStatistics statistics;
 
@@ -80,7 +76,6 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
      */
     protected final Subject getSubject(RequestContext request) throws Exception
     {
-        HttpSession session = request.getRequest().getSession();
         Principal userPrincipal = getUserPrincipal(request);
         
         Subject subject = getSubjectFromSession(request);

@@ -479,7 +479,7 @@ interface PageManagerTestShared
                             Link link = pageManager.getLink("/default.link");
                             try
                             {
-                                Page page1 = pageManager.getPage("/user-page.psml");
+                                pageManager.getPage("/user-page.psml");
                                 TestCase.assertTrue("Page /user-page.psml not viewable for manager", false);
                             }
                             catch (SecurityException se)
@@ -539,7 +539,7 @@ interface PageManagerTestShared
                             Link link = pageManager.getLink("/default.link");
                             try
                             {
-                                Page page1 = pageManager.getPage("/user-page.psml");
+                                pageManager.getPage("/user-page.psml");
                                 TestCase.assertTrue("Page /user-page.psml not viewable for guest", false);
                             }
                             catch (SecurityException se)

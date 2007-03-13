@@ -513,8 +513,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             {
             }
         }
-        long end = System.currentTimeMillis();
-        // new we're done
 
     }
 

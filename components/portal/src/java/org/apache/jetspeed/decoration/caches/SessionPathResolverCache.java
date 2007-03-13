@@ -32,11 +32,8 @@ import org.apache.jetspeed.decoration.PathResolverCache;
  */
 public class SessionPathResolverCache extends HashMapPathResolverCache implements PathResolverCache
 {
-    private final HttpSession session;    
-    
     public SessionPathResolverCache(HttpSession session)
     {
-        this.session = session;
         cache = (Map) session.getAttribute(PortalReservedParameters.RESOVLER_CACHE_ATTR);
         
         if(cache == null)

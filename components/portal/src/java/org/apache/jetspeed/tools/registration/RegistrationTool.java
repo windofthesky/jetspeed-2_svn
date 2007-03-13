@@ -46,7 +46,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class RegistrationTool 
 {
     private PortletRegistry registry;
-    private boolean overwriteApps = true;
     
     public static void main(String args[])
     {
@@ -100,7 +99,6 @@ public class RegistrationTool
     public RegistrationTool(PortletRegistry registry, boolean overwriteApps)
     {
         this.registry = registry;
-        this.overwriteApps = overwriteApps;
     }
     
     public void unregister(String appName)

@@ -167,8 +167,6 @@ public class SecurityPermissionsPortlet extends AbstractDojoVelocityPortlet
     public void processAction(ActionRequest request,
             ActionResponse actionResponse) throws PortletException, IOException
     {
-        PortletSession session = request.getPortletSession();
-        //session.setAttribute(SESSION_RESULTS, stats);
     }
 
     public class PermissionData

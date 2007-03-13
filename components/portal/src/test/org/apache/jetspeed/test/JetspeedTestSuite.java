@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletConfig;
-
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
@@ -38,7 +36,6 @@ import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
-import org.jmock.Mock;
 
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
@@ -112,7 +109,7 @@ public class JetspeedTestSuite extends TestSuite
             properties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
             //properties.setProperty(WEBAPP_ROOT_KEY, null);
             initializeConfiguration(properties, applicationRoot);
-            Mock servletConfigMock = new Mock(ServletConfig.class);
+            //Mock servletConfigMock = new Mock(ServletConfig.class);
             MockServletConfig msc = new MockServletConfig();
             msc.setServletContext(new MockServletContext());
             HashMap context = new HashMap();

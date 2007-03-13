@@ -16,17 +16,12 @@
  */
 package org.apache.jetspeed.rewriter;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Arrays;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
@@ -173,15 +168,17 @@ public class TestNekoRewriter extends TestCase
         return new JetspeedRewriterController("test/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays.asList(rewriterClasses), Arrays.asList(adaptorClasses));
     }
 
+    /*
     private Reader getRemoteReader(String uri) throws IOException
     {
         HttpClient client = new HttpClient();
         GetMethod get = new GetMethod(uri);
-        int status = client.executeMethod(get);
+        client.executeMethod(get);
         BufferedInputStream bis = new BufferedInputStream(get.getResponseBodyAsStream());
         String encoding = get.getResponseCharSet();
         return new InputStreamReader(bis, encoding);
     }
+    */
     
     /**
      * Gets a reader for a given filename in the test directory.

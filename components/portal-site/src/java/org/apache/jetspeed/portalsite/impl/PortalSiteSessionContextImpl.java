@@ -1037,12 +1037,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @param locator request profile locator
      * @return request path
-     */
+     
     private static String locatorRequestPath(ProfileLocator locator)
     {
         // use request path in locator as default
         return locatorRequestPath(locator, locator.getRequestPath());
     }
+    */
 
     /**
      * locatorRequestPath - extract request specific path from profile locator
@@ -1050,7 +1051,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param locator request profile locator
      * @param requestPath request path
      * @return request path
-     */
+     
     private static String locatorRequestPath(ProfileLocator locator, String requestPath)
     {
         // search locator using the most specific,
@@ -1105,6 +1106,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         }
         return requestPath;
     }
+    */
 
     /**
      * newNode - invoked when the definition of a node is

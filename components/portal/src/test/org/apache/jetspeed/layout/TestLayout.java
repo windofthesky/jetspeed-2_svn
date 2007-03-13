@@ -20,7 +20,6 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.apache.jetspeed.ajax.AjaxRequestService;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -28,8 +27,6 @@ import org.apache.jetspeed.layout.impl.LayoutValve;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.velocity.app.VelocityEngine;
-
 import com.mockrunner.mock.web.MockServletConfig;
 
 /**
@@ -45,10 +42,6 @@ public class TestLayout extends TestCase
 
     private LayoutValve valve;
     
-    private VelocityEngine velocity;
-    
-    private AjaxRequestService ajax;
-
     public static void main(String[] args)
     {
         junit.swingui.TestRunner.run(TestLayout.class);
@@ -78,9 +71,6 @@ public class TestLayout extends TestCase
         cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");
         cm.start();
         valve = (LayoutValve) cm.getComponent("layoutValve");
-        velocity = (VelocityEngine) cm.getComponent("AjaxVelocityEngine");
-        ajax = (AjaxRequestService) cm.getComponent("AjaxRequestService");
-                
     }
 
     protected void tearDown() throws Exception

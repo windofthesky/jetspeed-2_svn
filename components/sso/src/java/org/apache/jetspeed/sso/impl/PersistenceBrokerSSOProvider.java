@@ -187,7 +187,6 @@ public class PersistenceBrokerSSOProvider extends
     	SSOPrincipal ssoPrincipal = this.getSSOPrincipal(fullPath);
     	
     	// For each remote user we'll get the cookie
-    	Criteria remoteUserFilter = new Criteria();
     	Vector temp = new Vector();
     	
     	Iterator itRemotePrincipal = ssoPrincipal.getRemotePrincipals().iterator();
@@ -664,7 +663,6 @@ public class PersistenceBrokerSSOProvider extends
 			
 			// Get the Principal information
 			String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
-			String principalName  = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
 			
 			//	Get remotePrincipals for Site and match them with the Remote Principal for the Principal attached to site
 			Collection principalsForSite	= ssoSite.getPrincipals();
@@ -822,7 +820,7 @@ public class PersistenceBrokerSSOProvider extends
 
 	/*
 	 * Get a Collection of remote Principals for the logged in principal identified by the full path
-	 */
+	 *    
 	private Collection getRemotePrincipalsForPrincipal(SSOSite ssoSite, String fullPath)
 	{
 		// The site orincipals list contains a list of remote principals for the user
@@ -846,6 +844,7 @@ public class PersistenceBrokerSSOProvider extends
 		// Principal is not in list
 		return null;
 	}
+    */
 	
 	/*
 	 * getPrincipalForSite()
@@ -904,7 +903,7 @@ public class PersistenceBrokerSSOProvider extends
 	 * @return
 	 * 
 	 * removes remotePrincipal for a site & principal
-	 */
+	 *
 	private InternalUserPrincipal  removeRemotePrincipalForPrincipal(SSOSite site, String fullPath) throws SSOException
 	{
 		if (site.getPrincipals() != null)
@@ -935,7 +934,8 @@ public class PersistenceBrokerSSOProvider extends
 		
 		throw new SSOException(SSOException.REQUESTED_PRINCIPAL_DOES_NOT_EXIST);
 	}
-	
+	*/
+    
 	/*
 	 * 
 	 * 
@@ -1157,7 +1157,6 @@ public class PersistenceBrokerSSOProvider extends
         while (principals.hasNext())
         {
             InternalUserPrincipal remotePrincipal = (InternalUserPrincipal)principals.next();
-            String fullpath = remotePrincipal.getFullPath();
             Iterator creds = remotePrincipal.getCredentials().iterator();
             while (creds.hasNext())
             {
@@ -1200,6 +1199,7 @@ public class PersistenceBrokerSSOProvider extends
         return group;       
     }
     
+    /*
     private SSOSite getSiteForRemoteUser(String fullPath)
     {
     	// Get Site for remote user
@@ -1208,6 +1208,7 @@ public class PersistenceBrokerSSOProvider extends
         Query query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
         return  (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
+    */
     
     private String getContentFromURL(String proxyID, String destUrl, SSOSite[] sites, boolean bRefresh ) throws SSOException
     {

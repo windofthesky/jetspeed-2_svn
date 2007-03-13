@@ -156,11 +156,6 @@ public class TestRewriterController extends TestCase
             else if (tag.getId().equalsIgnoreCase("HEAD"))
             {
                 assertTrue("Remove", tag.getRemove());
-                Iterator attributes = tag.getAttributes().iterator();
-                while (attributes.hasNext())
-                {
-                    Attribute attribute = (Attribute) attributes.next();
-                }
             }
             else
             {
@@ -307,7 +302,7 @@ public class TestRewriterController extends TestCase
     {
         HttpClient client = new HttpClient();
         GetMethod get = new GetMethod(uri);
-        int status = client.executeMethod(get);
+        client.executeMethod(get);
         InputStream is = get.getResponseBodyAsStream();
         return new InputStreamReader(is);
     }

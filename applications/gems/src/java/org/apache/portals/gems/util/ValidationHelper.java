@@ -16,7 +16,6 @@
  */
 package org.apache.portals.gems.util;
 
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -190,7 +189,7 @@ public abstract class ValidationHelper
                 return true;
             }
             
-            URL url = new URL(evalString);
+            //URL url = new URL(evalString);
 
             /*
             Perl5Util util = new Perl5Util();
@@ -357,13 +356,13 @@ public abstract class ValidationHelper
             
         try
         {
-            Date date = EUROPEAN_DATE_FORMAT.parse(formatted);
+            EUROPEAN_DATE_FORMAT.parse(formatted);
         }
         catch (ParseException e)
         {
             try
             {
-                Date date = AMERICAN_DATE_FORMAT.parse(formatted);
+                AMERICAN_DATE_FORMAT.parse(formatted);
             }
             catch (ParseException ee)
             {
@@ -380,13 +379,13 @@ public abstract class ValidationHelper
             
         try
         {
-            Date date = EUROPEAN_DATETIME_FORMAT.parse(formatted);
+            EUROPEAN_DATETIME_FORMAT.parse(formatted);
         }
         catch (ParseException e)
         {
             try
             {
-                Date date = AMERICAN_DATETIME_FORMAT.parse(formatted);
+                AMERICAN_DATETIME_FORMAT.parse(formatted);
             }
             catch (ParseException ee)
             {

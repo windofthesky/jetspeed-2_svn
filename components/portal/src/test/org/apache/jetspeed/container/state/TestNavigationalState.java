@@ -70,9 +70,6 @@ public class TestNavigationalState extends TestCase
     // needed to be able to Mock PortletWindowListCtrl
     private interface CompositeWindowList extends PortletWindowList, PortletWindowListCtrl{}
 
-    private NavigationalStateComponent navFullSession;
-    private NavigationalStateComponent navSession;
-    private NavigationalStateComponent navPluto;
     private SpringEngineHelper engineHelper;
     private Engine engine;
     private NavigationalStateCodec codec;

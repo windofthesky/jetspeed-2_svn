@@ -69,8 +69,7 @@ public class CapabilityImpl implements Capability
      */
     public int hashCode()
     {
-    	int h = (name != null?capabilityId*31^(name.length()):capabilityId);
-    	return name.hashCode(); //ignore id + h;
+    	return name.hashCode();
     }
 
     /**

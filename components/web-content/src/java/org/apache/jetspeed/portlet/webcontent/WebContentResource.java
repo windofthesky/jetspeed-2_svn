@@ -19,8 +19,6 @@ package org.apache.jetspeed.portlet.webcontent;
 
 import java.io.Serializable;
 
-import org.apache.commons.httpclient.Cookie;
-
 /**
  * A cached resource object, stored in memory to optimize access to static resources
  * such as images and style sheets.
@@ -32,7 +30,6 @@ import org.apache.commons.httpclient.Cookie;
 public class WebContentResource implements Serializable
 {
     private transient byte[] content = null;
-    private transient Cookie cookie = null;
     private String url = null;
     private String lastUrl = null;
 

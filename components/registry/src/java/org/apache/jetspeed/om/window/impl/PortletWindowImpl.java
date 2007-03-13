@@ -40,9 +40,6 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
     private ObjectID objectId = null;
     private PortletEntity portletEntity = null;
 
-    //counter used to generate unique id's
-    private static int counter;
-
     public PortletWindowImpl(String id)
     {
         this.objectId = JetspeedObjectID.createFromString(id);

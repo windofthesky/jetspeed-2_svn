@@ -28,7 +28,6 @@ import javax.portlet.PortletException;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -38,8 +37,6 @@ public class PortletEntityEditorPortlet extends GenericVelocityPortlet
 {
     
     private PortletEntityAccessComponent entityAccess;
-    private PortletRegistry registry;
-
     /* (non-Javadoc)
      * @see org.apache.portals.bridges.velocity.GenericVelocityPortlet#init(javax.portlet.PortletConfig)
      */
@@ -48,7 +45,6 @@ public class PortletEntityEditorPortlet extends GenericVelocityPortlet
         super.init(config);
         PortletContext context = getPortletContext();
         entityAccess = (PortletEntityAccessComponent)context.getAttribute(CommonPortletServices.CPS_ENTITY_ACCESS_COMPONENT);
-        registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
     }
 
     /* (non-Javadoc)
@@ -154,7 +150,6 @@ public class PortletEntityEditorPortlet extends GenericVelocityPortlet
     {
         PortletEntity entity = getPortletEntity(request);
         String prefString= request.getParameter("selectedPref");
-        String updatedValue = request.getParameter("selectedPrefValue");
         String[] info = prefString.split("::");
         String prefName = info[1];
         int valueIndex = Integer.parseInt(info[2]);

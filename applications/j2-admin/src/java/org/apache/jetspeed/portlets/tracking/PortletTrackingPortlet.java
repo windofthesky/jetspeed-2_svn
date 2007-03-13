@@ -34,8 +34,6 @@ import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
@@ -43,8 +41,6 @@ import org.apache.velocity.context.Context;
 
 public class PortletTrackingPortlet extends GenericVelocityPortlet
 {
-    private PortletEntityAccessComponent entityAccess;
-    private PortletRegistry registry;
     private PortletTrackingManager trackingManager;
     
 
@@ -55,8 +51,6 @@ public class PortletTrackingPortlet extends GenericVelocityPortlet
     {
         super.init(config);
         PortletContext context = getPortletContext();
-        entityAccess = (PortletEntityAccessComponent)context.getAttribute(CommonPortletServices.CPS_ENTITY_ACCESS_COMPONENT);
-        registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
         trackingManager = (PortletTrackingManager)context.getAttribute(CommonPortletServices.CPS_PORTLET_TRACKING_MANAGER);
     }
 

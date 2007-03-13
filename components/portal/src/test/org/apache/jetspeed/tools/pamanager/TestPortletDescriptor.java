@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import javax.portlet.PortletMode;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
@@ -210,8 +208,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
             int modesCount = 0;
             while (modesIterator.hasNext())
             {
-                PortletMode mode = (PortletMode) modesIterator.next();
-                // System.out.println("mode = " + mode);
+                modesIterator.next();
                 modesCount++;
             }
             assertTrue("Portlets Modes Count != 3, count = " + count, modesCount == 3);
@@ -392,7 +389,6 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
             targetReader = new FileReader("./target/webapp/WEB-INF/web.xml");
 
             Document targetDoc = builder.build(targetReader);
-            Element targetRoot = targetDoc.getRootElement();
 
             jetspeedServlet = XPath.selectSingleNode(targetDoc, PortletApplicationWar.JETSPEED_SERVLET_XPATH);
             jetspeedServletMapping = XPath.selectSingleNode(targetDoc, PortletApplicationWar.JETSPEED_SERVLET_MAPPING_XPATH);

@@ -52,7 +52,6 @@ import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.pam.beans.PortletApplicationBean;
 import org.apache.jetspeed.search.SearchEngine;
-import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.SecurityRoleRef;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.portals.bridges.beans.TabBean;
@@ -1040,6 +1039,7 @@ public class PortletApplicationDetail extends GenericServletPortlet
 //      registry.getPersistenceStore().getTransaction().commit();
     }
     
+    /*
     private String createXml(MutablePortletApplication pa)
     {
         StringBuffer buffer = new StringBuffer();
@@ -1064,7 +1064,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
         
         return buffer.toString();
     }
+    */
     
+    /*
     private String createPortletDefinitionXml(PortletDefinitionComposite pDef)
     {
         StringBuffer buffer = new StringBuffer();
@@ -1155,11 +1157,11 @@ public class PortletApplicationDetail extends GenericServletPortlet
 	        while (langIter.hasNext())
 	        {
 	            MutableLanguage lang = (MutableLanguage) langIter.next();
-	            /*
-	            supportedLocaleBuffer.append("\t<supported-locale>");
-	            supportedLocaleBuffer.append(lang.getLocale().getCountry());
-	            supportedLocaleBuffer.append("</supported-locale>\n");
-	            */
+	            
+	            //supportedLocaleBuffer.append("\t<supported-locale>");
+	            //supportedLocaleBuffer.append(lang.getLocale().getCountry());
+	            //supportedLocaleBuffer.append("</supported-locale>\n");
+	            
 	            
 	            //lang.
 	            portletInfoBuffer.append("\t<portlet-info>\n");
@@ -1231,7 +1233,9 @@ public class PortletApplicationDetail extends GenericServletPortlet
         
         return buffer.toString();
     }
+    */
     
+    /*
     private void addDescriptions(StringBuffer buffer, DescriptionSet descriptions)
     {
         Iterator descIter = descriptions.iterator();
@@ -1247,5 +1251,5 @@ public class PortletApplicationDetail extends GenericServletPortlet
         buffer.append(desc.getDescription());
         buffer.append("</description>\n");
     }
-
+    */
 }

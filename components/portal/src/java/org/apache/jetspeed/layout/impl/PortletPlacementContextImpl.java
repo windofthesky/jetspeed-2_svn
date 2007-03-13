@@ -59,9 +59,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PortletPlacementContextImpl implements PortletPlacementContext 
 {
-    private static final String COLUMN = "column";
-    private static final String ROW = "row";
-    
     private static final int NO_DEPTH_LIMIT = -1;
 
     /** Logger */

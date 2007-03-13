@@ -36,7 +36,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
-import org.apache.jetspeed.testhelpers.BuildPropertiesHelper;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
@@ -53,14 +52,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     /** The test MutablePortletApplication. */
     private MutablePortletApplication portletApp;
 
-    /** The build properties helper. */
-    private BuildPropertiesHelper buildProperties = new BuildPropertiesHelper();
-
     /** The user info manager. */
     private UserInfoManager single;
-
-    /** The Multi Source user info manager */
-    private UserInfoManager multi;
 
     private PortletRegistry portletRegistry;
 
@@ -73,7 +66,6 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 
         single = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager");
         portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
-        multi = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.MultiUserInfoManager");
     }
 
     /**

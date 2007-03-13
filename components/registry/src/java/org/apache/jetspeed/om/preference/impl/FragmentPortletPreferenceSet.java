@@ -39,15 +39,12 @@ import org.apache.pluto.om.common.Preference;
 public class FragmentPortletPreferenceSet implements PreferenceSetComposite
 {
     private final PreferenceSetComposite preferenceSet;
-    private final Fragment fragment;
     private final Map prefs;
     
     public FragmentPortletPreferenceSet(PreferenceSetComposite preferenceSet, Fragment fragment)
     {
         // save mutable preference set and read only fragment
         this.preferenceSet = preferenceSet;
-        this.fragment = fragment;
-
         // construct merged portlet definition prefs map;
         // note that user specific preferences accessed via
         // the portlet entity should override these defaults

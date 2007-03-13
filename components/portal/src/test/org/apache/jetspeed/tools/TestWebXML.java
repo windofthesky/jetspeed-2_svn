@@ -35,8 +35,6 @@ public class TestWebXML extends TestCase
     {
     }
 
-    private static final String TEST_WEB_XML = "./test/testdata/deploy/web.xml";
-
     public void testReadWrite() throws Exception
     {
         // DeployUtilities util = new DeployUtilities();

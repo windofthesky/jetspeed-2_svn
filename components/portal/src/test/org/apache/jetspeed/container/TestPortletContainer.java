@@ -20,8 +20,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.pluto.PortletContainer;
-
 /**
  * TestPortletContainer
  *
@@ -30,9 +28,6 @@ import org.apache.pluto.PortletContainer;
  */
 public class TestPortletContainer extends TestCase 
 {
-    
-    private PortletContainer portletContainer;
-    
     /**
      * Defines the testcase name for JUnit.
      *

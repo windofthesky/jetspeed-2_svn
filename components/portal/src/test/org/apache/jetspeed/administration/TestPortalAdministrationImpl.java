@@ -53,8 +53,6 @@ public class TestPortalAdministrationImpl extends  TestCase
         return new TestSuite(TestPortalAdministrationImpl.class);
     }
 
-    private static final int JOB_COUNT = 2;
-    
     public void testPasswordGen() throws Exception
     {
         PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);

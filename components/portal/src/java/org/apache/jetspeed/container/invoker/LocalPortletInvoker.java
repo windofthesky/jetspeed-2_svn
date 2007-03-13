@@ -29,7 +29,6 @@ import javax.portlet.UnavailableException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -162,9 +161,6 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
 
         // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
-
-        ServletResponse servletResponse = ((javax.servlet.http.HttpServletResponseWrapper) portletResponse)
-                .getResponse();
 
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try

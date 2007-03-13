@@ -43,7 +43,6 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
-import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.folder.Folder;
@@ -1083,10 +1082,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
     }
     
+    /*
     private void setSecurityConstraints(Folder folder, String userName)
     {
         SecurityConstraints constraints = pageManager.newSecurityConstraints();
         constraints.setOwner(userName);
         folder.setSecurityConstraints(constraints);        
     }
+    */
 }

@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.engine;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -311,14 +310,9 @@ implements JetspeedEngineConstants, HttpSessionListener
     protected ComponentManager initializeComponentManager(ServletConfig servletConfig, String appRoot, Configuration configuration) throws IOException
     {
         ServletConfigFactoryBean.setServletConfig(servletConfig);
-       // String relativeApplicationRoot = getRealPath("/");
-        String relativeApplicationRoot = appRoot;
-        String absApplicationRoot = new File(relativeApplicationRoot).getCanonicalPath();               
-        
         final String assemblyDir = configuration.getString("assembly.dir","/WEB-INF/assembly");
         final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
-            
-        
+                    
         String[] bootConfigs = new String[] {"/WEB-INF/assembly/boot/*.xml"};
         String[] appConfigs =  new String[] {assemblyDir+"/*"+assemblyFileExtension};
         ServletContext servletContext = servletConfig.getServletContext();

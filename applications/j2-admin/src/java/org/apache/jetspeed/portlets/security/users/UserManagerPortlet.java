@@ -54,8 +54,7 @@ public class UserManagerPortlet extends FacesPortlet {
 			while (users.hasNext()) {
 				User user = (User) users.next();
 //				System.out.println("++++ User = " + user);
-				Principal principal = getPrincipal(user.getSubject(),
-						UserPrincipal.class);
+				getPrincipal(user.getSubject(), UserPrincipal.class);
 //				System.out.println("principal = " + principal.getName());
 			}
 		} catch (SecurityException se) {

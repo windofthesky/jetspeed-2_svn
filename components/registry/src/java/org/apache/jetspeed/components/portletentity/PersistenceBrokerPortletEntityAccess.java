@@ -60,7 +60,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
             PortletEntityAccessComponent
 {
     private PortletRegistry registry;
-    private RequestContextComponent rcc;
     private PortletWindowAccessor windowAccessor = null;
     
     // 2006-08-22: by default, do not merge preferences from the shared preferences area 
@@ -85,7 +84,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     {
         super();
         this.registry = registry;        
-        this.rcc = rcc;
         PortletEntityImpl.registry = registry;
         PortletEntityImpl.rcc = rcc;
     }
@@ -94,7 +92,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     {
         super();
         this.registry = registry;        
-        this.rcc = rcc;
         PortletEntityImpl.registry = registry;
         PortletEntityImpl.rcc = rcc;
         this.mergeSharedPreferences = mergeSharedPreferences;

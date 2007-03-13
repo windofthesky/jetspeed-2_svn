@@ -34,7 +34,6 @@ import javax.portlet.RenderResponse;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
-import org.apache.jetspeed.deployment.DeploymentManager;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
@@ -54,7 +53,6 @@ public class PortletApplicationLifecycleManager extends GenericServletPortlet
     private ApplicationServerManager asm;
     private PortletRegistry          registry;
     private PortletFactory           portletFactory;
-    private DeploymentManager        dm;
     private boolean serverManagerAvailable;
     
     public void init(PortletConfig config)
@@ -64,7 +62,6 @@ public class PortletApplicationLifecycleManager extends GenericServletPortlet
         PortletContext context = getPortletContext();                
         registry = (PortletRegistry)context.getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
         portletFactory = (PortletFactory)context.getAttribute(CommonPortletServices.CPS_PORTLET_FACTORY_COMPONENT);
-        dm = (DeploymentManager)context.getAttribute(CommonPortletServices.CPS_DEPLOYMENT_MANAGER_COMPONENT);
         asm = (ApplicationServerManager)context.getAttribute(CommonPortletServices.CPS_APPLICATION_SERVER_MANAGER_COMPONENT);
         if (null == registry)
         {

@@ -57,7 +57,6 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
    
     private Map windows = Collections.synchronizedMap(new HashMap());    
     private PortletEntityAccessComponent entityAccessor;
-    private PortletRegistry registry = null;
     private PortletFactory portletFactory;
     private boolean validateWindows = false;
     
@@ -76,7 +75,6 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
     {
         this.entityAccessor = entityAccessor;
         this.portletFactory = portletFactory;
-        this.registry = registry;
         this.validateWindows = validateWindows;
         registry.addRegistryListener(this);
     }

@@ -580,8 +580,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             boolean userIdExistsFlag = true;
             try
             {
-                User user = userManager.getUser((String) userInfo
-                        .get("user.name"));
+                userManager.getUser((String) userInfo.get("user.name"));
             } catch (SecurityException e)
             {
                 userIdExistsFlag = false;

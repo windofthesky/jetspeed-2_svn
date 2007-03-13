@@ -573,7 +573,7 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 				+ portletEntity.getId();
 		try
 		{
-			Preferences prefNode = Preferences.userRoot().node(rootForEntity); // will create it if it doesn't exist
+			Preferences.userRoot().node(rootForEntity); // will create it if it doesn't exist
 			
 			
 			Iterator it = preferences.iterator();

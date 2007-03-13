@@ -333,7 +333,6 @@ public class TestSSOComponent extends AbstractSecurityTestcase
         System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: "
                 + ssocontext.getRemoteCredential() + " for site: " + TEST_URL);
 
-        SSOContext ssocontext2 = ssoBroker.getCredentials(subject, TEST_URL2);
         System.out.println("SSO Credential: User:" + ssocontext.getRemotePrincipalName() + " Password: "
                 + ssocontext.getRemoteCredential() + " for site: " + TEST_URL2);
 

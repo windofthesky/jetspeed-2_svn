@@ -24,13 +24,11 @@ public class PageManagerLayoutEventListener implements LayoutEventListener
 {
     private final PageManager pageManager;
     private final Page page;
-    private final String layoutType;
     
     public PageManagerLayoutEventListener(PageManager pageManager, Page page, String layoutType)
     {
         this.pageManager = pageManager;
         this.page = page;
-        this.layoutType = layoutType;
     }
 
     public void handleEvent(LayoutEvent event) throws LayoutEventException

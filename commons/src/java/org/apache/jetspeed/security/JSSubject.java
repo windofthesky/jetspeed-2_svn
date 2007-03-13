@@ -105,7 +105,7 @@ public class JSSubject implements java.io.Serializable
     		subject = JSSubject.getSubject(null);
     	threadLocal.set(subject);
     	if (subject != null)
-    		return subject.doAs(subject,action);
+    		return Subject.doAs(subject,action);
     	else
     		return Subject.doAs(subject,action);
     		
@@ -145,7 +145,7 @@ public class JSSubject implements java.io.Serializable
     		subject = JSSubject.getSubject(null);
     	threadLocal.set(subject);
     	if (subject != null)
-    		return subject.doAs(subject,action);
+    		return Subject.doAs(subject,action);
     	else
     		return Subject.doAs(subject,action);
 			}
@@ -180,7 +180,7 @@ public class JSSubject implements java.io.Serializable
     		subject = JSSubject.getSubject(acc);
     	threadLocal.set(subject);
     	if (subject != null)
-    		return subject.doAsPrivileged(subject,action,acc);
+    		return Subject.doAsPrivileged(subject,action,acc);
     	else
     		return Subject.doAsPrivileged(subject,action,acc);
     		
@@ -224,7 +224,7 @@ public class JSSubject implements java.io.Serializable
     		s = JSSubject.getSubject(acc);
     	threadLocal.set(s);
     	if (s != null)
-    		return s.doAsPrivileged(s,action,acc);
+    		return Subject.doAsPrivileged(s,action,acc);
     	else
     		return Subject.doAsPrivileged(s,action,acc);
 

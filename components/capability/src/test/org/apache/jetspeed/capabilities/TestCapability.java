@@ -453,10 +453,6 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         // setting fields
         
         String name  = "TEST CLIENT";
-        int preferredMimeTypeId = 2;
-
-        int evalOrder = 0;
-        
         int numCapabilities = 3;
         int numMimeTypes = 4;
         
@@ -477,7 +473,6 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         String userAgentPattern = "TEST.*|TESTBROWSER.*";
         String manufacturer = "Test Manufacturer";
         String model = "XYZ";
-        String version = "1.0";
         
 // set object fields               
         client.setUserAgentPattern(userAgentPattern);

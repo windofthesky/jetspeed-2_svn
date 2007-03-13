@@ -23,7 +23,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -102,12 +101,6 @@ public class WebContentPortlet extends GenericVelocityPortlet
     public static final String BROWSER_ACTION_NEXT_PAGE = "nextPage"; 
 
     /**
-     * Default WebContent source attribute members.
-     */
-    private String defaultViewSource;
-    private String defaultEditSource;
-
-    /**
      * Action Parameter
      */
 
@@ -138,8 +131,6 @@ public class WebContentPortlet extends GenericVelocityPortlet
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
-
-        defaultEditSource = config.getInitParameter(EDIT_SOURCE_PARAM);
     }
 
     /**
@@ -289,7 +280,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
         // drain the stream to the portlet window
         ByteArrayInputStream bais = new ByteArrayInputStream(content);
-        drain(new InputStreamReader(bais, this.defaultEncoding), writer);
+        drain(new InputStreamReader(bais, WebContentPortlet.defaultEncoding), writer);
         bais.close();
         
         // done, cache results in the history and save the history
@@ -442,7 +433,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             
             // get the output buffer
             if (encoding == null)
-                encoding = this.defaultEncoding ;
+                encoding = WebContentPortlet.defaultEncoding ;
             ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
             Writer htmlWriter = new OutputStreamWriter(byteOutputStream, encoding);
 
@@ -596,6 +587,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
     static final int BLOCK_SIZE = 4096;
 
+    /*
     private void drain(InputStream reader, OutputStream writer) throws IOException
     {
         byte[] bytes = new byte[BLOCK_SIZE];
@@ -616,6 +608,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             bytes = null;
         }
     }
+    */
 
     private void drain(Reader r, Writer w) throws IOException
     {
@@ -639,12 +632,14 @@ public class WebContentPortlet extends GenericVelocityPortlet
 
     }
 
+    /*
     private void drain(Reader r, OutputStream os) throws IOException
     {
         Writer w = new OutputStreamWriter(os);
         drain(r, w);
         w.flush();
     }
+    */
 
     private String getContentCharSet(InputStream is) throws IOException
     {

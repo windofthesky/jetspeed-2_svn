@@ -147,7 +147,6 @@ public class CallbackElementRemover extends ElementRemover
         // OTHERWISE - explicitly accept (keep tag and associated text)
         // NOTE: even if fAcceptedElements contains the tag already, we need to reset the attribute names for this invocation context
         rewriter.enterConvertTagEvent(tag,new XMLAttributesWrapper(attrs));
-        String[] attrNames = getAttributeNames(attrs);
         acceptElement(tag,getAttributeNames(attrs));
     }
     protected String[] getAttributeNames(XMLAttributes attrs)

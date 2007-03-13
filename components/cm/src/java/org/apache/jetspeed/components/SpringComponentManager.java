@@ -97,7 +97,6 @@ public class SpringComponentManager implements ComponentManager
     
     public SpringComponentManager(String[] bootConfigs, String[] appConfigs, String appRoot)
     {        
-        File appRootDir = new File(appRoot);
         PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
         Properties p = new Properties();
         //p.setProperty(APPLICATION_ROOT_KEY,appRootDir.getAbsolutePath());

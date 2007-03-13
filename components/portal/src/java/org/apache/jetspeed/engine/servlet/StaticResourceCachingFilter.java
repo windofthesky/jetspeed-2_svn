@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.engine.servlet;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.servlet.Filter;
@@ -91,7 +87,7 @@ public class StaticResourceCachingFilter implements Filter
     }
 
 
-    /* unused (we're only doing Cache-Control max-age), but works for generating Expires header */
+    /* unused (we're only doing Cache-Control max-age), but works for generating Expires header
     private String createExpiresHeader( int expiresInHours )
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US );
@@ -102,4 +98,5 @@ public class StaticResourceCachingFilter implements Filter
         Date d = new Date( millis );
         return sdf.format( d );
     }
+     */
 }

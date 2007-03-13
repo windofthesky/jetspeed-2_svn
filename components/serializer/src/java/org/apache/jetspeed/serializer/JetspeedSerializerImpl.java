@@ -788,7 +788,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     private void recreatePermissions() throws SerializerException
     {
     	logMe("recreatePermissions - started");
-        Object o = null;
         PermissionManager pm = (PermissionManager) getCM()
                 .getComponent("org.apache.jetspeed.security.PermissionManager");
         if (pm == null)
@@ -1110,7 +1109,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
                             .create(new String[]
                             { "Role", e.getMessage()}));
         }
-        int count = 0;
         while (list.hasNext())
         {
             try
@@ -1171,7 +1169,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
                             .create(new String[]
                             { "Group", e.getMessage()}));
         }
-        int count = 0;
         while (list.hasNext())
         {
 
@@ -1332,7 +1329,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
                             .create(new String[]
                             { "User", e.getMessage()}));
         }
-        int count = 0;
         while (list.hasNext())
         {
 
@@ -1520,8 +1516,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     private void exportMediaTypes(Capabilities caps) throws SerializerException
     {
         Iterator list = caps.getMediaTypes();
-
-        int count = 0;
 
         while (list.hasNext())
         {
@@ -1725,7 +1719,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     private void getProfilingRules() throws SerializerException
     {
         getPermissions();
-        Object o = null;
         Profiler pm = (Profiler) getCM()
                 .getComponent("org.apache.jetspeed.profiler.Profiler");
         if (pm == null)
@@ -1758,8 +1751,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
                             .create(new String[]
                             { "ProfilingRules", e.getMessage()}));
         }
-        int count = 0;
-
         while (list.hasNext())
         {
             try

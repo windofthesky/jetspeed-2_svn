@@ -37,7 +37,6 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;
-import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -59,9 +58,6 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
     protected File deployRootFile;
 
     protected String testDb;
-    private PortletApplicationWar paWar1;
-    private PortletApplicationWar paWar2;
-    private PortletApplicationWar paWar3;
     protected File webAppsDirFile;
     protected File copyFrom;
     protected PortletWindowAccessor windowAccess;
@@ -347,13 +343,14 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
      * </p>
      *
      * @param demoApp
-     */
+     *
     private void verifyDemoAppDeleted( String appName, File appFile )
     {
         assertNull(appName + " was not removed from the registry.", portletRegistry
                 .getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
         assertFalse(appName+" directory was not deleted.", appFile.exists());
     }
+    */
 
     /**
      * @see junit.framework.TestCase#setUp()

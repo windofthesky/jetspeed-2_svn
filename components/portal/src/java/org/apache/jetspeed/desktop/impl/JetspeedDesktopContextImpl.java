@@ -42,7 +42,6 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
     // base portal url to override default url server info from servlet
     private BasePortalURL baseUrlAccess = null;
     
-    private Theme theme;
     private LayoutDecoration layoutDecoration;
     
     // default extension for layout templates
@@ -60,7 +59,6 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
         // String layoutDecorator, String layoutDecoratorRootPath, String resourceName
         this.context = context;
         this.baseUrlAccess = baseUrlAccess;
-        this.theme = theme;
         this.layoutDecoration = theme.getPageLayoutDecoration();
         this.headerResource = headerResource;
         this.defaultLayoutTemplateExtension = defaultLayoutTemplateExtension;

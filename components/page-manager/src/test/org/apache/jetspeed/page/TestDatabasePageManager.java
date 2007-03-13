@@ -930,7 +930,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         // verify root folder deep removal
         try
         {
-            Folder check = pageManager.getFolder("/");
+            pageManager.getFolder("/");
             assertTrue("Folder / FOUND", false);
         }
         catch (FolderNotFoundException e)
@@ -938,7 +938,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            PageSecurity check = pageManager.getPageSecurity();
+            pageManager.getPageSecurity();
             assertTrue("PageSecurity FOUND", false);
         }
         catch (DocumentNotFoundException e)
@@ -946,7 +946,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            Link check = pageManager.getLink("/default.link");
+            pageManager.getLink("/default.link");
             assertTrue("Link /default.link FOUND", false);
         }
         catch (DocumentNotFoundException e)
@@ -954,7 +954,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            Page check = pageManager.getPage("/default-page.psml");
+            pageManager.getPage("/default-page.psml");
             assertTrue("Page /default-page.psml FOUND", false);
         }
         catch (PageNotFoundException e)
@@ -962,7 +962,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            Folder check = pageManager.getFolder("/");
+            pageManager.getFolder("/");
             assertTrue("Folder / FOUND", false);
         }
         catch (FolderNotFoundException e)
@@ -970,7 +970,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            Folder check = pageManager.getFolder(deepFolderPath);
+            pageManager.getFolder(deepFolderPath);
             assertTrue("Folder " + deepFolderPath + " FOUND", false);
         }
         catch (FolderNotFoundException e)
@@ -978,7 +978,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            Page check = pageManager.getPage(deepPagePath);
+            pageManager.getPage(deepPagePath);
             assertTrue("Page " + deepPagePath + " FOUND", false);
         }
         catch (PageNotFoundException e)

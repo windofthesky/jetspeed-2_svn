@@ -68,8 +68,7 @@ public class MimeTypeImpl implements MimeType
      */
     public int hashCode()
     {
-    	int h = (name != null?mimeTypeId*31^(name.length()):mimeTypeId);
-    	return name.hashCode(); //ignore id:  + h;
+    	return name.hashCode();
     }
     /**
      * Implements the equals operation so that 2 elements are equal if

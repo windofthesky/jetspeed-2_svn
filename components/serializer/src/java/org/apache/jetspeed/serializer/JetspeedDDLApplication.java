@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
-
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -691,6 +689,7 @@ public class JetspeedDDLApplication
 
 	}
 
+    /*
 	private static String[] getTokens(String _line)
 	{
 		if ((_line == null) || (_line.length() == 0))
@@ -706,6 +705,7 @@ public class JetspeedDDLApplication
 			s[i] = (String) list.get(i);
 		return s;
 	}
+    */
 
 	public List getRows(JetspeedDDLUtil ddlUtil, String tableName)
 	{

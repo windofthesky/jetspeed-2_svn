@@ -20,7 +20,6 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.LocalizedField;
 
 /**
  * DublinCoreImpl
@@ -355,24 +354,5 @@ public class DublinCoreImpl implements DublinCore
      */
     public void addType(Locale locale, String type) {
         metadata.addField(locale, TYPE, type);
-    }
-    
-    private void addLocalizedFieldToCollection(Collection fields, Locale locale, String value)
-    {
-        try
-        {
-            LocalizedField localizedField = metadata.createLocalizedField();
-            //TODO: switch to object creation through another mechanism
-            //(LocalizedField) JetspeedPortletRegistry.getNewObjectInstance(MutableDescription.TYPE_WEB_APP, true);
-            localizedField.setLocale(locale);
-            localizedField.setValue(value);
-            fields.add(localizedField);
-        }
-        catch(Exception e)
-        {
-            String msg = "Unable to instantiate LocalizedField implementor, " + e.toString();
-            //log.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
     }
 }

@@ -95,7 +95,6 @@ public class ManagerServlet extends HttpServlet
     {
         // Prepare our output writer to generate the response message
         response.setContentType("text/plain; charset=utf-8");
-        StringBuffer output = new StringBuffer();
         CharArrayWriter buffer = new CharArrayWriter();
         PrintWriter writer = new PrintWriter(buffer);
 

@@ -31,8 +31,6 @@ public class JetspeedPowerToolFactory
     
     private Class jptClass;
     private Constructor constructor;
-    private String jptClassName;
-
     private DynamicTitleService titleService;
     
     /* Allows us to render portlets and other fragments */
@@ -41,7 +39,6 @@ public class JetspeedPowerToolFactory
     public JetspeedPowerToolFactory(String jptClassName, DynamicTitleService titleService, PortletRenderer renderer)
     throws ClassNotFoundException, NoSuchMethodException
     {
-        this.jptClassName = jptClassName;
         jptClass = Thread.currentThread().getContextClassLoader().loadClass(jptClassName);
         constructor =
             jptClass.getConstructor(

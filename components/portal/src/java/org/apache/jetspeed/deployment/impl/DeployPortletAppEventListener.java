@@ -53,8 +53,6 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     private String                       localAppStagingDir;
     private boolean                      stripLoggers;
     private PortletApplicationManagement pam;
-    private PortletRegistry              registry;
-
     /**
      * @param pam
      * @param webAppDir
@@ -81,7 +79,6 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
                                          String localAppDir, String localAppStagingDir, boolean stripLoggers) throws FileNotFoundException
     {
         this.pam = pam;
-        this.registry = registry;
         this.stripLoggers = stripLoggers;
         localPAPrefixLength = PortletApplicationManagement.LOCAL_PA_PREFIX.length();
 

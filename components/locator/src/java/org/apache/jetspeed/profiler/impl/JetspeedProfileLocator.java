@@ -36,7 +36,6 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 public class JetspeedProfileLocator implements ProfileLocatorControl
 {    
     private LinkedList elements = new LinkedList();
-    private Profiler profiler;
     private String requestPath;
 
     public List getElements()
@@ -46,7 +45,6 @@ public class JetspeedProfileLocator implements ProfileLocatorControl
 
     public void init(Profiler profiler, String requestPath)
     {
-        this.profiler = profiler;
         if (requestPath != null)
             if (requestPath.indexOf("/") != -1)
                 this.requestPath = requestPath;

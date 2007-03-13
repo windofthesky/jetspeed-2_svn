@@ -47,9 +47,6 @@ public class TomcatManager implements ApplicationServerManager
     private static final String DEFAULT_MANAGER_APP_PATH = "/manager";
     protected static final Log log = LogFactory.getLog("deployment");
 
-    private String catalinaBase;
-    private String catalinaEngine;
-    private String catalinaContextPath;
     private String hostUrl;
     private int hostPort;
     private String userName;
@@ -61,22 +58,15 @@ public class TomcatManager implements ApplicationServerManager
     private String startPath = managerAppPath + "/start";
     private String deployPath = managerAppPath + "/deploy";
     private String undeployPath = managerAppPath + "/undeploy";
-    private String reloadPath = managerAppPath + "/reload";
-    private String serverInfoPath = managerAppPath + "/serverinfo";
-
     private HttpClient client;
 
     private HttpMethod start;
 
     private HttpMethod stop;
 
-    private HttpMethod reload;
-
     private HttpMethod undeploy;
 
     private PutMethod deploy;
-
-    private HttpMethod install;
 
     public TomcatManager(String catalinaBase, String catalinaEngine, String hostName, int hostPort, String userName, String password) throws IOException
     {
@@ -84,19 +74,14 @@ public class TomcatManager implements ApplicationServerManager
         
         if ( !catalinaBase.endsWith("/") )
         {
-            this.catalinaBase = catalinaBase + "/";
         }
         else
         {
-            this.catalinaBase = catalinaBase;
         }    
-        this.catalinaEngine = catalinaEngine;
         this.hostUrl = hostName;
         this.hostPort = hostPort;
         this.userName = userName;
-        this.password = password;        
-        
-        this.catalinaContextPath = this.catalinaBase + "/conf/" + this.catalinaEngine + "/" + this.hostUrl + "/";
+        this.password = password;
     }
     
     private ApplicationServerManagerResult parseResult(String responseBody)
@@ -129,7 +114,6 @@ public class TomcatManager implements ApplicationServerManager
 
         start = new GetMethod(startPath);
         stop = new GetMethod(stopPath);
-        reload = new GetMethod(reloadPath);
         undeploy = new GetMethod(undeployPath);
         deploy = new PutMethod(deployPath);
     }

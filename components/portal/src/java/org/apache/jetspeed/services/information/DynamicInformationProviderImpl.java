@@ -16,12 +16,8 @@
  */
 package org.apache.jetspeed.services.information;
 
-import java.util.Map;
 import java.util.Iterator;
 import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Enumeration;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.portlet.WindowState;
@@ -30,13 +26,10 @@ import javax.portlet.PortletMode;
 import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.pluto.services.information.ResourceURLProvider;
-import org.apache.pluto.factory.NamespaceMapperFactory;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.util.NamespaceMapper;
 import org.apache.pluto.services.information.PortletURLProvider;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -131,13 +124,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
          return context.getPortalURL().getBaseURL();
     }
 
-    /**
-     * this method is deprecated but Im going to keep it around for reference
-     * 
-     * @param portletWindow
-     * @deprecated
-     * @return
-     */
+    /*
     private Map getAllParameters(PortletWindow portletWindow)
     {
         Enumeration parameters = request.getParameterNames();
@@ -173,6 +160,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
 
         return portletParameters;
     }
+    */
 
     private final static int NumberOfKnownMimetypes = 15;
 

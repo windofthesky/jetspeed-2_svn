@@ -248,7 +248,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         // Test when the role does not exist.
         try
         {
-            Role role = rms.getRole("testroledoesnotexist");
+            rms.getRole("testroledoesnotexist");
             assertTrue("role does not exist. should have thrown an exception.", false);
         }
         catch (SecurityException sex)
@@ -610,7 +610,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         Iterator it = rms.getRoles("");
         while (it.hasNext())
         {
-            Role role = (Role) it.next();
+            it.next();
             roleCount++;
         }
         ums.addUser("notme", "one-pw");
@@ -625,7 +625,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         it = rms.getRoles("");
         while (it.hasNext())
         {
-            Role role = (Role) it.next();
+            it.next();
             count++;
         }
         ums.removeUser("notme");

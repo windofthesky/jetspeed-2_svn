@@ -246,7 +246,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         // Test when the group does not exist.
         try
         {
-            Group group = gms.getGroup("testgroupdoesnotexist");
+            gms.getGroup("testgroupdoesnotexist");
             assertTrue("group does not exist. should have thrown an exception.", false);
         }
         catch (SecurityException sex)

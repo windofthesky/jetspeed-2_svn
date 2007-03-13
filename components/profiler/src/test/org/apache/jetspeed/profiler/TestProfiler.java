@@ -133,14 +133,6 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     
     
-    private static final String URCF_CRITERIA_TEST [] =
-    {
-        "user-test",
-        "navigation",
-        "role",
-        "path.session"
-    };
-
     public void testUserRoleFallback() 
     throws Exception
     {
@@ -229,13 +221,6 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
         return subject;
     }
-    
-    private static final String TEST_ROLES [] =
-    {
-        "ATP",
-        "NB",
-        "ATP-NB",
-    };
     
     /**
      * Tests
@@ -458,7 +443,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         count = 0;
         while (fallback.hasNext())
         {
-            ProfileLocatorProperty[] locatorProperties = (ProfileLocatorProperty[]) fallback.next();
+            fallback.next();
             count++;
         }
         assertTrue("fallback count = 0, " + count, count == 0);
@@ -475,8 +460,6 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         request.setLocale(new Locale("en", "US"));
         request.setMediaType("HTML");
         request.setMimeType("text/html");
-        Map params = request.getParameterMap();
-        // params.put("page", "default");
 
         ProfileLocator locator = profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR);
         assertNotNull("rule test on getProfile returned null", locator);

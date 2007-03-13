@@ -194,7 +194,6 @@ public class RSSPortlet extends AbstractRssPortlet implements EntityResolver
                 {
                 	// Java 1.5 only
                     // String t = document.getDocumentElement().getElementsByTagName("title").item(0).getTextContent();
-                    String t = document.getDocumentElement().getElementsByTagName("title").item(0).getNodeValue();
                     NodeList nodes = document.getDocumentElement().getElementsByTagName("title");
                     if (nodes != null)
                     {

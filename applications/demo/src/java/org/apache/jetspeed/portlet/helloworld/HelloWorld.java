@@ -24,7 +24,6 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -92,9 +91,6 @@ public class HelloWorld extends GenericPortlet
         ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
         response.setContentType("text/html");
 
-        PortletURL url = response.createRenderURL();
-        // url.addParameter("test", "value");
-        
         response.getWriter().println("<br/><b>"+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b>");
         // response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
         

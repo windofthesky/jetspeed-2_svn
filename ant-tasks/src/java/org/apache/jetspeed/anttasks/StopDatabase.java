@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.anttasks;
 
-import java.util.ArrayList;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import java.sql.SQLException;
@@ -25,8 +24,6 @@ import java.sql.SQLException;
 public class StopDatabase
   extends Task {
 
-  private ArrayList subTasks;
-  
   private String url;
 
   public String getUrl() {

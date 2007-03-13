@@ -216,7 +216,7 @@ public class PageManagerUtils
         boolean found = true;
         try
         {
-            Folder check = pageManager.getFolder(destinationPath);
+            pageManager.getFolder(destinationPath);
         }
         catch (FolderNotFoundException e)
         {

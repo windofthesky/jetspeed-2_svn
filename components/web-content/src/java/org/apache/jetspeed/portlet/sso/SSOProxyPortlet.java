@@ -20,11 +20,8 @@
 package org.apache.jetspeed.portlet.sso;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.AccessControlContext;
 import java.security.AccessController;
-import java.util.StringTokenizer;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -108,7 +105,7 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
      	if ( ssoProxyAction != null && ssoProxyAction.length() > 0)
      		this.destinationURL = ssoProxyAction;
      	else
-     		this.destinationURL = request.getParameter(this.DESTINATION_URL);
+     		this.destinationURL = request.getParameter(DESTINATION_URL);
      	
      	
         this.ssoSite = request.getParameter(SSO_SITE);
@@ -214,6 +211,7 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
         return JSSubject.getSubject(context);         
     }
     
+    /*
     private String getContentCharSet(InputStream is) throws IOException
     {
         if (!is.markSupported())
@@ -269,5 +267,6 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
 
         return null;
     }
+    */
    
 }

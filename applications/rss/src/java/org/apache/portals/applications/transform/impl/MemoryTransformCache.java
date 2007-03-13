@@ -42,7 +42,6 @@ public class MemoryTransformCache implements TransformCache
     private int evictionPercentage = 10;    
     private boolean enable = true;
 
-    private Transform transform = null;
     private TreeMap cache = null;
     private Object lock = new Object();
 
@@ -52,7 +51,6 @@ public class MemoryTransformCache implements TransformCache
      */
     public MemoryTransformCache(Transform transform, int maxSize, int evictionPercentage, boolean enable, boolean debug)
     {
-        this.transform = transform;
         cache = new TreeMap();
         this.maxSize = maxSize;
         this.evictionPercentage = evictionPercentage;

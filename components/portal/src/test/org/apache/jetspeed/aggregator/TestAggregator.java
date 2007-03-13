@@ -48,7 +48,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -78,7 +77,6 @@ public class TestAggregator extends TestCase
     private ServletContext servletContext;
     private PortletRegistry portletRegistry;
     private RequestContextComponent rcc;
-    private UserManager userManager;
     private String testPage = "/default-page.psml";
 
     /**
@@ -125,16 +123,15 @@ public class TestAggregator extends TestCase
         portletFactory = (PortletFactory) engine.getComponentManager().getComponent("portletFactory");
         rcc = (RequestContextComponent) engine.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
 
-        ResourceLocatingServletContext paContext = null;
         File paRootDir = null;
         paRootDir = new File("../../layout-portlets/target/jetspeed-layout-portlets");
-        paContext = initPA("jetspeed-layouts", "/jetspeed-layouts", paRootDir);
+        initPA("jetspeed-layouts", "/jetspeed-layouts", paRootDir);
 
         paRootDir = new File("../../applications/demo/target/demo");
-        paContext = initPA("demo", "/demo", paRootDir);
+        initPA("demo", "/demo", paRootDir);
 
         paRootDir = new File("../../applications/j2-admin/target/j2-admin");
-        paContext = initPA("j2-admin", "/j2-admin", paRootDir);
+        initPA("j2-admin", "/j2-admin", paRootDir);
  
         // j2-admin portlet needs user manager component, but the followings does not effect..
 //        userManager = (UserManager) engine.getComponentManager().getComponent(UserManager.class);

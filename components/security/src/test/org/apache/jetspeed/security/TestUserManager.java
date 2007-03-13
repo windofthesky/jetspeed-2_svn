@@ -113,7 +113,7 @@ public class TestUserManager extends AbstractSecurityTestcase
         // Test when the user does not exist.
         try
         {
-            User user = ums.getUser("test");
+            ums.getUser("test");
             assertTrue("user does not exist. should have thrown an exception.", false);
         }
         catch (SecurityException sex)

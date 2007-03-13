@@ -30,8 +30,6 @@ import org.apache.jetspeed.util.Path;
  */
 public class LayoutDecorationImpl extends BaseDecoration implements LayoutDecoration
 {
-    private DecorationFactory  decorationFactory;
-    
     public LayoutDecorationImpl(Properties config, ResourceValidator validator, Path basePath, Path baseClientPath, PathResolverCache cache)
     {
         super(config, validator, basePath, baseClientPath, cache);
@@ -39,7 +37,7 @@ public class LayoutDecorationImpl extends BaseDecoration implements LayoutDecora
     
     public void setDecorationFactory(DecorationFactory decorationFactory)
     {
-        this.decorationFactory = decorationFactory;
+        // TODO Ate: this seems like an obsolete constructor to me, no?
     }    
 
     public String getHeader()
