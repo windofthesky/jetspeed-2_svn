@@ -141,6 +141,8 @@ public class UserBrowser extends BrowserPortlet
     public void getRows(RenderRequest request, String sql, int windowSize, String filter)
     {
         String roleFilter = request.getPreferences().getValue("FilterByRole", "");
+        if (roleFilter == null)
+            roleFilter = "";
         boolean filterByRole = !roleFilter.equals("") || roleFilter.equalsIgnoreCase("false");
         List resultSetTitleList = new ArrayList();
         List resultSetTypeList = new ArrayList();
