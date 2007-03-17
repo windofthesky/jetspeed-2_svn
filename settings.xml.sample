@@ -290,7 +290,7 @@ deployment. -->
 
         <!-- Oracle database -->
 
-        <!-- Uncomment this if you are using the MySQL database
+        <!-- Uncomment this if you are using the Oracle database
         <activeProfile>jetspeed-oracle</activeProfile> -->
 
         <!-- Drivers path configured database profile -->
