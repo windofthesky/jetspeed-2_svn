@@ -138,13 +138,13 @@ deployment. -->
     
                 <!-- MySQL database properties -->
 
-                <org.apache.jetspeed.test.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/mysql-connector-java-5.0.4.jar</org.apache.jetspeed.test.jdbc.drivers.path>
+                <org.apache.jetspeed.test.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/mysql-connector-java-5.0.4-bin.jar</org.apache.jetspeed.test.jdbc.drivers.path>
                 <org.apache.jetspeed.test.database.default.name>mysql</org.apache.jetspeed.test.database.default.name>
                 <org.apache.jetspeed.test.database.url>jdbc:mysql://localhost/j2test</org.apache.jetspeed.test.database.url>
                 <org.apache.jetspeed.test.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.test.database.driver>
                 <org.apache.jetspeed.test.database.user>root</org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-                <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/mysql-connector-java-5.0.4.jar</org.apache.jetspeed.production.jdbc.drivers.path>
+                <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/mysql-connector-java-5.0.4-bin.jar</org.apache.jetspeed.production.jdbc.drivers.path>
                 <org.apache.jetspeed.production.database.default.name>mysql</org.apache.jetspeed.production.database.default.name>
                 <org.apache.jetspeed.production.database.url>jdbc:mysql://localhost/j2</org.apache.jetspeed.production.database.url>
                 <org.apache.jetspeed.production.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.production.database.driver>
