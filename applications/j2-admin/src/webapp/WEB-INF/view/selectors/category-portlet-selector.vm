@@ -336,7 +336,7 @@ function getReturnPagePath()
 {
    var jsPagePath = jetspeed.url.getQueryParameter( document.location.href, "jspage" );
    if ( jsPagePath == null )
-      jsPagePath = "";
+		jsPagePath = "$pagePath";
    return jsPagePath;
 }
 function getPageCount(portletCount,portletPerPage)
