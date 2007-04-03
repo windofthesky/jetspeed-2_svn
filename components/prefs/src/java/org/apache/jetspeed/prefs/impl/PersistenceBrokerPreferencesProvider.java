@@ -30,7 +30,9 @@ import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
+import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;
+import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -516,4 +518,10 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         }
         return proxied;       
     }
+    
+    public Property createProperty(Node node, String name, Object value)
+    {
+        return new PropertyImpl(node.getNodeId(), name, value);
+    }
+    
 }
