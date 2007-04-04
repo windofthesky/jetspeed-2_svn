@@ -38,6 +38,7 @@ import org.apache.jetspeed.security.UserPrincipal;
  * PageManagerUtils
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:firevelocity@gmail.com">Vivek Kumar</a>
  * @version $Id: $
  */
 public class PageManagerUtils
@@ -127,12 +128,15 @@ public class PageManagerUtils
                 Page dstPage = pageManager.copyPage(srcPage, path);
                 pageManager.updatePage(dstPage);
             }
+            //Commented, as these were creating the duplicate objects 
+            /*            
             else
             {
                 path = concatenatePaths(destinationPath, uniqueName + "-" +srcPage.getName());               
                 Page dstPage = pageManager.copyPage(srcPage, path);                
                 pageManager.updatePage(dstPage);                
             }
+            */
         }
      
         Iterator links = srcFolder.getLinks().iterator();
@@ -145,12 +149,15 @@ public class PageManagerUtils
                 Link dstLink = pageManager.copyLink(srcLink, path);
                 pageManager.updateLink(dstLink);
             }
+            //Commented, as these were creating the duplicate objects            
+            /*
             else
             {
                 path = concatenatePaths(destinationPath, uniqueName + "-" +srcLink.getName());               
                 Link dstLink = pageManager.copyLink(srcLink, path);                
                 pageManager.updateLink(dstLink);                                
             }
+            */
         }     
         Iterator folders = srcFolder.getFolders().iterator();
         while (folders.hasNext())
