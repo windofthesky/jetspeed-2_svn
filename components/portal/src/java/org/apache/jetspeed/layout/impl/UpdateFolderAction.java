@@ -143,7 +143,8 @@ public class UpdateFolderAction
             else if (method.equals("copy"))
             {            	   
             	String destination = getActionParameter(requestContext, "destination");
-            	destination = destination + Folder.PATH_SEPARATOR + folder.getName();
+            	String name = getActionParameter(requestContext, RESOURCE_NAME);
+            	destination = destination + Folder.PATH_SEPARATOR + name;
             	pageManager.deepCopyFolder(folder,destination,null);
             }
             else if (method.equals("move"))

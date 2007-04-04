@@ -169,7 +169,8 @@ public class UpdatePageAction
             else if (method.equals("copy"))
             {            	
             	String destination = getActionParameter(requestContext, "destination");
-            	destination = destination + Folder.PATH_SEPARATOR + page.getName();           	
+            	String name = getActionParameter(requestContext, RESOURCE_NAME);
+            	destination = destination + Folder.PATH_SEPARATOR + name;           	
             	Page newPage = pageManager.copyPage(page,destination);
             	pageManager.updatePage(newPage);
             }
