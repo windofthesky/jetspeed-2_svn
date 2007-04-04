@@ -148,7 +148,7 @@
 			<portletSpecVersion>1.0</portletSpecVersion>
 			<packaging>war</packaging>
 			<name>perl</name>
-			<description>Perl Bridge Demo portlet (JPetstore) from Apache Portals</description>
+			<description>Perl Bridge Demo portlet from Apache Portals</description>
 			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/perl.war</binaryURL>
 			<sourceURL />
 			<imageURL />
@@ -178,8 +178,39 @@
 			<portletSpecVersion>1.0</portletSpecVersion>
 			<packaging>war</packaging>
 			<name>php</name>
-			<description>PHP Bridge Demo portlet (JPetstore) from Apache Portals</description>
+			<description>PHP Bridge Demo portlet from Apache Portals</description>
 			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/php.war</binaryURL>
+			<sourceURL />
+			<imageURL />
+			<license>
+				<name>The Apache Software License, Version 2.0</name>
+				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			</license>
+			<externalDependencies />
+			<tags>
+				<tag>jetspeed</tag>
+				<tag>bridges</tag>
+			</tags>
+			<locales>
+				<locale>en</locale>
+			</locales>
+			<compiledJDKVersion>1.4</compiledJDKVersion>
+			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
+			<dateModified>2007-02-27T07:05+09:00</dateModified>
+			<publisher>
+				<name>Apache Portals</name>
+				<url>http://portals.apache.org/</url>
+			</publisher>
+		</portlet>
+	</portlets>	
+	<portlets>
+		<portlet id="springmvc" group="org.apache.portals.bridges"
+			version="2.1">
+			<portletSpecVersion>1.0</portletSpecVersion>
+			<packaging>war</packaging>
+			<name>springmvc</name>
+			<description>Spring MVC Demo portlet from Apache Portals</description>
+			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/springmvc.war</binaryURL>
 			<sourceURL />
 			<imageURL />
 			<license>
