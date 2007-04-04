@@ -23,8 +23,11 @@
     <form onsubmit="return false;">
     <table>
       <tr>
-        <td>Select Destination Folder for &nbsp;<br><b><span  id='c.name'></span></b></td><td>&nbsp;</td>
+        <td>Copying resource <b><span  id='c.name'></span></b></td><td>&nbsp;</td>
       </tr>
+      <tr>
+        <td><b>New Name</b>&nbsp;<input class="medium" type="text" maxlength="20" id="cName" onChange="disableCopySave();"></td>&nbsp;<td></td>
+      </tr>	
 	  <tr>
 		<td>
 			<table id="cfolderpath"></table>
@@ -50,7 +53,7 @@
     <form onsubmit="return false;">
     <table>
       <tr>
-        <td>Select Destination Folder for &nbsp;<br><b><span id='m.name'></span></b></td><td>&nbsp;</td>
+		<td>Moving resource <b><span  id='m.name'></span></b></td><td>&nbsp;</td>
       </tr>
       <tr>
         <td><b>New Name</b>&nbsp;<input class="medium" type="text" maxlength="20" id="mName"></td>&nbsp;<td></td>
@@ -342,11 +345,20 @@ function getSelectionResult(domainObjects, folderList,pagesList,linksList)
 	var status;
 	if (document.getElementById('action').value == 'copy')
 	{
-		name = document.getElementById('c.name').innerHTML;		
+		name = document.getElementById('cName').value;
 	}
 	else{
 		name = document.getElementById('mName').value;		
 	}
+	
+	if (objectType =='Page')
+	{
+		name = name + '.psml';
+	}else if(objectType =='Link')
+	{
+		name = name + '.link';
+	}
+	
 	status = isDupeObject(name,objectType);
 	if (status == true) 		
 	{
@@ -417,7 +429,6 @@ function getFoldersResult(domainObjects, folderList,pagesList,linksList)
 function getSelectedFolders(folder)
 {
    document.getElementById('path').value = folder;
-	//alert(' getting folder 4 ' +folder);
    jetspeed.getFolders(folder,getSelectionResult);
 }
 
@@ -515,7 +526,6 @@ function showPopUpfolderTree(node)
     {   
         var names = new Array("folder");
         var values = new Array(node.widgetId);
-		//alert(' i m her');
         ajaxInvoke("getfolder", names, values, new popFolderHandler() );     
     }
 }
@@ -558,6 +568,46 @@ function editResource(node)
 function validateNewField()
 {
     dojo.widget.byId("res.save").setDisabled(disableNewSave());    
+}
+function validateName(kind,name,action)
+{
+    var valid = true;
+    if (name != null && dojo.string.trim(name).length > 0)
+    {
+        name = dojo.string.trim(name.toLowerCase());
+        if (kind == "Page")
+        {
+            var regex = new RegExp(".*\.psml");
+            if (name.match(regex))
+            {
+				valid = false;
+				alert('Please choose a valid name');
+            }
+        }
+        else if (kind == "Link")
+        {
+            var regex = new RegExp(".*\.link");
+            if (name.match(regex))
+            {
+                valid = false;
+				alert('Please choose a valid name');
+            }
+        }
+	}else{
+	           valid = false;
+			   alert('Please choose a valid name');
+	}
+	if(valid == false)
+	{
+		if (action =='copy'){
+			dojo.widget.byId("copy.save").setDisabled(true);
+			return true;
+		}else{
+			dojo.widget.byId("move.save").setDisabled(true);    		
+			return  true;
+		}
+	}
+	return false;
 }
 function validateResourceName()
 {
@@ -634,7 +684,7 @@ function createResource()
     var parent = selector.selectedNode;
     if (selector.selectedNode.isFolder == false)
         parent = selector.selectedNode.parent;
-    
+
     var node = new dojo.widget.TreeNode();
     node.isFolder = false;
     node.object = document.getElementById("res.kind").innerHTML;
@@ -691,6 +741,7 @@ function copyResource()
         alert("Please do not copy the root folder!");
         return;
     }
+	document.getElementById("cName").value = node.title.substring(0,node.title.lastIndexOf('.'));
 	document.getElementById("c.name").innerHTML = node.title
 	document.getElementById("cType").value = node.object	
 	createpopUpTable('copy');
@@ -699,6 +750,15 @@ function copyResource()
 
 function copyAction()
 {
+	var nodeName = document.getElementById("cName").value;
+	var kind = document.getElementById("cType").value;
+	var destinationPath = document.getElementById('destination').value;
+	
+	var status  = validateName(kind,nodeName,'copy');
+	if(status == true) 
+	{
+		return;
+	}
 	var selector = dojo.widget.byId('treeSelector');
     if (selector.selectedNode == null)
     {
@@ -708,17 +768,16 @@ function copyAction()
     var parent = selector.selectedNode;
     if (selector.selectedNode.isFolder == false)
         parent = selector.selectedNode.parent;
-    
+
     var node = new dojo.widget.TreeNode();
     node.isFolder = false;
-    node.object = document.getElementById("cType").value;
+    node.object = kind;
     var sep = "/";
     if (parent.widgetId.substring(parent.widgetId.length-1) == "/")
        sep = "";
 	var source; 
-	//alert('dest ' + document.getElementById('destination').value);	
 	var nd = new dojo.widget.TreeNode();
-    if (node.object != "Folder")
+	    if (node.object != "Folder")
 	{		
 		source = parent.widgetId + sep + document.getElementById("c.name").innerHTML;
 	}
@@ -726,14 +785,10 @@ function copyAction()
 		source = parent.widgetId;
 
 	}
-	var name = document.getElementById("c.name").innerHTML;
-	//nd.title = name;
-    //nd.childIconSrc = "$app/images/" + node.object.toLowerCase() + ".gif";
 	
-	//alert(' nd ' +  nd );
-	
-	var par= dojo.widget.byId(document.getElementById('destination').value);
-	//alert(' par ' + par);    
+	nodeName = getFullName(nodeName,kind)
+	var par= dojo.widget.byId(destinationPath);
+
     var action = "update" + node.object.toLowerCase();
     var names = new Array();
     var values = new Array();
@@ -742,9 +797,9 @@ function copyAction()
     names[1] = "path";
     values[1] = escape(source);
     names[2] = "name";
-    values[2] = escape(name);
+    values[2] = escape(nodeName);
     names[3] = "destination";
-    values[3] = document.getElementById('destination').value ;
+	values[3] = destinationPath;
 	this.parent = parent;
 	this.node = node;
     ajaxInvoke(action, names, values, new ResourceCopyHandler(parent, node) );     
@@ -766,8 +821,8 @@ function moveResource()
         alert("Please do not move the root folder!");
         return;
     }	
-	document.getElementById("m.name").value = node.title
-	document.getElementById("mName").value = node.title
+	document.getElementById("m.name").innerHTML = node.title
+	document.getElementById("mName").value = node.title.substring(0,node.title.lastIndexOf('.'));
 	document.getElementById("mType").value = node.object	
 	createpopUpTable('move');
     dojo.widget.byId( "MoveResourceDialog" ).show();	
@@ -775,6 +830,16 @@ function moveResource()
 
 function moveAction()
 {
+	var nodeName = document.getElementById("mName").value;
+	var kind = document.getElementById("mType").value;
+	
+	var status  = validateName(kind,nodeName,'move');
+
+	if(status == true) 
+	{
+		return;
+	}
+
     var selector = dojo.widget.byId('treeSelector');
     if (selector.selectedNode == null)
     {
@@ -784,10 +849,10 @@ function moveAction()
     var parent = selector.selectedNode;
     if (selector.selectedNode.isFolder == false)
         parent = selector.selectedNode.parent;
-    
+
     var node = new dojo.widget.TreeNode();
     node.isFolder = false;
-    node.object = document.getElementById("mType").value;
+    node.object = kind
     var sep = "/";
     if (parent.widgetId.substring(parent.widgetId.length-1) == "/")
        sep = "";
@@ -798,9 +863,10 @@ function moveAction()
 	else{
 		node.widgetId = selector.selectedNode.widgetId;
 	}
-	//node.widgetId = parent.widgetId + sep + document.getElementById("mName").value;
+
     node.title = document.getElementById("res.name").value;
-	var name = document.getElementById("mName").value;
+	var name = nodeName;
+	nodeName =  getFullName(nodeName,kind); 
     node.childIconSrc = "$app/images/" + node.object.toLowerCase() + ".gif";
     node.isFolder = (node.object == "Folder");
     // create new Node
@@ -810,26 +876,31 @@ function moveAction()
     names[0] = "method";
     values[0] = "move";
     names[1] = "path";
-    values[1] = escape(node.widgetId+name);
+    values[1] = escape(node.widgetId+nodeName);
     names[2] = "name";
-    values[2] = escape(name);
+	values[2] = escape(nodeName);
     names[3] = "destination";
     values[3] = document.getElementById('destination').value;
     ajaxInvoke(action, names, values, new ResourceMoveHandler(parent, node) );     
 }
 var ResourceMoveHandler = function(parent, node)
 {
+  var nodeName=document.getElementById('mName').value;
+  var action = document.getElementById("action").value;
+  var kind = document.getElementById("mType").value;
+  var destinationPath = document.getElementById('destination').value;
+
   var selector = dojo.widget.byId('treeSelector');
   var node = selector.selectedNode;
-  //alert('node '  + node);
+
   var controller = dojo.widget.byId('treeController');
   var res = controller.removeNode(node);
-  parent= dojo.widget.byId(document.getElementById('destination').value);
+  parent= dojo.widget.byId(destinationPath);
   var node1 = new dojo.widget.TreeNode();
-  node1.object = document.getElementById("mType").value;
-  node1.title = document.getElementById('mName').value;		
-  node1.widgetId = document.getElementById('destination').value + "/" + document.getElementById("mName").value;
-  node1.childIconSrc = "$app/images/" + node1.object.toLowerCase() + ".gif";
+  node1.object = kind;
+  node1.title = getFullName(nodeName,kind);
+  node1.widgetId = getDestination(destinationPath) + getFullName(nodeName,kind);
+  node1.childIconSrc = "$app/images/" + kind.toLowerCase() + ".gif";
   this.populate = function(data) 
   { 
     // insert in sorted order
@@ -879,7 +950,7 @@ function deleteResource()
         return;
     }
     var kind = document.getElementById("res.kind").innerHTML;
-    
+
     var action = "update" + node.object.toLowerCase();
     var names = new Array();
     var values = new Array();
@@ -889,58 +960,53 @@ function deleteResource()
     values[1] = escape(node.widgetId);
     ajaxInvoke(action, names, values, new ResourceDeleteHandler(parent, node) );     
 }
-var ResourceCopyHandler = function(parent, node)
+var ResourceCopyHandler = function(parent, node1)
 {
-  //this.parent = parent;
-  //this.node = node;  
+  var nodeName=document.getElementById('cName').value;
   var action = document.getElementById("action").value;
-  parent= dojo.widget.byId(document.getElementById('destination').value);
-  var node1 = new dojo.widget.TreeNode();
-  node1.isFolder = false;
+  var kind = document.getElementById("cType").value;
+  var destinationPath = document.getElementById('destination').value;
+  parent= dojo.widget.byId(destinationPath);
+  var node = new dojo.widget.TreeNode();
+
+  if(kind != 'Folder') {
+	node.isFolder = false;
+   }else{
+	node.isFolder = false
+   }
+
   if (action == 'copy')
   {
-	//alert(' obj ' + document.getElementById("cType").value);
-	//alert(' title ' + document.getElementById('c.name').innerHTML);
-	//alert(' ID ' + document.getElementById('destination').value + "/" + document.getElementById("c.name").innerHTML);
-	node1.object = document.getElementById("cType").value;	
-	node1.title = document.getElementById('c.name').innerHTML;		
-	node1.widgetId = document.getElementById('destination').value + "/" + document.getElementById("c.name").innerHTML;
-	node1.childIconSrc = "$app/images/" + node1.object.toLowerCase() + ".gif";
+	node.object = kind;
+	node.title = getFullName(nodeName,kind);
+	node.widgetId = getDestination(destinationPath) + getFullName(nodeName,kind);
+	node.childIconSrc = "$app/images/" + kind.toLowerCase() + ".gif";
   }
-  else
-  {
-	node1.object = document.getElementById("mType").value;
-	node1.title = document.getElementById('mName').value;		
-	node1.widgetId = document.getElementById('destination').value + "/" + document.getElementById("mName").value;
-  }
+
   this.populate = function(data) 
   { 
     // insert in sorted order
-	//alert(' p c 1 ' + parent);
-	//alert(' p c 2 ' + node1);
-	//alert(' p c 3 ' + parent.children.length);
     for(var i=0; i<parent.children.length; i++) 
     {
         var child = parent.children[i];
-        if (child.object == node1.object)
+        if (child.object == node.object)
         {
-             if (child.title > node1.title)
+             if (child.title > node.title)
              {
                 break;
              }
         }
         else
         {
-            if (node1.object == "Folder")
+            if (node.object == "Folder")
                 break;
-            if (node1.object == "Page" && child.object == "Link")
+            if (node.object == "Page" && child.object == "Link")
                 break;
         }
     }
     var controller = dojo.widget.byId('treeController');
 	if(parent.isExpanded == true) {
-		//alert('node is exp ' );
-		var res = controller.createChild(parent, i, node1);
+		var res = controller.createChild(parent, i, node);
 	}
     var selector = dojo.widget.byId('treeSelector');
     selector.select({ source: parent, event: {} });
@@ -1001,6 +1067,23 @@ var ResourceDeleteHandler = function(parent, node)
   {
   }
 }
+function getFullName(name,kind)
+{
+  if (kind=='Page'){ 
+	name = name + '.psml';
+  }else if (kind =='Link'){
+	name = name + '.link';
+  }
+  return name;
+}
+function getDestination(path)
+{
+	if (path !='/')
+	{
+		path = path + '/';
+	}
+	return path;
+} 
 function removeResource(xnode)
 {
     var selector = dojo.widget.byId('treeSelector');
@@ -1511,7 +1594,7 @@ function displayTabs( tabIdList )
     {     
         if ( siteViewAllTabWidgets[ siteViewAllTabIds[i] ] == null )
             siteViewAllTabWidgets[ siteViewAllTabIds[i] ] = dojo.widget.byId( siteViewAllTabIds[i] );
-        
+
         var removeTab = siteViewAllTabWidgets[ siteViewAllTabIds[i] ];
         if ( removeTab && ! removeTab.js_removed )
         {
@@ -2280,6 +2363,10 @@ function validateOwnerName()
     if (name == null || dojo.string.trim(name) == "")
         disabled = true;
     dojo.widget.byId("owner.save").setDisabled(disabled);
+}
+function disableCopySave()
+{
+	dojo.widget.byId("copy.save").setDisabled(true);
 }
 function addListeners()
 {
