@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page id="/_hostname/localhost/bookmarks.psml" hidden="false">
+    <title>Subsite Bookmarks</title>
+    <short-title>Subsite Bookmarks</short-title>
+    <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
+    <fragment id="P-111c9af9583-10001a" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <fragment id="P-111c9af9583-10002b" type="portlet" name="demo::BookmarkPortlet">
+            <property name="row" value="0"/>
+        </fragment>
+    </fragment>
+    <metadata name="title" xml:lang="ja">サブサイトブックマーク</metadata>
+    <metadata name="title" xml:lang="es">Favoritos de subportal</metadata>
+    <metadata name="title" xml:lang="hu">Portálon belüli könyvjelzők</metadata>
+    <metadata name="title" xml:lang="zh">子站点书签</metadata>
+    <metadata name="title" xml:lang="zh_TW">子站點書簽</metadata>
+    <metadata name="title" xml:lang="ko">서브사이트 북마크</metadata>
+</page>
