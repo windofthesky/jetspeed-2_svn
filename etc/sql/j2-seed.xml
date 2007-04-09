@@ -314,6 +314,16 @@
 				<Rule locator="page" rule="j2"/>
 			</Rules>
 		</User>
+		<User name="local">
+			<credentials password="local" enabled="TRUE" requiresUpdate="FALSE"/>
+			<roles>user</roles>
+			<groups>accounting</groups>
+			<preferences/>
+			<userinfo/>
+			<Rules>
+				<Rule locator="page" rule="localhost"/>
+			</Rules>
+		</User>
 		<User name="tomcat">
 			<credentials password="tomcat" enabled="TRUE" requiresUpdate="FALSE"/>
 			<roles></roles>
@@ -730,5 +740,67 @@
 				</Criterion>
 			</Criteria>
 		</ProfilingRule>
+		
+		<ProfilingRule id="localhost" standardRule="true">
+			<description value="A hosting rule"/>
+			<Criteria>
+				<Criterion name="hostname">
+					<type value="hostname"/>
+					<fallBackOrder value="0"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="user">
+					<type value="user"/>
+					<fallBackOrder value="1"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="page">
+					<type value="path.session"/>
+					<value value="home"/>
+					<fallBackOrder value="2"/>
+					<fallBackType value="1"/>
+				</Criterion>
+			</Criteria>
+		</ProfilingRule>
+
+		<ProfilingRule id="localhost-fallback" standardRule="false">
+			<description value="A hosting rule with role fallback"/>
+			<Criteria>
+				<Criterion name="hostname">
+					<type value="hostname"/>
+					<fallBackOrder value="0"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="user">
+					<type value="user"/>
+					<fallBackOrder value="1"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="navigation">
+					<type value="navigation"/>
+					<value value="/"/>
+					<fallBackOrder value="2"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="hostname2">
+					<type value="hostname"/>
+					<fallBackOrder value="3"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="role">
+					<type value="role"/>
+					<fallBackOrder value="4"/>
+					<fallBackType value="2"/>
+				</Criterion>				
+				<Criterion name="page">
+					<type value="path.session"/>
+					<value value="home"/>
+					<fallBackOrder value="5"/>
+					<fallBackType value="1"/>
+				</Criterion>
+			</Criteria>
+		</ProfilingRule>
+		
 	</ProfilingRules>
+
 </Snapshot>
