@@ -155,7 +155,12 @@
     <bean id='NavigationCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.NavigationCriterionResolver'></bean>
     <bean id='UserAgentCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.UserAgentCriterionResolver'></bean>
     <bean id='IPCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.IPCriterionResolver'></bean>
-    <bean id='HostnameCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.HostnameCriterionResolver'></bean>    
+    <bean id='HostnameCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.HostnameCriterionResolver'>
+      <!--  use the dot prefix, for ex: "accounting.xyz.com" returns "accounting" -->
+      <constructor-arg type="boolean" index="0">
+            <value>false</value> 
+        </constructor-arg>    	
+    </bean>    
     <bean id='DomainCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.DomainCriterionResolver'></bean>      
 
 	<!-- Profiling Rules -->
