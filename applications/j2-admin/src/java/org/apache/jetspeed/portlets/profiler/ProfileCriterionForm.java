@@ -66,7 +66,8 @@ public class ProfileCriterionForm implements Serializable
             new SelectItem("path.session"),
             new SelectItem("user.attribute"),
             new SelectItem("navigation"),
-            new SelectItem("ip")
+            new SelectItem("ip"),
+            new SelectItem("hostname")
     };
 
     private transient SelectItem[] fallbackTypes =
@@ -259,6 +260,15 @@ public class ProfileCriterionForm implements Serializable
             {                
                 criterion.setRuleId(rule.getId());
                 rule.getRuleCriteria().add(criterion);
+            }
+            String value = criterion.getValue();
+            if (value != null)
+            {
+                value = value.trim();
+                if (value.equals(""))
+                {
+                    criterion.setValue(null);
+                }
             }
            profiler.storeProfilingRule(rule);
            isNew = false;
