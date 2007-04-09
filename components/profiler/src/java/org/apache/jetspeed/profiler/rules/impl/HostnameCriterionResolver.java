@@ -29,6 +29,13 @@ import org.apache.jetspeed.request.RequestContext;
 public class HostnameCriterionResolver extends StandardResolver implements
         RuleCriterionResolver
 {
+    boolean useDotPrefix = false;
+    
+    public HostnameCriterionResolver(boolean usePrefix)
+    {
+        super();
+        this.useDotPrefix = usePrefix;
+    }
 
     /*
      * (non-Javadoc)
@@ -37,7 +44,7 @@ public class HostnameCriterionResolver extends StandardResolver implements
      */
     public boolean isControl(RuleCriterion criterion)
     {
-        return false;
+        return true;
     }
 
     /*
@@ -47,49 +54,22 @@ public class HostnameCriterionResolver extends StandardResolver implements
      */
     public boolean isNavigation(RuleCriterion criterion)
     {
-        return true;
+        return false;
     }
 
     public String resolve(RequestContext context, RuleCriterion criterion)
     {
-        return getHostname(context.getRequest().getServerName());
-    }
-
-    /**
-     * extracts the hostname from the servername from RequestContext
-     * 
-     * @param servername
-     *            server name from request
-     * @return hostname extracted from server name
-     */
-    public String getHostname(String servername)
-    {
-        String hostname = null;
-
-        if (servername != null)
+        String serverName = context.getRequest().getServerName();        
+        if (useDotPrefix)
         {
-            int idx = servername.indexOf(".");
+            int idx = serverName.indexOf(".");
             if (idx != -1)
             {
-                hostname = servername.substring(idx, servername.length());
-            } else
-            {
-                // maybe we already have the hostname
-                // testing for IPv6 IP Address
-                idx = servername.indexOf(":");
-                if (idx != -1)
-                {
-                    // TODO resolving IP Address?
-                    // for now we take this as the host name
-                    hostname = servername;
-                } else
-                {
-                    // looks like hostname==servername
-                    hostname = servername;
-                }
+                // SUFFIX: hostname = servername.substring(idx + 1, servername.length());
+                serverName = serverName.substring(0, idx);
             }
         }
-        return hostname;
+        return serverName;
     }
 
 }
