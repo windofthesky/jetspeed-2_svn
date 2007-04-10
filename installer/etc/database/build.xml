@@ -42,7 +42,7 @@
 
     <echo>Setting up the Jetspeed database for ${db.type}</echo>
 
-    <echo>All exiting Jetspeed data is going to be deleted from the database.</echo>
+    <echo>All existing Jetspeed data is going to be deleted from the database.</echo>
     <echo></echo>
     <echo>Selected database configuration:</echo>
     <echo></echo>
@@ -103,7 +103,7 @@
   </target>
 
   <target name="generateStandardDB" unless="_derby">
-    <echo>cleaning up possible exiting Db</echo>
+    <echo>cleaning up possible existing Db</echo>
 
     <sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}"
       src="${basedir}/drop.sql" autocommit="true" onerror="continue" print="no" output="setup.log">
