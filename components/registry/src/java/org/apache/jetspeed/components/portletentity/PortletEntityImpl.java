@@ -173,11 +173,9 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         while (sharedPrefs.hasNext())
         {
             PrefsPreference sharedPref = (PrefsPreference) sharedPrefs.next();
-            if (names.contains(sharedPref.getName()))
-            {
-                List prefs = Arrays.asList(sharedPref.getValueArray());
-                userPrefSet.add(sharedPref.getName(), prefs);
-            }
+// this seems limiting, removing if (names.contains(sharedPref.getName()))
+            List prefs = Arrays.asList(sharedPref.getValueArray());
+            userPrefSet.add(sharedPref.getName(), prefs);
             index++;
         }        
     }
