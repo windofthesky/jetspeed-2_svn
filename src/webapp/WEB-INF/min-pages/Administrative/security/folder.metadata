@@ -22,6 +22,7 @@ limitations under the License.
   <document-order>user-mgt.psml</document-order>
   <document-order>role-mgt.psml</document-order>
   <document-order>group-mgt.psml</document-order>
+  <document-order>security-constraints.psml</document-order>  
   <document-order>security-permissions.psml</document-order>
   <document-order>sso-admin.psml</document-order>
 

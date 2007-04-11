@@ -30,6 +30,7 @@ limitations under the License.
   <document-order>palm.psml</document-order>
   <document-order>profiler.psml</document-order>
   <document-order>entities.psml</document-order>
+  <document-order>statistics.psml</document-order>  
   <document-order>tracking.psml</document-order>
 
   <security-constraints>
