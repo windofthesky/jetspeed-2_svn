@@ -104,11 +104,7 @@ public class JSSubject implements java.io.Serializable
     	if (subject == null)
     		subject = JSSubject.getSubject(null);
     	threadLocal.set(subject);
-    	if (subject != null)
-    		return Subject.doAs(subject,action);
-    	else
-    		return Subject.doAs(subject,action);
-    		
+    	return Subject.doAs(subject,action);	
     }
 
     /**
