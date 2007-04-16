@@ -281,12 +281,12 @@ public class MultiColumnPortlet extends LayoutPortlet
                             String path = parent.getPath();
                             if (path.endsWith(Folder.PATH_SEPARATOR))
                             {
-                                path = path + getEscapedPageName(jsPageName);
+                                path = path + getEscapedName(jsPageName);
                             }
                             else
                             {
                                 path = path + Folder.PATH_SEPARATOR
-                                        + getEscapedPageName(jsPageName);
+                                        + getEscapedName(jsPageName);
                             }
                             Page page = pageManager.newPage(path);
                             if ( layout == null || layout.length() == 0 )
@@ -458,7 +458,250 @@ public class MultiColumnPortlet extends LayoutPortlet
                 }
                 return;
             }            
-            
+
+            if (request.getParameter("jsSubmitFolder") != null)
+            {
+                String jsFolderName = request.getParameter("jsFolderName");
+                if (jsFolderName != null && jsFolderName.length() > 0
+                        && jsFolderName.indexOf(Folder.PATH_SEPARATOR) == -1)
+                {
+                    try
+                    {
+                        Folder parent = (Folder) requestPage.getParent();
+                        if (parent != null)
+                        {
+                            String path = parent.getPath();
+                            if (path.endsWith(Folder.PATH_SEPARATOR))
+                            {
+                                path = path + getEscapedName(jsFolderName);
+                            }
+                            else
+                            {
+                                path = path + Folder.PATH_SEPARATOR
+                                        + getEscapedName(jsFolderName);
+                            }
+                            Folder folder = pageManager.newFolder(path);
+                            if (layout == null || layout.length() == 0)
+                            {
+                                layout = requestPage.getRootFragment()
+                                        .getName();
+                            }
+                            folder.setDefaultDecorator(requestPage
+                                    .getDefaultDecorator(Fragment.LAYOUT),
+                                    Fragment.LAYOUT);
+                            folder.setDefaultDecorator(requestPage
+                                    .getDefaultDecorator(Fragment.PORTLET),
+                                    Fragment.PORTLET);
+                            folder.setTitle(jsFolderName);
+                            pageManager.updateFolder(folder);
+
+                            List orderList = parent.getDocumentOrder();
+                            if (orderList != null)
+                            {
+                                String name = folder.getName();
+                                if (orderList.indexOf(name) < 0)
+                                {
+                                    orderList.add(name);
+                                    parent.setDocumentOrder(orderList);
+                                    pageManager.updateFolder(parent);
+                                }
+                            }
+
+                            // add default page
+                            path = folder.getPath();
+                            if (path.endsWith(Folder.PATH_SEPARATOR))
+                            {
+                                path = path + getEscapedName("default-page");
+                            }
+                            else
+                            {
+                                path = path + Folder.PATH_SEPARATOR
+                                        + getEscapedName("default-page");
+                            }
+                            Page page = pageManager.newPage(path);
+                            if (layout == null || layout.length() == 0)
+                            {
+                                layout = requestPage.getRootFragment()
+                                        .getName();
+                            }
+                            page.getRootFragment().setName(layout);
+                            page.setDefaultDecorator(requestPage
+                                    .getDefaultDecorator(Fragment.LAYOUT),
+                                    Fragment.LAYOUT);
+                            page.setDefaultDecorator(requestPage
+                                    .getDefaultDecorator(Fragment.PORTLET),
+                                    Fragment.PORTLET);
+                            page.setTitle(jsFolderName);
+                            pageManager.updatePage(page);
+
+                            orderList = folder.getDocumentOrder();
+                            if (orderList != null)
+                            {
+                                String name = page.getName();
+                                if (orderList.indexOf(name) < 0)
+                                {
+                                    orderList.add(name);
+                                    folder.setDocumentOrder(orderList);
+                                    pageManager.updateFolder(folder);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new PortletException(
+                                "Unable to access folder for editing: "
+                                        + e.getMessage(), e);
+                    }
+                }
+                return;
+            }
+
+            if (request.getParameter("jsDeleteFolder") != null)
+            {
+                try
+                {
+                    Folder targetFolder = (Folder) requestPage.getParent();
+                    Folder parent = (Folder) targetFolder.getParent();
+                    if (parent != null)
+                    {
+                        List orderList = parent.getDocumentOrder();
+                        if (orderList != null)
+                        {
+                            String name = targetFolder.getName();
+                            if (orderList.indexOf(name) > -1)
+                            {
+                                orderList.remove(name);
+                                parent.setDocumentOrder(orderList);
+                                pageManager.updateFolder(parent);
+                            }
+                        }
+
+                        // do not remove if the folder is root.
+                        pageManager.removeFolder(targetFolder);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access folder for removing: "
+                                    + e.getMessage(), e);
+                }
+                return;
+            }
+
+            if (request.getParameter("jsMoveFolderLeft") != null)
+            {
+                try
+                {
+                    Folder targetFolder = (Folder) requestPage.getParent();
+                    Folder parent = (Folder) targetFolder.getParent();
+                    if (parent != null)
+                    {
+                        List orderList = parent.getDocumentOrder();
+                        String name = targetFolder.getName();
+                        if (orderList != null)
+                        {
+                            int index = orderList.indexOf(name);
+                            if (index > -1)
+                            {
+                                int i = index - 1;
+                                while (i >= 0)
+                                {
+                                    String value = (String) orderList.get(i);
+                                    if (!value.endsWith(".psml")
+                                            && !value.endsWith(".link"))
+                                    {
+                                        orderList.remove(index);
+                                        orderList.add(i, name);
+                                        parent.setDocumentOrder(orderList);
+                                        pageManager.updateFolder(parent);
+                                        break;
+                                    }
+                                    i--;
+                                }
+                            }
+                            else
+                            {
+                                orderList.add(name);
+                                parent.setDocumentOrder(orderList);
+                                pageManager.updateFolder(parent);
+                            }
+                        }
+                        else
+                        {
+                            orderList = new ArrayList(4);
+                            orderList.add(name);
+                            parent.setDocumentOrder(orderList);
+                            pageManager.updateFolder(parent);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access folder for changing the document order: "
+                                    + e.getMessage(), e);
+                }
+                return;
+            }
+
+            if (request.getParameter("jsMoveFolderRight") != null)
+            {
+                try
+                {
+                    Folder targetFolder = (Folder) requestPage.getParent();
+                    Folder parent = (Folder) targetFolder.getParent();
+                    if (parent != null)
+                    {
+                        List orderList = parent.getDocumentOrder();
+                        String name = targetFolder.getName();
+                        if (orderList != null)
+                        {
+                            int index = orderList.indexOf(name);
+                            if (index > -1)
+                            {
+                                int i = index + 1;
+                                while (i < orderList.size())
+                                {
+                                    String value = (String) orderList.get(i);
+                                    if (!value.endsWith(".psml")
+                                            && !value.endsWith(".link"))
+                                    {
+                                        orderList.remove(index);
+                                        orderList.add(i, name);
+                                        parent.setDocumentOrder(orderList);
+                                        pageManager.updateFolder(parent);
+                                        break;
+                                    }
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                orderList.add(name);
+                                parent.setDocumentOrder(orderList);
+                                pageManager.updateFolder(parent);
+                            }
+                        }
+                        else
+                        {
+                            orderList = new ArrayList(4);
+                            orderList.add(name);
+                            parent.setDocumentOrder(orderList);
+                            pageManager.updateFolder(parent);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access folder for changing the document order: "
+                                    + e.getMessage(), e);
+                }
+                return;
+            }
+
             String theme = request.getParameter("theme");
             if ( theme != null && theme.length() > 0 && !theme.equals(requestPage.getDefaultDecorator(Fragment.LAYOUT)) )
             {
@@ -693,7 +936,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         return -1;
     }
 
-    protected String getEscapedPageName(String pageName)
+    protected String getEscapedName(String pageName)
     {
         try
         {

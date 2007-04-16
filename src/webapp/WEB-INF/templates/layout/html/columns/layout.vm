@@ -62,11 +62,19 @@ limitations under the License.
       #getBoolProperty($allowAddPage $rootDecorator "allow.add.page" true)
       #getBoolProperty($allowNavigatePage $rootDecorator "allow.navigate.page" true)
       #getBoolProperty($allowDeletePage $rootDecorator "allow.delete.page" true)
+      #getBoolProperty($allowChangeFolderTheme $rootDecorator "allow.change.folder.theme" true)
+      #getBoolProperty($allowAddFolder $rootDecorator "allow.add.folder" true)
+      #getBoolProperty($allowNavigateFolder $rootDecorator "allow.navigate.folder" true)
+      #getBoolProperty($allowDeleteFolder $rootDecorator "allow.delete.folder" true)
     #else
       #set($allowChangePageTheme=false)
       #set($allowAddPage=false)
       #set($allowNavigatePage=false)
       #set($allowDeletePage=false)
+      #set($allowChangeFolderTheme=false)
+      #set($allowAddFolder=false)
+      #set($allowNavigateFolder=false)
+      #set($allowDeleteFolder=false)
     #end
 
     #getIntProperty($maxLayoutNesting $rootDecorator "max.layout.nesting" 2)
@@ -92,13 +100,13 @@ limitations under the License.
       #end
     </div>
     </fieldset>
-    <fieldset>
-    <div class="layout-edit-bar-left">
       #set($form="f${renderResponse.namespace}")
       #set($formAction = "$renderResponse.createActionURL()")
       #set($submit = ".submit()")
 
-      <form name="$form" action="$formAction" method='post'>
+    <form name="$form" action="$formAction" method='post'>
+    <fieldset>
+    <div class="layout-edit-bar-left">
         #if($allowAddLayout||$allowChangeLayout)
           <div class="layout-title"><b>$messages.getString("portal.page.editing.layoutConfiguration")</b></div>
           <div class="layout-content">
@@ -167,9 +175,34 @@ limitations under the License.
         #if($allowAddPage||$allowDeletePage)
           </div>
         #end
-      </form>
     </div> 
-  </fieldset>
+    </fieldset>
+    <fieldset>
+    <div class="layout-edit-bar-left">
+        #if($allowAddFolder||$allowDeleteFolder)
+          <div class="folder-title"><b>$messages.getString("portal.folder.editing.folderConfiguration")</b></div>
+          <div class="folder-content">
+        #end
+        #if($allowAddFolder)
+          <label for="newfolder">$messages.getString("portal.folder.editing.folder")</label>
+          <input id='newfolder' name='jsFolderName'/>
+          <input type="submit" name="jsSubmitFolder" value="$messages.getString("portal.folder.editing.addfolder")"/>
+        #end
+        #if($allowNavigateFolder)
+          <label>$messages.getString("portal.folder.editing.foldernavigation")</label>
+          <input id="move-folder-left" type="submit" name="jsMoveFolderLeft" value="$messages.getString("portal.folder.editing.moveFolderLeft")" />
+          <input id="move-folder-right" type="submit" name="jsMoveFolderRight" value="$messages.getString("portal.folder.editing.moveFolderRight")" />
+        #end
+        #if($allowDeleteFolder)
+          <label for="deletefolder">$messages.getString("portal.folder.editing.deleteThisFolder")</label>
+          <input id="deletefolder" type="submit" name="jsDeleteFolder" value="$messages.getString("portal.folder.editing.deleteFolder")" onclick="if(window.confirm('$messages.getString("portal.folder.editing.confirmDeleteThisFolder")')){return true;}return false;"/>
+        #end
+        #if($allowAddFolder||$allowDeleteFolder)
+          </div>
+        #end
+    </div>
+    </fieldset>
+    </form>
   </div>
 ## end edit mode
 #end
