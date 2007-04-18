@@ -271,6 +271,8 @@ public class MultiColumnPortlet extends LayoutPortlet
             if ( request.getParameter("jsSubmitPage" ) != null )
             {
                 String jsPageName = request.getParameter("jsPageName");
+                String jsPageTitle = request.getParameter("jsPageTitle");
+                String jsPageShortTitle = request.getParameter("jsPageShortTitle");
                 if ( jsPageName != null && jsPageName.length() > 0 && jsPageName.indexOf(Folder.PATH_SEPARATOR) == -1 )
                 {
                     try
@@ -296,7 +298,10 @@ public class MultiColumnPortlet extends LayoutPortlet
                             page.getRootFragment().setName(layout);
                             page.setDefaultDecorator(requestPage.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
                             page.setDefaultDecorator(requestPage.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
-                            page.setTitle(jsPageName);
+                            page.setTitle(jsPageTitle != null && !jsPageTitle.equals("") ? jsPageTitle : jsPageName);
+                            page.setShortTitle(jsPageShortTitle != null
+                                            && !jsPageShortTitle.equals("") ? jsPageShortTitle
+                                            : jsPageName);
                             pageManager.updatePage(page);
 
                             List orderList = parent.getDocumentOrder();
@@ -316,6 +321,33 @@ public class MultiColumnPortlet extends LayoutPortlet
                     {
                         throw new PortletException("Unable to access page for editing: "+e.getMessage(), e);
                     }                        
+                }
+                return;
+            }
+
+            if (request.getParameter("jsChangePageName") != null)
+            {
+                String jsPageTitle = request.getParameter("jsPageTitle");
+                String jsPageShortTitle = request
+                        .getParameter("jsPageShortTitle");
+                try
+                {
+                    if (jsPageTitle != null && !jsPageTitle.equals(""))
+                    {
+                        requestPage.setTitle(jsPageTitle);
+                    }
+                    if (jsPageShortTitle != null
+                            && !jsPageShortTitle.equals(""))
+                    {
+                        requestPage.setShortTitle(jsPageShortTitle);
+                    }
+                    pageManager.updatePage(requestPage);
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access page for editing: "
+                                    + e.getMessage(), e);
                 }
                 return;
             }
@@ -462,6 +494,8 @@ public class MultiColumnPortlet extends LayoutPortlet
             if (request.getParameter("jsSubmitFolder") != null)
             {
                 String jsFolderName = request.getParameter("jsFolderName");
+                String jsFolderTitle = request.getParameter("jsFolderTitle");
+                String jsFolderShortTitle = request.getParameter("jsFolderShortTitle");
                 if (jsFolderName != null && jsFolderName.length() > 0
                         && jsFolderName.indexOf(Folder.PATH_SEPARATOR) == -1)
                 {
@@ -492,7 +526,14 @@ public class MultiColumnPortlet extends LayoutPortlet
                             folder.setDefaultDecorator(requestPage
                                     .getDefaultDecorator(Fragment.PORTLET),
                                     Fragment.PORTLET);
-                            folder.setTitle(jsFolderName);
+                            folder
+                                    .setTitle(jsFolderTitle != null
+                                            && !jsFolderTitle.equals("") ? jsFolderTitle
+                                            : jsFolderName);
+                            folder
+                                    .setShortTitle(jsFolderShortTitle != null
+                                            && !jsFolderShortTitle.equals("") ? jsFolderShortTitle
+                                            : jsFolderName);
                             pageManager.updateFolder(folder);
 
                             List orderList = parent.getDocumentOrder();
@@ -557,6 +598,38 @@ public class MultiColumnPortlet extends LayoutPortlet
                 return;
             }
 
+            if (request.getParameter("jsChangeFolderName") != null)
+            {
+                String jsFolderTitle = request.getParameter("jsFolderTitle");
+                String jsFolderShortTitle = request
+                        .getParameter("jsFolderShortTitle");
+                try
+                {
+                    Folder parent = (Folder) requestPage.getParent();
+                    if (parent != null)
+                    {
+                        if (jsFolderTitle != null && !jsFolderTitle.equals(""))
+                        {
+                            parent.setTitle(jsFolderTitle);
+                        }
+                        if (jsFolderShortTitle != null
+                                && !jsFolderShortTitle.equals(""))
+                        {
+                            parent.setShortTitle(jsFolderShortTitle);
+                        }
+                        pageManager.updateFolder(parent);
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException(
+                            "Unable to access folder for editing: "
+                                    + e.getMessage(), e);
+                }
+                return;
+            }
+            
             if (request.getParameter("jsDeleteFolder") != null)
             {
                 try

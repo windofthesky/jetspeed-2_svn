@@ -60,19 +60,23 @@ limitations under the License.
     #if($isRoot)
       #getBoolProperty($allowChangePageTheme $rootDecorator "allow.change.page.theme" true)
       #getBoolProperty($allowAddPage $rootDecorator "allow.add.page" true)
+      #getBoolProperty($allowChangePageName $rootDecorator "allow.change.page.name" true)
       #getBoolProperty($allowNavigatePage $rootDecorator "allow.navigate.page" true)
       #getBoolProperty($allowDeletePage $rootDecorator "allow.delete.page" true)
       #getBoolProperty($allowChangeFolderTheme $rootDecorator "allow.change.folder.theme" true)
       #getBoolProperty($allowAddFolder $rootDecorator "allow.add.folder" true)
+      #getBoolProperty($allowChangeFolderName $rootDecorator "allow.change.folder.name" true)
       #getBoolProperty($allowNavigateFolder $rootDecorator "allow.navigate.folder" true)
       #getBoolProperty($allowDeleteFolder $rootDecorator "allow.delete.folder" true)
     #else
       #set($allowChangePageTheme=false)
       #set($allowAddPage=false)
+      #set($allowChangePageName=false)
       #set($allowNavigatePage=false)
       #set($allowDeletePage=false)
       #set($allowChangeFolderTheme=false)
       #set($allowAddFolder=false)
+      #set($allowChangeFolderName=false)
       #set($allowNavigateFolder=false)
       #set($allowDeleteFolder=false)
     #end
@@ -108,22 +112,25 @@ limitations under the License.
     <fieldset>
     <div class="layout-edit-bar-left">
         #if($allowAddLayout||$allowChangeLayout)
-          <div class="layout-title"><b>$messages.getString("portal.page.editing.layoutConfiguration")</b></div>
-          <div class="layout-content">
+      <div class="layout-title"><b>$messages.getString("portal.page.editing.layoutConfiguration")</b></div>
+      <div class="layout-content">
         #end
         #if ($allowChangePageTheme)
+        <div>
           <label for="theme">$messages.getString("portal.page.editing.theme")</label>
           <select id='theme' name='theme' onChange="$form$submit">
             #foreach($td in $decorationFactory.getPageDecorations($rc))
-              <option value='$td' #if($rootDecorator.Name == $td) SELECTED #end>$td
+            <option value='$td' #if($rootDecorator.Name == $td) SELECTED #end>$td
             #end
           </select>   
+        </div>
         #end
         #if($allowAddLayout||$allowChangeLayout)
+        <div>
           <label for="layout">$messages.getString("portal.page.editing.layout")</label>
           <select id='layout' name='layout'>
             #foreach($ld in $decorationFactory.getLayouts($rc))     
-              <option value='$ld.Name' #if($myFragment.Name == $ld.Name) SELECTED #end>$ld.DisplayName
+            <option value='$ld.Name' #if($myFragment.Name == $ld.Name) SELECTED #end>$ld.DisplayName
             #end
           </select>
         #end
@@ -133,75 +140,128 @@ limitations under the License.
         #if($allowAddLayout)
           <input type="submit" name="jsAddLayout" value="$messages.getString("portal.page.editing.addlayout")" />
         #end    
+        #if($allowAddLayout||$allowChangeLayout)
+        </div>
+        #end    
         #getBoolProperty($allowChangePortletDecorator $rootDecorator "allow.change.portlet.decorator" true)
          ####### Take all fragments and apply style	  
         #if($allowChangePortletDecorator)          
-              <input type="hidden" name="fragment" value="$f.id">
-              <input type="hidden" name="move" value="">
-              <input type="hidden" name="remove" value="">
-        	  <select id="decorators" name="decorators">
-        	    <option value=''>
+        <div>
+          <input type="hidden" name="fragment" value="$f.id">
+          <input type="hidden" name="move" value="">
+          <input type="hidden" name="remove" value="">
+          <label for="decorators">$messages.getString("portal.page.editing.portlet.decorator")</label>
+          <select id="decorators" name="decorators">
+            <option value=''>
         	    #foreach($pd in $decorationFactory.getPortletDecorations($rc))
-        	      <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
+            <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
         	    #end
-        	  </select>
-        	    <input type="submit" name="jsSubmitTheme" value="$messages.getString("portal.page.editing.changethemeall")"/>
+          </select>
+          <input type="submit" name="jsSubmitTheme" value="$messages.getString("portal.page.editing.changethemeall")"/>
+        </div>
         #end	   
         #if($allowAddLayout||$allowChangeLayout)
-          </div>
+      </div>
         #end
     </div> 
     </fieldset>   
-    <fieldset>
+    <fieldset style="float:left;width:49%;margin:0px;padding:0px;">
     <div class="layout-edit-bar-left">
-        #if($allowAddPage||$allowDeletePage)
-          <div class="page-title"><b>$messages.getString("portal.page.editing.pageConfiguration")</b></div>
-          <div class="page-content">
+        #if($allowAddPage||$allowChangePageName||$allowDeletePage)
+      <div class="page-title"><b>$messages.getString("portal.page.editing.pageConfiguration")</b></div>
+      <div class="page-content">
+        #end
+        #if($allowAddPage||$allowChangePageName)
+        <div>
+          <label for="pagename">$messages.getString("portal.page.editing.page")</label>
+          <input id='pagename' name='jsPageName'/>
+        </div>
+        <div>
+          <label for="pagetitle">$messages.getString("portal.page.editing.page.title")</label>
+          <input id='pagetitle' name='jsPageTitle'/>
+        </div>
+        <div>
+          <label for="pageshorttitle">$messages.getString("portal.page.editing.page.shorttitle")</label>
+          <input id='pageshorttitle' name='jsPageShortTitle'/>
+        </div>
+        <div>
         #end
         #if($allowAddPage)
-          <label for="newpage">$messages.getString("portal.page.editing.page")</label>
-          <input id='newpage' name='jsPageName'/>
           <input type="submit" name="jsSubmitPage" value="$messages.getString("portal.page.editing.addpage")"/>
         #end
+        #if($allowChangePageName)
+          <input type="submit" name="jsChangePageName" value="$messages.getString("portal.page.editing.changepagename")"/>
+        #end
+        #if($allowAddPage||$allowChangePageName)
+        </div>
+        #end
         #if($allowNavigatePage)
+        <div>
           <label>$messages.getString("portal.page.editing.pagenavigation")</label>
           <input id="move-page-left" type="submit" name="jsMovePageLeft" value="$messages.getString("portal.page.editing.movePageLeft")" />
           <input id="move-page-right" type="submit" name="jsMovePageRight" value="$messages.getString("portal.page.editing.movePageRight")" />
+        </div>
         #end
         #if($allowDeletePage)
+        <div>
           <label for="deletepage">$messages.getString("portal.page.editing.deleteThisPage")</label>
           <input id="deletepage" type="submit" name="jsDeletePage" value="$messages.getString("portal.page.editing.deletePage")" onclick="if(window.confirm('$messages.getString("portal.page.editing.confirmDeleteThisPage")')){return true;}return false;"/>
+        </div>
         #end
-        #if($allowAddPage||$allowDeletePage)
-          </div>
+        #if($allowAddPage||$allowChangePageName||$allowDeletePage)
+      </div>
         #end
     </div> 
     </fieldset>
-    <fieldset>
+    <fieldset style="width:49%;margin:0px;padding:0px;">
     <div class="layout-edit-bar-left">
-        #if($allowAddFolder||$allowDeleteFolder)
-          <div class="folder-title"><b>$messages.getString("portal.folder.editing.folderConfiguration")</b></div>
-          <div class="folder-content">
+        #if($allowAddFolder||$allowChangeFolderName||$allowDeleteFolder)
+      <div class="folder-title"><b>$messages.getString("portal.folder.editing.folderConfiguration")</b></div>
+      <div class="folder-content">
+        #end
+        #if($allowAddFolder||$allowChangeFolderName)
+        <div>
+          <label for="foldername">$messages.getString("portal.folder.editing.folder")</label>
+          <input id='foldername' name='jsFolderName'/>
+        </div>
+        <div>
+          <label for="foldertitle">$messages.getString("portal.folder.editing.folder.title")</label>
+          <input id='foldertitle' name='jsFolderTitle'/>
+        </div>
+        <div>
+          <label for="foldershorttitle">$messages.getString("portal.folder.editing.folder.shorttitle")</label>
+          <input id='foldershorttitle' name='jsFolderShortTitle'/>
+        </div>
+        <div>
         #end
         #if($allowAddFolder)
-          <label for="newfolder">$messages.getString("portal.folder.editing.folder")</label>
-          <input id='newfolder' name='jsFolderName'/>
           <input type="submit" name="jsSubmitFolder" value="$messages.getString("portal.folder.editing.addfolder")"/>
         #end
+        #if($allowChangeFolderName)
+          <input type="submit" name="jsChangeFolderName" value="$messages.getString("portal.folder.editing.changefoldername")"/>
+        #end
+        #if($allowAddFolder||$allowChangeFolderName)
+        </div>
+        #end
         #if($allowNavigateFolder)
+        <div>
           <label>$messages.getString("portal.folder.editing.foldernavigation")</label>
           <input id="move-folder-left" type="submit" name="jsMoveFolderLeft" value="$messages.getString("portal.folder.editing.moveFolderLeft")" />
           <input id="move-folder-right" type="submit" name="jsMoveFolderRight" value="$messages.getString("portal.folder.editing.moveFolderRight")" />
+        </div>
         #end
         #if($allowDeleteFolder)
+        <div>
           <label for="deletefolder">$messages.getString("portal.folder.editing.deleteThisFolder")</label>
           <input id="deletefolder" type="submit" name="jsDeleteFolder" value="$messages.getString("portal.folder.editing.deleteFolder")" onclick="if(window.confirm('$messages.getString("portal.folder.editing.confirmDeleteThisFolder")')){return true;}return false;"/>
+        </div>
         #end
-        #if($allowAddFolder||$allowDeleteFolder)
-          </div>
+        #if($allowAddFolder||$allowChangeFolderName||$allowDeleteFolder)
+      </div>
         #end
     </div>
     </fieldset>
+    <br style="clear:both;">
     </form>
   </div>
 ## end edit mode
