@@ -156,10 +156,7 @@ public class IsolatedLog4JLogger implements Log
 
     private Log4JLogger getLogger()
     {
-        synchronized (IsolatedLog4JLogger.class)
-        {
-            return logger;
-        }
+        return logger;
     }
 
     public void debug(Object arg0)
