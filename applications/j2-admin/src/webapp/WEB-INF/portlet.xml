@@ -55,9 +55,10 @@ limitations under the License.
 
 <portlet id="LoginPortlet">
     <description>Logs a user on to the Jetspeed portal by entering a username and password. Authenticates using full Jetspeed Active Authentication.</description>
+    <description xml:lang="ja">ユーザー名とパスワードを入力して、ユーザーがポータルにログインできます。アクティブ認証を利用して認証します。</description>
     <portlet-name>LoginPortlet</portlet-name>
     <display-name>Login with Active Authentication</display-name>
-    <display-name xml:lang="ja">ログイン</display-name>
+    <display-name xml:lang="ja">アクティブ認証を用いたログイン</display-name>
     <display-name xml:lang="zh">登陆</display-name>
     <display-name xml:lang="zh-TW">登陸</display-name>
     <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>
@@ -87,9 +88,10 @@ limitations under the License.
     
 <portlet id="LoginPortletForXHTMLBasic">
     <description>Logs a user on to the Jetspeed portal by entering a username and password in an XHTML form. Authenticates using full Jetspeed Active Authentication.</description>
+    <description xml:lang="ja">XHTMLフォームでユーザー名とパスワードを入力して、ユーザーがポータルにログインできます。アクティブ認証を利用して認証します。</description>
     <portlet-name>LoginPortletForXHTMLBasic</portlet-name>
     <display-name>Login with Active Authentication (XHTML Basic)</display-name>
-    <display-name xml:lang="ja">XHTML Basic用ログイン</display-name>
+    <display-name xml:lang="ja">アクティブ認証を用いたログイン(XHTML Basic用)</display-name>
     <display-name xml:lang="zh">基于XHTML的登陆Portlet</display-name>
     <display-name xml:lang="zh-TW">基於XHTML的登陸Portlet</display-name>
     <portlet-class>org.apache.portals.bridges.common.GenericServletPortlet</portlet-class>                
@@ -123,7 +125,7 @@ limitations under the License.
     <description xml:lang="zh-TW">更改當前登陸用戶的密碼。</description>        
     <portlet-name>ChangePasswordPortlet</portlet-name>
     <display-name>Change Password</display-name>
-    <display-name xml:lang="ja">パスワードの変更</display-name>
+    <display-name xml:lang="ja">パスワード変更</display-name>
     <display-name xml:lang="zh">更改密码</display-name>
     <display-name xml:lang="zh-TW">更改密碼</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.ChangePasswordPortlet</portlet-class>        
@@ -206,7 +208,7 @@ limitations under the License.
     <description xml:lang="zh-TW">顯示用戶的資料。可以添加修改用戶資訊。</description>        
     <portlet-name>UserDetailsPortlet</portlet-name>
     <display-name>User Details</display-name>
-    <display-name xml:lang="ja">ユーザー情報</display-name>
+    <display-name xml:lang="ja">ユーザー情報詳細</display-name>
     <display-name xml:lang="zh">用户信息</display-name>
     <display-name xml:lang="zh-TW">用戶資訊</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.users.UserDetailsPortlet</portlet-class>        
@@ -315,7 +317,7 @@ limitations under the License.
     <description xml:lang="zh-TW">顯示組的詳細資訊。可以添加修改組的資訊。</description>
     <portlet-name>GroupDetailsPortlet</portlet-name>
     <display-name>Group Details</display-name>
-    <display-name xml:lang="ja">グループ情報</display-name>
+    <display-name xml:lang="ja">グループ情報詳細</display-name>
     <display-name xml:lang="zh">组信息</display-name>
     <display-name xml:lang="zh-TW">組資訊</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.groups.GroupDetails</portlet-class>        
@@ -353,7 +355,7 @@ limitations under the License.
     <description xml:lang="zh-TW">顯示角色的詳細資訊。可以添加修改角色資訊。</description>
     <portlet-name>RoleDetailsPortlet</portlet-name>
     <display-name>Role Details</display-name>
-    <display-name xml:lang="ja">ロール情報</display-name>
+    <display-name xml:lang="ja">ロール情報詳細</display-name>
     <display-name xml:lang="zh">角色信息</display-name>
     <display-name xml:lang="zh-TW">角色信息</display-name>        
     <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleDetails</portlet-class>        
@@ -386,7 +388,7 @@ limitations under the License.
 
 <portlet id="SSOBrowserPortlet">
     <description>SSO Sites Browser displays a list of all configured SSO sites in the portal. From here you can select SSO Sites for editing. Place this portlet on the same page as the SSO Details portlet.</description>
-    <description xml:lang="ja">SSO サイトブラウザポートレット</description>
+    <description xml:lang="ja">SSO サイトブラウザポートレットは、ポータル内の構成された、すべての SSO サイトの一覧を表示します。ここから、編集したい SSO サイトを選択できます。</description>
     <description xml:lang="zh">SSO 站点浏览 Portlet</description>
     <description xml:lang="zh-TW">SSO 站點流覽 Portlet</description>        
     <portlet-name>SSOBrowserPortlet</portlet-name>
@@ -424,12 +426,12 @@ limitations under the License.
 
 <portlet id="SSODetailsPortlet">        
     <description>The SSO Site Details portlet edits the credentials and site location for a single SSO Site. Place this portlet on the same page as the SSO Browser portlet.</description>
-    <description xml:lang="ja">SSO サイト詳細ポートレット</description>
+    <description xml:lang="ja">SSO サイト詳細ポートレットは、SSO サイト用の資格およびサイトの場所を編集できます。このポートレットは、SSOブラウザポートレットと同じページに置いてください。</description>
     <description xml:lang="zh">SSO 详情 Portlet</description>
     <description xml:lang="zh-TW">SSO 詳情 Portlet</description>        
     <portlet-name>SSODetailsPortlet</portlet-name>
     <display-name>SSO Details</display-name>
-    <display-name xml:lang="ja">SSO の詳細</display-name>
+    <display-name xml:lang="ja">SSO 情報詳細</display-name>
     <display-name xml:lang="zh">SSO 详情</display-name>
     <display-name xml:lang="zh-TW">SSO 詳情</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.sso.SSODetails</portlet-class>
@@ -462,12 +464,12 @@ limitations under the License.
 
 <portlet id="UserChooser">        
     <description>A Popup portlet for selecting a single user from a list of users. Usually not placed on a page directly, but accessed by Jetspeed over the portlet pipeline in a popup window.</description>
-    <description xml:lang="ja">ユーザー選択ポートレット</description>
+    <description xml:lang="ja">ユーザー一覧からユーザーを選択するポップアップポートレットです。通常、直接ページ上には置かれません。ポップアップウィンドウ内でポートレットのパイプライン外でポータルからアクセスされます。</description>
     <description xml:lang="zh">选择用户的Portlet</description>
     <description xml:lang="zh-TW">選擇用戶的Portlet</description>        
     <portlet-name>UserChooser</portlet-name>
     <display-name>User Chooser (popup)</display-name>
-    <display-name xml:lang="ja">ユーザー</display-name>
+    <display-name xml:lang="ja">ユーザー選択(ポップアップ)</display-name>
     <display-name xml:lang="zh">用户</display-name>
     <display-name xml:lang="zh-TW">用戶</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.users.UserChooserPortlet</portlet-class>
@@ -504,12 +506,12 @@ limitations under the License.
 
 <portlet id="UserMultiChooser">
     <description>A Popup portlet for selecting one or more users from a list of users. Usually not placed on a page directly, but accessed by Jetspeed over the portlet pipeline in a popup window.</description>
-    <description xml:lang="ja">複数ユーザー選択ポートレット</description>
+    <description xml:lang="ja">ユーザー一覧から一人以上のユーザーを選択するポップアップポートレットです。通常、ページ上には置かれません。ポップアップウィンドウ内でポートレットのパイプライン外でポータルからアクセスされます。</description>
     <description xml:lang="zh">选择多用户的Portlet</description>
     <description xml:lang="zh-TW">選擇多用戶的Portlet</description>        
     <portlet-name>UserMultiChooser</portlet-name>
     <display-name>Multiple User Chooser (popup)</display-name>
-    <display-name xml:lang="ja">複数ユーザーの選択</display-name>
+    <display-name xml:lang="ja">複数ユーザー選択(ポップアップ)</display-name>
     <display-name xml:lang="zh">选择多个用户</display-name>
     <display-name xml:lang="zh-TW">選擇多個用戶</display-name>        
     <portlet-class>org.apache.jetspeed.portlets.security.users.UserChooserPortlet</portlet-class>
@@ -546,12 +548,12 @@ limitations under the License.
 
 <portlet id="RoleChooser">
     <description>A Popup portlet for selecting a single role from a list of roles. Usually not placed on a page directly, but accessed by Jetspeed over the portlet pipeline in a popup window.</description>
-    <description xml:lang="ja">ロール選択ポートレット</description>
+    <description xml:lang="ja">ロール一覧からロールを選択するポップアップポートレットです。通常、ページ上には置かれません。ポップアップウィンドウ内でポートレットのパイプライン外でポータルからアクセスされます。</description>
     <description xml:lang="zh">选择角色的Portlet</description>
     <description xml:lang="zh-TW">選擇角色的Portlet</description>        
     <portlet-name>RoleChooser</portlet-name>
     <display-name>Role Chooser (popup)</display-name>
-    <display-name xml:lang="ja">ロール</display-name>
+    <display-name xml:lang="ja">ロール選択(ポップアップ)</display-name>
     <display-name xml:lang="zh">角色</display-name>
     <display-name xml:lang="zh-TW">角色</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.users.RoleChooserPortlet</portlet-class>
@@ -588,12 +590,12 @@ limitations under the License.
 
 <portlet id="RoleMultiChooser">
   <description>A Popup portlet for selecting one or more roles from a list of roles. Usually not placed on a page directly, but accessed by Jetspeed over the portlet pipeline in a popup window.</description>        
-  <description xml:lang="ja">複数ロール選択ポートレット</description>
+  <description xml:lang="ja">ロール一覧から一つ以上のロールを選択するポップアップポートレットです。通常、ページ上には置かれません。ポップアップウィンドウ内でポートレットのパイプライン外でポータルからアクセスされます。</description>
   <description xml:lang="zh">选择多个角色的Portlet</description>
   <description xml:lang="zh-TW">選擇多個角色的Portlet</description>        
   <portlet-name>RoleMultiChooser</portlet-name>
   <display-name>Multiple Role Chooser (popup)</display-name>
-  <display-name xml:lang="ja">複数ロール選択</display-name>
+  <display-name xml:lang="ja">複数ロール選択(ポップアップ)</display-name>
   <display-name xml:lang="zh">选择多个角色</display-name>
   <display-name xml:lang="zh-TW">選擇多個角色</display-name>
   <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleChooserPortlet</portlet-class>
@@ -630,12 +632,12 @@ limitations under the License.
     
 <portlet id="GroupChooser">
     <description>A Popup portlet for selecting a single group from a list of groups. Usually not placed on a page directly, but accessed by Jetspeed over the portlet pipeline in a popup window.</description>        
-    <description xml:lang="ja">グループ選択ポートレット</description>
+    <description xml:lang="ja">グループ一覧からグループを選択するポップアップポートレットです。通常、ページ上には置かれません。ポップアップウィンドウ内でポートレットのパイプライン外でポータルからアクセスされます。</description>
     <description xml:lang="zh">选择组的Portlet</description>
     <description xml:lang="zh-TW">選擇組的Portlet</description>        
     <portlet-name>GroupChooser</portlet-name>
     <display-name>Group Chooser (popup)</display-name>
-    <display-name xml:lang="ja">グループ</display-name>
+    <display-name xml:lang="ja">グループ選択(ポップアップ)</display-name>
     <display-name xml:lang="zh">组</display-name>
     <display-name xml:lang="zh-TW">組</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.users.GroupChooserPortlet</portlet-class>
@@ -672,12 +674,12 @@ limitations under the License.
 
 <portlet id="GroupBrowser">
     <description>The Group Browser displays a list of groups managed in this portal. From here you can select Groups for editing. Place this portlet on the same page as the Group Details portlet.</description>        
-    <description xml:lang="ja">グループブラウザポートレット</description>
+    <description xml:lang="ja">グループブラウザは、このポートレット内で管理されるグループ一覧を表示します。ここから、編集したいグループを選択できます。グループ情報詳細ポートレット同じページに置いてください。</description>
     <description xml:lang="zh">浏览组的Portlet</description>
     <description xml:lang="zh-TW">流覽組的Portlet</description>        
     <portlet-name>GroupBrowserPortlet</portlet-name>
     <display-name>Group Browser</display-name>
-    <display-name xml:lang="ja">グループ管理</display-name>
+    <display-name xml:lang="ja">グループブラウザ</display-name>
     <display-name xml:lang="zh">组管理</display-name>
     <display-name xml:lang="zh-TW">組管理</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.groups.GroupBrowser</portlet-class>
@@ -712,12 +714,12 @@ limitations under the License.
 
 <portlet id="RoleBrowser">
     <description>The Role Browser displays a list of roles managed in this portal. From here you can select Roles for editing. Place this portlet on the same page as the Role Details portlet.</description>                
-    <description xml:lang="ja">ロールブラウザポートレット</description>
+    <description xml:lang="ja">ロールブラウザは、このポートレット内で管理されるロール一覧を表示します。ここから、編集したいロールを選択できます。ロール情報詳細ポートレットと同じページに置いてください。</description>
     <description xml:lang="zh">浏览角色的Portlet</description>
     <description xml:lang="zh-TW">流覽角色的Portlet</description>        
     <portlet-name>RoleBrowserPortlet</portlet-name>
     <display-name>Role Browser</display-name>
-    <display-name xml:lang="ja">ロール管理</display-name>
+    <display-name xml:lang="ja">ロールブラウザ</display-name>
     <display-name xml:lang="zh">角色管理</display-name>
     <display-name xml:lang="zh-TW">角色管理</display-name>        
     <portlet-class>org.apache.jetspeed.portlets.security.roles.RoleBrowser</portlet-class>
@@ -852,7 +854,7 @@ limitations under the License.
 
 <portlet id="ProfilerAdmin">
     <description>The Profiler Admin portlet is used to administer profiling rules. You can create new rules, edit rules and delete rules and criterion.</description>
-    <description xml:lang="ja">プロファイラ管理はプロファイリングルールを管理するために利用されます。</description>
+    <description xml:lang="ja">プロファイラ管理はプロファイリングルールを管理するために利用されます。新規ルール作成、ルールの編集およびルールと基準の削除ができます。</description>
     <description xml:lang="zh">管理Profiler的规则。</description>
     <description xml:lang="zh-TW">管理Profiler的規則。</description>    
     <portlet-name>ProfilerAdmin</portlet-name>
@@ -890,7 +892,7 @@ limitations under the License.
      
 <portlet id="PortletEntityBrowserPortlet">    
     <description>Administrative portlet for browsing over all Portlet Entities by portlet. Place this portlet on the same page as the Portlet Entity Editor</description>    
-    <description xml:lang="ja">ポートレットエンティティを一覧する機能を提供します。</description>
+    <description xml:lang="ja">ポートレットエンティティを一覧する機能を提供します。ポートレットエンティティエディタと同じページに置いてください。</description>
     <description xml:lang="zh">浏览Portlet实例</description>
     <description xml:lang="zh-TW">流覽Portlet實例</description>    
     <portlet-name>PortletEntityBrowserPortlet</portlet-name>
@@ -923,12 +925,12 @@ limitations under the License.
     
 <portlet id="PortletEntityEditorPortlet">    
     <description>Administrative portlet editing and creating Portlet Entities. Place this portlet on the same page as the Portlet Entity Browser</description>    
-    <description xml:lang="ja">ポートレットエンティティの編集する機能を提供します。</description>
+    <description xml:lang="ja">ポートレットエンティティの作成・編集する機能を提供します。ポートレットエンティティブラウザと同じページに置いてください。</description>
     <description xml:lang="zh">编辑Portlet实例。</description>
     <description xml:lang="zh-TW">編輯Portlet實例。</description>    
     <portlet-name>PortletEntityEditorPortlet</portlet-name>
     <display-name>Portlet Entity Editor</display-name>
-    <display-name xml:lang="ja">ポートレットエンティティブラウザ</display-name>
+    <display-name xml:lang="ja">ポートレットエンティティエディタ</display-name>
     <display-name xml:lang="zh">编辑Portlet实例</display-name>
     <display-name xml:lang="zh-TW">編輯Portlet實例</display-name>
     <portlet-class>org.apache.jetspeed.portlets.entityeditor.PortletEntityEditorPortlet</portlet-class>
@@ -956,7 +958,7 @@ limitations under the License.
 
 <portlet id="StatisticsPortlet">    
     <description>Provides statistics about portal access hits by page, portlet, and by user. Statistical results are sorted by highest hit rate.</description>
-    <description xml:lang="ja">ページ、ポートレット、ユーザーごとのポータルアクセスについての統計機能を提供します。</description>
+    <description xml:lang="ja">ページ、ポートレット、ユーザーごとのポータルアクセスについての統計機能を提供します。統計結果は、ヒット割合が高い順にソートされます。</description>
     <description xml:lang="zh">提供关于门户页面、Portlet、用户的状态信息。</description>
     <description xml:lang="zh-TW">提供關於門戶頁面、Portlet、用戶的狀態資訊。</description>        
     <portlet-name>StatisticsPortlet</portlet-name>
@@ -1046,7 +1048,7 @@ limitations under the License.
 
 <portlet id="ForgottenPasswordReturnPortlet">        
     <description>Provides users with the ability to click and update their password automatically after completing the user registration process.</description>
-    <description xml:lang="ja">メールをした後にパスワードを更新する機能を提供します。</description>
+    <description xml:lang="ja">ユーザー登録完了後にパスワードを更新する機能を提供します。</description>
     <description xml:lang="zh">忘记密码，使用email发送更新密码的连接。</description>
     <description xml:lang="zh-TW">忘記密碼，使用email發送更新密碼的連接。</description>        
     <portlet-name>ForgottenPasswordReturnPortlet</portlet-name>
@@ -1170,6 +1172,7 @@ limitations under the License.
     
 <portlet id="PortalLoginPortlet">    
     <description>Logs a user on to the Jetspeed portal by entering a username and password. Authentication bypasses JAAS and active authentication.</description>
+    <description xml:lang="ja">ユーザー名とパスワードを入力して、ユーザーがポータルにログインできます。JAAS およびアクティブ認証を回避した認証です。</description>
     <portlet-name>PortalLoginPortlet</portlet-name>
     <display-name>Portal Login (Basic)</display-name>
     <display-name xml:lang="ja">ポータルログイン</display-name>
@@ -1201,9 +1204,10 @@ limitations under the License.
     
 <portlet id="SecurityPermissionsPortlet">
     <description>Policy Editor for managing the Jetspeed JAAS Security Policy. The policy is a standard Java security policy (JAAS), stored in a database. Portlet, page, and folder permissions are managed here.</description>
+    <description xml:lang="ja">JAAS セキュリティポリシーを管理するポリシーエディタです。ポリシーはJava セキュリティポリシー(JAAS)標準で、データベースに格納されます。ポートレット、ページおよびフォルダのパーミッションはここで管理できます。</description>
     <portlet-name>SecurityPermissionsPortlet</portlet-name>
     <display-name>Security Permission Policy</display-name>
-    <display-name xml:lang="ja">セキュリティパーミッション</display-name>
+    <display-name xml:lang="ja">セキュリティパーミッションポリシー</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.permissions.SecurityPermissionsPortlet</portlet-class>
     <init-param>
         <name>ViewPage</name>
@@ -1229,9 +1233,10 @@ limitations under the License.
 
 <portlet id="SecurityConstraintsPortlet">
     <description>Declartive Security Constraint editor. Manages PSML global security constraints to grant or deny access to pages and folders.</description>
+    <description xml:lang="ja">宣言的セキュリティ制限エディタです。ページとフォルダへのアクセスを許可または拒否するためのPSMLグローバルセキュリティ制限を管理します。</description>
     <portlet-name>SecurityConstraintsPortlet</portlet-name>
     <display-name>PSML Security Constraints</display-name>        
-    <display-name xml:lang="ja">セキュリティ制限</display-name>        
+    <display-name xml:lang="ja">PSMLセキュリティ制限</display-name>        
     <portlet-class>org.apache.portals.gems.dojo.DojoSpringMVCPortlet</portlet-class>
     <init-param>
         <name>contextConfigLocation</name>
@@ -1263,6 +1268,7 @@ limitations under the License.
 
 <portlet id="DateTimePortlet">
     <description>Display the date and time in a simple string format.</description>
+    <description xml:lang="ja">簡単な文字列フォーマットで日付と時間を表示します。</description>
     <portlet-name>DateTimePortlet</portlet-name>
     <display-name>Date Time Portlet</display-name>
     <display-name xml:lang="ja">日付ポートレット</display-name>
@@ -1290,9 +1296,10 @@ limitations under the License.
 
 <portlet id="CategoryPortletSelector">
     <description>Portlet Selector for adding portlets to your page. Categories classify portlets by indexed keywords to help users find portlets.</description>
+    <description xml:lang="ja">ページにポートレットを塚するポートレット選択です。カテゴリは、ポートレットを検索するために役立つ索引されたキーワードでポートレットを分類しています。</description>
     <portlet-name>CategoryPortletSelector</portlet-name>
     <display-name>Portlet Selector</display-name>        
-    <display-name xml:lang="ja">セキュリティ制限</display-name>        
+    <display-name xml:lang="ja">ポートレット選択</display-name>        
     <portlet-class>org.apache.jetspeed.portlets.selector.CategoryPortletSelector</portlet-class>
     <init-param>
         <name>ViewPage</name>
@@ -1379,8 +1386,10 @@ limitations under the License.
 
 <portlet id="SitemapView">
     <description>A read only view of the site map available to the current user</description>          
+    <description xml:lang="ja">現在のユーザーで利用可能なサイトマップをリードオンリーで表示します。</description>          
     <portlet-name>SitemapView</portlet-name>
     <display-name>Sitemap View</display-name>
+    <display-name xml:lang="ja">サイトマップ表示</display-name>
     <portlet-class>org.apache.portals.bridges.velocity.GenericVelocityPortlet</portlet-class>
     <init-param>
       <description>This parameter sets the template used in view mode.</description>
@@ -1407,8 +1416,10 @@ limitations under the License.
     
 <portlet>
     <description>The Portal Site Manager displays a hierarchical view of the entire portal site. From here you can add, edit, and delete folders, links, and pages.</description>
+    <description xml:lang="ja">ポータルサイトマネージャは、ポータルサイト全体の階層的な表示を提供します。ここから、フォルダ、リンクおよびページを追加・偏執・削除することができます。</description>
     <portlet-name>PortalSiteManager</portlet-name>
     <display-name>Portal Site Manager</display-name>        
+    <display-name xml:lang="ja">ポータルサイトマネージャ</display-name>        
     <portlet-class>org.apache.jetspeed.portlets.site.PortalSiteManager</portlet-class>
     <init-param>
         <name>ViewPage</name>
@@ -1468,8 +1479,10 @@ limitations under the License.
 
   <portlet>
     <description>Remote Portlet Application Deployer for Jetspeed.</description>
+    <description xml:lang="ja">Jetspeed用リモートポートレットアプリケーション配備</description>
     <portlet-name>RPADPortlet</portlet-name>
     <display-name>Remote Portlet Application Deployer</display-name>
+    <display-name xml:lang="ja">リモートポートレットアプリケーション配備(RPAD)</display-name>
     <portlet-class>org.apache.portals.bridges.portletfilter.FilterPortlet</portlet-class>
     <init-param>
       <name>portlet-class</name>
@@ -1505,8 +1518,10 @@ limitations under the License.
 
   <portlet>
     <description>Portlet Tracking Manager</description>
+    <description xml:lang="ja">ポートレットトラッキングマネージャ</description>
     <portlet-name>PortletTracking</portlet-name>
     <display-name>Portlet Tracking Manager</display-name>
+    <display-name xml:lang="ja">ポートレットトラッキングマネージャ</display-name>
     <portlet-class>org.apache.jetspeed.portlets.tracking.PortletTrackingPortlet</portlet-class>
     <init-param>
       <name>ViewPage</name>
@@ -1528,8 +1543,10 @@ limitations under the License.
 
  <portlet>
     <description>Welcome to Jetspeed</description>
+    <description xml:lang="ja">Jetspeedにようこそ</description>
     <portlet-name>WelcomeToJetspeed</portlet-name>
     <display-name>Welcome to Jetspeed</display-name>
+    <display-name xml:lang="ja">Jetspeedにようこそ</display-name>
     <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -1553,8 +1570,10 @@ limitations under the License.
 
 <portlet>
     <description>About Jetspeed</description>
+    <description xml:lang="ja">Jetspeedについて</description>
     <portlet-name>AboutJetspeed</portlet-name>
     <display-name>About Jetspeed</display-name>
+    <display-name xml:lang="ja">Jetspeedについて</display-name>
     <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -1578,8 +1597,10 @@ limitations under the License.
 
   <portlet>
     <description>Jetspeed Developer Information</description>
+    <description xml:lang="ja">Jetspeed 開発者情報</description>
     <portlet-name>JetspeedDeveloper</portlet-name>
     <display-name>Jetspeed Developer Information</display-name>
+    <display-name xml:lang="ja">Jetspeed 開発者情報</display-name>
     <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
     <expiration-cache>-1</expiration-cache>
     <supports>
@@ -1604,8 +1625,10 @@ limitations under the License.
  <!--  Delegated Security Example -->
  <portlet id="DevelopersBrowser">
     <description>The User Browser displays a list of users filtered by the Developer role managed in this portal. From here you can select users for editing. Place this portlet on the same page as the User Details portlet.</description>
+    <description xml:lang="ja">開発者ブラウザは、このポータル内で管理される開発者ロールでフィルタされたユーザー一覧を表示します。ここから、編集したいユーザーを選択できます。開発者情報詳細ポートレットと同じページに置いてください。</description>
     <portlet-name>DevelopersBrowser</portlet-name>
     <display-name>Developer Browser</display-name>
+    <display-name xml:lang="ja">開発者ブラウザ</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.users.UserBrowser</portlet-class>        
     <init-param>
         <description>This parameter sets the template used in view mode.</description>
@@ -1646,8 +1669,10 @@ limitations under the License.
 
 <portlet id="DeveloperDetails">
     <description>The User Details portlet displays a Developers details in a tabbed view. From here you can add, edit, and delete User information. Place this portlet on the same page as the User Browser portlet.</description>
+    <description xml:lang="ja">開発者情報詳細ポートレットは、タブ表示で開発者情報詳細を表示します。ここから、開発者情報を追加・偏執・削除することができます。開発者ブラウザポートレットと同じページに置いてください。</description>
     <portlet-name>DeveloperDetails</portlet-name>
     <display-name>Developer Details</display-name>
+    <display-name xml:lang="ja">開発者情報詳細</display-name>
     <portlet-class>org.apache.jetspeed.portlets.security.users.UserDetailsPortlet</portlet-class>        
     <init-param>
         <description>This parameter sets the template used in view mode.</description>
