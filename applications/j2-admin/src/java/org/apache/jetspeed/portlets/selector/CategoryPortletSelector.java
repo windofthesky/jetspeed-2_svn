@@ -84,8 +84,10 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
     protected final static String PORTLETS = "category.selector.portlets";
     protected final static String CATEGORIES = "category.selector.categories";
     protected final static String PAGE = "category.selector.page";
+    protected final static String LAYOUT = "category.selector.layout";
     
     private final String JSPAGE = "jspage";
+    private final String JSLAYOUT = "jslayoutid";
 	private final String CATEGORY = "category";
 	private final String PAGENUMNER = "pageNumber";
 	private final String FILTER = "filter";
@@ -179,7 +181,17 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         {
             request.getPortletSession().setAttribute(PAGE, page);
         }
-        this.getContext(request).put(JSPAGE, page);        
+        String layout = request.getParameter(JSLAYOUT);
+        this.getContext(request).put(JSPAGE, page); 
+        if (layout == null || layout.equals(""))
+        {
+            layout = (String)request.getPortletSession().getAttribute(LAYOUT);
+        }
+        else
+        {
+            request.getPortletSession().setAttribute(LAYOUT, layout);
+        }
+        this.getContext(request).put(JSLAYOUT, layout);                
     }
     
     public List retrieveCategories(RenderRequest request)

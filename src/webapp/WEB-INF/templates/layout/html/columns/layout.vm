@@ -97,7 +97,7 @@ limitations under the License.
     <div class="layout-edit-bar-right">
       #if($allowAddPortlet)
         <label>$messages.getString("portal.page.editing.portlet")</label>
-          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${profiledPage}")
+          #set ($chooser = "${jetspeed.basePath}/system/customizer/selector.psml?jspage=${profiledPage}&jslayoutid=$myFragment.id")  
           <a href="$response.encodeURL($chooser)">
           <img src="#GetPageResource('images/select.gif')" border="0" title="$messages.getString("portal.page.editing.addportlet")"/>
         </a>

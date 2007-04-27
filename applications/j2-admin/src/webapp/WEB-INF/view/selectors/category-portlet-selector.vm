@@ -17,7 +17,7 @@ limitations under the License.
 #set ($refreshLink = $renderResponse.createActionURL())
 $refreshLink.setParameter("reset","true")
 #set ($renderLink = $renderResponse.createActionURL())
-#set ($pagePath = $renderRequest.getParameter("jspage"))
+
 #set ($portalContextPath=$renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext").request.contextPath)
 <!-- Search Form -->
 <form id='jsSelectorForm' onSubmit='return false;' style="height:21px; padding: 2px; margin:10px">
@@ -30,7 +30,7 @@ $refreshLink.setParameter("reset","true")
 <input type="submit" value="Refresh" onClick="javascript:performRefresh()">
 <input type="hidden" value="$category" id="category" name="category">
 <input type="hidden" value="$pageNumber" id="pageNumber" name="pageNumber">
-<input type="hidden" value="$pagePath" id="pageNumber" name="jspage">
+<input type="hidden" value="$jspage" id="pagePath" name="pagePath">
 </td>
 <td nowrap>
 <a href='' id='previousButton'><img style="border:none" src="${portalContextPath}/images/portlets/go-previous.png"></a>
@@ -336,7 +336,7 @@ function getReturnPagePath()
 {
    var jsPagePath = jetspeed.url.getQueryParameter( document.location.href, "jspage" );
    if ( jsPagePath == null )
-		jsPagePath = "$pagePath";
+		jsPagePath = "$jspage";
    return jsPagePath;
 }
 function getPageCount(portletCount,portletPerPage)
@@ -351,6 +351,8 @@ function getPageCount(portletCount,portletPerPage)
 function getAddToLayoutId()
 {
    var jsLayoutId = jetspeed.url.getQueryParameter( document.location.href, "jslayoutid" );
+   if ( jsLayoutId == null )
+		jsLayoutId = "$jslayoutid";
    return jsLayoutId;
 }
 function getReturnURL()
