@@ -45,6 +45,7 @@
     	</menu>
     	<menu name="About Jetspeed-2">
     		<item name="For Jetspeed-1 Users" href="j1-users.html" />
+    		<item name="Jetspeed-1 Migration Guideline" href="j1-migration.html" />
     		<item name="Supporting Projects" href="supporting-projects.html" />
     		<item name="Who Uses J2?" href="who-uses-j2.html" />
     		<item name="Portlets Community" href="portlets-community.html" />
