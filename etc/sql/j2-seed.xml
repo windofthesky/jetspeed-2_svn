@@ -321,7 +321,17 @@
 			<preferences/>
 			<userinfo/>
 			<Rules>
-				<Rule locator="page" rule="localhost"/>
+				<Rule locator="page" rule="localhost-fallback"/>
+			</Rules>
+		</User>
+		<User name="sublocal">
+			<credentials password="sublocal" enabled="TRUE" requiresUpdate="FALSE"/>
+			<roles>user</roles>
+			<groups>accounting</groups>
+			<preferences/>
+			<userinfo/>
+			<Rules>
+				<Rule locator="page" rule="subsite-by-hostname"/>
 			</Rules>
 		</User>
 		<User name="tomcat">
@@ -686,6 +696,49 @@
 				</Criterion>
 			</Criteria>
 		</ProfilingRule>
+		<ProfilingRule id="subsite-by-hostname" standardRule="false">
+			<description value="A rule based on role fallback algorithm with specified subsite and home page"/>
+			<Criteria>
+				<Criterion name="navigation">
+					<type value="navigation"/>
+					<value value="subsite-root"/>
+					<fallBackOrder value="0"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="hostname">
+					<type value="hostname"/>
+					<fallBackOrder value="1"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="user">
+					<type value="user"/>
+					<fallBackOrder value="2"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="navigation-2">
+					<type value="navigation"/>
+					<value value="subsite-root"/>
+					<fallBackOrder value="3"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="hostname">
+					<type value="hostname"/>
+					<fallBackOrder value="4"/>
+					<fallBackType value="2"/>
+				</Criterion>
+				<Criterion name="role">
+					<type value="role"/>
+					<fallBackOrder value="5"/>
+					<fallBackType value="2"/>
+				</Criterion>				
+				<Criterion name="path">
+					<type value="path"/>
+					<value value="home"/>
+					<fallBackOrder value="6"/>
+					<fallBackType value="2"/>
+				</Criterion>
+			</Criteria>
+		</ProfilingRule>
 		<ProfilingRule id="user-role-fallback" standardRule="false">
 			<description value="A role based fallback algorithm based on Jetspeed-1 role-based fallback"/>
 			<Criteria>
@@ -782,7 +835,7 @@
 					<fallBackOrder value="2"/>
 					<fallBackType value="2"/>
 				</Criterion>
-				<Criterion name="hostname2">
+				<Criterion name="hostname">
 					<type value="hostname"/>
 					<fallBackOrder value="3"/>
 					<fallBackType value="2"/>

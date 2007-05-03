@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page id="/localhost/sublocalrole" hidden="false">
+    <title>Role Test2</title>
+    <short-title>Role Test2</short-title>
+    <defaults/>
+    <fragment id="role-test2-001" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+        <fragment id="role-test2-002" type="portlet" name="j2-admin::JetspeedDeveloper">
+            <property name="row" value="0"/>
+            <property name="column" value="0"/>
+        </fragment>
+        <fragment id="role-test2-003" type="portlet" name="demo::IFramePortlet">
+            <property name="row" value="0"/>
+            <property name="column" value="1"/>
+        </fragment>
+    </fragment>
+</page>
