@@ -125,6 +125,42 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(rootFolder.getLink("link0.link"), rootLink0);        
     }
 
+    public void testRelativeNavigations() throws Exception
+    {
+        JetspeedProfileLocator locator = new JetspeedProfileLocator();
+
+        locator.init(null, "/");
+        locator.add("hostname", true, false, "dash");
+        locator.add("user", true, false, "joe");
+        locator.add("page", false, false, "home");
+        SiteView profileView = new SiteView(pageManager, locator);
+        assertEquals("/_hostname/dash/_user/joe,/_hostname/dash,/", profileView.getSearchPathsString());
+        
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("hostname", true, false, "dash");
+        locator.add("user", true, false, "joe");
+        locator.add("navigation", false, true, "/");
+        locator.add("hostname", true, false, "dash");
+        locator.add("role", true, false, "user");
+        locator.add("page", false, false, "home");
+        profileView = new SiteView(pageManager, locator);
+        assertEquals("/_hostname/dash/_user/joe,/_hostname/dash/_role/user,/_hostname/dash,/", profileView.getSearchPathsString());
+  
+        locator = new JetspeedProfileLocator();
+        //locator.init(null, "/__subsite-root");
+        locator.init(null, "/");        
+        locator.add("navigation", false, true, "subsite-root");
+        locator.add("hostname", true, false, "localhost");
+        locator.add("user", true, false, "sublocal");
+        locator.add("navigation", false, true, "subsite-root");
+        locator.add("hostname", true, false, "localhost");
+        locator.add("role", true, false, "somerole");
+        locator.add("path", false, false, "home");
+        profileView = new SiteView(pageManager, locator);
+        assertEquals("/__subsite-root/_hostname/localhost/_user/sublocal,/__subsite-root/_hostname/localhost/_role/somerole,/__subsite-root/_hostname/localhost,/__subsite-root", profileView.getSearchPathsString());                       
+    }
+    
     /**
      * testSiteView - Test SiteView operation
      *
@@ -346,7 +382,6 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "joe");
         locator.add("page", false, false, "home");
         profileView = new SiteView(pageManager, locator);
-        System.out.println("DST: PATH = " + profileView.getSearchPathsString());
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash,/", profileView.getSearchPathsString());
         
         locator = new JetspeedProfileLocator();
@@ -547,7 +582,7 @@ public class TestPortalSite extends AbstractSpringTestCase
      *
      * @throws Exception
      */
-    public void xtestPotalSiteMenus() throws Exception
+    public void testPotalSiteMenus() throws Exception
     {
         assertNotNull(portalSite);
         PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
@@ -1079,7 +1114,7 @@ public class TestPortalSite extends AbstractSpringTestCase
      *
      * @throws Exception
      */
-    public void xtestPotalSiteHiddenPageMenus() throws Exception
+    public void testPotalSiteHiddenPageMenus() throws Exception
     {
         assertNotNull(portalSite);
         PortalSiteSessionContext sessionContext = portalSite.newSessionContext();

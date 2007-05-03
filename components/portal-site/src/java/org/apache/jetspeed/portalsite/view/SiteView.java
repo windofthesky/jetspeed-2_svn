@@ -435,7 +435,6 @@ public class SiteView
                         // value case as provided by profiler
                         String propertyName = properties[i].getName().toLowerCase();
                         String propertyValue = properties[i].getValue();
-                        
                         // detect duplicate control names which indicates multiple
                         // values: must duplicate locator paths for each value; different
                         // control values are simply appended to all locator paths
@@ -567,7 +566,6 @@ public class SiteView
                 addLocatorSearchPathsAt = 0;
             }
         }
-
         return searchPaths;
     }
 
