@@ -50,6 +50,7 @@
 			<li><a href="guide-user-attributes.html">Guide to defining user attributes (PLT.17 user information configuration)</a></li>
 			<li><a href="guide-profiler.html">Guide to using profilers</a></li>
 			<li><a href="guide-aggregation.html">Guide to Aggregation</a></li>
+			<li><a href="guide-subsites.html">Guide to Subsites</a></li>
 			<li><a href="guide-migration.html">Guide to Migration from 2.0 to 2.1</a></li>			
 		</ul>
 		</subsection>
