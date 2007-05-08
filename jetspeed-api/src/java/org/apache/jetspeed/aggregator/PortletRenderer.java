@@ -63,6 +63,7 @@ public interface PortletRenderer
      * The method returns before rendering is complete, rendered content can be
      * accessed through the ContentDispatcher
      * @return the asynchronous portlet rendering job to synchronize
+     * @deprecated
      */
     public RenderingJob render(ContentFragment fragment, RequestContext request);
 

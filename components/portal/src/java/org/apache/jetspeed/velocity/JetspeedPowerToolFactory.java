@@ -25,7 +25,7 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 
-public class JetspeedPowerToolFactory
+public class JetspeedPowerToolFactory implements org.apache.jetspeed.layout.JetspeedPowerToolFactory
 {
     protected static final Log log = LogFactory.getLog(JetspeedPowerToolFactory.class);
     
@@ -46,10 +46,7 @@ public class JetspeedPowerToolFactory
         this.titleService = titleService;
         this.renderer = renderer;
     }
-    
-    
-    
-    
+       
     public JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext)
     throws PortletException
     {
