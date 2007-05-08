@@ -176,7 +176,7 @@ the Profiler Admininistrative portlet.
 <tr><td>navigation-2</td><td>navigation</td><td>subsite-root</td><td>When a page is not found under the user directory, we start over and navigate back to the subsite root.</td></tr>
 <tr><td>hostname</td><td>hostname</td><td>(provided at runtime)</td><td>Then again navigate to the _hostname directory</td></tr>
 <tr><td>role</td><td>role</td><td>(provided at runtime)</td><td>Navigate to each role directory of the given user until we find the page. For example, for a role named "role1", navigate to the control directory /__subsite-root/_hostname/role, and then to the subdirectory matching each runtime _role parameters.  If the runtime _role parameter is only "role1", then the physical location is /__subsite-root/_hostname/localhost/_role/role1.</td></tr>
-<tr><td>path</td><td>path</td><td>home</td><td>This is a constant used in all calculations, the path portion of the URL, such as home.psml, or /accounting/worksheet.psml. It is always appended to the calculated path to give the complete physical address of the page.</td></tr>
+<tr><td>path</td><td>path</td><td>home</td><td>This is a constant used in all calculations, the path portion of the URL, such as home.psml, or /accounting/worksheet.psml. It is always appended to the calculated path to give the complete physical address of the page. In the case where there is no page specified, the default value provided in the rule "home" is used, and that actually maps to "home.psml" as the default page extensions.</td></tr>
 </table>
 <p>
 The screenshot below shows the directory tree for a <i>localhost</i> subsite.
@@ -238,21 +238,76 @@ For each of the examples below, consider the following runtime parameters:
             <subsection name='Associated Rules with Users'>
 <p>
 All users are either explicity or implicity associated with a profiling rule. 
+The User Administration utility has a tab to setup the profiling rule associated with a user:
 </p>            
+<img src='images/user-profile.jpg' border="0"/>
+<p>
+Additionally, you can associate users with profiling rules in the XML seed data configuration:
+</p>
+            <source>
+                <![CDATA[
+<Users>
+...                
+<User name="jetspeed">
+	<credentials password="jetspeed" enabled="TRUE" requiresUpdate="FALSE"/>
+	<roles>manager</roles>
+	<groups>engineering</groups>
+	<preferences/>
+	<userinfo/>
+	<Rules>
+		<Rule locator="menu" rule="role-group"/>
+		<Rule locator="page" rule="role-fallback"/>
+	</Rules>
+</User>
+</Users>                
+]]>
+</source>
+<p>Looking at the <b>Rule</b> element of a User, the locator can be either:</p>
+<ul>
+<li>page - use associated profiling rule to locate pages</li>
+<li>menu - use the associated profiling rule to locate menus (if not specified, use the page locator)</li>
+</ul>
+<p>The <b>rule</b> attribute on the <b>Rule</b> element of a User defines which profiling rule is associated to either a page or menu locator.
+If a user is not associated with a locator, then there is a system wide locator configured in the Spring configuration file <i>profiler.xml</i>.
+See the contructor-arg of index = 1. This locator is the default locator, system-wide, for when there is no-associated profiling rule.
+Normally, profiling rules are associated with user during activities such as the creation of new users with the User Administration portlet,
+or during new user registration.
+</p>
+<source>
+<![CDATA[
+<beans>
+    <!-- Profiler -->
+    <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
+        <constructor-arg index="0">
+            <value>JETSPEED-INF/ojb/profiler_repository.xml</value>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <value>j2</value>
+        </constructor-arg>                
+        ....
+]]>
+</source>
             </subsection>            
         </section>
         <section name="Hostname Profiling Rule Configuration">
             <p>
-	There is an option for hostnames to use the entire hostname or a prefix.            
+There is an option for hostnames to use the entire hostname or a prefix.            
+This is configured in the Spring configuration file <i>profiler.xml</i>.
             </p>
-            <source test="">
-                <![CDATA[
+            <source>
+                <![CDATA[                
+    <bean id='HostnameCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.HostnameCriterionResolver'>
+      <!--  use the dot prefix, for ex: "accounting.xyz.com" returns "accounting" -->
+      <constructor-arg type="boolean" index="0">
+            <value>false</value> 
+        </constructor-arg>    	
+    </bean>                    
 ]]>
             </source>
             <p>
-            </p>
-            
+By settting the prefix boolean argument to true, the hostname resolve will only look at the prefix of the hostname.
+For example, with the dot prefix flag set to true, a hostname of "accounting.xyz.com" returns "accounting".            
+            </p>            
         </section>
-        
     </body>
 </document>

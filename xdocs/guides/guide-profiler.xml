@@ -237,6 +237,14 @@ login as the user "admin" to see an example of the Jetspeed Profiler Administrat
         <td>resolve by matching the browser's (client) user agent from the request context device capabilities (originating from the HTML headers)</td>
     </tr>
     <tr>
+        <td>hostname</td>
+        <td>resolve by matching the host name from the server name in the request, returning the host name</td>
+    </tr>       
+    <tr>
+        <td>domain</td>
+        <td>resolve by matching the domain from the server name in the request, returning the domain</td>
+    </tr>       
+    <tr>
         <td>navigation</td>
         <td>A directive to changes the current navigation path during a profile location resolution performed by the page manager. The value can be the location of a folder, for example <quote>/pages/freecontent</quote></td>
     </tr>       

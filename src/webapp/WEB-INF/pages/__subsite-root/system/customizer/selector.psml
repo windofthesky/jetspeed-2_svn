@@ -15,20 +15,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="customizer" hidden='true'
+<page id="Selector.psml" hidden="true"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults     
-     skin="blue"
-     layout-decorator="clear"
-     portlet-decorator="clear"
-  />
-  <title>Customizer</title>
-  <fragment id="customizer-2.0" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
-  
-    <fragment id="customizer-2.1" type="portlet" name="j2-admin::CustomizerPortlet"/>
-
-  </fragment>
-      
+    <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
+    <title>Selector</title>
+    <short-title>Selector</short-title>
+    <fragment id="ss-js-cp-selector" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <fragment id="ss-js-cp-selector.2" type="portlet" name="j2-admin::CategoryPortletSelector"/>
+    </fragment>
 </page>
