@@ -17,11 +17,13 @@
 package org.apache.jetspeed.velocity;
 
 import java.lang.reflect.Constructor;
+
 import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 

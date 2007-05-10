@@ -40,6 +40,7 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -48,7 +49,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.velocity.JetspeedPowerTool;
 import org.apache.jetspeed.velocity.JetspeedPowerToolFactory;
 import org.apache.pluto.om.window.PortletWindow;
 

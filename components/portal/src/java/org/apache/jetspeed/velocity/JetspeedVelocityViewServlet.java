@@ -56,12 +56,12 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.app.event.NullSetEventHandler;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.tools.generic.log.LogSystemCommonsLog;
-import org.apache.velocity.tools.view.servlet.WebappLoader;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.tools.generic.log.LogSystemCommonsLog;
+import org.apache.velocity.tools.view.servlet.WebappLoader;
 
 /**
  * @version $Id$
@@ -268,7 +268,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);
         }
                 
-        JetspeedPowerTool jpt = (JetspeedPowerTool) renderRequest.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
+        JetspeedVelocityPowerTool jpt = (JetspeedVelocityPowerTool) renderRequest.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
         if(jpt == null)
         {
             throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no JetspeedPowerTool in "+
@@ -386,12 +386,12 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         }                
         // get render request and request context from Context
         RenderRequest renderRequest = (RenderRequest) ctx.get("renderRequest");
-        JetspeedPowerTool jpt = (JetspeedPowerTool) ctx.get("jetspeed");
+        JetspeedVelocityPowerTool jpt = (JetspeedVelocityPowerTool) ctx.get("jetspeed");
         if ((renderRequest != null) && (requestContext != null))
         {
             // get layout type and decoration, fallback to
             // page default decorations
-            Fragment layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.LAYOUT_ATTR);
+            Fragment layout = (Fragment) renderRequest.getAttribute(JetspeedVelocityPowerTool.LAYOUT_ATTR);
             if (layout == null)
             {
                // layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.FRAGMENT_ATTR);
@@ -471,7 +471,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             descriptor.setType(layoutType);
             
             // get decoration configuration properties descriptor
-            descriptor.setName(layoutDecoration + "/" + JetspeedPowerTool.DECORATOR_TYPE + ".properties");
+            descriptor.setName(layoutDecoration + "/" + JetspeedVelocityPowerTool.DECORATOR_TYPE + ".properties");
             TemplateDescriptor propertiesDescriptor = null;
             try
             {
@@ -482,7 +482,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                 // fallback to generic template type
                 try
                 {
-                    descriptor.setType(JetspeedPowerTool.GENERIC_TEMPLATE_TYPE);
+                    descriptor.setType(JetspeedVelocityPowerTool.GENERIC_TEMPLATE_TYPE);
                     propertiesDescriptor = decorationLocator.locateTemplate(descriptor);
                 }
                 catch (TemplateLocatorException tleFallback)
@@ -511,7 +511,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                 // get decoration template macros descriptor if defined
                 if ((ext != null) && (ext.length() > 0) && (macros != null) && (macros.length() > 0))
                 {
-                    descriptor.setName(layoutDecoration + "/" + JetspeedPowerTool.DECORATOR_TYPE + macros + ext);
+                    descriptor.setName(layoutDecoration + "/" + JetspeedVelocityPowerTool.DECORATOR_TYPE + macros + ext);
                     try
                     {
                         macrosDescriptor = decorationLocator.locateTemplate(descriptor);
@@ -525,7 +525,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                             String parent = configuration.getString("extends");
                             if ((parent != null) && (parent.length() > 0))
                             {
-                                descriptor.setName(parent + "/" + JetspeedPowerTool.DECORATOR_TYPE + macros + ext);
+                                descriptor.setName(parent + "/" + JetspeedVelocityPowerTool.DECORATOR_TYPE + macros + ext);
                                 macrosDescriptor = decorationLocator.locateTemplate(descriptor);
                             }
                         }

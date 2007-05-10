@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.velocity;
+package org.apache.jetspeed.layout;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,19 +23,17 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.security.auth.Subject;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.velocity.context.Context;
 
 /**
  * JetspeedPowerTool
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: JetspeedPowerTool.java 516448 2007-03-09 16:25:47Z ate $
  */
 
 public interface JetspeedPowerTool
@@ -169,9 +167,6 @@ public interface JetspeedPowerTool
     TemplateDescriptor getTemplate(String path, String templateType)
             throws TemplateLocatorException;
 
-    Configuration getTypeConfiguration(String type, String name, String location)
-            throws Exception;
-
     TemplateDescriptor getDecoration(String path, String templateType)
             throws TemplateLocatorException;
 
@@ -247,16 +242,7 @@ public interface JetspeedPowerTool
 
     String getBasePath();
 
-    String getPageBasePath();
-    
-    /**
-     * Sets the Velocity Context object for this powertool instance.  This is
-     * only required if using Velocity based decortaions and layouts.
-     * 
-     * @param velocityContext
-     */
-    void setVelocityContext(Context velocityContext);
-    
+    String getPageBasePath();    
     
     String renderPortletEntity(String entityId, String portletId);
 }

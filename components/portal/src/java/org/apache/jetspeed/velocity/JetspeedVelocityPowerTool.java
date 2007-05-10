@@ -14,19 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.layout;
+package org.apache.jetspeed.velocity;
 
-import javax.portlet.PortletException;
-
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.layout.JetspeedPowerTool;
+import org.apache.velocity.context.Context;
 
 /**
- * Factory interface to retrieve the Jetspeed Power Tool from the current request context. 
- *
+ * JetspeedPowerTool
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id$
  */
-public interface JetspeedPowerToolFactory
+
+public interface JetspeedVelocityPowerTool extends JetspeedPowerTool
 {
-    JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext) throws PortletException;
+    /**
+     * Sets the Velocity Context object for this powertool instance.  This is
+     * only required if using Velocity based decortaions and layouts.
+     * 
+     * @param velocityContext
+     */
+    void setVelocityContext(Context velocityContext);
 }

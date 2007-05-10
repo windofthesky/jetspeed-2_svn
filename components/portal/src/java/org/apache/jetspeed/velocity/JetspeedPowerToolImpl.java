@@ -85,7 +85,7 @@ import org.apache.velocity.context.Context;
  * @version $Id$
  * 
  */
-public class JetspeedPowerToolImpl implements JetspeedPowerTool
+public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 {
 
     private static final String DECORATOR_ID_ATTR = "decoratorId";
