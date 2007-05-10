@@ -116,7 +116,7 @@ limitations under the License.
         <commons-digester.version>1.5</commons-digester.version>
         <commons-logging.version>1.0.3</commons-logging.version>
         <hsqldb.version>1.8.0.2</hsqldb.version>
-        <javax.servlet.jstl.version>1.0.6</javax.servlet.jstl.version>
+        <javax.servlet.jstl.version>1.1.2</javax.servlet.jstl.version>
         <javax.servlet.version>2.3</javax.servlet.version>
         <log4j.version>1.2.8</log4j.version>
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
@@ -127,7 +127,7 @@ limitations under the License.
         <org.apache.portals.jetspeed-2.groupid>org.apache.portals.jetspeed-2</org.apache.portals.jetspeed-2.groupid>
         <portlet-api.version>1.0</portlet-api.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
-        <taglibs-standard.version>1.0.6</taglibs-standard.version>
+        <taglibs-standard.version>1.1.2</taglibs-standard.version>
         <velocity-tools.version>1.2</velocity-tools.version>
         <velocity.version>1.4</velocity.version>
         

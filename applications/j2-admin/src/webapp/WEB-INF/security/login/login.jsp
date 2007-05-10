@@ -44,9 +44,9 @@ limitations under the License.
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
-    <a href='<c:url context="${requestContext.request.contextPath}" value="${destLogout}"/>'><fmt:message key="login.label.Logout"/></a>
+    <a href='<c:url context="${requestContext.request.contextPath}/" value="${destLogout}"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
-    <a href='<c:url context="${requestContext.request.contextPath}" value="${destAccount}"/>'><fmt:message key="login.label.ChangePassword"/></a>
+    <a href='<c:url context="${requestContext.request.contextPath}/" value="${destAccount}"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
   <c:otherwise>
     <%-- backdoor access to the portal session to get the login error count --%>
@@ -70,7 +70,7 @@ limitations under the License.
         </c:if>
       </c:otherwise>
     </c:choose>   
-    <form method="POST" action='<c:url context="${requestContext.request.contextPath}" value="${destLogin}"/>'>
+    <form method="POST" action='<c:url context="${requestContext.request.contextPath}/" value="${destLogin}"/>'>
       <table border="0">
       <tr>
         <td><div class="portlet-form-field-label"><fmt:message key="login.label.Username"/></div></td>

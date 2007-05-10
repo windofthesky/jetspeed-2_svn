@@ -84,7 +84,7 @@ limitations under the License.
               <c:otherwise>
                 <br/><br/>
                 <c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
-                <a href='<c:url context="${requestContext.request.contextPath}" value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
+                <a href='<c:url context="${requestContext.request.contextPath}/" value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
               </c:otherwise>
             </c:choose>
           </c:if>
