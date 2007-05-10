@@ -162,7 +162,7 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="db2" displayText="DB2 Database connection parameters" ifProperty="${dbName}=mssql">
+  <page type="input" name="db2" displayText="DB2 Database connection parameters" ifProperty="${dbName}=db2">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="DB2"/>
