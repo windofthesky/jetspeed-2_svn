@@ -17,8 +17,11 @@
   
   $Id$
 -->
-<!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN"
-    "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
+<!-- JS2-657: Installer fails with firewall
+  
+  <!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN"
+  "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
+-->
 
 <installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.1.1-dev Installer"
   windowIcon="/resources/feather-small.png" defaultImageResource="/resources/Jetspeed_blue_med.png" minJavaVersion="1.4"
