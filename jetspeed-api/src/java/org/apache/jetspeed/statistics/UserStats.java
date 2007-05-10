@@ -17,6 +17,8 @@
 package org.apache.jetspeed.statistics;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * UserStats
@@ -35,4 +37,10 @@ public interface UserStats extends Serializable
     public void setNumberOfSession(int number);
 
     public void setUsername(String username);
+    
+    public void setInetAddress(InetAddress inetAddress);    
+
+    public InetAddress getInetAddress();
+    
+    public void setInetAddressFromIp(String ip) throws UnknownHostException;
 }

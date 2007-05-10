@@ -36,4 +36,9 @@ public interface PortalSessionsManager
     void sessionWillPassivate(PortletApplicationSessionMonitor pasm);    
     void sessionDidActivate(PortletApplicationSessionMonitor pasm);    
     void sessionDestroyed(PortletApplicationSessionMonitor pasm);    
+    /**
+     * Returns the number of current sessions. Used to track the number guest users in portal.
+     * @return Number of currently created sessions in the registry
+     */
+    int sessionCount();
 }
