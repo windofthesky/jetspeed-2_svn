@@ -136,13 +136,14 @@
       CachePeer objects are stashed for performance.
     * jndiUrls (mandatory) - specify a pipe separated list of jndiUrls,
       in the form protocol//hostname:port
-    -->
+      
     <cacheManagerPeerProviderFactory
             class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
             properties="peerDiscovery=automatic,
                         multicastGroupAddress=230.0.0.1,
                         multicastGroupPort=4446, timeToLive=1"/>
-
+    -->
+  
 
     <!--
     (Enable for distributed operation)
@@ -185,10 +186,10 @@
     Properties for JNDIRMICacheManagerPeerListenerFactory are the same as
     RMICacheManagerPeerListenerFactory.
 
-    -->
     <cacheManagerPeerListenerFactory
             class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"/>
-
+    -->
+  
 
     <!-- Cache configuration.
 
