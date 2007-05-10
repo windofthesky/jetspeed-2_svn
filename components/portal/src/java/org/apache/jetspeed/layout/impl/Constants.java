@@ -64,8 +64,17 @@ public interface Constants
     public static final String FOLDER = "folder";
     public static final String FOLDERS = "folders";
     public static final String SIZES = "sizes";
-    public static final String RESOURCE_NAME = "name";
-
+    public static final String RESOURCE_NAME = "name";    
+    public static final String USERS = "users";
+    public static final String GUESTUSERS = "guestusers";
+    public static final String USERNAME = "username";
+    public static final String USERINFO = "userinfo";
+    public static final String SESSIONS = "sessions";
+    public static final String IPADDRESS = "ipaddress";
+    
+    public static final String OFFLINE = "offline";
+    public static final String ONLINE = "online";
+    
     public static final String STANDARD_MENUS = "standardMenus";
     public static final String CUSTOM_MENUS = "customMenus";
     public static final String MENU = "menu";

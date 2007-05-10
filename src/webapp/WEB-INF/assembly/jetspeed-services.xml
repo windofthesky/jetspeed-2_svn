@@ -100,7 +100,7 @@ limitations under the License.
             <ref bean="org.apache.jetspeed.prefs.PreferencesProvider"/>
           </entry>
           <entry key="org.apache.jetspeed.container.session.PortalSessionsManager">
-            <bean class="org.apache.jetspeed.container.session.PortalSessionsManagerImpl"/>
+            <ref bean="org.apache.jetspeed.container.session.PortalSessionsManager"/>
           </entry>
           <entry key="SecurityAccessController">
             <ref bean="org.apache.jetspeed.security.SecurityAccessController"/>

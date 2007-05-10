@@ -236,4 +236,12 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             pasm.invalidateSession();
         }
     }
+
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.container.session.PortalSessionsManager#sessionCount()
+	 */
+	public int sessionCount() {
+		
+		return portalSessionsRegistry.size();
+	}
 }

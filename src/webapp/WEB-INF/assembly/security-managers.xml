@@ -39,6 +39,10 @@ limitations under the License.
   	   <constructor-arg ><ref bean="org.apache.jetspeed.security.SecurityProvider"/></constructor-arg>   
   </bean>
   
+  <!-- Security: Session Manager -->
+  <bean id="org.apache.jetspeed.container.session.PortalSessionsManager" 
+  	   class="org.apache.jetspeed.container.session.PortalSessionsManagerImpl"  />
+    
   <!-- Security: Permission Manager -->
   <bean id="org.apache.jetspeed.security.impl.PermissionManagerImpl" 
   	   class="org.apache.jetspeed.security.impl.PermissionManagerImpl"  />

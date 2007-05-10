@@ -340,24 +340,26 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             {
                 synchronized (currentUsers)
                 {
-                    UserStats userStats = (UserStats) currentUsers
-                            .get(userName);
-                    if (userStats == null)
-                    {
-                        userStats = new UserStatsImpl();
-                        userStats.setNumberOfSession(0);
-                        userStats.setUsername(userName);
-                        currentUsers.put(userName, userStats);
-                    }else
+                	UserStats userStats = null;
+                	
+                	Map users = (Map)currentUsers.get(userName);                	
+                	if(users != null && users.size() > 0)
+                	{
+                		userStats = (UserStats) users.get(ipAddress);                		
+                	}                	
+            	
+                	if(userStats != null)
                     {
                     	// only decrement if user has been logged in
                     	currentUserCount = currentUserCount - 1;
-                    }
-                    userStats.setNumberOfSession(userStats
-                            .getNumberOfSessions() - 1);
-                    if (userStats.getNumberOfSessions() <= 0)
-                    {
-                        currentUsers.remove(userName);
+                        
+                    	userStats.setNumberOfSession(userStats
+                                .getNumberOfSessions() - 1);                    
+                        if (userStats.getNumberOfSessions() <= 0)
+                        {
+                        	users.remove(ipAddress);
+                            currentUsers.put(userName, users);
+                        }
                     }
                 }
             }
@@ -400,6 +402,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             Principal principal = req.getUserPrincipal();
             String userName = (principal != null) ? principal.getName()
                     : "guest";
+            String ipAddress = req.getRemoteAddr();
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             UserLogRecord record = new UserLogRecord();
 
@@ -409,22 +412,36 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
                 synchronized (currentUsers)
                 {
-                    UserStats userStats = (UserStats) currentUsers
-                            .get(userName);
-                    if (userStats == null)
+                	
+                	UserStats userStats = null;
+                	
+                	Map users = (Map)currentUsers.get(userName);                	
+                	if(users != null && users.size() > 0)
+                	{
+                		userStats = (UserStats) users.get(ipAddress);                		
+                	}
+                	else
+                	{
+                		users = new TreeMap();
+                	}
+                	
+                	if(userStats == null)
                     {
                         userStats = new UserStatsImpl();
                         userStats.setNumberOfSession(0);
                         userStats.setUsername(userName);
-                        currentUsers.put(userName, userStats);
+                        userStats.setInetAddressFromIp(ipAddress);                        
                     }
+                    
                     userStats.setNumberOfSession(userStats
                             .getNumberOfSessions() + 1);
+                    users.put(ipAddress, userStats);
+            		currentUsers.put(userName, users);
                 }
             }
 
             record.setUserName(userName);
-            record.setIpAddress(req.getRemoteAddr());
+            record.setIpAddress(ipAddress);
             record.setStatus(STATUS_LOGGED_IN);
             record.setTimeStamp(timestamp);
             record.setMsElapsedTime(msElapsedLoginTime);

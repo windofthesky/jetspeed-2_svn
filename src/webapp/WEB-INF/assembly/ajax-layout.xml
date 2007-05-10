@@ -493,6 +493,41 @@
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
 </bean>
+
+<bean id="AjaxGetUserInformation"
+    class="org.apache.jetspeed.layout.impl.GetUserInformationAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/userinfo.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.security.UserManager"/>        
+    </constructor-arg>
+</bean>
+
+<bean id="AjaxGetUserList"
+    class="org.apache.jetspeed.layout.impl.GetUserListAction">
+    <constructor-arg index="0">
+        <value>org/apache/jetspeed/layout/ajax-xml/userlist.vm</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+        <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
+    </constructor-arg>
+    <constructor-arg index='2'>    
+        <ref bean="org.apache.jetspeed.security.UserManager"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
+        <ref bean="PortalStatistics"/>
+    </constructor-arg>
+    <constructor-arg index='4'>
+        <ref bean="org.apache.jetspeed.container.session.PortalSessionsManager"/>
+    </constructor-arg>
+	<constructor-arg index='5'>
+        <ref bean="RolesSecurityBehavior"/>
+    </constructor-arg>
+</bean>
     
 <bean id="AjaxActionMap" class="java.util.HashMap">
     <constructor-arg index="0">
@@ -572,6 +607,12 @@
             <entry key="updatelink">
                 <ref bean="AjaxUpdateLink"/>                
             </entry>                                                              
+            <entry key="getuserinfo">
+                <ref bean="AjaxGetUserInformation"/>                
+            </entry>
+            <entry key="getuserlist">
+                <ref bean="AjaxGetUserList"/>                
+            </entry>
         </map>
     </constructor-arg>    
 </bean>    

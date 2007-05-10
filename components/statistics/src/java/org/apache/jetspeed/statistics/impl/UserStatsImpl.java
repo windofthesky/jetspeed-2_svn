@@ -16,7 +16,12 @@
  */
 package org.apache.jetspeed.statistics.impl;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.jetspeed.statistics.UserStats;
+
+import com.sun.org.apache.bcel.internal.util.ByteSequence;
 
 /**
  * UserStatsImpl
@@ -31,6 +36,8 @@ public class UserStatsImpl implements UserStats
     private String username;
 
     private int numberOfSessions;
+    
+    private InetAddress inetAddress;
 
     /*
      * (non-Javadoc)
@@ -74,4 +81,44 @@ public class UserStatsImpl implements UserStats
         this.username = username;
 
     }
+
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.statistics.UserStats#getInetAddress()
+	 */
+	public InetAddress getInetAddress() {
+		return inetAddress;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.statistics.UserStats#setInetAddress(java.net.InetAddress)
+	 */
+	public void setInetAddress(InetAddress inetAddress) {
+		this.inetAddress = inetAddress;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.statistics.UserStats#setInetAddressFromIp(java.lang.String)
+	 */
+	public void setInetAddressFromIp(String ip) throws UnknownHostException {
+		this.inetAddress = InetAddress.getByName(ip);		
+	}
+
+	/**
+	 * Checks whether these two object match. Simple check for
+	 * just the ipaddresse and username.
+	 * 
+	 * @param Object instanceof UserStats
+	 */
+	public boolean equals(Object obj) {
+		
+		boolean equals = true;
+		if(!(obj instanceof UserStats))
+			return false;
+		
+		UserStats userstat = (UserStats)obj;
+		if(this.inetAddress.equals(userstat.getInetAddress()) && this.username.equals(userstat.getUsername()))
+			equals = true;
+		
+		return equals;
+	}
 }
