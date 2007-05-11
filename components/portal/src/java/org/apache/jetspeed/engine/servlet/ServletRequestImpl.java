@@ -39,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
+import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
@@ -48,8 +50,6 @@ import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.aggregator.Worker;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.window.PortletWindow;
@@ -83,6 +83,10 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     private boolean portletMergePortalParametersBeforePortletParameters;
     
     private Map portalParameters;
+    
+    // request attributes map which is cached for each paralleled worker.
+    // this should be re-created when it is called for the first time or when some attributes are added/modified/removed.
+    private Map cachedAttributes;
 
     public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
     {
@@ -364,6 +368,51 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     }
 
     /**
+     * @see javax.servlet.http.HttpServletRequest#getAttributeNames()
+     */
+    public Enumeration getAttributeNames()
+    {
+        Enumeration attrNames = super.getAttributeNames();
+        
+        // In parallel mode, adjust attributes by the values of the current thread
+        Thread ct = Thread.currentThread();
+
+        if (ct instanceof Worker)
+        {
+            // If cached attributes map is null, it should be re-created.
+            
+            if (cachedAttributes == null)
+            {
+                HashMap adjustedAttrMap = new HashMap();
+                
+                // first, add all attributes of original request.
+                
+                while (attrNames.hasMoreElements())
+                {
+                    String key = (String) attrNames.nextElement();
+                    adjustedAttrMap.put(key, super.getAttribute(key));
+                }
+                
+                // second, add or override all attributes by the current worker context.
+                
+                Enumeration cwAttrNames = CurrentWorkerContext.getAttributeNames();
+                
+                while (cwAttrNames.hasMoreElements())
+                {
+                    String key = (String) cwAttrNames.nextElement();
+                    adjustedAttrMap.put(key, CurrentWorkerContext.getAttribute(key));
+                }
+                
+                cachedAttributes = Collections.unmodifiableMap(adjustedAttrMap);
+            }
+            
+            attrNames = Collections.enumeration(cachedAttributes.keySet());
+        }
+        
+        return attrNames;
+    }
+    
+    /**
      * @see javax.servlet.http.HttpServletRequest#getAttribute(java.lang.String)
      */
     public Object getAttribute( String name )
@@ -375,8 +424,18 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         Thread ct = Thread.currentThread();
 
         if (ct instanceof Worker)
-        {
+        {            
             value = CurrentWorkerContext.getAttribute(name);
+
+            // Because PortletRequestImpl class of pluto encodes the name of attribute before calling setAttribute(), 
+            // we have to check the encoded name also.
+            if (null == value)
+            {
+                // Extra code (2 lines) from Nicolas... not clear to me why this is needed, as "pr" is not used. Commenting out for now...
+                //PortletRequest pr = (PortletRequest) super.getAttribute("javax.portlet.request");
+                //if (pr != null)
+                value = CurrentWorkerContext.getAttribute(nameSpaceMapper.encode(portletWindow.getId(), name));
+            }
         }
 
         // If no attribute found, then look up from the request
@@ -538,6 +597,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
         if (ct instanceof Worker) 
         {
+            // when it is parallel rendering, the cached request attributes should be re-created later by setting it to null.
+            cachedAttributes = null;
+            
             if (null == value) 
             {
                 CurrentWorkerContext.removeAttribute(name);
@@ -578,6 +640,44 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         }
         super.setAttribute(name, value);
     }
+
+    /**
+     * <p>
+     * removeAttribute
+     * </p>
+     * 
+     * @see javax.servlet.ServletRequest#removeAttribute(java.lang.String)
+     * @param arg0
+     */
+    public void removeAttribute( String name )
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Attribute name == null");
+        }
+        
+        // In parallel mode, remove attribute from worker.
+
+        Thread ct = Thread.currentThread();
+
+        if (ct instanceof Worker) 
+        {
+            // when it is parallel rendering, the cached request attributes should be re-created later by setting it to null.
+            cachedAttributes = null;
+            
+            CurrentWorkerContext.removeAttribute(name);
+            
+            if (name.startsWith("org.apache.jetspeed")) {
+                super.removeAttribute(name);
+            }
+        }
+        else
+        {
+            // remove attribute from request.
+            super.removeAttribute(name);
+        }        
+    }
+
     /**
      * <p>
      * getHeaderNames
