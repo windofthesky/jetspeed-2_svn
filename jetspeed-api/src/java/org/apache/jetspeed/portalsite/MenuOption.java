@@ -63,6 +63,13 @@ public interface MenuOption extends MenuElement
     String getTarget();
 
     /**
+     * getDefaultPage - get target for url of menu option
+     *
+     * @return url target
+     */
+    String getDefaultPage();
+    
+    /**
      * isHidden - get hidden state of menu option
      *
      * @return hidden state

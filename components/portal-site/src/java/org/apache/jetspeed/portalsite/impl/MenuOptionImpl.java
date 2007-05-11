@@ -147,6 +147,22 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
     }
 
     /**
+     * getDefaultPage - get default page for a folder (if folder) of menu option
+     *
+     * @return url target
+     */
+    public String getDefaultPage()
+    {
+        // only link nodes support target
+        Node node = getNode();
+        if (node instanceof Folder)
+        {
+            return ((Folder)node).getDefaultPage();
+        }
+        return null;
+    }
+    
+    /**
      * isHidden - get hidden state of menu option
      *
      * @return hidden state
