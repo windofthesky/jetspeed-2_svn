@@ -69,6 +69,8 @@ public class GetUserListAction
     protected Log log = LogFactory.getLog(GetUserListAction.class);
     private PortalStatistics pstats = null;
     private PortalSessionsManager psm = null;
+    // By default the protection is set to all
+    private String protectionScope = "all";
 
     private final String PARAM_GUEST = "guest";
     private final String PARAM_USERINFO = "userinfo";
@@ -96,23 +98,26 @@ public class GetUserListAction
     	this.psm = psm;
     }
     
+    public GetUserListAction(String template, 
+            String errorTemplate, 
+            UserManager um,
+            PortalStatistics pstats,
+            PortalSessionsManager psm, 
+            RolesSecurityBehavior securityBehavior,
+            String protectionScope)
+    {
+    	super(template, errorTemplate, um, securityBehavior); 
+    	this.pstats = pstats;
+    	this.psm = psm;
+    	this.protectionScope = protectionScope;
+    }
+    
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
     {
         boolean success = true;
         String status = "success";
         
-    	// Do a security check if a behavior is set
-    	if(securityBehavior != null)
-    	{
-    		if(!checkAccess(requestContext, JetspeedActions.EDIT))
-    		{
-    			success = false;
-                resultMap.put(REASON, "Insufficient access see user details.");                
-                return success;
-    		}
-    	}
-
     	boolean includeGuests;
     	boolean includeUserInfo;
         boolean includeOffline;
@@ -130,6 +135,35 @@ public class GetUserListAction
         	includeGuests = isTrue(getActionParameter(requestContext, PARAM_GUEST));
         	includeUserInfo = isTrue(getActionParameter(requestContext, PARAM_USERINFO));
         }
+        
+    	// Do a security check if a behavior is set
+    	if(securityBehavior != null)
+    	{
+    		// If protection is set to "none", everything will be allowed
+    		if(!checkAccess(requestContext, JetspeedActions.EDIT) && !this.protectionScope.equals("none"))
+    		{
+    			// If we have set protection to private only and security check failed,
+    			// will return basic information still
+    			if(this.protectionScope.equals("private-offline"))
+    			{
+    				// If private and offline information is protected, disable that and offline users.
+    				includeUserInfo = false;
+    				includeOffline = false;
+    			}
+    			else if(this.protectionScope.equals("private"))
+    			{
+    				// Only private information is protected.
+    				includeUserInfo = false;
+    			}
+    			else
+    			{
+    				
+	    			success = false;
+	                resultMap.put(REASON, "Insufficient access see user details.");                
+	                return success;
+    			}
+    		}
+    	}
         
         int numberOfCurrentUsers = 0;
         int numberOfCurrentLoggedInUsers = 0;

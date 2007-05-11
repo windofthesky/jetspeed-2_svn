@@ -846,7 +846,148 @@ http://localhost:8080/jetspeed/ajaxapi?action=window&state=maximized&mode=edit&i
 		</td>    
 	</tr>
 </table>
-</subsection>        
+</subsection>
+
+<subsection name='getuseinfo'>
+<table>		
+
+    <tr>
+        <td>API:</td>
+        <td>getuseinfo</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxGetUserInformation</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Returns information about the currently logged in user. Can be used for example in AJAX based portlets to retrieve the userinfo in a more robust way. Will return success only if a user is currenly logged in, otherwise will return false.</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>action</td>
+				<td>getuserinfo</td>				
+			</tr>                                   
+		</table>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi?action=getuserinfo
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+    <status>success</status>
+    <action>userinformation</action>
+    <username>admin</username> 
+    <type>org.apache.jetspeed.security.impl.UserPrincipalImpl</type>
+    <userinfo>
+        <user.name.given>Test Dude</user.name.given>
+        <user.name.family>Dudley</user.name.family>
+    </userinfo>
+</js>
+]]></source>		
+		</td>    
+	</tr>
+</table>
+</subsection>
+
+<subsection name='getuserlist'>
+<table>		
+
+    <tr>
+        <td>API:</td>
+        <td>getuseinfo</td>
+    </tr>
+    <tr>
+        <td>Component:</td>
+        <td>AjaxGetUserList</td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td>Provides basic information (username, ip-address, number of sessions and status) about currently logged in users in xml-format. Optionally it can also provide more detailed userinformation, number of guest sessions and include offline users as well.</td>
+    </tr>
+    <tr>
+        <td>Parameters:</td>
+        <table>
+			<tr>
+				<td>action</td>
+				<td>getuserinfo</td>
+			</tr>
+            <tr>
+                <td>userinfo</td>
+                <td>Whether we should include also userinfo (true | false [default])</td>
+            </tr>
+            <tr>
+                <td>offline</td>
+                <td>Whether we should include offline users (true | false [default])</td>
+            </tr>
+            <tr>
+                <td>guest</td>
+                <td>Whether we should return also the guest sessions (true | false [default])</td>
+            </tr>
+            <tr>
+                <td>all</td>
+                <td>If set to true, will return every bits and piece there is (true | false [default])</td>
+            </tr>
+		</table>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                By default the private information (emails, etc..) is protected with
+                RolesSecurityBehavior security, but can be changed in <a href="http://svn.apache.org/viewvc/portals/jetspeed-2/trunk/src/webapp/WEB-INF/assembly/ajax-layout.xml?view=markup">AJAX configuration</a>
+                by altering the protectionScope constructor value to either "all" to protect
+                even the basic information or to "none" when everything will be shown for everyone (not wise on production).
+                The default value "private" will show just the basic information of online/offline users and number of guest sessions,
+                as the "private-offline" will not show even the offline users. Possible protectionScope values are "all",
+                "private-offline", "private" and "none".
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>API example:</td>
+		<td>
+<source><![CDATA[			
+http://localhost:8080/jetspeed/ajaxapi?action=getuserlist&userinfo=true&guest=true
+]]></source>			
+		</td>    
+	</tr>
+    <tr>
+        <td>XML Response:</td>
+		<td>
+<source><![CDATA[
+<js>
+    <status>success</status>
+    <action>getuserlist</action>
+    <users>
+        <user>
+            <username>admin</username>
+            <sessions>1</sessions>
+            <status>online</status>
+            <ipaddress>127.0.0.1</ipaddress>
+            <userinfo>
+                <user.name.given>Test Dude</user.name.given>
+                <user.name.family>Dudley</user.name.family>
+            </userinfo>
+        </user>
+        <guests>0</guests>
+    </users>
+</js>
+]]></source>		
+		</td>    
+	</tr>
+</table>
+</subsection>
+        
 </section>
 
 <section name='Spring Assembly'>
@@ -892,9 +1033,27 @@ of AJAX request. Here is the Spring Assembly. Each API is configured in the Ajax
             <entry key="getpages">
                 <ref bean="AjaxGetPages"/>
             </entry>			
+            <entry key="getfolder">
+                <ref bean="AjaxGetFolder"/>
+            </entry>			            
+            <entry key="getlink">
+                <ref bean="AjaxGetLink"/>
+            </entry>			                        
+            <entry key="getfolderlist">
+                <ref bean="AjaxGetFolderList"/>
+            </entry>			                        
+            <entry key="getfolders">
+                <ref bean="AjaxGetFoldersList"/>
+            </entry>			      						
+            <entry key="getthemes">
+                <ref bean="AjaxGetThemes"/>
+            </entry>
+            <entry key="getactions">
+                <ref bean="AjaxGetActions"/>
+            </entry>
             <entry key="window">
                 <ref bean="AjaxChangeWindow"/>
-            </entry>			            
+            </entry>
             <entry key="getmenus">
                 <ref bean="AjaxGetMenus"/>
             </entry>			            
@@ -904,6 +1063,24 @@ of AJAX request. Here is the Spring Assembly. Each API is configured in the Ajax
             <entry key="permissions">
                 <ref bean="AjaxSecurityPermissions"/>
             </entry>			                        
+            <entry key="constraints">
+                <ref bean="AjaxSecurityConstraints"/>
+            </entry>			          
+            <entry key="updatefolder">
+                <ref bean="AjaxUpdateFolder"/>                
+            </entry>                          
+            <entry key="updatepage">
+                <ref bean="AjaxUpdatePage"/>                
+            </entry>              
+            <entry key="updatelink">
+                <ref bean="AjaxUpdateLink"/>                
+            </entry>                                                              
+            <entry key="getuserinfo">
+                <ref bean="AjaxGetUserInformation"/>                
+            </entry>
+            <entry key="getuserlist">
+                <ref bean="AjaxGetUserList"/>                
+            </entry>
         </map>
     </constructor-arg>
     <constructor-arg index="1">

@@ -507,6 +507,17 @@
     </constructor-arg>
 </bean>
 
+<!-- 
+    == AjaxGetUserList Constructor Arguments ==
+    index 0 = render response VM template, generates XML NORMAL response
+    index 1 = render response VM template, generates XML ERROR response
+    index 2 = User Manager
+    index 3 = Portal statistics
+    index 4 = Portal session manager
+    index 5 = Security behavior
+    index 6 = Protection scope
+    -->
+
 <bean id="AjaxGetUserList"
     class="org.apache.jetspeed.layout.impl.GetUserListAction">
     <constructor-arg index="0">
@@ -526,6 +537,9 @@
     </constructor-arg>
 	<constructor-arg index='5'>
         <ref bean="RolesSecurityBehavior"/>
+    </constructor-arg>
+    <constructor-arg index='6'>
+        <value>private</value>
     </constructor-arg>
 </bean>
     
