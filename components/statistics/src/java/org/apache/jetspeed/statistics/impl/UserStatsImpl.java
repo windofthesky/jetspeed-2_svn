@@ -21,8 +21,6 @@ import java.net.UnknownHostException;
 
 import org.apache.jetspeed.statistics.UserStats;
 
-import com.sun.org.apache.bcel.internal.util.ByteSequence;
-
 /**
  * UserStatsImpl
  * 
