@@ -30,7 +30,6 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -103,11 +102,10 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
-     * @param pageManager page manager component reference
      * @param requestFallback flag to enable root folder fallback
      * @param useHistory flag to enable selection of last visited folder page
      */
-    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageManager pageManager,
+    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, 
                               boolean requestFallback, boolean useHistory)
     {
         this.profiler = profiler;
@@ -121,13 +119,12 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
-     * @param pageManager page manager component reference
      * @param requestFallback flag to enable root folder fallback
      */
-    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, PageManager pageManager,
+    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, 
                              boolean requestFallback)
     {
-        this(profiler, portalSite, pageManager, requestFallback, true);
+        this(profiler, portalSite, requestFallback, true);
     }
 
     /**
@@ -135,11 +132,10 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
-     * @param pageManager page manager component reference
      */
-    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, PageManager pageManager)
+    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite)
     {
-        this(profiler, portalSite, pageManager, true, true);
+        this(profiler, portalSite, true, true);
     }
     
     /*
