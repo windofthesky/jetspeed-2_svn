@@ -55,7 +55,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     private final static String DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsAllowed";
     private final static String DOJO_CONFIG_ACTION_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopActionLabels";
 
-    private final static String[] DESKTOP_ACTIONS = new String[] { "menu", "tile", "untile", "heightexpand", "heightnormal", "restore", "removeportlet", "addportlet", "editpage" };
+    private final static String[] DESKTOP_ACTIONS = new String[] { "menu", "tile", "untile", "heightexpand", "heightnormal", "restore", "removeportlet", "addportlet", "editpage", "loading" };
     private final static String DESKTOP_ACTION_RESOURCE_NAME_PREFIX = "desktop.action.";
     
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
