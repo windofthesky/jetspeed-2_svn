@@ -16,8 +16,11 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +29,7 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
+import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
@@ -87,10 +91,53 @@ public class GetMenusAction extends BasePortletAction
             catch (NodeNotFoundException nnfe)
             {
             }
-
+            
             // return menu names action results
             resultMap.put(STANDARD_MENUS, standardMenuNames);
             resultMap.put(CUSTOM_MENUS, customMenuNames);
+            
+            // get action parameter
+            String includeMenuDefinitions = getActionParameter(requestContext, INCLUDE_MENU_DEFS);
+            if ( includeMenuDefinitions != null && includeMenuDefinitions.toLowerCase().equals( "true" ) )
+            {
+                // get request locale
+                Locale locale = requestContext.getLocale();
+                
+                HashMap menuDefinitionsMap = new HashMap();
+                
+                StringBuffer failReason = new StringBuffer();
+                Iterator menuNamesIter = standardMenuNames.iterator();
+                while ( menuNamesIter.hasNext() )
+                {
+                    String menuName = (String)menuNamesIter.next();
+                    Menu menuDefinition = getMenuDefinition( menuName, siteRequestContext, failReason );
+                    if ( menuDefinition != null )
+                        menuDefinitionsMap.put( menuName, menuDefinition );
+                }
+                menuNamesIter = customMenuNames.iterator();
+                while ( menuNamesIter.hasNext() )
+                {
+                    String menuName = (String)menuNamesIter.next();
+                    Menu menuDefinition = getMenuDefinition( menuName, siteRequestContext, failReason );
+                    if ( menuDefinition != null )
+                        menuDefinitionsMap.put( menuName, menuDefinition );
+                }
+                
+                if ( failReason.length() > 0 )
+                {
+                    success = false;
+                    resultMap.put(REASON, failReason.toString() );
+                    return success;
+                }
+                resultMap.put( INCLUDE_MENU_DEFS, new Boolean( true ) );
+                resultMap.put( MENU_DEFINITIONS, menuDefinitionsMap );
+                resultMap.put( MENU_CONTEXT, siteRequestContext );
+                resultMap.put( MENU_LOCALE, locale );
+            }
+            else
+            {
+                resultMap.put( INCLUDE_MENU_DEFS, new Boolean( false ) );
+            }
             resultMap.put(STATUS, status);
         }
         catch (Exception e)
@@ -101,4 +148,25 @@ public class GetMenusAction extends BasePortletAction
 
         return success;
 	}
+    
+    private Menu getMenuDefinition( String menuName, PortalSiteRequestContext siteRequestContext, StringBuffer failReason )
+    {
+        // get menu definition
+        Menu menuDefinition = null;
+        try
+        {
+            menuDefinition = siteRequestContext.getMenu( menuName );
+        }
+        catch ( NodeNotFoundException nnfe )
+        {
+        }
+        if ( menuDefinition == null && failReason != null )
+        {
+            if ( failReason.length() == 0 )
+                failReason.append( "Unable to lookup specified menus: " ).append( menuName );
+            else
+                failReason.append( ", " ).append( menuName );
+        }
+        return menuDefinition;
+    }
 }

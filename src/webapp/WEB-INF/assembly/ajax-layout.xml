@@ -384,7 +384,7 @@
 <bean id="AjaxGetMenus"
     class="org.apache.jetspeed.layout.impl.GetMenusAction">
     <constructor-arg index="0">
-        <value>org/apache/jetspeed/layout/ajax-xml/menus.vm</value>
+        <value>org/apache/jetspeed/layout/ajax-xml/menu.vm</value>
     </constructor-arg>
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>

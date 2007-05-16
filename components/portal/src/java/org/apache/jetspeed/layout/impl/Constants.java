@@ -77,6 +77,8 @@ public interface Constants
     
     public static final String STANDARD_MENUS = "standardMenus";
     public static final String CUSTOM_MENUS = "customMenus";
+    public static final String MENU_DEFINITIONS = "menuDefinitions";
+    public static final String INCLUDE_MENU_DEFS = "includeMenuDefs";
     public static final String MENU = "menu";
     public static final String MENU_NAME = "name";
     public static final String MENU_CONTEXT = "menuContext";

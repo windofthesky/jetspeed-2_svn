@@ -14,8 +14,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-#macro (serializeMenu $_menu $_context $_locale $_indent)
+#macro (serializeMenu $_menu $_context $_locale $_indent $_menutype)
+#if($_menutype && $_menutype.length()>0)
+${_indent}<menu type="$_menutype">
+#else
 ${_indent}<menu>
+#end
 #if("$!_menu.getName()" != "")
 ${_indent}    <name>$_menu.getName()</name>
 #end
@@ -32,9 +36,9 @@ ${_indent}    <skin>$_menu.getSkin()</skin>
 #if("$!_menu.getUrl()" != "")
 ${_indent}    <url>$_menu.getUrl()</url>
 #end
-${_indent}    <hidden>$menu.isHidden()</hidden>
+${_indent}    <hidden>$_menu.isHidden()</hidden>
 #if("$!_context" != "")
-${_indent}    <selected>$menu.isSelected($_context)</selected>
+${_indent}    <selected>$_menu.isSelected($_context)</selected>
 #else
 ${_indent}    <selected>false</selected>
 #end
@@ -87,14 +91,36 @@ ${_indent}        <skin>$element.getSkin()</skin>
 #end
 ${_indent}    </separator>
 #elseif($element.elementType == "menu")
-#serializeMenu($element $_context $_locale "${_indent}    ")
+#set($childmenutype="")
+#serializeMenu($element $_context $_locale "${_indent}    " $childmenutype)
 #end
 #end
 ${_indent}</menu>
 #end
 <js>
     <status>$status</status>
-    <action>$action</action>
-    
-#serializeMenu($menu $menuContext $menuLocale "    ")
+    <action>$action</action> 
+#if( $menu )
+#set($menuType="")
+#serializeMenu($menu $menuContext $menuLocale "    " $menuType)
+#else
+    <menus>
+#if($includeMenuDefs)
+#foreach ($menu in $standardMenus)
+#serializeMenu($menuDefinitions.get( $menu ) $menuContext $menuLocale "        " "standard")
+#end
+#foreach ($menu in $customMenus)
+#serializeMenu($menuDefinitions.get( $menu ) $menuContext $menuLocale "        " "custom")
+#end
+#else
+#foreach ($menu in $standardMenus)    
+        <menu type="standard">${menu}</menu>
+#end        
+#foreach ($menu in $customMenus)    
+        <menu type="custom">${menu}</menu>
+#end
+#end 
+    </menus>
+#end
+
 </js>
