@@ -104,6 +104,8 @@ jetspeed.id =
     ACTION_NAME_DESKTOP_HEIGHT_EXPAND: "heightexpand",
     ACTION_NAME_DESKTOP_HEIGHT_NORMAL: "heightnormal",
 
+    ACTION_NAME_LOADING: "loading",
+
     PORTLET_ACTION_TYPE_MODE: "mode",
     PORTLET_ACTION_TYPE_STATE: "state",
 
@@ -297,7 +299,7 @@ jetspeed.initializeDesktop = function()
             }
         }
     }
-
+    jetspeed.url.loadingIndicatorShow();
     jetspeed.loadPage();
 };
 jetspeed.loadPage = function()
@@ -736,6 +738,7 @@ jetspeed.notifyRetrieveAllMenusFinished = function()
         }
     }
     
+    jetspeed.url.loadingIndicatorHide();
     jetspeed.pageNavigateSuppress = false;
 };
 
@@ -1289,6 +1292,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 if ( this.actions != null && ( this.actions[ jetspeed.id.ACTION_NAME_EDIT ] != null || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null ) )
                     jetspeed.editPageInitiate();
             }
+
         }
         else
         {
@@ -2299,8 +2303,8 @@ dojo.lang.extend( jetspeed.om.Page,
     {
         if ( ! menuObj ) return;
         var menuName = ( menuObj.getName ? menuObj.getName() : null );
-        if ( ! menuName ) dojo.raise( "Page.addMenu argument is invalid - no menu-name can be found" );
-        this.menus[ menuName ] = menuObj;
+        if ( menuName != null )
+            this.menus[ menuName ] = menuObj;
     },
     getMenu: function( /* String */ menuName )
     {
@@ -2333,17 +2337,17 @@ dojo.lang.extend( jetspeed.om.Page,
     },
     retrieveAllMenus: function()
     {
-        var contentListener = new jetspeed.om.MenusAjaxApiCallbackContentListener( true );
-        this.retrieveMenuDeclarations( contentListener );
+        this.retrieveMenuDeclarations( true );
     },
-    retrieveMenuDeclarations: function( contentListener )
+    retrieveMenuDeclarations: function( includeMenuDefs )
     {
-        if ( contentListener == null )
-            contentListener = new jetspeed.om.MenusAjaxApiContentListener( false );
+        contentListener = new jetspeed.om.MenusAjaxApiContentListener( includeMenuDefs );
 
         this.clearMenus();
 
         var queryString = "?action=getmenus";
+        if ( includeMenuDefs )
+            queryString += "&includeMenuDefs=true";
 
         var psmlMenusActionUrl = this.getPsmlUrl() + queryString;
         var mimetype = "text/xml";
@@ -3730,91 +3734,16 @@ dojo.lang.extend( jetspeed.om.Menu,
     
 });
 
-// ... jetspeed.om.MenusAjaxApiContentListener
-jetspeed.om.MenusAjaxApiContentListener = function( /* boolean */ retrieveEachMenu )
-{
-    this.retrieveEachMenu = retrieveEachMenu;
-};
-dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
-{
-    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
-    {
-        var menuDefs = this.getMenuDefs( data, requestUrl, domainModelObject );
-        var menuContentListener = new jetspeed.om.MenuAjaxApiContentListener( this, menuDefs.length )
-        for ( var i = 0 ; i < menuDefs.length; i++ )
-        {
-            var mObj = menuDefs[i];
-            domainModelObject.page.putMenu( mObj );
-            if ( this.retrieveEachMenu )
-            {
-                domainModelObject.page.retrieveMenu( mObj.getName(), mObj.getType(), menuContentListener );
-            }
-            else if ( i == (menuDefs.length -1) )
-            {
-                if ( dojo.lang.isFunction( this.notifyFinished ) )
-                {
-                    this.notifyFinished( domainModelObject );
-                }
-            }
-        }  
-    },
-    getMenuDefs: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
-    {
-        var menuDefs = [];
-        var menuDefElements = data.getElementsByTagName( "menu" );
-        for( var i = 0; i < menuDefElements.length; i++ )
-        {
-            var menuType = menuDefElements[i].getAttribute( "type" );
-            var menuName = menuDefElements[i].firstChild.nodeValue;
-            menuDefs.push( new jetspeed.om.Menu( menuName, menuType ) );
-        }
-        return menuDefs;
-    },
-    
-    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
-    {
-        dojo.raise( "MenusAjaxApiContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
-    }
-});
-
-// ... jetspeed.om.MenusAjaxApiCallbackContentListener
-jetspeed.om.MenusAjaxApiCallbackContentListener = function( /* boolean */ retrieveEachMenu )
-{
-    jetspeed.om.MenusAjaxApiContentListener.call( this, retrieveEachMenu );
-};
-dojo.inherits( jetspeed.om.MenusAjaxApiCallbackContentListener, jetspeed.om.MenusAjaxApiContentListener );
-dojo.lang.extend( jetspeed.om.MenusAjaxApiCallbackContentListener,
-{
-    notifyFinished: function( domainModelObject )
-    {
-        jetspeed.notifyRetrieveAllMenusFinished();
-    }
-});
-
 // ... jetspeed.om.MenuAjaxApiContentListener
-jetspeed.om.MenuAjaxApiContentListener = function( /* jetspeed.om.MenusAjaxApiContentListener */ parentNotifyFinishedListener, /* int */ parentNotifyFinishedAfterIndex )
+jetspeed.om.MenuAjaxApiContentListener = function()
 {
-    this.parentNotifyFinishedListener = parentNotifyFinishedListener;
-    this.parentNotifyFinishedAfterIndex = parentNotifyFinishedAfterIndex;
-    this.parentNotified = false;
-    this.notifyCount = 0;
 };
 dojo.lang.extend( jetspeed.om.MenuAjaxApiContentListener,
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
-        this.notifyCount++;
         var menuObj = this.parseMenu( data, domainModelObject.menuName, domainModelObject.menuType );
         domainModelObject.page.putMenu( menuObj );
-        if ( ! this.parentNotified && this.parentNotifyFinishedListener != null && this.notifyCount >= this.parentNotifyFinishedAfterIndex && dojo.lang.isFunction( this.parentNotifyFinishedListener.notifyFinished ) )
-        {
-            this.parentNotified = true;
-            this.parentNotifyFinishedListener.notifyFinished( domainModelObject );
-        }
-        if ( dojo.lang.isFunction( this.notifyFinished ) )
-        {
-            this.notifyFinished( domainModelObject, menuObj );
-        }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
@@ -3892,17 +3821,51 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiContentListener,
     }
 });
 
-// ... jetspeed.om.MenusAjaxApiCallbackContentListener
-jetspeed.om.MenuAjaxApiCallbackContentListener = function( /* boolean */ retrieveEachMenu )
+// ... jetspeed.om.MenusAjaxApiContentListener
+jetspeed.om.MenusAjaxApiContentListener = function( /* boolean */ includeMenuDefs )
 {
-    jetspeed.om.MenusAjaxApiContentListener.call( this, retrieveEachMenu );
+    this.includeMenuDefs = includeMenuDefs;
 };
-dojo.inherits( jetspeed.om.MenuAjaxApiCallbackContentListener, jetspeed.om.MenuAjaxApiContentListener );
-dojo.lang.extend( jetspeed.om.MenuAjaxApiCallbackContentListener,
+dojo.inherits( jetspeed.om.MenusAjaxApiContentListener, jetspeed.om.MenuAjaxApiContentListener);
+dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
 {
-    notifyFinished: function( domainModelObject, menuObj )
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
-        jetspeed.notifyRetrieveMenuFinished( menuObj );
+        var menuDefs = this.getMenuDefs( data, requestUrl, domainModelObject );
+        for ( var i = 0 ; i < menuDefs.length; i++ )
+        {
+            var mObj = menuDefs[i];
+            domainModelObject.page.putMenu( mObj );
+        }
+        this.notifyFinished( domainModelObject );
+    },
+    getMenuDefs: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
+    {
+        var menuDefs = [];
+        var menuDefElements = data.getElementsByTagName( "menu" );
+        for( var i = 0; i < menuDefElements.length; i++ )
+        {
+            var menuType = menuDefElements[i].getAttribute( "type" );
+            if ( this.includeMenuDefs )
+                menuDefs.push( this.parseMenuObject( menuDefElements[i], new jetspeed.om.Menu( null, menuType ) ) );
+            else
+            {
+                var menuName = menuDefElements[i].firstChild.nodeValue;
+                menuDefs.push( new jetspeed.om.Menu( menuName, menuType ) );
+            }
+        }
+        return menuDefs;
+    },
+    
+    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
+    {
+        dojo.raise( "MenusAjaxApiContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+    },
+
+    notifyFinished: function( domainModelObject )
+    {
+        if ( this.includeMenuDefs )
+            jetspeed.notifyRetrieveAllMenusFinished();
     }
 });
 

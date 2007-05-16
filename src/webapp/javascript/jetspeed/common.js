@@ -188,13 +188,13 @@ jetspeed.debugNodeTree = function( node, string )
     {
         jetspeed.println( 'node: ' );
     }
-    if ( node.nodeType != ELEMENT_NODE && node.nodeType != TEXT_NODE )
+    if ( node.nodeType != 1 && node.nodeType != 3 )
     {
-        if ( node.length && node.length > 0 && ( node[0].nodeType == ELEMENT_NODE || node[0].nodeType == TEXT_NODE ) )
+        if ( node.length && node.length > 0 && ( node[0].nodeType == 1 || node[0].nodeType == 3 ) )
         {
             for ( var i = 0 ; i < node.length ; i++ )
             {
-                debugNodeTree( node[i], " [" + i + "]" )
+                jetspeed.debugNodeTree( node[i], " [" + i + "]" )
             }
         }
         else
@@ -265,6 +265,7 @@ jetspeed.getDebugElement = function( clear )
 
 
 // ... jetspeed.url
+jetspeed.url.LOADING_INDICATOR_ID = "js-showloading";
 jetspeed.url.path =
 {
     SERVER: null,     //   http://localhost:8080
@@ -683,6 +684,8 @@ if ( window.dojo )
                 dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
                 dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] no valid contentListener" );
             }
+            if ( this.hideLoadingIndicator )
+                jetspeed.url.loadingIndicatorHide();
         },
     
         error: function( type, error )
@@ -696,6 +699,8 @@ if ( window.dojo )
             {
                 this.contentListener.notifyFailure( type, error, this.url, this.domainModelObject );
             }
+            if ( this.hideLoadingIndicator )
+                jetspeed.url.loadingIndicatorHide();
         }
     });
     
@@ -707,7 +712,12 @@ if ( window.dojo )
         bindArgs.debugContentDumpIds = debugContentDumpIds ;
         
         var jetspeedBindArgs = new jetspeed.url.BindArgs( bindArgs );
-    
+
+        if ( bindArgs.showLoadingIndicator || ( contentListener && ! contentListener.suppressLoadingIndicator && bindArgs.showLoadingIndicator != false ) )
+        {
+            if ( jetspeed.url.loadingIndicatorShow() )
+                jetspeedBindArgs.hideLoadingIndicator = true ;
+        }
         dojo.io.bind( jetspeedBindArgs.createIORequest() ) ;
     };
     
@@ -756,5 +766,36 @@ if ( window.dojo )
             msg += " (" + bindError.type + ")";
         }
         return msg;
+    };
+    jetspeed.url.loadingIndicatorShow = function()
+    {
+        var loading = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID );
+        if ( loading != null && loading.style )
+        {
+            if ( loading.style[ "display" ] == "none" )
+            {
+                loading.style[ "display" ] = "";
+
+                var actionlabel = null;
+                if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
+                    actionlabel = jetspeed.prefs.desktopActionLabels[ "loading" ];
+                if ( actionlabel != null )
+                {
+                    var loadingContent = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID + "-content" );
+                    if ( loadingContent != null )
+                    {
+                        loadingContent.innerHTML = actionlabel;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    };
+    jetspeed.url.loadingIndicatorHide = function()
+    {
+        var loading = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID );
+        if ( loading != null && loading.style )
+            loading.style[ "display" ] = "none";
     };
 }
