@@ -75,5 +75,16 @@ limitations under the License.
   <p>
      <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
+<div id="js-showloading" style="display: none">
+    <table class="js-showloading">
+        <tr>
+            <td class="js-showloading-left">&nbsp;</td>
+            <td class="js-showloading-middle">
+                <div class="js-showloading-content" id="js-showloading-content">&lt;loading&gt; ...</div>
+            </td>
+            <td class="js-showloading-right">&nbsp;</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

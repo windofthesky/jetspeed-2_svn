@@ -70,5 +70,43 @@ DIV.portlet
     vertical-align: top;
 }
 
+/*.layout-tigris #navcolumn {
+    padding: 5px;
+}*/
+
+.js-showloading {
+    z-index: 999;
+    position: absolute;
+    top: 41%;
+    left: 45%;
+    height: 50px;
+}
+.js-showloading-left {
+    background-image: url(../images/desktop/loading/loading_left.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    width: 5px;
+    height: 50px;
+}
+.js-showloading-middle {
+    background-image: url(../images/desktop/loading/loading_middle.png);
+    background-repeat: repeat-x;
+    background-position: 0 0;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+}
+.js-showloading-right {
+    background-image: url(../images/desktop/loading/loading_right.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    width: 5px;
+    height: 50px;
+}
+.js-showloading-content {
+    padding: 0 25px;
+}
+
 /*  end layout decorator tigris embellishments  */
 
