@@ -1,7 +1,7 @@
 <%@ page session="true" contentType="text/html;charset=utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 
 <!--
 /*
@@ -46,7 +46,7 @@
 </h:panelGroup>
 <h:panelGroup rendered="#{rule != null && rule.id != '{empty}'}">
 
-    <h:form id="ruleForm" name="ruleForm">
+    <h:form id="ruleForm" >
         <h:panelGrid columns="3">
 
         <h:outputLabel for="xid" value="#{MESSAGE['profiler.rule.id']}: "/>

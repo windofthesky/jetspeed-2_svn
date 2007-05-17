@@ -46,12 +46,12 @@ public class FragmentUtil
 
         // Build some fragments and add them to the request context
         // Prepare some fragments
-        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 0, 0);
-        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 0, 1);
-        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 1, 0);
-        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 1, 1);
-        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 1, 2);
         Fragment a_oLayout = buildFragment("layout", "6", "layout", 0, 0);
+        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 1, 0);
+        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 1, 1);
+        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 2, 0);
+        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 2, 1);
+        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 2, 2);
 
         LocalFragmentImpl a_oLocalLayout = (LocalFragmentImpl) a_oLayout;
         a_oLocalLayout.addFragment(a_oFrag1);
@@ -117,12 +117,12 @@ public class FragmentUtil
     public static Page setupPage()
     {
         // Prepare some fragments
-        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 0, 0);
-        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 0, 1);
-        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 1, 0);
-        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 1, 1);
-        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 1, 2);
         Fragment a_oLayout = buildFragment("layout", "6", "layout", 0, 0);
+        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 1, 0);
+        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 1, 1);
+        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 2, 0);
+        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 2, 1);
+        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 2, 2);
 
         LocalFragmentImpl a_oLocalLayout = (LocalFragmentImpl) a_oLayout;
         a_oLocalLayout.addFragment(a_oFrag1);

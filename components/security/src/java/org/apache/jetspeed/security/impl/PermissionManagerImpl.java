@@ -50,7 +50,7 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
+import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
  * <p>

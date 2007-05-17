@@ -41,42 +41,42 @@ public class TestPortletPlacement extends TestCase
         {
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
             int a_iNumCols = ppc.getNumberColumns();
-            assertEquals(a_iNumCols, 2);
+            assertEquals(a_iNumCols, 3);
 
-            int a_iNumRows = ppc.getNumberRows(0);
+            int a_iNumRows = ppc.getNumberRows(1);
             assertEquals(a_iNumRows, 2);
 
-            a_iNumRows = ppc.getNumberRows(1);
+            a_iNumRows = ppc.getNumberRows(2);
             assertEquals(a_iNumRows, 3);
 
             // Check the fragments
             Fragment a_oFrag = ppc
-                    .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
-            assertNotNull("null fragment found at 0,0", a_oFrag);
+                    .getFragmentAtNewCoordinate(new CoordinateImpl(1, 0, 1, 0));
+            assertNotNull("null fragment found at 1,0", a_oFrag);
             assertEquals(a_oFrag.getId(), "1");
             assertEquals(a_oFrag.getName(), "frag1");
 
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 0,
-                    0, 1));
-            assertNotNull("null fragment found at 0,0", a_oFrag);
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(1, 1,
+                    1, 1));
+            assertNotNull("null fragment found at 1,1", a_oFrag);
             assertEquals(a_oFrag.getId(), "2");
             assertEquals(a_oFrag.getName(), "frag2");
 
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 0,
-                    1, 0));
-            assertNotNull("null fragment found at 0,0", a_oFrag);
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(2, 0,
+                    2, 0));
+            assertNotNull("null fragment found at 2,0", a_oFrag);
             assertEquals(a_oFrag.getId(), "3");
             assertEquals(a_oFrag.getName(), "frag3");
 
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 0,
-                    1, 1));
-            assertNotNull("null fragment found at 0,0", a_oFrag);
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(2, 1,
+                    2, 1));
+            assertNotNull("null fragment found at 2,1", a_oFrag);
             assertEquals(a_oFrag.getId(), "4");
             assertEquals(a_oFrag.getName(), "frag4");
 
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 0,
-                    1, 2));
-            assertNotNull("null fragment found at 0,0", a_oFrag);
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(2, 2,
+                    2, 2));
+            assertNotNull("null fragment found at 2,2", a_oFrag);
             assertEquals(a_oFrag.getId(), "5");
             assertEquals(a_oFrag.getName(), "frag5");
 
@@ -136,16 +136,16 @@ public class TestPortletPlacement extends TestCase
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
 
             Fragment a_oFrag = ppc
-                    .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
+                    .getFragmentAtNewCoordinate(new CoordinateImpl(1, 0, 1, 0));
 
             Coordinate a_oCoordinate = ppc.remove(a_oFrag);
 
-            assertEquals(a_oCoordinate.getOldCol(), 0);
+            assertEquals(a_oCoordinate.getOldCol(), 1);
             assertEquals(a_oCoordinate.getOldRow(), 0);
 
             // Should be the second fragment now that the first has been deleted
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 0,
-                    0, 0));
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(1, 0,
+                    1, 0));
             assertEquals(a_oFrag.getId(), "2");
             assertEquals(a_oFrag.getName(), "frag2");
         } catch (PortletPlacementException e)

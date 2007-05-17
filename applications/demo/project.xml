@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <id>commons-httpclient</id>
-            <version>3.0</version>
+            <version>3.0.1</version>
             <type>jar</type>
             <properties>
                 <war.bundle>true</war.bundle>
@@ -53,17 +53,26 @@
         <dependency>
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
-            <version>1.5</version>
+            <version>1.8</version>
             <type>jar</type>
             <url>http://jakarta.apache.org/commons/digester.html</url>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
-        </dependency>
+        </dependency>        
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+      <url>http://jakarta.apache.org/commons/lang.html</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>        
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.6.1</version>
+            <version>1.7.0</version>
             <type>jar</type>
             <url>http://jakarta.apache.org/commons/beanutils.html</url>
             <properties>
@@ -72,21 +81,21 @@
         </dependency>
         <dependency>
             <id>commons-collections</id>
-            <version>3.0</version>
+            <version>3.2</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>commons-pool</id>
-            <version>1.2</version>
+            <version>1.3</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>commons-dbcp</id>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
@@ -165,19 +174,26 @@
         </dependency>
         <dependency>
             <id>velocity</id>
-            <version>1.4</version>
+            <version>1.5</version>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
         <dependency>
             <id>velocity-tools</id>
-            <version>1.2</version>
+            <version>1.3</version>
             <url>http://jakarta.apache.org/velocity</url>
             <properties>
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+	    <dependency>
+	      <id>oro</id>
+	      <version>2.0.8</version>
+	      <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>        
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -214,13 +230,6 @@
 			 <properties>
 			 	<war.bundle>true</war.bundle>
 			 </properties>
-	    </dependency>
-	    <dependency>
-	      <id>castor</id>
-	      <version>0.9.4.3</version>
-	      <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
 	    </dependency>
 	    <dependency>
             <groupId>org.apache.portals.jetspeed-2</groupId>

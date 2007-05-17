@@ -495,7 +495,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 
 	public int getNumberColumns() throws PortletPlacementException 
     {
-		return this.columnsList.length;
+        return numberOfColumns;
+		//return this.columnsList.length;
 	}
 
 	public int getNumberRows(int col) throws PortletPlacementException 

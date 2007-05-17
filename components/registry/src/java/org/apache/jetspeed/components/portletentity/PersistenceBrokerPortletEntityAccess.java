@@ -41,7 +41,7 @@ import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.window.PortletWindow;
-import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
+import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
  * <p>

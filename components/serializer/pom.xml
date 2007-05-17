@@ -48,7 +48,7 @@ limitations under the License.
         <!-- Build Dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
+            <artifactId>spring-core</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>

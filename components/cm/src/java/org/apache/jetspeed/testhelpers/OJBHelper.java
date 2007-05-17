@@ -22,8 +22,8 @@ import java.util.Properties;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
-import org.springmodules.orm.ojb.PersistenceBrokerTransactionManager;
-import org.springmodules.orm.ojb.support.LocalOjbConfigurer;
+import org.springframework.orm.ojb.PersistenceBrokerTransactionManager;
+import org.springframework.orm.ojb.support.LocalOjbConfigurer;
 
 public class OJBHelper extends DatasourceHelper
 {

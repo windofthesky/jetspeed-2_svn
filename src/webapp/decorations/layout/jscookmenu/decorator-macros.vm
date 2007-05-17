@@ -39,18 +39,15 @@ DEALINGS IN THE SOFTWARE.
 
 #* define navigation constants *#
 #macro (defineNavigationConstants)
-  #* Constants for layout orientation *#
   #set($LEFT_TO_RIGHT = "LeftToRight")
   #set($RIGHT_TO_LEFT = "RightToLeft")
   #set($TOP_TO_BOTTOM = "TopToBottom")
   #set($BOTTOM_TO_TOP = "BottomToTop")
 
-  #* Constants for layout control *#
   #set($TITLE_FIRST = "TitleFirst")
   #set($TITLE_LAST = "TitleLast")
   #set($BREADCRUMBS_STYLE = "BreadcrumbsStyle")
 
-  #* Constants for JSCookMenu themes *#
   #set($JSCOOKMENU_JETSPEED_THEME = "ThemeJetspeed")
   #set($JSCOOKMENU_PANEL_THEME = "ThemePanel")
   #set($JSCOOKMENU_OFFICE_THEME = "ThemeOffice")

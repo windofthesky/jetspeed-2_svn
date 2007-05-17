@@ -310,7 +310,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
 
         request.setUserPrincipal(p);
 
-        request.setRemoteAddr("192.168.2.3");
+        request.setRemoteAddr("123.234.145.156");
         request.setSession(session);
         request.setServerName("www.sporteportal.com");
         request.setScheme("http");

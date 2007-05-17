@@ -154,104 +154,104 @@ public class TestLayout extends TestCase
 
     public void testEasy()
     {
-        moveSuccess("moveabs", "1", "0", "0", "0", "1", "0", "1"); // Move down
-        moveSuccess("moveright", "1", "0", "0", "1", "0", "1", "0"); // Straight across
-        //moveSuccess("moveabs", "2", "0", "1", "0", "2", "0", "1");
+        moveSuccess("moveabs", "1", "1", "0", "1", "1", "1", "1"); // Move down
+        moveSuccess("moveright", "1", "1", "0", "2", "0", "2", "0"); // Straight across
     }
     
     public void testMoveSuccess()
     {
-        moveSuccess("moveabs", "1", "0", "0", "0", "0", "0", "0"); // Doesn't
+        moveSuccess("moveabs", "1", "1", "0", "1", "0", "1", "0"); // Doesn't
                                                                     // really
                                                                     // move
-        moveSuccess("moveabs", "1", "0", "0", "0", "1", "0", "1"); // Move down
-        moveSuccess("moveabs", "2", "0", "1", "0", "0", "0", "0"); // Move up
-        moveSuccess("moveabs", "1", "0", "0", "1", "0", "1", "0"); // Move
+        moveSuccess("moveabs", "1", "1", "0", "1", "1", "1", "1"); // Move down
+
+        moveSuccess("moveabs", "2", "1", "1", "1", "0", "1", "0"); // Move up
+        moveSuccess("moveabs", "1", "1", "0", "2", "0", "2", "0"); // Move
                                                                     // right
-        moveSuccess("moveabs", "3", "1", "0", "0", "0", "0", "0"); // Move left
-        moveSuccess("moveabs", "2", "0", "1", "1", "2", "1", "2"); // Move
+        moveSuccess("moveabs", "3", "2", "0", "1", "0", "1", "0"); // Move left
+        moveSuccess("moveabs", "2", "1", "1", "2", "2", "2", "2"); // Move
                                                                     // right &
                                                                     // move down
-        moveSuccess("moveabs", "3", "1", "0", "0", "1", "0", "1"); // Move left
+        moveSuccess("moveabs", "3", "2", "0", "1", "1", "1", "1"); // Move left
                                                                     // & move
                                                                     // down
-        moveSuccess("moveabs", "4", "1", "1", "0", "0", "0", "0"); // Move left
+        moveSuccess("moveabs", "4", "2", "1", "1", "0", "1", "0"); // Move left
                                                                     // & move up
 
-        moveSuccess("moveabs", "1", "0", "0", "0", "2", "0", "1"); // Move too
+        moveSuccess("moveabs", "1", "1", "0", "1", "2", "1", "1"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
-        moveSuccess("moveabs", "2", "0", "1", "0", "2", "0", "1"); // Move too
+        moveSuccess("moveabs", "2", "1", "1", "1", "2", "1", "1"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
-        moveSuccess("moveabs", "3", "1", "0", "1", "3", "1", "2"); // Move too
+        moveSuccess("moveabs", "3", "2", "0", "2", "3", "2", "2"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
-        moveSuccess("moveabs", "4", "1", "1", "1", "3", "1", "2"); // Move too
+        moveSuccess("moveabs", "4", "2", "1", "2", "3", "2", "2"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
-        moveSuccess("moveabs", "5", "1", "2", "1", "3", "1", "2"); // Move too
+        moveSuccess("moveabs", "5", "2", "2", "2", "3", "2", "2"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
-        moveSuccess("moveabs", "1", "0", "0", "1", "4", "1", "3"); // Move too
+        moveSuccess("moveabs", "1", "1", "0", "2", "4", "2", "3"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
-        moveSuccess("moveabs", "2", "0", "1", "1", "4", "1", "3"); // Move too
+        moveSuccess("moveabs", "2", "1", "1", "2", "4", "2", "3"); // Move too
                                                                     // far down,
                                                                     // should be
                                                                     // at end of
                                                                     // row
 
-        moveSuccess("moveleft", "1", "0", "0", "0", "0", "0", "0"); // Shouldn't
+        moveSuccess("moveleft", "1", "1", "0", "0", "0", "0", "0"); // Shouldn't
                                                                     // move
-        moveSuccess("moveleft", "2", "0", "1", "0", "1", "0", "1"); // Shouldn't
+        moveSuccess("moveleft", "6", "0", "0", "0", "0", "0", "0"); // Shouldn't
                                                                     // move
-        moveSuccess("moveleft", "3", "1", "0", "0", "0", "0", "0"); // Straight
+        moveSuccess("moveleft", "3", "2", "0", "1", "0", "1", "0"); // Straight
                                                                     // across
-        moveSuccess("moveleft", "4", "1", "1", "0", "1", "0", "1"); // Straight
+        moveSuccess("moveleft", "4", "2", "1", "1", "1", "1", "1"); // Straight
                                                                     // across
-        moveSuccess("moveleft", "5", "1", "2", "0", "2", "0", "2"); // Straight
+        moveSuccess("moveleft", "5", "2", "2", "1", "2", "1", "2"); // Straight
                                                                     // across
 
-        moveSuccess("moveright", "1", "0", "0", "1", "0", "1", "0"); // Straight
+        moveSuccess("moveright", "1", "1", "0", "2", "0", "2", "0"); // Straight
                                                                         // across
-        moveSuccess("moveright", "2", "0", "1", "1", "1", "1", "1"); // Straight
+        moveSuccess("moveright", "2", "1", "1", "2", "1", "2", "1"); // Straight
                                                                         // across
-        moveSuccess("moveright", "3", "1", "0", "1", "0", "1", "0"); // Shouldn't
+        moveSuccess("moveright", "3", "2", "0", "3", "0", "3", "0"); // Shouldn't
+//                                                                        // move
+        moveSuccess("moveright", "4", "2", "1", "3", "0", "3", "0"); // Shouldn't
                                                                         // move
-        moveSuccess("moveright", "4", "1", "1", "1", "1", "1", "1"); // Shouldn't
-                                                                        // move
-        moveSuccess("moveright", "5", "1", "2", "1", "2", "1", "2"); // Shouldn't
+        moveSuccess("moveright", "5", "2", "2", "3", "0", "3", "0"); // Shouldn't
                                                                         // move
 
-        moveSuccess("moveup", "2", "0", "1", "0", "0", "0", "0"); // Straight
+        moveSuccess("moveup", "2", "1", "1", "1", "0", "1", "0"); // Straight
                                                                     // across
-        moveSuccess("moveup", "4", "1", "1", "1", "0", "1", "0"); // Straight
+        moveSuccess("moveup", "4", "2", "1", "2", "0", "2", "0"); // Straight
                                                                     // across
-        moveSuccess("moveup", "5", "1", "2", "1", "1", "1", "1"); // Straight
+        moveSuccess("moveup", "5", "2", "2", "2", "1", "2", "1"); // Straight
                                                                     // across
 
-        moveSuccess("movedown", "1", "0", "0", "0", "1", "0", "1"); // Straight
+        moveSuccess("movedown", "1", "1", "0", "1", "1", "1", "1"); // Straight
                                                                     // across
-        moveSuccess("movedown", "2", "0", "1", "0", "1", "0", "1"); // Shouldn't
+        moveSuccess("movedown", "2", "1", "1", "1", "1", "1", "1"); // Shouldn't
                                                                     // move
-        moveSuccess("movedown", "3", "1", "0", "1", "1", "1", "1"); // Straight
+        moveSuccess("movedown", "3", "2", "0", "2", "1", "2", "1"); // Straight
                                                                     // across
-        moveSuccess("movedown", "4", "1", "1", "1", "2", "1", "2"); // Straight
+        moveSuccess("movedown", "4", "2", "1", "2", "2", "2", "2"); // Straight
                                                                     // across
-        moveSuccess("movedown", "5", "1", "2", "1", "2", "1", "2"); // Shouldn't
+        moveSuccess("movedown", "5", "2", "2", "2", "2", "2", "2"); // Shouldn't
                                                                     // move
     }
 
@@ -368,7 +368,7 @@ public class TestLayout extends TestCase
         }
     }
 
-    public void xtestRemove()
+    public void testRemove()
     {
         remove("1");
         remove("2");

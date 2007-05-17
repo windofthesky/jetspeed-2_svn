@@ -136,7 +136,8 @@ public class RemovePortletAction
             page.removeFragmentById(fragment.getId());
             if (!batch)
             {
-                pageManager.updatePage(page);
+                if (pageManager != null)
+                    pageManager.updatePage(page);
             }
             // Build the results for the response
             resultMap.put(PORTLETID, portletId);            

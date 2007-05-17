@@ -134,7 +134,7 @@ limitations under the License.
         <ant.version>1.6.5</ant.version>
         <jmock.version>1.0.1</jmock.version>
         <junit.version>3.8.1</junit.version>
-        <mockrunner.version>0.2.7</mockrunner.version>
+        <mockrunner.version>0.3.8</mockrunner.version>
         <org.apache.maven.artifact.ant.version>2.0.4</org.apache.maven.artifact.ant.version>
         <!--
             Bug: using specific version of surefire plugin
@@ -147,21 +147,22 @@ limitations under the License.
 
         <!-- Project Dependency Version Properties -->
         <aopalliance.version>1.0</aopalliance.version>
-        <castor.version>0.9.4.3</castor.version>
-        <cglib.version>2.0.2</cglib.version>
+<!--         <castor.version>1.1.1-xml</castor.version> -->
+		<castor.version>0.9.4.3</castor.version>
+        <cglib.version>2.1_3</cglib.version>
         <commons-beanutils.version>1.7.0</commons-beanutils.version>
         <commons-betwixt.version>20061115</commons-betwixt.version>        
         <commons-codec.version>1.3</commons-codec.version>
-        <commons-collections.version>3.1</commons-collections.version>
+        <commons-collections.version>3.2</commons-collections.version>
         <commons-configuration.version>1.1</commons-configuration.version>
-        <commons-dbcp.version>1.2.1</commons-dbcp.version>
-        <commons-digester.version>1.5</commons-digester.version>
-        <commons-fileupload.version>1.0</commons-fileupload.version>
-        <commons-httpclient.version>3.0</commons-httpclient.version>
+        <commons-dbcp.version>1.2.2</commons-dbcp.version>
+        <commons-digester.version>1.8</commons-digester.version>
+        <commons-fileupload.version>1.2</commons-fileupload.version>
+        <commons-httpclient.version>3.0.1</commons-httpclient.version>
         <commons-io.version>0.1</commons-io.version>
         <commons-lang.version>2.1</commons-lang.version>
-        <commons-logging.version>1.0.3</commons-logging.version>
-        <commons-pool.version>1.2</commons-pool.version>
+        <commons-logging.version>1.1</commons-logging.version>
+        <commons-pool.version>1.3</commons-pool.version>
         <ddlutils.version>1.0-RC1-PATCHED</ddlutils.version>        
         <directory.version>0.9.3</directory.version>      
         <ehcache.version>1.2.4</ehcache.version>
@@ -175,9 +176,9 @@ limitations under the License.
         <javax.transaction.version>1.0.1B</javax.transaction.version>
         <jaxen.version>1.0-FCS</jaxen.version>
         <jdom.version>1.0</jdom.version>
-        <log4j.version>1.2.8</log4j.version>
+        <log4j.version>1.2.14</log4j.version>
         <lucene.version>2.0.0</lucene.version>
-        <myfaces.version>1.1.0</myfaces.version>
+        <myfaces.version>1.1.5</myfaces.version>
         <nekohtml.version>0.9.5</nekohtml.version>
         <ojb.version>1.0.3</ojb.version>
         <org.apache.derby.version>10.1.1.0</org.apache.derby.version>
@@ -189,18 +190,18 @@ limitations under the License.
         <org.apache.portals.bridges.jsf.version>1.0.2-RC</org.apache.portals.bridges.jsf.version>
         <org.apache.portals.bridges.velocity.version>1.0.2-RC</org.apache.portals.bridges.velocity.version>
         <org.apache.portals.bridges.portletfilter.version>1.0.2-RC</org.apache.portals.bridges.portletfilter.version>
-        <oro.version>2.0.7</oro.version>
+        <oro.version>2.0.8</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
         <regexp.version>1.2</regexp.version>
         <rome.version>0.8</rome.version>
         <saxpath.version>1.0-FCS</saxpath.version>
-        <spring.version>2.0</spring.version>
-        <spring.modules.version>0.6</spring.modules.version>
+        <spring.version>2.0.5</spring.version>
+        <spring.modules.version>2.0-rc2</spring.modules.version>
         <taglibs-random.version>1.0.2</taglibs-random.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
         <taglibs-standard.version>1.1.2</taglibs-standard.version>
-        <velocity-tools.version>1.2</velocity-tools.version>
-        <velocity.version>1.4</velocity.version>
+        <velocity-tools.version>1.3</velocity-tools.version>
+        <velocity.version>1.5</velocity.version>
         <xalan.version>2.4.1</xalan.version>
         <xerces.version>2.3.0</xerces.version>
         <xml-apis.version>1.0.b2</xml-apis.version>
@@ -519,7 +520,7 @@ limitations under the License.
             <!-- Spring Framework -->
             <dependency>
                 <groupId>cglib</groupId>
-                <artifactId>cglib-full</artifactId>
+                <artifactId>cglib</artifactId>
                 <version>${cglib.version}</version>
             </dependency>
             <dependency>
@@ -531,7 +532,7 @@ limitations under the License.
                 <groupId>org.springframework</groupId>
                 <artifactId>spring</artifactId>
                 <version>${spring.version}</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-portlet</artifactId>
@@ -574,8 +575,8 @@ limitations under the License.
             </dependency>
             <!-- Spring Framework Modules -->
             <dependency>
-                <groupId>org.springmodules</groupId>
-                <artifactId>spring-modules-ojb</artifactId>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-ojb</artifactId>
                 <version>${spring.modules.version}</version>
             </dependency>
             
@@ -743,11 +744,6 @@ limitations under the License.
                 <groupId>javolution</groupId>
                 <artifactId>javolution</artifactId>
                 <version>${javolution.version}</version>
-            </dependency>                        
-            <dependency>
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils</artifactId>
-                <version>${commons-beanutils.version}</version>
             </dependency>                        
             <dependency>
                 <groupId>commons-betwixt</groupId>

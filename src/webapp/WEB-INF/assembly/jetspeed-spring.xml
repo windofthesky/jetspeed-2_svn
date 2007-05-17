@@ -188,5 +188,9 @@
 
     <!-- HeaderResource Factory -->
     <bean id="org.apache.jetspeed.headerresource.HeaderResourceFactory" class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl"></bean>
+
+    <!-- Security: Session Manager -->
+    <bean id="org.apache.jetspeed.container.session.PortalSessionsManager" 
+  	   class="org.apache.jetspeed.container.session.PortalSessionsManagerImpl"  />
         
 </beans>
