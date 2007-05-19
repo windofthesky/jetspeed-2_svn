@@ -44,13 +44,12 @@ limitations under the License.
         </property>
         <property name="transactionAttributes">
             <props>
-              <prop key="*">PROPAGATION_SUPPORTS</prop>              
-              <prop key="getPage*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="getLink*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="getFolder*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="getContentPage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="getAll">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="getUserFolder">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="getPage*">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getLink*">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getFolder*">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getContentPage">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getAll">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getUserFolder">PROPAGATION_SUPPORTS</prop>  
               <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removePage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removeFolder">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
@@ -59,11 +58,11 @@ limitations under the License.
               <prop key="createUserHomePagesFromRoles">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="deepCopy*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="addPages">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>              
-              <prop key="folderExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="pageExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="linkExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="userFolderExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
-              <prop key="userPageExists">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="folderExists">PROPAGATION_SUPPORTS</prop>  
+              <prop key="pageExists">PROPAGATION_SUPPORTS</prop>  
+              <prop key="linkExists">PROPAGATION_SUPPORTS</prop>  
+              <prop key="userFolderExists">PROPAGATION_SUPPORTS</prop>  
+              <prop key="userPageExists">PROPAGATION_SUPPORTS</prop>  
             </props>
         </property>
     </bean>

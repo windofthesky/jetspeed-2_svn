@@ -1,4 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+                           "http://castor.org/mapping.dtd">
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
@@ -19,7 +21,7 @@
   <class name="org.apache.jetspeed.om.page.psml.PageImpl">
     <map-to xml="page"/>
 
-    <field name="id" type="java.lang.String">
+    <field name="id" type="string">
       <bind-xml name="id" node="attribute"/>
     </field>
 
@@ -32,15 +34,15 @@
       <bind-xml name="security-constraints"/>
     </field>
 
-    <field name="version" type="java.lang.String">
+    <field name="version" type="string">
       <bind-xml name="version" node="attribute"/>
     </field>
 
-    <field name="title" type="java.lang.String">
+    <field name="title" type="string">
       <bind-xml name="title"/>
     </field>
     
-    <field name="shortTitle" type="java.lang.String">
+    <field name="shortTitle" type="string">
       <bind-xml name="short-title"/>
     </field>
     
@@ -70,15 +72,15 @@
   <class name="org.apache.jetspeed.om.page.PageLocalizedFieldImpl">
     <map-to xml="metadata"/>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml name="name" node="attribute"/>
     </field>
 
-    <field name="language" type="java.lang.String">
+    <field name="language" type="string">
       <bind-xml name="xml:lang" node="attribute"/>
     </field>
 
-    <field name="value" type="java.lang.String">
+    <field name="value" type="string">
       <bind-xml node="text"/>
     </field>
   </class>
@@ -86,31 +88,31 @@
   <class name="org.apache.jetspeed.om.page.psml.FragmentImpl">
     <map-to xml="fragment"/>
 
-    <field name="id" type="java.lang.String">
+    <field name="id" type="string">
       <bind-xml name="id" node="attribute"/>
     </field>
 
-    <field name="type" type="java.lang.String">
+    <field name="type" type="string">
       <bind-xml name="type" node="attribute"/>
     </field>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml name="name" node="attribute"/>
     </field>
 
-    <field name="skin" type="java.lang.String">
+    <field name="skin" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>
 
-    <field name="state" type="java.lang.String">
+    <field name="state" type="string">
       <bind-xml name="state" node="attribute"/>
     </field>
 
-    <field name="mode" type="java.lang.String">
+    <field name="mode" type="string">
       <bind-xml name="mode" node="attribute"/>
     </field>
 
-    <field name="decorator" type="java.lang.String">
+    <field name="decorator" type="string">
       <bind-xml name="decorator" node="attribute"/>
     </field>
 
@@ -119,11 +121,11 @@
       <bind-xml name="security-constraints"/>
     </field>
 
-    <field name="title" type="java.lang.String">
+    <field name="title" type="string">
       <bind-xml name="title"/>
     </field>
     
-    <field name="shortTitle" type="java.lang.String">
+    <field name="shortTitle" type="string">
       <bind-xml name="short-title"/>
     </field>
 
@@ -147,7 +149,7 @@
   <class name="org.apache.jetspeed.om.page.psml.LinkImpl">
     <map-to xml="link"/>
 
-    <field name="target" type="java.lang.String">
+    <field name="target" type="string">
       <bind-xml name="target" node="attribute"/>
     </field>
     
@@ -155,11 +157,11 @@
       <bind-xml name="hidden" node="attribute"/>
     </field>
 
-    <field name="skin" type="java.lang.String">
+    <field name="skin" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>
 
-    <field name="version" type="java.lang.String">
+    <field name="version" type="string">
       <bind-xml name="version" node="attribute"/>
     </field>
 
@@ -168,15 +170,15 @@
       <bind-xml name="security-constraints"/>
     </field>
     
-    <field name="url" type="java.lang.String">
+    <field name="url" type="string">
       <bind-xml name="url" />
     </field>
 
-    <field name="title" type="java.lang.String">
+    <field name="title" type="string">
       <bind-xml name="title"/>
     </field>
     
-    <field name="shortTitle" type="java.lang.String">
+    <field name="shortTitle" type="string">
       <bind-xml name="short-title"/>
     </field>
     
@@ -199,15 +201,15 @@
       <bind-xml name="security-constraints"/>
     </field>
 
-    <field name="version" type="java.lang.String">
+    <field name="version" type="string">
       <bind-xml name="version" node="attribute"/>
     </field>
     
-    <field name="title" type="java.lang.String">
+    <field name="title" type="string">
       <bind-xml name="title"/>
     </field>
     
-    <field name="shortTitle" type="java.lang.String">
+    <field name="shortTitle" type="string">
       <bind-xml name="short-title"/>
     </field>
     
@@ -216,12 +218,12 @@
       <bind-xml name="defaults"/>
     </field>
 
-    <field name="defaultPage" type="java.lang.String">
+    <field name="defaultPage" type="string">
       <bind-xml name="default-page"/>
     </field>
 
     <field name="documentOrder"
-           type="java.lang.String" 
+           type="string" 
            collection="collection">
       <bind-xml name="document-order"/>
     </field>    
@@ -242,11 +244,11 @@
   <class name="org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl">
     <map-to xml="menu"/>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml name="name" node="attribute"/>
     </field>    
 
-    <field name="options" type="java.lang.String">
+    <field name="options" type="string">
       <bind-xml name="options" node="attribute"/>
     </field>    
 
@@ -262,23 +264,23 @@
       <bind-xml name="regexp" node="attribute"/>
     </field>    
 
-    <field name="profile" type="java.lang.String">
+    <field name="profile" type="string">
       <bind-xml name="profile" node="attribute"/>
     </field>    
 
-    <field name="order" type="java.lang.String">
+    <field name="order" type="string">
       <bind-xml name="order" node="attribute"/>
     </field>    
 
-    <field name="skin" type="java.lang.String">
+    <field name="skin" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>    
 
-    <field name="title" type="java.lang.String">
+    <field name="title" type="string">
       <bind-xml name="title"/>
     </field>
     
-    <field name="shortTitle" type="java.lang.String">
+    <field name="shortTitle" type="string">
       <bind-xml name="short-title"/>
     </field>
     
@@ -327,7 +329,7 @@
   <class name="org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl">
     <map-to xml="options"/>
 
-    <field name="options" type="java.lang.String">
+    <field name="options" type="string">
       <bind-xml node="text"/>
     </field>    
 
@@ -343,15 +345,15 @@
       <bind-xml name="regexp" node="attribute"/>
     </field>    
 
-    <field name="profile" type="java.lang.String">
+    <field name="profile" type="string">
       <bind-xml name="profile" node="attribute"/>
     </field>    
 
-    <field name="order" type="java.lang.String">
+    <field name="order" type="string">
       <bind-xml name="order" node="attribute"/>
     </field>    
 
-    <field name="skin" type="java.lang.String">
+    <field name="skin" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>    
   </class>
@@ -359,19 +361,19 @@
   <class name="org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl">
     <map-to xml="separator"/>
 
-    <field name="skin" type="java.lang.String">
+    <field name="skin" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>    
 
-    <field name="title" type="java.lang.String">
+    <field name="title" type="string">
       <bind-xml name="title"/>
     </field>
     
-    <field name="textChild" type="java.lang.String">
+    <field name="textChild" type="string">
       <bind-xml name="text"/>
     </field>
     
-    <field name="textBody" type="java.lang.String">
+    <field name="textBody" type="string">
       <bind-xml node="text"/>
     </field>
     
@@ -385,7 +387,7 @@
   <class name="org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl">
     <map-to xml="include"/>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml node="text"/>
     </field>    
 
@@ -397,7 +399,7 @@
   <class name="org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl">
     <map-to xml="exclude"/>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml node="text"/>
     </field>    
   </class>
@@ -405,15 +407,15 @@
   <class name="org.apache.jetspeed.om.page.psml.DefaultsImpl">
     <map-to xml="defaults"/>
 
-    <field name="skin" type="java.lang.String">
+    <field name="skin" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>
 
-    <field name="layoutDecorator" type="java.lang.String">
+    <field name="layoutDecorator" type="string">
       <bind-xml name="layout-decorator" node="attribute"/>
     </field>
     
-    <field name="portletDecorator" type="java.lang.String">
+    <field name="portletDecorator" type="string">
       <bind-xml name="portlet-decorator" node="attribute"/>
     </field>
   </class>
@@ -421,15 +423,15 @@
   <class name="org.apache.jetspeed.om.page.psml.PropertyImpl">
     <map-to xml="property"/>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml name="name" node="attribute"/>
     </field>
 
-    <field name="value" type="java.lang.String">
+    <field name="value" type="string">
       <bind-xml name="value" node="attribute"/>
     </field>
 
-    <field name="layout" type="java.lang.String">
+    <field name="layout" type="string">
       <bind-xml name="layout" node="attribute"/>
     </field>
   </class>
@@ -437,7 +439,7 @@
   <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl">
     <map-to xml="security-constraints"/>
 
-    <field name="owner" type="java.lang.String">
+    <field name="owner" type="string">
       <bind-xml name="owner"/>
     </field>
 
@@ -448,7 +450,7 @@
     </field>
 
     <field name="securityConstraintsRefs"
-           type="java.lang.String"
+           type="string"
            collection="collection">
       <bind-xml name="security-constraints-ref"/>
     </field>
@@ -457,19 +459,19 @@
   <class name="org.apache.jetspeed.om.page.SecurityConstraintImpl">
     <map-to xml="security-constraint"/>
 
-    <field name="usersAsString" type="java.lang.String">
+    <field name="usersAsString" type="string">
       <bind-xml name="users"/>
     </field>
 
-    <field name="rolesAsString" type="java.lang.String">
+    <field name="rolesAsString" type="string">
       <bind-xml name="roles"/>
     </field>
 
-    <field name="groupsAsString" type="java.lang.String">
+    <field name="groupsAsString" type="string">
       <bind-xml name="groups"/>
     </field>
 
-    <field name="permissionsAsString" type="java.lang.String">
+    <field name="permissionsAsString" type="string">
       <bind-xml name="permissions"/>
     </field>
   </class>
@@ -477,7 +479,7 @@
   <class name="org.apache.jetspeed.om.page.psml.PageSecurityImpl">
     <map-to xml="page-security"/>
 
-    <field name="version" type="java.lang.String">
+    <field name="version" type="string">
       <bind-xml name="version" node="attribute"/>
     </field>
 
@@ -488,7 +490,7 @@
     </field>
 
     <field name="globalSecurityConstraintsRefs"
-           type="java.lang.String"
+           type="string"
            collection="collection">
       <bind-xml name="global-security-constraints-ref"/>
     </field>
@@ -497,7 +499,7 @@
   <class name="org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl">
     <map-to xml="security-constraints-def"/>
 
-    <field name="name" type="java.lang.String">
+    <field name="name" type="string">
       <bind-xml name="name" node="attribute"/>
     </field>
 
@@ -521,7 +523,7 @@
     </field>
     
     <field name="valueList"
-           type="java.lang.String" 
+           type="string" 
            collection="arraylist" >
       <bind-xml name="value" node="element" />
     </field>
