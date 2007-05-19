@@ -25,9 +25,12 @@
 <f:loadBundle basename="org.apache.jetspeed.portlets.profiler.resources.ProfilerResources" var="MESSAGE" />
 
 <f:view>
-<h:panelGrid columns='2'>
-<h:panelGroup>
+<h:form id="extentForm">
+<h:panelGrid id='pg00' columns='2'>
+<h:panelGroup id='pgg00'>
+
 <h:dataTable
+	id='dt00'
     value="#{rules.extent}"
     var="mRule"
     styleClass="portlet-menu"
@@ -44,43 +47,27 @@
     </h:column>
 </h:dataTable>
 </h:panelGroup>
-<h:panelGroup rendered="#{rule != null && rule.id != '{empty}'}">
+<h:panelGroup id='pgg01' rendered="#{rule != null && rule.id != '{empty}'}">
+	
+<h:panelGrid id='pg01' columns="3">
+<h:outputLabel id='lxid' for="xid" value="#{MESSAGE['profiler.rule.id']}: "/>
+<h:inputText readonly='#{rule.updating}' id="xid" styleClass='portlet-form-label' value="#{rule.id}" size='80'/>
+<h:message id='mxid' for="xid" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
+<h:outputLabel id='ltitle' for="title" value="#{MESSAGE['profiler.rule.title']}: "/>
+<h:inputText id="title" styleClass='portlet-form-label' value="#{rule.title}"  size='100'/>
+<h:message id='mtitle' for="title" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
 
-    <h:form id="ruleForm" >
-        <h:panelGrid columns="3">
+<h:outputLabel id='lclassname' for="classname" value="#{MESSAGE['profiler.rule.class']}: "/>
+<h:selectOneMenu id="classname" styleClass='portlet-form-label' value="#{rule.classname}">
+	<f:selectItems value="#{rule.classnames}"/>
+</h:selectOneMenu>
+<h:message id='mclassname' for="classname" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
 
-        <h:outputLabel for="xid" value="#{MESSAGE['profiler.rule.id']}: "/>
-        <h:inputText readonly='#{rule.updating}' id="xid" styleClass='portlet-form-label' value="#{rule.id}" size='80'/>
-        <h:message for="xid" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
-
-        <h:outputLabel for="title" value="#{MESSAGE['profiler.rule.title']}: "/>
-        <h:inputText id="title" styleClass='portlet-form-label' value="#{rule.title}"  size='100'/>
-        <h:message for="title" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
-
-        <h:outputLabel for="classname" value="#{MESSAGE['profiler.rule.class']}: "/>
-        <h:selectOneMenu id="classname" styleClass='portlet-form-label' value="#{rule.classname}">
-        	<f:selectItems value="#{rule.classnames}"/>
-        </h:selectOneMenu>
-        <h:message for="classname" styleClass="portlet-msg-error" showDetail="true" showSummary="false" />
-        
-        </h:panelGrid>        
-        
-        <h:panelGroup/>
-	    <h:commandButton id="saveProfile" value="#{MESSAGE['profiler.rule.save']}" action="#{rule.saveProfile}"/>
-	    <h:commandButton id="newProfile" value="#{MESSAGE['profiler.rule.new']}" action="#{rule.createNewProfile}"/>
-	    <h:commandButton id="removeProfile" value="#{MESSAGE['profiler.rule.remove']}" action="#{rule.removeProfile}"/>
-        <h:panelGroup/>
-                
-    </h:form>
+</h:panelGrid>
 
 <!-- criteria -->
-    <br/>
-    <div>
-	<h:outputText styleClass='portlet-section-header' value="#{MESSAGE['criteria.title']}"/>
-    </div>
-	<br/>
-	
 	<h:dataTable
+		id='dt01'
 	    value="#{rule.criteria}"
 	    var="mCriterion"
 	    styleClass="portlet-menu"
@@ -116,17 +103,17 @@
 	    </h:column>
 	    
 	</h:dataTable>
-        
-        <h:panelGroup/>
 	    <h:commandLink id="addCriterion" value="#{MESSAGE['criteria.new']}"  immediate='true'
 	                     action="gotoCriterionForm" actionListener="#{criterion.listen}">
 	    	<f:param name='selectedRule' value="#{rule.id}" />	            	    
 	    </h:commandLink>
-        <h:panelGroup/>
-        
-    
-</h:panelGroup>
-
+<h:panelGrid id='cmdButtons' columns='3'>
+		<h:commandButton id="saveProfile" value="#{MESSAGE['profiler.rule.save']}" action="#{rule.saveProfile}"/>
+		<h:commandButton id="newProfile" value="#{MESSAGE['profiler.rule.new']}" action="#{rule.createNewProfile}"/>
+		<h:commandButton id="removeProfile" value="#{MESSAGE['profiler.rule.remove']}" action="#{rule.removeProfile}"/>
 </h:panelGrid>
 
+</h:panelGroup>
+</h:panelGrid>
+</h:form>
 </f:view>
