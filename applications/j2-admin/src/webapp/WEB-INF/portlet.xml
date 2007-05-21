@@ -1031,7 +1031,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>application-certificate.png</value>
     </init-param>                      
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -1066,7 +1066,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>application-certificate.png</value>
     </init-param>                              
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
       <portlet-mode>VIEW</portlet-mode>
@@ -1149,7 +1149,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>start-here.png</value>
     </init-param>    
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
