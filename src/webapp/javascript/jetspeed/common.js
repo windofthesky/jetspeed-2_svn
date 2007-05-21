@@ -274,6 +274,8 @@ jetspeed.url.path =
     DESKTOP: null,    //   /jetspeed/desktop
     PORTAL: null,     //   /jetspeed/portal
     PORTLET: null,    //   /jetspeed/portlet
+    ACTION: null,     //   /jetspeed/action
+    RENDER: null,     //   /jetspeed/render
     initialized: false
 };
 
@@ -318,7 +320,9 @@ jetspeed.url.pathInitialize = function( force )
     jetspeed.url.path.DESKTOP = jetspeed.url.path.JETSPEED + "/desktop";
     jetspeed.url.path.PORTAL = jetspeed.url.path.JETSPEED + "/portal";
     jetspeed.url.path.PORTLET = jetspeed.url.path.JETSPEED + "/portlet";
-    
+    jetspeed.url.path.ACTION = jetspeed.url.path.JETSPEED + "/action";
+    jetspeed.url.path.RENDER = jetspeed.url.path.JETSPEED + "/render";
+
     jetspeed.url.path.initialized = true;
 };
 jetspeed.url.parse = function( url )
