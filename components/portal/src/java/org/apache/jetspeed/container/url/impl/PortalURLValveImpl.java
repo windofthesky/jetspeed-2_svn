@@ -22,6 +22,7 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
 
 /**
  * Creates the PortalURL for the current Request
@@ -45,8 +46,8 @@ public class PortalURLValveImpl extends AbstractValve
         {  
             if ( request.getPortalURL() == null )
             {
-                String encoding = request.getRequestParameter("encoder");
-                if (encoding != null && encoding.equals("desktop"))
+                String encoding = request.getRequestParameter(JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER);
+                if (encoding != null && encoding.equals(JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE))
                 {
                     request.setPortalURL(navComponent.createDesktopURL(request.getRequest(), request.getCharacterEncoding()));
                 }

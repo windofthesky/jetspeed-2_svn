@@ -27,53 +27,85 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
- * DesktopEncodingPortalURL encodes URLs as javascript calls 
- * The signature for the javascript call is based on teh constructor argument <code>javascriptDoRender</code>
- * The script method requires two parameters:
- *   1. URL the portlet pipeline URL
- *   2. the entity id of the portlet to render
- * Example URL for a javascript method doRender:  <code>doRender("http://localhost/jetspeed/portlet", "33")</code>
- * *
+ * DesktopEncodingPortalURL encodes action URLs to target desktop specific /action pipeline,
+ * and render URLs to target desktop specific /render pipeline
+ * 
+ * The query parameters "entity" and "portlet" are added to each url. These parameters are needed in a /render
+ * request and are used by the desktop javascript code for both /render and /action requests.
+ * 
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id: PathInfoEncodingPortalURL.java 367856 2006-01-11 01:04:09Z taylor $
  */
 public class DesktopEncodingPortalURL extends AbstractPortalURL
 {
-    protected final String javascriptDoRender;
-    protected final String javascriptDoAction;    
-    protected String baseActionPath;;
+    private String baseActionPath = null;
+    private String baseRenderPath = null;
     
-    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String javascriptDoRender, String javascriptDoAction, BasePortalURL base)
-    {
-        super(navState, portalContext, base);
-        this.javascriptDoRender = javascriptDoRender;
-        this.javascriptDoAction = javascriptDoAction;        
-    }
-
-    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String javascriptDoRender, String javascriptDoAction)
+    private String desktopActionPipelinePath = null;
+    private String desktopRenderPipelinePath = null;
+    
+    
+    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String desktopRenderPipelinePath, String desktopActionPipelinePath)
     {
         super(navState, portalContext);
-        this.javascriptDoRender = javascriptDoRender;                
-        this.javascriptDoAction = javascriptDoAction;
+        initializePipelinePaths( desktopRenderPipelinePath, desktopActionPipelinePath );
+    }
+    
+    public DesktopEncodingPortalURL(NavigationalState navState, PortalContext portalContext, String desktopRenderPipelinePath, String desktopActionPipelinePath, BasePortalURL base)
+    {
+        super(navState, portalContext, base);
+        initializePipelinePaths( desktopRenderPipelinePath, desktopActionPipelinePath );
     }
 
     public DesktopEncodingPortalURL(String characterEncoding, NavigationalState navState, PortalContext portalContext)
     {
         super(characterEncoding, navState, portalContext);
-        this.javascriptDoRender = null;
-        this.javascriptDoAction = null;
+        initializePipelinePaths( null, null );
     }
 
     public DesktopEncodingPortalURL(HttpServletRequest request, String characterEncoding, NavigationalState navState, PortalContext portalContext)
     {
         super(request, characterEncoding, navState, portalContext);
-        this.javascriptDoRender = null;
-        this.javascriptDoAction = null;
+        initializePipelinePaths( null, null );
+    }
+    
+    private void initializePipelinePaths( String desktopRenderPipelinePath, String desktopActionPipelinePath )
+    {
+        if ( desktopActionPipelinePath == null || desktopActionPipelinePath.length() == 0 )
+            desktopActionPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_ACTION_PIPELINE_PATH;
+        if ( desktopActionPipelinePath.charAt( 0 ) != '/' )
+            desktopActionPipelinePath = "/" + desktopActionPipelinePath;
+        if ( desktopActionPipelinePath.length() > 1 && desktopActionPipelinePath.charAt( desktopActionPipelinePath.length() -1 ) == '/' )
+            desktopActionPipelinePath = desktopActionPipelinePath.substring( 0, desktopActionPipelinePath.length() -1 );
+
+        if ( desktopRenderPipelinePath == null || desktopRenderPipelinePath.length() == 0 )
+            desktopRenderPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_RENDER_PIPELINE_PATH;
+        if ( desktopRenderPipelinePath.charAt( 0 ) != '/' )
+            desktopRenderPipelinePath = "/" + desktopRenderPipelinePath;
+        if ( desktopRenderPipelinePath.length() > 1 && desktopRenderPipelinePath.charAt( desktopRenderPipelinePath.length() -1 ) == '/' )
+            desktopRenderPipelinePath = desktopRenderPipelinePath.substring( 0, desktopRenderPipelinePath.length() -1 );
+        
+        this.desktopRenderPipelinePath = desktopRenderPipelinePath;
+        this.desktopActionPipelinePath = desktopActionPipelinePath;        
     }
 
+    protected void decodeBasePath(HttpServletRequest request)
+    {
+        super.decodeBasePath(request);
+        if ( this.baseActionPath == null )
+        {
+            this.baseActionPath = contextPath + this.desktopActionPipelinePath;
+            this.baseRenderPath = contextPath + this.desktopRenderPipelinePath;
+        }
+    }
+    
     protected void decodePathAndNavigationalState(HttpServletRequest request)
     {
         String path = null;
@@ -125,20 +157,6 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
     protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action)
     {   
         StringBuffer buffer = new StringBuffer("");
-        if (action)
-        {
-            if (this.javascriptDoAction != null)
-            {
-                buffer.append(this.javascriptDoAction + "(&quot;");
-            }            
-        }
-        else
-        {
-            if (this.javascriptDoRender != null)
-            {
-                buffer.append(this.javascriptDoRender + "(&quot;");
-            }            
-        }   
         buffer.append(getBaseURL(secure));
         if (action)
         {
@@ -146,7 +164,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         }
         else
         {
-            buffer.append(getBasePath());            
+            buffer.append(this.baseRenderPath);        
         }            
         if ( encodedNavState != null )
         {
@@ -159,33 +177,14 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             buffer.append(getPath());
         }
-        if (action)
-        {
-            if (this.javascriptDoAction != null)            
-            {
-                if (window != null)
-                {
-                    buffer.append("&quot;,&quot;");
-                    buffer.append(window.getPortletEntity().getId());
-                    buffer.append("&quot;");                
-                }
-                buffer.append(")");
-            }
-        }
-        else
-        {
-            if (this.javascriptDoRender != null)            
-            {
-                if (window != null)
-                {
-                    buffer.append("&quot;,&quot;");
-                    buffer.append(window.getPortletEntity().getId());
-                    buffer.append("&quot;");                
-                }
-                buffer.append(")");
-            }            
-        }
-        //System.out.println("*** " + buffer.toString());
+        PortletEntity pe = window.getPortletEntity();
+        buffer.append( "?entity=" ).append( pe.getId() );
+        
+        PortletDefinition portlet = pe.getPortletDefinition();
+        MutablePortletApplication app = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+        String uniqueName = app.getName() + "::" + portlet.getName();
+        buffer.append( "&portlet=" ).append( uniqueName );
+
         return buffer.toString();
     }        
     
@@ -202,12 +201,5 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             // to keep the compiler happy
             return null;
         }
-    }
-    
-    protected void decodeBasePath(HttpServletRequest request)
-    {
-        super.decodeBasePath(request);
-        this.baseActionPath = contextPath + "/action";
-    }
-    
+    }    
 }

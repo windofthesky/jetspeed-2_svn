@@ -28,6 +28,14 @@ import org.apache.jetspeed.request.RequestContext;
 public interface JetspeedDesktop 
 {
     String DESKTOP_ENABLED_REQUEST_ATTRIBUTE = "desktop.enabled";
+    
+    String DESKTOP_ENCODER_REQUEST_PARAMETER = "encoder";
+    String DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE = "desktop";
+    
+    String DEFAULT_DESKTOP_PIPELINE_PATH = "/desktop";
+    String DEFAULT_DESKTOP_ACTION_PIPELINE_PATH = "/action";
+    String DEFAULT_DESKTOP_RENDER_PIPELINE_PATH = "/render";
+    
 
     /**
      * Render a desktop theme.

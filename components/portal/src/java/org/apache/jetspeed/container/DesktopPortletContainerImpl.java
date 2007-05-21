@@ -32,17 +32,50 @@ import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.InformationProviderAccess;
 import org.apache.pluto.services.information.PortletURLProvider;
 
+import org.apache.jetspeed.desktop.JetspeedDesktop;
+
 /**
- * Desktop Portlet Container implementation. This implementation does not
- * redirect, but instead returns back the 'redirect' URL in the response to the
- * Ajax client for client-side aggregation.
+ * Desktop Portlet Container implementation. This implementation 
+ * redirects only if the query paramater encoder=desktop is NOT specified.
+ * When the encoder=desktop parameter is specified, the 'redirect' URL 
+ * is returned in the response body for use by desktop javascript code.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class DesktopPortletContainerImpl extends PortletContainerImpl implements
-        PortletContainer
+public class DesktopPortletContainerImpl extends PortletContainerImpl implements PortletContainer
 {
+    private String desktopPipelinePath = null;
+    private String desktopActionPipelinePath = null;
+    private String desktopRenderPipelinePath = null;
+    
+    public DesktopPortletContainerImpl( String desktopPipelinePath, String desktopActionPipelinePath, String desktopRenderPipelinePath )
+    {
+        if ( desktopPipelinePath == null || desktopPipelinePath.length() == 0 )
+            desktopPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_PIPELINE_PATH;
+        if ( desktopPipelinePath.charAt( 0 ) != '/' )
+            desktopPipelinePath = "/" + desktopPipelinePath;
+        if ( desktopPipelinePath.charAt( desktopPipelinePath.length() -1 ) != '/' )
+            desktopPipelinePath = desktopPipelinePath + "/";
+        
+        if ( desktopActionPipelinePath == null || desktopActionPipelinePath.length() == 0 )
+            desktopActionPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_ACTION_PIPELINE_PATH;
+        if ( desktopActionPipelinePath.charAt( 0 ) != '/' )
+            desktopActionPipelinePath = "/" + desktopActionPipelinePath;
+        if ( desktopActionPipelinePath.charAt( desktopActionPipelinePath.length() -1 ) != '/' )
+            desktopActionPipelinePath = desktopActionPipelinePath + "/";
+
+        if ( desktopRenderPipelinePath == null || desktopRenderPipelinePath.length() == 0 )
+            desktopRenderPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_RENDER_PIPELINE_PATH;
+        if ( desktopRenderPipelinePath.charAt( 0 ) != '/' )
+            desktopRenderPipelinePath = "/" + desktopRenderPipelinePath;
+        if ( desktopRenderPipelinePath.charAt( desktopRenderPipelinePath.length() -1 ) != '/' )
+            desktopRenderPipelinePath = desktopRenderPipelinePath + "/";
+        
+        this.desktopPipelinePath = desktopPipelinePath;
+        this.desktopActionPipelinePath = desktopActionPipelinePath;
+        this.desktopRenderPipelinePath = desktopRenderPipelinePath;
+    }
 
     /**
      * This redirect does not redirect, instead returns the redirect URL in the response
@@ -111,10 +144,21 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
             redirectResponse = (javax.servlet.http.HttpServletResponse) ((javax.servlet.http.HttpServletResponseWrapper) redirectResponse)
                     .getResponse();
         }
-        //redirectResponse.sendRedirect(location);
-        location = location.replaceAll("/action/", "/portlet/");
+
+        String encoding = servletRequest.getParameter( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER );
+        if ( encoding != null && encoding.equals( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE ) )
+        {
+            location = location.replaceAll( this.desktopActionPipelinePath, this.desktopRenderPipelinePath );
+            redirectResponse.getWriter().print( location );
+        }
+        else
+        {
+            location = location.replaceAll( this.desktopActionPipelinePath, this.desktopPipelinePath );
+            location = location.replaceAll( this.desktopRenderPipelinePath, this.desktopPipelinePath);
+            redirectResponse.sendRedirect(location);
+        }
         // System.out.println("+++ >>>> location is " + location);
-        redirectResponse.getWriter().print(location);
+        
     }
 
 }
