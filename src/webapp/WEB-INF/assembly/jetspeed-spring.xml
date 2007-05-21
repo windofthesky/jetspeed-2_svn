@@ -124,7 +124,19 @@
     <bean id="Pluto" class="org.apache.pluto.PortletContainerImpl" />
 
     <!-- Desktop Pluto Portlet Container -->
-    <bean id="DesktopPluto" class="org.apache.jetspeed.container.DesktopPortletContainerImpl" />
+    <bean id="DesktopPluto" class="org.apache.jetspeed.container.DesktopPortletContainerImpl">
+        
+        <constructor-arg index='0'>
+            <value>/desktop</value>
+        </constructor-arg>
+        <constructor-arg index='1'>
+            <value>/action</value>
+        </constructor-arg>
+        <constructor-arg index='2'>
+            <value>/portlet</value>
+        </constructor-arg>
+        
+    </bean>
     
     <!-- Jetspeed 2's wrapper around Pluto -->
     <!-- settings for this bean will start the underlying pluto portlet container -->

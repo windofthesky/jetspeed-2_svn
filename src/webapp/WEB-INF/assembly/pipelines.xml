@@ -162,6 +162,14 @@ limitations under the License.
     </constructor-arg>                
         -->          	
   </bean> 
+
+  <bean id="desktopEncoderRedirectValve"
+        class="org.apache.jetspeed.desktop.impl.DesktopEncoderRedirectValveImpl">
+     <!-- /desktop pipeline -->
+     <constructor-arg index="0"><value>/desktop</value></constructor-arg>    
+     <!-- /render pipeline -->
+     <constructor-arg index="1"><value>/render</value></constructor-arg>    
+  </bean>
       
   <bean id="portletValve"
         class="org.apache.jetspeed.aggregator.PortletValve"
@@ -342,6 +350,28 @@ limitations under the License.
         <ref bean="desktopActionValve"/>
     </list>
     </constructor-arg>
+  </bean>
+
+  <bean id="desktop-render-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <!-- same as /portlet pipeline except for the addition of the desktopEncoderRedirectValve -->
+   <constructor-arg>
+       <value>DesktopRenderPipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+        <ref bean="desktopEncoderRedirectValve"/>
+        <ref bean="portalURLValve"/>                
+        <ref bean="capabilityValve"/>        
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="containerValve"/>
+        <ref bean="portletValveTitleInHeader"/>    
+    </list>
+    </constructor-arg>
   </bean> 
       
   <bean id="portlet-pipeline"
@@ -362,7 +392,7 @@ limitations under the License.
         <ref bean="portletValveTitleInHeader"/>    
     </list>
     </constructor-arg>
-  </bean> 
+  </bean>
   
   <bean id="ajax-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
@@ -463,15 +493,23 @@ limitations under the License.
             </entry>            
             <entry key='/fileserver'>
                 <value>fileserver-pipeline</value>
-            </entry>                        
-            <entry key='/desktop'>                <!-- the key "/desktop" cannot be changed without editing core.js (at least) -->
-                <value>desktop-pipeline</value>   <!--    must be set in third argument in JetspeedDesktop bean initialization -->
-            </entry>                                    
-            <entry key='/action'>
-                <value>desktop-action-pipeline</value>
-            </entry>                                                
+            </entry>
             <entry key='/ajax'>
                 <value>ajax-direct-pipeline</value>
+            </entry>
+            <entry key='/desktop'>
+                <value>desktop-pipeline</value>
+            </entry>                              <!-- for jetspeed desktop, the keys /desktop, /action and /render cannot be changed -->
+                                                  <!-- without also editing src/webapp/javascript/jetspeed/common.js and these beans: -->
+                                                  <!--    the JetspeedDesktop bean expects argument for /desktop (3rd arg in constructor) -->
+                                                  <!--    the DesktopPluto bean expects arguments for /desktop, /action and /render -->
+                                                  <!--    the DesktopPortalURL bean expects arguments for /render and /action -->
+                                                  <!--    the desktopEncoderRedirectValve bean expects arguments for /desktop and /render -->
+            <entry key='/action'>
+                <value>desktop-action-pipeline</value>
+            </entry>
+            <entry key='/render'>
+                <value>desktop-render-pipeline</value>
             </entry>
         </map>        
     </constructor-arg>        
