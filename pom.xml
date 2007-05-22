@@ -1126,6 +1126,44 @@ limitations under the License.
             <scope>test</scope>
         </dependency>
 
+		<!-- Transitive Dependencies forced out -->
+		<dependency>
+			<groupId>isorelax</groupId>
+			<artifactId>isorelax</artifactId>
+			<version>20020414</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>1.5.3</version>			
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>logkit</groupId>
+			<artifactId>logkit</artifactId>
+			<version>1.0.1</version>			
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>msv</groupId>
+			<artifactId>msv</artifactId>
+			<version>20020414</version>						
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>relaxngDatatype</groupId>
+			<artifactId>relaxngDatatype</artifactId>
+			<version>20020414</version>						
+			<scope>provided</scope>
+		</dependency>
+        <dependency>
+            <groupId>avalon-framework</groupId>
+            <artifactId>avalon-framework</artifactId>
+			<version>4.1.3</version>						
+            <scope>provided</scope>
+        </dependency>
+		
     </dependencies>
 
     <!-- Project Information -->

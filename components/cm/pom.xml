@@ -93,8 +93,9 @@ limitations under the License.
         <dependency>
             <groupId>mockrunner</groupId>
             <artifactId>mockrunner</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
+
         <!--
             Note: junit is normally required only for test, but 
             in this case, abstract test cases are included in the

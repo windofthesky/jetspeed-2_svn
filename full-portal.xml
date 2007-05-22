@@ -40,7 +40,7 @@ limitations under the License.
 	      <id>org.apache.portals.jetspeed-2:ant-tasks</id>
     	  <version>${jetspeed.version}</version>
       		<properties>
-        		 <war.bundle>true</war.bundle>
+        		 <war.bundle>false</war.bundle>
 		    </properties>                    
         </dependency>
 	
