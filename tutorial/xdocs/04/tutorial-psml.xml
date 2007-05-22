@@ -28,7 +28,8 @@
 	<p>
 	Now that we've created a new portlet, lets add a page to hold that portlet.
 	In the <b>jetexpress</b> project, lets add a folder to the root of our site named
-	<i>portal/src/webapp/WEB-INF/pages/tutorial/</i>.
+	<i>portal/src/webapp/WEB-INF/pages/tutorial/</i>. In addition to creating the folder,
+	you will need to create a <i>folder.metadata</i> file:
 	</p>
 	 <source>	
 	 <![CDATA[	
