@@ -439,5 +439,13 @@ public interface RequestContext
      *  @return A Content Page located by the profiler, or null if not found
      */
     ContentPage locatePage(Profiler profiler, String nonProfiledPath);
+    
+    /**
+     * Return a map of Jetspeed Request Context objects configured via Spring Map
+     * 
+     * @return a Map of request context objects
+     * @since 2.1.1
+     */
+    Map getObjects();
 }
 

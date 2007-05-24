@@ -92,6 +92,7 @@ public class JetspeedRequestContext implements RequestContext
     private UserInfoManager userInfoMgr;
     private Map requestsForWindows;
     private Map responsesForWindows;
+    private final Map objects;
     
     /**
      * Create a new Request Context
@@ -104,6 +105,12 @@ public class JetspeedRequestContext implements RequestContext
     public JetspeedRequestContext( HttpServletRequest request, HttpServletResponse response, ServletConfig config,
             UserInfoManager userInfoMgr )
     {
+        this(request, response, config, userInfoMgr, new HashMap());
+    }
+
+    public JetspeedRequestContext( HttpServletRequest request, HttpServletResponse response, ServletConfig config,
+            UserInfoManager userInfoMgr, Map objects)
+    {
         this.request = request;
         this.response = response;
         this.config = config;
@@ -111,6 +118,7 @@ public class JetspeedRequestContext implements RequestContext
         this.userInfoMgr = userInfoMgr;
         this.requestsForWindows = new HashMap();
         this.responsesForWindows = new HashMap();
+        this.objects = objects;
 
         // set context in Request for later use
         if (null != this.request)
@@ -137,9 +145,9 @@ public class JetspeedRequestContext implements RequestContext
                 // to the original request.
                 this.request = new HttpServletRequestWrapper(this.request);
             }
-        }
+        }        
     }
-
+    
     public HttpServletRequest getRequest()
     {
         return request;
@@ -670,4 +678,8 @@ public class JetspeedRequestContext implements RequestContext
         return null;
     }    
 
+    public Map getObjects()
+    {
+        return objects;
+    }
 }

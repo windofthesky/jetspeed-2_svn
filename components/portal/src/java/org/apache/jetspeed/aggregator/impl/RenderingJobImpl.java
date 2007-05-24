@@ -237,6 +237,7 @@ public class RenderingJobImpl implements RenderingJob
             this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
             this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+            this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
           //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
             container.renderPortlet(this.window, this.request, this.response);               
             this.response.flushBuffer();                           

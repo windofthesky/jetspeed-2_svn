@@ -94,11 +94,14 @@
 
     <!-- Request Context -->
     <bean id="org.apache.jetspeed.request.RequestContextComponent" class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
-        <constructor-arg>
+        <constructor-arg index='0'>
             <value>org.apache.jetspeed.request.JetspeedRequestContext</value>
         </constructor-arg>
-        <constructor-arg>
+        <constructor-arg index='1'>
             <ref bean="org.apache.jetspeed.userinfo.UserInfoManager" />
+        </constructor-arg>
+        <constructor-arg index='2'>
+        	<ref bean="RequestContextObjects" />
         </constructor-arg>
     </bean>
 

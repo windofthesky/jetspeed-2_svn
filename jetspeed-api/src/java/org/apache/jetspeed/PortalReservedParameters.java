@@ -39,6 +39,7 @@ public interface PortalReservedParameters
     public static final String PAGE_EDIT_ACCESS_ATTRIBUTE = "org.apache.jetspeed.decoration.PageEditAccess";
     public static final String SESSION_KEY_SUBJECT = "org.apache.jetspeed.security.subject";
     public static final String REQUEST_CONTEXT_ATTRIBUTE = "org.apache.jetspeed.request.RequestContext";
+    public static final String REQUEST_CONTEXT_OBJECTS = "org.apache.jetspeed.request.RequestContextObjects";
     public static final String FRAGMENT_ATTRIBUTE = "org.apache.jetspeed.Fragment";
     public static final String MAXIMIZED_FRAGMENT_ATTRIBUTE = "org.apache.jetspeed.maximized.Fragment";    
     public static final String MAXIMIZED_LAYOUT_ATTRIBUTE = "org.apache.jetspeed.maximized.Layout";

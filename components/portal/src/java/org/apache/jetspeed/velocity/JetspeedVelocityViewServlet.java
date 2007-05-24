@@ -287,6 +287,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         ctx.put("windowStateNormal", WindowState.NORMAL);
         ctx.put("windowStateMinimized", WindowState.MINIMIZED);
         ctx.put("windowStateMaximized", WindowState.MAXIMIZED);
+        ctx.put("rco", requestContext.getObjects());
         StringBuffer appRoot = new StringBuffer();
         if (!requestContext.getPortalURL().isRelativeOnly())
         {

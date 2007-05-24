@@ -65,6 +65,7 @@ public class MockRequestContext implements RequestContext
     private HttpServletResponse response;
     private Object session;
     private Pipeline pipeline;
+    private Map objects;
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
@@ -555,5 +556,15 @@ public class MockRequestContext implements RequestContext
     public ContentPage locatePage(Profiler profiler, String nonProfiledPath)
     {
         return null;
+    }
+    
+    public Map getObjects()
+    {
+        return objects;
+    }
+    
+    public void setObjects(Map objects)
+    {
+        this.objects = objects;
     }
 }

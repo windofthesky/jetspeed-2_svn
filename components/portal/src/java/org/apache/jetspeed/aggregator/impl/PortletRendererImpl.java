@@ -472,7 +472,8 @@ public class PortletRendererImpl implements PortletRenderer
         request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
         request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
         request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);
-        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);                
+        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+        request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());                        
         request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestContext.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
         request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
         
@@ -488,7 +489,8 @@ public class PortletRendererImpl implements PortletRenderer
             workerAttrs.put(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
             workerAttrs.put(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
             workerAttrs.put(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);
-            workerAttrs.put(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);        
+            workerAttrs.put(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+            workerAttrs.put(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());                                    
             workerAttrs.put(PortalReservedParameters.PATH_ATTRIBUTE, requestContext.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
             workerAttrs.put(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, portletWindow);
 

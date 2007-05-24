@@ -17,6 +17,8 @@
 package org.apache.jetspeed.request;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -42,12 +44,14 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     /** The user info manager. */
     private UserInfoManager userInfoMgr;
     private ThreadLocal tlRequestContext = new ThreadLocal();
-
+    private Map requestContextObjects;
+    
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
 
     public JetspeedRequestContextComponent(String contextClassName)
     {
         this.contextClassName = contextClassName;
+        this.requestContextObjects = new HashMap();
     }
 
     public JetspeedRequestContextComponent(String contextClassName, 
@@ -55,8 +59,18 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     {
         this.contextClassName = contextClassName;
         this.userInfoMgr = userInfoMgr;
+        this.requestContextObjects = new HashMap();        
     }
 
+    public JetspeedRequestContextComponent(String contextClassName, 
+            UserInfoManager userInfoMgr,
+            Map requestContextObjects)
+    {
+        this.contextClassName = contextClassName;
+        this.userInfoMgr = userInfoMgr;
+        this.requestContextObjects = requestContextObjects;        
+    }
+    
     public RequestContext create(HttpServletRequest req, HttpServletResponse resp, ServletConfig config)
     {
         RequestContext context = null;
@@ -74,18 +88,17 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
                         HttpServletRequest.class,
                         HttpServletResponse.class,
                         ServletConfig.class,
-                        UserInfoManager.class});
-            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, userInfoMgr});
-
+                        UserInfoManager.class,
+                        Map.class});
+            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, userInfoMgr, requestContextObjects});
+                    
         }
         catch (Exception e)
         {
             String msg = "JetspeedRequestContextComponent: Failed to create a Class object for RequestContext: " + e.toString();
             log.error(msg);
         }
-
-        tlRequestContext.set(context);
-        
+        tlRequestContext.set(context);        
         return context;
     }
 

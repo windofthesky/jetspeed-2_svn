@@ -53,6 +53,15 @@ public class SessionNavigationalState extends AbstractNavigationalState
             if (JetspeedActions.SOLO_STATE.equals(state))
             {
                 // skip *any* synchronizations when in SOLO state
+                HttpSession session = context.getRequest().getSession();
+                if ( session != null )
+                {
+                    PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
+                    if ( sessionStates != null )
+                    {
+                        sessionStates.removeFromCache(context, requestMaximizedWindowId, cache);
+                    }
+                }
                 return;
             }
         }
