@@ -210,7 +210,7 @@ public class GetUserListAction
         						
         						Map singleUserMap = new HashMap();
         						singleUserMap.put(USERNAME, userStat.getUsername());
-        						singleUserMap.put(SESSIONS, Integer.valueOf(userStat.getNumberOfSessions()));
+                                singleUserMap.put(SESSIONS, new Integer(userStat.getNumberOfSessions()));
         						singleUserMap.put(STATUS, ONLINE);
         						singleUserMap.put(IPADDRESS, userStat.getInetAddress().getHostAddress());
         						if(includeUserInfo)
@@ -268,7 +268,7 @@ public class GetUserListAction
         		{
         			// Add number of guest accounts to resultMap
         			int guestUserCount = numberOfCurrentUsers - numberOfCurrentLoggedInUsers;
-                    resultMap.put(GUESTUSERS, Integer.valueOf(guestUserCount));
+                    resultMap.put(GUESTUSERS, new Integer(guestUserCount));
         		}
                 	
         	}
