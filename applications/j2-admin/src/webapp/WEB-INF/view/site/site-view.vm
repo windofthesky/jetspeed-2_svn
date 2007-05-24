@@ -18,7 +18,8 @@
 #set($req = $rc.Request)
 #set($app = $renderRequest.getContextPath())
 #set($rooturl = "${req.scheme}://${req.serverName}:${req.serverPort}${req.contextPath}/")
-
+#set($treeName = $renderRequest.getParameter("treeName"))
+#set($renderURL = $renderResponse.createRenderURL())
   <div dojoType="dialog" id="CopyResourceDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250" >
     <form onsubmit="return false;">
     <table>
@@ -404,9 +405,36 @@ function getFoldersResult(domainObjects, folderList,pagesList,linksList)
     var img = null;    
 	var frmObj = null;    
 	var a = null;
+	var folder =document.getElementById('path').value;
+	var rowNum;
+	if(folder =='/')
+	{
+		pgRoww = foldersTable.insertRow(0);
+		pgCol = pgRoww.insertCell(0);
+		frmObj = document.createElement("input");
+		frmObj.type = "radio";
+		frmObj.name = "fDestination";
+		frmObj.setAttribute("onChange","javascript:setDestination('/','/')");
+		pgCol.appendChild(frmObj);   
+		pgCol = pgRoww.insertCell(1);
+		img = document.createElement("img");
+        img.src = '$app/images/folder.gif';
+        pgCol.appendChild(img);        
+		pgCol = pgRoww.insertCell(2);
+		a = document.createElement("a");
+		a.innerHTML = '/';
+		a.href = "javascript:getFolders('/')";
+		pgCol.appendChild(a);              
+
+	}
 	for ( var i = 0 ; i < folder_len ; i++ )
 	{   
-		pgRoww = foldersTable.insertRow(i);
+		if(folder =='/'){
+			rowNum = i+1;
+		}else{
+			rowNum = i;
+		}
+		pgRoww = foldersTable.insertRow(rowNum);
 		pgCol = pgRoww.insertCell(0);
 		frmObj = document.createElement("input");
 		frmObj.type = "radio";
@@ -1249,8 +1277,8 @@ dojo.addOnLoad(function()
 #end
 
 #macro (UserTreeView $f)
-<div dojoType="Tree"  widgetId="userTree" DNDMode="between" selector="treeSelector" 
-      actionsDisabled="customize,move,delete" toggler="fade" DNDAcceptTypes="userTree" controller="treeController" menu='treeContextMenu'>
+<div dojoType="Tree" widgetId="siteTree" DNDMode="between" selector="treeSelector" 
+      actionsDisabled="customize,move,delete" toggler="fade" DNDAcceptTypes="siteTree" controller="treeController" menu='treeContextMenu'>
 	#TraverseUserFolder($f)
 </div>
 #end
@@ -1264,16 +1292,33 @@ dojo.addOnLoad(function()
 
 <!-- Start LHS -->    
 <div dojoType="LayoutContainer" widgetId="lhs" layoutAlign="left" style="width: 32%; border: 1px solid gray; ">
-<div id="lmainTabContainer" dojoType="TabContainer" selectedChild="fullTree" doLayout="false">
-<div dojoType="ContentPane" widgetId="fullTree" style="width: 100%; height: 100%; overflow:auto;" label="Portal Tree">
-#FolderTreeView($folders)
-</div>
-   #if($userTree == 'false')
-		<div dojoType="ContentPane" widgetId="userTree" label="User Tree">
+#if (!$treeName ||  $treeName =='portal')
+	$!renderURL.setParameter("treeName","user")
+	#set($label = "User")
+	#set($treeName = "portal")	
+
+	#if($userTree == 'false')
+		Click here for <a href="$renderURL">$label</a> Tree 
+	#end
+	<div id="lmainTabContainer" dojoType="TabContainer" doLayout="false" selectedChild="fullTree">
+		<div dojoType="ContentPane" widgetId="fullTree" style="width: 100%; height: 100%; overflow:auto;" label="Portal Tree">
+			#FolderTreeView($folders)
+		</div>
+	</div>
+#end
+#if ($treeName =='user')
+	$!renderURL.setParameter("treeName","portal")
+	#set($label = "Portal")
+	#set($treeName = "user")
+	#if($userTree == 'false')
+		Click here for <a href="$renderURL">$label</a> Tree 
+	#end
+	<div id="lmainTabContainer" dojoType="TabContainer" doLayout="false" selectedChild="userTree">
+		<div dojoType="ContentPane" widgetId="userTree"  style="width: 100%; height: 100%; overflow:auto;" label="User Tree">
 			#UserTreeView($folders)
 		</div>
-   #end
 </div>
+#end
 </div>
 <!-- Start RHS -->    
 <div dojoType="LayoutContainer" id="rhs" widgetId="rhs" layoutAlign="client" style="display:none; border: 1px solid gray; width: 68%">
@@ -1781,11 +1826,6 @@ dojo.addOnLoad(function()
    var tree = dojo.widget.byId("siteTree");
    if (tree.children[0])
        tree.children[0].expand();
-   #if($userTree == 'false')
-   var uTree = dojo.widget.byId("userTree");
-   if (uTree.children[0])
-       uTree.children[0].expand();	          
-   #end	   
 }); 
 // General Table Functions
 function processTableRowEvent(e, tableName)

@@ -97,6 +97,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
             this.getContext(request).put("page-decorations", decorationFactory.getPageDecorations(requestContext));
             this.getContext(request).put("portlet-decorations", decorationFactory.getPortletDecorations(requestContext));
             this.getContext(request).put("themes", decorationFactory.getDesktopPageDecorations(requestContext));
+            this.getContext(request).put("treeName", "portal");
             this.getContext(request).put("userTree", determineuserTree(request));
             this.getContext(request).put("defaultLayout", request.getPreferences().getValue("defaultLayout", "jetspeed-layouts::VelocityTwoColumns"));            
             this.getContext(request).put(FOLDERS, retrieveFolders(request, jsroot));
