@@ -141,6 +141,9 @@
       <fileset dir="${maven.repo.local}/tyrex/jars/">
         <include name="tyrex-1.0.1.jar" />
       </fileset>
+      <fileset dir="${maven.repo.local}/ant/jars/">
+        <include name="ant-1.6.5.jar" />
+      </fileset>
       <fileset dir="${maven.repo.local}/${org.apache.jetspeed.portal.groupId}/jars/">
         <include name="ant-tasks-${jetspeed.version}.jar" />
       </fileset>
