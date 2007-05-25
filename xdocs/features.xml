@@ -170,9 +170,12 @@
 			<subsection name="Application Servers Supported">
 				<ul>
 					<li>Tomcat 5.0.x</li>
-					<li>Tomcat 5.5.x</li>
+					<li>Tomcat 5.5.x</li> 
+					<li>Jetty</li>
 					<li>Websphere 5.1, 6.0</li>
+					<li>Geronimo</li>
 					<li>JBoss</li>
+					<li>Weblogic</li>
 				</ul>
 			</subsection>
 		</section>
