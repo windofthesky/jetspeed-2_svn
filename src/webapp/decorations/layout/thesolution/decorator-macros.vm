@@ -173,18 +173,14 @@
   #foreach($element in $_menu.elements.iterator())
     #if($element.elementType == "option")
       #if(!$rowStarted)
-#*
-        <tr>
-          <td>
-            <div class="toolgroup">
-              <div class="body">
-                <div class="FolderList">
-*#
+##        <tr>
+##          <td>
+##            <div class="toolgroup">
+##              <div class="body">
+##                <div class="FolderList">
       #elseif(!$elementsStarted)
-#*
-              <div class="body">
-                <div class="FolderList">
-*#
+##              <div class="body">
+##                <div class="FolderList">
       #end
       #set($linkTitle = $element.getTitle($preferedLocale))
       #set($linkName = $element.getShortTitle($preferedLocale))
@@ -201,58 +197,44 @@
       #set($elementsStarted = true)
     #elseif($element.elementType == "menu")
       #if(!$rowStarted)
-#*
-        <tr>
-          <td>
-            <div class="toolgroup">
-              <div class="body">
-                <div class="FolderList">
-*#
+##        <tr>
+##          <td>
+##            <div class="toolgroup">
+##              <div class="body">
+##                <div class="FolderList">
       #elseif(!$elementsStarted)
-#*
-              <div class="body">
-                <div class="FolderList">
-*#
+##              <div class="body">
+##                <div class="FolderList">
       #end
       #includeNestedLinksWithIconNavigation($element $_orientation)
       #set($rowStarted = true)
       #set($elementsStarted = true)
     #elseif($element.elementType == "separator")
       #if(!$rowStarted)
-#*
-        <tr>
-          <td>
-            <div class="toolgroup">
-*#
+##        <tr>
+##          <td>
+##            <div class="toolgroup">
       #elseif($elementsStarted)
-#*
-                </div>
-              </div>
-*#
+##                </div>
+##              </div>
       #end
       #set($separatorTitle = $element.getTitle($preferedLocale))
       #set($separatorText = $element.getText($preferedLocale))
         <h3>${separatorText}</h3>
-#*
-              <div class="label">
-                ${separatorText}
-              </div>
-*#
+##              <div class="label">
+##                ${separatorText}
+##              </div>
       #set($rowStarted = true)
       #set($elementsStarted = false)
     #end
   #end
   #if($elementsStarted)
-#*
-                </div>
-              </div>
-*#
+##                </div>
+##              </div>
   #end
   #if($rowStarted)
-#*
-            </div>
-          </td>
-        </tr>
-*#
+##            </div>
+##          </td>
+##        </tr>
   #end
 #end
