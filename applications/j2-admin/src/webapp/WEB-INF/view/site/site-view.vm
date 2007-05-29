@@ -1291,7 +1291,7 @@ dojo.addOnLoad(function()
 <div dojoType="LayoutContainer" style="width: 100%; height: 500px; border: 1px solid gray;">
 
 <!-- Start LHS -->    
-<div dojoType="LayoutContainer" widgetId="lhs" layoutAlign="left" style="width: 32%; border: 1px solid gray; ">
+<div dojoType="LayoutContainer" widgetId="lhs" layoutAlign="left" style="width: 32%; border: 1px solid gray; overflow:auto;">
 #if (!$treeName ||  $treeName =='portal')
 	$!renderURL.setParameter("treeName","user")
 	#set($label = "User")
