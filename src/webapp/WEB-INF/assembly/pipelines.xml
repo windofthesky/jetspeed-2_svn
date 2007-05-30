@@ -48,15 +48,23 @@ limitations under the License.
         class="org.apache.jetspeed.security.impl.SecurityValveImpl"
         init-method="initialize"
   >
-   <constructor-arg>
+   <constructor-arg index='0'>
        <ref bean="org.apache.jetspeed.profiler.Profiler" />
    </constructor-arg>
-   <constructor-arg>
+   <constructor-arg index='1'>
        <ref bean="org.apache.jetspeed.security.UserManager" />
    </constructor-arg>
-   <constructor-arg>
+   <constructor-arg index='2'>
        <ref bean="PortalStatistics" />
-   </constructor-arg>   
+   </constructor-arg>
+   <!--  hard session timeout limit in seconds, regardless of (in)activity, setting to 0 turns off this feature -->   
+   <constructor-arg index='3'>
+   		<value>0</value>
+   </constructor-arg>
+   <!--  redirect location for hard session expiration -->   
+   <constructor-arg index='4'>
+   		<value>/login/logout</value>
+   </constructor-arg>
   </bean> 
   
   <bean id="passwordCredentialValve"

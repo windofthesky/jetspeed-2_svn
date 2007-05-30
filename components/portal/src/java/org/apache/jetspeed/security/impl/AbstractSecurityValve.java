@@ -22,10 +22,12 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -48,6 +50,10 @@ import org.apache.jetspeed.security.JSSubject;
  */
 public abstract class AbstractSecurityValve extends AbstractValve implements SecurityValve
 {
+    protected int maxSessionHardLimit = 0;
+    protected long msMaxSessionHardLimit = 1;
+    protected String timeoutRedirectLocation = "";
+    
     /**
      * 
      * <p>
@@ -71,7 +77,7 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      * @throws Exception
      */
     protected abstract Principal getUserPrincipal(RequestContext request) throws Exception;
-    
+        
     /**
      * 
      * <p>
@@ -106,45 +112,87 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      */
     public void invoke( RequestContext request, ValveContext context ) throws PipelineException
     {
-            // initialize/validate security subject
-            Subject subject;
-            try
-            {
-                subject = getSubject(request);
-            }
-            catch (Exception e1)
-            {
-               throw new PipelineException(e1.getMessage(), e1);
-            }
-            request.getRequest().getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);            
-            
-            // set request context subject
-            request.setSubject(subject);
-            
-            // Pass control to the next Valve in the Pipeline and execute under
-            // the current subject
-            final ValveContext vc = context;
-            final RequestContext rc = request;            
-            PipelineException pe = (PipelineException) JSSubject.doAsPrivileged(subject, new PrivilegedAction()
-            {
-                public Object run() 
-                {
-                     try
-                    {
-                        vc.invokeNext(rc);                 
-                        return null;
-                    }
-                    catch (PipelineException e)
-                    {
-                        return e;
-                    }                    
-                }
-            }, null);
-            
-            if(pe != null)
-            {
-                throw pe;
-            }       
+        if (isSessionExpired(request))
+        {
+            return; // short circuit processing and redirect
+        }
     
+        // initialize/validate security subject
+        Subject subject;
+        try
+        {
+            subject = getSubject(request);
+        }
+        catch (Exception e1)
+        {
+           throw new PipelineException(e1.getMessage(), e1);
+        }
+        request.getRequest().getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);            
+        
+        // set request context subject
+        request.setSubject(subject);
+        
+        // Pass control to the next Valve in the Pipeline and execute under
+        // the current subject
+        final ValveContext vc = context;
+        final RequestContext rc = request;            
+        PipelineException pe = (PipelineException) JSSubject.doAsPrivileged(subject, new PrivilegedAction()
+        {
+            public Object run() 
+            {
+                 try
+                {
+                    vc.invokeNext(rc);                 
+                    return null;
+                }
+                catch (PipelineException e)
+                {
+                    return e;
+                }                    
+            }
+        }, null);
+        
+        if(pe != null)
+        {
+            throw pe;
+        }           
     }
+    
+    /**
+     * Check for hard limit session expiration time out
+     * 
+     * @param request
+     * @return
+     * @throws PipelineException
+     */
+    protected boolean isSessionExpired(RequestContext request) throws PipelineException    
+    {
+        if (maxSessionHardLimit > 0)
+        {
+            HttpSession session = request.getRequest().getSession();
+            long sessionCreationTime = session.getCreationTime();
+            long currentTime = System.currentTimeMillis();
+            if ((currentTime - sessionCreationTime) > msMaxSessionHardLimit)
+            {
+                session.invalidate();
+                String redirector = request.getRequest().getContextPath() + timeoutRedirectLocation;
+                // System.out.println("logging user out " + redirector + ", " + (currentTime - sessionCreationTime) + ", " + this.msMaxSessionHardLimit);
+                try
+                {
+                    request.getResponse().sendRedirect(redirector);
+                }
+                catch (IOException e)
+                {
+                    throw new PipelineException(e);
+                }
+                return true;
+            }
+            else
+            {
+                // System.out.println("Not logging user out: " + (currentTime - sessionCreationTime) + ", " + this.msMaxSessionHardLimit);
+            }
+        }
+        return false;        
+    }
+    
 }

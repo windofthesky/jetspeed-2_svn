@@ -82,19 +82,28 @@ public class NtlmSecurityValve extends AbstractSecurityValve
      * or the remoteUser cannot be authorized.
      * 
      */
-    public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired, PortalStatistics statistics) 
+    public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired, 
+            PortalStatistics statistics, int maxSessionHardLimit, String timeoutRedirectLocation) 
     {
         this.userMgr = userMgr;
         this.statistics = statistics;
         this.networkDomain = networkDomain;
         this.ntlmAuthRequired = ntlmAuthRequired;
         this.omitDomain = omitDomain;
+        this.maxSessionHardLimit = maxSessionHardLimit;
+        this.timeoutRedirectLocation = timeoutRedirectLocation;
     }
 
-    public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired){
-        this(userMgr, networkDomain, omitDomain, ntlmAuthRequired, null);
+    public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired, PortalStatistics statistics)
+    {
+        this(userMgr, networkDomain, omitDomain, ntlmAuthRequired, statistics, 0, "");        
     }
     
+    public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired)
+    {
+        this(userMgr, networkDomain, omitDomain, ntlmAuthRequired, null);
+    }
+
     public String toString()
     {
         return "NtlmSecurityValve";
