@@ -659,37 +659,46 @@ if ( window.dojo )
             //dojo.debugShallow( type ) ;
             //dojo.debug( "  http:" );
             //dojo.debugShallow( http ) ;
-            var dmId = null;
-            if ( this.debugContentDumpIds )
+            try
             {
-                dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
-                for ( var debugContentIndex = 0 ; debugContentIndex < this.debugContentDumpIds.length; debugContentIndex++ )
+                var dmId = null;
+                if ( this.debugContentDumpIds )
                 {
-                    if ( dmId.match( new RegExp( this.debugContentDumpIds[ debugContentIndex ] ) ) )
+                    dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
+                    for ( var debugContentIndex = 0 ; debugContentIndex < this.debugContentDumpIds.length; debugContentIndex++ )
                     {
-                        if ( dojo.lang.isString( data ) )
-                            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
-                        else
+                        if ( dmId.match( new RegExp( this.debugContentDumpIds[ debugContentIndex ] ) ) )
                         {
-                            var textContent = dojo.dom.innerXML( data );
-                            if ( ! textContent )
-                                textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
-                            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
+                            if ( dojo.lang.isString( data ) )
+                                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
+                            else
+                            {
+                                var textContent = dojo.dom.innerXML( data );
+                                if ( ! textContent )
+                                    textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
+                                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
+                            }
                         }
                     }
                 }
+                if ( this.contentListener && dojo.lang.isFunction( this.contentListener.notifySuccess ) )
+                {
+                    this.contentListener.notifySuccess( data, this.url, this.domainModelObject, http ) ;
+                }
+                else
+                {
+                    dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
+                    dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] no valid contentListener" );
+                }
+                if ( this.hideLoadingIndicator )
+                    jetspeed.url.loadingIndicatorHide();
             }
-            if ( this.contentListener && dojo.lang.isFunction( this.contentListener.notifySuccess ) )
+            catch(e)
             {
-                this.contentListener.notifySuccess( data, this.url, this.domainModelObject, http ) ;
+                if ( this.hideLoadingIndicator )
+                    jetspeed.url.loadingIndicatorHide();
+                throw e;
             }
-            else
-            {
-                dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
-                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] no valid contentListener" );
-            }
-            if ( this.hideLoadingIndicator )
-                jetspeed.url.loadingIndicatorHide();
         },
     
         error: function( type, error )
@@ -699,12 +708,21 @@ if ( window.dojo )
             //dojo.debugShallow( type ) ;
             //dojo.debug( "  error:" );
             //dojo.debugShallow( error ) ;
-            if ( this.contentListener && dojo.lang.isFunction( this.contentListener.notifyFailure ) )
+            try
             {
-                this.contentListener.notifyFailure( type, error, this.url, this.domainModelObject );
+                if ( this.contentListener && dojo.lang.isFunction( this.contentListener.notifyFailure ) )
+                {
+                    this.contentListener.notifyFailure( type, error, this.url, this.domainModelObject );
+                }
+                if ( this.hideLoadingIndicator )
+                    jetspeed.url.loadingIndicatorHide();
             }
-            if ( this.hideLoadingIndicator )
-                jetspeed.url.loadingIndicatorHide();
+            catch(e)
+            {
+                if ( this.hideLoadingIndicator )
+                    jetspeed.url.loadingIndicatorHide();
+                throw e;
+            }
         }
     });
     
