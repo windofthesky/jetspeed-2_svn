@@ -20,6 +20,7 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
@@ -41,41 +42,53 @@ public class SessionNavigationalState extends AbstractNavigationalState
     {
         PortletWindowRequestNavigationalStates requestStates = getPortletWindowRequestNavigationalStates();
         
-        // First check if a maximized window is set in the request.
+        boolean transientNavState = false;
+        
+        // Check if a maximized window is set in the request.
         // This can mean a window with state MAXIMIZED *or* SOLO.
-        // With a SOLO, skip all synchroniziations!!!
+        // With a SOLO state, or if request parameter nav-state is provided with value "transient", skip all synchroniziations!
         String requestMaximizedWindowId = null;
         
         if ( requestStates.getMaximizedWindow() != null )
         {
             requestMaximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
             WindowState state = requestStates.getPortletWindowNavigationalState(requestMaximizedWindowId).getWindowState();
-            if (JetspeedActions.SOLO_STATE.equals(state))
+            transientNavState = JetspeedActions.SOLO_STATE.equals(state);
+            
+            if (!transientNavState)
             {
-                // skip *any* synchronizations when in SOLO state
-                HttpSession session = context.getRequest().getSession();
-                if ( session != null )
-                {
-                    PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
-                    if ( sessionStates != null )
-                    {
-                        sessionStates.removeFromCache(context, requestMaximizedWindowId, cache);
-                    }
-                }
-                return;
+                // check if request parameter nav-state=transient is provided
+                String navState = context.getRequestParameter(PortalReservedParameters.NAV_STATE);
+                transientNavState = (navState != null && PortalReservedParameters.TRANSIENT_NAV_STATE.equals(navState));
             }
         }
         
-        HttpSession session = context.getRequest().getSession();
-        if ( session != null )
+        if (transientNavState)
         {
-            PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
-            if ( sessionStates == null )
+            // skip *any* navState synchronizations
+            HttpSession session = context.getRequest().getSession();
+            if ( session != null )
             {
-                sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
-                session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
+                PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
+                if ( sessionStates != null )
+                {
+                    sessionStates.removeFromCache(context, requestMaximizedWindowId, cache);
+                }
             }
-            sessionStates.sync(context, context.getPage(), requestStates, cache);
+        }
+        else
+        {
+            HttpSession session = context.getRequest().getSession();
+            if ( session != null )
+            {
+                PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
+                if ( sessionStates == null )
+                {
+                    sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
+                    session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
+                }
+                sessionStates.sync(context, context.getPage(), requestStates, cache);
+            }
         }
     }
     
