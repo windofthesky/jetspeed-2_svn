@@ -73,7 +73,7 @@ To get the binary installation of an official Jetspeed release, go here:
 You can checkout from the SVN HEAD from here:
 </p>
 <ul>
-<li><a href='http://portals.apache.org/jetspeed-2/source-code.html' target='_blank'>Checking out the Source Code from Subversion</a></li>
+<li><a href='http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/' target='_blank'>Checking out the Source Code from Subversion</a></li>
 </ul>
 <p>
 Get your Javadocs here:
