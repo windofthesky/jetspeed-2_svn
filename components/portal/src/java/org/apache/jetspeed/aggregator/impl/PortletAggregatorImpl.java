@@ -59,18 +59,18 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
             return;
         }        
-        String name = context.getRequestParameter(PortalReservedParameters.PORTLET);
-        if (name == null)
-        {
-            name = (String)context.getAttribute(PortalReservedParameters.PORTLET);
-        }
-        if (name == null)
-        {
-            return;
-        }
         Fragment fragment = context.getPage().getFragmentById(entity);
         if (fragment == null) 
         {        
+            String name = context.getRequestParameter(PortalReservedParameters.PORTLET);
+            if (name == null)
+            {
+                name = (String)context.getAttribute(PortalReservedParameters.PORTLET);
+            }
+            if (name == null)
+            {
+                return;
+            }
             fragment = new PortletAggregatorFragmentImpl(entity);        
             fragment.setType(Fragment.PORTLET);
             fragment.setName(name);
