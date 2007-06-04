@@ -16,15 +16,13 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpSession;
 
-import org.apache.jetspeed.pipeline.PipelineException;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
@@ -48,13 +46,12 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
     private UserManager userMgr;
     private PortalStatistics statistics;
 
-    public SecurityValveImpl(Profiler profiler, UserManager userMgr, PortalStatistics statistics, int maxSessionHardLimit, String timeoutRedirectLocation)
+    public SecurityValveImpl(Profiler profiler, UserManager userMgr, PortalStatistics statistics, 
+                            PortalAuthenticationConfiguration authenticationConfiguration)
     {
         this.userMgr = userMgr;
         this.statistics = statistics;
-        this.maxSessionHardLimit = maxSessionHardLimit;
-        this.msMaxSessionHardLimit = this.maxSessionHardLimit * 1000;
-        this.timeoutRedirectLocation = timeoutRedirectLocation;
+        this.authenticationConfiguration = authenticationConfiguration;
     }
     
     public SecurityValveImpl( Profiler profiler, UserManager userMgr, PortalStatistics statistics )

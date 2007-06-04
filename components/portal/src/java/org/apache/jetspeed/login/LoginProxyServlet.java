@@ -24,7 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 
 /**
  * LoginProxyServlet
@@ -41,6 +43,13 @@ public class LoginProxyServlet extends HttpServlet
         String parameter;
 
         request.setCharacterEncoding( "UTF-8" );
+        
+        PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
+        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
+        if (authenticationConfiguration.isCreateNewSessionOnLogin())
+        {
+            request.getSession().invalidate();
+        }        
         
         HttpSession session = request.getSession(true);
 

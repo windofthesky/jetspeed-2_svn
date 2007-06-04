@@ -108,6 +108,9 @@ limitations under the License.
           <entry key="PortletTrackingManager">
             <ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager"/>
           </entry>
+          <entry key ="PortalAuthenticationConfiguration">
+          	<ref bean="org.apache.jetspeed.administration.PortalAuthenticationConfiguration"/>
+          </entry>
           
 <!-- first uncomment the below service bean in security-spi-atn.xml
          <entry key="PasswordEncodingService">

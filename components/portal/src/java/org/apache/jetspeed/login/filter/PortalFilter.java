@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserManager;
@@ -57,10 +58,16 @@ public class PortalFilter implements Filter
             String password = request.getParameter(LoginConstants.PASSWORD);            
             if (username != null)
             {
-                UserManager userManager = (UserManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");
+                UserManager userManager = (UserManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");                
                 boolean success = userManager.authenticate(username, password);
                 if (success)
                 {
+                    PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
+                        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
+                    if (authenticationConfiguration.isCreateNewSessionOnLogin())
+                    {
+                        request.getSession().invalidate();
+                    }
                     Set principals = new PrincipalsSet();
                     Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
                     UserPrincipal userPrincipal = new UserSubjectPrincipalImpl(username, subject);

@@ -22,7 +22,10 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.pluto.om.window.PortletWindow;
 
 public interface DecoratorActionsFactory
@@ -31,5 +34,5 @@ public interface DecoratorActionsFactory
                     WindowState ws, Decoration decoration);
 
     List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
-                    WindowState ws, Decoration decoration, List allowedActions);
+                        WindowState ws, Decoration decoration, List allowedActions, PortletDefinitionComposite portlet, ContentFragment fragment, SecurityAccessController accessController);
 }

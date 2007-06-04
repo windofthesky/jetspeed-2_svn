@@ -30,6 +30,7 @@ import javax.security.auth.Subject;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
@@ -50,9 +51,7 @@ import org.apache.jetspeed.security.JSSubject;
  */
 public abstract class AbstractSecurityValve extends AbstractValve implements SecurityValve
 {
-    protected int maxSessionHardLimit = 0;
-    protected long msMaxSessionHardLimit = 1;
-    protected String timeoutRedirectLocation = "";
+    protected PortalAuthenticationConfiguration authenticationConfiguration = null;
     
     /**
      * 
@@ -167,15 +166,15 @@ public abstract class AbstractSecurityValve extends AbstractValve implements Sec
      */
     protected boolean isSessionExpired(RequestContext request) throws PipelineException    
     {
-        if (maxSessionHardLimit > 0)
+        if (authenticationConfiguration != null && authenticationConfiguration.isMaxSessionHardLimitEnabled())
         {
             HttpSession session = request.getRequest().getSession();
             long sessionCreationTime = session.getCreationTime();
             long currentTime = System.currentTimeMillis();
-            if ((currentTime - sessionCreationTime) > msMaxSessionHardLimit)
+            if ((currentTime - sessionCreationTime) > authenticationConfiguration.getMsMaxSessionHardLimit())
             {
                 session.invalidate();
-                String redirector = request.getRequest().getContextPath() + timeoutRedirectLocation;
+                String redirector = request.getRequest().getContextPath() + authenticationConfiguration.getTimeoutRedirectLocation();
                 // System.out.println("logging user out " + redirector + ", " + (currentTime - sessionCreationTime) + ", " + this.msMaxSessionHardLimit);
                 try
                 {

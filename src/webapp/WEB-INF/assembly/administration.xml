@@ -101,4 +101,23 @@
         </constructor-arg>
 </bean>
     
+<bean id='org.apache.jetspeed.administration.PortalAuthenticationConfiguration'
+	class='org.apache.jetspeed.administration.PortalAuthenticationConfigurationImpl'>
+
+   <!--  create new session upon authentication -->   
+   <constructor-arg index='0'>
+   		<value>false</value>
+   </constructor-arg>	
+   <!--  hard session timeout limit in seconds, regardless of (in)activity, setting to 0 turns off this feature 
+   		 note:this feature should be used with 'create new session upon authentication' feature 
+   -->   
+   <constructor-arg index='1'>
+   		<value>0</value>
+   </constructor-arg>
+   <!--  redirect location for hard session expiration -->   
+   <constructor-arg index='2'>
+   		<value>/login/logout</value>
+   </constructor-arg>
+</bean>    
+    
 </beans>

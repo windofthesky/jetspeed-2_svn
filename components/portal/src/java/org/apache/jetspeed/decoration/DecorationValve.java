@@ -42,6 +42,7 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -57,6 +58,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @see org.apache.jetspeed.decoration.Theme
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <href a="mailto:firevelocity@gmail.com">Vivek Kumar</a>
  *
  */
 public class DecorationValve extends AbstractValve implements Valve
@@ -74,11 +76,18 @@ public class DecorationValve extends AbstractValve implements Valve
     
     private DecoratorActionsFactory defaultDecoratorActionsFactory;
 
-    public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor)
-    {
+     /**
+      * For security constraint checks
+      */
+     protected SecurityAccessController accessController;
+     
+     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,SecurityAccessController accessController)
+     {    
         this.decorationFactory = decorationFactory;
         this.windowAccessor = windowAccessor;
         this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();
+        //added the accessController in portlet decorater for checking the actions
+        this.accessController = accessController;        
     }
     
 
@@ -287,7 +296,7 @@ public class DecorationValve extends AbstractValve implements Valve
                     }
                 }
             }
-            actions = actionsAdapter.getDecoratorActions(requestContext, pa, window, currentMode, currentState, decoration, actionTemplates);
+            actions = actionsAdapter.getDecoratorActions(requestContext, pa, window, currentMode, currentState, decoration, actionTemplates,portlet,fragment,accessController);            
             
             decoration.setCurrentModeAction( currentModeAction );
             decoration.setCurrentStateAction( currentStateAction );

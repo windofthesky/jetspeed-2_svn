@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.security.auth.Subject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
@@ -83,20 +84,19 @@ public class NtlmSecurityValve extends AbstractSecurityValve
      * 
      */
     public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired, 
-            PortalStatistics statistics, int maxSessionHardLimit, String timeoutRedirectLocation) 
+            PortalStatistics statistics, PortalAuthenticationConfiguration authenticationConfiguration) 
     {
         this.userMgr = userMgr;
         this.statistics = statistics;
         this.networkDomain = networkDomain;
         this.ntlmAuthRequired = ntlmAuthRequired;
         this.omitDomain = omitDomain;
-        this.maxSessionHardLimit = maxSessionHardLimit;
-        this.timeoutRedirectLocation = timeoutRedirectLocation;
+        this.authenticationConfiguration = authenticationConfiguration;
     }
 
     public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired, PortalStatistics statistics)
     {
-        this(userMgr, networkDomain, omitDomain, ntlmAuthRequired, statistics, 0, "");        
+        this(userMgr, networkDomain, omitDomain, ntlmAuthRequired, statistics, null);        
     }
     
     public NtlmSecurityValve(UserManager userMgr, String networkDomain, boolean omitDomain, boolean ntlmAuthRequired)

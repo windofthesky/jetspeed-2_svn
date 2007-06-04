@@ -57,13 +57,8 @@ limitations under the License.
    <constructor-arg index='2'>
        <ref bean="PortalStatistics" />
    </constructor-arg>
-   <!--  hard session timeout limit in seconds, regardless of (in)activity, setting to 0 turns off this feature -->   
    <constructor-arg index='3'>
-   		<value>0</value>
-   </constructor-arg>
-   <!--  redirect location for hard session expiration -->   
-   <constructor-arg index='4'>
-   		<value>/login/logout</value>
+       <ref bean="org.apache.jetspeed.administration.PortalAuthenticationConfiguration" />
    </constructor-arg>
   </bean> 
   
@@ -260,6 +255,9 @@ limitations under the License.
         </constructor-arg>
 		<constructor-arg>			
 			 <ref bean="PortletWindowAccessor" />
+		</constructor-arg>
+		<constructor-arg>
+			<ref bean="org.apache.jetspeed.security.SecurityAccessController" />
 		</constructor-arg>
   </bean>
 
@@ -538,6 +536,5 @@ limitations under the License.
   <bean id="debugValve"
         class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl"
   /> 
-
           
 </beans>

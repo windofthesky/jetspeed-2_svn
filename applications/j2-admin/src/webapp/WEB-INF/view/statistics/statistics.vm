@@ -155,7 +155,7 @@
 		</TR>
 	#foreach ( $row in $results.statlist )
   		<tr>
-  			<td> $row.get("groupColumn") </td>
+  			<td> $!row.get("groupColumn") </td>
   			<td align="right" > $row.get("count") </td>
   			<td align="right" > $row.get("max") </td>
   			<td align="right" > $row.get("avg") </td>
