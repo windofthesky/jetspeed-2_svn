@@ -33,9 +33,6 @@ public interface PortalReservedParameters
     public final static String PORTLET_PIPELINE = "portlet-pipeline";
     public final static String ACTION_PIPELINE = "action-pipeline";
     public final static String LOGIN_PIPELINE = "login-pipeline";
-    public final static String NAV_STATE = "nav-state";
-    public final static String TRANSIENT_NAV_STATE = "transient";
-    public final static String PERSISTENT_NAV_STATE = "persistent";
     
     // Session and Request attribute keys
     public static final String PAGE_ATTRIBUTE = "org.apache.jetspeed.Page";

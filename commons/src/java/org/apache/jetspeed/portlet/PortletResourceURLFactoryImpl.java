@@ -23,10 +23,8 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.portals.bridges.common.PortletResourceURLFactory;
 
 /**
@@ -48,25 +46,11 @@ public class PortletResourceURLFactoryImpl implements PortletResourceURLFactory
             throws PortletException
     {
         PortletURL url = response.createRenderURL();
-        url.setWindowState(WindowState.MAXIMIZED);
         if (parameters != null)
         {
             url.setParameters(parameters);
         }
-        ContentFragment fragment = (ContentFragment)request.getAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE);
-        StringBuffer path = new StringBuffer(url.toString());
-        path.append(path.indexOf("?") > -1 ? '&' : '?');
-        path.append(PortalReservedParameters.PIPELINE);
-        path.append('=');
-        path.append(PortalReservedParameters.PORTLET_PIPELINE);
-        path.append('&');
-        path.append(PortalReservedParameters.PORTLET_ENTITY);
-        path.append('=');
-        path.append(fragment.getId());
-        path.append('&');
-        path.append(PortalReservedParameters.NAV_STATE);
-        path.append('=');
-        path.append(PortalReservedParameters.TRANSIENT_NAV_STATE);
-        return path.toString();
+        url.setParameter(PortalReservedParameters.PORTLET_RESOURCE_URL_REQUEST_PARAMETER, "");
+        return url.toString();
     }
 }
