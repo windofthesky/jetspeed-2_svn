@@ -28,6 +28,7 @@ public class PortletWindowRequestNavigationalStates
     private Map pwnStates = new HashMap();
     private PortletWindow maximizedWindow;
     private PortletWindow actionWindow;
+    private PortletWindow resourceWindow;
     
     public PortletWindowRequestNavigationalStates(String characterEncoding)
     {
@@ -76,5 +77,13 @@ public class PortletWindowRequestNavigationalStates
     public void setActionWindow(PortletWindow actionWindow)
     {
         this.actionWindow = actionWindow;
-    }    
+    }
+    public void setResourceWindow(PortletWindow resourceWindow)
+    {
+        this.resourceWindow = resourceWindow;
+    }
+    public PortletWindow getResourceWindow()
+    {
+        return resourceWindow;
+    }
 }

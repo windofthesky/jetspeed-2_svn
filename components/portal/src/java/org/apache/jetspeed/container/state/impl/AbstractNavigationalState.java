@@ -219,6 +219,11 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     {
         return requestStates.getActionWindow();
     }
+    
+    public PortletWindow getPortletWindowOfResource()
+    {
+        return requestStates.getResourceWindow();
+    }
 
     public String encode(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action)
     throws UnsupportedEncodingException

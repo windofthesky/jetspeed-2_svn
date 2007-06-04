@@ -280,6 +280,17 @@ limitations under the License.
     </constructor-arg>      
   </bean>
       
+  <bean id="resourceValve"
+        class="org.apache.jetspeed.resource.ResourceValveImpl"
+        init-method="initialize">
+    <constructor-arg>
+      <ref bean="org.apache.pluto.PortletContainer" />
+    </constructor-arg>
+    <constructor-arg>   
+      <ref bean="PortletWindowAccessor" />    
+    </constructor-arg>
+  </bean> 
+    
   <bean id="jetspeed-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
         init-method="initialize"
@@ -298,6 +309,7 @@ limitations under the License.
       <ref bean="profilerValve"/>
       <ref bean="containerValve"/>
       <ref bean="actionValve"/>
+      <ref bean="resourceValve"/>
       <ref bean="DecorationValve" />
       <ref bean="headerAggregatorValvePortal"/>  
       <ref bean="aggregatorValve"/>

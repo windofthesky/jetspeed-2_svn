@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -52,6 +53,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected static final char STATE_KEY = 'd';
     protected static final char PARAM_KEY = 'e';
     protected static final char CLEAR_PARAMS_KEY = 'f';
+    protected static final char RESOURCE_WINDOW_ID_KEY = 'g';
     
     protected static final String keytable = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     protected final PortletMode[] portletModes;
@@ -218,7 +220,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             }
         }
         // encode as requestURL parameters
-        return encode(states, windowId, targetState, false, navParamsStateFull, renderParamsStateFull);
+        return encode(states, windowId, targetState, false, false, navParamsStateFull, renderParamsStateFull);
     }
 
     public String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, Map parameters, 
@@ -233,13 +235,26 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         targetState.setWindowState(windowState != null ? windowState : currentState != null ? currentState.getWindowState() : null);
         
         Iterator parametersIter = parameters.entrySet().iterator();
+        
+        boolean resource = false;
 
         Map.Entry entry;
+        String parameter;
         // fill in the new parameters
         while ( parametersIter.hasNext())
         {
             entry = (Map.Entry)parametersIter.next();
-            targetState.setParameters((String)entry.getKey(), (String[])entry.getValue());
+            parameter = (String)entry.getKey();
+            if (!resource && !action && PortalReservedParameters.PORTLET_RESOURCE_URL_REQUEST_PARAMETER.equals(parameter))
+            {
+                resource = true;
+                navParamsStateFull = true;
+                renderParamsStateFull = true;
+            }
+            else
+            {
+                targetState.setParameters(parameter, (String[])entry.getValue());
+            }
         }
         if ( renderParamsStateFull && targetState.getParametersMap() == null )
         {
@@ -247,11 +262,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             // and not copied when synchronizing the state (encoded as CLEAR_PARAMS_KEY)
             targetState.setClearParameters(true);
         }
-        return encode(states, windowId, targetState, action, navParamsStateFull, renderParamsStateFull);
+        return encode(states, windowId, targetState, action, resource, navParamsStateFull, renderParamsStateFull);
     }
 
     protected String encode(PortletWindowRequestNavigationalStates states, String targetWindowId, 
-            PortletWindowRequestNavigationalState targetState, boolean action, boolean navParamsStateFull, 
+            PortletWindowRequestNavigationalState targetState, boolean action, boolean resource, boolean navParamsStateFull, 
             boolean renderParamsStateFull)
     throws UnsupportedEncodingException
     {
@@ -275,7 +290,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
                 else
                 {
-                    encodedState = encodePortletWindowNavigationalState(windowId, pwfns, false, navParamsStateFull, 
+                    encodedState = encodePortletWindowNavigationalState(windowId, pwfns, false, false, navParamsStateFull, 
                             renderParamsStateFull);
                     if ( encodedState.length() > 0 )
                     {
@@ -292,7 +307,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
             }
         }
-        encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, action, false, false); 
+        encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, action, resource, false, false); 
         if ( encodedState.length() > 0 )
         {
             if ( !haveState )
@@ -315,12 +330,12 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     }
     
     protected String encodePortletWindowNavigationalState(String windowId, PortletWindowRequestNavigationalState state, 
-            boolean action, boolean navParamsStateFull, boolean renderParamsStateFull)
+            boolean action, boolean resource, boolean navParamsStateFull, boolean renderParamsStateFull)
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append(action ? ACTION_WINDOW_ID_KEY : RENDER_WINDOW_ID_KEY);
+        buffer.append(action ? ACTION_WINDOW_ID_KEY : resource? RESOURCE_WINDOW_ID_KEY: RENDER_WINDOW_ID_KEY);
         buffer.append(windowId);
-        boolean encoded = action;
+        boolean encoded = action || resource;
         
         if ( action || !navParamsStateFull )
         {
@@ -388,7 +403,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected PortletWindowRequestNavigationalState decodeParameter(PortletWindowAccessor accessor, PortletWindowRequestNavigationalStates states, PortletWindowRequestNavigationalState currentState, String parameter)
     {
         char parameterType = parameter.charAt(0);
-        if (parameterType == RENDER_WINDOW_ID_KEY || parameterType == ACTION_WINDOW_ID_KEY )
+        if (parameterType == RENDER_WINDOW_ID_KEY || parameterType == ACTION_WINDOW_ID_KEY || parameterType == RESOURCE_WINDOW_ID_KEY )
         {            
             String windowId = parameter.substring(1);
             currentState = states.getPortletWindowNavigationalState(windowId);
@@ -404,6 +419,10 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 if ( parameterType == ACTION_WINDOW_ID_KEY )
                 {
                     states.setActionWindow(window);
+                }
+                else if (parameterType == RESOURCE_WINDOW_ID_KEY )
+                {
+                    states.setResourceWindow(window);
                 }
             }
         }

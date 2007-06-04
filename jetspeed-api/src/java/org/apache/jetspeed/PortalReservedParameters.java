@@ -131,4 +131,14 @@ public interface PortalReservedParameters
      *  </p>
      */
      public static final String PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_BEFORE_PORTLET_PARAMETERS = "merge.portal.parameters.before.portlet.parameters";
+     
+     /**
+      * Preliminary Portlet API 2.0 ResourceURL support.
+      * By setting the RenderURL parameter PORTLET_RESOURCE_URL_REQUEST_PARAMETER (with whatever value) the Jetspeed encoded PortletURL
+      * will be marked as a ResourceURL (the parameter itself will not be stored).
+      * By invoking such a Render/ResourceURL, NavigationalState.getPortletWindowOfResource() will be set, and with an custom Valve 
+      * (example implementation o.a.j.resource.ResourceValveImpl) this PortletWindow can be invoked directly,
+      * similar as an ActionURL but as a direct Portlet Render request.
+      */
+     public static final String PORTLET_RESOURCE_URL_REQUEST_PARAMETER = "org.apache.jetspeed.portlet.resource.url";
 }

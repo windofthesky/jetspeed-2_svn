@@ -140,6 +140,7 @@ public interface NavigationalState
 
     PortletWindow getPortletWindowOfAction();
     
+    PortletWindow getPortletWindowOfResource();
     /**
      * Returns an iterator of Portlet Window ids of all the Portlet Windows 
      * within the NavigationalState.

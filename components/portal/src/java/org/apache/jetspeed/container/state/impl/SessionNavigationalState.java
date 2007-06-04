@@ -20,7 +20,6 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
@@ -42,37 +41,41 @@ public class SessionNavigationalState extends AbstractNavigationalState
     {
         PortletWindowRequestNavigationalStates requestStates = getPortletWindowRequestNavigationalStates();
         
-        boolean transientNavState = false;
+        // for Resource (PortletURL) requests, session state is never synchronized
+        boolean transientNavState = requestStates.getResourceWindow() != null;
         
-        // Check if a maximized window is set in the request.
-        // This can mean a window with state MAXIMIZED *or* SOLO.
-        // With a SOLO state, or if request parameter nav-state is provided with value "transient", skip all synchroniziations!
-        String requestMaximizedWindowId = null;
+        String clearCacheWindowId = null;
         
-        if ( requestStates.getMaximizedWindow() != null )
+        if (!transientNavState)
         {
-            requestMaximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
-            WindowState state = requestStates.getPortletWindowNavigationalState(requestMaximizedWindowId).getWindowState();
-            transientNavState = JetspeedActions.SOLO_STATE.equals(state);
+            // Check if a maximized window is set in the request.
+            // This can mean a window with state MAXIMIZED *or* SOLO.
+            // With a SOLO state, also skip all synchroniziations!
+            String requestMaximizedWindowId = null;
             
-            if (!transientNavState)
+            if ( requestStates.getMaximizedWindow() != null )
             {
-                // check if request parameter nav-state=transient is provided
-                String navState = context.getRequestParameter(PortalReservedParameters.NAV_STATE);
-                transientNavState = (navState != null && PortalReservedParameters.TRANSIENT_NAV_STATE.equals(navState));
+                requestMaximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
+                WindowState state = requestStates.getPortletWindowNavigationalState(requestMaximizedWindowId).getWindowState();
+                transientNavState = JetspeedActions.SOLO_STATE.equals(state);
+                clearCacheWindowId = requestMaximizedWindowId;
             }
+            
         }
-        
         if (transientNavState)
         {
-            // skip *any* navState synchronizations
-            HttpSession session = context.getRequest().getSession();
-            if ( session != null )
+            // no navState synchronizations
+            
+            if (clearCacheWindowId != null)
             {
-                PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
-                if ( sessionStates != null )
+                HttpSession session = context.getRequest().getSession();
+                if ( session != null )
                 {
-                    sessionStates.removeFromCache(context, requestMaximizedWindowId, cache);
+                    PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
+                    if ( sessionStates != null )
+                    {
+                        sessionStates.removeFromCache(context, clearCacheWindowId, cache);
+                    }
                 }
             }
         }
