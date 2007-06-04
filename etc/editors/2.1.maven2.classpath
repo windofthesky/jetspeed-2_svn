@@ -80,7 +80,7 @@
 	<classpathentry kind="var" path="M2_REPO/velocity-tools/velocity-tools/1.2/velocity-tools-1.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.2.1/commons-dbcp-1.2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-configuration/commons-configuration/1.1/commons-configuration-1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/mockrunner/mockrunner/0.2.7/mockrunner-0.2.7.jar"/>
+	<classpathentry kind="var" path="M2_REPO/mockrunner/mockrunner/0.3.8/mockrunner-0.3.8.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.0-FCS/jaxen-1.0-FCS.jar"/>
@@ -93,7 +93,7 @@
 	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.3/commons-codec-1.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/rome/rome/0.8/rome-0.8.jar"/>
 	<classpathentry kind="var" path="M2_REPO/taglibs/standard/1.0.6/standard-1.0.6.jar"/>
-	<classpathentry kind="var" path="M2_REPO/cglib/cglib-full/2.0.2/cglib-full-2.0.2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/cglib/cglib/2.1_3/cglib-2.1_3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.0/spring-2.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-mock/2.0/spring-mock-2.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-portlet/2.0/spring-portlet-2.0.jar"/>
@@ -115,8 +115,8 @@
 	<classpathentry kind="var" path="M2_REPO/ant/ant/1.6.5/ant-1.6.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/ehcache/ehcache/1.2.4/ehcache-1.2.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/portlet-api/portlet-api/1.0/portlet-api-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/myfaces/myfaces-api/1.1.0/myfaces-api-1.1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/myfaces/myfaces-impl/1.1.0/myfaces-impl-1.1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/myfaces/tomahawk/1.1.0/tomahawk-1.1.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/myfaces/myfaces-api/1.1.5/myfaces-api-1.1.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/myfaces/myfaces-impl/1.1.5/myfaces-impl-1.1.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/myfaces/tomahawk/1.1.5/tomahawk-1.1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
