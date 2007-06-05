@@ -106,13 +106,13 @@
 
    <!--  create new session upon authentication -->   
    <constructor-arg index='0'>
-   		<value>true</value>
+   		<value>false</value>
    </constructor-arg>	
    <!--  hard session timeout limit in seconds, regardless of (in)activity, setting to 0 turns off this feature 
    		 note:this feature should be used with 'create new session upon authentication' feature 
    -->   
    <constructor-arg index='1'>
-   		<value>4800</value>
+   		<value>0</value>
    </constructor-arg>
    <!--  redirect location for hard session expiration -->   
    <constructor-arg index='2'>
