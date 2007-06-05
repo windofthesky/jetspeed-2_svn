@@ -52,14 +52,7 @@ public class LoginRedirectorServlet extends HttpServlet
         session.removeAttribute(LoginConstants.PASSWORD);
         session.removeAttribute(LoginConstants.RETRYCOUNT);
         session.removeAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
-        
-//        PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
-//        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
-//        if (authenticationConfiguration.isCreateNewSessionOnLogin())
-//        {
-//            request.getSession().invalidate();
-//        }        
-        
+                
         response.sendRedirect(response.encodeURL(destination));
     }
 

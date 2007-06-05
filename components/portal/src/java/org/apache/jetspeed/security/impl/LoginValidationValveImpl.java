@@ -44,7 +44,6 @@ import org.apache.jetspeed.security.UserPrincipal;
 public class LoginValidationValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.LoginValidationValve
 {
     private static final Log log = LogFactory.getLog(LoginValidationValveImpl.class);
-    private static final String LOGIN_CHECK = "org.apache.jetspeed.login.check";
     
     private int maxNumberOfAuthenticationFailures;
     private List sessionAttributes; 
@@ -150,10 +149,10 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
             }
             else
             {
-                if (request.getSessionAttribute(LOGIN_CHECK) == null)
+                if (request.getSessionAttribute(LoginConstants.LOGIN_CHECK) == null)
                 {
                     clearSessionAttributes(request);
-                    request.getRequest().getSession().setAttribute(LOGIN_CHECK, "true");
+                    request.getRequest().getSession().setAttribute(LoginConstants.LOGIN_CHECK, "true");
                 }                
             }
             

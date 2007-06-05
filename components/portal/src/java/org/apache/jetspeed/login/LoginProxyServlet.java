@@ -17,6 +17,8 @@
 package org.apache.jetspeed.login;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +29,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
+import org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider;
+import org.apache.jetspeed.security.activeauthentication.IdentityToken;
 
 /**
  * LoginProxyServlet
@@ -43,14 +47,7 @@ public class LoginProxyServlet extends HttpServlet
         String parameter;
 
         request.setCharacterEncoding( "UTF-8" );
-        
-        PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
-        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
-        if (authenticationConfiguration.isCreateNewSessionOnLogin())
-        {
-            request.getSession().invalidate();
-        }        
-        
+                
         HttpSession session = request.getSession(true);
 
         parameter = request.getParameter(LoginConstants.DESTINATION);
@@ -58,9 +55,9 @@ public class LoginProxyServlet extends HttpServlet
             session.setAttribute(LoginConstants.DESTINATION, parameter);
         else
             session.removeAttribute(LoginConstants.DESTINATION);
-        parameter = request.getParameter(LoginConstants.USERNAME);
-        if (parameter != null)
-            session.setAttribute(LoginConstants.USERNAME, parameter);
+        String username = request.getParameter(LoginConstants.USERNAME);
+        if (username != null)
+            session.setAttribute(LoginConstants.USERNAME, username);
         else
             session.removeAttribute(LoginConstants.USERNAME);
         parameter = request.getParameter(LoginConstants.PASSWORD);
@@ -80,10 +77,50 @@ public class LoginProxyServlet extends HttpServlet
                     decoratorName);
         }
 
-        response.sendRedirect(response.encodeURL(request.getContextPath()
-                + "/login/redirector"));
+        PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
+        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
+        if (authenticationConfiguration.isCreateNewSessionOnLogin())
+        {
+    
+            ActiveAuthenticationIdentityProvider identityProvider = (ActiveAuthenticationIdentityProvider) 
+                Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider");
+            IdentityToken token = identityProvider.createIdentityToken(username);
+            saveState(session, token, identityProvider.getSessionAttributeNames());
+            request.getSession().invalidate();
+            HttpSession newSession = request.getSession(true);
+            restoreState(newSession, token);
+            response.sendRedirect(response.encodeURL(request.getContextPath()
+                    + "/login/redirector?token=") + token.getToken());
+            
+        }
+        else
+        {
+            response.sendRedirect(response.encodeURL(request.getContextPath()
+                    + "/login/redirector"));
+        }
     }
 
+    protected void saveState(HttpSession session, IdentityToken token, List sessionAttributes)
+    {
+        Iterator sessionNames = sessionAttributes.iterator();
+        while (sessionNames.hasNext())
+        {
+            String name = (String)sessionNames.next();
+            token.setAttribute(name, session.getAttribute(name));
+        }
+    }
+
+    protected void restoreState(HttpSession session, IdentityToken token)
+    {
+        Iterator names = token.getAttributeNames();
+        while (names.hasNext())
+        {
+            String name = (String)names.next();
+            Object attribute = token.getAttribute(name);
+            session.setAttribute(name, attribute);
+        }        
+    }
+    
     public final void doPost(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException
     {

@@ -30,6 +30,7 @@ public final class LoginConstants
     public final static String DESTINATION = "org.apache.jetspeed.login.destination";
     public final static String RETRYCOUNT  = "org.apache.jetspeed.login.retrycount";
     public final static String ERRORCODE   = "org.apache.jetspeed.login.errorcode";
+    public final static String LOGIN_CHECK = "org.apache.jetspeed.login.check";
     
     public final static Integer ERROR_UNKNOWN_USER = new Integer(1);
     public final static Integer ERROR_INVALID_PASSWORD = new Integer(2);

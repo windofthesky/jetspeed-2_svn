@@ -106,18 +106,37 @@
 
    <!--  create new session upon authentication -->   
    <constructor-arg index='0'>
-   		<value>false</value>
+   		<value>true</value>
    </constructor-arg>	
    <!--  hard session timeout limit in seconds, regardless of (in)activity, setting to 0 turns off this feature 
    		 note:this feature should be used with 'create new session upon authentication' feature 
    -->   
    <constructor-arg index='1'>
-   		<value>0</value>
+   		<value>4800</value>
    </constructor-arg>
    <!--  redirect location for hard session expiration -->   
    <constructor-arg index='2'>
    		<value>/login/logout</value>
    </constructor-arg>
 </bean>    
-    
+
+<bean id='org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider'
+	class='org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProviderImpl'>
+    <constructor-arg index="0">
+        <ref bean="activeAuthenticationCache" />
+    </constructor-arg>
+    <!--  list of session attribute names that should be saved and restored upon authentication events -->
+    <constructor-arg>    
+    <list>
+    	<value>org.apache.jetspeed.login.username</value>
+    	<value>org.apache.jetspeed.login.password</value>
+    	<value>org.apache.jetspeed.login.destination</value>
+    	<value>org.apache.jetspeed.login.retrycount</value>
+    	<value>org.apache.jetspeed.login.errorcode</value>
+    	<value>org.apache.jetspeed.login.check</value>    
+    	<value>org.apache.jetspeed.theme.override</value>	
+    </list>    
+    </constructor-arg>
+</bean>    
+
 </beans>

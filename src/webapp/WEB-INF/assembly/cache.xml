@@ -121,4 +121,22 @@
 		</constructor-arg>
 	</bean>
 
+	<!--  Active Authentication Cache: only use with Active Authentication -->
+	<!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
+		configuration in cacheManager.xml -->
+	<bean id="ehActiveAuthenticationCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="activeAuthenticationCache" />
+	</bean>
+
+	<bean id="activeAuthenticationCache"
+		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+		<constructor-arg index="0">
+			<ref bean="ehActiveAuthenticationCache" />
+		</constructor-arg>
+	</bean>
+
 </beans>
