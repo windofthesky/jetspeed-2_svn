@@ -111,8 +111,6 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 currentState = decodeParameter( windowAccessor, states, currentState, parameter);
             }
             
-            // Big ole `
-            /*
             if ( log.isDebugEnabled() )
             {
                 logDecode(states, buffer);
@@ -122,7 +120,6 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                     log.debug("navstate decoded="+buffer.toString());
                 }
             }
-            */
         }
         return states;
     }
