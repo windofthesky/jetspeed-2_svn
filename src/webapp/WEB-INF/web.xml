@@ -209,6 +209,14 @@ limitations under the License.
          /action/*
        </url-pattern>
     </servlet-mapping>            
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /render/*
+       </url-pattern>
+    </servlet-mapping>
     
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>
