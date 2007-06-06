@@ -25,6 +25,12 @@
         </constructor-arg>
     </bean>
 
+    <bean id="PortalConfiguration" class="org.apache.jetspeed.administration.PortalConfigurationImpl">
+        <constructor-arg>
+            <ref bean="portal_configuration" />        
+        </constructor-arg>
+    </bean>
+
     <!-- ServletConfig -->
     <bean id="javax.servlet.ServletConfig" name="ServletConfig" class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean" />
 

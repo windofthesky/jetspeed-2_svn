@@ -67,5 +67,10 @@ public interface PortalConfigurationConstants
     
     /** Users */
     static final String USERS_DEFAULT_ADMIN = "default.admin.user";
-    static final String USERS_DEFAULT_GUEST = "default.user.principal";
+    static final String USERS_DEFAULT_GUEST = "default.user.principal";    
+    static final String ROLES_DEFAULT_ADMIN = "default.admin.role";    
+    static final String ROLES_DEFAULT_MANAGER = "default.manager.role";
+    static final String ROLES_DEFAULT_USER = "default.user.role";
+    static final String ROLES_DEFAULT_GUEST = "default.guest.role";
+    
 }

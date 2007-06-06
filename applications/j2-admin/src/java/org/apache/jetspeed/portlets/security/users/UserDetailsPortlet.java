@@ -41,6 +41,8 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.administration.PortalConfiguration;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -49,7 +51,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
-import org.apache.jetspeed.portlets.security.users.JetspeedUserBean;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.security.Group;
@@ -60,9 +61,9 @@ import org.apache.jetspeed.security.PasswordAlreadyUsedException;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.portals.bridges.beans.TabBean;
@@ -127,6 +128,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private String paIdentifier;
     private Collection paUserAttributes;
     private boolean initPrefsAndAttr;
+    private PortalConfiguration configuration;
     
     private LinkedHashMap userTabMap;
     private LinkedHashMap anonymousUserTabMap;
@@ -165,6 +167,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
         if (null == pageManager)
         {
             throw new PortletException("Failed to find the Page Manager on portlet initialization");
+        }
+
+        configuration = (PortalConfiguration)getPortletContext().getAttribute(CommonPortletServices.CPS_PORTAL_CONFIGURATION);
+        if (null == configuration)
+        {
+            throw new PortletException("Failed to find the Portal Configuration on portlet initialization");
         }
         
         paIdentifier = ((MutablePortletApplication)((JetspeedPortletContext)config.getPortletContext())
@@ -416,12 +424,31 @@ public class UserDetailsPortlet extends GenericServletPortlet
         {
             if (roles == null)
             {
+                String adminName = configuration.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN, "admin");
+                String managerName  = configuration.getString(PortalConfigurationConstants.ROLES_DEFAULT_MANAGER, "manager");
                 roles = new LinkedList();
                 Iterator fullRoles = roleManager.getRoles("");
                 while (fullRoles.hasNext())
                 {
                     Role role = (Role)fullRoles.next();
-                    roles.add(role.getPrincipal().getName());
+                    String roleName = role.getPrincipal().getName();
+                    // https://issues.apache.org/jira/browse/JS2-714
+                    // Filter roles for delegated security
+                    String username = request.getUserPrincipal().getName();
+                    if (roleName.equals(adminName))                        
+                    {
+                        if (roleManager.isUserInRole(username, adminName))
+                            roles.add(roleName);
+                    }
+                    else if (roleName.equals(managerName))                        
+                    {
+                        if (roleManager.isUserInRole(username, managerName))
+                            roles.add(roleName);
+                    }    
+                    else
+                    {
+                        roles.add(roleName);                        
+                    }
                 }
                 request.getPortletSession().setAttribute(ROLES_CONTROL, roles);
             }

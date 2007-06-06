@@ -111,6 +111,9 @@ limitations under the License.
           <entry key ="PortalAuthenticationConfiguration">
           	<ref bean="org.apache.jetspeed.administration.PortalAuthenticationConfiguration"/>
           </entry>
+          <entry key ="PortalConfiguration">
+          	<ref bean="PortalConfiguration"/>
+          </entry>
           
 <!-- first uncomment the below service bean in security-spi-atn.xml
          <entry key="PasswordEncodingService">
