@@ -64,6 +64,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
         if (null != internalUser)
         {
             userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()));
+            userPrincipal.setEnabled(internalUser.isEnabled());
         }
         return userPrincipal;
     }
@@ -83,7 +84,9 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
             {
                 continue;
             }
-            userPrincipals.add(new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath())));
+            UserPrincipal userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()));
+            userPrincipal.setEnabled(internalUser.isEnabled());
+            userPrincipals.add(userPrincipal);
         }
         return userPrincipals;
     }
@@ -109,10 +112,13 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userPrincipal.getName(), false);
-        if ( null != internalUser && internalUser.isEnabled() != userPrincipal.isEnabled() )
+        if ( null != internalUser )
         {
-            internalUser.setEnabled(userPrincipal.isEnabled());
-            securityAccess.setInternalUserPrincipal(internalUser, false);        
+            if ( internalUser.isEnabled() != userPrincipal.isEnabled())
+            {
+                internalUser.setEnabled(userPrincipal.isEnabled());
+                securityAccess.setInternalUserPrincipal(internalUser, false);        
+            }
         }
         else
         {
