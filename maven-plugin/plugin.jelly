@@ -312,8 +312,9 @@
   <!-- ============== DATABASE CREATE ============== -->
   <!-- ============================================= -->
 
-  <goal name="j2:db.create.test">
-    <attainGoal name="j2:_db.test.properties"/>
+  <goal name="j2:db.create.test" prereqs="j2:_check.required.properties,j2:_db.test.properties">
+    <j:set var="org.apache.jetspeed.target.rdbms" value="${org.apache.jetspeed.test.database.default.name}"/>
+    <attainGoal name="j2:_set.rdbms.props"/>
     <attainGoal name="j2:_db.drop"/>
     <attainGoal name="j2:_db.create"/>
     <attainGoal name="j2:_db.entities"/>    
