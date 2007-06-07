@@ -241,7 +241,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 request.setAttribute(VIEW_ROLES, userRoles );
                 
                 // check for refresh on roles list
-                String refreshRoles = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, "roles");
+                String refreshRoles = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_ROLES);
                 List roles = null;
                 if (refreshRoles == null)
                 {        
@@ -287,7 +287,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 request.setAttribute(VIEW_GROUPS, userGroups);
                 
                 // check for refresh on groups list
-                String refreshGroups = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, "groups");
+                String refreshGroups = (String)PortletMessaging.consume(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_GROUPS);
                 List groups = null;
                 if (refreshGroups == null)
                 {        

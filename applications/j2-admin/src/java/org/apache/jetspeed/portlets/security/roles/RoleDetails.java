@@ -226,6 +226,8 @@ public class RoleDetails extends BrowserPortlet
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_REFRESH, "true");
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_SELECTED, role);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_CHANGED, role);
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_ROLES, "true");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_REFRESH_ROLES, "true");
             }            
             catch (SecurityException sex)
             {
@@ -249,6 +251,8 @@ public class RoleDetails extends BrowserPortlet
                 try
                 {
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_ROLES, SecurityResources.MESSAGE_REFRESH, "true");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_ROLES, "true");
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_REFRESH_ROLES, "true");
                 }
                 catch (NotSerializableException e)
                 {

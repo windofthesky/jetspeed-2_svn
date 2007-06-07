@@ -321,6 +321,7 @@ public class GroupDetails extends BrowserPortlet
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_REFRESH, "true");
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_SELECTED, group);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_CHANGED, group);
+                PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_GROUPS, "true");                        
             } 
             catch (NotSerializableException e)
             {
@@ -344,6 +345,7 @@ public class GroupDetails extends BrowserPortlet
                 try
                 {
                     PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_GROUPS, SecurityResources.MESSAGE_REFRESH, "true");
+                    PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_GROUPS, "true");                        
                 } 
                 catch (NotSerializableException e)
                 {
