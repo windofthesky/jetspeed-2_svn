@@ -712,26 +712,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
         this._getActionMenuPopupWidget().onOpen( evt );        
     },
-    windowActionMenuIsEmpty: function()
-    {
-        var currentPortletActionState = null;
-        var currentPortletActionMode = null;
-        if ( this.portlet )
-        {
-            currentPortletActionState = this.portlet.getCurrentActionState();
-            currentPortletActionMode = this.portlet.getCurrentActionMode();
-        }
-        var actionMenuIsEmpty = true;
-        for ( var actionName in this.actionMenus )
-        {
-            var menuitem = this.actionMenus[ actionName ];
-            if ( this._isWindowActionEnabled( actionName, currentPortletActionState, currentPortletActionMode ) )
-            {
-                actionMenuIsEmpty = true;
-                break;
-            }
-        }
-    },
     windowActionProcess: function( /* String */ actionName, evt )
     {   // evt arg is needed only for opening action menu
         //dojo.debug( "windowActionProcess [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " actionName=" + actionName );
@@ -849,33 +829,31 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
         else if ( actionName == jetspeed.id.ACTION_NAME_MENU )
         {
-            if ( this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE || this.windowActionMenuIsEmpty() )
+            if ( ! this._windowActionMenuIsEmpty() )
                 enabled = true;
         }
         else if ( jetspeed.prefs.windowActionDesktop[ actionName ] != null )
         {
-            if ( this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
+            var layoutActionsEnabled = this.getLayoutActionsEnabled();
+            if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
             {
-                if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_EXPAND )
-                {
-                    if ( ! this.windowHeightToFit )
-                        enabled = true;
-                }
-                else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
-                {
-                    if ( this.windowHeightToFit )
-                        enabled = true;
-                }
-                else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_TILE && jetspeed.prefs.windowTiling )
-                {
-                    if ( ! this.windowPositionStatic )
-                        enabled = true;
-                }
-                else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_UNTILE )
-                {
-                    if ( this.windowPositionStatic )
-                        enabled = true;
-                }
+                if ( ! this.windowHeightToFit && layoutActionsEnabled )
+                    enabled = true;
+            }
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_HEIGHT_NORMAL )
+            {
+                if ( this.windowHeightToFit && layoutActionsEnabled )
+                    enabled = true;
+            }
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_TILE && jetspeed.prefs.windowTiling )
+            {
+                if ( ! this.windowPositionStatic && layoutActionsEnabled )
+                    enabled = true;
+            }
+            else if ( actionName == jetspeed.id.ACTION_NAME_DESKTOP_UNTILE )
+            {
+                if ( this.windowPositionStatic && layoutActionsEnabled )
+                    enabled = true;
             }
         }
         else if ( this.portlet )
@@ -929,6 +907,27 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             }
         }
         return enabled;
+    },
+    _windowActionMenuIsEmpty: function()
+    {   // meant to be called from within _isWindowActionEnabled call for ACTION_NAME_MENU
+        var currentPortletActionState = null;
+        var currentPortletActionMode = null;
+        if ( this.portlet )
+        {
+            currentPortletActionState = this.portlet.getCurrentActionState();
+            currentPortletActionMode = this.portlet.getCurrentActionMode();
+        }
+        var actionMenuIsEmpty = true;
+        for ( var actionName in this.actionMenus )
+        {
+            var menuitem = this.actionMenus[ actionName ];
+            if ( actionName != jetspeed.id.ACTION_NAME_MENU && this._isWindowActionEnabled( actionName, currentPortletActionState, currentPortletActionMode ) )
+            {
+                actionMenuIsEmpty = false;
+                break;
+            }
+        }
+        return actionMenuIsEmpty ;
     },
 
     windowActionButtonSync: function()
@@ -1003,10 +1002,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             this.drag = new jetspeed.widget.PortletWindowDragMoveSource( this );
             if ( this.constrainToContainer )
                 this.drag.constrainTo();
-            if ( ! this.portlet || ! jetspeed.page.layoutActionsDisabled )
-                this.setTitleBarDragging( true );
-            else
-                this.setTitleBarDragging( false );
+            this.setTitleBarDragging();
         }
         
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
@@ -1080,6 +1076,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     {
         if ( this.windowState == jetspeed.id.ACTION_NAME_MAXIMIZE )
         {
+            this.showAllPortletWindows() ;
             this.restoreWindow( evt );
         }
         this._setLastPositionInfo();
@@ -1090,8 +1087,41 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     
         this.windowState = jetspeed.id.ACTION_NAME_MINIMIZE;
     },
+    showAllPortletWindows: function()
+    {
+        var allPWwidgets = dojo.widget.manager.getWidgetsByType( this.getNamespacedType() ) ;
+        for ( var i = 0 ; i < allPWwidgets.length ; i++ )
+        {
+            var showPWwidget = allPWwidgets[i] ;
+            if ( showPWwidget )
+            {
+                showPWwidget.domNode.style.display = "";
+            }
+        }
+    },
+    hideAllPortletWindows: function( excludeWidgetIds )
+    {
+        var allPWwidgets = dojo.widget.manager.getWidgetsByType( this.getNamespacedType() ) ;
+        for ( var i = 0 ; i < allPWwidgets.length ; i++ )
+        {
+            var hidePWwidget = allPWwidgets[i] ;
+            if ( hidePWwidget && excludeWidgetIds && excludeWidgetIds.length > 0 )
+            {
+                for ( var exclI = 0 ; exclI < excludeWidgetIds.length ; exclI++ )
+                {
+                    if ( hidePWwidget.widgetId == excludeWidgetIds[exclI] )
+                        hidePWwidget = null ;
+                }
+            }
+            if ( hidePWwidget )
+            {
+                hidePWwidget.domNode.style.display = "none";
+            }
+        }
+    },
     maximizeWindow: function( evt )
     {
+        this.hideAllPortletWindows( [ this.widgetId ] ) ;
         if ( this.windowState == jetspeed.id.ACTION_NAME_MINIMIZE )
         {
             this.restoreWindow( evt );
@@ -1143,11 +1173,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         var lastPositionInfo = null;
         if ( this.windowState == jetspeed.id.ACTION_NAME_MAXIMIZE )
         {
+            this.showAllPortletWindows() ;
             this.windowPositionStatic = ( this.lastWindowPositionStatic != null ? this.lastWindowPositionStatic : false );
         }
-
-        if ( ! this.portlet || ! jetspeed.page.layoutActionsDisabled )
-            this.setTitleBarDragging( true );
 
         this.containerNode.style.display = "";
         this.resizeBar.style.display = "";
@@ -1194,6 +1222,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this._adjustPositionToDesktopState();
 
 		this.windowState = jetspeed.id.ACTION_NAME_RESTORE;  // "normal"
+
+        this.setTitleBarDragging();
 	},
     getLastPositionInfo: function()
     {
@@ -1260,8 +1290,16 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
+    getLayoutActionsEnabled: function()
+    {
+        return ( this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE && ( ! this.portlet || ! this.portlet.layoutActionsDisabled ) );
+    },
     setTitleBarDragging: function( enableDrag )
     {
+        if ( typeof enableDrag == "undefined" )
+        {
+            enableDrag = this.getLayoutActionsEnabled();
+        }
         if ( enableDrag )
         {
             if ( this.normalTitleBarCursor != null )
@@ -1335,6 +1373,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         
         var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
         addToElmt.appendChild( this.domNode );
+
+        if ( this.windowState == jetspeed.id.ACTION_NAME_MINIMIZE )
+            this.minimizeWindow();
 
         if ( this.portlet )
             this.portlet.submitChangedWindowState();
@@ -1847,6 +1888,10 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             this.titleBarText.innerHTML = this.title;
         }
     },
+    getPortletTitle: function()
+    {
+        return this.title;
+    },
 
     _splitAndFixPaths_scriptsonly: function( /* String */ s, /* String */ url )
     {
@@ -1995,7 +2040,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindowDragMoveSource, {
 dojo.declare( "jetspeed.widget.PortletWindowDragMoveObject", dojo.dnd.HtmlDragMoveObject, {
     qualifyTargetColumn: function( /* jetspeed.om.Column */ column )
     {
-        return true;
+        if ( column != null && ! column.layoutActionsDisabled )
+            return true;
+        return false;
     },
     onDragStart: function( e )
     {

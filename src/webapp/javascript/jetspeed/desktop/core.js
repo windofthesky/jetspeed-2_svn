@@ -104,7 +104,9 @@ jetspeed.id =
     ACTION_NAME_DESKTOP_HEIGHT_EXPAND: "heightexpand",
     ACTION_NAME_DESKTOP_HEIGHT_NORMAL: "heightnormal",
 
-    ACTION_NAME_LOADING: "loading",
+    ACTION_NAME_LOAD_RENDER: "loadportletrender",
+    ACTION_NAME_LOAD_ACTION: "loadportletaction",
+    ACTION_NAME_LOAD_UPDATE: "loadportletupdate",
 
     PORTLET_ACTION_TYPE_MODE: "mode",
     PORTLET_ACTION_TYPE_STATE: "state",
@@ -498,7 +500,7 @@ jetspeed.doAction = function( bindArgs, portletEntityId )
             else
                 dojo.debug( "doAction [" + portletEntityId + "] url: " + bindArgs.url + " form: " + jetspeed.debugDumpForm( bindArgs.formNode ) );
         }
-        targetPortlet.retrieveContent( new jetspeed.om.PortletActionContentListener( bindArgs ), bindArgs );
+        targetPortlet.retrieveContent( new jetspeed.om.PortletActionContentListener( targetPortlet, bindArgs ), bindArgs );
     }
 };
 
@@ -838,18 +840,17 @@ jetspeed.portletDefinitionsforSelector = function(filter,category,pagenumber,por
 	var ajaxApiContext = new jetspeed.om.Id( "selectorPortlets", { } );
     jetspeed.url.retrieveContent( { url: getPortletsUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
 };
-jetspeed.getActionsForPortlet = function( /* String */ portletEntityId, contentListener )
+jetspeed.getActionsForPortlet = function( /* String */ portletEntityId )
 {
     if ( portletEntityId == null ) return;
-    jetspeed.getActionsForPortlets( [ portletEntityId ], contentListener );
+    jetspeed.getActionsForPortlets( [ portletEntityId ] );
 };
-jetspeed.getActionsForPortlets = function( /* Array */ portletEntityIds, contentListener )
+jetspeed.getActionsForPortlets = function( /* Array */ portletEntityIds )
 {
-    if ( contentListener == null )
-        contentListener = new jetspeed.om.PortletActionsContentListener();
-    var queryString = "?action=getactions";
     if ( portletEntityIds == null )
         portletEntityIds = jetspeed.page.getPortletIds();
+    var contentListener = new jetspeed.om.PortletActionsContentListener( portletEntityIds );
+    var queryString = "?action=getactions";
     for ( var i = 0 ; i < portletEntityIds.length ; i++ )
     {
         queryString += "&id=" + portletEntityIds[i];
@@ -1139,7 +1140,6 @@ dojo.lang.extend( jetspeed.om.Page,
     shortTitle: null,
     layoutDecorator: null,
     portletDecorator: null,
-    layoutActionsDisabled: false,
 
     layouts: null,
     columns: null,
@@ -1333,15 +1333,6 @@ dojo.lang.extend( jetspeed.om.Page,
             return null;
         }
 
-        var rootFragNameAttr = rootFragment.getAttribute( "name" );
-        if ( rootFragNameAttr != null )
-        {
-            rootFragNameAttr = rootFragNameAttr.toLowerCase();
-            if ( rootFragNameAttr.indexOf( "noactions" ) != -1 )
-            {
-                this.layoutActionsDisabled = true;
-            }
-        }
         var parsedRootLayoutFragment = this._parsePSMLLayoutFragment( rootFragment, 0 );    // rootFragment must be a layout fragment - /portal requires this as well
         return parsedRootLayoutFragment;
     },
@@ -1353,6 +1344,16 @@ dojo.lang.extend( jetspeed.om.Page,
         {
             dojo.raise( "_parsePSMLLayoutFragment called with non-layout fragment: " + layoutNode );
             return null;
+        }
+        var layoutActionsDisabled = false;
+        var layoutFragNameAttr = layoutNode.getAttribute( "name" );
+        if ( layoutFragNameAttr != null )
+        {
+            layoutFragNameAttr = layoutFragNameAttr.toLowerCase();
+            if ( layoutFragNameAttr.indexOf( "noactions" ) != -1 )
+            {
+                layoutActionsDisabled = true;
+            }
         }
 
         var sizes = null, sizesSum = 0;
@@ -1388,7 +1389,7 @@ dojo.lang.extend( jetspeed.om.Page,
                             portletProps[ jetspeed.id.PORTLET_PROP_WINDOW_ICON ] = portletIcon;
                         }
                     }
-                    fragChildren.push( { id: child.getAttribute( "id" ), type: fragType, name: child.getAttribute( "name" ), properties: portletProps, actions: this._parsePSMLActions( child, null ), currentActionState: this._parsePSMLCurrentActionState( child ), currentActionMode: this._parsePSMLCurrentActionMode( child ), decorator: child.getAttribute( "decorator" ), documentOrderIndex: i } );
+                    fragChildren.push( { id: child.getAttribute( "id" ), type: fragType, name: child.getAttribute( "name" ), properties: portletProps, actions: this._parsePSMLActions( child, null ), currentActionState: this._parsePSMLCurrentActionState( child ), currentActionMode: this._parsePSMLCurrentActionMode( child ), decorator: child.getAttribute( "decorator" ), layoutActionsDisabled: layoutActionsDisabled, documentOrderIndex: i } );
                 }
             }
             else if ( childLName == "property" )
@@ -1440,7 +1441,7 @@ dojo.lang.extend( jetspeed.om.Page,
             sizes.push( "100" );
             sizesSum = 100;
         }
-        return { id: layoutNode.getAttribute( "id" ), type: layoutFragType, name: layoutNode.getAttribute( "name" ), decorator: layoutNode.getAttribute( "decorator" ), columnSizes: sizes, columnSizesSum: sizesSum, properties: propertiesMap, fragments: fragChildren, layoutFragmentIndexes: layoutFragIndexes, otherFragmentIndexes: otherFragIndexes, documentOrderIndex: layoutNodeDocumentOrderIndex };
+        return { id: layoutNode.getAttribute( "id" ), type: layoutFragType, name: layoutNode.getAttribute( "name" ), decorator: layoutNode.getAttribute( "decorator" ), columnSizes: sizes, columnSizesSum: sizesSum, properties: propertiesMap, fragments: fragChildren, layoutFragmentIndexes: layoutFragIndexes, otherFragmentIndexes: otherFragIndexes, layoutActionsDisabled: layoutActionsDisabled, documentOrderIndex: layoutNodeDocumentOrderIndex };
     },
     _parsePSMLActions: function( fragmentNode, actionsMap )
     {
@@ -1687,7 +1688,7 @@ dojo.lang.extend( jetspeed.om.Page,
             
             if ( parentColumn != null && ! omitLayoutHeader )
             {
-                var layoutHeaderColModelObj = new jetspeed.om.Column( 0, layoutFragment.id, ( subOneLast ? layoutFragment.columnSizesSum-0.1 : layoutFragment.columnSizesSum ), this.columns.length );
+                var layoutHeaderColModelObj = new jetspeed.om.Column( 0, layoutFragment.id, ( subOneLast ? layoutFragment.columnSizesSum-0.1 : layoutFragment.columnSizesSum ), this.columns.length, layoutFragment.layoutActionsDisabled );
                 layoutHeaderColModelObj.layoutHeader = true;
                 this.columns.push( layoutHeaderColModelObj );
                 if ( parentColumn.columnChildren == null )
@@ -1702,7 +1703,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 var size = layoutFragment.columnSizes[i];
                 if ( subOneLast && i == (layoutFragment.columnSizes.length - 1) )
                     size = size - 0.1;
-                var colModelObj = new jetspeed.om.Column( i, layoutFragment.id, size, this.columns.length );
+                var colModelObj = new jetspeed.om.Column( i, layoutFragment.id, size, this.columns.length, layoutFragment.layoutActionsDisabled );
                 this.columns.push( colModelObj );
                 if ( parentColumn != null )
                 {
@@ -1795,7 +1796,7 @@ dojo.lang.extend( jetspeed.om.Page,
                         var portletPageColumnIndex = pageColumnStartIndex + new Number( portletColumnIndex );
                         portletPageColumnKey = portletPageColumnIndex.toString();
                     }
-                    var portlet = new jetspeed.om.Portlet( pFrag.name, pFrag.id, null, pFrag.properties, pFrag.actions, pFrag.currentActionState, pFrag.currentActionMode, pFrag.decorator );
+                    var portlet = new jetspeed.om.Portlet( pFrag.name, pFrag.id, null, pFrag.properties, pFrag.actions, pFrag.currentActionState, pFrag.currentActionMode, pFrag.decorator, pFrag.layoutActionsDisabled );
                     portlet.initialize();
 
                     this.putPortlet( portlet ) ;
@@ -2637,12 +2638,14 @@ dojo.lang.extend( jetspeed.om.Page,
 });
 
 // ... jetspeed.om.Column
-jetspeed.om.Column = function( layoutColumnIndex, layoutId, size, pageColumnIndex )
+jetspeed.om.Column = function( layoutColumnIndex, layoutId, size, pageColumnIndex, layoutActionsDisabled )
 {
     this.layoutColumnIndex = layoutColumnIndex;
     this.layoutId = layoutId;
     this.size = size;
     this.pageColumnIndex = new Number( pageColumnIndex );
+    if ( typeof layoutActionsDisabled != "undefined" )
+        this.layoutActionsDisabled = layoutActionsDisabled ;
     this.id = "jscol_" + pageColumnIndex; //  + "_" + this.layoutColumnIndex + "_" + this.layoutId;
     this.domNode = null;
 };
@@ -2653,6 +2656,7 @@ dojo.lang.extend( jetspeed.om.Column,
     layoutId: null,
     size: null,
     pageColumnIndex: null,
+    layoutActionsDisabled: false,
     domNode: null,
 
     columnContainer: false,
@@ -2731,7 +2735,7 @@ dojo.lang.extend( jetspeed.om.Column,
 });
 
 // ... jetspeed.om.Portlet
-jetspeed.om.Portlet = function( portletName, portletEntityId, alternateContentRetriever, properties, actions, currentActionState, currentActionMode, decorator )
+jetspeed.om.Portlet = function( portletName, portletEntityId, alternateContentRetriever, properties, actions, currentActionState, currentActionMode, decorator, layoutActionsDisabled )
 {   // new jetspeed.om.Portlet( pFrag.name, pFrag.id, alternateContentRetriever, pFrag.properties, pFrag.decorator, portletPageColumnIndex ) ;
     this.name = portletName;
     this.entityId = portletEntityId;
@@ -2760,6 +2764,10 @@ jetspeed.om.Portlet = function( portletName, portletEntityId, alternateContentRe
             this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_DECORATION, decorator );
         }
     }
+
+    this.layoutActionsDisabled = false ;
+    if ( typeof layoutActionsDisabled != "undefined" )
+        this.layoutActionsDisabled = layoutActionsDisabled ;
 };
 dojo.inherits( jetspeed.om.Portlet, jetspeed.om.Id);
 dojo.lang.extend( jetspeed.om.Portlet,
@@ -3172,12 +3180,12 @@ dojo.lang.extend( jetspeed.om.Portlet,
             if ( windowExtendedProperty != null )
                 queryStringFragment += "&" + jetspeed.id.PORTLET_PROP_DESKTOP_EXTENDED + "=" + windowExtendedProperty;
 
-            this._submitJetspeedAjaxApi( action, queryStringFragment, new jetspeed.om.MoveAjaxApiContentListener( changedState ) );
+            this._submitJetspeedAjaxApi( action, queryStringFragment, new jetspeed.om.MoveAjaxApiContentListener( this, changedState ) );
 
             if ( ! volatileOnly && ! reset )
             {
                 if ( ! windowPositionStatic && changedStateResult.zIndexChanged )  // current condition for whether 
-                {                                                                         // volatile (zIndex) changes are possible
+                {                                                                  // volatile (zIndex) changes are possible
                     var portletArrayList = jetspeed.page.getPortletArrayList();
                     var autoUpdatePortlets = dojo.collections.Set.difference( portletArrayList, [ this ] );
                     if ( ! portletArrayList || ! autoUpdatePortlets || ((autoUpdatePortlets.count + 1) != portletArrayList.count) )
@@ -3185,7 +3193,7 @@ dojo.lang.extend( jetspeed.om.Portlet,
                     else if ( autoUpdatePortlets && autoUpdatePortlets.count > 0 )
                     {
                         dojo.lang.forEach( autoUpdatePortlets.toArray(),
-                                function( portlet ) { if ( portlet.getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ) ) portlet.submitChangedWindowState( true ); } );
+                                function( portlet ) { if ( ! portlet.getProperty( jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC ) ) portlet.submitChangedWindowState( true ); } );
                     }
                 }
                 else if ( windowPositionStatic )
@@ -3199,7 +3207,7 @@ dojo.lang.extend( jetspeed.om.Portlet,
     retrieveContent: function( contentListener, bindArgs, suppressGetActions )
     {
         if ( contentListener == null )
-            contentListener = new jetspeed.om.PortletContentListener( suppressGetActions, bindArgs );
+            contentListener = new jetspeed.om.PortletContentListener( this, suppressGetActions, bindArgs );
 
         if ( ! bindArgs )
             bindArgs = {};
@@ -3215,11 +3223,57 @@ dojo.lang.extend( jetspeed.om.Portlet,
         if ( portletTitle != null && portletTitle.length > 0 )
         {
             this.putProperty( jetspeed.id.PORTLET_PROP_WINDOW_TITLE, portletTitle );
-            windowWidget.setPortletTitle( portletTitle );
+            if ( windowWidget && ! this.loadingIndicatorIsShown() )
+                windowWidget.setPortletTitle( portletTitle );
         }
         if ( windowWidget )
         {
             windowWidget.setPortletContent( portletContent, renderUrl );
+        }
+    },
+    loadingIndicatorIsShown: function()
+    {
+        var actionlabel1 = this._getLoadingActionLabel( jetspeed.id.ACTION_NAME_LOAD_RENDER );
+        var actionlabel2 = this._getLoadingActionLabel( jetspeed.id.ACTION_NAME_LOAD_ACTION );
+        var actionlabel3 = this._getLoadingActionLabel( jetspeed.id.ACTION_NAME_LOAD_UPDATE );
+        var windowWidget = this.getPortletWindow();
+        if ( windowWidget && ( actionlabel1 || actionlabel2 ) )
+        {
+            var windowTitle = windowWidget.getPortletTitle();
+            if ( windowTitle && ( windowTitle == actionlabel1 || windowTitle == actionlabel2 ) )
+                return true;
+        }
+        return false;
+    },
+    _getLoadingActionLabel: function( actionName )
+    {
+        var actionlabel = null;
+        if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
+        {
+            actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
+            if ( actionlabel != null && actionlabel.length == 0 )
+                actionlabel = null;
+        }
+        return actionlabel;
+    },  
+    loadingIndicatorShow: function( actionName )
+    {
+        if ( actionName && ! this.loadingIndicatorIsShown() )
+        {
+            var actionlabel = this._getLoadingActionLabel( actionName );
+            var windowWidget = this.getPortletWindow();
+            if ( windowWidget && actionlabel )
+            {
+                windowWidget.setPortletTitle( actionlabel );
+            }
+        }
+    },
+    loadingIndicatorHide: function()
+    {
+        var windowWidget = this.getPortletWindow();
+        if ( windowWidget )
+        {
+            windowWidget.setPortletTitle( this.getProperty( jetspeed.id.PORTLET_PROP_WINDOW_TITLE ) );
         }
     },
 
@@ -3515,17 +3569,27 @@ jetspeed.om.BasicContentListener.prototype =
 };
 
 // ... jetspeed.om.PortletContentListener
-jetspeed.om.PortletContentListener = function( suppressGetActions, bindArgs )
+jetspeed.om.PortletContentListener = function( /* Portlet */ portlet, suppressGetActions, bindArgs )
 {
+    this.portlet = portlet;
     this.suppressGetActions = suppressGetActions;
     this.submittedFormBindObject = null;
     if ( bindArgs != null && bindArgs.submitFormBindObject != null )
     {
         this.submittedFormBindObject = bindArgs.submitFormBindObject;
     }
+    this._setPortletLoading( true );
 };
 jetspeed.om.PortletContentListener.prototype =
 {
+    _setPortletLoading: function( /* boolean */ showLoading )
+    {
+        if ( this.portlet == null ) return;
+        if ( showLoading )
+            this.portlet.loadingIndicatorShow( jetspeed.id.ACTION_NAME_LOAD_RENDER );
+        else
+            this.portlet.loadingIndicatorHide();
+    },
     notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet, http )
     {
         var portletTitle = null;
@@ -3538,6 +3602,8 @@ jetspeed.om.PortletContentListener.prototype =
         portlet.setPortletContent( portletContent, requestUrl, portletTitle );
         if ( this.suppressGetActions == null || this.suppressGetActions == false )
             jetspeed.getActionsForPortlet( portlet.getId() );
+        else
+            this._setPortletLoading( false );
         if ( this.submittedFormBindObject != null )
         {
             this.submittedFormBindObject.isFormSubmitInProgress( false );
@@ -3545,6 +3611,7 @@ jetspeed.om.PortletContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
+        this._setPortletLoading( false );
         if ( this.submittedFormBindObject != null )
         {
             this.submittedFormBindObject.isFormSubmitInProgress( false );
@@ -3554,16 +3621,26 @@ jetspeed.om.PortletContentListener.prototype =
 };
 
 // ... jetspeed.om.PortletActionContentListener
-jetspeed.om.PortletActionContentListener = function( bindArgs )
+jetspeed.om.PortletActionContentListener = function( /* Portlet */ portlet, bindArgs )
 {
+    this.portlet = portlet;
     this.submittedFormBindObject = null;
     if ( bindArgs != null && bindArgs.submitFormBindObject != null )
     {
         this.submittedFormBindObject = bindArgs.submitFormBindObject;
     }
+    this._setPortletLoading( true );
 };
 jetspeed.om.PortletActionContentListener.prototype =
 {
+    _setPortletLoading: function( /* boolean */ showLoading )
+    {
+        if ( this.portlet == null ) return;
+        if ( showLoading )
+            this.portlet.loadingIndicatorShow( jetspeed.id.ACTION_NAME_LOAD_ACTION );
+        else
+            this.portlet.loadingIndicatorHide();
+    },
     notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet, http )
     {
         var renderUrl = null;
@@ -3591,12 +3668,14 @@ jetspeed.om.PortletActionContentListener.prototype =
                     }
                     else
                     {
+                        this._setPortletLoading( false );
                         dojo.raise( "PortletActionContentListener cannot interpret action response: " + portletContent );
                     }
                     renderUrl = null;
                 }
                 else if ( portletUrlPos > 0 )
                 {
+                    this._setPortletLoading( false );
                     dojo.raise( "PortletActionContentListener cannot interpret portlet url in action response: " + portletContent );
                     renderUrl = null;
                 }
@@ -3609,6 +3688,10 @@ jetspeed.om.PortletActionContentListener.prototype =
             jetspeed.doRenderAll( renderUrl );    // render all portlets
             //  portlet.retrieveContent(null, { url: renderUrl } );    // render just the one portlet
         }
+        else
+        {
+            this._setPortletLoading( false );
+        }
         if ( this.submittedFormBindObject != null )
         {
             this.submittedFormBindObject.isFormSubmitInProgress( false );
@@ -3616,6 +3699,7 @@ jetspeed.om.PortletActionContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
+        this._setPortletLoading( false );
         if ( this.submittedFormBindObject != null )
         {
             this.submittedFormBindObject.isFormSubmitInProgress( false );
@@ -3919,18 +4003,31 @@ dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
 jetspeed.om.PortletChangeActionContentListener = function( /* String */ portletEntityId )
 {
     this.portletEntityId = portletEntityId;
+    this._setPortletLoading( true );
 };
 dojo.lang.extend( jetspeed.om.PortletChangeActionContentListener,
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
         if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "portlet-change-action" ) )
-        {
             jetspeed.getActionsForPortlet( this.portletEntityId );
+        else
+            this._setPortletLoading( false );
+    },
+    _setPortletLoading: function( /* boolean */ showLoading )
+    {
+        var portlet = jetspeed.page.getPortlet( this.portletEntityId ) ;
+        if ( portlet )
+        {
+            if ( showLoading )
+                portlet.loadingIndicatorShow( jetspeed.id.ACTION_NAME_LOAD_UPDATE );
+            else
+                portlet.loadingIndicatorHide();
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
+        this._setPortletLoading( false );
         dojo.raise( "PortletChangeActionContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 });
@@ -3957,13 +4054,31 @@ dojo.lang.extend( jetspeed.om.PageChangeActionContentListener,
 });
 
 // ... jetspeed.om.PortletActionsContentListener
-jetspeed.om.PortletActionsContentListener = function()
+jetspeed.om.PortletActionsContentListener = function( /* String[] */ portletEntityIds )
 {
+    this.portletEntityIds = portletEntityIds;
+    this._setPortletLoading( true );
 };
 dojo.lang.extend( jetspeed.om.PortletActionsContentListener,
 {
+    _setPortletLoading: function( /* boolean */ showLoading )
+    {
+        if ( this.portletEntityIds == null || this.portletEntityIds.length == 0 ) return ;
+        for ( var i = 0 ; i < this.portletEntityIds.length ; i++ )
+        {
+            var portlet = jetspeed.page.getPortlet( this.portletEntityIds[i] ) ;
+            if ( portlet )
+            {
+                if ( showLoading )
+                    portlet.loadingIndicatorShow( jetspeed.id.ACTION_NAME_LOAD_UPDATE );
+                else
+                    portlet.loadingIndicatorHide();
+            }
+        }
+    },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
+        this._setPortletLoading( false );
         if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "portlet-actions" ) )
         {
             this.processPortletActionsResponse( data );
@@ -4033,6 +4148,7 @@ dojo.lang.extend( jetspeed.om.PortletActionsContentListener,
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
+        this._setPortletLoading( false );
         dojo.raise( "PortletActionsContentListener error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 });
@@ -4383,14 +4499,25 @@ dojo.lang.extend( jetspeed.om.PortletSelectorSearchContentListener,
 
 
 // ... jetspeed.om.MoveAjaxApiContentListener
-jetspeed.om.MoveAjaxApiContentListener = function( changedState )
+jetspeed.om.MoveAjaxApiContentListener = function( /* Portlet */ portlet, changedState )
 {
+    this.portlet = portlet;
     this.changedState = changedState;
+    this._setPortletLoading( true );
 };
 jetspeed.om.MoveAjaxApiContentListener.prototype =
 {
+    _setPortletLoading: function( /* boolean */ showLoading )
+    {
+        if ( this.portlet == null ) return;
+        if ( showLoading )
+            this.portlet.loadingIndicatorShow( jetspeed.id.ACTION_NAME_LOAD_UPDATE );
+        else
+            this.portlet.loadingIndicatorHide();
+    },
     notifySuccess: function( /* String */ data, /* String */ requestUrl, domainModelObject )
     {
+        this._setPortletLoading( false );
         dojo.lang.mixin( domainModelObject.portlet.lastSavedWindowState, this.changedState );
         var reportError = false;
         if ( djConfig.isDebug && jetspeed.debug.submitChangedWindowState )
@@ -4399,6 +4526,7 @@ jetspeed.om.MoveAjaxApiContentListener.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
+        this._setPortletLoading( false );
         dojo.debug( "submitChangedWindowState error [" + domainModelObject.entityId + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
     }
 };

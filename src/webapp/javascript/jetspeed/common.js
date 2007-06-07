@@ -789,8 +789,10 @@ if ( window.dojo )
         }
         return msg;
     };
-    jetspeed.url.loadingIndicatorShow = function()
+    jetspeed.url.loadingIndicatorShow = function( actionName )
     {
+        if ( typeof actionName == "undefined" )
+            actionName = "loadpage";
         var loading = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID );
         if ( loading != null && loading.style )
         {
@@ -798,15 +800,18 @@ if ( window.dojo )
             {
                 loading.style[ "display" ] = "";
 
-                var actionlabel = null;
-                if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
-                    actionlabel = jetspeed.prefs.desktopActionLabels[ "loading" ];
-                if ( actionlabel != null )
+                if ( actionName != null )
                 {
-                    var loadingContent = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID + "-content" );
-                    if ( loadingContent != null )
+                    var actionlabel = null;
+                    if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
+                        actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
+                    if ( actionlabel != null && actionlabel.length > 0 )
                     {
-                        loadingContent.innerHTML = actionlabel;
+                        var loadingContent = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID + "-content" );
+                        if ( loadingContent != null )
+                        {
+                            loadingContent.innerHTML = actionlabel;
+                        }
                     }
                 }
                 return true;
