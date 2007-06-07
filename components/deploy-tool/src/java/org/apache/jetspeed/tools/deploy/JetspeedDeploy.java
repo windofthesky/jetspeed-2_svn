@@ -137,10 +137,6 @@ public class JetspeedDeploy implements Deploy
                         System.out.println("Found META-INF/context.xml");
                         contextXml = parseXml(source);
                     }
-                    else if ("WEB-INF/tld/portlet.tld".equals(target))
-                    {
-                        taglibFound = true;
-                    }
                     else
                     {
                         if ( stripLoggers && target.endsWith(".jar") &&
@@ -148,6 +144,11 @@ public class JetspeedDeploy implements Deploy
                         {
                             System.out.println("Stripping logger "+target);
                             continue;
+                        }
+                        else if ("WEB-INF/tld/portlet.tld".equals(target))
+                        {
+                            System.out.println("Warning: WEB-INF/tld/portlet.tld already provided, won't be replaced.");
+                            taglibFound = true;
                         }
                         addFile(target, source, jout);
                     }
@@ -181,7 +182,7 @@ public class JetspeedDeploy implements Deploy
             addFile("WEB-INF/portlet.xml", portletXml, jout);
             addFile("META-INF/context.xml", contextXml, jout);
 
-            if (webRewriter.isPortletTaglibAdded() || !taglibFound)
+            if (!taglibFound)
             {
                 System.out.println("Attempting to add portlet.tld to war...");
                 InputStream is = this.getClass().getResourceAsStream("/org/apache/jetspeed/tools/deploy/portlet.tld");
