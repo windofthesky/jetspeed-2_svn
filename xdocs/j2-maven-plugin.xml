@@ -429,18 +429,19 @@
         </tr>
         <tr>
           <td><code>j2:start.production.server</code></td>
-          <td>Starts the default HSQLDB production database for usage by the portal.</td>
+          <td>Starts the HSQLDB production database for usage by the portal. This goal is optional to those who use the default embedded Derby database.</td>
         </tr>
         <tr>
           <td><code>j2:start.test.server</code></td>
           <td>
-            Starts the default HSQLDB test database to be used for the testcases during the build of Jetspeed 2.
+            Starts the HSQLDB test database to be used for the testcases during the build of Jetspeed 2.
+            This goal is optional for those who use the default embedded Derby database for testing Jetspeed 2.
           </td>
         </tr>
         <tr>
           <td><code>j2:db.create.test</code></td>
           <td>
-            Creates the test database tables. If using the default HSQLDB database, it should be started first with
+            Creates the test database tables. If using the HSQLDB database, it should be started first with
             goal <code>j2:start.test.server</code>.
             <br />
             Existing portal tables are dropped first. The first time, this will lead to "table does not exist"
@@ -450,7 +451,7 @@
         <tr>
           <td><code>j2:db.create.production</code></td>
           <td>
-            Creates the production database tables. If using the default HSQLDB database, it should be started first
+            Creates the production database tables. If using the HSQLDB database, it should be started first
             with goal <code>j2:start.production.server</code>.
             <br />
             Existing portal tables are dropped first. The first time, this will lead to "table does not exist"

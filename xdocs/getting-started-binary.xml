@@ -395,7 +395,7 @@ maven j2:portal.genapp]]>
 					configuration properties can be placed in
 					<code>${basedir}build.properties</code>
 					. A minimal custom portal configuration using the
-					default HSQLDB database can be something like:
+					default Derby database can be something like:
 					<source>
 						<![CDATA[
 # required portal configuration properties          
@@ -409,7 +409,7 @@ org.apache.jetspeed.portal.currentVersion = 1.0
 					</source>
 				</p>
 				<p>
-					If you are not using the HSQLDB database that comes
+					If you are not using the Derby database that comes
 					pre-configured in the
 					<code>${basedir}project.properties</code>
 					file, you also need to define the database
@@ -489,33 +489,16 @@ maven war:install]]>
 			<subsection name="3.6 Start the Database Server">
 				<p>
 					You need to make sure that your database server is
-					running. If you are not using the default HSQLDB
+					running. If you are not using the default Derby
 					database, you need to make sure that it is running
 					and that the user that will own the Jetspeed tables
 					is setup and ready for use. Refer to the
 					<a href="guides/guide-database.html">Database Configuration</a>
-					section for more information. If you are using the
-					default HSQLDB database you need to start it before
-					deploying the portal.
-				</p>
-				<p>
-					To start the HSQLDB production database run the
-					following in a
-					<i>separate</i>
-					console:
-					<source>
-						<![CDATA[
-cd ${org.apache.jetspeed.portal.home}
-maven j2:start.production.server]]>
-					</source>
+					section for more information.
 				</p>
 				<p>
 					You need to have this database running during the
 					deployment and while running the application server.
-					Afterwards you can stop the database and close this
-					console with a
-					<code>Ctrl-C</code>
-					.
 				</p>
 				<p>
 					Note: this is required when using the

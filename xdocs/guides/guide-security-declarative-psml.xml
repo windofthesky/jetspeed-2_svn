@@ -52,7 +52,7 @@ access to pages and folders.  Constraints can be defined in one or all of these 
 Grants are associated with permissions, authorizing, or granting, a principal list 
 access to a page or folder.    
 A granting security constraint is the association of a list of one 
-or more security principals combined with one or permissions. Grant constraints grant access to a page or folder
+or more security principals combined with one or more permissions. Grant constraints grant access to a page or folder
 for the associated list of permissions. 
 </p>
 </subsection>
@@ -78,7 +78,7 @@ to be referenced in any page or folder.
 </section>
 <section name='The Security Constraint'>
 <p>
-A security constraint is an XML element found in a PSML file, a folder metadata file, or inthe global security declarations.
+A security constraint is an XML element found in a PSML file, a folder metadata file, or in the global security declarations.
 A security constraint has one attribute: the name. A security constraint has the following elements:
 </p>
 <ul>

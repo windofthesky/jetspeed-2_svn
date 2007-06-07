@@ -158,7 +158,7 @@
               <code>org.apache.jetspeed.portal.db.dir</code>
             </td>
             <td>
-              The folder where the maven-plugin will create its build-in HSQLDB database(s).
+              The folder where the maven-plugin will create its HSQLDB database(s).
               <br />
               This folder and its contents is created or updated by plugin goal <code>j2:start.production.server</code>
               or <code>j2:start.test.server</code>.
@@ -168,6 +168,19 @@
             </td>
           </tr>
           <tr>
+            <td>
+              <code>org.apache.jetspeed.derbydatabase.path</code>
+            </td>
+            <td>
+              The folder where the maven-plugin will create its built-in Derby database(s).
+              <br />
+              This folder and its contents is created or updated by plugin goal <code>j2:quickStart</code>.
+            </td>
+            <td>
+              <i>/tmp</i>
+            </td>
+           </tr>
+            <tr>
             <td>
               <code>org.apache.jetspeed.portal.webapp.dir</code>
             </td>
@@ -292,7 +305,7 @@
       </subsection>
       <subsection name="Optional Database Server Properties">
         <p>
-          Jetspeed-2 and its maven-plugin uses, as well as provides, by default a HSQLDB database.
+          Jetspeed-2 and its maven-plugin uses, as well as provides, by default a Derby database.
         </p>
         <p>
           If you want to use a different database you will need to override the following properties:
@@ -312,28 +325,31 @@
               <br />
               Currently supported databases (with corresponding Torque target database name):
               <ul>
+                <li>derby (derby)</li>
                 <li>hsql (hypersonic)</li>
                 <li>oracle (oracle)</li>
                 <li>mysql (mysql)</li>
                 <li>postgres (postresql)</li>
                 <li>mssql (mssql)</li>
+                <li>sapdb (sapdb)</li>
+                <li>db2 (db2)</li>
               </ul>
             </td>
-            <td>hsql</td>
+            <td>derby</td>
           </tr>
           <tr>
             <td>
               <code>org.apache.jetspeed.production.database.url</code>
             </td>
             <td>The jdbc connection url</td>
-            <td>jdbc:hsqldb:hsql://127.0.0.1:9001</td>
+            <td>jdbc:derby:${org.apache.jetspeed.derbydatabase.path}/productiondb;create=true</td>
           </tr>
           <tr>
             <td>
               <code>org.apache.jetspeed.production.database.user</code>
             </td>
             <td>The database user name to connect with.</td>
-            <td>sa</td>
+            <td><i>empty</i></td>
           </tr>
           <tr>
             <td>
@@ -349,7 +365,7 @@
               <code>org.apache.jetspeed.production.database.driver</code>
             </td>
             <td>The jdbc driver class name</td>
-            <td>org.hsqldb.jdbcDriver</td>
+            <td>org.apache.derby.jdbc.EmbeddedDriver</td>
           </tr>
           <tr>
             <td>
@@ -368,8 +384,8 @@
       </subsection>
       <subsection name="Example: A minimal custom portal configuration">
         <p>
-          Make sure you have define at least the required properties as described above in your
-          <code>${USER_HOME}/build.properties</code>. A minimal custom portal configuration using the default HSQLDB
+          Make sure you have defined at least the required properties as described above in your
+          <code>${USER_HOME}/build.properties</code>. A minimal custom portal configuration using the default Derby
           database can be something like:
           <source>
             <![CDATA[
@@ -388,11 +404,6 @@ org.apache.jetspeed.services.autodeployment.user     = j2deployer
 org.apache.jetspeed.services.autodeployment.password = xxxxx
 org.apache.jetspeed.catalina.version.major           = 5.5]]>
           </source>
-          <i>
-            Note: If you're going to build the default Jetspeed 2 portal directly from the source only the
-            <code>org.apache.jetspeed.portal.home</code> property is required from the set of required portal
-            configuration properties.
-          </i>  
         </p>
       </subsection>
     </section>

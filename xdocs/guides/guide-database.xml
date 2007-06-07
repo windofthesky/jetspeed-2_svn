@@ -209,7 +209,7 @@ maven j2:db.create.production
 				properties in your $HOME/build.properties.
 			</p>
 			<p>
-				NOTE: The Hypersonic JDBC driver is distributed with
+				NOTE: The Derby JDBC driver is distributed with
 				Jetspeed and require no configuration.
 			</p>
 			<source test="">
@@ -239,7 +239,7 @@ org.apache.jetspeed.production.jdbc.drivers.path=
 			<subsection name="Distributing Drivers">
 				<p>
 					When Jetspeed is deployed to an application server
-					using the maven deploy target, only the Hypersonic
+					using the maven deploy target, only the Derby
 					JDBC driver is copied into the web application. To
 					distribute a specific driver (i.e. Oracle, MySQL),
 					you will need to copy the driver into the

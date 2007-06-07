@@ -145,7 +145,7 @@
 		<section name="Optional Database Server Properties">
 			<p>
 				Jetspeed-2 and its maven-plugin uses, as well as
-				provides, by default a HSQLDB database.
+				provides, by default a Derby database.
 			</p>
 			<p>
 				If you want to use a different database you will need to
@@ -170,14 +170,17 @@
 						Currently supported databases (with
 						corresponding Torque target database name):
 						<ul>
+							<li>derby (derby)</li>
 							<li>hsql (hypersonic)</li>
 							<li>oracle (oracle)</li>
 							<li>mysql (mysql)</li>
 							<li>postgres (postresql)</li>
 							<li>mssql (mssql)</li>
+							<li>sapdb (sapdb)</li>
+							<li>db2 (db2)</li>
 						</ul>
 					</td>
-					<td>hsql</td>
+					<td>derby</td>
 				</tr>
 				<tr>
 					<td>
@@ -186,7 +189,7 @@
 						</code>
 					</td>
 					<td>The jdbc connection url</td>
-					<td>jdbc:hsqldb:hsql://127.0.0.1:9001</td>
+					<td>jdbc:derby:${org.apache.jetspeed.derbydatabase.path}/productiondb;create=true</td>
 				</tr>
 				<tr>
 					<td>
@@ -195,7 +198,7 @@
 						</code>
 					</td>
 					<td>The database user name to connect with.</td>
-					<td>sa</td>
+					<td><i>empty</i></td>
 				</tr>
 				<tr>
 					<td>
@@ -217,7 +220,7 @@
 						</code>
 					</td>
 					<td>The jdbc driver class name</td>
-					<td>org.hsqldb.jdbcDriver</td>
+					<td>org.apache.derby.EmbeddedDriver</td>
 				</tr>
 				<tr>
 					<td>
