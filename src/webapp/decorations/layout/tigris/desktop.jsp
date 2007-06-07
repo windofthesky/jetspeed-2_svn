@@ -89,6 +89,7 @@ limitations under the License.
   <p>
      <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
+<!-- uncomment for page level loading indicator (associated with layout decoration resource: desktop.action.loadpage)
 <div id="js-showloading" style="display: none">
     <table class="js-showloading">
         <tr>
@@ -100,5 +101,6 @@ limitations under the License.
         </tr>
     </table>
 </div>
+-->
 </body>
 </html>
