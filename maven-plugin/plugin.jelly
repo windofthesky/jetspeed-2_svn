@@ -332,10 +332,11 @@
   <goal name="j2:db.user.scripts.production" >
      <attainGoal name="j2:_db.production.properties"/>         
      <echo>Running user-defined SQL scripts...</echo>   
-     <j:set var="sql.src.path" value="${basedir}/src/sql"/>
+     <j:set var="sql.src.path" value="${org.apache.jetspeed.production.database.user.sql.scripts.path}"/>
+     <maven:property name="sql.src.path" defaultValue="${basedir}/src/sql"/>
      <j:set var="database.arg.onerror" value="abort"/> 
      <j:set var="process.database.script.goal" value="j2:_db.execute"/>
-     <attainGoal name="j2:_process.all.scripts.in.path"/>   
+     <attainGoal name="j2:_process.all.scripts.in.path"/>
   </goal>    
     
 	<goal name="j2:db.entities">
