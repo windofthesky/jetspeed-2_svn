@@ -100,7 +100,7 @@ public class TestCluster extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "cluster-node.xml"};
+        { "system-properties.xml", "cluster-node.xml"};
     }
 
 }
