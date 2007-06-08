@@ -109,7 +109,7 @@ public class JetspeedContentCacheKey implements ContentCacheKey, Serializable
                 if (pos > -1)
                 {
                     String attributeName = segment.substring(pos);
-                    this.sessionAttribute = context.getRequestParameter(attributeName);
+                    this.sessionAttribute = (String)context.getSessionAttribute(attributeName);
                     if (this.sessionAttribute != null)
                     {
                         key = (first) ? this.sessionAttribute : key + EhPortletContentCacheElementImpl.KEY_SEPARATOR + this.sessionAttribute;
