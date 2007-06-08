@@ -25,7 +25,10 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.pluto.om.window.PortletWindow;
 
 public class PrintSoloDecoratorActionsFactory extends AbstractDecoratorActionsFactory
@@ -56,7 +59,8 @@ public class PrintSoloDecoratorActionsFactory extends AbstractDecoratorActionsFa
     }
     
     public List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
-                    WindowState ws, Decoration decoration, List actionTemplates)
+                    WindowState ws, Decoration decoration, List actionTemplates, 
+                    PortletDefinitionComposite portlet, ContentFragment fragment, SecurityAccessController accessController)
     {
         int printModeIndex = actionTemplates.indexOf(PRINT_MODE_TEMPLATE);
         int soloStateIndex = actionTemplates.indexOf(SOLO_ACTION_TEMPLATE);
@@ -76,8 +80,7 @@ public class PrintSoloDecoratorActionsFactory extends AbstractDecoratorActionsFa
         }
         // else if (printModeIndex != -1)
         //   support switching to different modes once in "solo" state, even back to "print"
-        
-        return super.getDecoratorActions(rc,pa,pw,pm,ws,decoration,actionTemplates);
+        return super.getDecoratorActions(rc,pa,pw,pm,ws,decoration,actionTemplates, portlet,  fragment, accessController);
     }
     
     protected DecoratorAction createAction(RequestContext rc, PortletWindow pw, Decoration decoration,
