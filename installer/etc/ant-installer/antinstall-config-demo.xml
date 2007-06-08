@@ -50,6 +50,7 @@
     <checkbox displayText="Demo Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="JPetstore Demo Portlet" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="JSF Demo Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
   </page>
 
   <page type="input" name="databaseSelection" displayText="Database selection">

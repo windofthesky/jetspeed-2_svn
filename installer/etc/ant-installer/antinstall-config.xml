@@ -48,6 +48,7 @@
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Layout Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Portal Administration Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
   </page>
 
   <page type="input" name="databaseSelection" displayText="Database selection">

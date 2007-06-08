@@ -112,7 +112,10 @@
     <copy todir="${maven.build.dir}/database/postgres">
       <fileset dir="${maven.build.dir}/portal-sql/postgres/schema" excludes="*.generation,*.map" />
     </copy>
-
+    <copy todir="${maven.build.dir}/database/import/db-ojb" overwrite="true">
+      <fileset dir="${basedir}/../etc/db-ojb" />
+    </copy>
+    
     <filter token="CONTEXT" value="jetspeed" />
     <copy file="${basedir}/../etc/conf/tomcat/jetspeed-tomcat-5.5.xml" tofile="${maven.build.dir}/database/jetspeed.xml"
       filtering="true" />

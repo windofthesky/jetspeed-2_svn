@@ -71,7 +71,7 @@
   </target>
   
   <target name="runSetupDB" 
-    depends="checkDerby,generateStandardDB,generateDerbyDB,seedDB,copyJetspeedContext" />
+    depends="checkDerby,generateStandardDB,generateDerbyDB,seedDB,copyJetspeedContext,do-psml" />
 
   <target name="checkDerby">
     <condition property="_derby">
@@ -269,6 +269,100 @@
         <filter token="URL" value="${_jdbc.url}" />
       </filterset>
     </copy>
+  </target>
+
+<!-- Import of PSML -->
+  <property name="import.jdbc.driver.class" value="${_jdbc.driver.class}"/>
+  <property name="import.jdbc.username" value="${_db.username}"/>
+  <property name="import.jdbc.password" value="${_db.password}"/>
+  <property name="import.jdbc.url" value="${_jdbc.url}"/>
+  
+  <property name="jetspeedWebinfDir" value="${basedir}/../webapps/jetspeed/WEB-INF"/>
+  <property name="pagesLocation" value="${jetspeedWebinfDir}/pages"/>
+  <property name="importDir" value="${basedir}/import"/>
+  <property name="importTargetDir" value="${importDir}/target"/>
+  <property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import/import.properties"/>
+  <property name="org.apache.jetspeed.page.import.pages" value="${jetspeedWebinfDir}/pages"/>
+  
+  <path id="import-classpath">
+    <fileset dir="${basedir}/../shared/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${jetspeedWebinfDir}/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${basedir}/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${basedir}/../common/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement location="${basedir}/../shared/classes" />
+    <pathelement location="${jetspeedWebinfDir}/classes" />
+    <pathelement location="${importTargetDir}/classes" />
+  </path>
+  
+ 
+  <!-- Populate Database -->
+  
+  <target name="test-import-psml">
+    <condition property="_doImportPsml">
+      <equals arg1="${dbImportPsml}" arg2="true"/>
+    </condition>
+  </target>
+  
+  <target name="do-psml" depends="test-import-psml,db-psml,fs-psml"/>
+  
+  <target name="fs-psml" unless="_doImportPsml">
+    <copy file="${jetspeedWebinfDir}/assembly/alternate/fs-page-manager.xml" tofile="${jetspeedWebinfDir}/assembly/page-manager.xml" overwrite="true"/>
+    <delete quiet="true" file="${jetspeedWebinfDir}/assembly/interceptors.xml"/>
+  </target>
+  
+  <target name="db-psml" if="_doImportPsml">
+    
+    <!-- prepare a classes directory with resources and libraries to execute import -->
+    <delete dir="${importTargetDir}/classes"/>
+    <mkdir dir="${importTargetDir}/classes"/>
+    <echo>Import dir: ${importDir}</echo>
+    <copy todir="${importTargetDir}/classes" flatten="on">
+      <fileset dir="${importDir}" >
+        <include name="db-ojb/*"/>
+        <include name="log4j.properties"/>
+        <include name="assembly/import-page-manager.xml"/>
+        <include name="assembly/repository-datasource-spring.xml"/>
+      </fileset>
+      <fileset dir="${jetspeedWebinfDir}" >
+        <include name="assembly/transaction.xml"/>
+        <include name="assembly/alternate/interceptors.xml"/>
+      </fileset>
+    </copy>    
+  
+    <!-- create sysproperty set to configure import utility -->
+    <propertyset id="import.syspropertyset.id">
+      <propertyref name="org.apache.jetspeed.page.import.configuration"/>
+      <propertyref name="org.apache.jetspeed.page.import.pages"/>
+      <propertyref name="import.jdbc.driver.class"/>
+      <propertyref name="import.jdbc.username"/>
+      <propertyref name="import.jdbc.password"/>
+      <propertyref name="import.jdbc.url"/>
+    </propertyset>
+    
+    <!-- execute import utility within the page manager component -->
+    <antcall target="execute-import" inheritall="on" inheritrefs="on"/>
+    
+    <copy file="${jetspeedWebinfDir}/assembly/alternate/db-page-manager.xml" tofile="${jetspeedWebinfDir}/assembly/page-manager.xml" overwrite="true"/>
+    <copy file="${jetspeedWebinfDir}/assembly/alternate/interceptors.xml" todir="${jetspeedWebinfDir}/assembly" overwrite="true"/>
+  </target>
+  
+  <target name="execute-import">
+    
+    <!-- execute import utility with drivers path in classpath -->
+    <java classpathref="import-classpath" classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+      <syspropertyset>
+        <propertyset refid="import.syspropertyset.id"/>
+      </syspropertyset>
+    </java>
+    
   </target>
 
 </project>

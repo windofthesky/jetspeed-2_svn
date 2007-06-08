@@ -55,6 +55,7 @@
     <condition property="jdbcjar" value="${installDir}/database/lib/derby-10.1.1.0.jar">
       <equals arg1="${jdbc.driver.jar}" arg2="" />
     </condition>
+    <copy file="${installDir}/webapps/jetspeed/WEB-INF/assembly/page-manager.xml" tofile="${installDir}/webapps/jetspeed/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
     <property name="jdbcjar" value="${jdbc.driver.jar}" />
     <copy failonerror="false" todir="${installDir}/shared/lib" file="${jdbcjar}" />
 
@@ -66,6 +67,7 @@
         <filter token="db.password" value="${db.password}" />
         <filter token="jdbc.url" value="${jdbc.url}" />
         <filter token="jdbc.driver.class" value="${jdbc.driver.class}" />
+        <filter token="dbImportPsml" value="${dbImportPsml}" />
       </filterset>
     </move>
     <echo>Setting up the Jetspeed database (if selected)</echo>
