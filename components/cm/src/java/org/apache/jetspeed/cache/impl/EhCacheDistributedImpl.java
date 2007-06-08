@@ -32,6 +32,7 @@ import net.sf.ehcache.event.RegisteredEventListeners;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.request.RequestContext;
 
 public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache, CacheEventListener
 {
@@ -122,7 +123,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 
 	}
 
-	public void evictContentForUser(String user)
+	public void evictContentForUser(RequestContext context)
 	{
 		return;
 	}

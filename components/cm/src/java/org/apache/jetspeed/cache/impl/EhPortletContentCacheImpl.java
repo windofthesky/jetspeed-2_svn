@@ -27,8 +27,12 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.ContentCacheElement;
+import org.apache.jetspeed.cache.ContentCacheKey;
+import org.apache.jetspeed.cache.ContentCacheKeyGenerator;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Wrapper around actual cache implementation
@@ -38,91 +42,123 @@ import org.apache.jetspeed.cache.JetspeedCacheEventListener;
  */
 public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCache, JetspeedCacheEventListener
 {
-	
-    public static final String KEY_ENTITY_KEY = EhPortletContentCacheElementImpl.KEY_SEPARATOR + "portlet_entity" + EhPortletContentCacheElementImpl.KEY_SEPARATOR ;
-    public static final int KEY_ENTITY_KEY_LENGTH = KEY_ENTITY_KEY.length();
 
-	   JetspeedCache preferenceCache = null;
+	JetspeedCache preferenceCache = null;
+    ContentCacheKeyGenerator keyGenerator = null;    
 
-	   public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void notifyElementChanged(JetspeedCache cache, boolean local, Object key, Object element)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void notifyElementEvicted(JetspeedCache cache, boolean local, Object key, Object element)
-	{
-		// TODO Auto-generated method stub
-		
-		notifyElementRemoved(cache,local,key,element);
-	}
-
-	public void notifyElementExpired(JetspeedCache cache, boolean local, Object key, Object element)
-	{
-		// TODO Auto-generated method stub
-		notifyElementRemoved(cache,local,key,element);
-		
-	}
-
-	public void notifyElementRemoved(JetspeedCache cache, boolean local, Object key, Object element)
-		{
-		   if (local)
-			   return; //not interested in local changes
-			   
-		   	//System.out.println("notifying PortletContent that element " + key.toString() + " has been removed");		   
-			if (!(key instanceof String))
-				return;
-			String s = (String) key;
-			if (!(s.startsWith(KEY_ENTITY_KEY)))
-				return;
-			StringTokenizer st = new StringTokenizer(s,EhPortletContentCacheElementImpl.KEY_SEPARATOR);
-			int count = 0;
-			String pe = null; String user = null;
-		     while (st.hasMoreTokens()) 
-		     {
-		    	 String temp = st.nextToken();
-		    	 switch (count)
-		    	 {
-		    		 case 0: 
-		    			 break;
-		    		 case 1: 	pe = temp;
-		    	 		break;
-		    		 case 2: 	user = temp;
-		    		 break;
-		    	 }
-		    	 count++;
-		    	 if (count> 2)
-		    		 break;
-		     }
-			 if ((pe != null) && (user != null))
-				 removeOneEntry(user,pe);
-		}
-	    
-	public EhPortletContentCacheImpl(Cache ehcache,JetspeedCache preferenceCache )
+    public EhPortletContentCacheImpl(Cache ehcache, JetspeedCache preferenceCache, ContentCacheKeyGenerator keyGenerator)
+    {
+        this(ehcache);
+        this.preferenceCache = preferenceCache;
+        this.keyGenerator = keyGenerator;
+        preferenceCache.addEventListener(this,false); //only listen to remote events
+    }
+    
+    public EhPortletContentCacheImpl(Cache ehcache, JetspeedCache preferenceCache)
     {
         this(ehcache);
         this.preferenceCache = preferenceCache;
         preferenceCache.addEventListener(this,false); //only listen to remote events
     }
-
-	    
+        
     public EhPortletContentCacheImpl(Cache ehcache)
     {
         super(ehcache);
     }
 
+    public EhPortletContentCacheImpl(Cache ehcache, ContentCacheKeyGenerator keyGenerator)
+    {
+        this(ehcache);
+        this.keyGenerator = keyGenerator;
+    }
+    
+
+	public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+	}
+
+	public void notifyElementChanged(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+	}
+
+	public void notifyElementEvicted(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+	}
+
+	public void notifyElementExpired(JetspeedCache cache, boolean local, Object key, Object element)
+	{
+		notifyElementRemoved(cache,local,key,element);
+	}
+
+
+    public static final String KEY_ENTITY_KEY = 
+        EhPortletContentCacheElementImpl.KEY_SEPARATOR + "portlet_entity" + EhPortletContentCacheElementImpl.KEY_SEPARATOR ;
+	public static final int KEY_ENTITY_KEY_LENGTH = KEY_ENTITY_KEY.length();
+    
+	public void notifyElementRemoved(JetspeedCache cache, boolean local,
+            Object key, Object element)
+    {
+        if (local) return; // not interested in local changes
+
+        // System.out.println("notifying PortletContent that element " +
+        // key.toString() + " has been removed");
+        if (!(key instanceof String)) return;
+        String s = (String) key;
+        if (!(s.startsWith(KEY_ENTITY_KEY))) return;
+        StringTokenizer st = new StringTokenizer(s,
+                EhPortletContentCacheElementImpl.KEY_SEPARATOR);
+        int count = 0;
+        String pe = null;
+        String user = null;
+        while (st.hasMoreTokens())
+        {
+            String temp = st.nextToken();
+            switch (count)
+            {
+            case 0:
+                break;
+            case 1:
+                pe = temp; 
+                break;
+            case 2:
+                user = temp;
+                break;
+            }
+            count++;
+            if (count > 2) break;
+        }
+        if ((pe != null) && (user != null))
+        {
+            removeUserEntry(user, "portal", pe);     
+            removeUserEntry(user, "desktop", pe);
+        }
+    }
+
+    void removeUserEntry(String username, String pipeline, String windowId)
+    {        
+        ContentCacheKey key = keyGenerator.createUserCacheKey(username, pipeline, windowId);
+        if (ehcache.remove(key.getKey()))
+        {
+            Element userElement = ehcache.get(username);
+                
+            if (userElement != null)
+            {
+                Map map = (Map)userElement.getObjectValue();
+                if (map != null)
+                {
+                    map.remove(windowId);
+                }
+            }
+        }
+    }
+    
     public CacheElement get(Object key)
     {
-        Element element = ehcache.get(key);
+        ContentCacheKey cckey = (ContentCacheKey)key;
+        Element element = ehcache.get(cckey.getKey());
         if (element == null)
             return null;
-        return new EhPortletContentCacheElementImpl(element);
+        return new EhPortletContentCacheElementImpl(element, cckey);
     }
 
     public int getTimeToIdleSeconds()
@@ -137,35 +173,49 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
 
     public boolean isKeyInCache(Object key)
     {
-        return ehcache.isKeyInCache(key);
+        ContentCacheKey cckey = (ContentCacheKey)key;        
+        return ehcache.isKeyInCache(cckey.getKey());
     }
 
     public void put(CacheElement element)
     {
+        ContentCacheElement ccElement = (ContentCacheElement)element;
         EhPortletContentCacheElementImpl impl = (EhPortletContentCacheElementImpl)element;
-        Element ehl = impl.getImplElement();
-        String userKey = impl.getUserKey();
-        String entity = impl.getEntityKey();
-        ehcache.put(ehl);
+        Element ehl = impl.getImplElement();        
+        String userKey = ccElement.getContentCacheKey().getSessionId();
+        if (userKey == null)
+        {
+            userKey = ccElement.getContentCacheKey().getUsername();
+        }
+        String windowId = ccElement.getContentCacheKey().getWindowId();
+        try
+        {
+            ehcache.put(ehl);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         Element userElement = ehcache.get(userKey);
         if (userElement == null)
         {
             Map map = Collections.synchronizedMap(new HashMap());
-            map.put(entity, entity);
+            map.put(windowId, ccElement.getContentCacheKey());
             userElement = new Element(userKey, map);
             ehcache.put(userElement);           
         }
         else
         {
             Map map = (Map)userElement.getObjectValue();
-            map.put(entity, entity);
+            map.put(windowId, ccElement.getContentCacheKey());
         }        
     }
     
     public CacheElement createElement(Object key, Object content)
     {
-        Element cachedElement = new Element(key, content);        
-        return new EhPortletContentCacheElementImpl(cachedElement);
+        ContentCacheKey cckey = (ContentCacheKey)key;
+        Element cachedElement = new Element(cckey.getKey(), content);        
+        return new EhPortletContentCacheElementImpl(cachedElement, cckey);
     }
 
     public boolean remove(Object key)
@@ -174,57 +224,64 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
         boolean removed = false;
         if (element == null)
             return false;
-        removed = ehcache.remove(key);
+        
+        ContentCacheElement ccElement = (ContentCacheElement)element;
         EhPortletContentCacheElementImpl impl = (EhPortletContentCacheElementImpl)element;
-        String userKey = impl.getUserKey();
-        String entity = impl.getEntityKey();
+        Element ehl = impl.getImplElement();        
+        String userKey = ccElement.getContentCacheKey().getSessionId();
+        if (userKey == null)
+        {
+            userKey = ccElement.getContentCacheKey().getUsername();
+        }        
+        String windowId = ccElement.getContentCacheKey().getWindowId();        
+        removed = ehcache.remove(ccElement.getContentCacheKey().getKey());
         Element userElement = ehcache.get(userKey);
         if (userElement != null)
         {
             Map map = (Map)userElement.getObjectValue();
             if (map != null)
             {
-                map.remove(entity);
+                map.remove(windowId);
             }
         }
         return removed;
     }
-    
-    public void removeOneEntry(String pe, String user)
+        
+    public void evictContentForUser(String username)
     {
-        String key = createCacheKey(pe,user);
-        if (ehcache.remove(key))
-        {
-        	Element userElement = ehcache.get(user);
-	        	
-	        if (userElement != null)
-	        {
-	            Map map = (Map)userElement.getObjectValue();
-	            if (map != null)
-	            {
-	            	map.remove(pe);
-	            }
-	        }
-        }
-    }
-    
-    public void evictContentForUser(String user)
-    {
-        Element userElement = ehcache.get(user);
+        Element userElement = ehcache.get(username);
         if (userElement != null)
         {
             Map map = (Map)userElement.getObjectValue();
             if (map != null)
             {
-                Iterator entities = map.keySet().iterator();
+                Iterator entities = map.values().iterator();
                 while (entities.hasNext())
                 {
-                    String entity = (String)entities.next();
-                    String key = createCacheKey(user, entity);
-                    ehcache.remove(key);
+                    ContentCacheKey ccKey = (ContentCacheKey)entities.next();
+                    ehcache.remove(ccKey.getKey());
                 }
             }
-            ehcache.remove(user);
+            ehcache.remove(username);
+        }
+    }
+
+    public void evictContentForSession(String session)
+    {
+        Element userElement = ehcache.get(session);
+        if (userElement != null)
+        {
+            Map map = (Map)userElement.getObjectValue();
+            if (map != null)
+            {
+                Iterator entities = map.values().iterator();
+                while (entities.hasNext())
+                {
+                    ContentCacheKey ccKey = (ContentCacheKey)entities.next();
+                    ehcache.remove(ccKey.getKey());
+                }
+            }
+            ehcache.remove(session);
         }
     }
     
@@ -232,10 +289,11 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
     {
         ehcache.removeAll();
     }
-    
-    public String createCacheKey(String primary, String secondary)
+        
+    public ContentCacheKey createCacheKey(RequestContext context, String windowId)
     {
-        return primary + EhPortletContentCacheElementImpl.KEY_SEPARATOR + secondary;
+        return this.keyGenerator.createCacheKey(context, windowId);        
     }
+    
 
 }

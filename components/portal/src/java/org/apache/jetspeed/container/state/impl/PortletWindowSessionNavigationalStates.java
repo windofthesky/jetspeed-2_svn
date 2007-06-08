@@ -25,6 +25,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Page;
@@ -318,7 +319,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     
     protected void removeFromCache(RequestContext context, String id, JetspeedCache cache)
     {
-        String cacheKey = cache.createCacheKey(context.getUserPrincipal().getName(), id);
+        ContentCacheKey cacheKey = cache.createCacheKey(context, id);
         if (cache.isKeyInCache(cacheKey))
         {
             cache.remove(cacheKey);

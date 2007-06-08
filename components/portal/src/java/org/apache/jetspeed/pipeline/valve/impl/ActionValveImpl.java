@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -257,7 +258,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 }
             } 
         }    
-        String cacheKey = portletContentCache.createCacheKey(context.getUserPrincipal().getName(), f.getId());
+        ContentCacheKey cacheKey = portletContentCache.createCacheKey(context, f.getId());
         if (portletContentCache.isKeyInCache(cacheKey))
         {
             portletContentCache.remove(cacheKey);
@@ -266,7 +267,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
 
     protected void clearTargetCache(ContentFragment f, RequestContext context)
     {
-        String cacheKey = portletContentCache.createCacheKey(context.getUserPrincipal().getName(), f.getId());
+        ContentCacheKey cacheKey = portletContentCache.createCacheKey(context, f.getId());        
         if (portletContentCache.isKeyInCache(cacheKey))
         {
             portletContentCache.remove(cacheKey);

@@ -19,7 +19,8 @@ package org.apache.jetspeed.cache.impl;
 
 import net.sf.ehcache.Element;
 
-import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.ContentCacheElement;
+import org.apache.jetspeed.cache.ContentCacheKey;
 
 /**
  * Wrapper around actual cache element implementation
@@ -27,39 +28,24 @@ import org.apache.jetspeed.cache.CacheElement;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class EhPortletContentCacheElementImpl implements CacheElement
+public class EhPortletContentCacheElementImpl implements ContentCacheElement
 {
     Element element;
+    ContentCacheKey cckey;
+    
     public static final String KEY_SEPARATOR = "/";
     
-    
- 
-
-	public EhPortletContentCacheElementImpl(Element element)
+	public EhPortletContentCacheElementImpl(Element element, ContentCacheKey cckey)
     {
         this.element = element;
+        this.cckey = cckey;
     }
 
-
-
-	
     public Object getKey()
     {
         return element.getObjectKey();
     }
-    
-    public String getUserKey()
-    {
-        String key = (String)element.getObjectKey();
-        return key.substring(0, key.indexOf(KEY_SEPARATOR));
-    }
-
-    public String getEntityKey()
-    {
-        String key = (String)element.getObjectKey();
-        return key.substring(key.indexOf(KEY_SEPARATOR) + 1);
-    }
-    
+        
     public Object getContent()
     {
         return element.getObjectValue();
@@ -98,5 +84,10 @@ public class EhPortletContentCacheElementImpl implements CacheElement
     public void setTimeToLiveSeconds(int timeToLive)
     {
         element.setTimeToLive(timeToLive);
+    }
+
+    public ContentCacheKey getContentCacheKey()
+    {
+        return cckey;
     }
 }

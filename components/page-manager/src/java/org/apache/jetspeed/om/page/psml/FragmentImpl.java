@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
@@ -47,9 +46,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private String skin = null;
 
-    private List fragments = new Vector();
+    private List fragments = new ArrayList();
 
-    private List propertiesList = new Vector();
+    private List propertiesList = new ArrayList();
     
     private List preferences = new ArrayList();
     
@@ -141,9 +140,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
         return filterFragmentsByAccess(fragmentsList);
     }
 
-    public Vector getPropertiesList()
+    public List getPropertiesList()
     {
-        return (Vector) this.propertiesList;
+        return (List) this.propertiesList;
     }
     
     /**

@@ -18,6 +18,6 @@
 <project default="java:jar" xmlns:j="jelly:core" xmlns:define="jelly:define">
 
     <!-- Target of maven test:single test -->
-    <property name='testcase' value='org.apache.jetspeed.components.TestComponentManager' />
+    <property name='testcase' value='org.apache.jetspeed.cache.TestContentCache' />
 
 </project>

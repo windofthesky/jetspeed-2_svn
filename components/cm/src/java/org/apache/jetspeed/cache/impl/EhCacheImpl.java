@@ -24,8 +24,10 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
+import org.apache.jetspeed.request.RequestContext;
 
 public class EhCacheImpl implements JetspeedCache
 {
@@ -101,16 +103,16 @@ public class EhCacheImpl implements JetspeedCache
 		notifyListeners(true, CacheElement.ActionRemoved,null,null);
     }
     
-    public void evictContentForUser(String user)
+    public void evictContentForUser(String username)
     {
     	return;
     }
-    
-    public String createCacheKey(String primary, String secondary)
-    {
-        return primary;
-    }
 
+    public void evictContentForSession(String session)
+    {
+        return;
+    }
+    
     public void addEventListener(JetspeedCacheEventListener listener, boolean local)
     {
     	if (local)
@@ -172,10 +174,12 @@ public class EhCacheImpl implements JetspeedCache
         		e.printStackTrace();
         		
         	}
-        }
-    	
-    	
-    	
+        }    	
+    }
+
+    public ContentCacheKey createCacheKey(RequestContext rc, String windowId)
+    {
+        return null; // not implemented here
     }
 
 }

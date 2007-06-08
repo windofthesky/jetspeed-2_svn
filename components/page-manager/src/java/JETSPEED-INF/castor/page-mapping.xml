@@ -136,7 +136,7 @@
     </field>
 
     <field name="propertiesList"
-           type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="vector">
+           type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="arraylist">
       <bind-xml name="property"/>
     </field>
     

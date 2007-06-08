@@ -35,6 +35,26 @@
 		<property name="cacheName" value="portletContentCache" />
 	</bean>
 
+    <bean id="ContentCacheKeyGenerator" class="org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator">
+    	<!-- Keys are order specific in the list:
+    		 where username  == the user principal name of the current user
+    		       pipeline  == the name of the active pipeline for the current request (portal | desktop)
+    		       windowid  == the window id (fragment id) of the portlet
+    		       sessionid == the current session id 
+    		       request.{param.name} == request parameter name, such "request.myparam"
+    		       session.{attribute-name} == session attribute name, such "session.myattribute"
+    		       
+    		       username|sessionid AND windowid are required
+    	-->
+    	<constructor-arg index='0'>
+    		<list>
+    			<value>sessionid</value>
+    			<value>pipeline</value>
+    			<value>windowid</value>
+    		</list>
+    	</constructor-arg>
+    </bean>
+    
 	<bean id="portletContentCache"
 		class="org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl">
 		<constructor-arg index="0">
@@ -42,6 +62,9 @@
 		</constructor-arg>
 		<constructor-arg index="1">
 			<ref bean="preferencesCache" />
+		</constructor-arg>
+		<constructor-arg index="2">
+		   <ref bean="ContentCacheKeyGenerator"/>
 		</constructor-arg>
 	</bean>
 

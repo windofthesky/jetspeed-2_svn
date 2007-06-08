@@ -40,6 +40,7 @@ import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
@@ -392,7 +393,7 @@ public class PortletRendererImpl implements PortletRenderer
                                             PortletDefinitionComposite portletDefinition)
         throws Exception
     {
-        String cacheKey = portletContentCache.createCacheKey(requestContext.getUserPrincipal().getName(), fragment.getId());
+        ContentCacheKey cacheKey = portletContentCache.createCacheKey(requestContext, fragment.getId());        
         CacheElement cachedElement = portletContentCache.get(cacheKey);
         if (cachedElement != null)
         {
@@ -409,7 +410,7 @@ public class PortletRendererImpl implements PortletRenderer
     
     public ContentDispatcherCtrl createDispatcher(RequestContext request, ContentFragment fragment, int expirationCache)
     {
-        String cacheKey = portletContentCache.createCacheKey(request.getUserPrincipal().getName(), fragment.getId());
+        ContentCacheKey cacheKey = portletContentCache.createCacheKey(request, fragment.getId());                
         PortletContent content = new PortletContentImpl(this, cacheKey, expirationCache);
         ContentDispatcherCtrl dispatcher = new ContentDispatcherImpl(content); 
         return dispatcher;

@@ -24,6 +24,8 @@ package org.apache.jetspeed.aggregator;
 
 import java.io.PrintWriter;
 
+import org.apache.jetspeed.cache.ContentCacheKey;
+
 /**
  * <p>
  * PortletContent
@@ -78,10 +80,11 @@ public interface PortletContent
     void setExpiration(int expiration);
     
     /**
-     * Get the cache key used to cache this content 
+     * Get the cache key used to cache this content
+     * @since 2.1.1 
      * @return
      */
-    String getCacheKey();
+    ContentCacheKey getCacheKey();
     
     /**
      * Get the title of the portlet, used during caching

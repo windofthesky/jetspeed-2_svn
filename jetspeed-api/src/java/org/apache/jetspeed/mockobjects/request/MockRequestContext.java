@@ -285,8 +285,7 @@ public class MockRequestContext implements RequestContext
     
     public Principal getUserPrincipal()
     {
-        // TODO: implement
-        return null;
+        return request.getUserPrincipal();
     }
 
     /*

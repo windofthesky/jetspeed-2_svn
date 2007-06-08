@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.cache;
 
+import org.apache.jetspeed.request.RequestContext;
+
 /**
  * <p>
  *  Provides interface to Jetspeed for cache related activities
@@ -86,20 +88,28 @@ public interface JetspeedCache
     int getTimeToLiveSeconds();
 
     /**
-     * Evict all cached content for the given user
+     * Evict all cached content for the given username 
      * 
-     * @param user
+     * @param username unique user identifier
      */
-    void evictContentForUser(String user);
+    void evictContentForUser(String username);
+
+    /**
+     * Evict all cached content for the given session identifier 
+     * 
+     * @param sessionid unique session identifier
+     */    
+    void evictContentForSession(String sessionId);
     
     /**
-     * Create a cache key from a primary segment and secondary segment
+     * Create a portlet content cache key based on dynamic request context information and a window id
      * 
-     * @param primary
-     * @param secondary
+     * @param rc
+     * @param windowId
+     * @since 2.1.1
      * @return
      */
-    String createCacheKey(String primary, String secondary);
+    ContentCacheKey createCacheKey(RequestContext rc, String windowId);
     
     /**
      * Add a cache listener for supported cache events, either for local or remote cache events

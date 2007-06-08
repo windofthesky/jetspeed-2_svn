@@ -20,6 +20,7 @@ import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.cache.ContentCacheKey;
 
 public class PortletContentImpl implements PortletContent
 {
@@ -27,6 +28,7 @@ public class PortletContentImpl implements PortletContent
     private PrintWriter writer;
     private boolean complete = false;
     private String cacheKey;
+    private ContentCacheKey ccKey;    
     private int expiration = 0;
     private String title;
  
@@ -35,6 +37,15 @@ public class PortletContentImpl implements PortletContent
         init();
     }
 
+    PortletContentImpl(ContentCacheKey ccKey, int expiration, String title, boolean complete)
+    {
+        this.ccKey = ccKey;
+        this.expiration = expiration;
+        this.title = title;
+        this.complete = complete;
+        init();
+    }
+    
     PortletContentImpl(String cacheKey, int expiration, String title, boolean complete)
     {
         this.cacheKey = cacheKey;
@@ -116,7 +127,12 @@ public class PortletContentImpl implements PortletContent
        setComplete(true);
     }
         
-    public String getCacheKey()
+    public ContentCacheKey getCacheKey()
+    {
+        return ccKey;
+    }
+
+    public String getStringCacheKey()
     {
         return cacheKey;
     }
