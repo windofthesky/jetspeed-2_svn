@@ -73,7 +73,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
     protected DescriptorChangeMonitor monitor;
     protected boolean started;
-
+    protected String appRoot;
     protected NodeManager nodeManager;
     
     /**
@@ -82,7 +82,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
-        RoleManager roleManager, List permissionRoles, NodeManager nodeManager)
+        RoleManager roleManager, List permissionRoles, NodeManager nodeManager, String appRoot)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
@@ -93,6 +93,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.roleManager        = roleManager;        
         this.permissionRoles    = permissionRoles;
         this.nodeManager		= nodeManager;
+        this.appRoot            = appRoot;
 	}
     
     public void start()
@@ -161,9 +162,19 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        startPA(contextName, warStruct, paClassLoader, true);
+        startPA(contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
 	}
 
+    public void startInternalApplication(String contextName) throws RegistryException
+    {
+        checkStarted();
+        File webinf = new File (appRoot);
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();        
+        DirectoryHelper dir = new DirectoryHelper(webinf);
+        startPA(contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
+        // startInternal(contextName, warStruct, paClassLoader, true);        
+    }
+    
 	public void startPortletApplication(String contextName, FileSystemHelper warStruct,
 		ClassLoader paClassLoader)
 		throws RegistryException
@@ -173,7 +184,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            startPA(contextName, warStruct, paClassLoader, false);
+            startPA(contextName, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
         }
         finally
         {
@@ -184,7 +195,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public void stopLocalPortletApplication(String contextName)
 		throws RegistryException
 	{
-		stopPA(contextName, true);
+		stopPA(contextName, MutablePortletApplication.LOCAL);
 	}
 
 	public void stopPortletApplication(String contextName)
@@ -194,7 +205,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            stopPA(contextName, false);
+            stopPA(contextName, MutablePortletApplication.WEBAPP);
         }
         finally
         {
@@ -245,11 +256,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
         }
 	}
     
-    protected int getApplicationType(boolean local)
-    {
-        return local ?  MutablePortletApplication.LOCAL : MutablePortletApplication.WEBAPP;
-    }
-
 	protected void checkValidContextName(String contextName, boolean local)
 		throws RegistryException
 	{
@@ -272,7 +278,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	protected MutablePortletApplication registerPortletApplication(PortletApplicationWar paWar,
-		MutablePortletApplication oldPA, boolean local, ClassLoader paClassLoader)
+		MutablePortletApplication oldPA, int paType, ClassLoader paClassLoader)
 		throws RegistryException
 	{
 		if (oldPA != null)
@@ -289,25 +295,22 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		{
 			log.info("Loading portlet.xml...." + paName);
 			pa = paWar.createPortletApp(paClassLoader);
-
-			if (local)
-			{
-				pa.setApplicationType(MutablePortletApplication.LOCAL);
-			}
-			else
-			{
-				pa.setApplicationType(MutablePortletApplication.WEBAPP);
-			}
+			pa.setApplicationType(paType);
 
 			// load the web.xml
 			log.info("Loading web.xml...." + paName);
 			MutableWebApplication wa = paWar.createWebApp();
 			paWar.validate();
 
-			if (local)
+			if (paType == MutablePortletApplication.LOCAL)
 			{
 				wa.setContextRoot("<portal>");
 			}
+            else if (paType == MutablePortletApplication.INTERNAL)
+            {
+                // TODO: this is screwing up the PSML as its set all over the place to "jetspeed-layouts", not good
+                wa.setContextRoot("/" + paName);                
+            }
 
 			pa.setWebApplicationDefinition(wa);
             
@@ -390,7 +393,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				try
 				{
-					unregisterPortletApplication(pa, local);
+					unregisterPortletApplication(pa, (paType == MutablePortletApplication.LOCAL));
 				}
 				catch (Exception re)
 				{
@@ -403,14 +406,14 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	protected void startPA(String contextName, FileSystemHelper warStruct,
-	        ClassLoader paClassLoader, boolean local)
+	        ClassLoader paClassLoader, int paType)
 	throws RegistryException
 	{
-	    startPA(contextName, warStruct, paClassLoader, local, 0);
+	    startPA(contextName, warStruct, paClassLoader, paType, 0);
 	}
 	
 	protected void startPA(String contextName, FileSystemHelper warStruct,
-	        ClassLoader paClassLoader, boolean local, long checksum)
+	        ClassLoader paClassLoader, int paType, long checksum)
 	throws RegistryException
 	{
         PortletApplicationWar paWar = null;
@@ -443,16 +446,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
             if (pa != null)
             {
-                if ( pa.getApplicationType() != getApplicationType(local) )
+                if ( pa.getApplicationType() != paType )
                 {
-                    if ( local )
-                    {
-                        throw new RegistryException("Cannot start local portlet application "+contextName+": it is not a local application");
-                    }
-                    else
-                    {
-                        throw new RegistryException("Cannot start portlet application "+contextName+": it is a local application");
-                    }                    
+                    throw new RegistryException("Cannot start portlet application "+contextName+": as Application Types don't match: " + pa.getApplicationType() + " != " + paType);
                 }
                 DescriptorChangeMonitor changeMonitor = this.monitor;
                 if (!monitored && changeMonitor != null)
@@ -469,7 +465,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             		// new
 	                try
 	                {
-	                    pa = registerPortletApplication(paWar, pa, local, paClassLoader);
+	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
 	                }
 	                catch (Exception e)
 	                {
@@ -521,7 +517,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         				}
         			}
         			if (deploy)
-	                    pa = registerPortletApplication(paWar, pa, local, paClassLoader);
+	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
         			else
         				if (reregister)
         				{
@@ -550,7 +546,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             DescriptorChangeMonitor changeMonitor = this.monitor;
             if (!monitored && changeMonitor != null)
             {
-                changeMonitor.monitor(contextName,paClassLoader, local, warStruct.getRootDirectory(), checksum);
+                changeMonitor.monitor(contextName,paClassLoader, paType, warStruct.getRootDirectory(), checksum);
             }
 		}
 		finally
@@ -569,7 +565,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
-	protected void stopPA(String contextName, boolean local)
+	protected void stopPA(String contextName, int paType)
 		throws RegistryException
 	{
 		MutablePortletApplication pa = null;
@@ -582,16 +578,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             // ignore errors during portal shutdown
         }
-        if  (pa != null && pa.getApplicationType() != getApplicationType(local) )
+        if  (pa != null && pa.getApplicationType() != paType) 
         {
-            if ( local )
-            {
-                throw new RegistryException("Cannot stop local portlet application "+contextName+": it is not a local application");
-            }
-            else
-            {
-                throw new RegistryException("Cannot stop portlet application "+contextName+": it is a local application");
-            }
+            throw new RegistryException("Cannot stop portlet application "+contextName+": as Application Types don't match: " + pa.getApplicationType() + " != " + paType);
         }
         DescriptorChangeMonitor monitor = this.monitor;
         if ( monitor != null )
@@ -737,7 +726,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             private String contextName;
             private ClassLoader paClassLoader;
-            private boolean local;
+            private int  paType;
             private File paDir;
             private File[] descriptors;
             private long descriptorModificationTime;
@@ -753,11 +742,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 this.contextName = contextName;
             }
             
-            public DescriptorChangeMonitorInfo(String contextName, ClassLoader paClassLoader, boolean local, File paDir, long checksum)
+            public DescriptorChangeMonitorInfo(String contextName, ClassLoader paClassLoader, int paType, File paDir, long checksum)
             {
                 this.contextName = contextName;
                 this.paClassLoader = paClassLoader;
-                this.local = local;
+                this.paType = paType;
                 this.paDir = paDir.isAbsolute() ? paDir : paDir.getAbsoluteFile();
                 this.checksum = checksum;
                 
@@ -780,9 +769,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 return paClassLoader;
             }
             
-            public boolean isLocal()
+            public int getPortletApplicationType()
             {
-                return local;
+                return paType;
             }
             
             public File getPADir()
@@ -876,9 +865,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
             monitorInfos.clear();
         }
         
-        public synchronized void monitor(String contextName, ClassLoader paClassLoader, boolean local, File paDir, long checksum)
+        public synchronized void monitor(String contextName, ClassLoader paClassLoader, int paType, File paDir, long checksum)
         {
-            monitorInfos.add(new DescriptorChangeMonitorInfo(contextName, paClassLoader, local, paDir, checksum));
+            monitorInfos.add(new DescriptorChangeMonitorInfo(contextName, paClassLoader, paType, paDir, checksum));
         }
         
         public synchronized void remove(String contextName)
@@ -924,7 +913,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                                     try
                                     {
                                         pam.startPA(monitorInfo.getContextName(), new DirectoryHelper(monitorInfo.getPADir()),
-                                                monitorInfo.getPAClassLoader(), monitorInfo.isLocal(), monitorInfo.getChecksum());
+                                                monitorInfo.getPAClassLoader(), monitorInfo.getPortletApplicationType(), monitorInfo.getChecksum());
                                     }
                                     catch (Exception e)
                                     {

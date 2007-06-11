@@ -139,7 +139,13 @@ public interface MutablePortletApplication extends PortletApplication, Serializa
      * stored in Jetspeed managed portlet application space.
      */
     public static final int LOCAL = 1;
-        
+
+    /**
+     * Marks this application as a INTERNAL portlet application,
+     * stored in Jetspeed managed portlet application space.
+     */
+    public static final int INTERNAL = 2;
+    
     /**
      * Adds a Jetspeed component service to the collection of component services allowed for this application.
      * 

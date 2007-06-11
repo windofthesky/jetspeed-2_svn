@@ -34,6 +34,7 @@ import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.statistics.PortalStatistics;
+import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -123,6 +124,11 @@ public class JetspeedEngine implements Engine
                 // silenty ignore, its not configured
                 // TODO: statistics as an AOP advice
             }
+            // TODO: complete this work for JSP (https://issues.apache.org/jira/browse/JS2-711)
+            // I think config.getServletName is incorrect, need to fix this and change this name to jetspeed-layouts:: when looking up in registry
+            // but not when dispatching, still trying to figure that out
+            //PortletApplicationManagement pam = (PortletApplicationManagement)componentManager.getComponent("PAM");
+            //pam.startInternalApplication(config.getServletName());                
             
         }
         catch (Throwable e)

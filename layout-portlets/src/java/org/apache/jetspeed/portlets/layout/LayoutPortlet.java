@@ -17,7 +17,9 @@
 package org.apache.jetspeed.portlets.layout;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.portlet.ActionRequest;
@@ -84,6 +86,14 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected PortletWindowAccessor windowAccess;
     protected TemplateLocator decorationLocator;
     
+    //B: mk
+    private Map layoutTemplateProperties = new HashMap();
+    public static final String DEFAULT_TEMPLATE_EXT = ".vm";
+    public static final String TEMPLATE_EXTENSION_KEY = "template.extension";
+    public static final String DEFAULT_TEMPLATE_TYPE = "velocity";
+    public static final String TEMPLATE_TYPE_KEY = "template.type";
+    
+    //E: mk
     public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
@@ -118,7 +128,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         
         templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
         decorationLocator = (TemplateLocator) getPortletContext().getAttribute("DecorationLocator");
-        
     }
 
     public void doHelp( RenderRequest request, RenderResponse response ) throws PortletException, IOException
@@ -146,9 +155,10 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 }
                 
 
-                // TODO: Need to retreive layout.properties instead of
-                // hard-coding ".vm"
-                absHelpPage = jpt.getTemplate(helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help.vm",
+                //Mohan: closed task
+                Configuration props = getConfiguration(request, helpPage);
+                String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
+                absHelpPage = jpt.getTemplate(helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help" + ext,
                         JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 log.debug("Path to help page for LayoutPortlet " + absHelpPage);
                 request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);
@@ -227,9 +237,13 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                             viewPage = "columns";
                     }
                 }
-                // TODO: Need to retrieve layout.properties instead of
-                // hard-coding ".vm"
-                absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".vm",
+                
+                //Mohan: closed task
+                Configuration props = getConfiguration(request, viewPage);
+                String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
+
+                
+                absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext,
                         JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
                 log.debug("Path to view page for LayoutPortlet " + absViewPage);
                 request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
@@ -585,4 +599,101 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             throw e;
         }
     }
+
+    /**
+     * Gets the configuration (layout.properties) object for the decoration.
+     * @param name Name of the Decoration.
+     * @return <code>java.util.Properties</code> representing the configuration
+     * object.
+     */
+    protected Configuration getConfiguration( RenderRequest request, String name )
+    {
+        Configuration props = null;
+        JetspeedPowerTool jpt = null;
+        String templatePropertiesPath = null;
+        String key = name;
+        try
+        {
+            jpt = getJetspeedPowerTool(request);
+            templatePropertiesPath = jpt.getTemplate(name + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".properties",
+                    JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAbsolutePath();
+        } 
+        catch (PortletException e)
+        {
+            log.warn("Could not acquire JetspeedPowerTool from request",e);
+        }
+        catch (TemplateLocatorException e)
+        {
+            log.warn("Could not find templatePorpertiesPath",e);
+        }
+        catch (Exception e)
+        {
+            log.warn("Could not determine Layout template properties file",e);
+        }
+        // if no path then set name to "default"
+        if (null == templatePropertiesPath)
+        {
+            key = "default";
+        }
+        else
+        {
+            key = templatePropertiesPath;
+        }
+        props = (Configuration)this.layoutTemplateProperties.get(key);
+        
+        if ( props != null )
+        {
+            return props;
+        }
+        if (log.isDebugEnabled()){
+            log.debug(
+                    "Template descriptor path:<" + templatePropertiesPath + ">"
+            );
+        }
+
+        // load Decoration.CONFIG_FILE_NAME (layout.properties)
+        try
+        {
+            props = new PropertiesConfiguration(templatePropertiesPath);
+            if (log.isDebugEnabled())
+                log.debug("Successfully read in: <" + templatePropertiesPath + "> ");
+        } 
+        catch (Exception e)
+        {
+            props = new PropertiesConfiguration();
+            log.warn( "Could not locate the " + templatePropertiesPath + " file for layout template \"" + name + "\".  This layout template may not exist.",e );
+            props.setProperty( "id", name );
+            props.setProperty( TEMPLATE_TYPE_KEY, DEFAULT_TEMPLATE_TYPE );
+            props.setProperty( TEMPLATE_EXTENSION_KEY, DEFAULT_TEMPLATE_EXT);
+        }
+        finally
+        {
+            String templateIdPropVal = (String) props.getProperty( "id" );
+            String templateNamePropVal = (String) props.getProperty( TEMPLATE_TYPE_KEY );
+            String templateExtPropVal = (String) props.getProperty(TEMPLATE_EXTENSION_KEY);
+            
+            if ( templateIdPropVal == null )
+            {
+                templateIdPropVal = name;
+                props.setProperty( "id", templateIdPropVal );
+            }
+            
+            if ( templateNamePropVal == null )
+            {
+                props.setProperty( TEMPLATE_TYPE_KEY, DEFAULT_TEMPLATE_TYPE );
+            }
+            if ( templateExtPropVal == null )
+            {
+                props.setProperty( TEMPLATE_EXTENSION_KEY, DEFAULT_TEMPLATE_EXT );
+            }
+        }
+
+        this.layoutTemplateProperties.put(key, props);
+        if (log.isDebugEnabled())
+        {
+            log.debug("Template layout.properties extension is:<" + props.getString(TEMPLATE_EXTENSION_KEY));
+        }
+        return props;
+    }
+
 }

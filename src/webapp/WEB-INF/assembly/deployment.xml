@@ -54,12 +54,19 @@ limitations under the License.
        </constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.cluster.NodeManager"/></constructor-arg>                     
 
+       <!--  application root -->
+        <constructor-arg>
+            <value>${applicationRoot}</value>
+        </constructor-arg>
+
+
    <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
        <property name="autoCreateRoles"><value>true</value></property>
    -->      
    <!-- optional descriptor change monitor check interval in seconds (0: disabled, default: 10):
        <property name="descriptorChangeMonitorInterval"><value>10</value></property>
    -->      
+   		
   </bean>
 
   <!-- Portlet Application and Decorator deployment event listeners -->
