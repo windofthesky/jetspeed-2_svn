@@ -1102,6 +1102,48 @@ limitations under the License.
         </portlet-preferences>
     </portlet>
 
+    <portlet id="HelloGroovy">
+        <portlet-name>HelloGroovy</portlet-name>
+        <display-name>Hello Groovy</display-name>
+        <portlet-class>org.apache.portals.bridges.groovy.GroovyPortlet</portlet-class>
+        <init-param>
+            <name>script-source</name>
+            <!-- Note: You can set script source in three ways.
+                The first is to use relative path uri,
+                the second is to use file: url,
+                and the last is to classpath: uri -->
+            <!--
+                <value>/WEB-INF/groovy/HelloGroovy.groovy</value>
+                <value>file:/C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/demo/WEB-INF/groovy/HelloGroovy.groovy</value>
+                <value>classpath:HelloGroovy.groovy</value>
+            -->
+            <value>/WEB-INF/demo/groovy/HelloGroovy.groovy</value>
+        </init-param>
+        <!-- If auto-refresh is true, then a modification of script source applies instantly. -->
+        <init-param>
+            <name>auto-refresh</name>
+            <value>true</value>
+        </init-param>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>Hello Groovy</title>
+            <short-title>Hello Groovy</short-title>
+            <keywords>demo, Groovy</keywords>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>message</name>
+                <value>Hello, Groovy!</value>
+            </preference>
+        </portlet-preferences>
+    </portlet>
+    
     <custom-portlet-mode>
         <description>a Custom Print Mode</description>            
         <portlet-mode>print</portlet-mode>

@@ -189,6 +189,7 @@ limitations under the License.
         <org.apache.portals.bridges.jsf-demo.version>1.0.2-dev</org.apache.portals.bridges.jsf-demo.version>
         <org.apache.portals.bridges.jsf.version>1.0.2-dev</org.apache.portals.bridges.jsf.version>
         <org.apache.portals.bridges.velocity.version>1.0.2-dev</org.apache.portals.bridges.velocity.version>
+        <org.apache.portals.bridges.groovy.version>1.0.2-dev</org.apache.portals.bridges.groovy.version>
         <org.apache.portals.bridges.portletfilter.version>1.0.2-dev</org.apache.portals.bridges.portletfilter.version>
         <oro.version>2.0.8</oro.version>
         <portlet-api.version>1.0</portlet-api.version>
@@ -885,6 +886,11 @@ limitations under the License.
                 <groupId>org.apache.portals.bridges</groupId>
                 <artifactId>portals-bridges-jsf</artifactId>
                 <version>${org.apache.portals.bridges.jsf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-groovy</artifactId>
+                <version>${org.apache.portals.bridges.groovy.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.portals.bridges</groupId>

@@ -87,6 +87,10 @@ limitations under the License.
             <artifactId>portals-bridges-velocity</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-groovy</artifactId>
+        </dependency>
+        <dependency>
             <groupId>velocity-tools</groupId>
             <artifactId>velocity-tools</artifactId>
             <scope>runtime</scope>
@@ -121,6 +125,26 @@ limitations under the License.
             <artifactId>log4j</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- for groovy -->
+        <dependency>
+            <groupId>groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>1.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>2.2.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        
 
     </dependencies>
 
