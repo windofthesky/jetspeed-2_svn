@@ -1,150 +1,68 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * author: Steve Milek
- */
-
 dojo.provide("jetspeed.widget.PortalTabContainer");
-
 dojo.require("jetspeed.desktop.core");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.TabContainer");
-
-jetspeed.widget.PortalTabContainer = function()
-{    
-    this.widgetType = "PortalTabContainer";
-    this.js_addingTab = false;
-    this.doLayout = false;    // to keep base class from conducting certain layout behavior (not sure if needed?)
-    this.selectedChildWidget = true;   // to keep base class code from setting first tab as selected
-    this.tabsadded = 0;
-    dojo.widget.TabContainer.call( this );
+jetspeed.widget.PortalTabContainer=function(){
+this.widgetType="PortalTabContainer";
+this.js_addingTab=false;
+this.doLayout=false;
+this.selectedChildWidget=true;
+this.tabsadded=0;
+dojo.widget.TabContainer.call(this);
 };
-
-dojo.inherits(jetspeed.widget.PortalTabContainer, dojo.widget.TabContainer);
-
-dojo.lang.extend( jetspeed.widget.PortalTabContainer,
-{
-    // dojo.widget.Widget create protocol
-    postMixInProperties: function( args, fragment, parentComp )
-    {
-        this.templateCssPath = new dojo.uri.Uri( jetspeed.prefs.getLayoutRootUrl() + "/css/PortalTabContainer.css" ) ;
-        jetspeed.widget.PortalTabContainer.superclass.postMixInProperties.call( this, args, fragment, parentComp );
-    },
-    // dojo.widget.Widget create protocol
-    postCreate: function( args, fragment, parentComp )
-    {
-        jetspeed.widget.PortalTabContainer.superclass.postCreate.call( this, args, fragment, parentComp );
-        
-        this.contextMenuCreate();
-    },
-    addTab: function( /* jetspeed.om.MenuOption */ menuOpt )
-    {
-        if ( ! menuOpt ) return;
-        this.js_addingTab = true;
-        var tabDomNode = document.createElement( "div" );
-        var tab = new dojo.widget.HtmlWidget();   // create a fake widget so that widget.addedTo doesn't bomb when we call this.addChild() below
-        tab.domNode = tabDomNode;
-        tab.menuOption = menuOpt;
-        tab.label = menuOpt.getShortTitle();
-        tab.closable = false;
-        tab.widgetId = this.widgetId + "-tab-" + this.tabsadded;   // to make toString of these widgets a useful hash key (this.tablist.pane2button)
-        this.tabsadded++;
-        this.addChild( tab );
-        //dojo.debug( "PortalTabContainer.addTab" );
-        if ( jetspeed.page.equalsPageUrl( menuOpt.getUrl() ) )
-        {
-            this.selectChild( tab );
-        }
-        this.js_addingTab = false;
-    },
-    _setupChild: function(page){
-		// Summary: Add the given child to this page container
-
-		//page.hide();
-
-		// publish the addChild event for panes added via addChild(), and the original panes too
-		dojo.event.topic.publish(this.widgetId+"-addChild", page);
-	},
-    selectChild: function( tab, _noRefresh )
-    {
-        //jetspeed.widget.PortalTabContainer.superclass.selectTab.call( this, tab );
-        
-        if(this.tablist._currentChild){
-            var oldButton=this.tablist.pane2button[this.tablist._currentChild];
-            oldButton.clearSelected();
-        }
-        var newButton=this.tablist.pane2button[tab];
-        newButton.setSelected();
-        this.tablist._currentChild=tab;
-
-        if ( ! this.js_addingTab && ! _noRefresh )
-        {
-            tab.menuOption.navigateTo();
-        }
-	},
-
-    _showChild: function(page) {
-		// size the current page (in case this is the first time it's being shown, or I have been resized)
-		//if(this.doLayout){
-		//	var content = dojo.html.getContentBox(this.containerNode);
-		//	page.resizeTo(content.width, content.height);
-		//}
-
-		page.selected=true;
-		//page.show();
-	},
-
-	_hideChild: function(page) {
-		page.selected=false;
-		//page.hide();
-	},
-
-    createJetspeedMenu: function( /* jetspeed.om.Menu */ menuObj )
-    {
-        if ( ! menuObj ) return;
-        var menuOpts = menuObj.getOptions();
-        for ( var i = 0 ; i < menuOpts.length ; i++ )
-        {
-            var menuOption = menuOpts[i];
-            if ( menuOption.isLeaf() && menuOption.getUrl() && ! menuOption.isSeparator() )
-            {
-                this.addTab( menuOption );
-            }
-        }
-    },
-    contextMenuCreate: function()
-    {
-        //var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "jstc_menu", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );
-        //var resetLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item1", caption: "Reset Window Layout"} );
-        //var freeFormLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item2", caption: "Free Flowing Layout"} );
-        //var twoColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item3", caption: "Two Column Layout"} );
-        //var threeColummLayoutMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item4", caption: "Three Column Layout"} );
-        //var openPortletSelectorMenuItem = dojo.widget.createWidget( "MenuItem2", { id: "jstc_menu_item5", caption: "Portlet Selector"} );
-        
-        //dojo.event.connect( resetLayoutMenuItem, "onClick", function(e) { jetspeed.page.resetWindowLayout(); } );
-        //dojo.event.connect( freeFormLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = false; jetspeed.page.resetWindowLayout(); jetspeed.page.reload(); } );
-        //dojo.event.connect( twoColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 2; jetspeed.page.reload(); } );
-        //dojo.event.connect( threeColummLayoutMenuItem, "onClick", function(e) { jetspeed.prefs.windowTiling = 3; jetspeed.page.reload(); } );
-        //dojo.event.connect( openPortletSelectorMenuItem, "onClick", function(e) { jetspeed.loadPortletSelector(); } );
-        //taskBarContextMenu.addChild( resetLayoutMenuItem );
-        //taskBarContextMenu.addChild( freeFormLayoutMenuItem );
-        //taskBarContextMenu.addChild( twoColummLayoutMenuItem );
-        //taskBarContextMenu.addChild( threeColummLayoutMenuItem );
-        //taskBarContextMenu.addChild( openPortletSelectorMenuItem );
-        //document.body.appendChild( taskBarContextMenu.domNode );
-    }
-});
+dojo.inherits(jetspeed.widget.PortalTabContainer,dojo.widget.TabContainer);
+dojo.lang.extend(jetspeed.widget.PortalTabContainer,{postMixInProperties:function(_1,_2,_3){
+this.templateCssPath=new dojo.uri.Uri(jetspeed.prefs.getLayoutRootUrl()+"/css/PortalTabContainer.css");
+jetspeed.widget.PortalTabContainer.superclass.postMixInProperties.call(this,_1,_2,_3);
+},postCreate:function(_4,_5,_6){
+jetspeed.widget.PortalTabContainer.superclass.postCreate.call(this,_4,_5,_6);
+this.contextMenuCreate();
+},addTab:function(_7){
+if(!_7){
+return;
+}
+this.js_addingTab=true;
+var _8=document.createElement("div");
+var _9=new dojo.widget.HtmlWidget();
+_9.domNode=_8;
+_9.menuOption=_7;
+_9.label=_7.getShortTitle();
+_9.closable=false;
+_9.widgetId=this.widgetId+"-tab-"+this.tabsadded;
+this.tabsadded++;
+this.addChild(_9);
+if(jetspeed.page.equalsPageUrl(_7.getUrl())){
+this.selectChild(_9);
+}
+this.js_addingTab=false;
+},_setupChild:function(_a){
+dojo.event.topic.publish(this.widgetId+"-addChild",_a);
+},selectChild:function(_b,_c){
+if(this.tablist._currentChild){
+var _d=this.tablist.pane2button[this.tablist._currentChild];
+_d.clearSelected();
+}
+var _e=this.tablist.pane2button[_b];
+_e.setSelected();
+this.tablist._currentChild=_b;
+if(!this.js_addingTab&&!_c){
+_b.menuOption.navigateTo();
+}
+},_showChild:function(_f){
+_f.selected=true;
+},_hideChild:function(_10){
+_10.selected=false;
+},createJetspeedMenu:function(_11){
+if(!_11){
+return;
+}
+var _12=_11.getOptions();
+for(var i=0;i<_12.length;i++){
+var _14=_12[i];
+if(_14.isLeaf()&&_14.getUrl()&&!_14.isSeparator()){
+this.addTab(_14);
+}
+}
+},contextMenuCreate:function(){
+}});
 
