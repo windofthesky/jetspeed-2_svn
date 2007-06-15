@@ -121,22 +121,7 @@ dojo.widget.defineWidget(
                 }
                 this.layoutNameSelect.dataProvider.setData( layoutNameData );
             }
-            if ( this.isRootLayout )
-            {
-                if ( this.deleteLayoutButton != null )
-                    this.deleteLayoutButton.domNode.style.display = "none";
-                if ( this.editModeLayoutMoveButton != null )
-                    this.editModeLayoutMoveButton.domNode.style.display = "block";
-                if ( this.editModeNormalButton != null )
-                    this.editModeNormalButton.domNode.style.display = "none";
-            }
-            else
-            {
-                if ( this.editModeLayoutMoveButton != null )
-                    this.editModeLayoutMoveButton.domNode.style.display = "none";
-                if ( this.editModeNormalButton != null )
-                    this.editModeNormalButton.domNode.style.display = "none";
-            }
+            this.syncButtons();
             
             this.layoutMoveContainer = dojo.widget.createWidget( "jetspeed:LayoutEditPaneMoveHandle",
 				{
@@ -229,6 +214,31 @@ dojo.widget.defineWidget(
         getPageColumnIndex: function()
         {
             return jetspeed.page.getColumnIndexContainingNode( this.domNode );
+        },
+        
+        editModeRedisplay: function()
+        {
+            this.show();
+            this.syncButtons();
+        },
+        syncButtons: function()
+        {
+            if ( this.isRootLayout )
+            {
+                if ( this.deleteLayoutButton != null )
+                    this.deleteLayoutButton.domNode.style.display = "none";
+                if ( this.editModeLayoutMoveButton != null )
+                    this.editModeLayoutMoveButton.domNode.style.display = "block";
+                if ( this.editModeNormalButton != null )
+                    this.editModeNormalButton.domNode.style.display = "none";
+            }
+            else
+            {
+                if ( this.editModeLayoutMoveButton != null )
+                    this.editModeLayoutMoveButton.domNode.style.display = "none";
+                if ( this.editModeNormalButton != null )
+                    this.editModeNormalButton.domNode.style.display = "none";
+            }
         }
 	}
 );
