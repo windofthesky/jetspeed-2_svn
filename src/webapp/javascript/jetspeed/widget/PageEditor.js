@@ -31,6 +31,8 @@ dojo.require("dojo.widget.Spinner");
 
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.display");
+dojo.require("jetspeed.widget.PageEditPane");
+dojo.require("jetspeed.widget.LayoutEditPane");
 
 jetspeed.widget.PageEditor = function()
 {
@@ -132,7 +134,8 @@ dojo.widget.defineWidget(
         },
         editPageBuild: function()
         {
-            //actionButton.style.backgroundImage = "url(" + jetspeed.prefs.getLayoutRootUrl() + "/images/desktop/" + actionName + ".gif)";
+            jetspeed.url.loadingIndicatorHide();
+
             var layoutImagesUrl = jetspeed.prefs.getLayoutRootUrl() + "/images/desktop/"; 
 
             var pageEditorWidgets = new Array();
@@ -200,7 +203,7 @@ dojo.widget.defineWidget(
             {
                 for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].show();
+                    this.pageEditorWidgets[i].editModeRedisplay();
                 }
             }
             this.show();
