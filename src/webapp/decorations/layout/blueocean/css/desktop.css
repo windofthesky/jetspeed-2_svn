@@ -77,14 +77,14 @@ DIV.portlet
     height: 50px;
 }
 .js-showloading-left {
-    background-image: url(../images/desktop/loading/loading_left.png);
+    background-image: url(../images/desktop/loading/loadleft.gif);
     background-repeat: no-repeat;
     background-position: 0 0;
     width: 5px;
     height: 50px;
 }
 .js-showloading-middle {
-    background-image: url(../images/desktop/loading/loading_middle.png);
+    background-image: url(../images/desktop/loading/loadmiddle.gif);
     background-repeat: repeat-x;
     background-position: 0 0;
     height: 50px;
@@ -93,7 +93,7 @@ DIV.portlet
     font-weight: bold;
 }
 .js-showloading-right {
-    background-image: url(../images/desktop/loading/loading_right.png);
+    background-image: url(../images/desktop/loading/loadright.gif);
     background-repeat: no-repeat;
     background-position: 0 0;
     width: 5px;
@@ -101,6 +101,11 @@ DIV.portlet
 }
 .js-showloading-content {
     padding: 0 25px;
+    font-size: small;
+}
+
+.js-showloading-animation {
+    padding-top: 4px;
 }
 
 /*  end layout decorator blueocean embellishments  */

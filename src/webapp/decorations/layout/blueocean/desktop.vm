@@ -75,18 +75,22 @@ limitations under the License.
   <p>
      <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
-<!-- uncomment for page level loading indicator (associated with layout decoration resource: desktop.action.loadpage)
-<div id="js-showloading" style="display: none">
-    <table class="js-showloading">
-        <tr>
-            <td class="js-showloading-left">&nbsp;</td>
-            <td class="js-showloading-middle">
-                <div class="js-showloading-content" id="js-showloading-content">&lt;Loading&gt; ...</div>
-            </td>
-            <td class="js-showloading-right">&nbsp;</td>
-        </tr>
+<!-- page level loading indicator (associated with layout decoration resource: desktop.action.loadpage) -->
+<div id="js-showloading" class="js-showloading" style="display: none">
+    <table cellpadding="0" cellspacing="0" border="0">
+        <tbody>
+            <tr>
+                <td class="js-showloading-left"></td>
+                <td class="js-showloading-middle">
+                    <div>
+                        <div class="js-showloading-content" id="js-showloading-content">Loading ...</div>
+                        <div class="js-showloading-animation"><img src="$jetspeedDesktop.getLayoutBaseUrl('images/desktop/loading/loaddots.gif')" border="0" /></div>
+                    </div>
+                </td>
+                <td class="js-showloading-right"></td>
+            </tr>
+        </tbody>
     </table>
 </div>
--->
 </body>
 </html>
