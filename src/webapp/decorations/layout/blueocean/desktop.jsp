@@ -23,7 +23,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.decoration.Theme" %>
 <%@ page import="org.apache.jetspeed.decoration.Decoration" %>
 <% 
-    JetspeedDesktopContext desktop = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_ATTRIBUTE);
+    JetspeedDesktopContext desktop = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_CONTEXT_ATTRIBUTE);
     RequestContext requestContext = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
 
     String layoutStyleClass = "layout-" + desktop.getLayoutDecorationName();
