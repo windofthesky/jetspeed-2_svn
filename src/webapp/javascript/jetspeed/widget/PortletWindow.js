@@ -822,7 +822,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 {
                     if ( actionDef.id == jetspeed.id.ACTION_NAME_REMOVEPORTLET )
                     {
-                        enabled = true;
+                        if ( jetspeed.page.editMode && this.getLayoutActionsEnabled() )
+                            enabled = true;
                     }
                 }
             }
@@ -863,7 +864,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             {
                 if ( actionDef.id == jetspeed.id.ACTION_NAME_REMOVEPORTLET )
                 {
-                    if ( jetspeed.page.editMode )
+                    if ( jetspeed.page.editMode && this.getLayoutActionsEnabled() )
                         enabled = true;
                 }
                 else if ( actionDef.type == jetspeed.id.PORTLET_ACTION_TYPE_MODE )
