@@ -189,6 +189,10 @@ dojo.widget.defineWidget(
         {
             var updatePageInfoContentManager = new jetspeed.widget.UpdatePageInfoContentManager( null, this.portletDecoratorSelect.getValue(), this.pageEditorWidget );
             updatePageInfoContentManager.getContent();
+        },
+        editModeRedisplay: function()
+        {
+            this.show();
         }
 	}
 );
