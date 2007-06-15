@@ -796,15 +796,16 @@ if ( window.dojo )
         var loading = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID );
         if ( loading != null && loading.style )
         {
-            if ( loading.style[ "display" ] == "none" )
+            var actionlabel = null;
+            if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
+                actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
+
+            if ( actionlabel != null && actionlabel.length > 0 && loading.style[ "display" ] == "none" )
             {
                 loading.style[ "display" ] = "";
 
                 if ( actionName != null )
                 {
-                    var actionlabel = null;
-                    if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
-                        actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
                     if ( actionlabel != null && actionlabel.length > 0 )
                     {
                         var loadingContent = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID + "-content" );
