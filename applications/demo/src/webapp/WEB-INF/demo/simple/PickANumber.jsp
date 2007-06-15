@@ -26,6 +26,10 @@ limitations under the License.
 	<portlet:param name="myParam" value="testParam"/>
 </portlet:actionURL>
 
+<portlet:actionURL var="myRedirect">
+	<portlet:param name="redirect-test" value="true"/>
+</portlet:actionURL>
+
 <%
     PortletSession portletSession = renderRequest.getPortletSession(true);
     Long value = (Long)portletSession.getAttribute("LastGuess", PortletSession.APPLICATION_SCOPE);    
@@ -113,3 +117,5 @@ limitations under the License.
   <a href='<%=minMe%>'>Min</a>
   <a href='<%=normalMe%>'>Normal</a>
 </c:if>
+
+<a href='<%=myRedirect%>'>Redirect Test</a>

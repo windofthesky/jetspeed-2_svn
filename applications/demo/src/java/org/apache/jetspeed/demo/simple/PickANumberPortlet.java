@@ -197,6 +197,11 @@ public class PickANumberPortlet extends GenericServletPortlet
             return;
         }
         
+        if (request.getParameter("redirect-test") != null)
+        {
+            actionResponse.sendRedirect("/jetspeed/desktop/rss.psml");
+            return;
+        }
         Long guessCount = null;
         Long targetValue = null;
         Long currentGuess = null;
