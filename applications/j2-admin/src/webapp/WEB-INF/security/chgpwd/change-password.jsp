@@ -23,6 +23,11 @@ limitations under the License.
 
 <portlet:defineObjects/>
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.ChgPwdResources" />
+<c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
+<c:set var="portalContextPath" value="${requestContext.request.contextPath}"/>
+<c:if test="${empty portalContextPath}">
+  <c:set var="portalContextPath" value="/"/>
+</c:if>
 
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
@@ -83,8 +88,7 @@ limitations under the License.
               </c:when>
               <c:otherwise>
                 <br/><br/>
-                <c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
-                <a href='<c:url context="${requestContext.request.contextPath}/" value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
+                <a href='<c:url context="${portalContextPath}" value="/login/logout"/>'><fmt:message key="chgpwd.label.Logout"/></a>
               </c:otherwise>
             </c:choose>
           </c:if>
