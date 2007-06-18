@@ -119,9 +119,6 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             {
                 ((PortletApplicationSessionMonitor)iter.next()).invalidateSession();
             }
-            // To make sure its gone.
-            // You better not remove the psm from the portal session yourself ;)
-            psm.invalidateSession();
         }
     }
 
@@ -231,9 +228,6 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
         if ( psr != null )
         {
             psr.sessionMonitors.remove(pasm.getContextPath());
-            // To make sure its gone.
-            // You better not remove the pasm from the session yourself ;)
-            pasm.invalidateSession();
         }
     }
 
