@@ -55,7 +55,8 @@
     <condition property="jdbcjar" value="${installDir}/database/lib/derby-10.1.1.0.jar">
       <equals arg1="${jdbc.driver.jar}" arg2="" />
     </condition>
-    <copy file="${installDir}/webapps/jetspeed/WEB-INF/assembly/page-manager.xml" tofile="${installDir}/webapps/jetspeed/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
+<!--    <copy file="${installDir}/webapps/${portalName}/WEB-INF/assembly/page-manager.xml" tofile="${installDir}/webapps/${portalName}/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
+  -->
     <property name="jdbcjar" value="${jdbc.driver.jar}" />
     <copy failonerror="false" todir="${installDir}/shared/lib" file="${jdbcjar}" />
 

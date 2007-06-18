@@ -20,6 +20,7 @@
 <project name="JetspeedDatabaseSetup" default="setupDB" basedir=".">
 
   <property file="${basedir}/database.properties" />
+  <property file="build.properties"/>
 
   <condition property="_db.username" value="">
     <equals arg1="${db.type}" arg2="derby" />
@@ -64,15 +65,21 @@
 
   </target>
 
-  <target name="setupNoDB" />
+  <target name="setupNoDB">
+  	<antcall target="setupDBPSML"/>
+  </target>
 
   <target name="checkInput" unless="failSetup">
     <antcall target="runSetupDB"/>
   </target>
   
+  <target name='setupDBPSML'>
+    <copy file="${installDir}/webapps/${portalName}/WEB-INF/assembly/page-manager.xml" tofile="${installDir}/webapps/${portalName}/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
+	</target>
+	
   <target name="runSetupDB" 
-    depends="checkDerby,generateStandardDB,generateDerbyDB,seedDB,copyJetspeedContext,do-psml" />
-
+    depends="setupDBPSML,checkDerby,generateStandardDB,generateDerbyDB,seedDB,copyJetspeedContext,do-psml" />
+	
   <target name="checkDerby">
     <condition property="_derby">
       <equals arg1="${db.type}" arg2="derby" />
@@ -173,7 +180,7 @@
     <echo>Seeding the database</echo>
 
     <copy todir="${basedir}/assembly" overwrite="true" failonerror="true">
-      <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/assembly">
+      <fileset dir="${basedir}/../webapps/${portalName}/WEB-INF/assembly">
         <include name="security*.xml" />
         <include name="capabilities.xml" />
         <include name="prefs.xml" />
@@ -186,7 +193,7 @@
 
 
     <copy todir="${basedir}/assembly" overwrite="true" failonerror="true">
-      <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/assembly/alternate/">
+      <fileset dir="${basedir}/../webapps/${portalName}/WEB-INF/assembly/alternate/">
         <include name="request-context.xml" />
       </fileset>
     </copy>
@@ -194,7 +201,7 @@
     <mkdir dir="${basedir}/assembly/boot" />
 
     <copy todir="${basedir}/assembly/boot" overwrite="true" failonerror="true">
-      <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/assembly/boot">
+      <fileset dir="${basedir}/../webapps/${portalName}/WEB-INF/assembly/boot">
         <include name="*.xml" />
       </fileset>
     </copy>
@@ -204,7 +211,7 @@
         <fileset dir="${basedir}/../shared/lib">
           <include name="**/*.jar" />
         </fileset>
-        <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/lib">
+        <fileset dir="${basedir}/../webapps/${portalName}/WEB-INF/lib">
           <include name="**/*.jar" />
         </fileset>
         <fileset dir="${basedir}/lib">
@@ -214,12 +221,12 @@
           <include name="**/*.jar" />
         </fileset>
         <pathelement location="${basedir}/../shared/classes" />
-        <pathelement location="${basedir}/../webapps/jetspeed/WEB-INF/classes" />
+        <pathelement location="${basedir}/../webapps/${portalName}/WEB-INF/classes" />
       </classpath>
 
       <arg
         line="-I &quot;${basedir}/j2-seed.xml&quot; 
-              -a &quot;${basedir}/../webapps/jetspeed&quot;
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
               -b &quot;file:${basedir}/assembly/boot/&quot;
               -c &quot;file:${basedir}/assembly/&quot;
               -dc &quot;${_jdbc.driver.class}&quot;
@@ -237,7 +244,7 @@
         <fileset dir="${basedir}/../shared/lib">
           <include name="**/*.jar" />
         </fileset>
-        <fileset dir="${basedir}/../webapps/jetspeed/WEB-INF/lib">
+        <fileset dir="${basedir}/../webapps/${portalName}/WEB-INF/lib">
           <include name="**/*.jar" />
         </fileset>
         <fileset dir="${basedir}/lib">
@@ -247,7 +254,7 @@
           <include name="**/*.jar" />
         </fileset>
         <pathelement location="${basedir}/../shared/classes" />
-        <pathelement location="${basedir}/../webapps/jetspeed/WEB-INF/classes" />
+        <pathelement location="${basedir}/../webapps/${portalName}/WEB-INF/classes" />
       </classpath>
       <arg
         line="driver=&quot;${_jdbc.driver.class}&quot; 
@@ -261,7 +268,7 @@
   </target>
 
   <target name="copyJetspeedContext">
-    <copy file="jetspeed.xml" tofile="${basedir}/../conf/Catalina/localhost/jetspeed.xml" overwrite="true">
+    <copy file="${portalName}.xml" tofile="${basedir}/../conf/Catalina/localhost/${portalName}.xml" overwrite="true">
       <filterset begintoken="@" endtoken="@">
         <filter token="USERNAME" value="${_db.username}" />
         <filter token="PASSWORD" value="${_db.password}" />
@@ -277,7 +284,7 @@
   <property name="import.jdbc.password" value="${_db.password}"/>
   <property name="import.jdbc.url" value="${_jdbc.url}"/>
   
-  <property name="jetspeedWebinfDir" value="${basedir}/../webapps/jetspeed/WEB-INF"/>
+  <property name="jetspeedWebinfDir" value="${basedir}/../webapps/${portalName}/WEB-INF"/>
   <property name="pagesLocation" value="${jetspeedWebinfDir}/pages"/>
   <property name="importDir" value="${basedir}/import"/>
   <property name="importTargetDir" value="${importDir}/target"/>
