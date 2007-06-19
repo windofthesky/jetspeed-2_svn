@@ -45,11 +45,18 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     
     private long portalSessionKeySequence;
     private Map portalSessionsRegistry;
+    private boolean forceInvalidate;
     
     public PortalSessionsManagerImpl()
     {
+        this(true);        
+    }
+    
+    public PortalSessionsManagerImpl(boolean forceInvalidate)
+    {
         portalSessionKeySequence = System.currentTimeMillis();
         portalSessionsRegistry = Collections.synchronizedMap(new HashMap());
+        this.forceInvalidate = forceInvalidate;
     }
     
     /* (non-Javadoc)
@@ -57,7 +64,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      */
     public synchronized void portalSessionCreated(HttpSession portalSession)
     {
-        PortalSessionMonitor psm = new PortalSessionMonitorImpl(++portalSessionKeySequence);
+        PortalSessionMonitor psm = new PortalSessionMonitorImpl(++portalSessionKeySequence, forceInvalidate);
         portalSession.setAttribute(PortalSessionMonitor.SESSION_KEY, psm);
         // register it as if activated
         portalSessionDidActivate(psm);
@@ -119,6 +126,9 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             {
                 ((PortletApplicationSessionMonitor)iter.next()).invalidateSession();
             }
+            // To make sure its gone.
+            // You better not remove the psm from the portal session yourself ;)
+            psm.invalidateSession();
         }
     }
 
@@ -173,7 +183,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             }
             if ( pasm == null )
             {
-                pasm = new PortletApplicationSessionMonitorImpl(contextPath,portalSession.getId(),psr.portalSessionKey);
+                pasm = new PortletApplicationSessionMonitorImpl(contextPath,portalSession.getId(),psr.portalSessionKey, forceInvalidate);
                 try
                 {
                     paSession.setAttribute(PortletApplicationSessionMonitor.SESSION_KEY, pasm);
@@ -228,6 +238,9 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
         if ( psr != null )
         {
             psr.sessionMonitors.remove(pasm.getContextPath());
+            // To make sure its gone.
+            // You better not remove the pasm from the session yourself ;)
+            pasm.invalidateSession();
         }
     }
 

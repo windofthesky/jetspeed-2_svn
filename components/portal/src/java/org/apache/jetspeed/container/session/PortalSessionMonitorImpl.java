@@ -36,10 +36,17 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
     private long sessionKey;
     private transient String sessionId;
     private transient HttpSession session;
+    private boolean forceInvalidate;
     
     public PortalSessionMonitorImpl(long sessionKey)
     {
+        this(sessionKey,true);
+    }
+    
+    public PortalSessionMonitorImpl(long sessionKey, boolean forceInvalidate)
+    {
         this.sessionKey = sessionKey;
+        this.forceInvalidate = forceInvalidate;
     }
     
     /* (non-Javadoc)
@@ -68,13 +75,16 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
         if ( thisSession != null )
         {
             session = null;
-            try
+            if (forceInvalidate)
             {
-                thisSession.invalidate();
-            }
-            catch (Exception ise)
-            {
-                // ignore
+                try
+                {
+                    thisSession.invalidate();
+                }
+                catch (Exception ise)
+                {
+                    // ignore
+                }
             }
         }
     }

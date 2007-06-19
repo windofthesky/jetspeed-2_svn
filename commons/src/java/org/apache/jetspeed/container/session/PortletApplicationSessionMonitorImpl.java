@@ -39,12 +39,19 @@ public class PortletApplicationSessionMonitorImpl implements PortletApplicationS
     private String portalSessionId;
     private long portalSessionKey;
     private transient HttpSession session;
+    private boolean forceInvalidate;
 
     public PortletApplicationSessionMonitorImpl(String contextPath, String portalSessionId, long portalSessionKey)
+    {
+        this(contextPath, portalSessionId, portalSessionKey, true);
+    }
+    
+    public PortletApplicationSessionMonitorImpl(String contextPath, String portalSessionId, long portalSessionKey, boolean forceInvalidate)
     {
         this.contextPath = contextPath;
         this.portalSessionId = portalSessionId;
         this.portalSessionKey = portalSessionKey;
+        this.forceInvalidate = forceInvalidate;
     }
     
     /* (non-Javadoc)
@@ -80,13 +87,16 @@ public class PortletApplicationSessionMonitorImpl implements PortletApplicationS
         {
             HttpSession thisSession = session;
             session = null;
-            try
+            if (forceInvalidate)
             {
-                thisSession.invalidate();
-            }
-            catch (Exception ise)
-            {
-                // ignore
+                try
+                {
+                    thisSession.invalidate();
+                }
+                catch (Exception ise)
+                {
+                    // ignore
+                }
             }
         }        
     }
