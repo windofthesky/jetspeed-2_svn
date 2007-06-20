@@ -133,6 +133,11 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         }
     }
 
+    protected String getWebAppDir()
+    {
+        return webAppDir;
+    }
+    
     public void initialize()
     {
         // start deployed local pa
