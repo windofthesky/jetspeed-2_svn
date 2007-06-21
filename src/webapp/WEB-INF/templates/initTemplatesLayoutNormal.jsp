@@ -154,7 +154,7 @@
       DecorationFactory _decorationFactory = (DecorationFactory) renderRequest.getAttribute("decorationFactory");
       pageContext.setAttribute("decorationFactory", _decorationFactory, PAGE_SCOPE);
 
-      if (_editing)
+      if (_editing.booleanValue())
       {
 	      //LayoutDecorations list
 	      pageContext.setAttribute("layoutDecorationsList",
