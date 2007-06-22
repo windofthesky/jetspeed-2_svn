@@ -16,17 +16,14 @@
  */
 package org.apache.jetspeed.deployment.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -46,7 +43,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
 public class JettyDeployPortletAppEventListener extends DeployPortletAppEventListener
@@ -192,7 +189,7 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         InputStream source = null;
         try
         {
-            source = getClass().getResourceAsStream("context-template.xml");
+            source = getClass().getResourceAsStream("jetty/context-template.xml");
             return parseJettyContext(source);
         }
         finally
