@@ -214,7 +214,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     
     private boolean isEqual(String one, String two)
     {
-        return one == null && two == null || (one != null && two != null && one.equals(two));
+        return (one == null && two == null) || (one != null && two != null && one.equals(two));
     }
     
     private boolean checkQueryStringChanged()
