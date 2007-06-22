@@ -171,6 +171,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
         File webinf = new File (appRoot);
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();        
         DirectoryHelper dir = new DirectoryHelper(webinf);
+        MutablePortletApplication app = registry.getPortletApplicationByIdentifier(contextName);
+        if (app.getApplicationType() == MutablePortletApplication.LOCAL)
+        {
+            app.setApplicationType(MutablePortletApplication.INTERNAL);
+            registry.updatePortletApplication(app);
+        }
         startPA(contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
         // startInternal(contextName, warStruct, paClassLoader, true);        
     }
