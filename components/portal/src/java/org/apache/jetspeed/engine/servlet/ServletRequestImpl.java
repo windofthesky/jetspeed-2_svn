@@ -84,6 +84,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     
     private Map portalParameters;
     
+    private String currentIncludeQueryString;    
+    private String currentForwardQueryString;    
+    
     // request attributes map which is cached for each paralleled worker.
     // this should be re-created when it is called for the first time or when some attributes are added/modified/removed.
     private Map cachedAttributes;
@@ -208,10 +211,41 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
             return (value.toString());
         }
     }
+    
+    private boolean isEqual(String one, String two)
+    {
+        return one == null && two == null || (one != null && two != null && one.equals(two));
+    }
+    
+    private boolean checkQueryStringChanged()
+    {
+        boolean changed = false;
+        ServletRequest request = getRequest();
+        String includeQueryString = (String)request.getAttribute("javax.servlet.include.query_string");        
+        String forwardQueryString = (String)request.getAttribute("javax.servlet.forward.query_string");
+        
+        if (!isEqual(currentIncludeQueryString,includeQueryString))
+        {
+            currentIncludeQueryString = includeQueryString;
+            changed = true;
+        }
+        if (!isEqual(currentForwardQueryString,forwardQueryString))
+        {
+            currentForwardQueryString = forwardQueryString;
+            changed = true;
+        }        
+        return changed;
+    }
 
     public Map getParameterMap()
     {
-        if (currentRequest == null || currentRequest != getRequest() )
+        // if included or forwarded with a query string, parameterMap might have changed
+        // this is/should be the only check needed, and the other "tricky" check below probably
+        // can be removed.
+        // I'll keep it in for now though as it hasn't been tested enough on other app servers
+        boolean queryStringChanged = checkQueryStringChanged();
+        
+        if (queryStringChanged || currentRequest == null || currentRequest != getRequest() )
         {
             // Cache the parameters for as long as the wrapped request stays the same.
             // According to Servlet 2.3 SRV.6.2.2 the passed on ServletRequest object
