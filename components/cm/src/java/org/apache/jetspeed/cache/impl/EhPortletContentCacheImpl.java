@@ -249,7 +249,7 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
         
     public void evictContentForUser(String username)
     {
-        Element userElement = ehcache.get(username);
+        Element userElement = saveGet(username);
         if (userElement != null)
         {
             Map map = (Map)userElement.getObjectValue();
@@ -268,7 +268,7 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
 
     public void evictContentForSession(String session)
     {
-        Element userElement = ehcache.get(session);
+        Element userElement = saveGet(session);
         if (userElement != null)
         {
             Map map = (Map)userElement.getObjectValue();
@@ -295,5 +295,16 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
         return this.keyGenerator.createCacheKey(context, windowId);        
     }
     
-
+    protected Element saveGet(Object key)
+    {
+        try
+        {
+            return ehcache.get(key);
+        }
+        catch (IllegalStateException ise)
+        {
+            // can be thrown during shutdown for instance
+            return null;
+        }
+    }
 }
