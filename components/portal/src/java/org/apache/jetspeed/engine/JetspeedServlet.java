@@ -315,7 +315,7 @@ implements JetspeedEngineConstants, HttpSessionListener
         final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
                     
         String[] bootConfigs = new String[] {"/WEB-INF/assembly/boot/*.xml"};
-        String[] appConfigs =  new String[] {assemblyDir+"/*"+assemblyFileExtension};
+        String[] appConfigs =  new String[] {assemblyDir+"/*"+assemblyFileExtension, assemblyDir+"/override/*"+assemblyFileExtension};
         ServletContext servletContext = servletConfig.getServletContext();
         SpringComponentManager cm = new SpringComponentManager(bootConfigs, appConfigs, servletContext, appRoot);      
         
