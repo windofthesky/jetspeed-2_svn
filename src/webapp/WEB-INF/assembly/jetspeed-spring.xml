@@ -211,7 +211,12 @@
     <bean id="org.apache.jetspeed.headerresource.HeaderResourceFactory" class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl"></bean>
 
     <!-- Security: Session Manager -->
-    <bean id="org.apache.jetspeed.container.session.PortalSessionsManager" 
-  	   class="org.apache.jetspeed.container.session.PortalSessionsManagerImpl"  />
-        
+    <bean id="org.apache.jetspeed.container.session.PortalSessionsManager" class="org.apache.jetspeed.container.session.PortalSessionsManagerImpl">
+        <!-- By default force invalidate portal and portlet applications when a user logs out (or a session timesout)
+             For Jetty 6.x which does that already automatically set to false to prevent ConcurrentModificationException
+               see https://issues.apache.org/jira/browse/JS2-735
+        -->
+        <constructor-arg><value type="boolean">true</value></constructor-arg>
+    </bean>
+    
 </beans>
