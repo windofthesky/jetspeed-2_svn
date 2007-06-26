@@ -30,6 +30,15 @@ limitations under the License.
        <constructor-arg index="0"><value>SHA-1</value></constructor-arg>       
   </bean>       
 
+  <!-- Alternate Password Encoder with Jetspeed-1 algorithm -->
+  <!--
+  <bean id="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" 
+       class="org.apache.jetspeed.security.spi.impl.Jetspeed1CredentialPasswordEncoder">
+       <constructor-arg index="0"><value>SHA</value></constructor-arg>
+       <constructor-arg index="1"><value>base64</value></constructor-arg>
+  </bean>       
+  -->
+  
   <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider" 
        class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
        <constructor-arg index="0"><ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator"/></constructor-arg>       
