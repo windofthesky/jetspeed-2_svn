@@ -190,7 +190,9 @@ public class JetspeedDesktopContextImpl implements JetspeedDesktopContext
             id = LAYOUT_TEMPLATE_ID_DEFAULT;
         }
         
-        String ext = layoutDecoration.getProperty( LAYOUT_TEMPLATE_EXTENSION_PROP );
+        String ext = layoutDecoration.getProperty( LAYOUT_DESKTOP_TEMPLATE_EXTENSION_PROP );
+        if ( ext == null )
+            ext = layoutDecoration.getProperty( LAYOUT_TEMPLATE_EXTENSION_PROP );
         if ( ext == null )
         {
             ext = this.defaultLayoutTemplateExtension;
