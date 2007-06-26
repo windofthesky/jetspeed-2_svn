@@ -56,13 +56,20 @@ _10.selected=false;
 if(!_11){
 return;
 }
-var _12=_11.getOptions();
-for(var i=0;i<_12.length;i++){
-var _14=_12[i];
+if(this.tabsadded>0&&this.children&&this.children.length>0){
+for(var i=(this.children.length-1);i>=0;i--){
+this.removeChild(this.children[i]);
+}
+this.tabsadded=0;
+}
+var _13=_11.getOptions();
+for(var i=0;i<_13.length;i++){
+var _14=_13[i];
 if(_14.isLeaf()&&_14.getUrl()&&!_14.isSeparator()){
 this.addTab(_14);
 }
 }
+},onKey:function(e){
 },contextMenuCreate:function(){
 }});
 

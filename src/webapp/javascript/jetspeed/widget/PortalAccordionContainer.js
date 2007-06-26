@@ -45,28 +45,33 @@ _7.addChild(_9);
 if(!_b){
 return;
 }
-var _c=_b.getOptions();
-var _d=[],_e=null,_f=null,_10=0;
-while(_d!=null){
+if(this.children&&this.children.length>0){
+for(var i=(this.children.length-1);i>=0;i--){
+this.children[i].destroy();
+}
+}
+var _d=_b.getOptions();
+var _e=[],_f=null,_10=null,_11=0;
+while(_e!=null){
+_10=null;
+if(_11<_d.length){
+_10=_d[_11];
+_11++;
+}
+if(_10==null||_10.isSeparator()){
+if(_e!=null&&_e.length>0){
+var _12=this.createAndAddPane(_f);
+this.addLinksToPane(_12,_e);
+}
 _f=null;
-if(_10<_c.length){
-_f=_c[_10];
-_10++;
-}
-if(_f==null||_f.isSeparator()){
-if(_d!=null&&_d.length>0){
-var _11=this.createAndAddPane(_e);
-this.addLinksToPane(_11,_d);
-}
 _e=null;
-_d=null;
-if(_f!=null){
-_e=_f;
-_d=[];
+if(_10!=null){
+_f=_10;
+_e=[];
 }
 }else{
-if(_f.isLeaf()&&_f.getUrl()){
-_d.push(_f);
+if(_10.isLeaf()&&_10.getUrl()){
+_e.push(_10);
 }
 }
 }

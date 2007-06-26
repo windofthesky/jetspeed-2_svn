@@ -22,17 +22,22 @@ jetspeed.widget.PortalBreadcrumbContainer.superclass.fillInTemplate.apply(this,a
 if(!_7){
 return;
 }
-var _8=_7.getOptions();
-var _9=[],_a=null;
-for(var i=0;i<_8.length;i++){
-_a=_8[i];
-if(_a!=null&&!_a.isSeparator()){
-_9.push(_a);
+if(this.containerNode.childNodes&&this.containerNode.childNodes.length>0){
+for(var i=(this.containerNode.childNodes.length-1);i>=0;i--){
+dojo.dom.removeNode(this.containerNode.childNodes[i]);
 }
 }
-if(_9!=null&&_9.length>0){
+var _9=_7.getOptions();
+var _a=[],_b=null;
+for(var i=0;i<_9.length;i++){
+_b=_9[i];
+if(_b!=null&&!_b.isSeparator()){
+_a.push(_b);
+}
+}
+if(_a!=null&&_a.length>0){
 var _c,_d;
-var _e=_9.length;
+var _e=_a.length;
 for(var i=0;i<_e;i++){
 if(i>0){
 _d=dojo.widget.createWidget("jetspeed:PortalBreadcrumbLinkSeparator");
@@ -40,10 +45,10 @@ this.containerNode.appendChild(_d.domNode);
 }
 if(i==(_e-1)){
 var _f=document.createElement("span");
-_f.appendChild(document.createTextNode(_9[i].getShortTitle()));
+_f.appendChild(document.createTextNode(_a[i].getShortTitle()));
 this.containerNode.appendChild(_f);
 }else{
-_c=dojo.widget.createWidget("jetspeed:PortalBreadcrumbLink",{menuOption:_9[i]});
+_c=dojo.widget.createWidget("jetspeed:PortalBreadcrumbLink",{menuOption:_a[i]});
 this.containerNode.appendChild(_c.domNode);
 }
 }
