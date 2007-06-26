@@ -33,7 +33,7 @@ limitations under the License.
 
   <security-constraints>
     <security-constraint>
-      <roles>subsite, subsite2</roles>
+      <roles>subsite, subsite2, user</roles>
       <permissions>view</permissions>
     </security-constraint>
   </security-constraints>
