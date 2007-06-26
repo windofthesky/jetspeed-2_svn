@@ -83,6 +83,7 @@ public interface HeaderResource
     public final static String HEADER_CONFIG_DOJO_PATH = "dojo.path";
     public final static String HEADER_CONFIG_DOJO_PARAM_ISDEBUG = "dojo.parameter.isDebug";
     public final static String HEADER_CONFIG_DOJO_PARAM_DEBUGALLCOSTS = "dojo.parameter.debugAtAllCosts";
+    public final static String HEADER_CONFIG_DOJO_PARAM_PREVENT_BACKBUTTON_FIX = "dojo.parameter.preventBackButtonFix";
     public final static String HEADER_CONFIG_DOJO_PARAMS = "dojo.parameters";
     public final static String HEADER_CONFIG_DOJO_REQUIRES_CORE = "dojo.requires.core";
     public final static String HEADER_CONFIG_DOJO_MODULES_PATH = "dojo.modules.path";
@@ -92,6 +93,7 @@ public interface HeaderResource
     // header configuration - desktop
     public final static String HEADER_CONFIG_DESKTOP_LAYOUT_DECORATION_DEFAULT = "desktop.decoration.layout";
     public final static String HEADER_CONFIG_DESKTOP_PORTLET_DECORATION_DEFAULT = "desktop.decoration.portlet";
+    public final static String HEADER_CONFIG_DESKTOP_PAGE_AJAXNAVIGATION = "desktop.page.ajaxnavigation";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_TILING = "desktop.window.tiling";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND = "desktop.window.heightexpand";
     public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT = "desktop.window.height";
