@@ -524,6 +524,13 @@ public class HeaderAggregatorImpl implements PageAggregator
             decorationFactory.setDefaultDesktopPortletDecoration( portletDecoration );
         }
         
+        String desktopPageAjaxNavName = HeaderResource.HEADER_CONFIG_DESKTOP_PAGE_AJAXNAVIGATION;
+        String desktopPageAjaxNav = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( desktopPageAjaxNavName ) );
+        if ( desktopPageAjaxNav != null && canAddHeaderNamedResourceFragment( desktopPageAjaxNavName, namedResourcesAddedFragmentsDefault, null ) )
+        {
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".ajaxPageNavigation = " ).append( desktopPageAjaxNav ).append( ";" ).append( EOL );
+        }
+        
         String desktopWindowTilingName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_TILING;
         String desktopWindowTiling = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( desktopWindowTilingName ) );
         if ( desktopWindowTiling != null && canAddHeaderNamedResourceFragment( desktopWindowTilingName, namedResourcesAddedFragmentsDefault, null ) )
@@ -683,8 +690,9 @@ public class HeaderAggregatorImpl implements PageAggregator
         // dojo parameters - djConfig parameters
         String dojoParamDebug = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_ISDEBUG );
         String dojoParamDebugAtAllCosts = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_DEBUGALLCOSTS );
+        String dojoParamPreventBackBtnFix = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_PREVENT_BACKBUTTON_FIX );
         String dojoParams = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAMS );
-        if ( dojoParamDebug != null || dojoParamDebugAtAllCosts != null || dojoParams != null )
+        if ( dojoParamDebug != null || dojoParamDebugAtAllCosts != null || dojoParamPreventBackBtnFix != null || dojoParams != null )
         {
             StringBuffer dojoConfigContent = new StringBuffer();
             boolean addedMembers = false;
@@ -709,6 +717,15 @@ public class HeaderAggregatorImpl implements PageAggregator
                     dojoConfigContent.append( ", " );
                 }
                 dojoConfigContent.append( "debugAtAllCosts: " ).append( dojoParamDebugAtAllCosts ) ;
+                addedMembers = true;
+            }
+            if ( dojoParamPreventBackBtnFix != null && dojoParamPreventBackBtnFix.length() > 0 )
+            {
+                if ( addedMembers )
+                {
+                    dojoConfigContent.append( ", " );
+                }
+                dojoConfigContent.append( "preventBackButtonFix: " ).append( dojoParamPreventBackBtnFix ) ;
                 addedMembers = true;
             }
             if ( addedMembers )
