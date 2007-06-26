@@ -14,26 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.container.state.impl;
+package org.apache.jetspeed.cache;
 
-import org.apache.jetspeed.cache.JetspeedContentCache;
-
+import org.apache.jetspeed.request.RequestContext;
 
 /**
- * SessionFullNavigationalState, stores all nav parameters in the session, including render parameters
- *
- * @author <a href="mailto:ate@apache.org">Ate Douma</a>
- * @version $Id$
+ * <p>
+ *  Provides interface to Jetspeed for cache related activities
+ *  Abstraction around actual cache implementation
+ * </p>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id: $
  */
-public class SessionFullNavigationalState extends SessionNavigationalState
-{    
-    public SessionFullNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
-    {
-        super(codec, cache);
-    }
-
-    public boolean isRenderParameterStateFull()
-    {
-        return true;
-    }
+public interface JetspeedContentCache extends JetspeedCache
+{
+    /**
+     * Creates a session key used to store associated information in the session.
+     * 
+     * @param context
+     * @return
+     */
+    String createSessionKey(RequestContext context);
+    
+    /** 
+     * remove from the cache and invalidate any associated caches or session attributes
+     * 
+     * @param context
+     * @param key
+     */
+    void invalidate(RequestContext context);
 }

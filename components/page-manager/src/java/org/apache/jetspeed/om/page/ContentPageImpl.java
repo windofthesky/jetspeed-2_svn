@@ -38,11 +38,16 @@ public class ContentPageImpl implements ContentPage
     private final Page page;
     private final Map cachedFragments;
     private ContentFragment rootContentFragment;
-    
+        
     public ContentPageImpl(Page page)
     {
         this.page = page;
         this.cachedFragments = new HashMap();
+    }
+
+    public void setRootContentFragment(ContentFragment frag)
+    {
+        this.rootContentFragment = frag;
     }
 
     public String toString()

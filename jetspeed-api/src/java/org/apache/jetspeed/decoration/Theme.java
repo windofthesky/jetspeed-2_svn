@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Theme provides a simple aggregation of all of the decorations
@@ -68,4 +70,15 @@ public interface Theme
      * decoration. 
      */
     LayoutDecoration getPageLayoutDecoration();
+    
+    /**
+     * Initialize a page theme
+     * 
+     * @param context
+     */
+    void init(Page page, DecorationFactory decoration, RequestContext context);
+    
+    boolean isInvalidated();
+    
+    void setInvalidated(boolean flag);
 }

@@ -424,7 +424,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             
             // validate cached configuration and return VelocityEngine if cached
             long now = System.currentTimeMillis();
-            if ((config != null) && (now <= (config.lastValidated + cacheValidationInterval))) 
+            if ((config != null) && ((cacheValidationInterval == -1) || (now <= (config.lastValidated + cacheValidationInterval)))) 
             {
                 if (config.macros != null)
                 {
@@ -452,7 +452,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
                     }
                 }
             }
-            
+           
             // load and/or verify decorator macros configuration
             TemplateDescriptor macrosDescriptor = null;
             

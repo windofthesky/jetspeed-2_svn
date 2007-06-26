@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.jetspeed.request.RequestContext;
 public class PathNavigationalState extends AbstractNavigationalState 
 {
 
-    public PathNavigationalState(NavigationalStateCodec codec, JetspeedCache cache)
+    public PathNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
         super(codec, cache);
     }

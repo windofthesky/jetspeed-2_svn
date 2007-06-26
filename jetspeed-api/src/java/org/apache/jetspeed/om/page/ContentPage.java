@@ -44,7 +44,7 @@ public interface ContentPage extends Page
    */
   ContentFragment getRootContentFragment();
   
-  
+  void setRootContentFragment(ContentFragment frag);
 
   /**
    * Returns a ContentFragment that wraps the actual

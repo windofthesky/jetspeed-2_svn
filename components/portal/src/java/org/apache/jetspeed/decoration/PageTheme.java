@@ -16,16 +16,18 @@
  */
 package org.apache.jetspeed.decoration;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
-import java.util.Collections;
 
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
@@ -37,16 +39,17 @@ import org.apache.jetspeed.request.RequestContext;
  *
  * @see org.apache.jetspeed.decoration.Theme
  */
-public class PageTheme implements Theme
+public class PageTheme implements Theme, Serializable
 {
-    private final Page page;
-    private final DecorationFactory decorationFactory;
-    private final RequestContext requestContext;
+    private transient Page page;
+    private transient DecorationFactory decorationFactory;
+    private transient RequestContext requestContext;
     private final Set styleSheets;
     private final LayoutDecoration layoutDecoration;
     private final Map fragmentDecorations;
     private final Collection portletDecorationNames;
-    
+    private boolean invalidated = false;
+        
     public PageTheme(Page page, DecorationFactory decorationFactory, RequestContext requestContext)
     {
         this.page = page;
@@ -150,4 +153,30 @@ public class PageTheme implements Theme
         return layoutDecoration;
     }
 
+    public void init(Page page, DecorationFactory decoration, RequestContext context)
+    {
+        this.page = page;
+        this.decorationFactory = decoration;
+        this.requestContext = context;        
+    }
+    
+    public Page getPage()
+    {
+        return page;
+    }    
+
+    public ContentPage getContentPage()
+    {
+        return (ContentPage)page;
+    }
+
+    public boolean isInvalidated()
+    {
+        return this.invalidated;
+    }
+    
+    public void setInvalidated(boolean flag)
+    {
+        this.invalidated = flag;
+    }
 }

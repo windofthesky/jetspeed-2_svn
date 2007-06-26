@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKey;
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
@@ -70,16 +70,16 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     private PortletContainer container;
     private PortletWindowAccessor windowAccessor;
     private boolean patchResponseCommitted = false;
-    private JetspeedCache portletContentCache;
+    private JetspeedContentCache portletContentCache;
 
-    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, JetspeedCache portletContentCache)
+    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, JetspeedContentCache portletContentCache)
     {
         this.container = container;
         this.windowAccessor = windowAccessor;
         this.portletContentCache = portletContentCache;
     }
     
-    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, JetspeedCache portletContentCache, boolean patchResponseCommitted)
+    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, JetspeedContentCache portletContentCache, boolean patchResponseCommitted)
     {
         this.container = container;
         this.windowAccessor = windowAccessor;
@@ -262,6 +262,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         if (portletContentCache.isKeyInCache(cacheKey))
         {
             portletContentCache.remove(cacheKey);
+            portletContentCache.invalidate(context);
         }
     }
 
@@ -271,6 +272,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         if (portletContentCache.isKeyInCache(cacheKey))
         {
             portletContentCache.remove(cacheKey);
+            portletContentCache.invalidate(context);            
         }
     }
     

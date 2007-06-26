@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.impl.NavigationalStateCodec;
 import org.apache.jetspeed.container.state.impl.PathNavigationalState;
 import org.apache.jetspeed.container.state.impl.SessionFullNavigationalState;
@@ -74,7 +74,7 @@ public class TestNavigationalState extends TestCase
     private Engine engine;
     private NavigationalStateCodec codec;
     private PortalContext portalContext;
-    private JetspeedCache cache;
+    private JetspeedContentCache cache;
 
     /**
      * Defines the testcase name for JUnit.
@@ -126,7 +126,7 @@ public class TestNavigationalState extends TestCase
         
         codec = (NavigationalStateCodec) engine.getComponentManager().getComponent("NavigationalStateCodec");
         portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");  
-        cache = (JetspeedCache) engine.getComponentManager().getComponent("portletContentCache");
+        cache = (JetspeedContentCache) engine.getComponentManager().getComponent("portletContentCache");
     }
 
     public static Test suite()

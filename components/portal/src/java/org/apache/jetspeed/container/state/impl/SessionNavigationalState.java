@@ -20,7 +20,7 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -32,7 +32,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class SessionNavigationalState extends AbstractNavigationalState
 {    
-    public SessionNavigationalState(NavigationalStateCodec codec, JetspeedCache cache)
+    public SessionNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
         super(codec, cache);
     }

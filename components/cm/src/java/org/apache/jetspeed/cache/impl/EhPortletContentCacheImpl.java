@@ -32,6 +32,8 @@ import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.ContentCacheKeyGenerator;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
+import org.apache.jetspeed.cache.JetspeedContentCache;
+import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -40,7 +42,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCache, JetspeedCacheEventListener
+public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedContentCache, JetspeedCacheEventListener
 {
 
 	JetspeedCache preferenceCache = null;
@@ -306,5 +308,22 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCa
             // can be thrown during shutdown for instance
             return null;
         }
+    }
+    
+    public String createSessionKey(RequestContext context)
+    {
+        boolean isAjaxRequest = (context == null);
+        String mode = isAjaxRequest ? "-d-" : "-p-";
+        String user = context.getRequest().getRemoteUser();
+        if (user == null)
+            user = "guest";        
+        return user + mode + context.getPage().getId();        
+    }
+    
+    public void invalidate(RequestContext context)
+    {
+        String themeCacheKey = createSessionKey(context);
+        Theme theme = (Theme)context.getRequest().getSession().getAttribute(themeCacheKey);
+        theme.setInvalidated(true);
     }
 }

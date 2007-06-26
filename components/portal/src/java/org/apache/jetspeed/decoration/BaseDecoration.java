@@ -17,6 +17,7 @@
 package org.apache.jetspeed.decoration;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -44,17 +45,17 @@ import org.apache.jetspeed.util.Path;
  * @see org.apache.jetspeed.decoration.PortletDecoration
  * 
  */
-public class BaseDecoration implements Decoration
+public class BaseDecoration implements Decoration, Serializable
 {
     private static final Log log = LogFactory.getLog(BaseDecoration.class);
     
     protected static final String NO_SUCH_RESOURCE = "no_such_resource";
-    protected final Properties config;
-    private final ResourceValidator validator;
+    protected transient Properties config;
+    private transient ResourceValidator validator;        
     private final String name;
     private final Path basePath;
     private final Path baseClientPath;
-    private final PathResolverCache cache;
+    private transient PathResolverCache cache;
     private final String commonStylesheet;
     private final String portalStylesheet;
     private final String desktopStylesheet;
@@ -100,6 +101,13 @@ public class BaseDecoration implements Decoration
         log.info( "BaseDecoration baseClientPath: " + baseClientPath.toString() );
         
     }
+    
+    public void init(Properties config, ResourceValidator validator, PathResolverCache cache)
+    {
+        this.config = config;
+        this.validator = validator;
+        this.cache = cache;
+    }    
 
     public String getName()
     {        
@@ -124,9 +132,10 @@ public class BaseDecoration implements Decoration
     {        
         Path workingPath = baseClientPath.getChild( path );
         
-        if( cache.getPath( workingPath.toString() ) != null )
+        String hit = cache.getPath( workingPath.toString()); 
+        if(  hit != null )
         {
-            return cache.getPath( workingPath.toString() );
+            return hit;
         }
         else
         {

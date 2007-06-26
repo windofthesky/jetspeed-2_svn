@@ -21,22 +21,27 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
@@ -76,37 +81,45 @@ public class DecorationValve extends AbstractValve implements Valve
     
     private DecoratorActionsFactory defaultDecoratorActionsFactory;
 
+    private JetspeedContentCache cache = null;
+         
      /**
       * For security constraint checks
       */
      protected SecurityAccessController accessController;
-     
+
      public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,SecurityAccessController accessController)
+     {
+         this(decorationFactory, windowAccessor, accessController, null);
+     }
+     
+     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+                            SecurityAccessController accessController, JetspeedContentCache cache)
      {    
         this.decorationFactory = decorationFactory;
         this.windowAccessor = windowAccessor;
         this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
+        this.cache = cache;
     }
     
-
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
     {
+        long start = System.currentTimeMillis();
         boolean isAjaxRequest = (context == null);
         
-        if (requestContext.getRequest().getParameter("clearThemeCache") != null)
-        {
-            decorationFactory.clearCache(requestContext);
-        }
-
         initFragments( requestContext, isAjaxRequest, null );
         
+        long end = System.currentTimeMillis();
+        // TODO: remove this
+        System.out.println(end - start);
         if (!isAjaxRequest)
         {
             context.invokeNext(requestContext);
         }
     }
+
 
     public void initFragments( RequestContext requestContext, boolean isAjaxRequest, List fragments )
     {
@@ -125,13 +138,51 @@ public class DecorationValve extends AbstractValve implements Valve
                     .getSessionAttribute(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE);
             page.setDefaultDecorator(decoratorName, Fragment.LAYOUT);
         }
-
-        Theme theme = decorationFactory.getTheme(page, requestContext);
-
-        requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
-
+        
         PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
         
+        String themeCacheKey = null;
+        Theme theme = null;
+        
+        if (useCache())
+        {
+            // user helps us with the funky way jetspeed doesn't create  a new session on login
+            themeCacheKey = cache.createSessionKey(requestContext);
+            theme = (Theme) requestContext.getSessionAttribute(themeCacheKey);
+        }        
+
+        if (theme != null)
+        {
+            System.out.println("Reusing Theme " + themeCacheKey);
+            theme.init(page, decorationFactory, requestContext);
+            requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
+            
+            Page themePage = ((PageTheme) theme).getPage();
+            Fragment themeFragment = themePage.getRootFragment();
+            page.setRootFragment(themeFragment);
+            
+            // TODO: IS THIS NECESSARY????
+            ContentPage contentThemePage = ((PageTheme)theme).getContentPage();
+            ContentFragment contentThemeFragment = contentThemePage.getRootContentFragment();
+            page.setRootContentFragment(contentThemeFragment);                        
+            boolean solo = isSoloMode(requestContext);            
+            SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
+            initDepthFragmentDecorations(requestContext, theme, page.getRootContentFragment(),
+                                                    pageActionAccess, isAjaxRequest,
+                                                    ((DecorationFactoryImpl) decorationFactory).getResourceValidator(),
+                                                    sessionPathResolver, (theme.isInvalidated() && !solo));
+            
+            if (theme.isInvalidated() && !solo)
+            {
+                System.out.println("*** INVALIDATED: "  + themeCacheKey);
+                requestContext.setSessionAttribute(themeCacheKey, theme);
+                theme.setInvalidated(false);                            
+            }                        
+            return;
+        }
+        System.out.println("*** new" );        
+        theme = decorationFactory.getTheme(page, requestContext);        
+        requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
         if ( fragments == null || fragments.size() == 0 )
         {
             ContentFragment rootFragment = page.getRootContentFragment();
@@ -146,9 +197,32 @@ public class DecorationValve extends AbstractValve implements Valve
                 initFragment(requestContext, theme, fragment, pageActionAccess, isAjaxRequest);
             }
         }
+        if (useCache())
+        {
+            if (!isSoloMode(requestContext))
+            {
+                requestContext.setSessionAttribute(themeCacheKey, theme);
+            }
+        }                
     }
 
-
+    protected boolean isSoloMode(RequestContext requestContext)
+    {
+        boolean solo = false;
+        PortletWindow window = requestContext.getPortalURL().getNavigationalState().getMaximizedWindow();
+        boolean maximized = (window != null);
+        if (maximized)
+        {
+            solo = JetspeedActions.SOLO_STATE.equals(requestContext.getPortalURL().getNavigationalState().getMappedState(window));
+        }
+        return solo;
+    }
+    
+    protected boolean useCache()
+    {
+        return this.cache != null;
+    }
+    
     public String toString()
     {
         return "DecorationValve";
@@ -156,6 +230,7 @@ public class DecorationValve extends AbstractValve implements Valve
     
     public DecoratorActionsFactory getDecoratorActionsAdapter(Decoration decoration)
     {
+        // FIXME: why always get this property
         String decoratorActionsAdapterClassName = decoration.getProperty("actions.factory");
         if ( decoratorActionsAdapterClassName == null )
         {
@@ -445,5 +520,59 @@ public class DecorationValve extends AbstractValve implements Valve
         return fragmentSupportsActions;
     }
 
-    
+    /**
+     * Reintializes all fragments with there decorations and portlet modes 
+     * and winodw states after theme is restored from cache.
+     * 
+     * @param requestContext RequestContext of the current portal request.
+     * @param theme
+     * @param fragment
+     * @param pageActionAccess
+     * @param isAjaxRequest
+     * @param validator
+     * @param pathResolverCache
+     */
+    protected void initDepthFragmentDecorations(RequestContext requestContext,
+                                                Theme theme,
+                                                ContentFragment fragment, 
+                                                PageActionAccess pageActionAccess,
+                                                boolean isAjaxRequest,
+                                                ResourceValidator validator,
+                                                PathResolverCache pathResolverCache,
+                                                boolean reloadActionList)
+    {
+        final List contentFragments = fragment.getContentFragments();
+        
+        if(contentFragments != null && contentFragments.size() > 0)
+        {
+            Iterator itr = contentFragments.iterator();
+            while(itr.hasNext())
+            {
+                ContentFragment aFragment = (ContentFragment) itr.next();
+                initDepthFragmentDecorations(requestContext, theme, aFragment,
+                                             pageActionAccess, isAjaxRequest,
+                                             validator, pathResolverCache, reloadActionList);
+            }
+        }
+
+        try 
+        {
+            // PageTheme::getDecoration retrieves cached decoration only.
+            Decoration decoration = theme.getDecoration(fragment);
+            // re-init to set transient memebers.
+            Properties config = ((DecorationFactoryImpl) decorationFactory).getConfiguration(decoration.getName(), fragment.getType());
+            ((BaseDecoration) decoration).init(config, validator, pathResolverCache);
+            // fragment is newly created on every request, so reset decoration for fragment.
+            fragment.setDecoration(decoration);
+            
+            if (reloadActionList)
+            {
+                initActionsForFragment(requestContext, fragment, pageActionAccess, decoration, isAjaxRequest);
+            }
+        }
+        catch (Exception e)
+        {
+            log.warn("Unable to initalize actions for fragment "+fragment.getId(), e);
+        }
+    }    
 }

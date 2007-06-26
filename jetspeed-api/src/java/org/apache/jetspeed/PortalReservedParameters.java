@@ -60,6 +60,12 @@ public interface PortalReservedParameters
     public static final String PORTLET_DEFINITION_ATTRIBUTE = "org.apache.jetspeed.portlet.definition";
     public static final String PORTLET_WINDOW_ATTRIBUTE = "org.apache.jetspeed.portlet.window";
     public static final String PAGE_THEME_ATTRIBUTE = "org.apache.jetspeed.theme";
+    public static final String PAGE_LAYOUT_VIEW = "org.apache.jetspeed.layout.view";
+    public static final String PAGE_LAYOUT_MAX = "org.apache.jetspeed.layout.max";
+    public static final String PAGE_LAYOUT_HELP = "org.apache.jetspeed.layout.help";
+    public static final String PAGE_LAYOUT_EDIT = "org.apache.jetspeed.layout.edit";
+    public static final String PAGE_LAYOUT_SOLO = "org.apache.jetspeed.layout.solo";
+    
     /**
      * Setting this as a session attribute will override all themes declared in
      * psml. Sample values are "Simple", "tigris", "jetspeed"

@@ -25,7 +25,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.pluto.om.window.PortletWindow;
@@ -40,9 +40,9 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
 {
     private NavigationalStateCodec codec;
     private PortletWindowRequestNavigationalStates requestStates;
-    protected JetspeedCache cache;
+    protected JetspeedContentCache cache;
     
-    public AbstractNavigationalState(NavigationalStateCodec codec, JetspeedCache cache)
+    public AbstractNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
         this.codec = codec;
         this.cache = cache;

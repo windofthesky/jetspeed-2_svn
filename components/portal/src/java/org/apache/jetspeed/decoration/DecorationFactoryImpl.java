@@ -62,9 +62,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     
     private final ResourceValidator validator;
     private final PortletRegistry registry;
-
-    private ServletContext servletContext;
     
+    private ServletContext servletContext;
+
     private String defaultDesktopLayoutDecoration = null;
     private String defaultDesktopPortletDecoration = null;
     
@@ -86,9 +86,10 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
         this( null, decorationsPath, validator );
     }
+
     public DecorationFactoryImpl( PortletRegistry registry,
-                                  String decorationsPath, 
-                                  ResourceValidator validator )
+            String decorationsPath, 
+            ResourceValidator validator )
     {
         this.registry =  registry;
         this.decorationsPath = new Path( decorationsPath );
@@ -98,10 +99,15 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         this.portletDecorationsPathStr = this.portletDecorationsPath.toString();
         this.validator = validator;
     }
+        
+    public ResourceValidator getResourceValidator()
+    {
+        return validator;
+    }    
 
     public Theme getTheme( Page page, RequestContext requestContext )
     {
-        return new PageTheme( page, this, requestContext );
+        return new PageTheme(page, this, requestContext);
     }
     
     public Decoration getDecoration( Page page, Fragment fragment, RequestContext requestContext )
@@ -150,7 +156,6 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
         Path basePath = getPortletDecorationBasePath( name );
         Path baseClientPath = createClientPath( name, (Path)basePath.clone(), requestContext, Fragment.PORTLET );
-
         Properties configuration = getConfiguration( name, Fragment.PORTLET );
         SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
         return new PortletDecorationImpl( configuration, validator, basePath, baseClientPath, sessionPathResolver );
@@ -160,7 +165,6 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
         Path basePath = getLayoutDecorationBasePath( name );
         Path baseClientPath = createClientPath( name, (Path)basePath.clone(), requestContext, Fragment.LAYOUT );
-
         Properties configuration = getConfiguration( name, Fragment.LAYOUT );
         SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
         return new LayoutDecorationImpl( configuration, validator, basePath, baseClientPath, sessionPathResolver );
@@ -184,7 +188,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      * @return <code>java.util.Properties</code> representing the configuration
      * object.
      */
-    protected Properties getConfiguration( String name, String type )
+    public Properties getConfiguration( String name, String type )
     {
         Properties props = null;
         if ( type.equals( Fragment.PORTLET ) )
@@ -327,6 +331,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
         return createClientPath( name, null, requestContext, decorationType );
     }   
+    
     private Path createClientPath( String name, Path basePath, RequestContext requestContext, String decorationType )
     {
         if ( basePath == null )

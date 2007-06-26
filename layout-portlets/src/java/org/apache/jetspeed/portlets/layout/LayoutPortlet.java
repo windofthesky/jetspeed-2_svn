@@ -135,38 +135,38 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         response.setContentType("text/html");
         JetspeedPowerTool jpt = getJetspeedPowerTool(request);
 
-        PortletPreferences prefs = request.getPreferences();
         String absHelpPage = "";
 
         // request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, getPage(request));
         // request.setAttribute("fragment", getFragment(request, false));        
 
-        if (prefs != null)
+        try
         {
-
-            try
+            String helpPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_HELP);                       
+            if (helpPage == null)
             {
-                String helpPage = prefs.getValue(PARAM_HELP_PAGE, null);
+                PortletPreferences prefs = request.getPreferences();
+                helpPage = prefs.getValue(PARAM_HELP_PAGE, null);
                 if (helpPage == null)
                 {
                     helpPage = this.getInitParameter(PARAM_HELP_PAGE);
                     if (helpPage == null)
                         helpPage = "columns";
                 }
-                
+                request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_HELP, helpPage);
+            }
 
-                //Mohan: closed task
-                Configuration props = getConfiguration(request, helpPage);
-                String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
-                absHelpPage = jpt.getTemplate(helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help" + ext,
-                        JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
-                log.debug("Path to help page for LayoutPortlet " + absHelpPage);
-                request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);
-            }
-            catch (TemplateLocatorException e)
-            {
-                throw new PortletException("Unable to locate view page " + absHelpPage, e);
-            }
+            //Mohan: closed task
+            Configuration props = getConfiguration(request, helpPage);
+            String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
+            absHelpPage = jpt.getTemplate(helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help" + ext,
+                    JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+            log.debug("Path to help page for LayoutPortlet " + absHelpPage);
+            request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);
+        }
+        catch (TemplateLocatorException e)
+        {
+            throw new PortletException("Unable to locate view page " + absHelpPage, e);
         }
         super.doView(request, response);
 
@@ -196,17 +196,17 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         {
             request.setAttribute("layout", getFragment(request, false));
         }
-
-        PortletPreferences prefs = request.getPreferences();
-        if (prefs != null)
+        String viewPage = null;
+        String absViewPage = null;
+        try
         {
-            String absViewPage = null;
-            String viewPage = null;
-            try
+            JetspeedPowerTool jpt = getJetspeedPowerTool(request);
+            if (maximized)
             {
-                JetspeedPowerTool jpt = getJetspeedPowerTool(request);
-                if (maximized)
+                viewPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_MAX);                       
+                if (viewPage == null)
                 {
+                    PortletPreferences prefs = request.getPreferences();
                     viewPage = prefs.getValue(PARAM_MAX_PAGE, null);
                     if (viewPage == null)
                     {
@@ -214,9 +214,15 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                         if (viewPage == null)
                             viewPage = "maximized";
                     }
+                    request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_MAX, viewPage);
                 }
-                else if (solo)
+            }
+            else if (solo)
+            {
+                viewPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_SOLO);                       
+                if (viewPage == null)
                 {
+                    PortletPreferences prefs = request.getPreferences();                
                     viewPage = prefs.getValue(PARAM_SOLO_PAGE, null);
                     if (viewPage == null)
                     {
@@ -226,9 +232,15 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                             viewPage = "solo";
                         }
                     }
+                    request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_SOLO, viewPage);                    
                 }
-                else
+            }
+            else
+            {
+                viewPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_VIEW);                       
+                if (viewPage == null)
                 {
+                    PortletPreferences prefs = request.getPreferences();                                
                     viewPage = prefs.getValue(PARAM_VIEW_PAGE, null);
                     if (viewPage == null)
                     {
@@ -236,24 +248,24 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                         if (viewPage == null)
                             viewPage = "columns";
                     }
+                    request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_VIEW, viewPage);                                        
                 }
-                
-                //Mohan: closed task
-                Configuration props = getConfiguration(request, viewPage);
-                String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
+            }
+            
+            //Mohan: closed task
+            Configuration props = getConfiguration(request, viewPage);
+            String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
 
-                
-                absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext,
-                        JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
-                log.debug("Path to view page for LayoutPortlet " + absViewPage);
-                request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
-            }
-            catch (TemplateLocatorException e)
-            {
-                throw new PortletException("Unable to locate view page " + absViewPage, e);
-            }
+            
+            absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext,
+                    JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+            log.debug("Path to view page for LayoutPortlet " + absViewPage);
+            request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
         }
-
+        catch (TemplateLocatorException e)
+        {
+            throw new PortletException("Unable to locate view page " + absViewPage, e);
+        }
         super.doView(request, response);
 
         request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE);

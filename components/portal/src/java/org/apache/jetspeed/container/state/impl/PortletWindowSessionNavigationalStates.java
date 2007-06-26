@@ -26,7 +26,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.ContentCacheKey;
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
@@ -48,7 +48,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         this.storeParameters = storeParameters;
     }
     
-    public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedCache cache)
+    public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache)
     {
         PageState pageState = (PageState)pageStates.get(page.getId());
         if ( pageState == null )
@@ -174,8 +174,8 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     {
         if (req == null)
         {
-            if (ses != null && !ses.equals(PortletMode.VIEW))
-                return true;
+            //if (ses != null && !ses.equals(PortletMode.VIEW))
+            //   return true;
             return false;
         }
         else
@@ -194,8 +194,8 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     {
         if (req == null)
         {
-            if (ses != null && !ses.equals(WindowState.NORMAL))
-                return true;
+            //if (ses != null && !ses.equals(WindowState.NORMAL))
+            //    return true;
             return false;
         }
         else
@@ -317,13 +317,13 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         return false;
     }
     
-    protected void removeFromCache(RequestContext context, String id, JetspeedCache cache)
+    protected void removeFromCache(RequestContext context, String id, JetspeedContentCache cache)
     {
         ContentCacheKey cacheKey = cache.createCacheKey(context, id);
         if (cache.isKeyInCache(cacheKey))
         {
             cache.remove(cacheKey);
         }
-        
+        cache.invalidate(context);
     }
 }
