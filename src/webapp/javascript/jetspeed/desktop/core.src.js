@@ -125,6 +125,8 @@ jetspeed.prefs =
 {
     windowTiling: true,                 // false indicates no-columns, free-floating windows
     windowHeightExpand: false,          // only meaningful when windowTiling == true
+
+    ajaxPageNavigation: false,
     
     windowWidth: null,                  // last-ditch defaults for these defined in initializeDesktop
     windowHeight: null,
@@ -184,7 +186,7 @@ jetspeed.prefs =
 // ... jetspeed debug options
 jetspeed.debug =
 {
-    pageLoad: true,
+    pageLoad: false,
     retrievePsml: false,
     setPortletContent: false,
     doRenderDoAction: false,
@@ -194,6 +196,7 @@ jetspeed.debug =
     createWindow: false,
     initializeWindowState: false,
     submitChangedWindowState: false,
+    ajaxPageNav: false,
 
     windowDecorationRandom: false,
 
@@ -310,13 +313,20 @@ jetspeed.loadPage = function()
     jetspeed.page = new jetspeed.om.Page();
     jetspeed.page.retrievePsml();
 };
-jetspeed.updatePage = function()
+jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
 {
     var previousPage = jetspeed.page;
-    if ( previousPage != null )
+    if ( ! navToPageUrl || jetspeed.pageNavigateSuppress ) return;
+    if ( previousPage && previousPage.equalsPageUrl( navToPageUrl ) )
+        return ;
+    navToPageUrl = jetspeed.page.makePageUrl( navToPageUrl );
+    if ( previousPage != null && navToPageUrl != null )
     {
-        jetspeed.page = new jetspeed.om.Page();
-        jetspeed.page.retrievePsml( jetspeed.om.PageContentListenerUpdate( previousPage ) );
+        var previousPageUrl = previousPage.getPageUrl();
+        previousPage.destroy();
+        var newJSPage = new jetspeed.om.Page( jetspeed.page.layoutDecorator, navToPageUrl, (! djConfig.preventBackButtonFix && ! backOrForwardPressed) );
+        jetspeed.page = newJSPage;
+        newJSPage.retrievePsml();
     }
 };
 
@@ -668,11 +678,14 @@ jetspeed.menuNavClickWidget = function( /* Tab widget || Tab widgetId */ tabWidg
 };
 
 jetspeed.pageNavigateSuppress = false;
-jetspeed.pageNavigate = function( navUrl, navTarget )
+jetspeed.pageNavigate = function( navUrl, navTarget, force )
 {
     if ( ! navUrl || jetspeed.pageNavigateSuppress ) return;
 
-    if ( jetspeed.page && jetspeed.page.equalsPageUrl( navUrl ) )
+    if ( typeof force == "undefined" )
+        force = false;
+
+    if ( ! force && jetspeed.page && jetspeed.page.equalsPageUrl( navUrl ) )
         return ;
 
     navUrl = jetspeed.page.makePageUrl( navUrl );
@@ -991,13 +1004,19 @@ dojo.lang.extend( jetspeed.om.Id,
 });
 
 // ... jetspeed.om.Page
-jetspeed.om.Page = function( pagePsmlPath, pageName, pageTitle )
+jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory )
 {
-    this.psmlPath = pagePsmlPath;
-    if ( this.psmlPath == null )
+    if ( requiredLayoutDecorator != null && navToPageUrl != null )
+    {
+        this.requiredLayoutDecorator = requiredLayoutDecorator;
+        this.setPsmlPathFromDocumentUrl( navToPageUrl );
+        this.pageUrlFallback = navToPageUrl;
+    }
+    else
+    {
         this.setPsmlPathFromDocumentUrl();
-    this.name = pageName;
-    this.title = pageTitle;
+    }
+    this.addToHistory = addToHistory;
     this.layouts = {};
     this.columns = [];
     this.portlets = [];
@@ -1015,6 +1034,9 @@ dojo.lang.extend( jetspeed.om.Page,
     shortTitle: null,
     layoutDecorator: null,
     portletDecorator: null,
+
+    requiredLayoutDecorator: null,
+    pageUrlFallback: null,
 
     layouts: null,
     columns: null,
@@ -1036,24 +1058,30 @@ dojo.lang.extend( jetspeed.om.Page,
         return "page-" + idsuffix;
     },
     
-    setPsmlPathFromDocumentUrl: function()
+    setPsmlPathFromDocumentUrl: function( navToPageUrl )
     {
-        var psmlPath = jetspeed.url.path.AJAX_API ;
-        var docPath = document.location.pathname ;
-        
-        var contextAndServletPath = jetspeed.url.path.DESKTOP ;
-        var contextAndServletPathPos = docPath.indexOf( contextAndServletPath ) ;
+        var psmlPath = jetspeed.url.path.AJAX_API;
+        var docPath = null;
+        if ( navToPageUrl == null )
+            docPath = document.location.pathname;
+        else
+        {
+            var uObj = jetspeed.url.parse( navToPageUrl );
+            docPath = uObj.path;
+        }
+        var contextAndServletPath = jetspeed.url.path.DESKTOP;
+        var contextAndServletPathPos = docPath.indexOf( contextAndServletPath );
         if ( contextAndServletPathPos != -1 && docPath.length > ( contextAndServletPathPos + contextAndServletPath.length ) )
         {
-            psmlPath = psmlPath + docPath.substring( contextAndServletPathPos + contextAndServletPath.length ) ;
+            psmlPath = psmlPath + docPath.substring( contextAndServletPathPos + contextAndServletPath.length );
         }
-        this.psmlPath = psmlPath ;
+        this.psmlPath = psmlPath;
     },
     
     getPsmlUrl: function()
     {
         if ( this.psmlPath == null )
-            this.setPsmlPathFromDocumentUrl() ;
+            this.setPsmlPathFromDocumentUrl();
 
         var psmlUrl = jetspeed.url.basePortalUrl() + this.psmlPath;
         if ( jetspeed.prefs.printModeOnly != null )
@@ -1082,6 +1110,7 @@ dojo.lang.extend( jetspeed.om.Page,
     {
         // parse PSML
         var parsedRootLayoutFragment = this._parsePSML( psml );
+        if ( parsedRootLayoutFragment == null ) return;
 
         // create layout model
         var portletsByPageColumn = {};
@@ -1206,6 +1235,34 @@ dojo.lang.extend( jetspeed.om.Page,
         {
             dojo.raise( "No root fragment in PSML." );
             return null;
+        }
+        if ( this.requiredLayoutDecorator != null && this.pageUrlFallback != null )
+        {
+            if ( this.layoutDecorator != this.requiredLayoutDecorator )
+            {
+                if ( jetspeed.debug.ajaxPageNav ) 
+                    dojo.debug( "ajaxPageNavigation _parsePSML different layout decorator (" + this.requiredLayoutDecorator + " != " + this.layoutDecorator + ") - fallback to normal page navigation - " + this.pageUrlFallback );
+                jetspeed.pageNavigate( this.pageUrlFallback, null, true );
+                return null;
+            }
+            else if ( this.addToHistory )
+            {
+                var currentPageUrl = this.getPageUrl();
+                dojo.undo.browser.addToHistory({
+	    	        back: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "back-nav-button: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
+		            forward: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "forward-nav-button: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
+		            changeUrl: false
+		        });
+            }
+        }
+        else if ( ! djConfig.preventBackButtonFix && jetspeed.prefs.ajaxPageNavigation )
+        {
+            var currentPageUrl = this.getPageUrl();
+            dojo.undo.browser.setInitialState({
+                back: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "back-nav-button initial: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
+                forward: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "forward-nav-button initial: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
+                changeUrl: false
+            });
         }
 
         var parsedRootLayoutFragment = this._parsePSMLLayoutFragment( rootFragment, 0 );    // rootFragment must be a layout fragment - /portal requires this as well
@@ -2100,6 +2157,12 @@ dojo.lang.extend( jetspeed.om.Page,
         this._removeColumns( document.getElementById( jetspeed.id.DESKTOP ) );
         jetspeed.loadPage();
     },
+    destroy: function()
+    {
+        this._destroyPortlets();
+        this._removeColumns( document.getElementById( jetspeed.id.DESKTOP ) );
+        this._destroyPageControls();
+    },
 
     // ... columns
     getColumnFromColumnNode: function( /* DOM node */ columnNode )
@@ -2304,7 +2367,10 @@ dojo.lang.extend( jetspeed.om.Page,
         if ( pageControlsContainer != null && actionButtonNames != null && actionButtonNames.length > 0 )
         {
             if ( this.actionButtons == null )
+            {
                 this.actionButtons = {};
+                this.actionButtonTooltips = [];
+            }
             
             for ( var i = 0 ; i < actionButtonNames.length ; i++ )
             {
@@ -2326,10 +2392,32 @@ dojo.lang.extend( jetspeed.om.Page,
                     if ( actionlabel == null || actionlabel.length == 0 )
                         actionlabel = dojo.string.capitalize( actionName );
                     var tooltip = dojo.widget.createWidget( "Tooltip", { isContainer: false, fastMixIn: true, caption: actionlabel, connectId: actionButton, delay: "100" } );
+                    this.actionButtonTooltips.push( tooltip );
                     document.body.appendChild( tooltip.domNode );
                 }
             }
         }
+    },
+    _destroyPageControls: function()
+    {
+        var pageControlsContainer = dojo.byId( jetspeed.id.PAGE_CONTROLS );
+        if ( pageControlsContainer != null && pageControlsContainer.childNodes && pageControlsContainer.childNodes.length > 0 )
+        {
+            for ( var i = (pageControlsContainer.childNodes.length -1) ; i >= 0 ; i-- )
+            {
+                dojo.dom.removeNode( pageControlsContainer.childNodes[i] );
+            }
+        }
+        if ( this.actionButtonTooltips && this.actionButtonTooltips.length > 0 )
+        {
+            for ( var i = (this.actionButtonTooltips.length -1); i >= 0 ; i-- )
+            {
+                this.actionButtonTooltips[i].destroy();
+                this.actionButtonTooltips[i] = null;
+            }
+            this.actionButtonTooltips = [];
+        }
+        this.actionButtons == null;
     },
     pageActionButtonClick: function( evt )
     {
@@ -2398,7 +2486,11 @@ dojo.lang.extend( jetspeed.om.Page,
             return this.pageUrl;
         var pageUrl = jetspeed.url.path.SERVER + ( ( forPortal ) ? jetspeed.url.path.PORTAL : jetspeed.url.path.DESKTOP ) + this.getPath();
         var pageUrlObj = jetspeed.url.parse( pageUrl );
-        var docUrlObj = jetspeed.url.parse( document.location.href );
+        var docUrlObj = null;
+        if ( this.pageUrlFallback != null )
+            docUrlObj = jetspeed.url.parse( this.pageUrlFallback );
+        else
+            docUrlObj = jetspeed.url.parse( document.location.href );
         if ( pageUrlObj != null && docUrlObj != null )
         {
             var docUrlQuery = docUrlObj.query;
@@ -2425,7 +2517,11 @@ dojo.lang.extend( jetspeed.om.Page,
             return this.pagePathAndQuery;
         var pagePath = this.getPath();
         var pagePathObj = jetspeed.url.parse( pagePath );
-        var docUrlObj = jetspeed.url.parse( document.location.href );
+        var docUrlObj = null;
+        if ( this.pageUrlFallback != null )
+            docUrlObj = jetspeed.url.parse( this.pageUrlFallback );
+        else
+            docUrlObj = jetspeed.url.parse( document.location.href );
         if ( pagePathObj != null && docUrlObj != null )
         {
             var docUrlQuery = docUrlObj.query;
@@ -3592,7 +3688,14 @@ dojo.lang.extend( jetspeed.om.MenuOption,
             var navUrl = this.getUrl();
             if ( navUrl )
             {
-                jetspeed.pageNavigate( navUrl, this.getTarget() );
+                if ( ! jetspeed.prefs.ajaxPageNavigation )
+                {
+                    jetspeed.pageNavigate( navUrl, this.getTarget() );
+                }
+                else
+                {
+                    jetspeed.updatePage( navUrl );
+                }
             }
         }
     },
