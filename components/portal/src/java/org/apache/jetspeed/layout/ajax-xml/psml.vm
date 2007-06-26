@@ -59,7 +59,7 @@
     
 <page hidden='$page.Hidden'>
   <defaults
-     layout-decorator='$!page.getDefaultDecorator("layout")'
+     layout-decorator='$!defaultLayout'
      portlet-decorator='$!page.getDefaultDecorator("portlet")'
      theme='$!page.Skin'     
   />
