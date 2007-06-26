@@ -24,10 +24,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.DecorationValve;
+import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -96,6 +98,19 @@ public class GetPageAction
             resultMap.put(STATUS, status);
             resultMap.put(PAGE, page);
             
+            Theme theme = (Theme)requestContext.getAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE);
+            String pageDecoratorName = null;
+            if ( theme != null )
+            {
+                pageDecoratorName = theme.getPageLayoutDecoration().getName();
+            }
+            else
+            {
+                pageDecoratorName = page.getDefaultDecorator( LAYOUT );
+            }
+            if ( pageDecoratorName != null )
+                resultMap.put( DEFAULT_LAYOUT, pageDecoratorName );
+                    
             PortalSiteRequestContext siteRequestContext = (PortalSiteRequestContext)requestContext.getAttribute(ProfilerValveImpl.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY);
             if (siteRequestContext == null)
             {
