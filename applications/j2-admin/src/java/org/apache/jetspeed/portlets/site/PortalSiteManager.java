@@ -16,7 +16,11 @@
  */
 package org.apache.jetspeed.portlets.site;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -24,6 +28,9 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
@@ -32,6 +39,8 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Link;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.portals.gems.dojo.AbstractDojoVelocityPortlet;
@@ -60,6 +69,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
     public final static String JSROOT = "jsroot";   
     public static final String ALL_SECURITY_REFS = "allSecurityRefs";
     
+	protected PageManager castorPageManager;
     
     public void init(PortletConfig config)
     throws PortletException 
@@ -82,8 +92,13 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         {
             PortletException pe = new PortletException("Failed to find the Decoration Factory on SiteViewController initialization");
             throw new RuntimeException(pe);             
-        }                
-        
+        }
+        castorPageManager = (PageManager) getPortletContext().getAttribute(CommonPortletServices.CPS_IMPORTER_MANAGER);
+        if (null == castorPageManager) {
+            PortletException pe = new PortletException(
+                    "Failed to find the castorPageManager on SiteViewController initialization");
+            throw new RuntimeException(pe);
+        }
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -183,9 +198,65 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
     public void processAction(ActionRequest request, ActionResponse actionResponse) throws PortletException, java.io.IOException
     {
         String add = request.getParameter("Save");
+        String fileName ="";
+        String baseName="";
+        String destPath="";
+        String fileType="";
+
         if (add != null)
         { 
             processPreferencesAction(request, actionResponse);
+        } else {
+            try {
+                DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
+                PortletFileUpload portletFileUpload = new PortletFileUpload(diskFileItemFactory);
+                if (PortletFileUpload.isMultipartContent(request)) {
+                    Iterator fileIt = portletFileUpload.parseRequest(request).iterator();
+                    while (fileIt.hasNext()) {
+                        FileItem fileItem = (FileItem) fileIt.next();
+                        if (fileItem.getFieldName().equals("psmlFile")) {
+                            synchronized (this) {
+                                fileName = fileItem.getName();
+                                String folder = getTempFolder(request);
+                                String path = System.getProperty("file.separator");
+                                String filePath = folder + path + fileItem.getName();
+                                FileOutputStream out = new FileOutputStream(filePath);
+                                out.write(fileItem.get());
+                                out.close();
+                            }
+                        }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("newName")){
+                            baseName = fileItem.getString();
+                        }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("importPath")){
+                            destPath= fileItem.getString();
+                        }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("fileType")){
+                            fileType= fileItem.getString();
+                        }   
+                    }
+                    if (fileType != null && !fileType.equals("")&& baseName != null && !baseName.equals("") && destPath != null && !destPath.equals("")) {
+                        Folder folder = castorPageManager.getFolder(request.getUserPrincipal().toString());
+                        if(fileType.equalsIgnoreCase("psml")){
+                            Page source = folder.getPage(fileName);
+                            Page page = pageManager.copyPage(source, destPath + "/" + baseName);
+                            pageManager.updatePage(page);                           
+                        }else if(fileType.equalsIgnoreCase("link")){
+                            Link source = folder.getLink(fileName);
+                            Link page = pageManager.copyLink(source, destPath + "/" + baseName);
+                            pageManager.updateLink(page);                           
+                        }
+
+                    }
+                }
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
         }
+
     }    
+	private String getTempFolder(ActionRequest request) {
+		String dir = System.getProperty("java.io.tmpdir");
+		String path = System.getProperty("file.separator");
+		File file = new File(dir + path + request.getUserPrincipal());
+		file.mkdir();
+		return dir + path + request.getUserPrincipal();
+    }
 }

@@ -114,6 +114,9 @@ limitations under the License.
           <entry key ="PortalConfiguration">
           	<ref bean="PortalConfiguration"/>
           </entry>
+          <entry key="ImporterManager">
+            <ref bean="importerCastorPageManager"/>
+          </entry>          
           
 <!-- first uncomment the below service bean in security-spi-atn.xml
          <entry key="PasswordEncodingService">

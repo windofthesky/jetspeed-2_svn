@@ -25,12 +25,14 @@ import java.io.OutputStream;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.portals.bridges.common.GenericServletPortlet;
-
 
 /**
  * FilePortlet
@@ -40,6 +42,7 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
  */
 public class FilePortlet extends GenericServletPortlet
 {
+
     /**
      * Name of portlet preference for source file url
      */
@@ -56,12 +59,13 @@ public class FilePortlet extends GenericServletPortlet
     public static final String PARAM_SOURCE_FILE_PATH = "filepath";
 
     /**
-     * Is the file stored in the webapp or outside of the webapp?
-     * valid values "webapp" and "filesystem", defaults to webapp
+     * Is the file stored in the webapp or outside of the webapp? valid values
+     * "webapp" and "filesystem", defaults to webapp
      */
     public static final String PARAM_LOCATION = "location";
+
     private boolean webappLocation = true;
-    
+
     /**
      * Default URL for the source file
      */
@@ -72,12 +76,12 @@ public class FilePortlet extends GenericServletPortlet
      */
     private String defaultSourceBasePath = null;
 
-    public void init(PortletConfig config)
-        throws PortletException
+    public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
         this.defaultSourceFile = config.getInitParameter(PARAM_SOURCE_FILE);
-        this.defaultSourceBasePath = config.getInitParameter(PARAM_SOURCE_BASE_PATH);
+        this.defaultSourceBasePath = config
+                .getInitParameter(PARAM_SOURCE_BASE_PATH);
         String location = config.getInitParameter(PARAM_LOCATION);
         if (location != null && location.equals("filesystem"))
             webappLocation = false;
@@ -85,48 +89,97 @@ public class FilePortlet extends GenericServletPortlet
             webappLocation = true;
     }
 
+    private RequestContext getRequestContext(PortletRequest request)
+    {
+        return (RequestContext) request
+                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+
+    }
+
+    private HttpServletRequest getHttpServletRequest(PortletRequest pRequest)
+    {
+        return getRequestContext(pRequest).getRequest();
+
+    }
 
     public void doView(RenderRequest request, RenderResponse response)
-    throws PortletException, IOException
+            throws PortletException, IOException
     {
         // NOTE: this is Jetspeed specific
-        String path = (String)request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
-        if (null == path)
+        HttpServletRequest req = getHttpServletRequest(request);
+        String fileName = (String) req.getSession().getAttribute("file");
+        if (fileName != null && !fileName.equals(""))
         {
-            PortletPreferences prefs = request.getPreferences();
-            path = prefs.getValue(PARAM_SOURCE_FILE, this.defaultSourceFile);
-        }
-        
-        if (null == path && this.defaultSourceBasePath != null )
-        {
-            String filepath = request.getParameter(PARAM_SOURCE_FILE_PATH);
-            if (filepath == null)
+            InputStream is = null;
+            try
             {
-                filepath = (String)request.getAttribute(PARAM_SOURCE_FILE_PATH);
+                fileName = getFilePath(fileName);
+                is = new FileInputStream(fileName);
+                if (is == null)
+                {
+                    byte[] bytes = ("File " + fileName + " not found.")
+                            .getBytes();
+                    response.getPortletOutputStream().write(bytes);
+                    return;
+                }
+                setContentType(fileName, response);
+                drain(is, response.getPortletOutputStream());
+                response.getPortletOutputStream().flush();
+                is.close();
+                req.getSession().removeAttribute("file");
+            } catch (Exception e)
+            {
+                if (is != null) is.close();
+                byte[] bytes = ("File " + fileName + " not found.").getBytes();
+                req.getSession().removeAttribute("file");
+                response.setContentType("text/html");
+                response.getPortletOutputStream().write(bytes);
+                return;
+            }
+        } else
+        {
+            String path = (String) request
+                    .getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
+            if (null == path)
+            {
+                PortletPreferences prefs = request.getPreferences();
+                path = prefs
+                        .getValue(PARAM_SOURCE_FILE, this.defaultSourceFile);
             }
 
-            if (filepath != null)
+            if (null == path && this.defaultSourceBasePath != null)
             {
-                path = ( ( this.defaultSourceBasePath.length() > 0 ) ? ( this.defaultSourceBasePath + "/" ) : "" ) + filepath;
-            }
-        }
+                String filepath = request.getParameter(PARAM_SOURCE_FILE_PATH);
+                if (filepath == null)
+                {
+                    filepath = (String) request
+                            .getAttribute(PARAM_SOURCE_FILE_PATH);
+                }
 
-        if (null == path)
-        {
-            response.setContentType("text/html");
-            response.getWriter().println("Could not find source document.");            
-        }
-        else
-        {
-            // default to 'content' area
-            File temp = new File(path);
-            if (webappLocation)
-            {
-                path = "/WEB-INF/" + temp.getPath();            
+                if (filepath != null)
+                {
+                    path = ((this.defaultSourceBasePath.length() > 0) ? (this.defaultSourceBasePath + "/")
+                            : "")
+                            + filepath;
+                }
             }
-            setContentType(path, response);        
-            renderFile(response, path);
-        }        
+
+            if (null == path)
+            {
+                response.setContentType("text/html");
+                response.getWriter().println("Could not find source document.");
+            } else
+            {
+                // default to 'content' area
+                File temp = new File(path);
+                if (webappLocation)
+                {
+                    path = "/WEB-INF/" + temp.getPath();
+                }
+                setContentType(path, response);
+                renderFile(response, path);
+            }
+        }
     }
 
     protected void setContentType(String path, RenderResponse response)
@@ -135,57 +188,53 @@ public class FilePortlet extends GenericServletPortlet
         if (path.endsWith(".html"))
         {
             response.setContentType("text/html");
-        }
-        else if (path.endsWith(".pdf"))
+        } else if (path.endsWith(".pdf"))
         {
             response.setContentType("application/pdf");
-        }
-        else if (path.endsWith(".zip"))
+        } else if (path.endsWith(".zip"))
         {
             response.setContentType("application/zip");
-        }
-        else if (path.endsWith(".csv"))
+        } else if (path.endsWith(".csv"))
         {
             response.setContentType("text/csv");
-        }
-        else if (path.endsWith(".xml") || path.endsWith(".xsl"))
+        } else if (path.endsWith(".xml") || path.endsWith(".xsl"))
         {
             response.setContentType("text/xml");
-        }
-        else
+        } else if (path.endsWith(".psml") || path.endsWith(".link"))
+        {
+            response.setContentType("text/xml");
+        } else
         {
             response.setContentType("text/html");
         }
     }
-    
+
     protected void renderFile(RenderResponse response, String fileName)
-    throws PortletException, IOException
+            throws PortletException, IOException
     {
         InputStream is = null;
-        
+
         if (this.webappLocation)
         {
             is = this.getPortletContext().getResourceAsStream(fileName);
-        }
-        else
+        } else
         {
             is = new FileInputStream(fileName);
         }
         if (is == null)
         {
-            byte [] bytes = ("File " + fileName + " not found.").getBytes();
+            byte[] bytes = ("File " + fileName + " not found.").getBytes();
             response.getPortletOutputStream().write(bytes);
             return;
         }
         drain(is, response.getPortletOutputStream());
         response.getPortletOutputStream().flush();
-        is.close();        
+        is.close();
     }
-    
-    
-    static final int BLOCK_SIZE=4096;
 
-    public static void drain(InputStream r,OutputStream w) throws IOException
+    static final int BLOCK_SIZE = 4096;
+
+    public static void drain(InputStream r, OutputStream w) throws IOException
     {
         byte[] bytes = new byte[BLOCK_SIZE];
         try
@@ -199,12 +248,20 @@ public class FilePortlet extends GenericServletPortlet
                 }
                 length = r.read(bytes);
             }
-        }
-        finally
+        } finally
         {
             bytes = null;
         }
     }
-   
-    
+
+    private String getFilePath(String path)
+    {
+        String pageRoot = System.getProperty("java.io.tmpdir");
+        String sep = System.getProperty("file.separator");
+        if (sep == null || sep.equals("")) sep = "/";
+
+        String ar[] = path.split("_");
+        if (ar.length == 1) return pageRoot + sep + path;
+        return pageRoot + sep + ar[0] + sep + ar[1];
+    }
 }

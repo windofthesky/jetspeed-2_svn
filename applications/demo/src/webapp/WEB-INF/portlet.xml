@@ -875,6 +875,10 @@ limitations under the License.
             <mime-type>application/zip</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
+         <supports>
+            <mime-type>text/xml</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>	       
         <supports>
             <mime-type>text/csv</mime-type>
             <portlet-mode>VIEW</portlet-mode>

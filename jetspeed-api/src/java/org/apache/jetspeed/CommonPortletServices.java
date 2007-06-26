@@ -49,5 +49,6 @@ public interface CommonPortletServices
     public final static String CPS_PASSWORD_ENCODER_COMPONENT = "cps:PasswordEncodingService";
     public final static String CPS_SECURITY_ACCESS_CONTROLLER = "cps:SecurityAccessController";
     public final static String CPS_PORTLET_TRACKING_MANAGER = "cps:PortletTrackingManager";
-    public final static String CPS_PORTAL_CONFIGURATION = "cps:PortalConfiguration";   
+    public final static String CPS_PORTAL_CONFIGURATION = "cps:PortalConfiguration";
+    public final static String CPS_IMPORTER_MANAGER = "cps:ImporterManager";
 }

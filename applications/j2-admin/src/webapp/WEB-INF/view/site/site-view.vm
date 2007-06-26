@@ -20,6 +20,7 @@
 #set($rooturl = "${req.scheme}://${req.serverName}:${req.serverPort}${req.contextPath}/")
 #set($treeName = $renderRequest.getParameter("treeName"))
 #set($renderURL = $renderResponse.createRenderURL())
+#set($actionURL = $renderResponse.createActionURL())
   <div dojoType="dialog" id="CopyResourceDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250" >
     <form onsubmit="return false;">
     <table>
@@ -572,7 +573,8 @@ function editResource(node)
         ajaxInvoke("getfolder", names, values, new FolderHandler() );     
         dojo.widget.byId( "saveFInfoButton" ).setDisabled(true);
         dojo.widget.byId( "revertFInfoButton" ).setDisabled(true);
-        displayTabs( [ "infoTabFolder", "securityTab", "metaTab", "menusTab", "orderTab" ] );
+        displayTabs( [ "infoTabFolder", "securityTab", "metaTab", "menusTab", "orderTab","import","export"] );
+		populateImport(node);		
     }
     if ( node.object == "Page" )
     {
@@ -581,7 +583,7 @@ function editResource(node)
         ajaxInvoke("getpage", names, values, new PageHandler() );     
         dojo.widget.byId( "savePInfoButton" ).setDisabled(true);
         dojo.widget.byId( "revertPInfoButton" ).setDisabled(true);
-        displayTabs( [ "infoTabPage", "securityTab", "metaTab" ] );
+        displayTabs( [ "infoTabPage", "securityTab", "metaTab","export" ] );
     }
     else if ( node.object == "Link" )
     {
@@ -589,10 +591,33 @@ function editResource(node)
         var values = new Array(node.widgetId);
         ajaxInvoke("getlink", names, values, new LinkHandler() );         
         dojo.widget.byId( "saveLInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertLInfoButton" ).setDisabled(true);
-        displayTabs( [ "infoTabLinks", "securityTab", "metaTab" ] );
+        dojo.widget.byId( "revertLInfoButton" ).setDisabled(true);        
+		displayTabs( [ "infoTabLinks", "securityTab", "metaTab","export" ] );
     }
+	populateExport(node);
 }
+
+function populateImport(node)
+{
+	document.getElementById('importPath').value = node.widgetId;    
+}
+function populateExport(node)
+{
+	document.getElementById("exportAns").innerHTML = '';
+	if ( node.object == "Folder" )
+    {
+		document.getElementById('exptRecurs').style.display = 'block';
+	}
+	else
+	{
+		document.getElementById('exptRecurs').style.display = 'none';
+	}
+	document.getElementById('exportObject').value = node.title;
+	document.getElementById('objName').value = node.title;
+	document.getElementById('objType').value = node.object;
+	document.getElementById('objPath').value = node.widgetId;    
+}
+
 function validateNewField()
 {
     dojo.widget.byId("res.save").setDisabled(disableNewSave());    
@@ -1610,6 +1635,68 @@ dojo.addOnLoad(function()
 <p>Coming soon...</p>
 </div> <!-- End Tab Order -->
 
+	<div id="import" dojoType="ContentPane" label="Import">
+		<form action="$actionURL" method="post" name="importObject" enctype="multipart/form-data">
+		<table class="formAnswer" style="width: 100%;">
+			<tr>
+				<td colspan="2" width="100%" class="emphasise"><b>Import</b><br>
+				Select a file destination from tree
+				</td>
+			</tr>
+			<tr>
+				<td width="20%" class="emphasise">File to Import</td>
+					<td width="80%"><input type="file" name="psmlFile"></td>
+			</tr>
+			<tr>
+				<td width="20%" class="emphasise">File Type</td>
+				<td width="80%">Link <input onClick="javascript:setType('link');" type="radio" name="type"/>Page
+				<input type="radio" onClick="javascript:setType('psml');" name="type"/></td>
+			</tr>			
+			<tr>
+				<td width="20%" class="emphasise">File name</td>
+				<td width="80%"><input type="text" size="20" name="newName" id="newName"
+				onChange="javascript:validImportName();"/></td>
+			</tr>
+			<tr>
+				<td width="20%" class="emphasise">File destination</td>
+				<td width="80%"><input type="text" name="importPath" id="importPath" readonly /></td>
+			</tr>
+			<tr>
+				<td colspan="2" width="100%">
+				<input type="hidden" name="fileType" id="fileType"/>
+				<input type="button" value="Import" onClick="javascript:submtimport();"/>
+				</td>
+			</tr>				
+		</table>
+		</form>
+	</div>
+	<div id="export" dojoType="ContentPane" label="Export">
+		<form>
+		<table class="formAnswer" style="width: 100%;">
+			<tr>
+				<td colspan="2" width="100%" class="emphasise"><b>Export</b><br><br></td>
+			</tr>
+			<tr>
+				<td width="20%" class="emphasise">Export Object</td>
+				<td width="80%"><input type="text" name="exportObject" id="exportObject" readonly /></td>
+			</tr>			
+			<tr id="exptRecurs" style="display:none">
+				<td width="20%" class="emphasise">Export recursively</td>
+				<td width="80%"><input type="checkbox" name="exportRecursively" id="exportRecursively" value='1' /></td>
+			</tr>			
+			<tr>
+				<td colspan="2" width="100%">
+				<input type="hidden" id="objName" name="objName">
+				<input type="hidden" id="objType" name="objType">
+				<input type="hidden" id="objPath" name="objPath">							
+				<input type="button" value="Export" id="exprtBtn" onClick="javascript:submtexport();"/>
+				</td>
+			</tr>				
+			<tr><td colspan="2" width="100%" id="exportAns"></td>
+			</tr>
+		</table>
+		</form>
+	</div>
 </div> <!-- End Tab Container -->
 
 <div dojoType="LayoutContainer" widgetId="MajorActions" minHeight="20" layoutAlign="bottom" style="width: 20%; height: 55px">
@@ -1630,7 +1717,7 @@ dojo.addOnLoad(function()
 <script type="text/javascript">
 // var starttime=new Date().getTime();
 
-var siteViewAllTabIds = [ "infoTabFolder", "infoTabPage", "infoTabLinks", "securityTab", "metaTab", "menusTab", "orderTab" ];
+var siteViewAllTabIds = [ "infoTabFolder", "infoTabPage", "infoTabLinks", "securityTab", "metaTab", "menusTab", "orderTab","import","export" ];
 var siteViewAllTabWidgets = {};
 function displayTabs( tabIdList )
 {
@@ -2408,6 +2495,100 @@ function disableCopySave()
 {
 	dojo.widget.byId("copy.save").setDisabled(true);
 }
+
+var ExportHandler = function()
+{
+  this.populate = function(xml) 
+  {
+	var path = xml.getElementsByTagName("link");
+	if (path != null && path.length > 0)
+	{    
+	   for (ix=0; ix < path.length; ix++)
+	   {
+		  var refName = path[ix].firstChild.nodeValue;
+	   }
+	}
+	var pgCol = document.getElementById("exportAns");
+	var	a = document.createElement("a");
+	a.innerHTML ='Download';
+	a.href = refName;
+	a.setAttribute("target","_blank");
+	a.setAttribute("onClick","javascript:downloadObject()");
+	pgCol.appendChild(a);              
+
+  }     
+  this.failure = function(data)
+  {
+  }
+}
+function downloadObject(){
+	document.getElementById("exportAns").innerHTML = '';
+}
+function submtimport()
+{
+	if(validImportName())
+	{
+		document.importObject.submit();
+	}
+}
+function setType(type)
+{
+	document.getElementById("fileType").value=type;
+}
+function validImportName()
+{
+	var type = document.getElementById("fileType").value;
+	var name = document.getElementById("newName").value;
+	var regex;
+	if(type == '')
+	{
+		alert('Please choose file type');
+		document.getElementById("newName").value='';
+		return false;
+	}
+	if(name == '')
+	{
+		alert('Please choose a valid name');
+		return false;
+	}
+	if(type=='link')
+	{
+		regex = new RegExp(".*\.link")
+	}else if(type == 'page')
+	{
+		regex = new RegExp(".*\.psml");
+	}
+    if (name.match(regex))
+    {
+		alert('Please choose a valid name');
+		document.getElementById("newName").value='';
+		return false;
+    }
+	return true;
+}
+
+function submtexport()
+{
+	var objName;
+	var objType;
+	var objPath;
+	var exptRecusive='';
+	document.getElementById("exportAns").innerHTML = '';
+	objName = document.getElementById("objName").value;
+	objType = document.getElementById("objType").value;
+	objType = objType.toLowerCase();
+	objPath = document.getElementById("objPath").value;
+	if(document.getElementById("exportRecursively").checked)
+	{
+		exptRecusive = document.getElementById("exportRecursively").value;
+	}
+	
+	var names = new Array("objName","objType","objPath","exptRecusive");
+    var values = new Array(objName,objType,objPath,exptRecusive);
+    ajaxInvoke("export", names, values, new ExportHandler() );     
+	//document.export.submit();
+}
+
 function addListeners()
 {
   var tabContainer = dojo.widget.byId("mainTabContainer");
