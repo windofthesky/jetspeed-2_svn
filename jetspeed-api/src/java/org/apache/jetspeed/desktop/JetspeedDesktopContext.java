@@ -35,7 +35,8 @@ public interface JetspeedDesktopContext
     String DESKTOP_COMPONENT_MANAGER_ATTRIBUTE = "JS2ComponentManager";
     
     String LAYOUT_TEMPLATE_EXTENSION_PROP = "template.extension";
-
+    String LAYOUT_DESKTOP_TEMPLATE_EXTENSION_PROP = "desktop.template.extension";
+    
     String LAYOUT_TEMPLATE_ID_PROP = "template.id";
     String LAYOUT_PRINT_TEMPLATE_ID_PROP = "template.print.id";
     String LAYOUT_PORTALUSER_TEMPLATE_ID_PROP = "template.portaluser.id";
