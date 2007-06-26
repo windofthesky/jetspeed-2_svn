@@ -106,14 +106,11 @@ public class DecorationValve extends AbstractValve implements Valve
     
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
     {
-        long start = System.currentTimeMillis();
-        boolean isAjaxRequest = (context == null);
-        
-        initFragments( requestContext, isAjaxRequest, null );
-        
-        long end = System.currentTimeMillis();
-        // TODO: remove this
-        System.out.println(end - start);
+        //long start = System.currentTimeMillis();
+        boolean isAjaxRequest = (context == null);        
+        initFragments( requestContext, isAjaxRequest, null );        
+        //long end = System.currentTimeMillis();
+        //System.out.println(end - start);
         if (!isAjaxRequest)
         {
             context.invokeNext(requestContext);
@@ -153,7 +150,6 @@ public class DecorationValve extends AbstractValve implements Valve
 
         if (theme != null)
         {
-            System.out.println("Reusing Theme " + themeCacheKey);
             theme.init(page, decorationFactory, requestContext);
             requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
             
@@ -161,7 +157,6 @@ public class DecorationValve extends AbstractValve implements Valve
             Fragment themeFragment = themePage.getRootFragment();
             page.setRootFragment(themeFragment);
             
-            // TODO: IS THIS NECESSARY????
             ContentPage contentThemePage = ((PageTheme)theme).getContentPage();
             ContentFragment contentThemeFragment = contentThemePage.getRootContentFragment();
             page.setRootContentFragment(contentThemeFragment);                        
@@ -174,13 +169,11 @@ public class DecorationValve extends AbstractValve implements Valve
             
             if (theme.isInvalidated() && !solo)
             {
-                System.out.println("*** INVALIDATED: "  + themeCacheKey);
                 requestContext.setSessionAttribute(themeCacheKey, theme);
                 theme.setInvalidated(false);                            
             }                        
             return;
         }
-        System.out.println("*** new" );        
         theme = decorationFactory.getTheme(page, requestContext);        
         requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
         if ( fragments == null || fragments.size() == 0 )

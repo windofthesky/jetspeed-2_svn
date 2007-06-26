@@ -323,7 +323,10 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCo
     public void invalidate(RequestContext context)
     {
         String themeCacheKey = createSessionKey(context);
-        Theme theme = (Theme)context.getRequest().getSession().getAttribute(themeCacheKey);
-        theme.setInvalidated(true);
+        Theme theme = (Theme)context.getRequest().getSession().getAttribute(themeCacheKey);        
+        if (theme != null)
+        {
+            theme.setInvalidated(true);
+        }
     }
 }
