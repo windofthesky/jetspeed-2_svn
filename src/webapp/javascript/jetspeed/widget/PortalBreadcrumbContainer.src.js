@@ -59,6 +59,13 @@ dojo.lang.extend( jetspeed.widget.PortalBreadcrumbContainer,
     createJetspeedMenu: function( /* jetspeed.om.Menu */ menuObj )
     {
         if ( ! menuObj ) return;
+        if ( this.containerNode.childNodes && this.containerNode.childNodes.length > 0 )
+        {
+            for ( var i = (this.containerNode.childNodes.length -1) ; i >= 0 ; i-- )
+            {
+                dojo.dom.removeNode( this.containerNode.childNodes[i] );
+            }
+        }
         var menuOpts = menuObj.getOptions();
         var breadcrumbLinks = [], menuOption = null;
         for ( var i = 0 ; i < menuOpts.length ; i++ )

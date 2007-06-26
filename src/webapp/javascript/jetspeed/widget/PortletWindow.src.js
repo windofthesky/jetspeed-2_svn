@@ -32,6 +32,7 @@ jetspeed.widget.PortletWindow = function()
     this.portletInitialized = false;
     this.actionButtons = {};
     this.actionMenus = {};
+    this.tooltips = [];
 };
 
 dojo.inherits( jetspeed.widget.PortletWindow, dojo.widget.FloatingPane );
@@ -628,6 +629,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             {   // setting isContainer=false and fastMixIn=true to avoid recursion hell when connectId is a node (could give each an id instead)
                 var tooltip = dojo.widget.createWidget( "Tooltip", { isContainer: false, fastMixIn: true, caption: this._getActionLabel( actionName ), connectId: actionButton, delay: "100" } );
                 document.body.appendChild( tooltip.domNode );
+                this.tooltips.push( tooltip );
             }
         }
     },
@@ -1622,10 +1624,24 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
  
     closeWindow: function()
     {
+        var actionCtxMenu = this._getActionMenuPopupWidget();
+        if ( actionCtxMenu != null )
+            actionCtxMenu.destroy();
+
+        if ( this.tooltips && this.tooltips.length > 0 )
+        {
+            for ( var i = (this.tooltips.length -1); i >= 0 ; i-- )
+            {
+                this.tooltips[i].destroy();
+                this.tooltips[i] = null;
+            }
+            this.tooltips = [];
+        }
+
         jetspeed.widget.PortletWindow.superclass.closeWindow.call( this );
-        var resizeWidget = this.getResizeHandleWidget();
-        if ( resizeWidget )
-            resizeWidget.destroy();
+        //var resizeWidget = this.getResizeHandleWidget();
+        //if ( resizeWidget )
+        //    resizeWidget.destroy();
     },
     dumpPostionInfo: function()
     {

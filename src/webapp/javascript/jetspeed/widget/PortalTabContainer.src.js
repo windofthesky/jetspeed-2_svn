@@ -115,6 +115,15 @@ dojo.lang.extend( jetspeed.widget.PortalTabContainer,
     createJetspeedMenu: function( /* jetspeed.om.Menu */ menuObj )
     {
         if ( ! menuObj ) return;
+        if ( this.tabsadded > 0 && this.children && this.children.length > 0 )
+        {
+            for ( var i = (this.children.length -1) ; i >= 0 ; i-- )
+            {
+                this.removeChild( this.children[i] );
+            }
+            this.tabsadded = 0;
+        }
+
         var menuOpts = menuObj.getOptions();
         for ( var i = 0 ; i < menuOpts.length ; i++ )
         {
@@ -125,6 +134,7 @@ dojo.lang.extend( jetspeed.widget.PortalTabContainer,
             }
         }
     },
+    onKey: function(e){},
     contextMenuCreate: function()
     {
         //var taskBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: "jstc_menu", targetNodeIds: [ this.domNode.id ], contextMenuForWindow: false }, null );

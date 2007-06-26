@@ -79,6 +79,13 @@ dojo.lang.extend( jetspeed.widget.PortalAccordionContainer,
     createJetspeedMenu: function( /* jetspeed.om.Menu */ menuObj )
     {
         if ( ! menuObj ) return;
+        if ( this.children && this.children.length > 0 )
+        {
+            for ( var i = (this.children.length -1) ; i >= 0 ; i-- )
+            {
+                this.children[i].destroy();
+            }
+        }
         var menuOpts = menuObj.getOptions();
         var currentLinkGroup = [], currentLinkGroupOpt = null, menuOption = null, menuOptIndex = 0;
         while ( currentLinkGroup != null )
