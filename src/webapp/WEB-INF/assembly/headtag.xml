@@ -62,13 +62,20 @@
                 <entry key="desktop.decoration.layout">
                     <!-- default layout decoration for desktop
                          this is used when a selected layout decoration does not support desktop -->
-                    <value>tigris</value>
+                    <value>blueocean</value>
                 </entry>
 
                 <entry key="desktop.decoration.portlet">
                     <!-- default portlet decoration for desktop
                          this is used when a selected portlet decoration does not support desktop -->
                     <value>tigris</value>
+                </entry>
+
+                <!-- page navigation -->
+                <entry key="desktop.page.ajaxnavigation">
+                    <!-- enable ajax page navigation - default is false -->
+                    <!-- when set to true, the dojo parameter dojo.parameter.preventBackButtonFix should be set to false -->
+                    <value>true</value>
                 </entry>
 
                 <!-- window modes -->
@@ -180,6 +187,10 @@
                 </entry>
                 <entry key="dojo.parameter.debugAtAllCosts">
                     <!-- value for djConfig variable debugAtAllCosts -->
+                    <value>false</value>
+                </entry>
+                <entry key="dojo.parameter.preventBackButtonFix">
+                    <!-- enable back button control -->
                     <value>false</value>
                 </entry>
                 <entry key="dojo.parameters">
