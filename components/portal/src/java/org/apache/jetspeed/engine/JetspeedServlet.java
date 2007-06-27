@@ -87,7 +87,8 @@ implements JetspeedEngineConstants, HttpSessionListener
      * The Jetspeed Engine
      */
     private static Engine engine;
-
+    private static RequestContextComponent contextComponent;
+    
     private static String webappRoot;
 
     // -------------------------------------------------------------------
@@ -157,7 +158,7 @@ implements JetspeedEngineConstants, HttpSessionListener
                 Jetspeed.setEngine(engine);
                 engine.start();                
                 console.info("JetspeedServlet has successfuly started the Jetspeed Portal Engine....");
-
+                contextComponent = (RequestContextComponent) Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
             }
             catch (Throwable e)
             {
@@ -237,8 +238,6 @@ implements JetspeedEngineConstants, HttpSessionListener
                 res.setHeader("Expires", "0");                               // HTTP/1.0 browser/proxy
 
                 // send request through pipeline
-                RequestContextComponent contextComponent = (RequestContextComponent) Jetspeed.getComponentManager()
-                        .getComponent(RequestContextComponent.class);
                 RequestContext context = contextComponent.create(req, res, getServletConfig());
                 engine.service(context);
                 contextComponent.release(context);
