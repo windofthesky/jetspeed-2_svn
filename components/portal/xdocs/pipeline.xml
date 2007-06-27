@@ -25,11 +25,11 @@
     <body>
         <section name="Request Pipeline">
             <p>
-            In Jetspeed-2, a request pipeline perform individual operations to the request.
+            In Jetspeed-2, a request pipeline performs individual operations to the request.
             </p>
             <subsection name="Pipeline Concepts">
             <p>
-            A <code>Pipeline</code> is made of <code>Value</code> chained together in a chain of reponsiblity pattern.
+            A <code>Pipeline</code> is made of <code>Valves</code> chained together in a chain of responsibility pattern.
             The <code>JetspeedPipeline</code> implementation assembles a ordered list of <code>Valves</code> that are
             processed sequentially.
             <br/><br/>
@@ -63,7 +63,7 @@
             	</tr>
             	<tr>
             		<td>CleanupValve</td>
-            		<td>Look for JSP pages that were pushed onto the <code>org.apache.jetspeed.renderStack</code>
+            		<td>Looks for JSP pages that were pushed onto the <code>org.apache.jetspeed.renderStack</code>
 					request attribute, and attempts to include them.</td>
             	</tr>
             	<tr>
@@ -77,7 +77,7 @@
             	</tr>
             	<tr>
             		<td>SecurityValve</td>
-            		<td>Authenticates the user or redirects to Login if necessary, add
+            		<td>Authenticates the user or redirects to Login if necessary, adds the
 					authenticated Subject to the <code>RequestContext</code>.</td>
             	</tr>
             </table>
