@@ -17,9 +17,11 @@
 package org.apache.jetspeed.util;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * <h2>Overview</h2>
@@ -68,6 +70,8 @@ public class Path implements Serializable, Cloneable
 
     public static final String PATH_SEPERATOR = "/";
 
+    private static HashMap childrenMap = new HashMap();
+    
     private String path;
 
     private final LinkedList segments;
@@ -81,10 +85,26 @@ public class Path implements Serializable, Cloneable
     private String queryString;
 
     private String pathOnly;
+    
+    private static final Pattern segmentsPattern = Pattern.compile("\\?");
+    
+    private StringBuffer pathBuffer = new StringBuffer();
 
     public Path()
     {
         segments = new LinkedList();
+    }
+    
+    public Path(Path copy)
+    {
+        this();
+        this.path = copy.path;
+        segments.addAll(copy.segments);
+        this.fileName = copy.fileName;
+        this.baseName = copy.baseName;
+        this.fileExtension = copy.fileExtension;
+        this.queryString = copy.queryString;
+        this.pathOnly = copy.pathOnly;
     }
 
     public Path(String path)
@@ -113,7 +133,7 @@ public class Path implements Serializable, Cloneable
         }
         else
         {
-            String[] split = path.split("\\?");
+            String[] split = segmentsPattern.split(path,0);
             pathOnly = split[0];
             StringTokenizer t = new StringTokenizer(pathOnly, PATH_SEPERATOR);
             int index = 0;
@@ -146,7 +166,7 @@ public class Path implements Serializable, Cloneable
 
     protected final void parseQueryString(String path)
     {
-        String[] split = path.split("\\?");
+        String[] split = segmentsPattern.split(path,0);
         if (split.length > 1)
         {
             queryString = split[1];
@@ -239,10 +259,10 @@ public class Path implements Serializable, Cloneable
 
     public Path getSubPath(int beginAtSegment, int endSegment)
     {
-        StringBuffer newPathString = new StringBuffer();
+        pathBuffer.setLength(0);
         for (int i = beginAtSegment; i < endSegment; i++)
         {
-            newPathString.append("/").append((String) segments.get(i));
+            pathBuffer.append("/").append((String) segments.get(i));
         }
 
 //        if (queryString != null)
@@ -250,7 +270,7 @@ public class Path implements Serializable, Cloneable
 //            newPathString.append("?").append(queryString);
 //        }
 
-        return new Path(newPathString.toString());
+        return new Path(pathBuffer.toString());
     }
 
     public String getBaseName()
@@ -393,25 +413,28 @@ public class Path implements Serializable, Cloneable
     protected final void rebuildPath()
     {
         Iterator itr = segments.iterator();
-        StringBuffer newPath = new StringBuffer();
+        pathBuffer.setLength(0);
         while (itr.hasNext())
         {
-            newPath.append(PATH_SEPERATOR).append((String) itr.next());
+            pathBuffer.append(PATH_SEPERATOR).append((String) itr.next());
         }
 
-        pathOnly = newPath.toString();
+        pathOnly = pathBuffer.toString();
 
         if (queryString != null)
         {
-            newPath.append("?").append(queryString);
+            pathBuffer.append("?").append(queryString);
+            path = pathBuffer.toString();
         }
-
-        path = newPath.toString();
+        else
+        {
+            path = pathOnly;
+        }
     }
 
     public Object clone()
     {
-        return new Path(path);
+        return new Path(this);
     }
 
     public int indexOf(String segment)
@@ -434,39 +457,42 @@ public class Path implements Serializable, Cloneable
 
     public Path getChild(String childPath)
     {
-        if(path.length() == 0)
+        synchronized (childrenMap)
         {
-            return new Path(childPath);
+            Path child = null;
+            HashMap children = (HashMap)childrenMap.get(path);
+            if (children == null)
+            {
+                children = new HashMap();
+                childrenMap.put(path, children);
+            }
+            else
+            {
+                child = (Path)children.get(childPath);
+            }
+            if ( child == null )
+            {
+                if (path.length() == 0)
+                {
+                    child = new Path(childPath);
+                }
+                else if (fileName != null)
+                {
+                    child = getSubPath(0, (segments.size() - 1)).addSegment(childPath);       
+                }
+                else
+                {
+                    child = getSubPath(0, segments.size()).addSegment(childPath);
+                }
+                children.put(childPath, child);
+            }
+            return new Path(child);
         }
-        if (fileName != null)
-        {
-            return getSubPath(0, (segments.size() - 1)).addSegment(childPath);       
-        }
-        else
-        {
-            return getSubPath(0, segments.size()).addSegment(childPath);
-        }
-
     }
 
     public Path getChild(Path childPath)
     {
-        Path child = null;
-        if (segments.size() == 0)
-        {
-            child = childPath;
-        }
-        else if (fileName != null)
-        {
-            child = getSubPath(0, (segments.size() - 1));
-        }
-        else
-        {
-            child = getSubPath(0, segments.size());
-        }
-
-        child.addSegment(childPath.toString());
-        return child;
+        return getChild(childPath.path);
     }
 
     public Path getParent()
