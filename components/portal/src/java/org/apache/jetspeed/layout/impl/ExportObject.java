@@ -154,38 +154,26 @@ public class ExportObject extends BaseGetResourceAction implements AjaxAction, A
 			
 			dir = new File(folder);
 			if (dir.exists()) {
-				if (dir.isDirectory()) {
-					String[] children = dir.list();
-					for (int i = 0; i < children.length; i++) {
-						File tmpFile = new File(dir, children[i]);
-						if (tmpFile.isDirectory()) {
-							success = deleteDir(tmpFile);
-						} else {
-							success = tmpFile.delete();
-						}
-						if (!success) {
-							return false;
-						}
-					}
-				}
-			} else {
-				dir.mkdir();
-			}
+                success = deleteDir(dir);
+			} 
+            success = dir.mkdir();
 		}
-		return true;
+		return success;
 	}
 
-	public boolean deleteDir(File dir) {
-		if (dir.isDirectory()) {
-			String[] children = dir.list();
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteDir(new File(dir, children[i]));
-				if (!success) {
-					return false;
-				}
-			}
-		}
-		return true;
+    private boolean deleteDir(File dir) {
+        if( dir.exists() ) {
+            File[] files = dir.listFiles();
+            for(int i=0; i<files.length; i++) {
+               if(files[i].isDirectory()) {
+                   deleteDir(files[i]);
+               }
+               else {
+                 files[i].delete();
+               }
+            }
+          }
+          return( dir.delete() );
 	}
 
 	private String getUserFolder(String userName, boolean fullPath) {

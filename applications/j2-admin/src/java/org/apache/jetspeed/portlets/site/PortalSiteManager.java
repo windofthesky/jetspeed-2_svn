@@ -116,7 +116,10 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
             this.getContext(request).put("userTree", determineuserTree(request));
             this.getContext(request).put("defaultLayout", request.getPreferences().getValue("defaultLayout", "jetspeed-layouts::VelocityTwoColumns"));            
             this.getContext(request).put(FOLDERS, retrieveFolders(request, jsroot));
-            this.getContext(request).put(ALL_SECURITY_REFS, pageManager.getPageSecurity().getSecurityConstraintsDefs());                    
+            this.getContext(request).put(ALL_SECURITY_REFS, pageManager.getPageSecurity().getSecurityConstraintsDefs());
+            if(request.getPortletSession().getAttribute("status") ==null){
+                request.getPortletSession().setAttribute("status","");
+            }
         }
         catch (Exception e)
         {
@@ -124,6 +127,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         }
         
         super.doView(request, response);
+        request.getPortletSession().removeAttribute("status");
     }
     
     protected String determineRootFolder(RenderRequest request)
@@ -199,9 +203,9 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
     {
         String add = request.getParameter("Save");
         String fileName ="";
-        String baseName="";
         String destPath="";
         String fileType="";
+        boolean success = false;
 
         if (add != null)
         { 
@@ -224,35 +228,47 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
                                 out.write(fileItem.get());
                                 out.close();
                             }
-                        }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("newName")){
-                            baseName = fileItem.getString();
                         }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("importPath")){
                             destPath= fileItem.getString();
-                        }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("fileType")){
-                            fileType= fileItem.getString();
-                        }   
+                        }  
                     }
-                    if (fileType != null && !fileType.equals("")&& baseName != null && !baseName.equals("") && destPath != null && !destPath.equals("")) {
+                    fileType = fileExt(fileName);
+                    if (fileType != null && !fileType.equals("")&& fileName != null && !fileName.equals("") && destPath != null && !destPath.equals("")) {
                         Folder folder = castorPageManager.getFolder(request.getUserPrincipal().toString());
                         if(fileType.equalsIgnoreCase("psml")){
                             Page source = folder.getPage(fileName);
-                            Page page = pageManager.copyPage(source, destPath + "/" + baseName);
-                            pageManager.updatePage(page);                           
+                            Page page = pageManager.copyPage(source, destPath + "/" + fileName);
+                            pageManager.updatePage(page);
+                            success = true;
                         }else if(fileType.equalsIgnoreCase("link")){
                             Link source = folder.getLink(fileName);
-                            Link page = pageManager.copyLink(source, destPath + "/" + baseName);
-                            pageManager.updateLink(page);                           
+                            Link page = pageManager.copyLink(source, destPath + "/" + fileName);
+                            pageManager.updateLink(page);
+                            success = true;
                         }
 
                     }
                 }
+                if (success){
+                    request.getPortletSession().setAttribute("status",fileName);
+                 }else{
+                    request.getPortletSession().setAttribute("status","false"); 
+                 }
             } catch (Exception e) {
-                // TODO: handle exception
+                request.getPortletSession().setAttribute("status","false");
+                //throw new PortletException("Error occured in file uplodad");
             }
         }
 
     }    
-	private String getTempFolder(ActionRequest request) {
+	private String fileExt(String fileName){
+	    int extIndex = fileName.lastIndexOf(".");
+        if(extIndex>0){
+            return fileName.substring(extIndex+1, fileName.length());
+        }
+        return "";
+    }
+    private String getTempFolder(ActionRequest request) {
 		String dir = System.getProperty("java.io.tmpdir");
 		String path = System.getProperty("file.separator");
 		File file = new File(dir + path + request.getUserPrincipal());

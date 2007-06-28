@@ -21,6 +21,7 @@
 #set($treeName = $renderRequest.getParameter("treeName"))
 #set($renderURL = $renderResponse.createRenderURL())
 #set($actionURL = $renderResponse.createActionURL())
+#set($status = $renderRequest.getPortletSession().getAttribute("status"))
   <div dojoType="dialog" id="CopyResourceDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250" >
     <form onsubmit="return false;">
     <table>
@@ -565,6 +566,9 @@ function editResource(node)
        alert("Please select a resource in the portal site tree.");
        return;
     }    
+	#if($status != '')    
+		document.getElementById("infobar").style.display = 'none';
+	#end
     determineSave();
     if ( node.object == "Folder" )
     {   
@@ -1311,6 +1315,15 @@ dojo.addOnLoad(function()
 <input type="hidden" id="site.path"/>
 <input type="hidden" id="site.kind"/>
 <input type="hidden" id="defaultLayout" value="$!defaultLayout"/>
+#if($status != '')
+	<div id="infobar">
+	#if($status == 'false')
+		Error occured during file import.
+	#else
+		$status imported succesfully
+	#end	
+	</div>
+#end 
 
 <!-- Start Site View Layout -->
 <div dojoType="LayoutContainer" style="width: 100%; height: 500px; border: 1px solid gray;">
@@ -1640,22 +1653,12 @@ dojo.addOnLoad(function()
 		<table class="formAnswer" style="width: 100%;">
 			<tr>
 				<td colspan="2" width="100%" class="emphasise"><b>Import</b><br>
-				Select a file destination from tree
+				Browse a file from the local machine and its destination from tree
 				</td>
 			</tr>
 			<tr>
 				<td width="20%" class="emphasise">File to Import</td>
 					<td width="80%"><input type="file" name="psmlFile"></td>
-			</tr>
-			<tr>
-				<td width="20%" class="emphasise">File Type</td>
-				<td width="80%">Link <input onClick="javascript:setType('link');" type="radio" name="type"/>Page
-				<input type="radio" onClick="javascript:setType('psml');" name="type"/></td>
-			</tr>			
-			<tr>
-				<td width="20%" class="emphasise">File name</td>
-				<td width="80%"><input type="text" size="20" name="newName" id="newName"
-				onChange="javascript:validImportName();"/></td>
 			</tr>
 			<tr>
 				<td width="20%" class="emphasise">File destination</td>
@@ -2526,45 +2529,7 @@ function downloadObject(){
 }
 function submtimport()
 {
-	if(validImportName())
-	{
-		document.importObject.submit();
-	}
-}
-function setType(type)
-{
-	document.getElementById("fileType").value=type;
-}
-function validImportName()
-{
-	var type = document.getElementById("fileType").value;
-	var name = document.getElementById("newName").value;
-	var regex;
-	if(type == '')
-	{
-		alert('Please choose file type');
-		document.getElementById("newName").value='';
-		return false;
-	}
-	if(name == '')
-	{
-		alert('Please choose a valid name');
-		return false;
-	}
-	if(type=='link')
-	{
-		regex = new RegExp(".*\.link")
-	}else if(type == 'page')
-	{
-		regex = new RegExp(".*\.psml");
-	}
-    if (name.match(regex))
-    {
-		alert('Please choose a valid name');
-		document.getElementById("newName").value='';
-		return false;
-    }
-	return true;
+	document.importObject.submit();
 }
 
 function submtexport()
