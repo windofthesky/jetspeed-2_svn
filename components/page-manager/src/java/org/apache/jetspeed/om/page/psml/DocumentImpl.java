@@ -25,18 +25,20 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
  * Link
  * </p>
  * <p>
- *
+ * 
  * </p>
+ * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id: LinkImpl.java 314803 2005-10-12 06:35:19Z rwatler $
- *
+ * 
  */
 public abstract class DocumentImpl extends AbstractNode implements Document 
 {
     
     private String version;
-    
-    /**
+    private boolean dirty=false;
+
+	/**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
      */
@@ -65,4 +67,13 @@ public abstract class DocumentImpl extends AbstractNode implements Document
     {
         this.version = version;
     }
+    
+    public boolean isDirty() {
+		return dirty;
+	}
+    
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+	}
+
 }

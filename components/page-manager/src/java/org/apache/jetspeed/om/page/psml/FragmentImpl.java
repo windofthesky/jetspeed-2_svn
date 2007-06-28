@@ -36,6 +36,8 @@ import org.apache.jetspeed.security.FragmentPermission;
 public class FragmentImpl extends AbstractBaseElement implements Fragment, java.io.Serializable
 {
 
+	private static int fragment_id_counter = 0;
+	
     private String type = null;
 
     private String state = null;
@@ -60,6 +62,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private PageImpl page;
 
+    private boolean dirty = false;
     /**
      * <p>
      * Default Constructor.
@@ -67,6 +70,16 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public FragmentImpl()
     {
+    }
+
+    public FragmentImpl(String id)
+    {
+    	if (id == null || id.length() == 0){
+    		setId(generateId());
+    		dirty=true;
+    	} else {
+    		setId(id);
+    	}    	
     }
 
     public String getType()
@@ -468,6 +481,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     {
         // set page implementation
         this.page = page;
+        if (dirty){
+        	page.setDirty(dirty);	
+        }        
         // propagate to children
         if (fragments != null)
         {
@@ -688,5 +704,9 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             }
         }
         return fragments;
+    }
+    
+    private synchronized static String generateId(){
+    	return new StringBuffer("F.").append(Long.toHexString(System.currentTimeMillis())).append(".").append(fragment_id_counter++).toString();
     }
 }

@@ -147,8 +147,7 @@ limitations under the License.
 
         <!-- Project Dependency Version Properties -->
         <aopalliance.version>1.0</aopalliance.version>
-<!--         <castor.version>1.1.1-xml</castor.version> -->
-		<castor.version>0.9.4.3</castor.version>
+         <castor.version>1.1.1-xml</castor.version> 
         <cglib.version>2.1_3</cglib.version>
         <commons-beanutils.version>1.7.0</commons-beanutils.version>
         <commons-betwixt.version>20061115</commons-betwixt.version>        

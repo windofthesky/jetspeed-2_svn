@@ -144,8 +144,10 @@ limitations under the License.
             <version>2.7.5</version>
             <scope>runtime</scope>
         </dependency>
-        
-
+        <dependency>
+            <groupId>castor</groupId>
+            <artifactId>castor</artifactId>
+        </dependency>        
     </dependencies>
 
     <!-- Build Configuration -->

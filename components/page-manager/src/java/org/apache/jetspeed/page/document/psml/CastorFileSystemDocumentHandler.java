@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
@@ -49,20 +50,25 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.XMLSerializer;
+import org.castor.mapping.BindingType;
+import org.castor.mapping.MappingUnmarshaller;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.EventProducer;
+import org.exolab.castor.mapping.MappingLoader;
+import org.exolab.castor.xml.ClassDescriptorResolver;
+import org.exolab.castor.xml.ClassDescriptorResolverFactory;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.SAX2EventProducer;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.AttributeList;
-import org.xml.sax.DocumentHandler;
+import org.exolab.castor.xml.XMLClassDescriptorResolver;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderAdapter;
 
 /**
  * <p>
@@ -82,18 +88,16 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
     private final static String PSML_DOCUMENT_ENCODING = "UTF-8";
 
-    protected String mappingFile;
     protected String documentType;
     protected Class expectedReturnType;
     protected String documentRoot;
     protected File documentRootDir;
     protected FileCache fileCache;
-    /** the Castor mapping file name */
-    protected Mapping mapping = null;
-
+    
     private OutputFormat format;
-
+    private final XMLReader xmlReader;
     private DocumentHandlerFactory handlerFactory;
+    private ClassDescriptorResolver classDescriptorResolver;
 
     /**
      * 
@@ -105,10 +109,9 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
      * @throws FileNotFoundException
      */
     public CastorFileSystemDocumentHandler( String mappingFile, String documentType, Class expectedReturnType,
-            String documentRoot, FileCache fileCache ) throws FileNotFoundException
+            String documentRoot, FileCache fileCache ) throws FileNotFoundException,SAXException,ParserConfigurationException, MappingException
     {
         super();
-        this.mappingFile = mappingFile;
         this.documentType = documentType;
         this.expectedReturnType = expectedReturnType;
         this.documentRoot = documentRoot;
@@ -120,12 +123,22 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         format.setIndenting(true);
         format.setIndent(4);
         format.setEncoding(PSML_DOCUMENT_ENCODING);
-
-        loadMapping();
+        
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
+        
+        xmlReader = parser.getXMLReader();
+        xmlReader.setFeature("http://xml.org/sax/features/namespaces", false);
+        
+        /*
+         * Create ClassDescripterResolver for better performance. 
+         * Mentioned as 'best practice' on the Castor website.
+         */
+        createCastorClassDescriptorResolver(mappingFile);
     }
     
     public CastorFileSystemDocumentHandler( String mappingFile, String documentType, String expectedReturnType,
-            String documentRoot, FileCache fileCache ) throws FileNotFoundException, ClassNotFoundException
+            String documentRoot, FileCache fileCache ) throws FileNotFoundException, ClassNotFoundException,SAXException,ParserConfigurationException, MappingException
     {
         this(mappingFile, documentType, Class.forName(expectedReturnType), documentRoot, fileCache);
     }
@@ -146,7 +159,12 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
     {
         return getDocument(name, true);
     }
-
+    
+    public void updateDocument( Document document ) throws FailedToUpdateDocumentException
+    {
+    	updateDocument(document, false);
+    }
+    
     /**
      * <p>
      * updateDocument
@@ -154,8 +172,9 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
      * 
      * @see org.apache.jetspeed.page.document.DocumentHandler#updateDocument(org.apache.jetspeed.om.page.Document)
      * @param document
+     * @param systemUpdate 
      */
-    public void updateDocument( Document document ) throws FailedToUpdateDocumentException
+    protected void updateDocument( Document document, boolean systemUpdate) throws FailedToUpdateDocumentException
     {
         // sanity checks
         if (document == null)
@@ -176,8 +195,14 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         }
         AbstractBaseElement documentImpl = (AbstractBaseElement)document;
         documentImpl.setHandlerFactory(handlerFactory);
-        documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
-        documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+        if (systemUpdate){
+        	// on system update: temporarily turn off security
+            documentImpl.setPermissionsEnabled(false);
+            documentImpl.setConstraintsEnabled(false);
+        } else {
+            documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+            documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+        }
         documentImpl.marshalling();
         
         // marshal page to disk
@@ -191,17 +216,18 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
         try
         {
-            // marshal: use SAX I handler to filter document XML for
+            // marshal: use SAX II handler to filter document XML for
             // page and folder menu definition menu elements ordered
             // polymorphic collection to strip artifical <menu-element>
             // tags enabling Castor XML binding; see JETSPEED-INF/castor/page-mapping.xml
             writer = new OutputStreamWriter(new FileOutputStream(f), PSML_DOCUMENT_ENCODING);
             Serializer serializer = new XMLSerializer(writer, this.format);
-            final DocumentHandler handler = serializer.asDocumentHandler();
-            Marshaller marshaller = new Marshaller(new DocumentHandler()
+            final ContentHandler handler = serializer.asContentHandler();
+            
+            Marshaller marshaller = new Marshaller(new ContentHandler()
                 {
                     private int menuDepth = 0;
-
+                    
                     public void characters(char[] ch, int start, int length) throws SAXException
                     {
                         handler.characters(ch, start, length);
@@ -210,21 +236,6 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                     public void endDocument() throws SAXException
                     {
                         handler.endDocument();
-                    }
-                    
-                    public void endElement(String name) throws SAXException
-                    {
-                        // track menu depth
-                        if (name.equals("menu"))
-                        {
-                            menuDepth--;
-                        }
-
-                        // filter menu-element noded within menu definition
-                        if ((menuDepth == 0) || !name.equals("menu-element"))
-                        {
-                            handler.endElement(name);
-                        }
                     }
                     
                     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
@@ -247,30 +258,50 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                         handler.startDocument();
                     }
                     
-                    public void startElement(String name, AttributeList atts) throws SAXException
-                    {
-                        // filter menu-element noded within menu definition
-                        if ((menuDepth == 0) || !name.equals("menu-element"))
+					public void endElement(String uri, String localName, String qName) throws SAXException {
+                        // track menu depth
+                        if (qName.equals("menu"))
                         {
-                            handler.startElement(name, atts);
+                            menuDepth--;
+                        }
+
+                        // filter menu-element noded within menu definition
+                        if ((menuDepth == 0) || !qName.equals("menu-element"))
+                        {
+                            handler.endElement(uri, localName, qName);
+                        }
+					}
+
+					public void endPrefixMapping(String prefix) throws SAXException {
+					}
+
+					public void skippedEntity(String name) throws SAXException {
+						handler.skippedEntity(name);
+					}
+
+					public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+                        // filter menu-element noded within menu definition
+                        if ((menuDepth == 0) || !qName.equals("menu-element"))
+                        {
+                            handler.startElement(uri,localName, qName, atts);
                         }
 
                         // track menu depth
-                        if (name.equals("menu"))
+                        if (qName.equals("menu"))
                         {
                             menuDepth++;
                         }
-                    }
+					}
+
+					public void startPrefixMapping(String prefix, String uri) throws SAXException {
+					}
                 });
-            marshaller.setMapping(this.mapping);
+            marshaller.setResolver((XMLClassDescriptorResolver) classDescriptorResolver);
+            
+            marshaller.setValidation(false); // results in better performance
             marshaller.marshal(document);
         }
         catch (MarshalException e)
-        {
-            log.error("Could not marshal the file " + f.getAbsolutePath(), e);
-            throw new FailedToUpdateDocumentException(e);
-        }
-        catch (MappingException e)
         {
             log.error("Could not marshal the file " + f.getAbsolutePath(), e);
             throw new FailedToUpdateDocumentException(e);
@@ -292,7 +323,12 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         }
         finally
         {
-            try
+            if (systemUpdate){
+            	// restore permissions / constraints
+            	documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+                documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+            }
+        	try
             {
                 writer.close();
             }
@@ -303,11 +339,10 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
     }
 
-   
-
-    protected void loadMapping()
+    protected void createCastorClassDescriptorResolver(String mappingFile) throws MappingException
     {
-        try
+    	Mapping mapping=null;
+    	try
         {
             InputStream stream = getClass().getResourceAsStream(mappingFile);
 
@@ -329,7 +364,11 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             ise.initCause(e);
             throw ise;
         }
-
+        this.classDescriptorResolver =
+ 		   ClassDescriptorResolverFactory.createClassDescriptorResolver(BindingType.XML);
+ 		MappingUnmarshaller mappingUnmarshaller = new MappingUnmarshaller();
+ 		MappingLoader mappingLoader = mappingUnmarshaller.getMappingLoader(mapping, BindingType.XML);
+ 		classDescriptorResolver.setMappingLoader(mappingLoader);
     }
 
     protected Object unmarshallDocument( Class clazz, String path, String extension ) throws DocumentNotFoundException,
@@ -353,21 +392,20 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
         try
         {
-            // unmarshal: use SAX I parser to read document XML, filtering
+            // unmarshal: use SAX II parser to read document XML, filtering
             // for page and folder menu definition menu elements ordered
             // polymorphic collection to insert artifical <menu-element>
             // tags enabling Castor XML binding; see JETSPEED-INF/castor/page-mapping.xml
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            XMLReader reader = parser.getXMLReader();
-            final XMLReaderAdapter readerAdapter = new XMLReaderAdapter(reader);
+            
             final InputSource readerInput = new InputSource(new InputStreamReader(new FileInputStream(f), PSML_DOCUMENT_ENCODING));
-            Unmarshaller unmarshaller = new Unmarshaller(this.mapping);
-            document = (Document) unmarshaller.unmarshal(new EventProducer()
+            Unmarshaller unmarshaller = new Unmarshaller();
+            unmarshaller.setResolver((XMLClassDescriptorResolver) classDescriptorResolver);            
+            unmarshaller.setValidation(false); // results in better performance
+            document = (Document) unmarshaller.unmarshal(new SAX2EventProducer()
                 {
-                    public void setDocumentHandler(final DocumentHandler handler)
+                    public void setContentHandler(final ContentHandler handler)
                     {
-                        readerAdapter.setDocumentHandler(new DocumentHandler()
+                    	xmlReader.setContentHandler(new ContentHandler()
                             {
                                 private int menuDepth = 0;
 
@@ -379,30 +417,6 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                                 public void endDocument() throws SAXException
                                 {
                                     handler.endDocument();
-                                }
-
-                                public void endElement(String name) throws SAXException
-                                {
-                                    // always include all elements
-                                    handler.endElement(name);
-
-                                    // track menu depth and insert menu-element nodes
-                                    // to encapsulate menu elements to support collection
-                                    // polymorphism in Castor
-                                    if (name.equals("menu"))
-                                    {
-                                        menuDepth--;
-                                        if (menuDepth > 0)
-                                        {
-                                            handler.endElement("menu-element");
-                                        }
-                                    }
-                                    else if ((menuDepth > 0) &&
-                                             (name.equals("options") || name.equals("separator") ||
-                                              name.equals("include") || name.equals("exclude")))
-                                    {
-                                        handler.endElement("menu-element");
-                                    }
                                 }
 
                                 public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
@@ -425,36 +439,68 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                                     handler.startDocument();
                                 }
 
-                                public void startElement(String name, AttributeList atts) throws SAXException
-                                {
+								public void endElement(String uri, String localName, String qName) throws SAXException {
+                                    // always include all elements
+                                    handler.endElement(uri,localName,qName);
                                     // track menu depth and insert menu-element nodes
                                     // to encapsulate menu elements to support collection
                                     // polymorphism in Castor
-                                    if (name.equals("menu"))
+                                    if (qName.equals("menu"))
+                                    {
+                                        menuDepth--;
+                                        if (menuDepth > 0)
+                                        {
+                                            handler.endElement(null,null,"menu-element");
+                                        }
+                                    }
+                                    else if ((menuDepth > 0) &&
+                                             (qName.equals("options") || qName.equals("separator") ||
+                                            		 qName.equals("include") || qName.equals("exclude")))
+                                    {
+                                        handler.endElement(null,null,"menu-element");
+                                    }
+								}
+
+								public void endPrefixMapping(String prefix) throws SAXException {
+								}
+
+								public void skippedEntity(String name) throws SAXException {
+									handler.skippedEntity(name);
+								}
+
+								public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+                                    // track menu depth and insert menu-element nodes
+                                    // to encapsulate menu elements to support collection
+                                    // polymorphism in Castor
+									
+									if (qName.equals("menu"))
                                     {
                                         if (menuDepth > 0)
                                         {
-                                            handler.startElement("menu-element", null);
+                                            handler.startElement(null,null,"menu-element", null);
                                         }
                                         menuDepth++;
                                     }
                                     else if ((menuDepth > 0) &&
-                                             (name.equals("options") || name.equals("separator") ||
-                                              name.equals("include") || name.equals("exclude")))
+                                             (qName.equals("options") || qName.equals("separator") ||
+                                              qName.equals("include") || qName.equals("exclude")))
                                     {
-                                        handler.startElement("menu-element", null);
+                                        handler.startElement(null,null,"menu-element", null);
                                     }
 
                                     // always include all elements
-                                    handler.startElement(name, atts);
-                                }
+                                    handler.startElement(null,null, qName, atts);
+								}
+
+								public void startPrefixMapping(String prefix, String uri) throws SAXException {
+								}
                             });
                     }
                     public void start() throws SAXException
                     {
                         try
                         {
-                            readerAdapter.parse(readerInput);
+                        	xmlReader.parse(readerInput);
                         }
                         catch (IOException ioe)
                         {
@@ -469,6 +515,10 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
             documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
             documentImpl.unmarshalled();
+            if (document.isDirty()){
+                updateDocument(document, true);
+                document.setDirty(false);
+            }
         }
         catch (IOException e)
         {
@@ -480,25 +530,10 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
             throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
         }
-        catch (MappingException e)
-        {
-        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-        }
         catch (ValidationException e)
         {
         	log.error("Document " + f.getAbsolutePath() + " is not valid", e);
             throw new DocumentNotFoundException("Document " + f.getAbsolutePath() + " is not valid", e);
-        }
-        catch (SAXException e)
-        {
-        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
-        }
-        catch (ParserConfigurationException e)
-        {
-        	log.error("Could not unmarshal the file " + f.getAbsolutePath(), e);
-            throw new PageNotFoundException("Could not unmarshal the file " + f.getAbsolutePath(), e);
         }
         
 

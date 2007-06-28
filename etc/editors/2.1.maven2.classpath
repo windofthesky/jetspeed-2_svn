@@ -58,7 +58,7 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/rss/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/castor/castor/0.9.4.3/castor-0.9.4.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/castor/castor/1.1.1-xml/castor-1.1.1-xml.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-digester/commons-digester/1.5/commons-digester-1.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/0.1/commons-io-0.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.1/commons-lang-2.1.jar"/>

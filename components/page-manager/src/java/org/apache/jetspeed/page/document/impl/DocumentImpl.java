@@ -29,6 +29,8 @@ public abstract class DocumentImpl extends NodeImpl implements Document
 {
     private String version;
     
+    private boolean dirty = false;
+    
     public DocumentImpl(SecurityConstraintsImpl constraints)
     {
         super(constraints);
@@ -64,4 +66,13 @@ public abstract class DocumentImpl extends NodeImpl implements Document
     {
         this.version = version;
     }
+    
+    public boolean isDirty() {
+		return dirty;
+	}
+    
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+	}
+
 }

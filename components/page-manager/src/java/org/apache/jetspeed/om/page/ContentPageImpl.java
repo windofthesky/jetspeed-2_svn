@@ -38,7 +38,8 @@ public class ContentPageImpl implements ContentPage
     private final Page page;
     private final Map cachedFragments;
     private ContentFragment rootContentFragment;
-        
+    private boolean dirty=false;
+    
     public ContentPageImpl(Page page)
     {
         this.page = page;
@@ -522,4 +523,13 @@ public class ContentPageImpl implements ContentPage
     {
         page.setVersion(version);
     }
+    
+    public boolean isDirty() {
+		return dirty;
+	}
+    
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+	}
+
 }

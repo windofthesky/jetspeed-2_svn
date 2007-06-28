@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
                            "http://castor.org/mapping.dtd">
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
@@ -88,7 +88,7 @@
   <class name="org.apache.jetspeed.om.page.psml.FragmentImpl">
     <map-to xml="fragment"/>
 
-    <field name="id" type="string">
+    <field name="id" type="string" set-method="%1" get-method="getId">
       <bind-xml name="id" node="attribute"/>
     </field>
 

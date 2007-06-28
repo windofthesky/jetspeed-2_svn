@@ -88,7 +88,8 @@
 
         <unitTest>
             <excludes>
-                <exclude>**/PageManagerTestShared.java</exclude>
+                <exclude>**/PageManagerTestShared.java</exclude>v
+              <exclude>**/DirectoryXMLTransform.java</exclude>
             </excludes>
             <resources>
                 <resource>

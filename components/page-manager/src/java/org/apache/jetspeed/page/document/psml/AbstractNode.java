@@ -50,7 +50,8 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     private String url;
     private boolean hidden=false;
     private String profiledPath;
-
+    private boolean dirty=false;
+    
     public AbstractNode()
     {
     }
@@ -500,4 +501,14 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
             setMetadataFields(metadataFields);
         }
     }
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty=dirty;
+	}
+    
+    
 }

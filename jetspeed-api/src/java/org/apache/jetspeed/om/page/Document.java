@@ -46,4 +46,27 @@ public interface Document extends Node
      */
     void setVersion(String versionNumber);
     
+    /**
+     * <p>
+     * isDirty
+     * </p>
+     * <p>
+     *  Whether this node is dirty, i.e. should be updated in the persistent store.
+     * </p>
+     * @param hidden flag
+     */
+    boolean isDirty();
+
+    /**
+     * <p>
+     * setDirty
+     * </p>
+     * <p>
+     *  Flag the node as dirty / clean, i.e. should be resp. should not be updated in the persistent store
+     * </p>
+     * @param hidden flag
+     */
+
+    void setDirty(boolean dirty);
+    
 }

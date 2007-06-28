@@ -28,6 +28,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -967,4 +968,93 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         
         // TODO: menu testing
     }
+    
+    public Collection collectIds(Folder f) throws Exception {
+        Collection result = new ArrayList();
+        
+        for (Iterator iter = f.getAll().iterator(); iter.hasNext();)
+        {
+           Object obj = iter.next();
+           
+           if (obj instanceof Page){
+               Page thisPage = (Page) obj;
+               if (thisPage.getRootFragment()!=null){
+                   result.addAll(collectIds(thisPage.getRootFragment()));    
+               }                          
+           } else
+           if (obj instanceof Folder){
+               Folder thisFolder = (Folder)obj;
+               result.addAll(collectIds((Folder)obj));
+           }            
+        }   
+        
+        return result;
+    }
+    
+    public Collection collectIds(Fragment f){
+    	Collection result = new ArrayList();
+    	
+        
+    	result.add(f.getId());
+    	if (f.getFragments().size() > 0){
+    		for (Iterator iter = f.getFragments().iterator(); iter.hasNext();) {
+				Fragment child = (Fragment) iter.next();
+				result.addAll(collectIds(child));
+			}
+    	}
+    	return result;
+    }
+    
+    private int countFragments(Fragment f){
+        int result = 1;
+        for (Iterator iter = f.getFragments().iterator(); iter.hasNext();)
+        {
+            result+=countFragments((Fragment)iter.next());
+        }
+        
+        return result;
+    }
+    
+    private void compareFolders(Folder folder1, Folder folder2) throws Exception {
+        for (Iterator iter = folder1.getAll().iterator(); iter.hasNext();)
+        {
+           Object obj = iter.next();
+           
+           if (obj instanceof Page){
+               Page thisPage = (Page) obj;
+               Page otherPage = folder2.getPage(thisPage.getName());
+               assertEquals(thisPage.getRootFragment()!=null,otherPage.getRootFragment() != null);
+               if (thisPage.getRootFragment() != null){
+                   Fragment thisRootFragment = thisPage.getRootFragment();
+                   Fragment otherRootFragment = otherPage.getRootFragment();
+                   assertEquals(thisRootFragment.getFragments().size(),otherRootFragment.getFragments().size());
+                   assertEquals(countFragments(thisRootFragment),countFragments(otherRootFragment));
+               }               
+           } else
+           if (obj instanceof Folder){
+               Folder thisFolder = (Folder)obj;
+               compareFolders(thisFolder, folder2.getFolder(thisFolder.getName())); 
+           }
+            
+        }        
+    }
+    
+    public void testIdGeneration() throws Exception{
+        Folder webappIds = pageManager.getFolder("/webapp-ids");
+        Folder webappNoIds = pageManager.getFolder("/webapp-no-ids");
+        
+        compareFolders(webappIds,webappNoIds);
+        
+        Collection allIds = collectIds(webappNoIds); 
+        for (Iterator iter = allIds.iterator(); iter.hasNext();) {
+			String id = (String) iter.next();
+			assertNotNull(id);
+			assertEquals(true,id.length() > 0);
+            if (CollectionUtils.cardinality(id, allIds) > 1){
+                 System.out.println("Fragment with id "+id+" has duplicates");
+            }
+			assertEquals(1, CollectionUtils.cardinality(id, allIds)); // uniqueness test			
+		}        
+    }
+   
 }

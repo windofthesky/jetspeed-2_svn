@@ -27,9 +27,11 @@ import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -69,7 +71,6 @@ import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.util.DirectoryHelper;
 
 /**
  * PageManagerTestShared
@@ -95,8 +96,13 @@ interface PageManagerTestShared
         static CastorXmlPageManager makeCastorXMLPageManager(String pagesDirName, boolean permissionsEnabled, boolean constraintsEnabled)
             throws Exception
         {
+            Map extensionsToXslt = new HashMap();
+            extensionsToXslt.put("psml","resources/stripIds.xslt");
+                
             File pagesDirFile = new File("target/testdata/" + pagesDirName);
-            DirectoryHelper dirHelper = new DirectoryHelper(pagesDirFile);
+            
+            
+            DirectoryXMLTransform dirHelper = new DirectoryXMLTransform(pagesDirFile,extensionsToXslt);
             FileFilter noCVSorSVNorBackups = new FileFilter()
                 {
                     public boolean accept( File pathname )
@@ -105,6 +111,18 @@ interface PageManagerTestShared
                     }
                 };
             dirHelper.copyFrom(new File("testdata/" + pagesDirName), noCVSorSVNorBackups);
+            
+            // copy documents under webapp/pages folder and strip fragment Ids
+            File webappDestDirFile = new File("target/testdata/" + pagesDirName+"/webapp-no-ids");
+            dirHelper.setBaseDirectory(webappDestDirFile);
+            File webappPagesDirFile = new File("../../src/webapp/WEB-INF/pages");
+            dirHelper.copyFromAndTransform(webappPagesDirFile, noCVSorSVNorBackups);
+
+            // copy documents under webapp/pages folder without transforming them
+            webappDestDirFile = new File("target/testdata/" + pagesDirName+"/webapp-ids");
+            dirHelper.setBaseDirectory(webappDestDirFile);
+            dirHelper.copyFrom(webappPagesDirFile, noCVSorSVNorBackups);
+
             IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
             FileCache cache = new FileCache(10, 12);
             
