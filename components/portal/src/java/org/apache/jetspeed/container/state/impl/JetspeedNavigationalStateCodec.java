@@ -25,7 +25,6 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
@@ -554,8 +553,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected String decodeParameters(String value, String characterEncoding)
     throws UnsupportedEncodingException
     {
-        value = StringUtils.replace(value,"-","/");
-        value = StringUtils.replace(value,"_","=");
+        value = value.replace('-','/').replace('_','=');
         if ( characterEncoding != null )
         {
             return new String(Base64.decodeBase64(value.getBytes(characterEncoding)), characterEncoding);
@@ -587,9 +585,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         {
             value = new String(Base64.encodeBase64(value.getBytes()));
         }
-        value = StringUtils.replace(value,"/","-");
-        value = StringUtils.replace(value,"=","_");
-        return value;
+        return value.replace('/','-').replace('=','_');
     }
 
     protected String encodeArgument( String argument, char escape )
