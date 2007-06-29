@@ -1147,6 +1147,27 @@ limitations under the License.
             </preference>
         </portlet-preferences>
     </portlet>
+
+    <portlet id="NoopPortlet">
+        <description>This is a "do nothing" portlet, primarily for test and profiling purposes</description>
+        <portlet-name>NoopPortlet</portlet-name>
+        <display-name>NoopPortlet</display-name>
+        <portlet-class>org.apache.jetspeed.demo.simple.NoopPortlet</portlet-class>
+        <expiration-cache>-1</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>Noop Portlet</title>
+            <short-title>Noop Portlet</short-title>
+            <keywords>demo,test</keywords>
+        </portlet-info>
+    </portlet>
+    
     
     <custom-portlet-mode>
         <description>a Custom Print Mode</description>            
