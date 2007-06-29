@@ -51,35 +51,20 @@ public class JetspeedNamespaceMapperImpl implements JetspeedNamespaceMapper
     
     public String encode(String ns, String name)
     {
-        StringBuffer buffer = new StringBuffer(50);
-        buffer.append(prefix);
-        buffer.append(ns);
-        buffer.append('_');
-        buffer.append(name);
-        return buffer.toString();
+        return join(prefix,ns,"_",name,null,null);
     }
 
     public String encode(String ns1, String ns2, String name)
     {
-        StringBuffer buffer = new StringBuffer(50);
-        buffer.append(prefix);
-        buffer.append(ns1);
-        buffer.append('_');
-        buffer.append(ns2);
-        buffer.append('_');
-        buffer.append(name);
-        return buffer.toString();
+        return join(prefix,ns1,"_",ns2,"_",name);
     }
 
     public String decode(String ns, String name)
     {
         if (!name.startsWith(prefix)) return null;
-        StringBuffer buffer = new StringBuffer(50);
-        buffer.append(prefix);
-        buffer.append(ns);
-        buffer.append('_');
-        if (!name.startsWith(buffer.toString())) return null;
-        return name.substring(buffer.length());
+        String tmp = join(prefix,ns,"_",null,null,null);
+        if (!name.startsWith(tmp)) return null;
+        return name.substring(tmp.length());
     }
 
     public String encode(long id, String name)
@@ -110,5 +95,71 @@ public class JetspeedNamespaceMapperImpl implements JetspeedNamespaceMapper
     {
         return decode(ns.toString(),name);
     }
-
+    
+    private static String join(String s1, String s2, String s3, String s4, String s5, String s6)
+    {
+        int len = 0;
+        if (s1 != null)
+        {
+            len+=s1.length();
+            if (s2 != null)
+            {
+                len+=s2.length();
+                if (s3 != null)
+                {
+                    len+=s3.length();
+                    if (s4 != null)
+                    {
+                        len+=s4.length();
+                        if (s5 != null)
+                        {
+                            len+=s5.length();
+                            if (s6 != null)
+                            {
+                                len+=s6.length();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        char[] buffer = new char[len];
+        int index = 0;
+        if (s1 != null) 
+        {
+            len = s1.length();
+            s1.getChars(0,len,buffer,index);
+            index+= len;
+            if (s2 != null) 
+            {
+                len = s2.length();
+                s2.getChars(0,len,buffer,index);
+                index+= len;
+                if (s3 != null) 
+                {
+                    len = s3.length();
+                    s3.getChars(0,len,buffer,index);
+                    index+= len;
+                    if (s4 != null) 
+                    {
+                        len = s4.length();
+                        s4.getChars(0,len,buffer,index);
+                        index+= len;
+                        if (s5 != null) 
+                        {
+                            len = s5.length();
+                            s5.getChars(0,len,buffer,index);
+                            index+= len;
+                            if (s6 != null) 
+                            {
+                                len = s6.length();
+                                s6.getChars(0,len,buffer,index);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return new String(buffer);
+    }
 }
