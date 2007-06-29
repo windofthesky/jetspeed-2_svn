@@ -17,8 +17,12 @@
 package org.apache.jetspeed.decoration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -34,6 +38,8 @@ import org.apache.pluto.om.window.PortletWindow;
 
 public abstract class AbstractDecoratorActionsFactory implements DecoratorActionsFactory
 {
+    private static ThreadLocal actionResourcesMap = new ThreadLocal();
+    
     public List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
                     WindowState ws, Decoration decoration, List actionTemplates,PortletDefinitionComposite portlet, 
                     ContentFragment fragment,SecurityAccessController accessController)
@@ -111,8 +117,29 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
                 || (template.getState() != null && !template.getState().equals(
                         template.getCustomState()));
 
-        return new DecoratorAction(actionName, rc.getLocale(), linkURL,
-                actionURL, customAction, template.getActionType());
+        HashMap resourcesMap = (HashMap)actionResourcesMap.get();
+        ResourceBundle bundle = null;
+        String localizedName = null;
+        
+        if (resourcesMap == null)
+        {
+            resourcesMap = new HashMap();
+            actionResourcesMap.set(resourcesMap);
+            bundle = DecoratorAction.getResourceBundle(rc.getLocale());
+            resourcesMap.put(DecoratorAction.RESOURCE_BUNDLE, bundle);
+            localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
+            resourcesMap.put(actionName,localizedName);
+        }
+        else
+        {
+            localizedName = (String)resourcesMap.get(actionName);
+            if (localizedName == null)
+            {
+                localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
+                resourcesMap.put(actionName,localizedName);
+            }
+        }
+        return new DecoratorAction(localizedName, localizedName, linkURL, actionURL, customAction, template.getActionType());
     }
     
     //added for checkin the constraints on actions

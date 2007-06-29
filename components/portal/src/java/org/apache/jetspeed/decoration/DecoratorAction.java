@@ -29,6 +29,8 @@ import java.util.ResourceBundle;
  */
 public class DecoratorAction implements Serializable
 {
+    public static final String RESOURCE_BUNDLE = "org.apache.jetspeed.decoration.resources.DecoratorActions";
+
     String actionName = null;
     String actionType = null;
     String name = null;
@@ -37,6 +39,11 @@ public class DecoratorAction implements Serializable
     String action = null;
     String target;
     boolean custom;
+    
+    public static ResourceBundle getResourceBundle(Locale locale)
+    {
+        return getBundle(RESOURCE_BUNDLE, locale);
+    }
     
     private static ResourceBundle getBundle(String base, Locale locale)
     {
@@ -58,7 +65,7 @@ public class DecoratorAction implements Serializable
         return bundle;
     }
     
-    private static String getResourceString(ResourceBundle bundle, String key, String defaultValue)
+    public static String getResourceString(ResourceBundle bundle, String key, String defaultValue)
     {
         String value = defaultValue;
         
@@ -75,11 +82,22 @@ public class DecoratorAction implements Serializable
 
     public DecoratorAction(String name, String alt, Locale locale, String link, String action, boolean custom, String actionType)
     {
-        ResourceBundle bundle = getBundle("org.apache.jetspeed.decoration.resources.DecoratorActions", locale);
+        ResourceBundle bundle = getBundle(RESOURCE_BUNDLE, locale);
         this.actionName = name;
         this.actionType = actionType;
         this.name = getResourceString(bundle,name,name);
         this.alt = getResourceString(bundle,alt,alt);
+        this.link = link;
+        this.action = action;
+        this.custom = custom;
+    }
+    
+    public DecoratorAction(String name, String alt, String link, String action, boolean custom, String actionType)
+    {
+        this.actionName = name;
+        this.actionType = actionType;
+        this.name = name;
+        this.alt = alt;
         this.link = link;
         this.action = action;
         this.custom = custom;
