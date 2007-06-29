@@ -17,11 +17,8 @@
 package org.apache.jetspeed.util;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 /**
  * <h2>Overview</h2>
@@ -69,139 +66,245 @@ public class Path implements Serializable, Cloneable
     private static final long serialVersionUID = 6890966283704092945L;
 
     public static final String PATH_SEPERATOR = "/";
-
+    
+    private static final String[] EMPTY_SEGMENTS = new String[0];
+    
     private static HashMap childrenMap = new HashMap();
     
-    private String path;
+    private final String path;
+    private final String[] segments;
 
-    private final LinkedList segments;
+    private final String fileName;
 
-    private String fileName;
+    private final String baseName;
 
-    private String baseName;
+    private final String fileExtension;
 
-    private String fileExtension;
-
-    private String queryString;
-
-    private String pathOnly;
+    private final String queryString;
     
-    private static final Pattern segmentsPattern = Pattern.compile("\\?");
-    
-    private StringBuffer pathBuffer = new StringBuffer();
+    private final int hashCode;
 
     public Path()
     {
-        segments = new LinkedList();
+        segments = EMPTY_SEGMENTS;
+        fileName = null;
+        baseName = null;
+        fileExtension = null;
+        queryString = null;
+        hashCode = 0;
+        path = "";
     }
     
-    public Path(Path copy)
+    private Path(Path parent, String childSegment, boolean pathOnly)
     {
-        this();
-        this.path = copy.path;
-        segments.addAll(copy.segments);
-        this.fileName = copy.fileName;
-        this.baseName = copy.baseName;
-        this.fileExtension = copy.fileExtension;
-        this.queryString = copy.queryString;
-        this.pathOnly = copy.pathOnly;
+        this(parent, splitPath(childSegment), pathOnly);
     }
-
-    public Path(String path)
+            
+    private Path(Path parent, String[] children, boolean pathOnly)
     {
-        this.segments = new LinkedList();
-        this.path = path.replace('\\', '/');
-
-        if (!this.path.startsWith("/"))
+        int code = 0;
+        if (!pathOnly)
         {
-            this.path = "/" + this.path;
-        }
-
-        parsePathSegments(segments, this.path, false);
-
-        parseFileInfo(true);
-
-        parseQueryString(path);
-    }
-
-    protected final void parsePathSegments(LinkedList segments, String path, boolean prepend)
-    {
-        if (path.equals("/"))
-        {
-            pathOnly = "";
-            segments.add("");
+            this.fileName = parent.fileName;
+            this.baseName = parent.baseName;
+            this.fileExtension = parent.fileExtension;
+            this.queryString = parent.queryString;
+            if (queryString != null)
+            {
+                code += queryString.hashCode();
+            }
         }
         else
         {
-            String[] split = segmentsPattern.split(path,0);
-            pathOnly = split[0];
-            StringTokenizer t = new StringTokenizer(pathOnly, PATH_SEPERATOR);
-            int index = 0;
-            while (t.hasMoreTokens())
-            {
-                if (prepend)
-                {
-                    segments.add(index, t.nextToken());
-                    index++;
-                }
-                else
-                {
-                    if (fileName == null)
-                    {
-                        segments.add(t.nextToken());
-                    }
-                    else if (fileName != null && segments.size() > 1)
-                    {
-                        segments.add(segments.size() - 1, t.nextToken());
-                    }
-                    else if (fileName != null && segments.size() < 2)
-                    {
-                        segments.add(0, t.nextToken());
-                    }
-                }
+            fileName = null;
+            baseName = null;
+            fileExtension = null;
+            queryString = null;
+        }
+        
+        int size = parent.segments.length;
+        if (pathOnly && parent.fileName != null)
+        {
+            size--;
+        }
 
+        int index = 0;
+        
+        segments = new String[size+children.length];
+        for (index = 0; index < size; index++)
+        {
+            segments[index] = parent.segments[index];
+            code += segments[index].hashCode();
+        }
+        for (int i = 0; i < children.length; i++, index++)
+        {
+            segments[index] = children[i];
+            code += segments[index].hashCode();
+        }
+        if (fileName != null && !pathOnly)
+        {
+            segments[index] = fileName;
+            code += segments[index].hashCode();
+        }
+        hashCode = code;
+        path = buildPath();
+    }
+            
+    private Path(Path parent)
+    {
+        this.fileName = parent.fileName;
+        this.baseName = parent.baseName;
+        this.fileExtension = parent.fileExtension;
+        this.queryString = parent.queryString;
+        segments = new String[parent.segments.length-1];
+        int code = 0;
+        for (int i = 0; i < parent.segments.length-2; i++)
+        {
+            segments[i] = parent.segments[i];
+            code += segments.hashCode();
+        }
+        if (fileName != null)
+        {
+            segments[segments.length-1] = fileName;
+        }
+        else if (parent.segments.length > 1)
+        {
+            segments[segments.length-1] = parent.segments[parent.segments.length-2];
+        }
+        if ( segments.length > 0)
+        {
+            code += segments[segments.length-1].hashCode();
+        }
+        if (queryString != null)
+        {
+            code += queryString.hashCode();
+        }
+        hashCode = code;
+        path = buildPath();
+    }
+            
+    private Path(String[] segments, int offset, int count)
+    {
+        this.segments = new String[count];
+        int code = 0;
+        for (int i = 0; i < count; i++)
+        {
+            this.segments[i] = segments[offset+i];
+            code+=segments[offset+i].hashCode();
+        }
+        hashCode = code;
+        if (count > 0)
+        {
+            fileName = this.segments[count-1];
+            int extIndex = fileName.lastIndexOf('.');
+            if (extIndex > -1)
+            {
+                baseName = fileName.substring(0, extIndex);
+                fileExtension = fileName.substring(extIndex);
+            }
+            else
+            {
+                baseName = fileName;
+                fileExtension = "";
+            }
+        }
+        else
+        {
+            fileName = null;
+            baseName = null;
+            fileExtension = null;
+        }
+        queryString = null;
+        path = buildPath();
+    }
+            
+    public Path(String path)
+    {
+        
+        String tmp = path.replace('\\', '/');
+
+        if (!tmp.startsWith("/"))
+        {
+            tmp = "/" + tmp;
+        }
+
+        this.path = tmp;
+        
+        if (path.equals("/"))
+        {
+            segments = new String[]{""};
+            fileName = null;
+            baseName = null;
+            fileExtension = null;
+            queryString = null;
+            hashCode = 0;
+        }
+        else
+        {
+            int queryStart = path.indexOf('?');
+            int len = queryStart > -1 ? queryStart : path.length();
+            segments = split(path, 0, len, '/');
+            int code  = 0;
+            for (int i = 0; i < segments.length; i++)
+            {
+                code += segments[i].hashCode();
+            }
+            String tmpFileName = null;
+            
+            if (queryStart > 1 && path.length() > queryStart+1)
+            {
+                queryString = path.substring(queryStart+1);
+                code += queryString.hashCode();
+            }
+            else
+            {
+                queryString = null;
+            }
+            hashCode = code;
+            int extIndex = -1;
+            if (segments.length > 0)
+            {
+                tmpFileName = segments[segments.length-1];
+                extIndex = tmpFileName.lastIndexOf('.');
+            }
+            if (extIndex > -1)
+            {
+                fileName = tmpFileName;
+                baseName = tmpFileName.substring(0, extIndex);
+                fileExtension = tmpFileName.substring(extIndex);
+            }
+            else
+            {
+                fileName = null;
+                baseName = null;
+                fileExtension = null;
             }
         }
     }
 
-    protected final void parseQueryString(String path)
+    private static String[] splitPath(String path)
     {
-        String[] split = segmentsPattern.split(path,0);
-        if (split.length > 1)
+        String[] children = null;
+        path = path.replace('\\', '/');
+
+        if (path.startsWith("/"))
         {
-            queryString = split[1];
+            path = "/" + path;
+        }
+
+        if (path.equals("/"))
+        {
+            children = new String[]{""};
         }
         else
         {
-            queryString = null;
+            int index = path.indexOf('?');
+            int len = index > -1 ? index : path.length();
+            children = split(path, 0, len, '/');
         }
+        return children;
     }
-
-    protected final void parseFileInfo(boolean expectExtension)
-    {
-        fileName = (String) segments.getLast();
-        int extIndex = fileName.lastIndexOf('.');
-        if (extIndex > -1)
-        {
-            baseName = fileName.substring(0, extIndex);
-            fileExtension = fileName.substring(extIndex);
-        }
-        else if (!expectExtension)
-        {
-            baseName = fileName;
-            fileExtension = "";
-        }
-        else
-        {
-            // File segment must have been removed
-            fileName = null;
-            baseName = null;
-            fileExtension = null;
-            // Remove the query string also
-            queryString = null;
-        }
-    }
-
+    
     /**
      * Returns the segement of the path at the specified index <code>i</code>.
      * 
@@ -213,7 +316,7 @@ public class Path implements Serializable, Cloneable
      */
     public String getSegment(int i)
     {
-        return (String) segments.get(i);
+        return segments[i];
     }
 
     /**
@@ -233,44 +336,17 @@ public class Path implements Serializable, Cloneable
      */
     public Path addSegment(String segment)
     {
-        parsePathSegments(segments, segment, false);
-        rebuildPath();
-        return this;
-    }
-
-    public Path setFileSegement(String fileSegment)
-    {
-        // Remove existing file segment
-        if (baseName != null)
-        {
-            segments.removeLast();
-        }
-
-        segments.add(fileSegment);
-        parseFileInfo(false);
-        rebuildPath();
-        return this;
+        return new Path(this, segment, false);
     }
 
     public Path getSubPath(int beginAtSegment)
     {
-        return getSubPath(beginAtSegment, segments.size());
+        return new Path(segments, beginAtSegment, segments.length-beginAtSegment);
     }
 
     public Path getSubPath(int beginAtSegment, int endSegment)
     {
-        pathBuffer.setLength(0);
-        for (int i = beginAtSegment; i < endSegment; i++)
-        {
-            pathBuffer.append("/").append((String) segments.get(i));
-        }
-
-//        if (queryString != null)
-//        {
-//            newPathString.append("?").append(queryString);
-//        }
-
-        return new Path(pathBuffer.toString());
+        return new Path(segments, beginAtSegment, endSegment-beginAtSegment);
     }
 
     public String getBaseName()
@@ -295,91 +371,60 @@ public class Path implements Serializable, Cloneable
 
     public int length()
     {
-        return segments.size();
+        return segments.length;
     }
-
+    
     public String toString()
     {
         return path;
     }
 
-    public String pathOnly()
+    private String buildPath()
     {
-        return pathOnly;
+        int len = 0;
+        for (int i = 0; i < segments.length; i++)
+        {
+            len+=segments[i].length()+1;
+        }
+        if (queryString!=null)
+        {
+            len+=queryString.length()+1;
+        }
+        char[] buffer = new char[len];
+        int index = 0;
+        for (int i = 0; i < segments.length; i++ )
+        {
+            buffer[index++] = '/';
+            len = segments[i].length();
+            segments[i].getChars(0, len, buffer, index);
+            index+= len;
+        }
+        if (queryString != null)
+        {                
+            buffer[index++] = '?';
+            len = queryString.length();
+            queryString.getChars(0, len, buffer, index);
+        }
+        return new String(buffer);
     }
 
     public boolean equals(Object obj)
     {
         if (obj instanceof Path)
         {
-            return ((Path) obj).path.equals(this.path);
+            Path other = (Path)obj;
+            if ( (other.queryString != null && other.queryString.equals(queryString)) ||
+                    (other.queryString == null && queryString == null) )
+            {
+                return Arrays.equals(other.segments,segments);
+            }
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     public int hashCode()
     {
-        return (getClass().getName() + "::" + path).hashCode();
-    }
-
-    public Path prepend(String pathSegment)
-    {
-        parsePathSegments(segments, pathSegment, true);
-        rebuildPath();
-        return this;
-    }
-
-    public Path prepend(Path pathToAdd)
-    {
-        for (int i = 0; i < pathToAdd.length(); i++)
-        {
-            segments.add(i, pathToAdd.getSegment(i));
-        }
-        rebuildPath();
-        return this;
-    }
-
-    public String remove(int i)
-    {
-        String removedSegment;
-        if ((segments.size() - 1) == i && fileName != null)
-        {
-            removedSegment = removeFileSegment();
-        }
-        else
-        {
-            removedSegment = (String) segments.remove(i);
-            rebuildPath();
-        }
-
-        return removedSegment;
-    }
-
-    public void removeQueryString()
-    {
-        queryString = null;
-    }
-
-    public String removeFileSegment()
-    {
-        if (fileName != null)
-        {
-            String fileSegment = (String) segments.removeLast();
-            fileName = null;
-            baseName = null;
-            fileExtension = null;
-            // Remove the query string also
-            queryString = null;
-            rebuildPath();
-            return fileSegment;
-        }
-        else
-        {
-            return null;
-        }
+        return hashCode;
     }
 
     /**
@@ -389,70 +434,13 @@ public class Path implements Serializable, Cloneable
      * 
      * @return segment removed.
      */
-    public String removeLastPathSegment()
+    public Path removeLastPathSegment()
     {
-        if (fileName != null)
+        if ((fileName != null && segments.length == 1) || segments.length == 0)
         {
-            if (segments.size() > 1)
-            {
-                return remove((segments.size() - 2));
-            }
-            else
-            {
-                return null;
-            }
+            return this;
         }
-        else
-        {
-            String segment = (String) segments.removeLast();
-            rebuildPath();
-            return segment;
-        }
-    }
-
-    protected final void rebuildPath()
-    {
-        Iterator itr = segments.iterator();
-        pathBuffer.setLength(0);
-        while (itr.hasNext())
-        {
-            pathBuffer.append(PATH_SEPERATOR).append((String) itr.next());
-        }
-
-        pathOnly = pathBuffer.toString();
-
-        if (queryString != null)
-        {
-            pathBuffer.append("?").append(queryString);
-            path = pathBuffer.toString();
-        }
-        else
-        {
-            path = pathOnly;
-        }
-    }
-
-    public Object clone()
-    {
         return new Path(this);
-    }
-
-    public int indexOf(String segment)
-    {
-        return segments.indexOf(segment.replaceAll("[\\\\ | /]", ""));
-    }
-
-    public void replaceVariable(String name, String value)
-    {
-        for (int i = 0; i < segments.size(); i++)
-        {
-            String segment = (String) segments.get(i);
-            if (("{" + name + "}").equals(segment))
-            {
-                segments.set(i, value);
-            }
-        }
-        rebuildPath();
     }
 
     public Path getChild(String childPath)
@@ -472,21 +460,17 @@ public class Path implements Serializable, Cloneable
             }
             if ( child == null )
             {
-                if (path.length() == 0)
+                if (segments.length == 0)
                 {
                     child = new Path(childPath);
                 }
-                else if (fileName != null)
-                {
-                    child = getSubPath(0, (segments.size() - 1)).addSegment(childPath);       
-                }
                 else
                 {
-                    child = getSubPath(0, segments.size()).addSegment(childPath);
+                    child = new Path(this, childPath, true);
                 }
                 children.put(childPath, child);
             }
-            return new Path(child);
+            return child;
         }
     }
 
@@ -494,24 +478,58 @@ public class Path implements Serializable, Cloneable
     {
         return getChild(childPath.path);
     }
-
-    public Path getParent()
+    
+    private static String[] split(String str, int start, int length, char separator)
     {
-        if (fileName != null)
+        String[] result;
+        char[] buffer = str.toCharArray();
+        int tokens = 0;
+        boolean token = false;
+        for (int i = start; i < length; i++)
         {
-
-            return getSubPath(0, segments.size() - 1);
+            if (buffer[i]==separator)
+            {
+                token = false;
+            }
+            else if (!token)
+            {
+                tokens++;
+                token = true;
+            }
         }
-        else
+        result = new String[tokens];
+        if (tokens > 0)
         {
-            if (segments.size() > 1)
+            int begin = start;
+            int end = start;
+            token = false;
+            tokens = 0;
+            for (int i = start; i < length; i++)
             {
-                return getSubPath(0, segments.size() - 1);
+                if (buffer[i]==separator)
+                {
+                    if (token)
+                    {
+                       result[tokens++] = new String(buffer,begin,end);
+                       token = false;
+                    }
+                }
+                else if (!token)
+                {
+                    token = true;
+                    begin = i;
+                    end = 1;
+                }
+                else
+                {
+                    end++;
+                }
             }
-            else
+            if (token)
             {
-                return new Path();
+                result[tokens] = new String(buffer,begin, end);
             }
         }
+        return result;
     }
 }

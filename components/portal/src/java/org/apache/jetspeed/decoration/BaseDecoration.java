@@ -125,7 +125,7 @@ public class BaseDecoration implements Decoration, Serializable
         {
             return basePath.toString();
         }
-        return ( (Path)basePath.clone() ).addSegment( relativePath ).toString();
+        return basePath.addSegment( relativePath ).toString();
     }
         
     public String getResource( String path )
@@ -139,7 +139,7 @@ public class BaseDecoration implements Decoration, Serializable
         }
         else
         {
-            String locatedPath = getResource( (Path)baseClientPath.clone(), new Path( path ) );
+            String locatedPath = getResource( baseClientPath, new Path( path ) );
             if( ! locatedPath.startsWith( NO_SUCH_RESOURCE ) )
             {
                 if( ! path.startsWith( "/" ) )
@@ -173,8 +173,8 @@ public class BaseDecoration implements Decoration, Serializable
         }
         else if( rootPath.length() > 0 )
         {
-            rootPath.removeLastPathSegment();
-            return getResource( rootPath, searchPath );
+            
+            return getResource( rootPath.removeLastPathSegment(), searchPath );
         }
         else
         {

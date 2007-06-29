@@ -155,7 +155,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public PortletDecoration getPortletDecoration( String name, RequestContext requestContext )
     {
         Path basePath = getPortletDecorationBasePath( name );
-        Path baseClientPath = createClientPath( name, (Path)basePath.clone(), requestContext, Fragment.PORTLET );
+        Path baseClientPath = createClientPath( name, basePath, requestContext, Fragment.PORTLET );
         Properties configuration = getConfiguration( name, Fragment.PORTLET );
         SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
         return new PortletDecorationImpl( configuration, validator, basePath, baseClientPath, sessionPathResolver );
@@ -164,7 +164,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public LayoutDecoration getLayoutDecoration( String name, RequestContext requestContext )
     {
         Path basePath = getLayoutDecorationBasePath( name );
-        Path baseClientPath = createClientPath( name, (Path)basePath.clone(), requestContext, Fragment.LAYOUT );
+        Path baseClientPath = createClientPath( name, basePath, requestContext, Fragment.LAYOUT );
         Properties configuration = getConfiguration( name, Fragment.LAYOUT );
         SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
         return new LayoutDecorationImpl( configuration, validator, basePath, baseClientPath, sessionPathResolver );
@@ -402,25 +402,21 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
 
     protected Path getBasePath( String decorationType )
     {
-        Path basePath = ((Path)decorationsPath.clone()).addSegment(decorationType);
-        return basePath;
+        return decorationsPath.addSegment(decorationType);
     }
     
     protected Path getBasePath( String name, String decorationType )
     {
-        Path basePath = ((Path)decorationsPath.clone()).addSegment(decorationType).addSegment(name);
-        return basePath;
+        return decorationsPath.addSegment(decorationType).addSegment(name);
     }
     
     protected Path getLayoutDecorationBasePath( String name )
     {
-        Path basePath = ((Path)layoutDecorationsPath.clone()).addSegment(name);
-        return basePath;
+        return layoutDecorationsPath.addSegment(name);
     }
     protected Path getPortletDecorationBasePath( String name )
     {
-        Path basePath = ((Path)portletDecorationsPath.clone()).addSegment(name);
-        return basePath;
+        return portletDecorationsPath.addSegment(name);
     }
     
     public String getLayoutDecorationsBasePath()

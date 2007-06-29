@@ -136,11 +136,11 @@ public class TestDecorations extends MockObjectTestCase
     {
         setUp1();
         
-        Path testPath = (Path) testPathHtmlEn.clone();
+        Path testPath = testPathHtmlEn;
         String failure1 = testPath.getChild("/images/myimage.gif").toString();
-        testPath.removeLastPathSegment();
+        testPath = testPath.removeLastPathSegment();
         String failure2 = testPath.getChild("/images/myimage.gif").toString();
-        testPath.removeLastPathSegment();
+        testPath = testPath.removeLastPathSegment();
         String success = testPath.getChild("/images/myimage.gif").toString();
         
         Constraint[] constraints = new Constraint[]{eq(failure1), eq(failure2), eq(success)};

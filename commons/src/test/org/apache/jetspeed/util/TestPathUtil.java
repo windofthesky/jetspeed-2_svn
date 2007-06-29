@@ -39,7 +39,7 @@ public class TestPathUtil extends TestCase
         assertEquals("sub1", path.getSegment(1));
         assertEquals("sub2", path.getSegment(2));
         assertEquals("file.html", path.getSegment(3));  
-        assertEquals("/root/sub1/sub2/file.html", path.pathOnly());
+//        assertEquals("/root/sub1/sub2/file.html", path.pathOnly());
         
         assertEquals("/sub1/sub2/file.html", path.getSubPath(1).toString());
         
@@ -57,12 +57,26 @@ public class TestPathUtil extends TestCase
         
         assertNull(path.getBaseName());
         
-        Path pathNoFile = new Path("/root/sub1/sub2");
+        Path pathNoFile = new Path("/root/sub1/sub2?abc");
         assertEquals("root", pathNoFile.getSegment(0));
         assertEquals("sub1", pathNoFile.getSegment(1));
         assertEquals("sub2", pathNoFile.getSegment(2));
         
         assertEquals("/sub1/sub2", pathNoFile.getSubPath(1).toString());
-                
+        
+        assertEquals("/root/sub1/sub2/abc", pathNoFile.getChild("abc").toString());
+        assertEquals("/root/sub1/sub2/abc/def", pathNoFile.getChild(new Path("abc/def")).toString());
+        assertEquals("/root/sub1?abc", pathNoFile.removeLastPathSegment().toString());
+        assertEquals("/root?abc", pathNoFile.removeLastPathSegment().removeLastPathSegment().toString());
+        assertEquals("?abc", pathNoFile.removeLastPathSegment().removeLastPathSegment().removeLastPathSegment().toString());
+        assertEquals("?abc", pathNoFile.removeLastPathSegment().removeLastPathSegment().removeLastPathSegment().removeLastPathSegment().toString());
+
+        Path pathFile = new Path("/root/sub1/sub2/test.html?123");
+        assertEquals("/root/sub1/sub2/abc", pathFile.getChild("abc").toString());
+        assertEquals("/root/sub1/sub2/abc/def/test123.html", pathFile.getChild(new Path("abc/def/test123.html")).toString());
+        assertEquals("/root/sub1/test.html?123", pathFile.removeLastPathSegment().toString());
+        assertEquals("/root/test.html?123", pathFile.removeLastPathSegment().removeLastPathSegment().toString());
+        assertEquals("/test.html?123", pathFile.removeLastPathSegment().removeLastPathSegment().removeLastPathSegment().toString());
+        assertEquals("/test.html?123", pathFile.removeLastPathSegment().removeLastPathSegment().removeLastPathSegment().removeLastPathSegment().toString());
     }
 }
