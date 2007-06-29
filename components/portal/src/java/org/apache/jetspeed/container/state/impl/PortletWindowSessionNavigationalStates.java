@@ -147,6 +147,10 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             if (changed)
             {
                 removeFromCache(context, requestState.getWindowId(), cache);
+                if (storeParameters)
+                {
+                    ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                }
             }
         }
         
@@ -165,6 +169,10 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 if (changed)
                 {
                     removeFromCache(context, requestState.getWindowId(), cache);
+                    if (storeParameters)
+                    {
+                        ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                    }
                 }
             }
         }        
@@ -325,5 +333,11 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             cache.remove(cacheKey);
         }
         cache.invalidate(context);
+    }
+    
+    protected Map getWindowStates(Page page)
+    {
+        PageState pageState = (PageState)pageStates.get(page.getId());
+        return pageState != null ? pageState.windowStates : null;
     }
 }

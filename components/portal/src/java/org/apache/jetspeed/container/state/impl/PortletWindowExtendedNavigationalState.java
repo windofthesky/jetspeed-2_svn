@@ -16,8 +16,12 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 /**
  * PortletWindowExtendedNavigationalState
@@ -27,7 +31,38 @@ import java.util.Map;
  */
 public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNavigationalState
 {
+    private static final class ModeStateKey implements Serializable
+    {
+        private final String mode;
+        private final String state;
+        private final int hashCode;
+        
+        public ModeStateKey(PortletMode mode, WindowState state)
+        {
+            this.mode = (mode != null ? mode.toString() : PortletMode.VIEW.toString()).intern() ;
+            this.state = (state != null ? state.toString() : WindowState.NORMAL.toString()).intern();
+            hashCode = this.mode.hashCode()+this.state.hashCode();
+        }
+        
+        public boolean equals(Object obj)
+        {
+            if (obj != null && obj instanceof ModeStateKey)
+            {
+                ModeStateKey key = (ModeStateKey)obj;
+                return mode.equals(key.mode) && state.equals(key.state);
+            }
+            return false;
+        }
+
+        public int hashCode()
+        {
+            return hashCode;
+        }
+    }
+    
     private Map parametersMap;
+    
+    private Map decoratorActionEncodings;
         
     public Map getParametersMap()
     {
@@ -46,5 +81,31 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     public void setParametersMap(Map parametersMap)
     {
         this.parametersMap = parametersMap;
+    }
+    
+    public void resetDecoratorActionEncodings()
+    {
+        if (decoratorActionEncodings != null)
+        {
+            decoratorActionEncodings.clear();
+        }
+    }
+    
+    public void setDecoratorActionEncoding(PortletMode mode, WindowState state, String encoding)
+    {
+        if (decoratorActionEncodings == null)
+        {
+            decoratorActionEncodings = new HashMap(4);
+        }
+        decoratorActionEncodings.put(new ModeStateKey(mode,state), encoding);
+    }
+    
+    public String getDecoratorActionEncoding(PortletMode mode, WindowState state)
+    {
+        if (decoratorActionEncodings != null)
+        {
+            return (String)decoratorActionEncodings.get(new ModeStateKey(mode,state));
+        }
+        return null;
     }
 }

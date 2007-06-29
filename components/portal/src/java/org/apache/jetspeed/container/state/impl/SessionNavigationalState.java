@@ -16,12 +16,15 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import java.util.Map;
+
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -31,7 +34,9 @@ import org.apache.jetspeed.request.RequestContext;
  * @version $Id$
  */
 public class SessionNavigationalState extends AbstractNavigationalState
-{    
+{   
+    private Map currentPageWindowStates;
+    
     public SessionNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
         super(codec, cache);
@@ -90,9 +95,19 @@ public class SessionNavigationalState extends AbstractNavigationalState
                     sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
                     session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
                 }
-                sessionStates.sync(context, context.getPage(), requestStates, cache);
+                Page page = context.getPage();
+                sessionStates.sync(context, page, requestStates, cache);
+                if (isNavigationalParameterStateFull() && isRenderParameterStateFull())
+                {
+                    currentPageWindowStates = sessionStates.getWindowStates(page);
+                }
             }
         }
+    }
+    
+    public Map getCurrentPageWindowStates()
+    {
+        return currentPageWindowStates;
     }
     
     public boolean isNavigationalParameterStateFull()

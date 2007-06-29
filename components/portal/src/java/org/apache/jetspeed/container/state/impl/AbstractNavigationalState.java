@@ -269,8 +269,35 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 state = pa.getMappedWindowState(state);
             }
         }
-        return codec.encode(requestStates, window, mode, state, isNavigationalParameterStateFull(), 
-                isRenderParameterStateFull());
+        String encodedState = null;
+        Map currentWindowStates = null;
+        PortletWindowExtendedNavigationalState windowNavState = null;
+        if (this instanceof SessionNavigationalState)
+        {
+            currentWindowStates = ((SessionNavigationalState)this).getCurrentPageWindowStates();
+            if (currentWindowStates != null)
+            {
+                windowNavState = (PortletWindowExtendedNavigationalState)currentWindowStates.get(window.getId().toString());
+                if (windowNavState != null)
+                {
+                   encodedState = windowNavState.getDecoratorActionEncoding(mode, state);
+                }
+            }
+        }
+        if (encodedState == null)
+        {
+            encodedState = codec.encode(requestStates, window, mode, state, isNavigationalParameterStateFull(), isRenderParameterStateFull());
+            if (currentWindowStates != null)
+            {
+                if (windowNavState == null)
+                {
+                    windowNavState = new PortletWindowExtendedNavigationalState();
+                    currentWindowStates.put(window.getId().toString(), windowNavState);
+                }
+                windowNavState.setDecoratorActionEncoding(mode, state, encodedState);
+            }
+        }
+        return encodedState;
     }
 
     public Iterator getWindowIdIterator()
