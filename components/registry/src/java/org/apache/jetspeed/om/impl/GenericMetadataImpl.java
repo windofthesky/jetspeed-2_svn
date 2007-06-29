@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 
@@ -37,8 +37,23 @@ import org.apache.jetspeed.om.common.LocalizedField;
 public abstract class GenericMetadataImpl implements GenericMetadata
 {   
     private Collection fields = null;
-    private transient MultiHashMap fieldMap = new MultiHashMap();
+    private transient MultiValueMap fieldMap = null;
     
+    private MultiValueMap getFieldMap(boolean create)
+    {
+        if (fieldMap == null && create)
+        {
+            synchronized(this)
+            {
+                if (fieldMap == null)
+                {
+                    fieldMap = new MultiValueMap();
+                }
+            }
+        }
+        return fieldMap;
+    }
+
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#addField(java.util.Locale, java.lang.String, java.lang.String)
@@ -64,7 +79,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
         }
         
         fields.add(field);
-        fieldMap.put(field.getName(), field);
+        getFieldMap(true).put(field.getName(), field);
     }
 
     /* (non-Javadoc)
@@ -73,7 +88,8 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     public Collection getFields(String name)
     {
     	//TODO:  return an immutable version?
-        return (Collection)fieldMap.get(name);
+        MultiValueMap fieldMap = getFieldMap(false);
+        return (Collection)(fieldMap !=null ? fieldMap.get(name) : null);
     }
 
     /* (non-Javadoc)
@@ -81,7 +97,11 @@ public abstract class GenericMetadataImpl implements GenericMetadata
      */
     public void setFields(String name, Collection values)
     {
-        fieldMap.remove(name);
+        MultiValueMap fieldMap = getFieldMap(false);
+        if (fieldMap != null)
+        {
+            fieldMap.remove(name);
+        }
         
         Iterator fieldIter = fields.iterator();
         while(fieldIter.hasNext())
@@ -99,13 +119,13 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             while(iter.hasNext())
             {
                 LocalizedField field = (LocalizedField)iter.next();
-                fieldMap.put(field.getName(), field);
+                getFieldMap(true).put(field.getName(), field);
             }
             
             fields.addAll(values);
         }
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#getFields()
      */
@@ -119,15 +139,23 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     public void setFields(Collection fields)
     {
         this.fields = fields;
-        fieldMap.clear();
 
+        MultiValueMap fieldMap = getFieldMap(false);
+        if (fieldMap != null)
+        {
+            fieldMap.clear();
+        }
+        
         if(fields != null)
         {    
             Iterator fieldIter = fields.iterator();
             while(fieldIter.hasNext())
             {
                 LocalizedField field = (LocalizedField)fieldIter.next();
-                fieldMap.put(field.getName(), field);
+                if (field.getName() != null)
+                {
+                    getFieldMap(true).put(field.getName(), field);
+                }
             }
         }
         
@@ -175,14 +203,19 @@ public abstract class GenericMetadataImpl implements GenericMetadata
         }
         
         // update field map
-        this.fieldMap.clear();
+        MultiValueMap fieldMap = getFieldMap(false);
+        if (fieldMap != null)
+        {
+            fieldMap.clear();
+        }
+        
         if (this.fields != null)
         {    
             Iterator fieldIter = this.fields.iterator();
             while (fieldIter.hasNext())
             {
                 LocalizedField field = (LocalizedField)fieldIter.next();
-                this.fieldMap.put(field.getName(), field);
+                getFieldMap(true).put(field.getName(), field);
             }
         }
     }
