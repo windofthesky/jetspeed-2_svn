@@ -136,6 +136,7 @@
       Boolean _editing = (Boolean) renderRequest.getAttribute("editing");
       pageContext.setAttribute("editing", _editing, REQ_SCOPE);
     
+      pageContext.setAttribute("layoutType", portletConfig.getInitParameter("layoutType"), REQ_SCOPE);
     
       //columnLayout, no type info here because layout jars not available
       // TODO got to move ColumnLayout from layout-portlets out! Jetspeed webapp cannot see it!
