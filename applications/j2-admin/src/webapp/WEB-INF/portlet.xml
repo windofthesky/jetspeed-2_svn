@@ -288,6 +288,10 @@ limitations under the License.
             <value>true</value>
         </preference>
         <preference>
+            <name>showSubsiteForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
             <name>defaultChangePasswordRequired</name>
             <value>false</value>
         </preference>
@@ -307,6 +311,14 @@ limitations under the License.
      		<name>requiredRole</name>
             <value></value>   
         </preference>
+        <preference>
+     		<name>subsiteRootFolder</name>
+            <value>/__subsite-root/_hostname/</value>   
+        </preference>        
+        <preference>
+     		<name>defaultSubsite</name>
+            <value></value>   
+        </preference>                
     </portlet-preferences>
 </portlet>
 
@@ -1098,6 +1110,10 @@ limitations under the License.
         <value>/WEB-INF/view/userreg/userRegistration.vm</value>
     </init-param>
     <init-param>
+        <name>EditPage</name>
+        <value>/WEB-INF/view/edit-prefs.vm</value>
+    </init-param>            
+    <init-param>
         <description>This option will generate a new password for each user registration</description>
         <name>Option_Generate_Passwords</name>
         <value>false</value>
@@ -1153,6 +1169,7 @@ limitations under the License.
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
+        <portlet-mode>EDIT</portlet-mode>
     </supports>
     <supported-locale>en</supported-locale>
     <supported-locale>ja</supported-locale>
@@ -1167,6 +1184,30 @@ limitations under the License.
             <name>SendEmail</name>
             <value>false</value>
         </preference>    
+        <preference>
+            <name>newUserTemplateDirectory</name>
+            <value>/_user/template/</value>
+        </preference>        
+        <preference>
+     		<name>subsiteRootFolder</name>
+            <value></value>   
+        </preference>        
+        <preference>
+     		<name>roles</name>
+            <value>user</value>   
+        </preference>        
+        <preference>
+     		<name>groups</name>
+            <value></value>   
+        </preference>        
+        <preference>
+     		<name>rulesNames</name>
+            <value>page</value>   
+        </preference>        
+        <preference>
+     		<name>rulesValues</name>
+            <value>j2</value>   
+        </preference>        
     </portlet-preferences>
  </portlet>
     
@@ -1750,6 +1791,10 @@ limitations under the License.
             <value>true</value>
         </preference>
         <preference>
+            <name>showSubsiteForAddUser</name>
+            <value>true</value>
+        </preference>        
+        <preference>
             <name>defaultChangePasswordRequired</name>
             <value>false</value>
         </preference>
@@ -1769,6 +1814,14 @@ limitations under the License.
      		<name>requiredRole</name>
             <value>user</value>   
         </preference>
+        <preference>
+     		<name>subsiteRootFolder</name>
+            <value>/__subsite-root/_hostname/</value>   
+        </preference>        
+        <preference>
+     		<name>defaultSubsite</name>
+            <value></value>   
+        </preference>                        
     </portlet-preferences>
 </portlet>
 

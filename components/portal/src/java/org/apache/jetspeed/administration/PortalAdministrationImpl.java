@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
@@ -149,7 +150,20 @@ public class PortalAdministrationImpl implements PortalAdministration
     {
         registerUser(userName, password, (List)null, null, null, null, null);
     }
-        
+
+    public void registerUser(
+            String userName, 
+            String password, 
+            List roles, 
+            List groups, 
+            Map userInfo, 
+            Map rules, 
+            String folderTemplate)
+    throws RegistrationException    
+    {
+        registerUser(userName, password, roles, groups, userInfo, rules, folderTemplate, null);
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.administration.PortalAdministration#registerUser(java.lang.String, java.lang.String, java.util.Map, java.awt.List, java.awt.List, java.lang.String)
      */    
@@ -160,7 +174,8 @@ public class PortalAdministrationImpl implements PortalAdministration
             List groups, 
             Map userInfo, 
             Map rules, 
-            String folderTemplate)
+            String folderTemplate,
+            String subsite)
     throws RegistrationException    
     {
         try 
@@ -225,11 +240,11 @@ public class PortalAdministrationImpl implements PortalAdministration
                 while (ruleEntries.hasNext())
                 {           
                     Map.Entry entry = (Map.Entry)ruleEntries.next();                    
-                    ProfilingRule rule = profiler.getRule((String)entry.getKey());
+                    ProfilingRule rule = profiler.getRule((String)entry.getValue());
                     if (rule != null)
                     {
                         Principal principal = SecurityHelper.getBestPrincipal(user.getSubject(), UserPrincipal.class);
-                        profiler.setRuleForPrincipal(principal, rule, (String)entry.getValue());
+                        profiler.setRuleForPrincipal(principal, rule, (String)entry.getKey());
                     }
                 }
             }
@@ -239,13 +254,24 @@ public class PortalAdministrationImpl implements PortalAdministration
                 folderTemplate = this.folderTemplate; 
             }
             
+            if (subsite == null)
+            {
+                subsite = Folder.USER_FOLDER + userName;
+            }
+            else
+            {
+                subsite  = subsite + Folder.USER_FOLDER +  userName;
+            }            
+            
+            
             // This next chunk of code is the fancy way to force the creation of the user
             // template pages to be created with subject equal to the new user
             // otherwise it would be created as guest, and guest does not have enough privs.
             final String innerFolderTemplate = folderTemplate;
-            final String innerUserName = userName;
+            final String innerSubsite = subsite;
             final PageManager innerPageManager = pageManager;
-            final String innerUser = userName;
+            final String innerUserName = userName;
+            final User innerUser = user;
             User powerUser = userManager.getUser(this.adminUser);
             JetspeedException pe = (JetspeedException) JSSubject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
                 {
@@ -253,12 +279,19 @@ public class PortalAdministrationImpl implements PortalAdministration
                     {
                          try
                         {
-//                           create user's home folder                        
+                             if (innerSubsite != null)
+                             {
+                                 Preferences attributes = innerUser.getUserAttributes();
+                                 attributes.put(User.USER_INFO_SUBSITE, innerSubsite);                                    
+                             }                                         
+                             // create user's home folder                        
                              // deep copy from the default folder template tree, creating a deep-copy of the template
                              // in the new user's folder tree
-                            Folder source = innerPageManager.getFolder(innerFolderTemplate);                            
-                            innerPageManager.deepCopyFolder(source, Folder.USER_FOLDER + innerUserName, innerUser);
-                            Folder newFolder = pageManager.getFolder(Folder.USER_FOLDER + innerUserName);                            
+                            Folder source = innerPageManager.getFolder(innerFolderTemplate);
+                            
+                            
+                            innerPageManager.deepCopyFolder(source, innerSubsite, innerUserName);
+                            Folder newFolder = pageManager.getFolder(innerSubsite);                            
                             newFolder.setTitle("Home Folder");
                             newFolder.setShortTitle("Home");
                              

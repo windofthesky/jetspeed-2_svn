@@ -51,6 +51,8 @@ public interface PortalAdministration
      *              Well known rules names are 'page' and 'menu' 
      * @param folderTemplate The full PSML path name of a folder to be deep
      *               copied as the new user's set of folders, pages, links
+     * @param subsite The subsite folder to place the new user in
+     * @since 2.1.1              
      */
     void registerUser(String userName, 
                       String password, 
@@ -58,7 +60,17 @@ public interface PortalAdministration
                       List groups,
                       Map userInfo,                       
                       Map rules,
-                      String template)
+                      String template,
+                      String subsiteFolder)
+        throws RegistrationException;
+
+    void registerUser(String userName, 
+            String password, 
+            List roles, 
+            List groups,
+            Map userInfo,                       
+            Map rules,
+            String template)
         throws RegistrationException;
  
     /**

@@ -51,7 +51,7 @@ public interface SecurityResources
     public static final String MESSAGE_REFRESH_PROFILES = "refresh.profiles";
     public static final String MESSAGE_REFRESH_ROLES = "refresh.roles";
     public static final String MESSAGE_REFRESH_GROUPS = "refresh.groups";
-    
+    public static final String MESSAGE_REFRESH_SUBSITES = "refresh.subsites";    
     
     /** the selected non-leaf node in the tree view */
     public final static String REQUEST_NODE = "node";

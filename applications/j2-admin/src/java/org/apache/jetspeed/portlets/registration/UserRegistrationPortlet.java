@@ -33,6 +33,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -51,6 +52,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.portals.bridges.util.PreferencesHelper;
 import org.apache.portals.bridges.velocity.AbstractVelocityMessagingPortlet;
 import org.apache.portals.gems.util.ValidationHelper;
 import org.apache.velocity.context.Context;
@@ -235,6 +237,13 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         this.redirectPath = config.getInitParameter(IP_REDIRECT_PATH);
     }
 
+    public void doEdit(RenderRequest request, RenderResponse response)
+    throws PortletException, IOException
+    {
+        response.setContentType("text/html");
+        doPreferencesEdit(request, response);
+    }
+    
     public void doView(RenderRequest request, RenderResponse response)
             throws PortletException, IOException
     {
@@ -488,6 +497,15 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         ResourceBundle resource = getPortletConfig().getResourceBundle(
                 actionRequest.getLocale());
 
+        if (actionRequest.getPortletMode() == PortletMode.EDIT)
+        {
+            PortletPreferences prefs = actionRequest.getPreferences();
+            PreferencesHelper.requestParamsToPreferences(actionRequest);
+            prefs.store();
+            actionResponse.setPortletMode(PortletMode.VIEW);
+            return;
+        }
+        
         try
         {
 
@@ -651,13 +669,37 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
             // Ok, we think we're good to go, let's create the user!
             try
             {
+                PortletPreferences prefs = actionRequest.getPreferences();
+                String template = prefs.getValue("newUserTemplateDirectory", "");
+                if (template.trim().length() == 0)
+                    template = null;
+                String subsiteRootFolder = prefs.getValue("subsiteRootFolder", "");
+                if (subsiteRootFolder.trim().length() == 0)
+                    subsiteRootFolder = null;
+                List prefRoles = getPreferencesList(prefs, IP_ROLES);
+                if (prefRoles.isEmpty())
+                    prefRoles = this.roles;
+                List prefGroups = getPreferencesList(prefs, IP_GROUPS);
+                if (prefGroups.isEmpty())
+                    prefGroups = this.groups;
+                
+                List names = getPreferencesList(prefs, IP_RULES_NAMES);
+                List values = getPreferencesList(prefs, IP_RULES_VALUES);
+                Map profileRules = new HashMap();
+                for (int ix = 0; ix < ((names.size() < values.size()) ? names.size()
+                        : values.size()); ix++)
+                {
+                    profileRules.put(names.get(ix), values.get(ix));
+                }
+                if (profileRules.isEmpty())
+                    profileRules = this.rules;
+                
                 admin.registerUser((String) userInfo.get("user.name"),
-                        (String) userInfo.get("password"), this.roles,
-                        this.groups, userAttributes, // note use of only
+                        (String) userInfo.get("password"), prefRoles,
+                        prefGroups, userAttributes, // note use of only
                                                         // PLT.D values here.
-                        rules, null); // passing in null causes use of default
-                                        // template
-
+                        profileRules, template, subsiteRootFolder); 
+                
                 String urlGUID = ForgottenPasswordPortlet.makeGUID(
                         (String) userInfo.get("user.name"), (String) userInfo
                                 .get("password"));
@@ -670,7 +712,6 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                 if (templ == null) { throw new Exception(
                         "email template not available"); }
 
-                PortletPreferences prefs = actionRequest.getPreferences();
                 boolean sendEmail = prefs.getValue("SendEmail", "true").equals("true");
                 if (sendEmail)
                 {
@@ -745,6 +786,18 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         return Arrays.asList(temps);
     }
 
+    protected List getPreferencesList(PortletPreferences prefs, String prefName)
+    {
+        String temp = prefs.getValue(prefName, "");
+        if (temp == null || temp.trim().length() == 0) return new ArrayList();
+
+        String[] temps = temp.split("\\,");
+        for (int ix = 0; ix < temps.length; ix++)
+            temps[ix] = temps[ix].trim();
+
+        return Arrays.asList(temps);
+    }
+    
     protected String generateReturnURL(PortletRequest request,
             PortletResponse response, String urlGUID)
     {

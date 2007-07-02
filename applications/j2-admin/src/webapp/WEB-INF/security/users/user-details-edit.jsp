@@ -33,7 +33,7 @@ limitations under the License.
 <form action="<portlet:actionURL/>" method="post">
 <c:set var="prefs" value="${renderRequest.preferences.map}"/>
 <table border="0" cellspacing="2" cellpadding="3">
-  <c:forEach var="prefName" items="showUserTab,showAttributesTab,showPasswordTab,showPasswordExpiration,showRoleTab,showGroupTab,showProfileTab,showPasswordOnUserTab,showChangePasswordRequiredForAddUser,showRoleForAddUser,showProfileForAddUser,defaultChangePasswordRequired">
+  <c:forEach var="prefName" items="showUserTab,showAttributesTab,showPasswordTab,showPasswordExpiration,showRoleTab,showGroupTab,showProfileTab,showPasswordOnUserTab,showChangePasswordRequiredForAddUser,showRoleForAddUser,showProfileForAddUser,showSubsiteForAddUser,defaultChangePasswordRequired">
   <tr>
     <c:set var="prefValue" value='${prefs[prefName][0]}'/>
     <td class="portlet-section-alternate">
@@ -63,6 +63,23 @@ limitations under the License.
           </select>      
     </td>
   </tr>
+ <tr>
+    <c:set var="prefName" value="requiredRole"/>
+    <c:set var="prefValue" value='${prefs[prefName][0]}'/>
+    <td class="portlet-section-alternate">
+      <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
+    </td>
+    <td class="portlet-section-body">
+      <select name="<c:out value="${prefName}"/>" class="portlet-form-field-label">     
+              <option value=""/>                
+              <c:forEach var="item" items="${jetspeedRoles}">
+                <option value="<c:out value='${item}'/>" <c:if test="${item == prefValue}">selected="true"</c:if>>
+                    <c:out value="${item}"/>
+                </option>
+              </c:forEach>
+          </select>      
+    </td>
+  </tr>  
   <tr>
     <c:set var="prefName" value="defaultProfile"/>
     <c:set var="prefValue" value='${prefs[prefName][0]}'/>
@@ -80,6 +97,36 @@ limitations under the License.
           </select>      
     </td>
   </tr>
+  <tr>
+    <c:set var="prefName" value="newUserTemplateDirectory"/>
+    <c:set var="prefValue" value='${prefs[prefName][0]}'/>
+    <td class="portlet-section-alternate">
+      <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
+    </td>
+    <td class="portlet-section-body">
+    	<input type="text" name="<c:out value="${prefName}"/>" value="<c:out value="${prefValue}"/>" class="portlet-form-field-label"/>
+    </td>
+  </tr>
+  <tr>
+    <c:set var="prefName" value="subsiteRootFolder"/>
+    <c:set var="prefValue" value='${prefs[prefName][0]}'/>
+    <td class="portlet-section-alternate">
+      <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
+    </td>
+    <td class="portlet-section-body">
+    	<input type="text" name="<c:out value="${prefName}"/>" value="<c:out value="${prefValue}"/>" class="portlet-form-field-label"/>
+    </td>
+  </tr>
+  <tr>
+    <c:set var="prefName" value="defaultSubsite"/>
+    <c:set var="prefValue" value='${prefs[prefName][0]}'/>
+    <td class="portlet-section-alternate">
+      <font class="portlet-form-field-label"><fmt:message key="user.details.preference.${prefName}"/></font>
+    </td>
+    <td class="portlet-section-body">
+    	<input type="text" name="<c:out value="${prefName}"/>" value="<c:out value="${prefValue}"/>" class="portlet-form-field-label"/>
+    </td>
+  </tr>  
 </table>
 <input type="submit" value="<fmt:message key="user.details.save.preferences"/>" class="portlet-form-button" />
 </form>

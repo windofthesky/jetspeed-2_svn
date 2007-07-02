@@ -34,6 +34,11 @@ public interface User
     final static String USER_INFO_PROPERTY_SET = "userinfo";
     
     /**
+     * the subsite path for a given user stored as a user attribute
+     */
+    final static String USER_INFO_SUBSITE = "subsite";
+    
+    /**
      * <p>Getter for the user {@link Subject} populated with the 
      * application principals.</p>
      * @return The {@link Subject}.

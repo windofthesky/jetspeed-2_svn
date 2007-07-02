@@ -655,6 +655,31 @@ limitations under the License.
       <input type="hidden" name="jetspeedRules" value="<c:out value="${defaultProfile}"/>">
     </c:otherwise>
   </c:choose>
+
+  <c:set var="defaultSubsite" value='${prefs["defaultSubsite"][0]}'/>
+
+  <c:choose>
+    <c:when test='${prefs["showSubsiteForAddUser"][0]}'>
+      <!-- Select Subsites -->
+      <tr colspan="2" align="right">
+        <td nowrap class="portlet-section-alternate" align="right"><fmt:message key="security.subsites"/>&nbsp;</td>
+        <td class="portlet-section-body" align="left">
+     		<select name="jetspeedSubsites" class="portlet-form-field-label">		
+    			<option value=""/> 		
+    			<c:forEach var="ss" items="${jetspeedSubsites}">
+    			    <option value="<c:out value='${ss.path}'/>"
+      			    <c:if test="${ss.path == defaultSubsite}">selected="true"</c:if>>
+    				  <c:out value="${ss.title}"/>
+    			    </option>
+    			</c:forEach>
+    		</select>      
+        </td>
+      </tr>
+    </c:when>
+    <c:otherwise>
+      <input type="hidden" name="jetspeedSubsites" value="<c:out value="${defaultSubsite}"/>">
+    </c:otherwise>
+  </c:choose>
   
 </table>
 <br/>

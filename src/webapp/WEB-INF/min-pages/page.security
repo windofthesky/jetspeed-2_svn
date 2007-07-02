@@ -34,6 +34,10 @@ limitations under the License.
       <users>*</users>
       <permissions>view</permissions>
     </security-constraint>
+    <security-constraint>
+      <roles>admin</roles>
+      <permissions>view, edit</permissions>
+    </security-constraint>    
   </security-constraints-def>
   
   <security-constraints-def name="public-edit">

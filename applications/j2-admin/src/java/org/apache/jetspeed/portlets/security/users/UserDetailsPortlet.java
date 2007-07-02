@@ -17,6 +17,7 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +49,9 @@ import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.profiler.Profiler;
@@ -115,6 +118,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     /** the id of the rules control */
     private static final String RULES_CONTROL = "jetspeedRules";
     
+    /** the id of the subsites control */
+    private static final String SUBSITES_CONTROL = "jetspeedSubsites";
 
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
@@ -342,7 +347,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
         else
         {
             renderRoleInformation(request);
-            renderProfileInformation(request);            
+            renderProfileInformation(request);
+            renderSubsiteInformation(request);
         }
         // check for ErrorMessages
         ArrayList errorMessages = (ArrayList)PortletMessaging.consume(request, SecurityResources.TOPIC_USER, SecurityResources.ERROR_MESSAGES);
@@ -479,13 +485,62 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
         request.setAttribute(RULES_CONTROL, rules);        
     }
+
+    protected void renderSubsiteInformation(RenderRequest request)
+    {
+        // check for refresh on profiles list
+        String refreshSubsites = (String)PortletMessaging.consume(request, 
+                        SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH_SUBSITES);
+        Collection subsites = null;        
+        if (refreshSubsites == null)
+        {        
+            subsites = (Collection) request.getPortletSession().getAttribute(SUBSITES_CONTROL);
+        }
+        
+        // build the subsites control and provide it to the view
+        if (subsites == null)
+        {
+            subsites = new ArrayList();
+            SubsiteInfo emptyone = new SubsiteInfo("","");
+            subsites.add(emptyone);
+            String subsiteRoot = request.getPreferences().getValue("subsiteRootFolder", "");
+            if (!subsiteRoot.equals(""))
+            {
+                try
+                {
+                    Folder subsiteFolder = pageManager.getFolder(subsiteRoot);
+                    NodeSet set = pageManager.getFolders(subsiteFolder);
+                    if (set != null && !set.isEmpty())
+                    {
+                        Iterator setIterator = set.iterator();
+                        while (setIterator.hasNext())
+                        {
+                            Folder f = (Folder)setIterator.next();
+                            subsites.add(new SubsiteInfo(f.getPath(), f.getTitle()));
+                        }
+                    }
+                }
+                catch (FolderNotFoundException fnfe)
+                {
+                    // subsites not used, ignore
+                }
+                catch (Exception e)
+                {
+                    
+                }
+            }
+            request.getPortletSession().setAttribute(SUBSITES_CONTROL, subsites);
+        }
+        request.setAttribute(SUBSITES_CONTROL, subsites);        
+    }
     
     public void doEdit(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
         response.setContentType("text/html");
         renderRoleInformation(request);
-        renderProfileInformation(request);            
+        renderProfileInformation(request);
+        renderSubsiteInformation(request);
         super.doEdit(request, response);
     }
 
@@ -499,6 +554,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             prefs.store();
             actionResponse.setPortletMode(PortletMode.VIEW);
             initPrefsAndAttr(actionRequest);
+            actionRequest.getPortletSession().removeAttribute(SUBSITES_CONTROL);
             return;
         }
         
@@ -585,13 +641,17 @@ public class UserDetailsPortlet extends GenericServletPortlet
         {
             try
             {
+                Preferences attributes = user.getUserAttributes();
+                String subsite = attributes.get(User.USER_INFO_SUBSITE, null);                
                 userManager.removeUser(userName);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
-                                
-                // TODO: handle subsite roots
-                if (pageManager.folderExists(Folder.USER_FOLDER + userName))
+                if (subsite == null)
                 {
-                    Folder folder = pageManager.getFolder(Folder.USER_FOLDER + userName);                    
+                    subsite = Folder.USER_FOLDER + userName;
+                }
+                if (pageManager.folderExists(subsite))
+                {
+                    Folder folder = pageManager.getFolder(subsite);                    
                     pageManager.removeFolder(folder);
                 }
                             
@@ -1084,10 +1144,21 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 
                 String templateFolder = actionRequest.getPreferences().getValue("newUserTemplateDirectory", "/_user/template/");
-
+                String subsite = actionRequest.getParameter(SUBSITES_CONTROL);
+                if (SecurityUtil.isEmpty(subsite))
+                {
+                    subsite = Folder.USER_FOLDER + userName;
+                }
+                else
+                {
+                    subsite  = subsite + Folder.USER_FOLDER +  userName;
+                    Preferences attributes = user.getUserAttributes();
+                    attributes.put(User.USER_INFO_SUBSITE, subsite);                    
+                }
+                
                 // copy the entire dir tree from the template folder
                 Folder source = pageManager.getFolder(templateFolder);                
-                pageManager.deepCopyFolder(source, Folder.USER_FOLDER + userName, userName);
+                pageManager.deepCopyFolder(source, subsite, userName);
                 
                 // TODO: send message that site tree portlet invalidated
                 
@@ -1109,6 +1180,27 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
     }
     
+    public class SubsiteInfo implements Serializable
+    {
+        private String title;
+        private String path;
+
+        public SubsiteInfo(String path, String title)
+        {
+            this.path = path;
+            this.title = title;
+        }
+        
+        public String getPath()
+        {
+            return path;
+        }
+                
+        public String getTitle()
+        {
+            return title;
+        }        
+    }
     /*
     private void setSecurityConstraints(Folder folder, String userName)
     {
@@ -1116,5 +1208,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
         constraints.setOwner(userName);
         folder.setSecurityConstraints(constraints);        
     }
-    */
+    */    
+    
 }
