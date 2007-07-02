@@ -1148,6 +1148,141 @@ limitations under the License.
         </portlet-preferences>
     </portlet>
 
+    <portlet id="GroovyCustomerList">
+        <description>Custom List is a part of a simple tutorial for inter-portlet
+            communication using the portlet session. Use with Customer Detail and Customer
+            Info portlets</description>
+        <portlet-name>GroovyCustomerList</portlet-name>
+        <display-name>Groovy Customer List</display-name>
+        <portlet-class>
+            org.apache.portals.bridges.groovy.GroovyPortlet</portlet-class>
+        <init-param>
+            <name>script-source</name>
+            <value>/WEB-INF/demo/groovy/CustomerPortlet.groovy</value>
+        </init-param>
+        <init-param>
+            <name>auto-refresh</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/demo/groovy/Page1.gsp</value>
+        </init-param>
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/demo/groovy/Page1Edit.groovy</value>
+        </init-param>
+        <init-param>
+            <name>portlet-icon</name>
+            <value>x-office-spreadsheet.png</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>ja</supported-locale>
+        <resource-bundle>
+            org.apache.jetspeed.demo.customerInfo.resources.CustomerListResources</resource-bundle>
+        <portlet-info>
+            <title>Groovy Customer List</title>
+            <short-title>List</short-title>
+            <keywords>demo,tutorial,programming,customer,session</keywords>
+        </portlet-info>
+    </portlet>
+    
+    <portlet id="GroovyCustomerInfo">
+        <description>Custom Info is a part of a simple tutorial for inter-portlet
+            communication using the portlet session. Use with Customer List and Customer
+            Info portlets.</description>
+        <portlet-name>GroovyCustomerInfo</portlet-name>
+        <display-name>Groovy Customer Information</display-name>
+        <portlet-class>
+            org.apache.portals.bridges.groovy.GroovyPortlet</portlet-class>
+        <init-param>
+            <name>script-source</name>
+            <value>/WEB-INF/demo/groovy/CustomerPortlet.groovy</value>
+        </init-param>
+        <init-param>
+            <name>auto-refresh</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/demo/groovy/Page2.gsp</value>
+        </init-param>
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/demo/groovy/Page2Edit.groovy</value>
+        </init-param>
+        <init-param>
+            <name>portlet-icon</name>
+            <value>x-office-spreadsheet.png</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>ja</supported-locale>
+        <resource-bundle>
+            org.apache.jetspeed.demo.customerInfo.resources.CustomerInfoResources</resource-bundle>
+        <portlet-info>
+            <title>Groovy Customer Information</title>
+            <short-title>Info</short-title>
+            <keywords>demo,tutorial,programming,customer</keywords>
+        </portlet-info>
+    </portlet>
+    
+    <portlet id="GroovyDojoCustomerList">
+        <description>Custom List is a part of a simple tutorial for inter-portlet
+            communication using the portlet session. Use with Customer Detail and Customer
+            Info portlets</description>
+        <portlet-name>GroovyDojoCustomerList</portlet-name>
+        <display-name>Groovy Dojo Customer List</display-name>
+        <portlet-class>
+            org.apache.portals.bridges.groovy.GroovyPortletHeaderPhaseSupport</portlet-class>
+        <init-param>
+            <name>script-source</name>
+            <value>/WEB-INF/demo/groovy/DojoCustomerPortlet.groovy</value>
+        </init-param>
+        <init-param>
+            <name>auto-refresh</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>ViewPage</name>
+            <value>/WEB-INF/demo/groovy/DojoPage1.gsp</value>
+        </init-param>
+        <init-param>
+            <name>EditPage</name>
+            <value>/WEB-INF/demo/groovy/Page1Edit.groovy</value>
+        </init-param>
+        <init-param>
+            <name>portlet-icon</name>
+            <value>x-office-spreadsheet.png</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>ja</supported-locale>
+        <resource-bundle>
+            org.apache.jetspeed.demo.customerInfo.resources.CustomerListResources</resource-bundle>
+        <portlet-info>
+            <title>Groovy Dojo Customer List</title>
+            <short-title>List</short-title>
+            <keywords>demo,tutorial,programming,customer,session</keywords>
+        </portlet-info>
+    </portlet>
+    
     <portlet id="NoopPortlet">
         <description>This is a "do nothing" portlet, primarily for test and profiling purposes</description>
         <portlet-name>NoopPortlet</portlet-name>

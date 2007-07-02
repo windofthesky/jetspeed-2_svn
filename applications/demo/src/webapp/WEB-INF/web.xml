@@ -51,6 +51,18 @@ limitations under the License.
 		</init-param>
 		<load-on-startup>10</load-on-startup>
 	</servlet>
+    
+    <!-- Define Groovlet Servlet -->
+    <servlet>
+      <servlet-name>Groovlet</servlet-name>
+      <servlet-class>groovy.servlet.GroovyServlet</servlet-class>
+    </servlet>
+    
+    <!-- Define Groovy Template Servlet -->
+    <servlet>
+        <servlet-name>Template</servlet-name>
+        <servlet-class>groovy.servlet.TemplateServlet</servlet-class>
+    </servlet>
 
   <servlet>
     <servlet-name>SSODemo</servlet-name>
@@ -92,6 +104,18 @@ limitations under the License.
 		<servlet-name>velocity</servlet-name>
 		<url-pattern>*.vm</url-pattern>
 	</servlet-mapping>	
+    
+    <!-- Map *.groovy to Groovlet -->
+    <servlet-mapping>
+        <servlet-name>Groovlet</servlet-name>
+        <url-pattern>*.groovy</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Map *.gsp to Groovy Template -->
+    <servlet-mapping>
+        <servlet-name>Template</servlet-name>
+        <url-pattern>*.gsp</url-pattern>
+    </servlet-mapping>
 
   <servlet-mapping>
      <servlet-name>

@@ -28,6 +28,18 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
+    <fragment id="groovy-3" type="portlet" name="demo::GroovyCustomerList" >
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
+    <fragment id="groovy-4" type="portlet" name="demo::GroovyCustomerInfo" >
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
+    <fragment id="groovy-5" type="portlet" name="demo::GroovyDojoCustomerList" >
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>
   </fragment>
   
   <security-constraints>
