@@ -309,5 +309,66 @@ By settting the prefix boolean argument to true, the hostname resolve will only 
 For example, with the dot prefix flag set to true, a hostname of "accounting.xyz.com" returns "accounting".            
             </p>            
         </section>
+        <section name="Administering Subsites with the User Manager">
+            <p>When creating a new user from User Manager Administration, you can specify two fields to enable and configure subsite behavior for that new user:
+        	</p>
+        	<ul>
+        	<li><b>Profiling Rule:</b> choose a profiling rule to assign to the new user that has built in subsite support such as the example used in this document: <b>subsite-by-hostname</b>.</li>
+        	<li><b>Subsites:</b> from the dropdown select the subsite to assign as the home subsite to the new user, or leave blank to use default /_user home.</li>
+        	</ul>
+        <img src='images/newuser-subsite-admin.png' border="0"/>        
+        	<p>When using the <b>subsite-by-hostname</b> profiling rule, make sure to select a subsite from the subsites drop-down, as these two attributes work together.
+        	The rule is the instructions on where to look for home pages, and the subsite selection tells the profiling rule which subsite will hold this user directory</p>
+        	<p>Subsite management can also be delegated to managers of particular subsites. For example, you may want to setup User Manager Administration pages for each subsite.
+        	By modifying the deployment descriptor for the j2-admin application, each User Manager details portlet can be configured with a different default subsite:</p>
+        <img src='images/subsite-fields.png' border="0"/>                        	        	
+       </section> 	
+        <section name="Administering Subsites with User Registration">
+            <p>When creating a new user from the User Registration portlet, you can specify two fields to enable and configure subsite behavior for that new user:
+        	</p>
+        	<ul>
+        	<li><b>rulesValues:</b> choose a profiling rule to assign to the new user that has built in subsite support such as the example used in this document: <b>subsite-by-hostname</b>.</li>
+        	<li><b>subsiteRootFolder:</b> the full path to one unique subsite root folder.</li>
+        	</ul>        	
+        <img src='images/user-reg-subsite.png' border="0"/>                        	
+        	<p>NOTE: the User Registration portlet will store these preference values on a per user basis. Usually this means the preferences are stored for the administrative user only.
+        	If you will have administrators registering users, then this approach works fine. However, with <b>self-registration</b> portal, you will need to set these values in the defaults for the portlet.
+        	The defaults are usually set in the portlet.xml, for example:
+        	</p>
+<source>
+<![CDATA[                
+...
+        <preference>
+     		<name>subsiteRootFolder</name>
+            <value>/__subsite-root/_hostname/localhost</value>   
+        </preference>        
+        <preference>
+     		<name>rulesNames</name>
+            <value>page</value>   
+        </preference>        
+        <preference>
+     		<name>rulesValues</name>
+            <value>subsite-by-hostname</value>   
+        </preference>        
+...
+]]>
+</source>        	
+        	<p>You can also set defaults on a per page (PSML) intermediate level:</p>
+<source>
+<![CDATA[                
+    <fragment id="example-subsite-1" type="portlet" name="j2-admin::UserRegistrationPortlet">
+      <preference name="subsiteRootFolder">
+        <value>/__subsite-root/_hostname/localhost</value>
+      </preference>
+      <preference name="rulesNames">
+        <value>page</value>
+      </preference>
+      <preference name="rulesValues">
+        <value>subsite-by-hostname</value>
+      </preference>      
+    </fragment>
+]]>
+</source>        	
+		</section>       
     </body>
 </document>
