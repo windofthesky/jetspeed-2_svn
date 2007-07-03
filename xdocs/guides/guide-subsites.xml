@@ -77,7 +77,7 @@
         above, there are several directories we need to take note of:
         </p>
         <ul>
-        <li><b>__subsite_root</b> - this is a reserved directory, containing all subsite control roots</li>
+        <li><b>__subsite-root</b> - this is a reserved directory, containing all subsite control roots</li>
         <li><b>_hostname</b> - this is a <i>control</i> directory (prefixed with underscore) containing all hostname-based subsites</li>
         </ul> 
         <p>Control directories must always begin with an underscore. Profiling rules navigate through control directories based on
@@ -200,12 +200,12 @@ For each of the examples below, consider the following runtime parameters:
 <b>http://localhost:8080/jetspeed/portal/calendar.psml</b>
 <table>
 <tr><th>URL</th><th>Site Physical Location</th></tr>
-<tr><td>http://localhost:8080/jetspeed/portal/calendar.psml</td><td>/__subsite_root/_hostname/localhost/_user/dean/calendar.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role1/calendar.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role2/calendar.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role3/calendar.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/calendar.psml</td></tr>
-<tr><td></td><td>/__subsite_root/calendar.psml</td></tr>
+<tr><td>http://localhost:8080/jetspeed/portal/calendar.psml</td><td>/__subsite-root/_hostname/localhost/_user/dean/calendar.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role1/calendar.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role2/calendar.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role3/calendar.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/calendar.psml</td></tr>
+<tr><td></td><td>/__subsite-root/calendar.psml</td></tr>
 </table>
 </p>
 
@@ -213,12 +213,12 @@ For each of the examples below, consider the following runtime parameters:
 <b>http://localhost:8080/jetspeed/portal/accounting/worksheet.psml</b>
 <table>
 <tr><th>URL</th><th>Site Physical Location</th></tr>
-<tr><td>http://localhost:8080/jetspeed/portal/accounting/worksheets.psml</td><td>/__subsite_root/_hostname/localhost/_user/dean/accounting/worksheet.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role1/accounting/worksheet.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role2/accounting/worksheet.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role3/accounting/worksheet.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/accounting/worksheet.psml</td></tr>
-<tr><td></td><td>/__subsite_root/accounting/worksheet.psml</td></tr>
+<tr><td>http://localhost:8080/jetspeed/portal/accounting/worksheets.psml</td><td>/__subsite-root/_hostname/localhost/_user/dean/accounting/worksheet.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role1/accounting/worksheet.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role2/accounting/worksheet.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role3/accounting/worksheet.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/accounting/worksheet.psml</td></tr>
+<tr><td></td><td>/__subsite-root/accounting/worksheet.psml</td></tr>
 </table>
 </p>
 
@@ -226,12 +226,12 @@ For each of the examples below, consider the following runtime parameters:
 <b>http://localhost:8080/jetspeed/portal/</b>
 <table>
 <tr><th>URL</th><th>Site Physical Location</th></tr>
-<tr><td>http://localhost:8080/jetspeed/portal/</td><td>/__subsite_root/_hostname/localhost/_user/dean/home.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role1/home.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role2/home.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/_role/role3/home.psml</td></tr>
-<tr><td></td><td>/__subsite_root/_hostname/localhost/home.psml</td></tr>
-<tr><td></td><td>/__subsite_root/home.psml</td></tr>
+<tr><td>http://localhost:8080/jetspeed/portal/</td><td>/__subsite-root/_hostname/localhost/_user/dean/home.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role1/home.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role2/home.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/_role/role3/home.psml</td></tr>
+<tr><td></td><td>/__subsite-root/_hostname/localhost/home.psml</td></tr>
+<tr><td></td><td>/__subsite-root/home.psml</td></tr>
 </table>
 </p>
             </subsection>
