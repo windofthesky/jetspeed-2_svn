@@ -140,17 +140,9 @@ public class PickANumberPortlet extends GenericServletPortlet
         PortletSession session = request.getPortletSession();
         Long guessCount = null;
         Long targetValue = null;
-        Long lastGuess = null;
         
         // get the current value in the prefs
         long range = getHighRange(request);
-        // Get target value
-        lastGuess = (Long)session.getAttribute(LAST_GUESS_NAME, PortletSession.APPLICATION_SCOPE);
-        if (lastGuess == null)
-        {
-            lastGuess = new Long(0);
-            session.setAttribute(LAST_GUESS_NAME, guessCount, PortletSession.APPLICATION_SCOPE);            
-        }
 
         // Get target value
 
