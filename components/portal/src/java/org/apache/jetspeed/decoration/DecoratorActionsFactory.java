@@ -35,4 +35,18 @@ public interface DecoratorActionsFactory
 
     List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
                         WindowState ws, Decoration decoration, List allowedActions, PortletDefinitionComposite portlet, ContentFragment fragment, SecurityAccessController accessController);
+    
+    /**
+     * Maximize portlet window when going into edit mode
+     * @param maxOnEdit
+     */
+    void setMaximizeOnEdit(boolean maxOnEdit);
+    
+    /**
+     * Maximize portlet window when going into edit mode
+     * 
+     * @return
+     */
+    public boolean getMaximizeOnEdit();
+    
 }

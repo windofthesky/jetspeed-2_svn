@@ -82,6 +82,7 @@ public class DecorationValve extends AbstractValve implements Valve
     private DecoratorActionsFactory defaultDecoratorActionsFactory;
 
     private JetspeedContentCache cache = null;
+    private boolean maxOnEdit = false;
          
      /**
       * For security constraint checks
@@ -98,7 +99,7 @@ public class DecorationValve extends AbstractValve implements Valve
      {    
         this.decorationFactory = decorationFactory;
         this.windowAccessor = windowAccessor;
-        this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();
+        this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();        
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
         this.cache = cache;
@@ -237,6 +238,7 @@ public class DecorationValve extends AbstractValve implements Valve
                 try
                 {
                     adapter = (DecoratorActionsFactory)Class.forName(decoratorActionsAdapterClassName).newInstance();
+                    adapter.setMaximizeOnEdit(this.maxOnEdit);
                 }
                 catch (Exception e)
                 {
@@ -422,7 +424,7 @@ public class DecorationValve extends AbstractValve implements Valve
                     : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString() );
                 pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 
-                window.getPortletEntity().getPortletDefinition().getInitParameterSet().get( "xxxx" );
+                //window.getPortletEntity().getPortletDefinition().getInitParameterSet().get( "xxxx" );
                 
                 if (content.supportsPortletMode(PortletMode.HELP))
                 {
@@ -567,5 +569,16 @@ public class DecorationValve extends AbstractValve implements Valve
         {
             log.warn("Unable to initalize actions for fragment "+fragment.getId(), e);
         }
-    }    
+    }
+    
+    public void setMaximizeOnEdit(boolean maxOnEdit)
+    {
+        this.maxOnEdit = maxOnEdit;
+        this.defaultDecoratorActionsFactory.setMaximizeOnEdit(maxOnEdit);
+    }
+    
+    public boolean getMaximizeOnEdit()
+    {
+        return this.maxOnEdit;
+    }
 }

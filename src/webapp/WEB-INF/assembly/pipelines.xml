@@ -264,6 +264,8 @@ limitations under the License.
         	<ref bean="portletContentCache"/>
         </constructor-arg>       		
          -->
+         <!-- When clicking on Edit Mode, also switch to Maximize -->
+        <property name="maximizeOnEdit"><value>false</value></property>         
   </bean>
 
   <bean id="loginViewValve"

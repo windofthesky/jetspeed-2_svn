@@ -39,13 +39,23 @@ import org.apache.pluto.om.window.PortletWindow;
 public abstract class AbstractDecoratorActionsFactory implements DecoratorActionsFactory
 {
     private static ThreadLocal actionResourcesMap = new ThreadLocal();
+    private boolean editMaximizesOption = false;
+    
+    /**
+     * When Edit is clicked, also maximize the window state
+     * 
+     * @param editMaxOption
+     */
+    public AbstractDecoratorActionsFactory()
+    {
+    }
     
     public List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
                     WindowState ws, Decoration decoration, List actionTemplates,PortletDefinitionComposite portlet, 
                     ContentFragment fragment,SecurityAccessController accessController)
     {
         DecoratorAction action;
-        boolean checkConstraints=false;        
+        boolean checkConstraints=false;      
         ArrayList actions = new ArrayList();
         
         Iterator iter = actionTemplates.iterator();
@@ -102,12 +112,41 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
         Boolean isAjaxRequest = (Boolean) rc
                 .getAttribute(DecorationValve.IS_AJAX_DECORATION_REQUEST);
 
+        WindowState ws;
+        PortletMode pm;
+        if (editMaximizesOption)
+        {
+            if (template.getAction().equals(JetspeedActions.EDIT))
+            {
+                ws = WindowState.MAXIMIZED;
+                pm = template.getCustomMode();
+            }
+            else if (template.getAction().equals(JetspeedActions.VIEW))
+            {
+                ws = WindowState.NORMAL;
+                pm = template.getCustomMode();                
+            }
+            else if (template.getAction().equals(JetspeedActions.NORMAL))
+            {
+                pm = PortletMode.VIEW;   
+                ws = template.getCustomState();                
+            }
+            else
+            {
+                ws = template.getCustomState();
+                pm = template.getCustomMode();
+            }
+        }
+        else
+        {
+            ws = template.getCustomState();
+            pm = template.getCustomMode();            
+        }
+        /////////////////////////////////////
+        
         String actionURL = rc.getResponse().encodeURL(
-                (isAjaxRequest == null) ? portalURL.createPortletURL(pw,
-                        template.getCustomMode(), template.getCustomState(),
-                        portalURL.isSecure()).toString() : portalURL
-                        .createNavigationalEncoding(pw, template
-                                .getCustomMode(), template.getCustomState()));
+                (isAjaxRequest == null) ? portalURL.createPortletURL(pw, pm, ws, portalURL.isSecure()).toString() 
+                        : portalURL.createNavigationalEncoding(pw, pm, ws));
 
         String linkURL = decoration
                 .getResource("images/" + actionName + ".gif");
@@ -158,5 +197,15 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
         }
         return true;
     }    
+    
+    public void setMaximizeOnEdit(boolean maxOnEdit)
+    {
+        this.editMaximizesOption = maxOnEdit;
+    }
+    
+    public boolean getMaximizeOnEdit()
+    {
+        return this.editMaximizesOption;
+    }
     
 }

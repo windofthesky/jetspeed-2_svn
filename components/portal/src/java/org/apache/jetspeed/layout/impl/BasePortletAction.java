@@ -121,6 +121,9 @@ public abstract class BasePortletAction
 
     public boolean createNewPageOnEdit(RequestContext context)
     {
+        if (securityBehavior == null)
+            return false;
+        
         return securityBehavior.createNewPageOnEdit(context);        
     }
         

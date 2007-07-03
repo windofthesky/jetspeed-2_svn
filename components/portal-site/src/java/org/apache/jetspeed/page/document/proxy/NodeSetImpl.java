@@ -77,7 +77,7 @@ public class NodeSetImpl implements NodeSet
      */
     public Iterator iterator()
     {
-        return nodes.iterator();
+        return nodes.listIterator();
     }
     
     /**

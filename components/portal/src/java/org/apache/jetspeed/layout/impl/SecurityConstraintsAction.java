@@ -63,6 +63,13 @@ public class SecurityConstraintsAction
     {
         super(template, errorTemplate, pm, securityBehavior); 
     }
+
+    public SecurityConstraintsAction(String template, 
+            String errorTemplate, 
+            PageManager pm)
+    {
+        this(template, errorTemplate, pm, null); 
+    }
     
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
