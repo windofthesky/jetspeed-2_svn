@@ -16,10 +16,16 @@
  */
 package org.apache.jetspeed.portlets.site;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -37,6 +43,7 @@ import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.DecorationFactory;
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
@@ -205,12 +212,15 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         String fileName ="";
         String destPath="";
         String fileType="";
+        String path="";
+        String usrFolder="";
         boolean success = false;
 
         if (add != null)
         { 
             processPreferencesAction(request, actionResponse);
         } else {
+            cleanUserFolder(request.getUserPrincipal().toString());
             try {
                 DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
                 PortletFileUpload portletFileUpload = new PortletFileUpload(diskFileItemFactory);
@@ -221,9 +231,9 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
                         if (fileItem.getFieldName().equals("psmlFile")) {
                             synchronized (this) {
                                 fileName = fileItem.getName();
-                                String folder = getTempFolder(request);
-                                String path = System.getProperty("file.separator");
-                                String filePath = folder + path + fileItem.getName();
+                                usrFolder = getTempFolder(request);
+                                path= System.getProperty("file.separator");
+                                String filePath = usrFolder + path + fileItem.getName();
                                 FileOutputStream out = new FileOutputStream(filePath);
                                 out.write(fileItem.get());
                                 out.close();
@@ -245,8 +255,12 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
                             Link page = pageManager.copyLink(source, destPath + "/" + fileName);
                             pageManager.updateLink(page);
                             success = true;
+                        }else if(fileType.equalsIgnoreCase("zip")){
+                            unzipfile(fileName,usrFolder + path,path);
+                            folder = castorPageManager.getFolder(request.getUserPrincipal().toString());
+                            importFolders(folder, request.getUserPrincipal().toString(), destPath);
+                            success = true;
                         }
-
                     }
                 }
                 if (success){
@@ -275,4 +289,139 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
 		file.mkdir();
 		return dir + path + request.getUserPrincipal();
     }
+
+    private static final void copyInputStream(InputStream in, OutputStream out)
+    throws IOException
+    {
+      byte[] buffer = new byte[1024];
+      int len;
+
+      while((len = in.read(buffer)) >= 0)
+        out.write(buffer, 0, len);
+
+      in.close();
+      out.close();
+    }
+
+    private boolean  unzipfile(String file,String destination,String sepreator) {
+      Enumeration entries;
+      try {
+          ZipFile zipFile = new ZipFile(destination+sepreator+file);
+
+        entries = zipFile.entries();
+
+        while(entries.hasMoreElements()) {
+          ZipEntry entry = (ZipEntry)entries.nextElement();
+
+          if(entry.isDirectory()) {
+            (new File(destination+sepreator+entry.getName())).mkdir();
+            continue;
+          }
+
+          System.out.println("Extracting file: " + entry.getName());
+          copyInputStream(zipFile.getInputStream(entry),
+             new BufferedOutputStream(new FileOutputStream(destination+sepreator+entry.getName())));
+        }
+
+        zipFile.close();
+        return true;
+      } catch (IOException ioe) {
+        System.err.println("Unhandled exception:");
+        ioe.printStackTrace();
+        return false;
+      }
+    }
+    private Folder importFolders(Folder srcFolder,String userName,String destination) throws JetspeedException {
+        Folder dstFolder = lookupFolder(srcFolder.getPath());
+        dstFolder = pageManager.copyFolder(srcFolder,destination);
+        pageManager.updateFolder(dstFolder);
+        String newPath="";
+        Iterator pages = srcFolder.getPages().iterator();
+        while (pages.hasNext()) {
+            Page srcPage = (Page) pages.next();
+            Page dstPage = lookupPage(srcPage.getPath());
+            newPath = destination+getRealPath(srcPage.getPath());
+            dstPage = pageManager.copyPage(srcPage,newPath);
+            pageManager.updatePage(dstPage);
+        }
+
+        Iterator links = srcFolder.getLinks().iterator();
+        while (links.hasNext()) {
+            Link srcLink = (Link) links.next();
+            Link dstLink = lookupLink(srcLink.getPath());
+            newPath = destination+getRealPath(srcLink.getPath());
+            dstLink = pageManager.copyLink(srcLink, newPath);
+            pageManager.updateLink(dstLink);
+        }
+        Iterator folders = srcFolder.getFolders().iterator();
+        while (folders.hasNext()) {
+            Folder folder = (Folder) folders.next();
+            newPath = destination+getRealPath(folder.getPath());
+            importFolders(folder,userName, newPath );
+        }
+
+        return dstFolder;
+    }
+    private Page lookupPage(String path) {
+        try {
+            return castorPageManager.getPage(path);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Link lookupLink(String path) {
+        try {
+            return castorPageManager.getLink(path);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Folder lookupFolder(String path) {
+        try {
+            return castorPageManager.getFolder(path);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    private String getRealPath(String path){
+        int index = path.lastIndexOf("/");
+        if (index>0)
+        {
+            return path.substring(index);
+        }
+        return path;
+         
+    }
+    private boolean cleanUserFolder( String userName) {
+        boolean success = false;
+        synchronized (this) {
+            String tmpdir = System.getProperty("java.io.tmpdir");
+            String path = System.getProperty("file.separator");
+            String folder = tmpdir + path + userName; 
+            File  dir = new File(folder);
+            if (dir.exists()) {
+                success = deleteDir(dir);
+            } 
+            success = dir.mkdir();
+        }
+        return success;
+    }
+
+    private boolean deleteDir(File dir) {
+        if( dir.exists() ) {
+            File[] files = dir.listFiles();
+            for(int i=0; i<files.length; i++) {
+               if(files[i].isDirectory()) {
+                   deleteDir(files[i]);
+               }
+               else {
+                 files[i].delete();
+               }
+            }
+          }
+          return( dir.delete() );
+    }
+
 }
