@@ -52,7 +52,7 @@ limitations under the License.
         </c:if>
       </c:otherwise>
     </c:choose>   
-    <form method="POST" action='<c:url context="${portalContextPath}" value="/"/>'>
+    <form method="POST" action='<c:url context="${portalContextPath}" value="/portal"/>'>
       <table border="0">
       <tr>
         <td><fmt:message key="login.label.Username"/></td>
