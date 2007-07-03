@@ -28,6 +28,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
@@ -57,9 +58,10 @@ public class SecurityConstraintsAction
 
     public SecurityConstraintsAction(String template, 
                                      String errorTemplate, 
-                                     PageManager pm)
+                                     PageManager pm,
+                                     PortletActionSecurityBehavior securityBehavior)                                     
     {
-        super(template, errorTemplate, pm); 
+        super(template, errorTemplate, pm, securityBehavior); 
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)

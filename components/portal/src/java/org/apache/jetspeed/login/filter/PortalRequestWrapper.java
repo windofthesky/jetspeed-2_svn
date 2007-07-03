@@ -17,21 +17,46 @@
 package org.apache.jetspeed.login.filter;
 
 import java.security.Principal;
+import java.util.Iterator;
+import java.util.List;
 
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
 
 public class PortalRequestWrapper extends HttpServletRequestWrapper
 {
     private Principal userPrincipal = null;
+    private Subject subject ;
     
-    public PortalRequestWrapper(HttpServletRequest request,
+    public PortalRequestWrapper(HttpServletRequest request, Subject subject,
             Principal userPrincipal)
     {
         super(request);
+        this.subject = subject;
         this.userPrincipal = userPrincipal;
     }
 
+    public boolean isUserInRole(String roleName)
+    {
+        if (subject == null)
+        {
+            return false;
+        }
+        List roles = SecurityHelper.getPrincipals(subject, RolePrincipal.class);
+        Iterator ir = roles.iterator();
+        while (ir.hasNext())
+        {
+            RolePrincipal role = (RolePrincipal)ir.next();
+            if (roleName.equals(role.getName()))
+                return true;
+        }
+        return false;
+    }
+    
     public void setUserPrincipal(Principal userPrincipal)
     {
         this.userPrincipal = userPrincipal;

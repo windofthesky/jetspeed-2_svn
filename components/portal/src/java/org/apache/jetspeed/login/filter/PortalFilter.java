@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.UserManager;
@@ -43,8 +44,13 @@ import org.apache.jetspeed.security.impl.UserSubjectPrincipalImpl;
 
 public class PortalFilter implements Filter
 {
+    protected String guest = "guest";
+    
     public void init(FilterConfig filterConfig) throws ServletException
     {
+        PortalConfiguration config = Jetspeed.getConfiguration();
+        if (config != null)
+            guest = config.getString("default.user.principal");                
     }
 
     public void doFilter(ServletRequest sRequest,
@@ -72,7 +78,7 @@ public class PortalFilter implements Filter
                     Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
                     UserPrincipal userPrincipal = new UserSubjectPrincipalImpl(username, subject);
                     principals.add(userPrincipal);
-                    sRequest = wrapperRequest(request, userPrincipal);
+                    sRequest = wrapperRequest(request, subject, userPrincipal);
                     request.getSession().removeAttribute(LoginConstants.ERRORCODE);
                     HttpSession session = request.getSession(true);
                     session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
@@ -91,12 +97,12 @@ public class PortalFilter implements Filter
                 if (subject != null)
                 {
                     Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-                    if (principal != null && principal.getName().equals("guest"))
+                    if (principal != null && principal.getName().equals(this.guest))
                     {                        
                     }
                     else
                     {
-                        sRequest = wrapperRequest(request, principal);
+                        sRequest = wrapperRequest(request, subject, principal);
                     }
                 }                
             }              
@@ -110,9 +116,9 @@ public class PortalFilter implements Filter
         }
     }
 
-    private ServletRequest wrapperRequest(HttpServletRequest request, Principal principal)
+    private ServletRequest wrapperRequest(HttpServletRequest request, Subject subject, Principal principal)
     {
-        PortalRequestWrapper wrapper = new PortalRequestWrapper(request, principal);
+        PortalRequestWrapper wrapper = new PortalRequestWrapper(request, subject, principal);
         return wrapper;
     }
 

@@ -29,6 +29,7 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
@@ -72,10 +73,11 @@ public class UpdatePageAction
                             String errorTemplate, 
                             PageManager pm,
                             PortletWindowAccessor windowAccess,
-                            PortletEntityAccessComponent entityAccess)
+                            PortletEntityAccessComponent entityAccess,
+                            PortletActionSecurityBehavior securityBehavior)                            
                             
     {
-        super(template, errorTemplate, pm);
+        super(template, errorTemplate, pm, securityBehavior);
         this.windowAccess = windowAccess;
         this.entityAccess = entityAccess;
     }

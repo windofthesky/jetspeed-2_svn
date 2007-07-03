@@ -20,6 +20,8 @@ import java.security.Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -36,10 +38,17 @@ public class PortletActionSecurityConstraintsBehavior
        implements PortletActionSecurityBehavior
 {
     protected Log log = LogFactory.getLog(PortletActionSecurityConstraintsBehavior.class);    
+    protected String guest = "guest";
     
     public PortletActionSecurityConstraintsBehavior(PageManager pageManager)
     {
         super(pageManager);
+        PortalConfiguration config = Jetspeed.getConfiguration();
+        if (config != null)
+        {
+            guest = config.getString("default.user.principal");
+            System.out.println("pas.guest=" + guest);
+        }
     }
 
     public boolean checkAccess(RequestContext context, String action)
@@ -52,7 +61,7 @@ public class PortletActionSecurityConstraintsBehavior
         catch (Exception e)
         {
             Principal principal = context.getRequest().getUserPrincipal();
-            String userName = "guest";
+            String userName = this.guest;
             if (principal != null)
                 userName = principal.getName();
             log.warn("Insufficient access to page " + page.getPath() + " by user " + userName);

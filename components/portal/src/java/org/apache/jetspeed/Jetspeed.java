@@ -18,6 +18,7 @@ package org.apache.jetspeed;
 
 import java.util.Locale;
 
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -55,7 +56,7 @@ public class Jetspeed
     {
         if (engine == null)
         {
-            throw new NullPointerException("The engine is null, have you called createEgine() yet?");
+            throw new NullPointerException("The engine is null, have you called createEngine() yet?");
         }
         return engine.getContext();
     }
@@ -103,6 +104,14 @@ public class Jetspeed
     public static void setEngine(Engine engine)
     {
         Jetspeed.engine = engine;
+    }
+    
+    public static PortalConfiguration getConfiguration()
+    {
+        ComponentManager manager = getComponentManager(); 
+        if (manager != null)
+            return (PortalConfiguration)manager.getComponent("PortalConfiguration");
+        return null;        
     }
     
 }

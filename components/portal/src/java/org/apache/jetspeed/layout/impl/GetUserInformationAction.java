@@ -50,9 +50,10 @@ public class GetUserInformationAction
 
     public GetUserInformationAction(String template, 
                             String errorTemplate, 
-                            UserManager um)
+                            UserManager um,
+                            RolesSecurityBehavior securityBehavior)                            
     {
-        super(template, errorTemplate, um); 
+        super(template, errorTemplate, um, securityBehavior); 
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
