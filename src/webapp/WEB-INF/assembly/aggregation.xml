@@ -73,7 +73,7 @@
              before rendering a portlet. If security check fails, do not display portlet content
           -->
         <constructor-arg type="boolean">
-            <value>true</value>
+            <value>false</value>
         </constructor-arg>           
         <constructor-arg>
             <ref bean="org.apache.jetspeed.security.SecurityAccessController" />
