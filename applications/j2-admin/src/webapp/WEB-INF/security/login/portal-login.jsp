@@ -22,17 +22,27 @@ limitations under the License.
 
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
 <c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
+<c_rt:set var="loginDestination" value="<%=LoginConstants.DESTINATION%>"/>
 <c:set var="portalContextPath" value="${requestContext.request.contextPath}"/>
 <c:if test="${empty portalContextPath}">
   <c:set var="portalContextPath" value="/"/>
+</c:if>
+<c:set var="encoder" value="${requestContext.request.parameterMap.encoder[0]}"/>
+<c:set var="destLogin" value="/login/proxy"/>
+<c:set var="destLogout" value="/login/logout"/>
+<c:set var="destAccount" value="/portal/my-account.psml"/>
+<c:if test="${not empty encoder && encoder == 'desktop'}">
+  <c:set var="destLogin" value="${destLogin}?${loginDestination}=${requestContext.request.contextPath}/desktop"/>
+  <c:set var="destLogout" value="${destLogout}?${loginDestination}=${requestContext.request.contextPath}/desktop"/>
+  <c:set var="destAccount" value="/desktop/my-account.psml?${loginDestination}=${requestContext.request.contextPath}/desktop"/>
 </c:if>
 
 <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
-    <a href='<c:url context="${portalContextPath}" value="/login/logout"/>'><fmt:message key="login.label.Logout"/></a>
+    <a href='<c:url context="${portalContextPath}" value="${destLogout}"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
-    <a href='<c:url context="${portalContextPath}" value="/portal/my-account.psml"/>'><fmt:message key="login.label.ChangePassword"/></a>
+    <a href='<c:url context="${portalContextPath}" value="${destAccount}"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
   <c:otherwise>
     <%-- backdoor access to the portal session to get the login error count --%>
@@ -52,7 +62,7 @@ limitations under the License.
         </c:if>
       </c:otherwise>
     </c:choose>   
-    <form method="POST" action='<c:url context="${portalContextPath}" value="/portal"/>'>
+    <form method="POST" action='<c:url context="${portalContextPath}" value="${destLogin}"/>'>
       <table border="0">
       <tr>
         <td><fmt:message key="login.label.Username"/></td>
