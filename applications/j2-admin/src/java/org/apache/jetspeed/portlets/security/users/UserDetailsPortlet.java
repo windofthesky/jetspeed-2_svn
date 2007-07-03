@@ -17,7 +17,6 @@
 package org.apache.jetspeed.portlets.security.users;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1180,27 +1179,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
         }
     }
     
-    public class SubsiteInfo implements Serializable
-    {
-        private String title;
-        private String path;
-
-        public SubsiteInfo(String path, String title)
-        {
-            this.path = path;
-            this.title = title;
-        }
-        
-        public String getPath()
-        {
-            return path;
-        }
-                
-        public String getTitle()
-        {
-            return title;
-        }        
-    }
     /*
     private void setSecurityConstraints(Folder folder, String userName)
     {
