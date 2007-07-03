@@ -47,7 +47,6 @@ public class PortletActionSecurityConstraintsBehavior
         if (config != null)
         {
             guest = config.getString("default.user.principal");
-            System.out.println("pas.guest=" + guest);
         }
     }
 

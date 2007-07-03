@@ -36,10 +36,14 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.login.LoginConstants;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
+import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.impl.UserSubjectPrincipalImpl;
 
 public class PortalFilter implements Filter
@@ -74,11 +78,29 @@ public class PortalFilter implements Filter
                     {
                         request.getSession().invalidate();
                     }
-                    Set principals = new PrincipalsSet();
-                    Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
-                    UserPrincipal userPrincipal = new UserSubjectPrincipalImpl(username, subject);
-                    principals.add(userPrincipal);
-                    sRequest = wrapperRequest(request, subject, userPrincipal);
+                    Subject subject = null;
+                    try
+                    {
+                        // load the user principals (roles, groups, credentials)
+                        User user = userManager.getUser(username);
+                        if ( user != null )
+                        {
+                            subject = user.getSubject();
+                        }
+                    }
+                    catch (SecurityException sex)
+                    {
+                        subject = null;
+                    }       
+                    if (subject == null)
+                    {
+                        Set principals = new PrincipalsSet();
+                        subject = new Subject(true, principals, new HashSet(), new HashSet());
+                        UserPrincipal userPrincipal = new UserSubjectPrincipalImpl(username, subject);
+                        principals.add(userPrincipal);
+                    }
+                    Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+                    sRequest = wrapperRequest(request, subject, principal);
                     request.getSession().removeAttribute(LoginConstants.ERRORCODE);
                     HttpSession session = request.getSession(true);
                     session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
@@ -115,7 +137,7 @@ public class PortalFilter implements Filter
             filterChain.doFilter(sRequest, sResponse);
         }
     }
-
+    
     private ServletRequest wrapperRequest(HttpServletRequest request, Subject subject, Principal principal)
     {
         PortalRequestWrapper wrapper = new PortalRequestWrapper(request, subject, principal);
