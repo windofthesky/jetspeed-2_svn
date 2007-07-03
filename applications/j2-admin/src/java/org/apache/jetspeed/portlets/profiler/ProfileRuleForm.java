@@ -41,7 +41,7 @@ public class ProfileRuleForm
     private boolean isNew = false;
     private transient Profiler profiler = null;
     private transient ProfilingRule rule = null;
-    private transient SelectItem[] classnames =
+    private static final SelectItem[] CLASSNAMES =
     {
             new SelectItem("org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule"),
             new SelectItem("org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule")            
@@ -71,7 +71,7 @@ public class ProfileRuleForm
     
     public SelectItem[] getClassnames()
     {
-        return classnames;
+        return CLASSNAMES;
     }
     
     public String getTitle()

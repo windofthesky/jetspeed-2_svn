@@ -453,15 +453,16 @@ public class PrefsPreference implements PreferenceComposite
      */
     public String[] cloneValues()
     {
-        synchronized (prefValueNode)
+    	String[] clonedValues;
+    	synchronized (prefValueNode)
         {
             String[] currentValues = getValueArray();
-            String[] clonedValues = new String[currentValues.length];
+            clonedValues = new String[currentValues.length];
 
             System.arraycopy(currentValues, 0, clonedValues, 0, currentValues.length);
         }
 
-        return cloneValues();
+        return clonedValues;
     }
 
     /**

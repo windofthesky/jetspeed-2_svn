@@ -36,7 +36,7 @@ public abstract class BaseGetResourceAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected Log log = LogFactory.getLog(BaseSiteUpdateAction.class);    
+    protected static final Log log = LogFactory.getLog(BaseSiteUpdateAction.class);    
     
     public BaseGetResourceAction(String template, 
             String errorTemplate, 

@@ -41,7 +41,7 @@ public class GetThemesAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetThemesAction.class);
+    protected static final Log log = LogFactory.getLog(GetThemesAction.class);
     protected DecorationFactory decorationFactory;
     
     public GetThemesAction(String template, 

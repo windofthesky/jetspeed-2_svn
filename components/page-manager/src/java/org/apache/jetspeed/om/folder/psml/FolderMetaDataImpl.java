@@ -38,7 +38,7 @@ import org.apache.jetspeed.om.page.psml.DocumentImpl;
  */
 public class FolderMetaDataImpl extends DocumentImpl implements Document
 {
-    public static String DOCUMENT_TYPE = "folder.metadata";
+    public static final String DOCUMENT_TYPE = "folder.metadata";
 
     private DefaultsImpl defaults = new DefaultsImpl();
     private List docOrder;

@@ -47,7 +47,7 @@ public class GetPortletActionsAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetPortletActionsAction.class);
+    protected static final Log log = LogFactory.getLog(GetPortletActionsAction.class);
     protected String action;
     private DecorationValve decorationValve;
     

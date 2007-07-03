@@ -182,7 +182,7 @@ class CapabilityMapImpl implements CapabilityMap
         Iterator capabilities = capabilityMap.values().iterator();
         while (capabilities.hasNext())
         {
-            if (((Capability) capabilities.next()).getName() == capability)
+            if (((Capability) capabilities.next()).getName().equals(capability))
             {
                 return true;
             }
@@ -206,7 +206,7 @@ class CapabilityMapImpl implements CapabilityMap
         Iterator mimetypes = mimeTypeMap.values().iterator();
         while (mimetypes.hasNext())
         {
-            if (((MimeType) mimetypes.next()).getName() == mimeType.getName())
+            if (((MimeType) mimetypes.next()).getName().equals(mimeType.getName()))
             {
                 return true;
             }

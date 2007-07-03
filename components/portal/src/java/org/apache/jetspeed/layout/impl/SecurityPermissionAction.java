@@ -55,7 +55,7 @@ public class SecurityPermissionAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(SecurityPermissionAction.class);
+    protected static final Log log = LogFactory.getLog(SecurityPermissionAction.class);
     protected PermissionManager pm = null;
     protected Map permissionMap = null;
 

@@ -122,7 +122,7 @@ public class AttributeScopeServlet extends GenericServletPortlet
         requestScopeAttribute = new Long(requestScopeAttribute.longValue() + 1);
         
         // Update the attribute values
-        session.setAttribute( APPLICATION_SCOPE_NAME, portletScopeAttribute, PortletSession.APPLICATION_SCOPE);
+        session.setAttribute( APPLICATION_SCOPE_NAME, applicationScopeAttribute, PortletSession.APPLICATION_SCOPE);
         session.setAttribute( PORTLET_SCOPE_NAME, portletScopeAttribute, PortletSession.PORTLET_SCOPE);
         request.setAttribute( REQUEST_SCOPE_NAME, requestScopeAttribute);
         

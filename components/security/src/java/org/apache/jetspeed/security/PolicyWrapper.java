@@ -33,7 +33,7 @@ public class PolicyWrapper implements Serializable
     private static final long serialVersionUID = 3386468724328997598L;
 
     /** The policy. */
-    private Policy policy;
+    private transient Policy policy;
 
     /** Whether to use as a policy. */
     private boolean useAsPolicy = false;

@@ -46,7 +46,7 @@ import org.apache.jetspeed.request.RequestContext;
 public class GetMenusAction extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetMenusAction.class);
+    protected static final Log log = LogFactory.getLog(GetMenusAction.class);
     
     public GetMenusAction(String template,
                           String errorTemplate,

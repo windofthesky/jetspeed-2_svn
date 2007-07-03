@@ -44,7 +44,7 @@ public abstract class BaseSiteUpdateAction
     extends BasePortletAction
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected Log log = LogFactory.getLog(BaseSiteUpdateAction.class);    
+    protected static final Log log = LogFactory.getLog(BaseSiteUpdateAction.class);    
     
     public BaseSiteUpdateAction(String template, 
             String errorTemplate, 

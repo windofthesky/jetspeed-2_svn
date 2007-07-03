@@ -30,10 +30,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class ValidationHelper
 {
-    public static SimpleDateFormat EUROPEAN_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
-    public static SimpleDateFormat EUROPEAN_DATETIME_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-    public static SimpleDateFormat AMERICAN_DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy");
-    public static SimpleDateFormat AMERICAN_DATETIME_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm");
+    public static final SimpleDateFormat EUROPEAN_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+    public static final SimpleDateFormat EUROPEAN_DATETIME_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+    public static final SimpleDateFormat AMERICAN_DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy");
+    public static final SimpleDateFormat AMERICAN_DATETIME_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm");
     
     /**
      * Tests that the input string contains only alpha numeric or white spaces
@@ -273,13 +273,19 @@ public abstract class ValidationHelper
         }
         try
         {
-            date = EUROPEAN_DATE_FORMAT.parse(formatted);
+            synchronized (EUROPEAN_DATE_FORMAT)
+            {
+                date = EUROPEAN_DATE_FORMAT.parse(formatted);
+            }
         }
         catch (ParseException e)
         {
             try
             {
-                date = AMERICAN_DATE_FORMAT.parse(formatted);
+                synchronized (AMERICAN_DATE_FORMAT)
+                {
+                    date = AMERICAN_DATE_FORMAT.parse(formatted);
+                }
             }
             catch (ParseException ee)
             {
@@ -298,13 +304,19 @@ public abstract class ValidationHelper
         
         try
         {
-            date = EUROPEAN_DATETIME_FORMAT.parse(formatted);
+            synchronized (EUROPEAN_DATETIME_FORMAT)
+            {
+                date = EUROPEAN_DATETIME_FORMAT.parse(formatted);
+            }
         }
         catch (ParseException e)
         {
             try
             {
-                date = AMERICAN_DATETIME_FORMAT.parse(formatted);
+                synchronized (AMERICAN_DATETIME_FORMAT)
+                {
+                    date = AMERICAN_DATETIME_FORMAT.parse(formatted);
+                }
             }
             catch (ParseException ee)
             {
@@ -319,7 +331,10 @@ public abstract class ValidationHelper
         {
             return null;
         }
-        return EUROPEAN_DATE_FORMAT.format(date);        
+        synchronized (EUROPEAN_DATE_FORMAT)
+        {
+            return EUROPEAN_DATE_FORMAT.format(date);        
+        }
     }
     
     public static String formatAmericanDate(Date date)
@@ -328,7 +343,10 @@ public abstract class ValidationHelper
         {
             return null;
         }        
-        return AMERICAN_DATE_FORMAT.format(date);        
+        synchronized (AMERICAN_DATE_FORMAT)
+        {
+            return AMERICAN_DATE_FORMAT.format(date);        
+        }
     }
 
     public static String formatEuropeanDatetime(Date date)
@@ -337,7 +355,10 @@ public abstract class ValidationHelper
         {
             return null;
         }        
-        return EUROPEAN_DATETIME_FORMAT.format(date);        
+        synchronized (EUROPEAN_DATETIME_FORMAT)
+        {
+            return EUROPEAN_DATETIME_FORMAT.format(date);        
+        }
     }
     
     public static String formatAmericanDatetime(Date date)
@@ -346,7 +367,10 @@ public abstract class ValidationHelper
         {
             return null;
         }        
-        return AMERICAN_DATETIME_FORMAT.format(date);        
+        synchronized (AMERICAN_DATETIME_FORMAT)
+        {
+            return AMERICAN_DATETIME_FORMAT.format(date);        
+        }
     }
     
     public static boolean isValidDate(String formatted)
@@ -362,7 +386,10 @@ public abstract class ValidationHelper
         {
             try
             {
-                AMERICAN_DATE_FORMAT.parse(formatted);
+                synchronized (AMERICAN_DATE_FORMAT)
+                {
+                    AMERICAN_DATE_FORMAT.parse(formatted);
+                }
             }
             catch (ParseException ee)
             {
@@ -379,13 +406,19 @@ public abstract class ValidationHelper
             
         try
         {
-            EUROPEAN_DATETIME_FORMAT.parse(formatted);
+            synchronized (EUROPEAN_DATETIME_FORMAT)
+            {
+                EUROPEAN_DATETIME_FORMAT.parse(formatted);
+            }
         }
         catch (ParseException e)
         {
             try
             {
-                AMERICAN_DATETIME_FORMAT.parse(formatted);
+                synchronized (AMERICAN_DATETIME_FORMAT)
+                {
+                    AMERICAN_DATETIME_FORMAT.parse(formatted);
+                }
             }
             catch (ParseException ee)
             {

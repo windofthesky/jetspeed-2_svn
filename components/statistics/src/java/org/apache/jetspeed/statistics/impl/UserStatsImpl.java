@@ -109,14 +109,10 @@ public class UserStatsImpl implements UserStats
 	 */
 	public boolean equals(Object obj) {
 		
-		boolean equals = true;
 		if(!(obj instanceof UserStats))
 			return false;
 		
 		UserStats userstat = (UserStats)obj;
-		if(this.inetAddress.equals(userstat.getInetAddress()) && this.username.equals(userstat.getUsername()))
-			equals = true;
-		
-		return equals;
+		return this.inetAddress.equals(userstat.getInetAddress()) && this.username.equals(userstat.getUsername());
 	}
 }

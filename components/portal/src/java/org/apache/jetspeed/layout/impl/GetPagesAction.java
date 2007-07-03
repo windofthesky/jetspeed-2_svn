@@ -47,7 +47,7 @@ public class GetPagesAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants, Comparator
 {
-    protected Log log = LogFactory.getLog(GetPortletsAction.class);
+    protected static final Log log = LogFactory.getLog(GetPortletsAction.class);
     
     public GetPagesAction(String template, 
                              String errorTemplate,

@@ -55,7 +55,7 @@ public class MovePortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(MovePortletAction.class);
+    protected static final Log log = LogFactory.getLog(MovePortletAction.class);
     private int iMoveType = -1;
     private String sMoveType = null;
 

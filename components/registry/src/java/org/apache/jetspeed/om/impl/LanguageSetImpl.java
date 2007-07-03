@@ -43,7 +43,7 @@ import org.apache.pluto.om.common.LanguageSet;
  */
 public class LanguageSetImpl implements LanguageSet, Serializable, Support
 {
-    private ClassLoader classLoader = null;
+    private transient ClassLoader classLoader = null;
 
     private String resources;
     protected Collection innerCollection;

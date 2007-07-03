@@ -47,7 +47,7 @@ public class ProfileCriterionForm implements Serializable
     private static final String FALLBACK_STOP = "Stop";
     private static final String FALLBACK_LOOP = "Loop";
     
-    private transient SelectItem[] resolvers =
+    private static final SelectItem[] RESOLVERS =
     {
             new SelectItem("request"),
             new SelectItem("session"),
@@ -70,7 +70,7 @@ public class ProfileCriterionForm implements Serializable
             new SelectItem("hostname")
     };
 
-    private transient SelectItem[] fallbackTypes =
+    private static final SelectItem[] FALLBACK_TYPES =
     {
             new SelectItem(FALLBACK_CONTINUE),
             new SelectItem(FALLBACK_LOOP),
@@ -88,12 +88,12 @@ public class ProfileCriterionForm implements Serializable
 
     public SelectItem[] getResolvers()
     {
-        return resolvers;
+        return RESOLVERS;
     }
 
     public SelectItem[] getFallbackTypes()
     {
-        return fallbackTypes;
+        return FALLBACK_TYPES;
     }
     
     public void listen(ActionEvent event)

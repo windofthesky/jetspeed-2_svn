@@ -54,7 +54,7 @@ public class ChangePortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(ChangePortletAction.class);
+    protected static final Log log = LogFactory.getLog(ChangePortletAction.class);
     protected String action;
     protected Map validWindowStates = new HashMap();
     protected Map validPortletModes = new HashMap();

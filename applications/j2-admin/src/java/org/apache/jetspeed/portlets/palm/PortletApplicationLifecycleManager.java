@@ -118,7 +118,7 @@ public class PortletApplicationLifecycleManager extends GenericServletPortlet
                     MutablePortletApplication pa = registry.getPortletApplication(value);
                     if ( pa == null )
                     {
-                        publishStatusMessage(request, "PALM", "status", null, "Portlet Application "+pa.getName()+" no longer exists");
+                        publishStatusMessage(request, "PALM", "status", null, "Portlet Application for lookup value "+value+" no longer exists");
                     }
                     else if ( pa.getApplicationType() == MutablePortletApplication.LOCAL )
                     {

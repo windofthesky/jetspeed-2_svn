@@ -55,7 +55,7 @@ public class PasswordHistoryInterceptor extends AbstractInternalPasswordCredenti
     /**
      * Value used for {@link InternalCredential#getClassname()} to distinguish from current password credentials
      */
-    public static String HISTORICAL_PASSWORD_CREDENTIAL = "org.apache.jetspeed.security.spi.impl.HistoricalPasswordCredentialImpl";
+    public static final String HISTORICAL_PASSWORD_CREDENTIAL = "org.apache.jetspeed.security.spi.impl.HistoricalPasswordCredentialImpl";
     
     private static final Comparator internalCredentialCreationDateComparator =
         new Comparator()

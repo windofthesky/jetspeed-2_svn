@@ -145,7 +145,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 if ( decoration == null )
                 {
                     String errMsg = "Cannot locate default desktop " + fragment.getType() + " decoration " + ( defaultDecoration == null ? "null" : ("\"" + defaultDecoration + "\"") ) + " (decoration " + ( defaultDecoration == null ? "null" : ("\"" + decorationName + "\"") ) + " specified for page could either not be located or does not support desktop). No desktop compatible " + fragment.getType() + " decoration is available.";
-                    log.equals( errMsg );
+                    log.warn( errMsg );
                 }
             }
         }

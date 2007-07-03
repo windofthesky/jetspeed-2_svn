@@ -48,7 +48,7 @@ public class RemovePortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(RemovePortletAction.class);
+    protected static final Log log = LogFactory.getLog(RemovePortletAction.class);
 
     public RemovePortletAction(String template, String errorTemplate)
             throws PipelineException

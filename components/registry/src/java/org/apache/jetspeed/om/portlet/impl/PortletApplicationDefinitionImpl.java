@@ -73,7 +73,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     private String applicationIdentifier;
 
     /** WebApplication property */
-    private WebApplicationDefinition webApplication;
+    private transient WebApplicationDefinition webApplication;
     /** PK of this Portlet Application's Web Application */
     protected long webApplicationId;
     

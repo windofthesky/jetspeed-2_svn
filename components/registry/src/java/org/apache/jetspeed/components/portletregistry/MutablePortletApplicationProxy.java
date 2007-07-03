@@ -25,16 +25,6 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 
 public class MutablePortletApplicationProxy implements InvocationHandler, PortletApplicationProxy
 {
-    public boolean equals(Object obj)
-    {
-        return super.equals(obj);
-        //        if (obj instanceof MutablePortletApplicationProxy)
-//        {
-//            MutablePortletApplicationProxy other = (MutablePortletApplicationProxy)obj;
-//            if (this.getRealApplication().g)
-//        }
-    }
-
     private MutablePortletApplication app = null;
     private static PortletRegistry registry;
     private String name;

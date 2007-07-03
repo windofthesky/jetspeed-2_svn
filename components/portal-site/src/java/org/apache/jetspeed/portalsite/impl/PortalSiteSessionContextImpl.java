@@ -130,7 +130,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     public PortalSiteSessionContextImpl(PageManager pageManager)
     {
         this.pageManager = pageManager;
-        this.folderPageHistory = new HashMap();
     }
 
     /**
@@ -271,7 +270,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         // clear all history entries for fallback
                         // request path in advance to make fallback
                         // page selection more predictable
-                        Iterator folderIter = folderPageHistory.keySet().iterator();
+                        Iterator folderIter = getFolderPageHistory().keySet().iterator();
                         while (folderIter.hasNext())
                         {
                             Folder folder = (Folder)folderIter.next();
@@ -538,7 +537,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     // occur in multiple site views
                     if (useHistory)
                     {
-                        requestPage = (Page)folderPageHistory.get(requestFolder);
+                        requestPage = (Page)getFolderPageHistory().get(requestFolder);
                         if ((requestPage != null) && requestFolderPages.contains(requestPage))
                         {
                             // log selected request page
@@ -569,7 +568,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             requestPage = requestFolder.getPage(defaultPageName);
                             if (!requestPage.isHidden())
                             {
-                                folderPageHistory.put(requestFolder, requestPage);
+                                getFolderPageHistory().put(requestFolder, requestPage);
                             }
                             
                             // log selected request page
@@ -598,7 +597,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     requestPage = (Page)requestFolderPages.iterator().next();
                     if (!requestPage.isHidden())
                     {
-                        folderPageHistory.put(requestFolder, requestPage);
+                        getFolderPageHistory().put(requestFolder, requestPage);
                     }
 
                     // log selected request page
@@ -619,7 +618,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 Folder requestFolder = (Folder)requestPage.getParent();
                 if (!requestPage.isHidden())
                 {
-                    folderPageHistory.put(requestFolder, requestPage);
+                	getFolderPageHistory().put(requestFolder, requestPage);
                 }
 
                 // log selected request page
@@ -805,10 +804,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             profileLocators = null;
             userPrincipal = null;
             siteView = null;
-            if (folderPageHistory != null)
-            {
-                folderPageHistory.clear();
-            }
+            folderPageHistory = null;
             if (menuDefinitionLocatorCache != null)
             {
                 menuDefinitionLocatorCache.clear();
@@ -1254,4 +1250,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             log.debug("Session unbound event: clear page manager listener and session context state");
         }
     }
+
+	private Map getFolderPageHistory()
+    {
+		if (folderPageHistory == null)
+        {
+			folderPageHistory = new HashMap();
+		}
+		return folderPageHistory;
+	}
 }

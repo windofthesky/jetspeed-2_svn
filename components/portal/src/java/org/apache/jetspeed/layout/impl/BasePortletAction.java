@@ -41,7 +41,7 @@ import org.apache.jetspeed.request.RequestContext;
 public abstract class BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected Log log = LogFactory.getLog(BasePortletAction.class);    
+    protected static final Log log = LogFactory.getLog(BasePortletAction.class);    
 	protected String template = null;
     protected PageManager pageManager = null;
     protected String errorTemplate = null;

@@ -16,13 +16,15 @@
  */
 package org.apache.jetspeed.util;
 
+import java.io.Serializable;
+
 /**
  * JetspeedLongObjectID
  *
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class JetspeedLongObjectID implements PortalObjectID
+public class JetspeedLongObjectID implements PortalObjectID, Serializable
 {
     private Long oid;
     

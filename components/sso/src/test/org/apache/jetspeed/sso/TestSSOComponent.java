@@ -17,9 +17,7 @@
 
 package org.apache.jetspeed.sso;
 
-import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
@@ -70,11 +68,6 @@ public class TestSSOComponent extends AbstractSecurityTestcase
     /** The property manager. */
     private static SSOProvider ssoBroker = null;
 
-    /** The user manager. */
-    protected UserManager ums;
-
-    protected GroupManager gms; // Group Manager
-
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -85,8 +78,6 @@ public class TestSSOComponent extends AbstractSecurityTestcase
         try
         {
             ssoBroker = (SSOProvider) ctx.getBean("ssoProvider");
-            ums = (UserManager) ctx.getBean("org.apache.jetspeed.security.UserManager");
-            gms = (GroupManager) ctx.getBean("org.apache.jetspeed.security.GroupManager");
         }
         catch (Exception ex)
         {

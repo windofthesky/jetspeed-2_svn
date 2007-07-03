@@ -38,7 +38,7 @@ import org.apache.jetspeed.util.JetspeedObjectID;
 public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Serializable
 {
     private ObjectID objectId = null;
-    private PortletEntity portletEntity = null;
+    private transient PortletEntity portletEntity = null;
 
     public PortletWindowImpl(String id)
     {

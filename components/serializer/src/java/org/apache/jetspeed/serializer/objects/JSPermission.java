@@ -60,36 +60,36 @@ public class JSPermission
 
 	private JSUserUsers userString;
 
-	public static String TYPE_FOLDER = "folder".intern();
+	public static final String TYPE_FOLDER = "folder".intern();
 
-	public static String TYPE_FRAGMENT = "fragment".intern();
+	public static final String TYPE_FRAGMENT = "fragment".intern();
 
-	public static String TYPE_PAGE = "page".intern();
+	public static final String TYPE_PAGE = "page".intern();
 
-	public static String TYPE_PORTALRESOURCE = "portalResource".intern();
+	public static final String TYPE_PORTALRESOURCE = "portalResource".intern();
 
-	public static String TYPE_PORTALRESOURCECOLLECTION = "portalResource"
+	public static final String TYPE_PORTALRESOURCECOLLECTION = "portalResource"
 			.intern();
 
-	public static String TYPE_PORTAL = "portal".intern();
+	public static final String TYPE_PORTAL = "portal".intern();
 
-	public static String TYPE_UNKNOWN = "unknown".intern();
+	public static final String TYPE_UNKNOWN = "unknown".intern();
 
 	public String getClassForType(String type)
 	{
-		if ((type == null) || (type.length() == 0) || (type == TYPE_UNKNOWN))
+		if ((type == null) || (type.length() == 0) || (type.equals(TYPE_UNKNOWN)))
 			return "";
-		if (type == TYPE_FOLDER)
+		if (type.equals(TYPE_FOLDER))
 			return "org.apache.jetspeed.security.FolderPermission";
-		if (type == TYPE_FRAGMENT)
+		if (type.equals(TYPE_FRAGMENT))
 			return "org.apache.jetspeed.security.FragmentPermission";
-		if (type == TYPE_PAGE)
+		if (type.equals(TYPE_PAGE))
 			return "org.apache.jetspeed.security.PagePermission";
-		if (type == TYPE_PORTALRESOURCE)
+		if (type.equals(TYPE_PORTALRESOURCE))
 			return "org.apache.jetspeed.security.PortalResourcePermission";
-		if (type == TYPE_PORTALRESOURCECOLLECTION)
+		if (type.equals(TYPE_PORTALRESOURCECOLLECTION))
 			return "org.apache.jetspeed.security.PortalResourcePermissionCollection";
-		if (type == TYPE_PORTAL)
+		if (type.equals(TYPE_PORTAL))
 			return "org.apache.jetspeed.security.PortletPermission";
 		return "";
 	}
@@ -121,7 +121,7 @@ public class JSPermission
 	public PortalResourcePermission getPermissionForType()
 	{
 		PortalResourcePermission newPermission = null; 
-		if ((this.type == null) || (this.type == TYPE_UNKNOWN))
+		if ((this.type == null) || (this.type.equals(TYPE_UNKNOWN)))
 			return null;
 		try
 		{

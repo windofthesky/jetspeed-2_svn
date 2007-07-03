@@ -125,8 +125,7 @@ public class RepositoryConfigHandler extends DefaultHandler
     {
         if ("repository".equals(qName))
         {
-            if (className != null && repositoryName != null
-                    && !repositories.equals(""))
+            if (className != null && repositoryName != null)
             {
                 Repository repo = loadRepository(className, properties);
                 if (repo != null)

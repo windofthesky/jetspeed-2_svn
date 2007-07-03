@@ -170,23 +170,15 @@ public class JetspeedTemplateLocator implements TemplateLocator
     {
         String templateName = locator.getName();       
         String path = locator.toPath();
-        
-        int last = path.lastIndexOf(PATH_SEPARATOR);
-        if (last > -1)
-        {
-            // drop off the name
-            path = path.substring(0, last);
-        }
-        else
-        {
-            path = null;
-        }                
                 
         String realPath = null;
         String workingPath = null;
-        
-        do // fallback
+
+        int lastSeperator;
+        while (path !=null && (lastSeperator = path.lastIndexOf(PATH_SEPARATOR))> 0)
         {
+            path = path.substring(0, lastSeperator);
+
             workingPath = path + PATH_SEPARATOR + templateName;
             realPath = root + workingPath;
 
@@ -208,19 +200,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
                 // return createTemplateFromPath(path, templateName, realPath, "/WEB-INF/templates" + workingPath);
                 return createTemplateFromPath(path, templateName, realPath, appRelativePath);
             }
-            // else strip path of one of its components and loop
-            int pt = path.lastIndexOf(PATH_SEPARATOR);
-            if (pt > -1)
-            {
-                path = path.substring(0, pt);
-            }
-            else
-            {
-                path = null;
-            }
         }
-        while (path != null);
-
         return null;
     }
 
