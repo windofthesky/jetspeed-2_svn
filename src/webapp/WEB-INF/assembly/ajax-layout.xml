@@ -447,6 +447,9 @@
     <constructor-arg index='2'>    
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	        
 </bean>
 
 <bean id="AjaxUpdateFolder"
@@ -460,6 +463,9 @@
     <constructor-arg index='2'>    
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	    
 </bean>
 
 <bean id="AjaxUpdatePage"
@@ -479,6 +485,9 @@
     <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
     </constructor-arg>      
+    <constructor-arg index='5'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	            
 </bean>
                 
 <bean id="AjaxUpdateLink"
@@ -492,6 +501,9 @@
     <constructor-arg index='2'>    
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
+    <constructor-arg index='3'>
+        <ref bean="PortletActionSecurityBehavior"/>        
+    </constructor-arg>    	                
 </bean>
 
 <bean id="AjaxGetUserInformation"
@@ -505,6 +517,9 @@
     <constructor-arg index='2'>    
         <ref bean="org.apache.jetspeed.security.UserManager"/>        
     </constructor-arg>
+	<constructor-arg index='3'>
+        <ref bean="RolesSecurityBehavior"/>
+    </constructor-arg>    
 </bean>
 
 <!-- 
