@@ -48,7 +48,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         this.storeParameters = storeParameters;
     }
     
-    public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache)
+    public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)    
     {
         PageState pageState = (PageState)pageStates.get(page.getId());
         if ( pageState == null )
@@ -147,6 +147,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             if (changed)
             {
                 removeFromCache(context, requestState.getWindowId(), cache);
+                removeFromCache(context, page.getId(), decorationCache);
                 if (storeParameters)
                 {
                     ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
@@ -169,6 +170,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 if (changed)
                 {
                     removeFromCache(context, requestState.getWindowId(), cache);
+                    removeFromCache(context, page.getId(), decorationCache);                    
                     if (storeParameters)
                     {
                         ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
@@ -327,6 +329,8 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     
     protected void removeFromCache(RequestContext context, String id, JetspeedContentCache cache)
     {
+        if (cache == null)
+            return;
         ContentCacheKey cacheKey = cache.createCacheKey(context, id);
         if (cache.isKeyInCache(cacheKey))
         {

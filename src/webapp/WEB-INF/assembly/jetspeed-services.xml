@@ -117,7 +117,12 @@ limitations under the License.
           <entry key="ImporterManager">
             <ref bean="importerCastorPageManager"/>
           </entry>          
-          
+          <entry key="decorationContentCache">
+          	<ref bean="decorationContentCache"/>
+          </entry>
+          <entry key="portletContentCache">
+          	<ref bean="portletContentCache"/>
+          </entry>          
 <!-- first uncomment the below service bean in security-spi-atn.xml
          <entry key="PasswordEncodingService">
            <ref bean="org.apache.jetspeed.security.PasswordEncodingService" />

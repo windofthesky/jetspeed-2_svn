@@ -24,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -41,6 +42,11 @@ public class SessionNavigationalState extends AbstractNavigationalState
     {
         super(codec, cache);
     }
+    
+    public SessionNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache, JetspeedContentCache decorationCache)
+    {
+        super(codec, cache, decorationCache);
+    }    
 
     public synchronized void sync(RequestContext context)
     {
@@ -80,6 +86,8 @@ public class SessionNavigationalState extends AbstractNavigationalState
                     if ( sessionStates != null )
                     {
                         sessionStates.removeFromCache(context, clearCacheWindowId, cache);
+                        ContentPage page = context.getPage();
+                        sessionStates.removeFromCache(context, page.getId(), decorationCache);                        
                     }
                 }
             }
@@ -96,7 +104,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
                     session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
                 }
                 Page page = context.getPage();
-                sessionStates.sync(context, page, requestStates, cache);
+                sessionStates.sync(context, (Page) context.getPage(), requestStates, cache, decorationCache);
                 if (isNavigationalParameterStateFull() && isRenderParameterStateFull())
                 {
                     currentPageWindowStates = sessionStates.getWindowStates(page);

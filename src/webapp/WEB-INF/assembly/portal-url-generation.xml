@@ -33,7 +33,10 @@ limitations under the License.
        <constructor-arg><ref bean="NavigationalStateCodec"/></constructor-arg>
        <constructor-arg>
         	<ref bean="portletContentCache"/>
-        </constructor-arg>       
+       </constructor-arg>       
+       <constructor-arg>
+        	<ref bean="decorationContentCache"/>
+       </constructor-arg>       
   </bean>
   
   <!-- PortalURL we are currently using -->

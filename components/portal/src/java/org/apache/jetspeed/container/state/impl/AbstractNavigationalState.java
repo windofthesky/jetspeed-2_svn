@@ -41,13 +41,20 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     private NavigationalStateCodec codec;
     private PortletWindowRequestNavigationalStates requestStates;
     protected JetspeedContentCache cache;
+    protected JetspeedContentCache decorationCache;
     
     public AbstractNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
-        this.codec = codec;
-        this.cache = cache;
+        this(codec, cache, null);
     }
 
+    public AbstractNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache, JetspeedContentCache decorationCache)
+    {
+        this.codec = codec;
+        this.cache = cache;
+        this.decorationCache = decorationCache;
+    }
+    
     public void init(String encodedState, String characterEncoding)
     throws UnsupportedEncodingException
     {

@@ -67,6 +67,27 @@
 		   <ref bean="ContentCacheKeyGenerator"/>
 		</constructor-arg>
 	</bean>
+    
+	<bean id="ehDecorationContentCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="decorationContentCache" />
+	</bean>
+
+	<bean id="decorationContentCache"
+		class="org.apache.jetspeed.cache.impl.EhDecorationContentCacheImpl">
+		<constructor-arg index="0">
+			<ref bean="ehDecorationContentCache" />
+		</constructor-arg>
+		<constructor-arg index="1">
+			<ref bean="preferencesCache" />
+		</constructor-arg>
+		<constructor-arg index="2">
+		   <ref bean="ContentCacheKeyGenerator"/>
+		</constructor-arg>
+	</bean>
 
 	<bean id="ehPreferencesCache"
 		class="org.springframework.cache.ehcache.EhCacheFactoryBean">

@@ -30,6 +30,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -82,6 +84,9 @@ public class DecorationValve extends AbstractValve implements Valve
     private DecoratorActionsFactory defaultDecoratorActionsFactory;
 
     private JetspeedContentCache cache = null;
+    
+    private boolean useSessionForThemeCaching = false;
+    
     private boolean maxOnEdit = false;
          
      /**
@@ -97,12 +102,20 @@ public class DecorationValve extends AbstractValve implements Valve
      public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
                             SecurityAccessController accessController, JetspeedContentCache cache)
      {    
+         this(decorationFactory, windowAccessor, accessController, cache, false);
+     }
+     
+     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+                                 SecurityAccessController accessController, JetspeedContentCache cache,
+                                 boolean useSessionForThemeCaching)
+     {       
         this.decorationFactory = decorationFactory;
         this.windowAccessor = windowAccessor;
         this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();        
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
         this.cache = cache;
+        this.useSessionForThemeCaching = useSessionForThemeCaching;
     }
     
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
@@ -138,29 +151,37 @@ public class DecorationValve extends AbstractValve implements Valve
         }
         
         PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
-        
         String themeCacheKey = null;
+        ContentCacheKey themeContentCacheKey = null;
         Theme theme = null;
         
         if (useCache())
         {
-            // user helps us with the funky way jetspeed doesn't create  a new session on login
-            themeCacheKey = cache.createSessionKey(requestContext);
-            theme = (Theme) requestContext.getSessionAttribute(themeCacheKey);
-        }        
+            if (pageActionAccess.isEditing() == false)
+            {
+                // user helps us with the funky way jetspeed doesn't create  a new session on login
+                if (this.useSessionForThemeCaching)
+                {
+                    themeCacheKey = cache.createSessionKey(requestContext);
+                    theme = (Theme) requestContext.getSessionAttribute(themeCacheKey);
+                }
+                else
+                {
+                    themeContentCacheKey = cache.createCacheKey(requestContext, page.getId());
+                    CacheElement themeCacheElem = cache.get(themeContentCacheKey);
+                    
+                    if (themeCacheElem != null)
+                    {
+                        theme = (Theme) themeCacheElem.getContent();
+                    }
+                }
+            }
+        }
 
         if (theme != null)
         {
             theme.init(page, decorationFactory, requestContext);
             requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
-            
-            Page themePage = ((PageTheme) theme).getPage();
-            Fragment themeFragment = themePage.getRootFragment();
-            page.setRootFragment(themeFragment);
-            
-            ContentPage contentThemePage = ((PageTheme)theme).getContentPage();
-            ContentFragment contentThemeFragment = contentThemePage.getRootContentFragment();
-            page.setRootContentFragment(contentThemeFragment);                        
             boolean solo = isSoloMode(requestContext);            
             SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
             initDepthFragmentDecorations(requestContext, theme, page.getRootContentFragment(),
@@ -170,7 +191,15 @@ public class DecorationValve extends AbstractValve implements Valve
             
             if (theme.isInvalidated() && !solo)
             {
-                requestContext.setSessionAttribute(themeCacheKey, theme);
+                if (this.useSessionForThemeCaching)
+                {
+                    requestContext.setSessionAttribute(themeCacheKey, theme);
+                }
+                else
+                {                    
+                    CacheElement themeCacheElem = cache.createElement(themeContentCacheKey, theme);
+                    cache.put(themeCacheElem);
+                }
                 theme.setInvalidated(false);                            
             }                        
             return;
@@ -191,11 +220,34 @@ public class DecorationValve extends AbstractValve implements Valve
                 initFragment(requestContext, theme, fragment, pageActionAccess, isAjaxRequest);
             }
         }
-        if (useCache())
+        
+        if (useCache() && !isSoloMode(requestContext))
         {
-            if (!isSoloMode(requestContext))
+            if (themeContentCacheKey == null && themeCacheKey == null)
             {
-                requestContext.setSessionAttribute(themeCacheKey, theme);
+                if (this.useSessionForThemeCaching)
+                {
+                    themeCacheKey = cache.createSessionKey(requestContext);                    
+                    requestContext.getRequest().getSession().removeAttribute(themeCacheKey);
+                }
+                else
+                {
+                    themeContentCacheKey = cache.createCacheKey(requestContext, page.getId());
+                    cache.remove(themeContentCacheKey);
+                }                
+            }
+            else
+            {
+                if (this.useSessionForThemeCaching)
+                {
+                    themeContentCacheKey = cache.createCacheKey(requestContext, page.getId());
+                    requestContext.setSessionAttribute(themeCacheKey, theme);
+                }
+                else
+                {
+                    CacheElement themeCacheElem = cache.createElement(themeContentCacheKey, theme);
+                    cache.put(themeCacheElem);
+                }
             }
         }                
     }

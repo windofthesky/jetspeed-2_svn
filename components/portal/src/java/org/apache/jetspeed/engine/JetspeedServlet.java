@@ -352,10 +352,34 @@ implements JetspeedEngineConstants, HttpSessionListener
         String ipAddress = (String)se.getSession().getAttribute(SecurityValve.IP_ADDRESS);
         statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);    
         JetspeedCache portletContentCache = (JetspeedCache)engine.getComponentManager().getComponent("portletContentCache");
+        JetspeedCache decorationContentCache = null;
+        
+        try
+        {
+            decorationContentCache = (JetspeedCache)engine.getComponentManager().getComponent("decorationContentCache");
+        }
+        catch (Exception e)
+        {
+        }
+        
         ContentCacheKeyGenerator generator = (ContentCacheKeyGenerator)engine.getComponentManager().getComponent("ContentCacheKeyGenerator");
+        
         if (generator.isCacheBySessionId())
+        {
             portletContentCache.evictContentForUser(se.getSession().getId());
+            
+            if (decorationContentCache != null)
+            {
+                decorationContentCache.evictContentForUser(se.getSession().getId());
+            }
+        }
         else
-            portletContentCache.evictContentForUser(subjectUserPrincipal.getName());        
+        {
+            portletContentCache.evictContentForUser(subjectUserPrincipal.getName());
+            
+            if (decorationContentCache != null)
+            {
+                decorationContentCache.evictContentForUser(subjectUserPrincipal.getName());            }
+        }
     }
 }

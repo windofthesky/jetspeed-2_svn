@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.decoration.PageEditAccess;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
@@ -68,6 +69,7 @@ public class MultiColumnPortlet extends LayoutPortlet
     private String editorType = null;
     protected DecorationFactory decorators;
     protected JetspeedDesktop desktop;
+    protected JetspeedContentCache decoratorCache;
 
     public void init( PortletConfig config ) throws PortletException
     {
@@ -107,6 +109,8 @@ public class MultiColumnPortlet extends LayoutPortlet
         }
         
         this.desktop = (JetspeedDesktop)getPortletContext().getAttribute(CommonPortletServices.CPS_DESKTOP);
+        
+        this.decoratorCache = (JetspeedContentCache)getPortletContext().getAttribute(CommonPortletServices.CPS_DECORATOR_CACHE);
     }
 
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
@@ -187,6 +191,8 @@ public class MultiColumnPortlet extends LayoutPortlet
             // Targetting this portlet with an ActionRequest REQUIRES that the ProfilerValve has been invoked!
             throw new PortletException("Current request page or PageEditAccess not available.");
         }
+
+        decoratorCache.invalidate(requestContext);
         
         String pageMode = request.getParameter("pageMode");
         if ( pageMode != null )

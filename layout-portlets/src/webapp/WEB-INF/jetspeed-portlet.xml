@@ -39,6 +39,8 @@ limitations under the License.
 		<js:service name='WindowAccessor'/>
         <js:service name='WindowAccessor'/>
         <js:service name='Desktop'/>
+        <js:service name='decorationContentCache'/>
+        <js:service name='portletContentCache'/>        
 	</js:services>
 	
 </portlet-app>

@@ -261,7 +261,7 @@ limitations under the License.
 		</constructor-arg>
 		<!-- 
        <constructor-arg index='3'>
-        	<ref bean="portletContentCache"/>
+	        <ref bean="decorationContentCache"/>
         </constructor-arg>       		
          -->
          <!-- When clicking on Edit Mode, also switch to Maximize -->

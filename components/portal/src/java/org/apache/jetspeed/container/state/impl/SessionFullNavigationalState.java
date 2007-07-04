@@ -31,6 +31,11 @@ public class SessionFullNavigationalState extends SessionNavigationalState
     {
         super(codec, cache);
     }
+    
+    public SessionFullNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache, JetspeedContentCache decorationCache)
+    {
+        super(codec, cache, decorationCache);
+    }
 
     public boolean isRenderParameterStateFull()
     {
