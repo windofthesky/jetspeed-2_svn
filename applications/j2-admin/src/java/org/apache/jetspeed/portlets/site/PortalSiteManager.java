@@ -305,6 +305,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
 
     private boolean  unzipfile(String file,String destination,String sepreator) {
       Enumeration entries;
+      String filePath="";
       try {
           ZipFile zipFile = new ZipFile(destination+sepreator+file);
 
@@ -312,24 +313,29 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
 
         while(entries.hasMoreElements()) {
           ZipEntry entry = (ZipEntry)entries.nextElement();
-
-          if(entry.isDirectory()) {
-            (new File(destination+sepreator+entry.getName())).mkdir();
-            continue;
-          }
-
-          System.out.println("Extracting file: " + entry.getName());
+          filePath = destination+sepreator+entry.getName();
+          createPath(filePath);
           copyInputStream(zipFile.getInputStream(entry),
-             new BufferedOutputStream(new FileOutputStream(destination+sepreator+entry.getName())));
+             new BufferedOutputStream(new FileOutputStream(filePath)));
         }
 
         zipFile.close();
         return true;
       } catch (IOException ioe) {
-        System.err.println("Unhandled exception:");
         ioe.printStackTrace();
         return false;
       }
+    }
+    
+    private void createPath(String filePath) {
+        String parentPath="";
+        File file = new File(filePath);
+        File parent = new File(file.getParent());
+        if (!parent.exists()) {
+            parentPath = parent.getPath();
+            createPath(parentPath);
+            parent.mkdir();
+        }
     }
     private Folder importFolders(Folder srcFolder,String userName,String destination) throws JetspeedException {
         Folder dstFolder = lookupFolder(srcFolder.getPath());

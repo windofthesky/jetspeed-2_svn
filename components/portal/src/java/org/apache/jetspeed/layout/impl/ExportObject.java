@@ -87,7 +87,7 @@ public class ExportObject extends BaseGetResourceAction implements AjaxAction, A
 				if (objectType.equalsIgnoreCase("folder")) {
 					Folder folder = pageManager.getFolder(objectPath);
 					if (isRecursive) {
-							importFolder(folder,userName);
+							importFolder(folder,userName,getRealPath(folder.getPath()));
 					} else {
 						Folder destFolder = castorPageManager.copyFolder(folder, getUserFolder(userName, true)
 								+ objectName);
@@ -242,16 +242,18 @@ public class ExportObject extends BaseGetResourceAction implements AjaxAction, A
 		}
 	}
 
-	private Folder importFolder(Folder srcFolder,String userName) throws JetspeedException {
-		Folder dstFolder = lookupFolder(srcFolder.getPath());
-		dstFolder = castorPageManager.copyFolder(srcFolder, getUserFolder(userName, true) + srcFolder.getPath());
+	private Folder importFolder(Folder srcFolder,String userName,String destination) throws JetspeedException {
+        String newPath="";
+        Folder dstFolder = lookupFolder(srcFolder.getPath());
+		dstFolder = castorPageManager.copyFolder(srcFolder, getUserFolder(userName, true) + destination);
 		castorPageManager.updateFolder(dstFolder);
 
 		Iterator pages = srcFolder.getPages().iterator();
 		while (pages.hasNext()) {
 			Page srcPage = (Page) pages.next();
 			Page dstPage = lookupPage(srcPage.getPath());
-			dstPage = castorPageManager.copyPage(srcPage, getUserFolder(userName, true) +srcPage.getPath());
+            newPath = getUserFolder(userName, true) +destination+ getRealPath(srcPage.getPath()); 
+			dstPage = castorPageManager.copyPage(srcPage, newPath);
 			castorPageManager.updatePage(dstPage);
 		}
 
@@ -259,13 +261,15 @@ public class ExportObject extends BaseGetResourceAction implements AjaxAction, A
 		while (links.hasNext()) {
 			Link srcLink = (Link) links.next();
 			Link dstLink = lookupLink(srcLink.getPath());
-			dstLink = castorPageManager.copyLink(srcLink, getUserFolder(userName, true) +srcLink.getPath());
+            newPath = getUserFolder(userName, true) +destination+ getRealPath(srcLink.getPath());
+			dstLink = castorPageManager.copyLink(srcLink,newPath);
 			castorPageManager.updateLink(dstLink);
 		}
 		Iterator folders = srcFolder.getFolders().iterator();
 		while (folders.hasNext()) {
 			Folder folder = (Folder) folders.next();
-			importFolder(folder,userName);
+            newPath = destination+getRealPath(folder.getPath());
+			importFolder(folder,userName,newPath);
 		}
 
 		return dstFolder;
@@ -294,4 +298,13 @@ public class ExportObject extends BaseGetResourceAction implements AjaxAction, A
 			return null;
 		}
 	}
+    private String getRealPath(String path){
+        int index = path.lastIndexOf("/");
+        if (index>0)
+        {
+            return path.substring(index);
+        }
+        return path;
+         
+    }
 }
