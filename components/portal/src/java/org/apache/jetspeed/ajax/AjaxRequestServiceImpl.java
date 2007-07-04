@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -236,8 +238,10 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
                 // Put the response XML on the response object
                 HttpServletResponse response = requestContext.getResponse();
                 ServletOutputStream sos = response.getOutputStream();
-                sos.print(buffer);
-                sos.flush();
+                
+                Writer writer = new OutputStreamWriter(sos, "UTF-8");
+                writer.write(buffer);
+                writer.flush();
             } 
             else
             {
