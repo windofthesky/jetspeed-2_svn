@@ -566,6 +566,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
+        rulesPerPrincipal.remove(rule.getPrincipalName());
+        String key = this.makePrincipalRuleKey(rule.getPrincipalName(), rule.getLocatorName());
+        principalRules.remove(key);                
     }
 
     /*
