@@ -204,9 +204,11 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // and is now being reloaded in a new server), it must be
                 // replaced with a newly created session context
                 PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
-                if ((sessionContext == null) || !sessionContext.isValid())
-                {
+                String pipeline = request.getPipeline().getName();
+                if ((sessionContext == null) || !sessionContext.isValid() || !pipeline.equals(sessionContext.getPipeline()))
+                {                    
                     sessionContext = portalSite.newSessionContext();
+                    sessionContext.setPipeline(pipeline);
                     request.setSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY, sessionContext);
                 }
 

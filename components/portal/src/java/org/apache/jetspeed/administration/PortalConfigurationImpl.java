@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.administration;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -109,5 +110,15 @@ public class PortalConfigurationImpl implements PortalConfiguration
     public String[] getStringArray(String key)
     {
         return configuration.getStringArray(key);                
+    }
+    
+    public Iterator getKeys()
+    {
+        return configuration.getKeys();
+    }
+    
+    public void setString(String key, String value)
+    {
+        configuration.setProperty(key, value);
     }
 }

@@ -217,6 +217,22 @@ limitations under the License.
          /render/*
        </url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /configure/*
+       </url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>
+         /dtconfigure/*
+       </url-pattern>
+    </servlet-mapping>
     
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>

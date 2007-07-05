@@ -1185,13 +1185,13 @@ function viewResource(xnode)
         var servletPath = "${req.ServletPath}";
         var regex = new RegExp("/portal.*");
         if (servletPath.match(regex))
-            servletPath = "portal";
+            servletPath = "configure";
         else
         {
             if (servletPath == "/")
-                servletPath = "portal";
+                servletPath = "configure";
             else
-                servletPath = "desktop";
+                servletPath = "configure";
         }
         window.open("${rooturl}" + servletPath + node.widgetId, 'w-' + node.title);
     }

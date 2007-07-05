@@ -122,4 +122,21 @@ limitations under the License.
 		<column name='ELAPSED_TIME' type='BIGINT'/>
 	</table>    
 	
+	<table name='ADMIN_ACTIVITY'>
+		<column name='USER_NAME' type='VARCHAR' size="80"/>
+		<column name='ADMIN' type='VARCHAR' size="80"/>
+		<column name='TIME_STAMP' type='TIMESTAMP'/>
+		<column name='IPADDRESS' type='VARCHAR' size="80"/>
+		<column name='ACTIVITY' type='VARCHAR' size="40"/>
+		<column name='DESCRIPTION' type='VARCHAR' size="128"/>			    
+	</table>
+
+	<table name='USER_ACTIVITY'>
+		<column name='USER_NAME' type='VARCHAR' size="80"/>
+		<column name='TIME_STAMP' type='TIMESTAMP'/>
+		<column name='IPADDRESS' type='VARCHAR' size="80"/>
+		<column name='ACTIVITY' type='VARCHAR' size="40"/>
+		<column name='DESCRIPTION' type='VARCHAR' size="128"/>			    
+	</table>
+	
 </database>

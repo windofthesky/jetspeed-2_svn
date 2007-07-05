@@ -35,7 +35,7 @@ public interface JetspeedDesktop
     String DEFAULT_DESKTOP_PIPELINE_PATH = "/desktop";
     String DEFAULT_DESKTOP_ACTION_PIPELINE_PATH = "/action";
     String DEFAULT_DESKTOP_RENDER_PIPELINE_PATH = "/render";
-    
+    String DEFAULT_DESKTOP_CONFIGURE_PIPELINE_PATH = "/dtconfigure";
 
     /**
      * Render a desktop theme.

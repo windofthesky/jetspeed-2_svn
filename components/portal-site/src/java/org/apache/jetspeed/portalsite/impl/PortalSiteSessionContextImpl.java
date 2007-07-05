@@ -123,6 +123,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     private transient boolean stale;
 
     /**
+     * store which pipeline we are serving
+     * 
+     */
+    private transient String pipeline = "";
+    
+    /**
      * PortalSiteSessionContextImpl - constructor
      *
      * @param pageManager PageManager component instance
@@ -130,6 +136,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     public PortalSiteSessionContextImpl(PageManager pageManager)
     {
         this.pageManager = pageManager;
+        this.pipeline = "";
     }
 
     /**
@@ -1259,4 +1266,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
 		}
 		return folderPageHistory;
 	}
+    
+    public void setPipeline(String pipeline)
+    {
+        this.pipeline = pipeline;
+    }
+    
+    public String getPipeline()
+    {
+        return this.pipeline;
+    }
 }

@@ -174,7 +174,7 @@ public class PortalContextProviderImpl
         {
             throw new IllegalArgumentException("Property name == null");
         }
-        portalContext.getConfiguration().setProperty(name, value);
+        portalContext.getConfiguration().setString(name, value);
     }      
 
     // expects enumeration of PortletMode objects

@@ -75,7 +75,7 @@ public abstract class AbstractPortalURL implements PortalURL
         this.navState = navState;
         if ( relativeOnly == null )
         {
-            relativeOnly = portalContext.getConfiguration().getBoolean("portalurl.relative.only", Boolean.FALSE);
+            relativeOnly = new Boolean(portalContext.getConfiguration().getBoolean("portalurl.relative.only", false));
         }
     }
     

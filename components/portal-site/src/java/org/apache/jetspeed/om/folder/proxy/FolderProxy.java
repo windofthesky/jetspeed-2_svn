@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -44,6 +46,7 @@ import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.page.document.proxy.NodeSetImpl;
 import org.apache.jetspeed.portalsite.view.SiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewSearchPath;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * This class proxies PSML Folder instances to create a logical view
@@ -151,7 +154,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                      least specific order
      */
     private List inheritanceFolders;
-
+        
     /**
      * newInstance - creates a new proxy instance that implements the Folder interface
      *
@@ -772,8 +775,20 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     // accessed only via SiteView search path
                     // aggregation that directly utilizes the
                     // current view page manager
-                    if (!(child instanceof Folder) || (!childName.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX) &&
-                                                       !childName.startsWith(Folder.RESERVED_FOLDER_PREFIX)))
+                    boolean visible = (!(child instanceof Folder) || (!childName.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX) &&
+                                                       !childName.startsWith(Folder.RESERVED_FOLDER_PREFIX)));
+                    RequestContext rc = Jetspeed.getCurrentRequestContext();
+                    boolean configureMode = false;
+                    if (rc != null)
+                    {
+                        if (rc.getPipeline().getName().equals(PortalReservedParameters.CONFIG_PIPELINE_NAME) ||
+                            rc.getPipeline().getName().equals(PortalReservedParameters.DESKTOP_CONFIG_PIPELINE_NAME))    
+                        {
+                            configureMode = true;
+                        }
+                    }
+                    
+                    if (visible || configureMode)
                     {
                         // test child name uniqueness
                         boolean childUnique = true ;

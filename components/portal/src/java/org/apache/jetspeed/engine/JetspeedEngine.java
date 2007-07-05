@@ -28,13 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfiguration;
+import org.apache.jetspeed.administration.PortalConfigurationImpl;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -69,6 +70,11 @@ public class JetspeedEngine implements Engine
 
     public JetspeedEngine(Configuration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )
     {
+        this(new PortalConfigurationImpl(configuration), applicationRoot, config, componentManager);
+    }
+    
+    public JetspeedEngine(PortalConfiguration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )
+    {
         this.componentManager = componentManager;
         this.context = new JetspeedPortalContext(this, configuration, applicationRoot);
         this.config = config;
@@ -76,7 +82,7 @@ public class JetspeedEngine implements Engine
         context.setConfiguration(configuration);           
 
         defaultPipelineName = configuration.getString(PIPELINE_DEFAULT, "jetspeed-pipeline");
-        configuration.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
+        configuration.setString(JetspeedEngineConstants.APPLICATION_ROOT_KEY, applicationRoot);
         
         // Make these availble as beans to Spring
         componentManager.addComponent("Engine", this);

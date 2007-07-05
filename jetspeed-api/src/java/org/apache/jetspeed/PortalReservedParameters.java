@@ -33,6 +33,10 @@ public interface PortalReservedParameters
     public final static String PORTLET_PIPELINE = "portlet-pipeline";
     public final static String ACTION_PIPELINE = "action-pipeline";
     public final static String LOGIN_PIPELINE = "login-pipeline";
+    public final static String CONFIG_PIPELINE = "config-pipeline";
+    public final static String DESKTOP_CONFIG_PIPELINE = "dtconfig-pipeline";
+    public final static String CONFIG_PIPELINE_NAME = "ConfigurePipeline";
+    public final static String DESKTOP_CONFIG_PIPELINE_NAME = "DesktopConfigurePipeline";
     
     // Session and Request attribute keys
     public static final String PAGE_ATTRIBUTE = "org.apache.jetspeed.Page";
@@ -65,7 +69,7 @@ public interface PortalReservedParameters
     public static final String PAGE_LAYOUT_HELP = "org.apache.jetspeed.layout.help";
     public static final String PAGE_LAYOUT_EDIT = "org.apache.jetspeed.layout.edit";
     public static final String PAGE_LAYOUT_SOLO = "org.apache.jetspeed.layout.solo";
-    
+
     /**
      * Setting this as a session attribute will override all themes declared in
      * psml. Sample values are "Simple", "tigris", "jetspeed"

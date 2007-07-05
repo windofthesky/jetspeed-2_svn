@@ -74,4 +74,17 @@ public interface PortalSiteSessionContext extends Serializable
      * @return valid context status
      */
     boolean isValid();
+    
+    /**
+     * set which pipeline this context is stored for 
+     * 
+     * @param pipeline
+     */
+    void setPipeline(String pipeline);
+    
+    /**
+     * get which pipeline this context is stored for
+     */
+    String getPipeline();
 }
+

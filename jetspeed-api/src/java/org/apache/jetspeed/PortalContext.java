@@ -19,7 +19,7 @@ package org.apache.jetspeed;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.engine.Engine;
 
 /**
@@ -32,8 +32,8 @@ public interface PortalContext extends javax.portlet.PortalContext
 {
     public Engine getEngine();
 
-    public Configuration getConfiguration();
-    public void setConfiguration(Configuration configuration);
+    public PortalConfiguration getConfiguration();
+    public void setConfiguration(PortalConfiguration configuration);
 
     public String getConfigurationProperty(String key);
     public String getConfigurationProperty(String key, String defaultValue);

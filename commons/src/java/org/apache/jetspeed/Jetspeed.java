@@ -31,7 +31,7 @@ import org.apache.jetspeed.request.RequestContext;
  * of jetspeed.
  *
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: Jetspeed.java 552657 2007-07-03 03:57:47Z taylor $
  */
 public class Jetspeed
 {
@@ -84,7 +84,9 @@ public class Jetspeed
      */
     public static RequestContext getCurrentRequestContext()
     {
-        return engine.getCurrentRequestContext();
+        if (engine != null)
+            return engine.getCurrentRequestContext();
+        return null;
     }
 
     // TODO We need to get this from the Engine and the engine should get it from the configuration. 

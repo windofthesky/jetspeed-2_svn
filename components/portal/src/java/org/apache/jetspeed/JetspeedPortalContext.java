@@ -23,7 +23,7 @@ import java.util.HashMap;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
@@ -55,7 +55,7 @@ public class JetspeedPortalContext implements PortalContext
     /**
      * Configuration state
      */
-    private Configuration configuration = null;
+    private PortalConfiguration configuration = null;
 
     /**
      * The base from which the Jetspped application will operate.
@@ -64,7 +64,7 @@ public class JetspeedPortalContext implements PortalContext
     
     private final String portalInfo;
 
-    public JetspeedPortalContext(Engine engine, Configuration configuration, String applicationRoot)
+    public JetspeedPortalContext(Engine engine, PortalConfiguration configuration, String applicationRoot)
     {
         this.engine = engine;
         this.configuration = configuration;
@@ -87,7 +87,7 @@ public class JetspeedPortalContext implements PortalContext
      *
      * @return a <code>Configuration</code> containing the configuration properties for this Jetspeed context.
      */
-    public Configuration getConfiguration()
+    public PortalConfiguration getConfiguration()
     {
         return configuration;
     }
@@ -107,7 +107,7 @@ public class JetspeedPortalContext implements PortalContext
      *
      * @param configuration - the configuration properties
      */
-    public void setConfiguration(Configuration configuration)
+    public void setConfiguration(PortalConfiguration configuration)
     {
         this.configuration = configuration;
     }
@@ -173,7 +173,7 @@ public class JetspeedPortalContext implements PortalContext
         {
             throw new IllegalArgumentException("Property name == null");
         }
-        return(String) configuration.getProperty(name);
+        return(String) configuration.getString(name);
     }
 
     /* (non-Javadoc)

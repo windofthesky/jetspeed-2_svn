@@ -135,9 +135,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         if (mergePortalParametersWithPortletParameters == null )
         {
             mergePortalParametersWithPortletParameters = 
-                Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.with.portlet.parameters", Boolean.FALSE);
+                new Boolean(Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.with.portlet.parameters", false));
             mergePortalParametersBeforePortletParameters = 
-                Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.before.portlet.parameters", Boolean.FALSE);
+                new Boolean(Jetspeed.getContext().getConfiguration().getBoolean("merge.portal.parameters.before.portlet.parameters", false));
         }
                 
         

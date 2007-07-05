@@ -323,6 +323,33 @@ limitations under the License.
     </constructor-arg>
   </bean> 
   
+  <bean id="configure-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <value>ConfigurePipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+      <ref bean="capabilityValve"/>
+      <ref bean="portalURLValve"/>
+      <ref bean="securityValve"/>
+      <ref bean="localizationValve"/>
+      <ref bean="passwordCredentialValve"/>
+      <ref bean="loginValidationValve"/>
+      <ref bean="profilerValve"/>
+      <ref bean="containerValve"/>
+      <ref bean="actionValve"/>
+      <ref bean="resourceValve"/>
+      <ref bean="DecorationValve" />
+      <ref bean="headerAggregatorValvePortal"/>  
+      <ref bean="aggregatorValve"/>
+      <ref bean="cleanUpValve"/>
+    </list>
+    </constructor-arg>
+   </bean>
+	
   <bean id="login-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
         init-method="initialize"
@@ -499,6 +526,27 @@ limitations under the License.
     </list>
     </constructor-arg>
   </bean> 
+
+  <bean id="dtconfigure-pipeline"
+        class="org.apache.jetspeed.pipeline.JetspeedPipeline"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <value>DesktopConfigurePipeline</value>
+   </constructor-arg>
+   <constructor-arg>
+    <list>
+        <ref bean="capabilityValve"/>
+        <ref bean="portalURLValve"/>                
+        <ref bean="securityValve"/>                
+        <ref bean="localizationValve"/>
+        <ref bean="profilerValve"/>                        
+        <ref bean="headerAggregatorValveDesktop"/>          
+        <ref bean="desktopValve"/>
+    </list>
+    </constructor-arg>
+  </bean> 
+
       
   <bean id='pipeline-map'
         class='java.util.HashMap'>
@@ -536,6 +584,12 @@ limitations under the License.
             <entry key='/render'>
                 <value>desktop-render-pipeline</value>
             </entry>
+            <entry key='/configure'>
+                <value>configure-pipeline</value>
+            </entry>            
+            <entry key='/dtconfigure'>
+                <value>dtconfigure-pipeline</value>
+            </entry>                        
         </map>        
     </constructor-arg>        
   </bean>

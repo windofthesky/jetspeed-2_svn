@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.administration;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,5 +46,7 @@ public interface PortalConfiguration
     List getList(String key);    
     long getLong(String key);
     long getLong(String key, long defaultValue);        
-    String[] getStringArray(String key);    
+    String[] getStringArray(String key);
+    Iterator getKeys();
+    void setString(String key, String value);
 }
