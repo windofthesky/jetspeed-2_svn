@@ -45,6 +45,8 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.page.FolderNotUpdatedException;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.window.PortletWindow;
 
@@ -920,8 +922,40 @@ public class MultiColumnPortlet extends LayoutPortlet
                     return;
                 }
                 // evlach
-                String decorators = request.getParameter("decorators");
-                if ( decorators != null )
+                String decorators = request.getParameter("decorators");                
+                // change style for all pages in user folder 
+                String jsChangeUserPagesTheme = request.getParameter("jsChangeUserPagesTheme");
+                if ( jsChangeUserPagesTheme != null )
+                {
+                   String user_pages_theme = request.getParameter("user_pages_theme");
+                   try
+                    {
+                       Folder f = pageManager.getUserFolder(request.getRemoteUser());
+                       applyStyle(f,user_pages_theme,Fragment.LAYOUT);
+                       decorators=null;
+                    }
+                    catch (Exception e)
+                    {
+                       throw new PortletException("Unable to update folder for defUserLayoutDeco decorator: "+e.getMessage(), e);
+                    }
+                }                
+                String jsChangeUserPortletsDeco = request.getParameter("jsChangeUserPortletsDeco");
+                if ( jsChangeUserPortletsDeco != null )
+                {                  
+                   String user_portlets_deco = request.getParameter("user_portlets_deco");
+                   try
+                    {
+                       Folder f = pageManager.getUserFolder(request.getRemoteUser());
+                       applyStyle(f,user_portlets_deco,Fragment.PORTLET);
+                        decorators = null; //do insert next if
+                    }
+                   catch (Exception e)
+                    {
+                        throw new PortletException("Unable to update folder for defUserPortletDeco decorator: "+e.getMessage(), e);
+                    }
+                }                                
+                
+                if ( decorators != null && decorators.length() > 1)
                 {
                     Iterator fragmentsIter = requestPage.getRootFragment().getFragments().iterator();
                     while(fragmentsIter.hasNext())
@@ -948,7 +982,6 @@ public class MultiColumnPortlet extends LayoutPortlet
                     }
                     return;
                 }                
-                //end evlach
             }
             
             String portlets = request.getParameter("portlets");
@@ -1027,4 +1060,23 @@ public class MultiColumnPortlet extends LayoutPortlet
             return pageName;
         }
     }
+    
+    private void applyStyle(Folder f, String theme, String theme_type) throws FolderNotUpdatedException, NodeException 
+    {
+       f.setDefaultDecorator(theme, theme_type);
+       pageManager.updateFolder(f);
+       Iterator pagesIter = f.getPages().iterator();
+       while(pagesIter.hasNext())
+       {
+           Page pp = (Page) pagesIter.next();
+           pp.setDefaultDecorator(theme, theme_type);
+           pageManager.updatePage(pp);
+       }                       
+       Iterator userFoldersIter = pageManager.getFolders(f).iterator();
+       while(userFoldersIter.hasNext()) 
+       {
+           Folder ff = (Folder) userFoldersIter.next();
+           applyStyle(ff,theme,theme_type);
+       }
+    }    
 }

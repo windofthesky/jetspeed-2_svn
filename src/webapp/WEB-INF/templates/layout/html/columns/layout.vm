@@ -68,6 +68,7 @@ limitations under the License.
       #getBoolProperty($allowChangeFolderName $rootDecorator "allow.change.folder.name" true)
       #getBoolProperty($allowNavigateFolder $rootDecorator "allow.navigate.folder" true)
       #getBoolProperty($allowDeleteFolder $rootDecorator "allow.delete.folder" true)
+      #getBoolProperty($allowCustomizeAll $rootDecorator "allow.customize.all" false)
     #else
       #set($allowChangePageTheme=false)
       #set($allowAddPage=false)
@@ -79,6 +80,7 @@ limitations under the License.
       #set($allowChangeFolderName=false)
       #set($allowNavigateFolder=false)
       #set($allowDeleteFolder=false)
+      #set($allowCustomizeAll=false)
     #end
 
     #getIntProperty($maxLayoutNesting $rootDecorator "max.layout.nesting" 2)
@@ -109,6 +111,26 @@ limitations under the License.
       #set($submit = ".submit()")
 
     <form name="$form" action="$formAction" method='post'>
+    #if($allowCustomizeAll)
+    <fieldset>
+    	<legend>$messages.getString("portal.userfolder.config.title")</legend>
+    	<label for="user_pages_theme">$messages.getString("portal.page.editing.theme")</label>
+    	<select id="user_pages_theme" name="user_pages_theme">
+        	#foreach($td in $decorationFactory.getPageDecorations($rc))
+            <option value='$td'>$td
+            #end
+        </select>   
+        <input type="submit" name="jsChangeUserPagesTheme" value='$messages.getString("portal.page.editing.changetheme")' />
+        <label for="user_portlets_deco">$messages.getString("portal.page.editing.portlet.decorator")</label>
+        <select id="user_portlets_deco" name="user_portlets_deco">
+    		<option value=''>
+    	    #foreach($pd in $decorationFactory.getPortletDecorations($rc))
+        	<option value='$pd'>$pd
+    	   	#end
+        </select>
+        <input type="submit" name="jsChangeUserPortletsDeco" value='$messages.getString("portal.page.editing.changethemeall")'/>        
+    </fieldset>
+    #end
     <fieldset>
     <div class="layout-edit-bar-left">
         #if($allowAddLayout||$allowChangeLayout)
