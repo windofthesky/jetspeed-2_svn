@@ -37,6 +37,7 @@ import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -533,8 +534,9 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                         {
                             if (getPath().endsWith(PATH_SEPARATOR))
                             {
-                                if(nodeNames[i].indexOf(".") > -1)
-                                {    
+                                String full = PageManagerUtils.concatenatePaths(getPath(), nodeNames[i]); 
+                                if (!folderHandler.isFolder(full))
+                                {
                                     node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + nodeNames[i]);
                                 }
                                 else
@@ -544,9 +546,10 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                             }
                             else
                             {
-                                
-                                if(nodeNames[i].indexOf(".") > -1)
-                                {    
+                                String full = PageManagerUtils.concatenatePaths(getPath(), nodeNames[i]); 
+                                if (!folderHandler.isFolder(full))                                
+                                //if(nodeNames[i].indexOf(".") > -1)
+                                {
                                     node = getHandlerFactory().getDocumentHandlerForPath(nodeNames[i]).getDocument(getPath() + PATH_SEPARATOR + nodeNames[i]);
                                 }
                                 else
@@ -577,7 +580,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         
         return allNodes;
     }
-
+    
     /**
      * <p>
      * getFolderMetaData

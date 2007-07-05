@@ -748,4 +748,8 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
 
     }
 
+    public boolean isFolder(String path)
+    {
+        return new File(this.documentRootDir, path).isDirectory();        
+    }
 }

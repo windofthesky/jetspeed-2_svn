@@ -155,4 +155,12 @@ public interface FolderHandler
      */
     NodeSet getNodes(String path, boolean regexp, String documentType) throws FolderNotFoundException, InvalidFolderException, NodeException;
     
+    /**
+     * Returns true if the path is a folder
+     * 
+     * @param path
+     * @return
+     */
+    boolean isFolder(String path);
+    
 }

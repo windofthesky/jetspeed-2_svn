@@ -487,6 +487,24 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
         assertTrue(link.getTitle().equals("Updated Title"));
     }
 
+    public void testGetFolders() throws Exception
+    {
+
+        Folder subsites = pageManager.getFolder("/subsites");
+        assertNotNull(subsites);
+
+        Iterator ssi = subsites.getFolders().iterator();
+        assertTrue(ssi.hasNext());
+        int count = 0;
+        while (ssi.hasNext())
+        {
+            Folder folder = (Folder)ssi.next();
+            System.out.println("folder = " + folder.getName());
+            count++;
+        }
+        assertEquals(4, count);
+    }
+    
     public void testFolders() throws Exception
     {
 
