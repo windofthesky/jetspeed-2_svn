@@ -1170,6 +1170,17 @@ function viewResource(xnode)
 {
     var selector = dojo.widget.byId('treeSelector');
     var node = selector.selectedNode;
+    
+    var title = "w";
+    var i;
+    for (i=0; i<node.title.length; i++)
+    {
+    	if ( node.title.charAt(i) >= 'a' && node.title.charAt(i) <= 'z' || node.title.charAt(i) >= 'A' && node.title.charAt(i) <= 'Z' )
+    	{
+    		title = title + node.title.charAt(i);
+    	}
+    }
+    
     if (node == null)
     {
         selector.select({ source: xnode, event: {} });
@@ -1178,7 +1189,7 @@ function viewResource(xnode)
     if (node.object == "Link")
     {
         var url = document.getElementById("linfo.url").value;
-        window.open(url, 'w-' + node.title);
+        window.open(url, title);
     }
     else 
     {
@@ -1193,7 +1204,7 @@ function viewResource(xnode)
             else
                 servletPath = "configure";
         }
-        window.open("${rooturl}" + servletPath + node.widgetId, 'w-' + node.title);
+        window.open("${rooturl}" + servletPath + node.widgetId, title);
     }
 }
 function newResource(kind, xnode)

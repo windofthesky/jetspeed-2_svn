@@ -70,7 +70,31 @@ limitations under the License.
 <hr/>
 
 <!-- controls -->
-<table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
+#if ($tableSize > 0)
+	<table align="center">
+      <form action="$formAction" method="post">
+      <td valign="middle" height="30">
+        <div align="center">
+          	<input type='hidden' name='db.browser.action' value='change'/>                    
+            <input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input type="input" readonly size='10' value="$MESSAGES.getString('numsepa') $tableSize" class="portlet-form-field-label">            
+        </div>
+      </td>  
+      <td valign="middle" height="30">
+        <div align="center">
+            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('go')">            
+        </div>
+      </td>  
+
+      </form>
+    </table>
+#end    
+
+<table border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
     #if ($prev)
       <td valign="middle" height="30">
@@ -92,29 +116,6 @@ limitations under the License.
         </div>
       </td>
     #end
-    #if ($tableSize > 0)
-      <form action="$formAction" method="post">
-      <td valign="middle" height="30">
-        <div align="center">
-          	<input type='hidden' name='db.browser.action' value='change'/>                    
-            <input type="input" name='start' size='5' value="$start" class="portlet-form-field-label">
-        </div>
-      </td>  
-      <td valign="middle" height="30">
-        <div align="center">
-            <input type="input" readonly size='10' value="$MESSAGES.getString('numsepa') $tableSize" class="portlet-form-field-label">            
-        </div>
-      </td>  
-      <td valign="middle" height="30">
-        <div align="center">
-            <input class="portlet-form-button" type="submit" value="$MESSAGES.getString('go')">            
-        </div>
-      </td>  
-
-      </form>
-
-      
-    #end    
     #if ($next)
       <td valign="middle">
         <div align="center">
@@ -154,7 +155,7 @@ limitations under the License.
   <table>
   <tr>
     <td><input class="portlet-form-button" type="submit" value="$MESSAGES.getString('search')"></td>
-    <td><input type="text" name="searchString" size="30" value="" class="portlet-form-field-label"></td>
+    <td><input type="text" name="searchString" size="25" value="" class="portlet-form-field-label"></td>
   </tr>
   <tr>
     <td nowrap align="right" style="vertical-align:middle">&nbsp;$MESSAGES.getString('filter')</td>
