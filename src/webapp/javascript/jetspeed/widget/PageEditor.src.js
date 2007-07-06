@@ -209,7 +209,24 @@ dojo.widget.defineWidget(
             this.show();
             this.editPageSyncPortletActions();
         },
-
+        editPageDestroy: function()
+        {
+            if ( this.pageEditorWidgets != null )
+            {
+                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                {
+                    this.pageEditorWidgets[i].destroy();
+                    this.pageEditorWidgets[i] = null;
+                }
+            }
+            if ( this.deletePortletDialog != null )
+                this.deletePortletDialog.destroy();
+            if ( this.deleteLayoutDialog != null )
+                this.deleteLayoutDialog.destroy();
+            if ( this.columnSizeDialog != null )
+                this.columnSizeDialog.destroy();
+            this.destroy();
+        },
 
         // methods
 
