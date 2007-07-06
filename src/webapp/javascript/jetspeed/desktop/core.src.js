@@ -270,7 +270,7 @@ jetspeed.initializeDesktop = function()
         jetspeed.prefs.windowActionNoImage = noImageMap;
     }
 
-    var docUrlObj = jetspeed.url.parse( document.location.href );
+    var docUrlObj = jetspeed.url.parse( window.location.href );
     var printModeOnly = jetspeed.url.getQueryParameter( docUrlObj, "jsprintmode" ) == "true";
     if ( printModeOnly )
     {
@@ -315,18 +315,20 @@ jetspeed.loadPage = function()
 };
 jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
 {
-    var previousPage = jetspeed.page;
-    if ( ! navToPageUrl || jetspeed.pageNavigateSuppress ) return;
-    if ( previousPage && previousPage.equalsPageUrl( navToPageUrl ) )
+    var currentPage = jetspeed.page;
+    if ( ! navToPageUrl || ! currentPage || jetspeed.pageNavigateSuppress ) return;
+    if ( currentPage.equalsPageUrl( navToPageUrl ) )
         return ;
-    navToPageUrl = jetspeed.page.makePageUrl( navToPageUrl );
-    if ( previousPage != null && navToPageUrl != null )
+    navToPageUrl = currentPage.makePageUrl( navToPageUrl );
+    if ( navToPageUrl != null )
     {
-        var previousPageUrl = previousPage.getPageUrl();
-        previousPage.destroy();
-        var newJSPage = new jetspeed.om.Page( jetspeed.page.layoutDecorator, navToPageUrl, (! djConfig.preventBackButtonFix && ! backOrForwardPressed) );
+        var currentLayoutDecorator = currentPage.layoutDecorator;
+        var currentEditMode = currentPage.editMode;
+        currentPage.destroy();
+        var newJSPage = new jetspeed.om.Page( currentLayoutDecorator, navToPageUrl, (! djConfig.preventBackButtonFix && ! backOrForwardPressed), currentEditMode );
         jetspeed.page = newJSPage;
         newJSPage.retrievePsml();
+        window.focus();   // to prevent IE from sending alt-arrow to tab container
     }
 };
 
@@ -828,7 +830,7 @@ jetspeed.editPageInitiate = function()
     if ( ! jetspeed.page.editMode )
     {
         var fromDesktop = true;
-        var fromPortal = jetspeed.url.getQueryParameter( document.location.href, jetspeed.id.PORTAL_ORIGINATE_PARAMETER );
+        var fromPortal = jetspeed.url.getQueryParameter( window.location.href, jetspeed.id.PORTAL_ORIGINATE_PARAMETER );
         if ( fromPortal != null && fromPortal == "true" )
             fromDesktop = false;
         jetspeed.page.editMode = true;
@@ -1004,7 +1006,7 @@ dojo.lang.extend( jetspeed.om.Id,
 });
 
 // ... jetspeed.om.Page
-jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory )
+jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory, editMode )
 {
     if ( requiredLayoutDecorator != null && navToPageUrl != null )
     {
@@ -1016,7 +1018,10 @@ jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory
     {
         this.setPsmlPathFromDocumentUrl();
     }
-    this.addToHistory = addToHistory;
+    if ( typeof addToHistory != "undefined" )
+        this.addToHistory = addToHistory;
+    if ( typeof editMode != "undefined" )
+        this.editMode = editMode;
     this.layouts = {};
     this.columns = [];
     this.portlets = [];
@@ -1037,6 +1042,7 @@ dojo.lang.extend( jetspeed.om.Page,
 
     requiredLayoutDecorator: null,
     pageUrlFallback: null,
+    addToHistory: false,
 
     layouts: null,
     columns: null,
@@ -1063,12 +1069,31 @@ dojo.lang.extend( jetspeed.om.Page,
         var psmlPath = jetspeed.url.path.AJAX_API;
         var docPath = null;
         if ( navToPageUrl == null )
-            docPath = document.location.pathname;
+        {
+            docPath = window.location.pathname;
+            if ( ! djConfig.preventBackButtonFix && jetspeed.prefs.ajaxPageNavigation )
+            {
+                var hash = window.location.hash;
+                if ( hash != null && hash.length > 0 )
+                {
+                    if ( hash.indexOf( "#" ) == 0 )
+                    {
+                        hash = ( hash.length > 1 ? hash.substring(1) : "" );
+                    }
+                    if ( hash != null && hash.length > 1 && hash.indexOf( "/" ) == 0 )
+                    {
+                        this.psmlPath = jetspeed.url.path.AJAX_API + hash;
+                        return;
+                    }
+                }
+            }
+        }
         else
         {
             var uObj = jetspeed.url.parse( navToPageUrl );
             docPath = uObj.path;
         }
+
         var contextAndServletPath = jetspeed.url.path.DESKTOP;
         var contextAndServletPathPos = docPath.indexOf( contextAndServletPath );
         if ( contextAndServletPathPos != -1 && docPath.length > ( contextAndServletPathPos + contextAndServletPath.length ) )
@@ -1118,6 +1143,14 @@ dojo.lang.extend( jetspeed.om.Page,
 
         this.rootFragmentId = parsedRootLayoutFragment.id ;
 
+        var initiateEditMode = false;
+        if ( this.editMode )
+        {
+            this.editMode = false;
+            if ( jetspeed.prefs.printModeOnly == null )
+                initiateEditMode = true;
+        }
+
         // create columns
         if ( jetspeed.prefs.windowTiling )
         {
@@ -1163,21 +1196,21 @@ dojo.lang.extend( jetspeed.om.Page,
             // initialize portlet window state
             this._portletsInitializeWindowState( portletsByPageColumn[ "z" ] );
 
+            // detect edit mode force - likely to be temporary
+            var pageEditorInititate = jetspeed.url.getQueryParameter( window.location.href, jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER );
+            if ( initiateEditMode || ( pageEditorInititate != null && pageEditorInititate == "true" ) || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null )
+            {
+                initiateEditMode = false;
+                if ( this.actions != null && ( this.actions[ jetspeed.id.ACTION_NAME_EDIT ] != null || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null ) )
+                    initiateEditMode = true;
+            }
+
             // load menus
-            this.retrieveAllMenus();
+            this.retrieveMenuDeclarations( true, initiateEditMode );
     
             // render page buttons
             this.renderPageControls();
             this.syncPageControls();
-    
-            // detect edit mode force - likely to be temporary
-            var pageEditorInititate = jetspeed.url.getQueryParameter( document.location.href, jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER );
-            if ( ( pageEditorInititate != null && pageEditorInititate == "true" ) || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null )
-            {
-                if ( this.actions != null && ( this.actions[ jetspeed.id.ACTION_NAME_EDIT ] != null || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null ) )
-                    jetspeed.editPageInitiate();
-            }
-
         }
         else
         {
@@ -1251,7 +1284,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 dojo.undo.browser.addToHistory({
 	    	        back: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "back-nav-button: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
 		            forward: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "forward-nav-button: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
-		            changeUrl: false
+		            changeUrl: escape( this.getPath() )
 		        });
             }
         }
@@ -1261,7 +1294,7 @@ dojo.lang.extend( jetspeed.om.Page,
             dojo.undo.browser.setInitialState({
                 back: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "back-nav-button initial: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
                 forward: function() { if ( jetspeed.debug.ajaxPageNav ) dojo.debug( "forward-nav-button initial: " + currentPageUrl ); jetspeed.updatePage( currentPageUrl, true ); },
-                changeUrl: false
+                changeUrl: escape( this.getPath() )
             });
         }
 
@@ -2160,6 +2193,7 @@ dojo.lang.extend( jetspeed.om.Page,
     destroy: function()
     {
         this._destroyPortlets();
+        this._destroyEditPage();
         this._removeColumns( document.getElementById( jetspeed.id.DESKTOP ) );
         this._destroyPageControls();
     },
@@ -2264,13 +2298,9 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         return menuNamesArray;
     },
-    retrieveAllMenus: function()
+    retrieveMenuDeclarations: function( includeMenuDefs, initiateEditMode )
     {
-        this.retrieveMenuDeclarations( true );
-    },
-    retrieveMenuDeclarations: function( includeMenuDefs )
-    {
-        contentListener = new jetspeed.om.MenusAjaxApiContentListener( includeMenuDefs );
+        contentListener = new jetspeed.om.MenusAjaxApiContentListener( includeMenuDefs, initiateEditMode );
 
         this.clearMenus();
 
@@ -2398,6 +2428,14 @@ dojo.lang.extend( jetspeed.om.Page,
             }
         }
     },
+    _destroyEditPage: function()
+    {
+        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+        if ( pageEditorWidget != null )
+        {
+            pageEditorWidget.editPageDestroy();
+        }
+    },
     _destroyPageControls: function()
     {
         var pageControlsContainer = dojo.byId( jetspeed.id.PAGE_CONTROLS );
@@ -2490,7 +2528,7 @@ dojo.lang.extend( jetspeed.om.Page,
         if ( this.pageUrlFallback != null )
             docUrlObj = jetspeed.url.parse( this.pageUrlFallback );
         else
-            docUrlObj = jetspeed.url.parse( document.location.href );
+            docUrlObj = jetspeed.url.parse( window.location.href );
         if ( pageUrlObj != null && docUrlObj != null )
         {
             var docUrlQuery = docUrlObj.query;
@@ -2521,7 +2559,7 @@ dojo.lang.extend( jetspeed.om.Page,
         if ( this.pageUrlFallback != null )
             docUrlObj = jetspeed.url.parse( this.pageUrlFallback );
         else
-            docUrlObj = jetspeed.url.parse( document.location.href );
+            docUrlObj = jetspeed.url.parse( window.location.href );
         if ( pagePathObj != null && docUrlObj != null )
         {
             var docUrlQuery = docUrlObj.query;
@@ -3925,9 +3963,10 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiContentListener,
 });
 
 // ... jetspeed.om.MenusAjaxApiContentListener
-jetspeed.om.MenusAjaxApiContentListener = function( /* boolean */ includeMenuDefs )
+jetspeed.om.MenusAjaxApiContentListener = function( /* boolean */ includeMenuDefs, /* boolean */ initiateEditMode )
 {
     this.includeMenuDefs = includeMenuDefs;
+    this.initiateEditMode = initiateEditMode;
 };
 dojo.inherits( jetspeed.om.MenusAjaxApiContentListener, jetspeed.om.MenuAjaxApiContentListener);
 dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
@@ -3969,6 +4008,8 @@ dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
     {
         if ( this.includeMenuDefs )
             jetspeed.notifyRetrieveAllMenusFinished();
+        if ( this.initiateEditMode )
+            jetspeed.editPageInitiate();
     }
 });
 
