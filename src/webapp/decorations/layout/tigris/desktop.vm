@@ -34,7 +34,6 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
 <script language="JavaScript" type="text/javascript">
     function notifyRetrieveAllMenusFinished()
     {
-        dojo.debug( "window.notifyRetrieveAllMenusFinished" );
     }
     dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );
 </script>
