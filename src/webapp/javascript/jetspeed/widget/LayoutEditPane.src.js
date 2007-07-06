@@ -55,6 +55,7 @@ dojo.widget.defineWidget(
         // fields
 		isContainer: true,
         widgetsInTemplate: true,
+        isLayoutPane: true,
 
         // drag variables
         containingColumn: null,
@@ -134,8 +135,7 @@ dojo.widget.defineWidget(
         initializeDrag: function()
         {
             this.containingColumn = this.getContainingColumn();
-            this.drag = new jetspeed.widget.LayoutDragMoveSource( this );
-            this.drag.setDragHandle( this.layoutMoveContainer.domNode );
+            this.drag = new dojo.dnd.Moveable( this, {handle: this.layoutMoveContainer.domNode});
         },
 
         // methods
@@ -201,8 +201,8 @@ dojo.widget.defineWidget(
                 if ( afterDragColumnRowInfo != null && ( afterDragColumnRowInfo.row != beforeDragColumnRowInfo.row || afterDragColumnRowInfo.column != beforeDragColumnRowInfo.column || afterDragColumnRowInfo.layout != beforeDragColumnRowInfo.layout ) )
                 {
                     //dojo.debug( "layout (" + this.layoutId + ") endDragging (c)" );
-                    var moveLayoutContentManager = new jetspeed.widget.MoveLayoutContentManager( this.layoutId, afterDragColumnRowInfo.layout, afterDragColumnRowInfo.column, afterDragColumnRowInfo.row, this.pageEditorWidget );
-                    moveLayoutContentManager.getContent();
+                    //var moveLayoutContentManager = new jetspeed.widget.MoveLayoutContentManager( this.layoutId, afterDragColumnRowInfo.layout, afterDragColumnRowInfo.column, afterDragColumnRowInfo.row, this.pageEditorWidget );
+                    //moveLayoutContentManager.getContent();
                 }
             }
         },
@@ -253,56 +253,3 @@ dojo.widget.defineWidget(
 	templateString: '<span class="layoutMoveContainer"><img src="${this.layoutImagesRoot}layout_move.png"></span>'
 
 });
-
-jetspeed.widget.LayoutDragMoveSource = function( /* jetspeed.widget.LayoutEditPane */ layoutEditPane )
-{
-    this.layoutEditPane = layoutEditPane;
-    this.beforeDragColumnRowInfo = null;
-    this.beforeDragColumn = layoutEditPane.containingColumn;
-    var dragNode = ( ( this.beforeDragColumn != null ) ? this.beforeDragColumn.domNode : null );
-	dojo.dnd.HtmlDragMoveSource.call( this, dragNode );
-};
-
-dojo.inherits( jetspeed.widget.LayoutDragMoveSource, dojo.dnd.HtmlDragMoveSource );
-
-dojo.lang.extend( jetspeed.widget.LayoutDragMoveSource, {
-	onDragStart: function()
-    {
-        this.beforeDragColumnRowInfo = null;
-        var dragMoveObj = null;
-        if ( this.dragObject != null )
-        {
-            if ( this.beforeDragColumn != null && this.beforeDragColumn.domNode != null )
-                this.beforeDragColumnRowInfo = jetspeed.page.getPortletCurrentColumnRow( this.beforeDragColumn.domNode );
-
-//jetspeed.page.getColumnContainingNode(  );
-
-            dragMoveObj = new jetspeed.widget.LayoutDragMoveObject( this.dragObject, this.type, this.layoutEditPane, this.beforeDragColumn );
-            if ( this.constrainToContainer )
-            {
-                dragMoveObj.constrainTo( this.constrainingContainer );
-            }
-        }
-		return dragMoveObj;
-	},
-    onDragEnd: function()
-    {
-    }
-});
-
-dojo.declare( "jetspeed.widget.LayoutDragMoveObject", jetspeed.widget.PortletWindowDragMoveObject, {
-    qualifyTargetColumn: function( /* jetspeed.om.Column */ column )
-    {
-        if ( column == null ) return false;
-        if ( this.disqualifiedColumnIndexes[ column.getPageColumnIndex() ] != null )
-            return false;
-        return true;
-    }
-    },    
-    function( node, type, /* jetspeed.widget.LayoutEditPane */ layoutEditPane, /* jetspeed.om.Column */ beforeDragColumn )
-    {
-        this.layoutEditPane = layoutEditPane;
-    
-        this.disqualifiedColumnIndexes = beforeDragColumn.getDescendantColumns();
-    }
-);
