@@ -41,7 +41,6 @@ limitations under the License.
 <script language="JavaScript" type="text/javascript">
     function notifyRetrieveAllMenusFinished()
     {
-        dojo.debug( "window.notifyRetrieveAllMenusFinished" );
     }
     dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );
 </script>
@@ -87,7 +86,7 @@ limitations under the License.
 </div>
 <!-- End Jetspeed Page -->
   <p>
-     <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
+     <img src='<%= desktop.getLayoutBaseUrl("images/Jetspeed_blue_sm.png") %>' alt="Jetspeed 2 Powered" border="0" />
     </p>
 <!-- page level loading indicator (associated with layout decoration resource: desktop.action.loadpage) -->
 <div id="js-showloading" class="js-showloading" style="display: none">
