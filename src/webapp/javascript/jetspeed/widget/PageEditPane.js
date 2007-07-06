@@ -33,6 +33,14 @@ _6.createPageConfirmed(_8,_9,_a);
 this.createPageDialog=dojo.widget.createWidget("dialog",_7,this.createPageDialog);
 this.createPageDialog.setCloseControl(this.createPageDialog.createPageCancel.domNode);
 jetspeed.widget.PageEditPane.superclass.fillInTemplate.call(this);
+},destroy:function(){
+if(this.deletePageDialog!=null){
+this.deletePageDialog.destroy();
+}
+if(this.createPageDialog!=null){
+this.createPageDialog.destroy();
+}
+jetspeed.widget.PageEditPane.superclass.destroy.apply(this,arguments);
 },postCreate:function(_b,_c,_d){
 jetspeed.widget.PageEditPane.superclass.postCreate.apply(this,arguments);
 if(!dojo.render.html.ie){

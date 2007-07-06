@@ -92,6 +92,14 @@ dojo.widget.defineWidget(
             
             jetspeed.widget.PageEditPane.superclass.fillInTemplate.call( this );
 		},
+        destroy: function()
+        {
+            if ( this.deletePageDialog != null )
+                this.deletePageDialog.destroy();
+            if ( this.createPageDialog != null )
+                this.createPageDialog.destroy();
+            jetspeed.widget.PageEditPane.superclass.destroy.apply( this, arguments );
+        },
 
         postCreate: function( args, fragment, parent )
         {
