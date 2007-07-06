@@ -279,6 +279,8 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         String encodedState = null;
         Map currentWindowStates = null;
         PortletWindowExtendedNavigationalState windowNavState = null;
+        PortletMode targetMode = mode;
+        WindowState targetState = state;
         if (this instanceof SessionNavigationalState)
         {
             currentWindowStates = ((SessionNavigationalState)this).getCurrentPageWindowStates();
@@ -287,7 +289,15 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 windowNavState = (PortletWindowExtendedNavigationalState)currentWindowStates.get(window.getId().toString());
                 if (windowNavState != null)
                 {
-                   encodedState = windowNavState.getDecoratorActionEncoding(mode, state);
+                    if (targetMode == null)
+                    {
+                        targetMode = windowNavState.getPortletMode();
+                    }
+                    if (targetState == null)
+                    {
+                        targetState = windowNavState.getWindowState();
+                    }
+                   encodedState = windowNavState.getDecoratorActionEncoding(targetMode, targetState);
                 }
             }
         }
@@ -301,7 +311,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                     windowNavState = new PortletWindowExtendedNavigationalState();
                     currentWindowStates.put(window.getId().toString(), windowNavState);
                 }
-                windowNavState.setDecoratorActionEncoding(mode, state, encodedState);
+                windowNavState.setDecoratorActionEncoding(targetMode, targetState, encodedState);
             }
         }
         return encodedState;
