@@ -51,6 +51,7 @@
 #pwGhost {
     border: 1px dashed #F00;
     margin: 2px;
+    background-color: transparent;
 }
 
 /********** Outer Window ***************/
