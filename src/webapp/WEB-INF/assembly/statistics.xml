@@ -50,4 +50,13 @@
 		<!-- jetspeedDSEntry -->
       	<constructor-arg  index='8' ><ref bean="JetspeedDS" /></constructor-arg>
 	</bean>
+	
+    <!-- Audit Activity Implementation -->
+    <bean id="org.apache.jetspeed.audit.AuditActivity" 
+          class="org.apache.jetspeed.audit.impl.AuditActivityImpl"
+          >
+      	<constructor-arg  index='0' ><ref bean="JetspeedDS" /></constructor-arg>
+		<property name="enabled"><value type='boolean'>true</value></property>          
+	</bean>
+		
 </beans>

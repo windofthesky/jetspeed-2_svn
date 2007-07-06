@@ -35,6 +35,7 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.administration.PortalConfiguration;
+import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
@@ -68,12 +69,14 @@ public class PortalFilter implements Filter
             String password = request.getParameter(LoginConstants.PASSWORD);            
             if (username != null)
             {
-                UserManager userManager = (UserManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");                
+                UserManager userManager = (UserManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");
+                AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");                
                 boolean success = userManager.authenticate(username, password);
                 if (success)
                 {
+                    audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "PortalFilter");
                     PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
-                        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
+                        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
                     if (authenticationConfiguration.isCreateNewSessionOnLogin())
                     {
                         request.getSession().invalidate();
@@ -108,6 +111,7 @@ public class PortalFilter implements Filter
                 }
                 else
                 {
+                    audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_FAILURE, "PortalFilter");                    
                     request.getSession().setAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_INVALID_PASSWORD);                    
                 }
             }

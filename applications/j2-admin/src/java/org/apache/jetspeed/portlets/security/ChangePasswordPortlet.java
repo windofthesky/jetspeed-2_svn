@@ -25,6 +25,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -32,6 +33,8 @@ import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.portlets.security.users.UserDetailsPortlet;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.InvalidNewPasswordException;
 import org.apache.jetspeed.security.InvalidPasswordException;
@@ -50,6 +53,7 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
 public class ChangePasswordPortlet extends GenericServletPortlet
 {
     private UserManager manager;
+    private AuditActivity audit;
     
     public static final String CURRENT_PASSWORD = "currentPassword";
     public static final String NEW_PASSWORD = "newPassword";
@@ -69,6 +73,11 @@ public class ChangePasswordPortlet extends GenericServletPortlet
         {
             throw new PortletException("Failed to find the User Manager on portlet initialization");
         }
+        audit = (AuditActivity)getPortletContext().getAttribute(CommonPortletServices.CPS_AUDIT_ACTIVITY);
+        if (null == audit)
+        {
+            throw new PortletException("Failed to find the Audit Activity on portlet initialization");            
+        }        
     }
     
     public void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException
@@ -134,6 +143,7 @@ public class ChangePasswordPortlet extends GenericServletPortlet
                 String currPassword = actionRequest.getParameter(CURRENT_PASSWORD);
                 String newPassword = actionRequest.getParameter(NEW_PASSWORD);
                 String newPasswordAgain = actionRequest.getParameter(NEW_PASSWORD_AGAIN);
+                String userName = actionRequest.getUserPrincipal().getName();
             
                 if (currPassword == null || currPassword.length() == 0)
                 {
@@ -159,8 +169,8 @@ public class ChangePasswordPortlet extends GenericServletPortlet
                 {
                     try
                     {
-                        String userName = actionRequest.getUserPrincipal().getName();
                         manager.setPassword(userName, currPassword, newPassword);
+                        audit.logUserActivity(userName, getIPAddress(actionRequest), AuditActivity.PASSWORD_CHANGE_SUCCESS, UserDetailsPortlet.USER_ADMINISTRATION);
 
                         // refresh/update Subject in session to reflect the changed PasswordCredential
                         Subject subject = manager.getUser(userName).getSubject();
@@ -188,6 +198,7 @@ public class ChangePasswordPortlet extends GenericServletPortlet
                 if ( errorMessages.size() > 0 )
                 {
                     actionRequest.getPortletSession().setAttribute(ERROR_MESSAGES,errorMessages);
+                    audit.logUserActivity(userName, getIPAddress(actionRequest), AuditActivity.PASSWORD_CHANGE_FAILURE, errorMessages.toString());                    
                 }
                 else
                 {
@@ -196,4 +207,13 @@ public class ChangePasswordPortlet extends GenericServletPortlet
             }
         }
     }
+
+    protected String getIPAddress(PortletRequest request)
+    {
+        RequestContext context = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if (context == null)
+            return "";
+        return context.getRequest().getRemoteAddr();
+    }
+    
 }

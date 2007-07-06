@@ -134,6 +134,7 @@ limitations under the License.
         <js:service name='PortletTrackingManager'/>     
         <js:service name='PortalConfiguration'/>
         <js:service name='ImporterManager'/>
+        <js:service name='AuditActivity'/>
 	</js:services>
 
 </portlet-app>

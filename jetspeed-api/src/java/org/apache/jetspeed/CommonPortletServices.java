@@ -53,4 +53,5 @@ public interface CommonPortletServices
     public final static String CPS_IMPORTER_MANAGER = "cps:ImporterManager";
     public final static String CPS_DECORATOR_CACHE = "cps:decorationContentCache";
     public final static String CPS_PORTLET_CACHE = "cps:portletContentCache";
+    public final static String CPS_AUDIT_ACTIVITY = "cps:AuditActivity";
 }

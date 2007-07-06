@@ -41,8 +41,10 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
+import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.common.UserAttribute;
@@ -55,6 +57,7 @@ import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.InvalidNewPasswordException;
@@ -123,6 +126,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
     /** the id of the groups control */
     private static final String GROUPS_CONTROL = "jetspeedGroups";
     
+    public static final String USER_ADMINISTRATION = "J2 User Administration";
+    
     private PageManager pageManager;
     private UserManager userManager;
     private RoleManager roleManager;
@@ -133,6 +138,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
     private Collection paUserAttributes;
     private boolean initPrefsAndAttr;
     private PortalConfiguration configuration;
+    private AuditActivity audit;
     
     private LinkedHashMap userTabMap;
     private LinkedHashMap anonymousUserTabMap;
@@ -177,6 +183,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
         if (null == configuration)
         {
             throw new PortletException("Failed to find the Portal Configuration on portlet initialization");
+        }
+        
+        audit = (AuditActivity)getPortletContext().getAttribute(CommonPortletServices.CPS_AUDIT_ACTIVITY);
+        if (null == audit)
+        {
+            throw new PortletException("Failed to find the Audit Activity on portlet initialization");            
         }
         
         paIdentifier = ((MutablePortletApplication)((JetspeedPortletContext)config.getPortletContext())
@@ -652,8 +664,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     Folder folder = pageManager.getFolder(subsite);                    
                     pageManager.removeFolder(folder);
-                }
-                            
+                }                
+                audit.logAdminUserActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, USER_ADMINISTRATION);            
                 // remove selected user from USERS_TOPIC
                 PortletMessaging.cancel(actionRequest,SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
                 // TODO: send message to site manager portlet
@@ -698,6 +710,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 if ( password != null && password.trim().length() > 0 )
                 {
                     userManager.setPassword(userName, null, password);
+                    audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_RESET, USER_ADMINISTRATION);                                                                                            
                     passwordSet = true;
                 }
                 PasswordCredential credential = getCredential(actionRequest, userName);
@@ -710,6 +723,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (updateRequired != credential.isUpdateRequired())
                         {
                             userManager.setPasswordUpdateRequired(userName,updateRequired);
+                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_UPDATE_REQUIRED, USER_ADMINISTRATION);                                                                                                                        
                         }
                     }
                     String enabledStr = actionRequest.getParameter("user_cred_enabled");
@@ -719,6 +733,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (enabled != credential.isEnabled())
                         {
                             userManager.setPasswordEnabled(userName,enabled);
+                            String activity = (enabled) ? AuditActivity.PASSWORD_ENABLED : AuditActivity.PASSWORD_DISABLED;
+                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, activity, USER_ADMINISTRATION);                                                                                                                                                                                
                         }
                     }
                     String expiredFlagStr = actionRequest.getParameter("user_expired_flag");
@@ -727,15 +743,18 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if ( !passwordSet && expiredFlagStr.equals("expired"))
                         {
                             java.sql.Date today = new java.sql.Date(new Date().getTime());
-                            userManager.setPasswordExpiration(userName,today);
+                            userManager.setPasswordExpiration(userName,today);                            
+                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_EXPIRE, USER_ADMINISTRATION);                                                                                                                                                                                                            
                         }
                         else if (expiredFlagStr.equals("extend"))
                         {
                             userManager.setPasswordExpiration(userName,null);
+                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_EXTEND, USER_ADMINISTRATION);                                                                                                                                                                                                                                        
                         }
                         else if (expiredFlagStr.equals("unlimited"))
                         {
                             userManager.setPasswordExpiration(userName,InternalCredential.MAX_DATE);
+                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_UNLIMITED, USER_ADMINISTRATION);                                                                                                                                                                                                                                                                    
                         }
                     }
                 }
@@ -776,6 +795,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 if (value != null)
                 {
                     user.getUserAttributes().put(attr.getName(), value);
+                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ATTRIBUTE, attr.getName(), value, USER_ADMINISTRATION);                                
                 }
             }
         }
@@ -800,6 +820,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     String userAttrName = userAttrNames[i];
                     String value = actionRequest.getParameter(userAttrName + ":value");
                     user.getUserAttributes().put(userAttrName, value);
+                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_UPDATE_ATTRIBUTE, userAttrName, value, USER_ADMINISTRATION);                                                    
                 }                
             }        
         }
@@ -818,6 +839,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 Preferences attributes = user.getUserAttributes();
                 attributes.put(userAttrName, userAttrValue);
+                audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ATTRIBUTE, userAttrName, userAttrValue, USER_ADMINISTRATION);                                                
             }
         }
     }
@@ -840,6 +862,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     try
                     {
                         attributes.remove(userAttrNames[ix]);
+                        audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_ATTRIBUTE, userAttrNames[ix], "", USER_ADMINISTRATION);                                                                        
                     }
                     catch (Exception e) 
                     {
@@ -868,6 +891,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (roleManager.roleExists(roleNames[ix]))
                         {
                             roleManager.removeRoleFromUser(userName, roleNames[ix]);
+                            audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_ROLE, roleNames[ix], "", USER_ADMINISTRATION);                                                                                                    
                         }
                     }
                     catch (SecurityException e)
@@ -892,6 +916,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 try
                 {
                     roleManager.addRoleToUser(userName, roleName);
+                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ROLE, roleName, "", USER_ADMINISTRATION);                                                                                                                        
                 }
                 catch (SecurityException e)
                 {
@@ -919,6 +944,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (groupManager.groupExists(groupNames[ix]))
                         {
                             groupManager.removeUserFromGroup(userName, groupNames[ix]);
+                            audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_GROUP, groupNames[ix], "", USER_ADMINISTRATION);                                                                                                                                
                         }
                     }
                     catch (SecurityException e)
@@ -943,6 +969,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 try
                 {
                     groupManager.addUserToGroup(userName, groupName);
+                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_GROUP, groupName, "", USER_ADMINISTRATION);                                                                                                                                            
                 }
                 catch (SecurityException e)
                 {
@@ -1051,7 +1078,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     String ruleName = actionRequest.getParameter("select_rule");
                     profiler.setRuleForPrincipal(userPrincipal, 
                             profiler.getRule(ruleName),
-                            locatorName);                                                         
+                            locatorName);              
+                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_PROFILE, ruleName, locatorName, USER_ADMINISTRATION);                                                                                                                                            
                 }
                 catch (Exception e)
                 {
@@ -1086,6 +1114,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                             if (rule.getLocatorName().equals(locatorNames[ix]))
                             {
                                 profiler.deletePrincipalRule(rule);
+                                audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_PROFILE, rule.getProfilingRule().getId(), rule.getLocatorName(), USER_ADMINISTRATION);                                                                                                                                                        
                             }
                         }
                     }
@@ -1111,9 +1140,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
                 }
                 userManager.addUser(userName, password);
+                audit.logAdminUserActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_CREATE, USER_ADMINISTRATION);            
+                
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);
-                                
+                                                
                 User user = userManager.getUser(userName);
                 
                 PasswordCredential credential = getCredential(user);
@@ -1167,6 +1198,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     Principal principal = SecurityUtil.getPrincipal(user.getSubject(), UserPrincipal.class);                         
                     profiler.setRuleForPrincipal(principal, profiler.getRule(rule), "page");
                 }                
+                                
             }
             catch (SecurityException sex)
             {
@@ -1188,4 +1220,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
     }
     */    
     
+    protected String getIPAddress(PortletRequest request)
+    {
+        RequestContext context = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if (context == null)
+            return "";
+        return context.getRequest().getRemoteAddr();
+    }
 }

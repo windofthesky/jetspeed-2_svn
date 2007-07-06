@@ -26,7 +26,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
+import org.apache.jetspeed.audit.AuditActivity;
 
 /**
  * LoginRedirectorServlet
@@ -48,11 +48,18 @@ public class LoginRedirectorServlet extends HttpServlet
         else
             session.removeAttribute(LoginConstants.DESTINATION);
 
+        String username = (String)session.getAttribute(LoginConstants.USERNAME);
+        
         session.removeAttribute(LoginConstants.USERNAME);
         session.removeAttribute(LoginConstants.PASSWORD);
         session.removeAttribute(LoginConstants.RETRYCOUNT);
         session.removeAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
-                
+
+        AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");
+        if (audit != null)
+        {
+            audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "Active Authentication");
+        }
         response.sendRedirect(response.encodeURL(destination));
     }
 
@@ -60,5 +67,5 @@ public class LoginRedirectorServlet extends HttpServlet
             HttpServletResponse response) throws IOException, ServletException
     {
         doGet(request, response);
-    }
+    }    
 }
