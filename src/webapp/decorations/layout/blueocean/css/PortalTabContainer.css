@@ -15,18 +15,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.dojoTabContainer {
+.layout-blueocean .dojoTabContainer {
 	position : relative;
 }
 
-.dojoTabPaneWrapper {
+.layout-blueocean .dojoTabPaneWrapper {
 	border : 1px solid #6290d2;
 	_zoom: 1; /* force IE6 layout mode so top border doesnt disappear */
 	display: block;
 	clear: both;
+    overflow: hidden;
 }
 
-.dojoTabLabels-top {
+.layout-blueocean .dojoTabLabels-top {
 	position : relative;
 	top : 0px;
 	left : 0px;
@@ -36,12 +37,12 @@ limitations under the License.
 	z-index: 2;	/* so the bottom of the tab label will cover up the border of dojoTabPaneWrapper */
 }
 
-.dojoTabNoLayout.dojoTabLabels-top .dojoTab {
+.layout-blueocean .dojoTabNoLayout.dojoTabLabels-top .dojoTab {
 	margin-bottom: -1px;
 	_margin-bottom: 0px; /* IE filter so top border lines up correctly */
 }
 
-.dojoTab {
+.layout-blueocean .dojoTab {
 	position : relative;
 	float : left;
 	padding-left : 9px;
@@ -52,7 +53,7 @@ limitations under the License.
 	z-index: 3;
 }
 
-.dojoTab div {
+.layout-blueocean .dojoTab div {
 	display : block;
 	padding : 4px 15px 4px 6px;
 	background : url(../images/desktop/tabs/tab_top_right.gif) no-repeat right top;
@@ -61,7 +62,7 @@ limitations under the License.
     font-weight: bold;
 }
 
-.dojoTab .close {
+.layout-blueocean .dojoTab .close {
 	display : inline-block;
 	height : 12px;
 	width : 12px;
@@ -71,21 +72,21 @@ limitations under the License.
 	font-size: small;
 }
 
-.dojoTab .closeImage {
+.layout-blueocean .dojoTab .closeImage {
 	background : url(../images/desktop/tabs/tab_close.gif) no-repeat right top;
 }
 
-.dojoTab .closeHover {
+.layout-blueocean .dojoTab .closeHover {
 	background-image : url(../images/desktop/tabs/tab_close_h.gif);
 }
 
-.dojoTab.current {
+.layout-blueocean .dojoTab.current {
 	padding-bottom : 1px;
 	border-bottom : 0;
 	background-position : 0 -150px;
 }
 
-.dojoTab.current div {
+.layout-blueocean .dojoTab.current div {
 	padding-bottom : 5px;
 	margin-bottom : -1px;
 	background-position : 100% -150px;
@@ -93,7 +94,7 @@ limitations under the License.
 
 /* bottom tabs */
 
-.dojoTabLabels-bottom {
+.layout-blueocean .dojoTabLabels-bottom {
 	position : relative;
 	bottom : 0px;
 	left : 0px;
@@ -103,39 +104,39 @@ limitations under the License.
 	z-index: 2;
 }
 
-.dojoTabNoLayout.dojoTabLabels-bottom {
+.layout-blueocean .dojoTabNoLayout.dojoTabLabels-bottom {
 	position : relative;
 }
 
-.dojoTabLabels-bottom .dojoTab {
+.layout-blueocean .dojoTabLabels-bottom .dojoTab {
 	border-top :  1px solid #6290d2;
 	border-bottom : 0;
 	background : url(../images/desktop/tabs/tab_bot_left.gif) no-repeat left bottom;
 }
 
-.dojoTabLabels-bottom .dojoTab div {
+.layout-blueocean .dojoTabLabels-bottom .dojoTab div {
 	background : url(../images/desktop/tabs/tab_bot_right.gif) no-repeat right bottom;
 }
 
-.dojoTabLabels-bottom .dojoTab.current {
+.layout-blueocean .dojoTabLabels-bottom .dojoTab.current {
 	border-top : 0;
 	background : url(../images/desktop/tabs/tab_bot_left_curr.gif) no-repeat left bottom;
 }
 
-.dojoTabLabels-bottom .dojoTab.current div {
+.layout-blueocean .dojoTabLabels-bottom .dojoTab.current div {
 	padding-top : 4px;
 	background : url(../images/desktop/tabs/tab_bot_right_curr.gif) no-repeat right bottom;
 }
 
 /* right-h tabs */
 
-.dojoTabLabels-right-h {
+.layout-blueocean .dojoTabLabels-right-h {
 	overflow : visible;
 	margin-left : -1px;
 	z-index: 2;
 }
 
-.dojoTabLabels-right-h .dojoTab {
+.layout-blueocean .dojoTabLabels-right-h .dojoTab {
 	padding-left : 0;
 	border-left :  1px solid #6290d2;
 	border-bottom : 0;
@@ -143,38 +144,38 @@ limitations under the License.
 	float : none;
 }
 
-.dojoTabLabels-right-h .dojoTab div {
+.layout-blueocean .dojoTabLabels-right-h .dojoTab div {
 	padding : 4px 15px 4px 15px;
 }
 
-.dojoTabLabels-right-h .dojoTab.current {
+.layout-blueocean .dojoTabLabels-right-h .dojoTab.current {
 	border-left :  0;
 	border-bottom :  1px solid #6290d2;
 }
 
 /* left-h tabs */
 
-.dojoTabLabels-left-h {
+.layout-blueocean .dojoTabLabels-left-h {
 	overflow : visible;
 	margin-right : -1px;
 	z-index: 2;
 }
 
-.dojoTabLabels-left-h .dojoTab {
+.layout-blueocean .dojoTabLabels-left-h .dojoTab {
 	border-right :  1px solid #6290d2;
 	border-bottom : 0;
 	float : none;
 	background : url(../images/desktop/tabs/tab_top_left.gif) no-repeat left top;
 }
 
-.dojoTabLabels-left-h .dojoTab.current {
+.layout-blueocean .dojoTabLabels-left-h .dojoTab.current {
 	border-right : 0;
 	border-bottom :  1px solid #6290d2;
 	padding-bottom : 0;
 	background : url(../images/desktop/tabs/tab_top_left.gif) no-repeat 0 -150px;
 }
 
-.dojoTabLabels-left-h .dojoTab div {
+.layout-blueocean .dojoTabLabels-left-h .dojoTab div {
 	background : 0;
 	border-bottom :  1px solid #6290d2;
 }
