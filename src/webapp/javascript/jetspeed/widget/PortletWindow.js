@@ -15,7 +15,7 @@ this.subWidgetStartIndex=-1;
 this.subWidgetEndIndex=-1;
 };
 dojo.inherits(jetspeed.widget.PortletWindow,dojo.widget.FloatingPane);
-dojo.lang.extend(jetspeed.widget.PortletWindow,{title:"Unknown Portlet",contentWrapper:"layout",displayCloseAction:true,displayMinimizeAction:true,displayMaximizeAction:true,displayRestoreAction:true,taskBarId:null,hasShadow:false,nextIndex:1,windowDecorationName:null,windowDecorationConfig:null,windowPositionStatic:false,windowHeightToFit:false,titleMouseIn:0,titleLit:false,portlet:null,jsAltInitParams:null,templateDomNodeClassName:null,templateContainerNodeClassName:null,processingContentChanged:false,lastUntiledPositionInfo:null,lastTiledPositionInfo:null,minimizeWindowTemporarilyRestoreTo:null,executeScripts:false,scriptSeparation:false,adjustPaths:false,staticDefineAsAltInitParameters:function(_1,_2){
+dojo.lang.extend(jetspeed.widget.PortletWindow,{title:"Unknown Portlet",contentWrapper:"layout",displayCloseAction:true,displayMinimizeAction:true,displayMaximizeAction:true,displayRestoreAction:true,taskBarId:null,nextIndex:1,windowDecorationName:null,windowDecorationConfig:null,windowPositionStatic:false,windowHeightToFit:false,titleMouseIn:0,titleLit:false,portlet:null,jsAltInitParams:null,templateDomNodeClassName:null,templateContainerNodeClassName:null,processingContentChanged:false,lastUntiledPositionInfo:null,lastTiledPositionInfo:null,minimizeWindowTemporarilyRestoreTo:null,executeScripts:false,scriptSeparation:false,adjustPaths:false,staticDefineAsAltInitParameters:function(_1,_2){
 if(!_1){
 _1={getProperty:function(_3){
 if(!_3){
@@ -83,6 +83,7 @@ this.windowDecorationName=_f;
 var _10=jetspeed.loadPortletDecorationStyles(_f);
 this.windowDecorationConfig=_10;
 this.templateCssPath="";
+this.templatePath=_10.templatePath;
 },initWindowTitle:function(_11){
 var _12=this.getInitProperty(jetspeed.id.PORTLET_PROP_WINDOW_TITLE);
 this.setPortletTitle(_12);
@@ -204,7 +205,6 @@ this.widgetId=jetspeed.id.PORTLET_WINDOW_ID_PREFIX+this.portletIndex;
 }
 }
 this._incrementNextIndex();
-this.templatePath=jetspeed.ui.getDefaultFloatingPaneTemplate();
 this.portletMixinProperties(_1f);
 },_incrementNextIndex:function(){
 var _22=jetspeed.widget.PortletWindow.prototype.nextIndex;
@@ -217,7 +217,7 @@ return _22;
 return jetspeed.widget.PortletWindow.prototype.nextIndex;
 },portletInitDragHandle:function(){
 var _23=this.resizable;
-if(_23){
+if(_23&&this.resizeBar){
 this.resizeBar.style.display="block";
 var _24=this.widgetId+"_resize";
 if(!this.portletInitialized){
@@ -231,6 +231,8 @@ if(!this.portletInitialized){
 this.resizeBar.appendChild(this.resizeHandle.domNode);
 }
 }
+}else{
+this.resizable=false;
 }
 },fillInTemplate:function(_25,_26){
 var _27=this.getFragNodeRef(_26);
@@ -239,12 +241,14 @@ document.body.appendChild(this.domNode);
 if(!this.isShowing()){
 this.windowState=jetspeed.id.ACTION_NAME_MINIMIZE;
 }
+if(this.titleBarIcon){
 if(this.iconSrc==null||this.iconSrc==""){
 dojo.dom.removeNode(this.titleBarIcon);
 }else{
 this.titleBarIcon.src=this.iconSrc.toString();
 }
-if(this.titleBarDisplay!="none"){
+}
+if(this.titleBarDisplay&&this.titleBar){
 this.titleBar.style.display="";
 dojo.html.disableSelection(this.titleBar);
 this.titleBarIcon.style.display=(this.iconSrc==""?"none":"");
@@ -359,9 +363,6 @@ this.movable=false;
 }
 }
 this.portletInitDragHandle();
-if(this.hasShadow){
-this.shadow=new dojo.lfx.shadow(this.domNode);
-}
 this.bgIframe=new dojo.html.BackgroundIframe(this.domNode);
 if(this.taskBarId){
 this.taskBarSetup();
@@ -695,7 +696,7 @@ this.portletMixinProperties();
 this.portletInitDragHandle();
 this.portletInitDimensions();
 },postCreate:function(_68,_69,_6a){
-if(this.movable){
+if(this.movable&&this.titleBar){
 this.drag=new dojo.dnd.Moveable(this,{handle:this.titleBar});
 }
 this.domNode.id=this.widgetId;
@@ -717,6 +718,7 @@ this.needsRenderOnRestore=true;
 }else{
 if(_6b==jetspeed.id.ACTION_NAME_MAXIMIZE){
 dojo.lang.setTimeout(this,this._postCreateMaximizeWindow,1500);
+return;
 }
 }
 },_postCreateMaximizeWindow:function(){
@@ -743,13 +745,18 @@ this.restoreWindow();
 this.windowActionButtonSync();
 }
 },minimizeWindow:function(evt){
+if(!this.titleBar){
+return;
+}
 if(this.windowState==jetspeed.id.ACTION_NAME_MAXIMIZE){
 this.showAllPortletWindows();
 this.restoreWindow(evt);
 }
 this._setLastPositionInfo();
 this.containerNode.style.display="none";
+if(this.resizeBar){
 this.resizeBar.style.display="none";
+}
 dojo.html.setContentBox(this.domNode,{height:dojo.html.getMarginBox(this.titleBar).height});
 this.windowState=jetspeed.id.ACTION_NAME_MINIMIZE;
 },showAllPortletWindows:function(){
@@ -809,7 +816,9 @@ this.showAllPortletWindows();
 this.windowPositionStatic=(this.lastWindowPositionStatic!=null?this.lastWindowPositionStatic:false);
 }
 this.containerNode.style.display="";
+if(this.resizeBar){
 this.resizeBar.style.display="";
+}
 var _7f=this.getLastPositionInfo();
 var _80=null;
 var _81=null;
@@ -891,6 +900,9 @@ this.lastUntiledPositionInfo.top=this.domNode.style.top;
 },getLayoutActionsEnabled:function(){
 return (this.windowState!=jetspeed.id.ACTION_NAME_MAXIMIZE&&(!this.portlet||!this.portlet.layoutActionsDisabled));
 },setTitleBarDragging:function(_89){
+if(!this.titleBar){
+return;
+}
 if(typeof _89=="undefined"){
 _89=this.getLayoutActionsEnabled();
 }
@@ -1004,7 +1016,9 @@ this.lastWidthResizeTo=w;
 this.lastHeightResizeTo=h;
 this.resetLostHeightWidth();
 dojo.lang.forEach([this.titleBar,this.resizeBar,this.containerNode],function(_a3){
+if(_a3!=null){
 dojo.html.setMarginBox(_a3,{width:w-this.lostWidth});
+}
 },this);
 if(this.windowPositionStatic){
 this.domNode.style.width="";
@@ -1031,9 +1045,6 @@ h=this.lostHeight+60;
 dojo.html.setMarginBox(this.domNode,{height:h});
 dojo.html.setMarginBox(this.containerNode,{height:h-this.lostHeight});
 this.bgIframe.onResized();
-if(this.shadow){
-this.shadow.size(w,h);
-}
 this.onResized();
 },_IEPostResize:function(){
 this.containerNode.style.width="99%";
@@ -1078,7 +1089,7 @@ this.containerNode.style.width="";
 },resetLostHeightWidth:function(){
 var _a4=dojo.html.getMarginBox(this.domNode);
 var _a5=dojo.html.getContentBox(this.domNode);
-this.lostHeight=(_a4.height-_a5.height)+dojo.html.getMarginBox(this.titleBar).height+dojo.html.getMarginBox(this.resizeBar).height;
+this.lostHeight=(_a4.height-_a5.height)+(this.titleBar?dojo.html.getMarginBox(this.titleBar).height:0)+(this.resizeBar?dojo.html.getMarginBox(this.resizeBar).height:0);
 this.lostWidth=_a4.width-_a5.width;
 },contentChanged:function(evt){
 if(this.processingContentChanged==false){

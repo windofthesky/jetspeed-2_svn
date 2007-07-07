@@ -46,7 +46,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     displayMaximizeAction: true,
     displayRestoreAction: true,
     taskBarId: null,
-    hasShadow: false,
     nextIndex: 1,
 
     windowDecorationName: null,
@@ -163,6 +162,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.windowDecorationConfig = pdConfig;
 
         this.templateCssPath = "";   // clear this so dojo default will not be loaded
+        this.templatePath = pdConfig.templatePath;     // jetspeed.ui.getDefaultFloatingPaneTemplate();
     },
     initWindowTitle: function( fragment )
     {
@@ -302,13 +302,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this.initWindowDecoration( fragment );
         this.initWindowTitle( fragment );
         this.initWindowIcon( fragment );
-
-        //if ( dojo.render.html.mozilla )  // dojo.render.html.ie
-        //{
-        //    this.hasShadow = "true";
-        //    this.domNode.style = "overflow: visible;";   // so that drop shadow is displayed
-        //}
-
         this.initWindowDimensions( fragment );
     },
 
@@ -340,8 +333,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
                 this.widgetId = jetspeed.id.PORTLET_WINDOW_ID_PREFIX + this.portletIndex;
         }
         this._incrementNextIndex();
-
-        this.templatePath = jetspeed.ui.getDefaultFloatingPaneTemplate();
         
         this.portletMixinProperties( fragment );
     },
@@ -362,7 +353,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     portletInitDragHandle: function()
     {
         var isResizable = this.resizable;
-        if ( isResizable )
+        if ( isResizable && this.resizeBar )
         {
 			this.resizeBar.style.display = "block";
             var rhWidgetId = this.widgetId + "_resize";
@@ -381,6 +372,10 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 			        this.resizeBar.appendChild( this.resizeHandle.domNode );
             }
 		}
+        else
+        {
+            this.resizable = false;
+        }
     },
 
     // dojo.widget.Widget create->buildRendering protocol
@@ -401,16 +396,15 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 		}
 
 		// <img src=""> can hang IE!  better get rid of it
-		if ( this.iconSrc == null || this.iconSrc == "" )
+        if ( this.titleBarIcon )
         {
-			dojo.dom.removeNode( this.titleBarIcon );
-		}
-        else
-        {
-			this.titleBarIcon.src = this.iconSrc.toString();    // dojo.uri.Uri obj req. toString()
+		    if ( this.iconSrc == null || this.iconSrc == "" )
+			    dojo.dom.removeNode( this.titleBarIcon );
+            else
+			    this.titleBarIcon.src = this.iconSrc.toString();
 		}
 
-		if ( this.titleBarDisplay!="none" )
+		if ( this.titleBarDisplay && this.titleBar )
         {	
 			this.titleBar.style.display = "";
 			dojo.html.disableSelection( this.titleBar );
@@ -584,11 +578,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         // j2o - deletion - creation of ResizeHandle - done by portletInitDragHandle()
 
         this.portletInitDragHandle();    // j2o addition
-
-		// add a drop shadow
-		if(this.hasShadow){
-			this.shadow=new dojo.lfx.shadow( this.domNode );
-		}
 
 		// Prevent IE bleed-through problem
 		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
@@ -1016,7 +1005,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     // dojo.widget.Widget create protocol
     postCreate: function( args, fragment, parentComp )
     {   // FloatingPane 0.3.1 essentially calls resizeTo - this is done in portletInitDimensions()
-        if ( this.movable )
+        if ( this.movable && this.titleBar )
         {
             this.drag = new dojo.dnd.Moveable( this, {handle: this.titleBar});
         }
@@ -1044,6 +1033,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         else if ( initWindowState == jetspeed.id.ACTION_NAME_MAXIMIZE )
         {   // needs delay so that widths are fully realized before maximize occurs
             dojo.lang.setTimeout( this, this._postCreateMaximizeWindow, 1500 );
+            return;
         }
     },
     _postCreateMaximizeWindow: function()
@@ -1090,6 +1080,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     
     minimizeWindow: function( evt )
     {
+        if ( ! this.titleBar )
+            return;
+
         if ( this.windowState == jetspeed.id.ACTION_NAME_MAXIMIZE )
         {
             this.showAllPortletWindows() ;
@@ -1098,7 +1091,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         this._setLastPositionInfo();
 
         this.containerNode.style.display = "none";
-        this.resizeBar.style.display = "none";
+        if ( this.resizeBar )
+            this.resizeBar.style.display = "none";
         dojo.html.setContentBox( this.domNode, { height: dojo.html.getMarginBox( this.titleBar ).height } );
     
         this.windowState = jetspeed.id.ACTION_NAME_MINIMIZE;
@@ -1189,6 +1183,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         }
 
         this.containerNode.style.display = "";
+        if ( this.resizeBar )
         this.resizeBar.style.display = "";
 
         var lastPositionInfo = this.getLastPositionInfo();
@@ -1307,6 +1302,9 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
     },
     setTitleBarDragging: function( enableDrag )
     {
+        if ( ! this.titleBar )
+            return;
+
         if ( typeof enableDrag == "undefined" )
         {
             enableDrag = this.getLayoutActionsEnabled();
@@ -1478,7 +1476,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
 		dojo.lang.forEach(
 			[ this.titleBar, this.resizeBar, this.containerNode ],
-			function( node ){ dojo.html.setMarginBox( node, { width: w - this.lostWidth } ); }, this
+			function( node ){ if ( node != null ) dojo.html.setMarginBox( node, { width: w - this.lostWidth } ); }, this
 		);
 
         //dojo.debug( "resizeTo [" + this.widgetId + "] before-adjust w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + " style-width=" + this.containerNode.style.width + " style-height=" + this.containerNode.style.height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
@@ -1519,10 +1517,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         dojo.html.setMarginBox( this.containerNode, { height: h-this.lostHeight } );
 
         this.bgIframe.onResized();
-        if ( this.shadow )
-        {
-            this.shadow.size( w, h );
-        }
+
 		this.onResized();
 
         //dojo.debug( "resizeTo [" + this.widgetId + "] end w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + " desired-h=" + (h-this.lostHeight) + " style-width=" + this.containerNode.style.width + " style-height=" + this.containerNode.style.height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
@@ -1611,8 +1606,8 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
 		this.lostHeight=
 			( domNodeMarginBox.height - domNodeContentBox.height )
-			+ dojo.html.getMarginBox(this.titleBar).height
-			+ dojo.html.getMarginBox(this.resizeBar).height;
+			+ ( this.titleBar ? dojo.html.getMarginBox(this.titleBar).height : 0 )
+			+ ( this.resizeBar ? dojo.html.getMarginBox(this.resizeBar).height : 0 );
 		this.lostWidth = domNodeMarginBox.width - domNodeContentBox.width;
     },
 
@@ -1752,7 +1747,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             toBeEnlightened[i].style.display = "" ;
         }
-        //jetspeed.ui.fadeIn( toBeEnlightened, 325, "" );
+
         this.titleLit = true ;
     },
     titleDim: function( immediateForce )
@@ -1771,7 +1766,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             toBeExtinguished[i].style.display = "none" ;
         }
-        //jetspeed.ui.fadeOut( toBeExtinguished, 280, [ this.restoreAction ] );   // nodes in 3rd arg will be set to display=none
+
         this.titleLit = false ;
     },
     titleMouseOver: function( evt )
