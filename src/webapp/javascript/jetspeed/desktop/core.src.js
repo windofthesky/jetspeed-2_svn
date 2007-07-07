@@ -288,10 +288,12 @@ jetspeed.initializeDesktop = function()
     {
         jetspeed.loadPortletDecorationConfig( jetspeed.prefs.portletDecorationsAllowed[ i ] );
     }
-    
-    jetspeed.debugWindowLoad();
 
-    if ( jetspeed.prefs.printModeOnly != null )
+    if ( jetspeed.prefs.printModeOnly == null )
+    {
+        jetspeed.debugWindowLoad();
+    }
+    else
     {
         for ( var portletDecorationName in jetspeed.prefs.portletDecorationsConfig )
         {
@@ -496,15 +498,20 @@ jetspeed.doNothingNav = function()
 jetspeed.loadPortletDecorationStyles = function( portletDecorationName )
 {
     var portletDecorationConfig = jetspeed.prefs.getPortletDecorationConfig( portletDecorationName );
-    if ( portletDecorationConfig != null && ! portletDecorationConfig.css_loaded )
+    if ( portletDecorationConfig != null && ! portletDecorationConfig._initialized )
     {
         var pdBaseUrl = jetspeed.prefs.getPortletDecorationBaseUrl( portletDecorationName );
-        portletDecorationConfig.css_loaded = true;
+        portletDecorationConfig._initialized = true;
         portletDecorationConfig.cssPathCommon = new dojo.uri.Uri( pdBaseUrl + "/css/styles.css" );
         portletDecorationConfig.cssPathDesktop = new dojo.uri.Uri( pdBaseUrl + "/css/desktop.css" );
         
         dojo.html.insertCssFile( portletDecorationConfig.cssPathCommon, null, true );
         dojo.html.insertCssFile( portletDecorationConfig.cssPathDesktop, null, true );
+
+        if ( jetspeed.prefs.printModeOnly == null )
+            portletDecorationConfig.templatePath = pdBaseUrl + "/templates/PortletWindow.html";
+        else
+            portletDecorationConfig.templatePath = pdBaseUrl + "/templates/PortletWindowPrintMode.html";
     }
     return portletDecorationConfig;
 };
@@ -4740,50 +4747,6 @@ jetspeed.ui.createPortletWindowWidget = function( windowConfigObject, createWidg
     var nWidget = dojo.widget.createWidget( "jetspeed:PortletWindow", createWidgetParams );
     
     return nWidget;
-};
-
-// ... fade-in convenience methods (work with set of nodes)
-jetspeed.ui.fadeIn = function(nodes, duration, visibilityStyleValue)
-{
-    jetspeed.ui.fade(nodes, duration, visibilityStyleValue, 0, 1);
-};
-jetspeed.ui.fadeOut = function(nodes, duration, nodesToChgDisplayNone)
-{
-    jetspeed.ui.fade(nodes, duration, "hidden", 1, 0, nodesToChgDisplayNone);
-};
-jetspeed.ui.fade = function(nodes, duration, visibilityStyleValue, startOpac, endOpac, nodesToChgDisplayNone)
-{
-    if ( nodes.length > 0 )
-    {   // mimick dojo.lfx.html.fade, but for all objects together
-        for ( var i = 0 ; i < nodes.length ; i++ )
-        {
-            dojo.lfx.html._makeFadeable(nodes[i]);
-            if (visibilityStyleValue != "none")
-                nodes[i].style.visibility = visibilityStyleValue ;
-        }
-        var anim = new dojo.animation.Animation(
-		                new dojo.math.curves.Line([startOpac],[endOpac]),
-		                duration, 0);
-	    dojo.event.connect(anim, "onAnimate", function(e) {
-            for ( var mi = 0 ; mi < nodes.length ; mi++ )
-            {
-                dojo.html.setOpacity(nodes[mi], e.x);
-	        }});
-        
-        if (visibilityStyleValue == "hidden")
-        {
-            dojo.event.connect(anim, "onEnd", function(e) {
-			    for ( var mi = 0 ; mi < nodes.length ; mi++ )
-                    nodes[mi].style.visibility = visibilityStyleValue ;
-                if ( nodesToChgDisplayNone )
-                {
-                    for ( var mi = 0; mi < nodesToChgDisplayNone.length ; mi++ )
-                        nodesToChgDisplayNone[mi].style.display = "none";
-                }
-		    });
-        }
-        anim.play(true);
-    }
 };
 
 jetspeed.debugWindowLoad = function()
