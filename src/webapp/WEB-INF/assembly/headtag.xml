@@ -247,10 +247,6 @@
                 <value>dojo.lang.*</value>
                 <value>dojo.event.*</value>
                 <value>dojo.io.*</value>
-                <value>dojo.dnd.HtmlDragManager</value>
-                <value>dojo.dnd.DragAndDrop</value>
-                <value>dojo.dnd.HtmlDragAndDrop</value>
-                <value>dojo.dnd.HtmlDragMove</value>
                 <value>dojo.widget.*</value>
                 <value>dojo.collections.ArrayList</value>
                 <value>dojo.collections.Set</value>
@@ -269,7 +265,6 @@
                 <value>dojo.widget.SplitContainer</value>
                 <value>dojo.widget.Tree</value>
                 <value>dojo.widget.Tooltip</value>
-                <value>dojo.lfx.html</value>
             </list>
         </constructor-arg>
     </bean>
