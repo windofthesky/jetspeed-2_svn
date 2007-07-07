@@ -167,7 +167,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutBasePath() ).append( "\";" ).append( EOL );
             dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutDecorationName() ).append( "\";" ).append( EOL );
             dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME ).append( " = \"" ).append( portletDecorationsBasePath ).append( "\";" ).append( EOL );
-            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( theme.getPortletDecorationNames() );
+            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( decorationFactory.getDesktopPortletDecorations( request ) );
             dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME ).append( " = " ).append( portletDecorationNamesContent ).append( ";" );
             hr.addHeaderSectionFragment( DOJO_CONFIG_LAYOUT_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
             
