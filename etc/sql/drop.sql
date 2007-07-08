@@ -99,3 +99,5 @@ drop table SECURITY_PRINCIPAL;
 drop table PORTLET_STATISTICS;
 drop table PAGE_STATISTICS;
 drop table USER_STATISTICS;
+drop table ADMIN_ACTIVITY;
+drop table USER_ACTIVITY;
