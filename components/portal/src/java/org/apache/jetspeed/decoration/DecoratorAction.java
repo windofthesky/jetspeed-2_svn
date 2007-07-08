@@ -80,10 +80,10 @@ public class DecoratorAction implements Serializable
         return value;
     }
 
-    public DecoratorAction(String name, String alt, Locale locale, String link, String action, boolean custom, String actionType)
+    public DecoratorAction(String actionName, String name, String alt, Locale locale, String link, String action, boolean custom, String actionType)
     {
         ResourceBundle bundle = getBundle(RESOURCE_BUNDLE, locale);
-        this.actionName = name;
+        this.actionName = actionName;
         this.actionType = actionType;
         this.name = getResourceString(bundle,name,name);
         this.alt = getResourceString(bundle,alt,alt);
@@ -92,9 +92,9 @@ public class DecoratorAction implements Serializable
         this.custom = custom;
     }
     
-    public DecoratorAction(String name, String alt, String link, String action, boolean custom, String actionType)
+    public DecoratorAction(String actionName, String name, String alt, String link, String action, boolean custom, String actionType)
     {
-        this.actionName = name;
+        this.actionName = actionName;
         this.actionType = actionType;
         this.name = name;
         this.alt = alt;
@@ -105,17 +105,17 @@ public class DecoratorAction implements Serializable
     
     public DecoratorAction(String name, Locale locale, String link, String action, boolean custom, String actionType)
     {
-        this(name,name,locale,link,action,custom,actionType);
+        this(name,name,name,locale,link,action,custom,actionType);
     }
     
     public DecoratorAction(String name, Locale locale, String link, String action, String actionType)
     {
-        this(name,name,locale,link,action,false,actionType);
+        this(name,name,name,locale,link,action,false,actionType);
     }
     
-    public DecoratorAction(String name, String alt, String link, String actionType)
+    public DecoratorAction(String actionName, String name, String alt, String link, String actionType)
     {
-        this(name,alt,null,link,null,false,actionType);
+        this(actionName, name,alt,null,link,null,false,actionType);
     }
 
     public String getActionName()

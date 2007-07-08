@@ -178,7 +178,7 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
                 resourcesMap.put(actionName,localizedName);
             }
         }
-        return new DecoratorAction(localizedName, localizedName, linkURL, actionURL, customAction, template.getActionType());
+        return new DecoratorAction(actionName, localizedName, localizedName, linkURL, actionURL, customAction, template.getActionType());
     }
     
     //added for checkin the constraints on actions
