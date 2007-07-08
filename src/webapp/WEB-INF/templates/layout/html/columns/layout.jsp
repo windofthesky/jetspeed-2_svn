@@ -16,14 +16,13 @@ limitations under the License.
 --%>
 <%@ include file="../../../initTemplatesLayoutNormal.jsp" %>
 
-
-
-
   <%--  Check if I am root fragment --%>
   <c:set var="lastColumn" value="${numberOfColumns - 1}" scope="request"/>
 
   <% 
-      log.debug("------------ SSS ");
+    /**
+    * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+    */
 
       LayoutDecoration layoutDecoration = (LayoutDecoration)_myFragment.getDecoration();
       // get the layout decoration header file

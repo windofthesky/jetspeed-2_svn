@@ -20,6 +20,9 @@ limitations under the License.
  
   <%-- BEGIN PORTLET SCOPE CONSTANTS --%>
     <%
+	  /**
+	   * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+	   */
     
       // TODO find out where is this set? or how is it set?
       String _hidePortletAttrKey = "js_" + _jpt.getCurrentFragment().getId() + "_HideDecorator";

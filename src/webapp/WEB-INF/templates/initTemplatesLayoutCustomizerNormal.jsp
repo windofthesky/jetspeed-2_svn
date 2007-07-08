@@ -22,17 +22,11 @@ limitations under the License.
 <%@page import="javax.servlet.jsp.jstl.core.Config"%>
 <%@page import="javax.servlet.jsp.jstl.fmt.LocalizationContext"%>
 
-  <%-- BEGIN DECLARATIONS --%>
-
-  <%!
-  
-
-  %>
-  
-  <%-- END DECLARATIONS --%>
-
   <%-- BEGIN customizer page scoped variables and declarations --%>
     <%
+      /**
+      * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+      */
         //layoutType
         String _layoutType = portletConfig.getInitParameter("layoutType");
         pageContext.setAttribute("layoutType", _layoutType, PAGE_SCOPE);

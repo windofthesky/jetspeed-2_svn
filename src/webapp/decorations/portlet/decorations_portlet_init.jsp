@@ -26,6 +26,9 @@ limitations under the License.
 <portlet:defineObjects/>
 
 <%
+	/**
+	 * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+	 */
 
   int DEFAULT_SCOPE = PageContext.PAGE_SCOPE;
 

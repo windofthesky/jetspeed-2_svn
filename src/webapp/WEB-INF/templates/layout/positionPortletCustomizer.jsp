@@ -17,6 +17,9 @@ limitations under the License.
 <%@ include file="../initTemplatesLayoutNormal.jsp" %>
 
   <%
+      /**
+      * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+      */
       // columnLayout already inhertited
 
       // our current index in the loop

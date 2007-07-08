@@ -35,6 +35,9 @@ limitations under the License.
 <portlet:defineObjects/>
 
   <%!
+	  /**
+	   * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+	   */
       private final static Log log = LogFactory.getLog("org.apache.jetspeed.decoration.layout.tigris_jsp");
       private int PAGE_SCOPE = PageContext.PAGE_SCOPE;
       private String getLayoutResource(LayoutDecoration _layoutDecoration,String _path)

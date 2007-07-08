@@ -16,6 +16,9 @@ limitations under the License.
 --%>
 <%@ include file="../initLayoutDecorators.jsp" %>
   <%
+	  /**
+	   * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+	   */
       //contextPath
       String _cPath = (String) request.getContextPath();
       pageContext.setAttribute("imgFooter", _cPath + "/" +

@@ -38,12 +38,11 @@ limitations under the License.
 
 <portlet:defineObjects/>
 
-<%-- TODO
-       - Tabs
---%>
-
   <%!
   
+	  /**
+	   * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+	   */
   
       private final static int INITIAL_BUFFER = 1024;
       

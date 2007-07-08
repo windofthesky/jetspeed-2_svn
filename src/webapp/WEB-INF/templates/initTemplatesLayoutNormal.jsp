@@ -43,6 +43,11 @@ limitations under the License.
 
 <portlet:defineObjects/>
 
+  <%
+    /**
+    * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+    */
+   %>
 
 
   <%!  
@@ -171,7 +176,7 @@ limitations under the License.
       DecorationFactory _decorationFactory = (DecorationFactory) renderRequest.getAttribute("decorationFactory");
       pageContext.setAttribute("decorationFactory", _decorationFactory, PAGE_SCOPE);
 
-      if (_editing.booleanValue())
+      if ((_editing != null) && (_editing.booleanValue()))
       {
 	      //LayoutDecorations list
 	      pageContext.setAttribute("layoutDecorationsList",
