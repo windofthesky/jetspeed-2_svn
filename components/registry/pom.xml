@@ -44,6 +44,10 @@ limitations under the License.
     <!-- Dependencies -->
 
     <dependencies>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
 
         <!-- Build Dependencies -->
         <dependency>
