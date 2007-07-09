@@ -693,12 +693,12 @@ maven.repo.remote = http://www.bluesunrise.com/maven/, http://www.ibiblio.org/ma
 					maven-plugin as follows:
 					<source>
 						<![CDATA[
-maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-2 -Dversion=2.1.1 plugin:download]]>
+maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-2 -Dversion=2.1.2 plugin:download]]>
 					</source>
 					<i>
 						Note: you can set the version flag to the
 						specific version you want to install,
-						2.1.1 is just an example here.
+						2.1.2 is just an example here.
 					</i>
 				</p>
 			</subsection>

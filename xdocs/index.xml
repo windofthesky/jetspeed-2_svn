@@ -27,14 +27,14 @@
 	<body>
 		<section name="Welcome to Jetspeed-2">
 			<div id="downloadbox">
-				<h5>Get Jetspeed 2.1.1</h5>
+				<h5>Get Jetspeed 2.1.2</h5>
 				<p>
 					<a href="download.html">
 						<img valign="top" src="images/folder-open.gif"
 							border="0" alt="" title="download" />
 						Download
 					</a>
-					Jetspeed 2.1.1
+					Jetspeed 2.1.2
 					<small>(33MB)</small>
 				</p>
 				<ul>
@@ -95,7 +95,7 @@
 			</subsection>
 			<subsection name="Jetspeed-2 Status">
 				<p>
-					The latest 2.1.1 production release of Jetspeed-2 was released
+					The latest 2.1.2 production release of Jetspeed-2 was released
 					on July 11, 2007.  Future development areas include alignment with the upcoming
 					<a href="http://www.jcp.org/en/jsr/detail?id=286">Java Portlet Standard 2.0, JSR-286</a>
 				    new portlet applications, WSRP support, further improvement of the design and user experience.

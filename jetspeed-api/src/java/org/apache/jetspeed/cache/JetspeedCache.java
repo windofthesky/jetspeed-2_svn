@@ -106,7 +106,7 @@ public interface JetspeedCache
      * 
      * @param rc
      * @param windowId
-     * @since 2.1.1
+     * @since 2.1.2
      * @return
      */
     ContentCacheKey createCacheKey(RequestContext rc, String windowId);

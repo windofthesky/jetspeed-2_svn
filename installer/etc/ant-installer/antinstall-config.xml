@@ -23,11 +23,11 @@
   "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
 -->
 
-<installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.1.1 Installer"
+<installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.1.2 Installer"
   windowIcon="/resources/feather-small.png" defaultImageResource="/resources/Jetspeed_blue_med.png" minJavaVersion="1.4"
   wide="700:250" antialiased="true">
 
-  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.1.1">
+  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.1.2">
     <comment displayText="" />
     <comment displayText="This installer will guide you through setting up the Jetspeed Portal." />
   </page>
@@ -35,15 +35,15 @@
   <page type="license" name="license" displayText="License conditions" resource="/LICENSE.TXT"></page>
 
   <page type="input" name="properties" displayText="Installation location">
-    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.1.1"
-      defaultValueWin="C:\Apache\Jetspeed-2.1.1" displayText="Select an installation directory" create="true"
+    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.1.2"
+      defaultValueWin="C:\Apache\Jetspeed-2.1.2" displayText="Select an installation directory" create="true"
       checkExists="true" />
     <comment displayText=""/>
     <comment displayText="Warning: on Windows, the location must not contain spaces." bold="true"/>
   </page>
 
   <page type="input" name="requiredComponents" displayText="Components selection">
-    <comment displayText="Jetspeed Enterprise Portal version 2.1.1" bold="true" />
+    <comment displayText="Jetspeed Enterprise Portal version 2.1.2" bold="true" />
     <target displayText="Tomcat 5.5.20 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Layout Portlets" property="dummy" defaultValue="true" force="true" />

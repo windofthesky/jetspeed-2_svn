@@ -22,7 +22,7 @@ package org.apache.jetspeed.administration;
  * 
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @since 2.1.1
+ * @since 2.1.2
  * @version $Id: $
  */
 public interface PortalAuthenticationConfiguration

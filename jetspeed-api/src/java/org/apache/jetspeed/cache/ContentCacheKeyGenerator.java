@@ -33,7 +33,7 @@ public interface ContentCacheKeyGenerator
      * 
      * @param context
      * @param windowId The window id of the portlet to be cached.
-     * @since 2.1.1
+     * @since 2.1.2
      * @return
      */
     ContentCacheKey createCacheKey(RequestContext context, String windowId);

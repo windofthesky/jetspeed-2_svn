@@ -81,7 +81,7 @@ public interface PortletContent
     
     /**
      * Get the cache key used to cache this content
-     * @since 2.1.1 
+     * @since 2.1.2 
      * @return
      */
     ContentCacheKey getCacheKey();

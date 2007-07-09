@@ -33,7 +33,7 @@
 				</a>
 				.
 			</p>
-			<subsection name="Jetspeed-2.1.1 Installer Distribution">
+			<subsection name="Jetspeed-2.1.2 Installer Distribution">
 				<table>
 				<tr>
 					<th>Distribution</th>
@@ -43,15 +43,15 @@
 				</tr>
 				<tr>
 					<td>Jetspeed-2 Standard with only the required Administrative Portlets</td>
-					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.1-installer.jar">jetspeed-2.1.1-installer.jar</a></td>
-					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.1-installer.jar.md5">here</a></td>
-					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.1-installer.jar.arc">here</a></td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar">jetspeed-2.1.2-installer.jar</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar.md5">here</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar.arc">here</a></td>
 				</tr>
 				<tr>
 					<td>Jetspeed-2 Demo With lots of demo Portlets: RSS, JSF, JPetstore and many more</td>
-					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.1-demo-installer.jar">Jetspeed-2.1.1-demo-installer.jar</a></td>
-					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.1-demo-installer.jar.md5">here</a></td>
-					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.1-demo-installer.jar.arc">here</a></td>
+					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar">Jetspeed-2.1.2-demo-installer.jar</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar.md5">here</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar.arc">here</a></td>
 				</tr>
 			</table>
 				<p>
@@ -62,7 +62,7 @@
 				</p>
 				<p>Complete instructions for getting started using the installer is available <a href="getting-started-installer.html">here</a>.</p> 				
 			</subsection>
-			<subsection name="Jetspeed-2.1.1 Source Distribution">
+			<subsection name="Jetspeed-2.1.2 Source Distribution">
 				<table>
 					<tr>
 						<th/>
@@ -71,22 +71,22 @@
 						<th>Signature</th>
 					</tr>
 					<tr>
-						<td>jetspeed-2.1.1-src.tar.bz2</td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.tar.bz2">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.tar.bz2.md5">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.tar.bz2.arc">here</a></td>
+						<td>jetspeed-2.1.2-src.tar.bz2</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2.arc">here</a></td>
 					</tr>
 					<tr>
-						<td>jetspeed-2.1.1-src.tar.gz</td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.tar.gz">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.tar.gz.md5">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.tar.gz.arc">here</a></td>
+						<td>jetspeed-2.1.2-src.tar.gz</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz.arc">here</a></td>
 					</tr>
 					<tr>
-						<td>jetspeed-2.1.1-src.zip</td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.zip">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.zip.md5">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.1-src.zip.arc">here</a></td>
+						<td>jetspeed-2.1.2-src.zip</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip.arc">here</a></td>
 					</tr>
 				</table>
 			</subsection>
@@ -97,7 +97,7 @@
 			</subsection>
 			<subsection name="Migrating Guide">
 				<p>
-					Important information for migrating existing Jetspeed-2.0 and Jetspeed-2.1 installations to Jetspeed-2.1.1 is provided in the <a href="guides/guide-migration.html">migration guide</a>.
+					Important information for migrating existing Jetspeed-2.0 and Jetspeed-2.1 installations to Jetspeed-2.1.2 is provided in the <a href="guides/guide-migration.html">migration guide</a>.
 				</p>
 			</subsection>
 		</section>

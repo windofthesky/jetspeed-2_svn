@@ -72,7 +72,7 @@ public interface PreferencesProvider
      * @param name the name of the property to add to the node
      * @param value the value of the property to add to the node
      * @return the newly created property
-     * @since 2.1.1
+     * @since 2.1.2
      */
     Property createProperty(Node node, String name, Object value);
     

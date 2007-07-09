@@ -33,7 +33,7 @@
     	    <item name="From Maven Plugin" href="getting-started-binary.html" />
     	    <item name="From Eclipse" href="jetspeed-eclipse.html" />            
     	</menu>
-    	<menu name="Get Jetspeed-2.1.1">
+    	<menu name="Get Jetspeed-2.1.2">
     		<item name="Download" href="download.html" />
     		<item name="Release Notes" href="release-notes.html" />
     	</menu>

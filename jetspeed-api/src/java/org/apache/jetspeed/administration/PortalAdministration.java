@@ -52,7 +52,7 @@ public interface PortalAdministration
      * @param folderTemplate The full PSML path name of a folder to be deep
      *               copied as the new user's set of folders, pages, links
      * @param subsite The subsite folder to place the new user in
-     * @since 2.1.1              
+     * @since 2.1.2              
      */
     void registerUser(String userName, 
                       String password, 

@@ -444,7 +444,7 @@ public interface RequestContext
      * Return a map of Jetspeed Request Context objects configured via Spring Map
      * 
      * @return a Map of request context objects
-     * @since 2.1.1
+     * @since 2.1.2
      */
     Map getObjects();
 }

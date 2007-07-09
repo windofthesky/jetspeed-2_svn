@@ -28,7 +28,7 @@ import java.util.List;
  * with the requirements of interface-driven development and zero dependencies in API
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @since 2.1.1
+ * @since 2.1.2
  * @version $Id: $
  */
 public interface PortalConfiguration
