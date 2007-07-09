@@ -27,14 +27,14 @@
 	<body>
 		<section name="Welcome to Jetspeed-2">
 			<div id="downloadbox">
-				<h5>Get Jetspeed 2.1</h5>
+				<h5>Get Jetspeed 2.1.1</h5>
 				<p>
 					<a href="download.html">
 						<img valign="top" src="images/folder-open.gif"
 							border="0" alt="" title="download" />
 						Download
 					</a>
-					Jetspeed 2.1
+					Jetspeed 2.1.1
 					<small>(33MB)</small>
 				</p>
 				<ul>
@@ -62,7 +62,7 @@
 					</li>
 					<li>
 						<a href="guides/guide-migration.html">
-							Migrating from Jetspeed 2.0
+							Migrating from Jetspeed 2.0 or Jetspeed 2.1
 						</a>
 					</li>
 					<li>

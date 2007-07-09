@@ -25,6 +25,23 @@
 		</authors>
 	</properties>
 	<body>
+		<section name="Data Migrating from Jetspeed 2.1 to 2.1.1">
+			<p>The following tables describe database schema changes from version 2.1 to version 2.1.1.                                  
+			</p>
+			<subsection name="Added Tables">
+				<table>
+					<tr>
+						<th>Table</th>
+					</tr>
+					<tr>
+						<td>ADMIN_ACTIVITY</td>
+					</tr>
+					<tr>
+						<td>USER_ACTIVITY</td>
+					</tr>                
+				</table>
+			</subsection>            
+		</section>	
 	 <section name="Configuration Migrating from Jetspeed 2.0 to 2.1">
 	  <p>The following items describe important functional changes in Jetspeed 2.1
 	  </p>
