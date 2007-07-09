@@ -95,8 +95,8 @@
 			</subsection>
 			<subsection name="Jetspeed-2 Status">
 				<p>
-					The latest 2.1 production release of Jetspeed-2 was released
-					on March 3, 2007.  Future development areas include  alignment with the upcoming
+					The latest 2.1.1 production release of Jetspeed-2 was released
+					on July 11, 2007.  Future development areas include alignment with the upcoming
 					<a href="http://www.jcp.org/en/jsr/detail?id=286">Java Portlet Standard 2.0, JSR-286</a>
 				    new portlet applications, WSRP support, further improvement of the design and user experience.
 				</p>
