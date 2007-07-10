@@ -173,6 +173,9 @@ dojo.widget.defineWidget(
             this.pageEditorWidgets = pageEditorWidgets;
             this.layoutEditPaneWidgets = layoutEditPaneWidgets;
             this.editPageSyncPortletActions();
+
+            if ( dojo.render.html.ie60 )
+                jetspeed.page.displayAllPortlets();
         },
         editPageSyncPortletActions: function()
         {
@@ -208,6 +211,8 @@ dojo.widget.defineWidget(
             }
             this.show();
             this.editPageSyncPortletActions();
+            if ( dojo.render.html.ie60 )
+                jetspeed.page.displayAllPortlets();
         },
         editPageDestroy: function()
         {
@@ -324,14 +329,33 @@ dojo.widget.defineWidget(
 
         editModeNormal: function()
         {
+            var isIE6 = dojo.render.html.ie60;
+            if ( isIE6 )
+                jetspeed.page.displayAllPortlets( true );
             // restore all portlets (that were not previously minimized)
             var portletArray = jetspeed.page.getPortletArray();
+            var colNodes = [];
             for ( var i = 0; i < portletArray.length; i++ )
             {
                 var portletWindow = portletArray[i].getPortletWindow();
                 if ( portletWindow != null )
                 {
                     portletWindow.restoreFromMinimizeWindowTemporarily();
+                    if ( isIE6 && portletWindow.windowPositionStatic )
+                    {
+                        var colDomNode = portletWindow.domNode.parentNode;
+                        var added = false;
+                        for ( var j = 0 ; j < colNodes.length ; j++ )
+                        {
+                            if ( colNodes[j] == colDomNode )
+                            {
+                                added = true;
+                                break;
+                            }
+                        }
+                        if ( ! added )
+                            colNodes.push( colDomNode );
+                    }
                 }
             }
             if ( this.layoutEditPaneWidgets != null )
@@ -342,10 +366,21 @@ dojo.widget.defineWidget(
                     if ( lepWidget.layoutMoveContainer != null )
                         lepWidget.layoutMoveContainer.domNode.style.display = "none";
                 }
-            }           
+            }
+            if ( isIE6 )
+            {
+                jetspeed.page.displayAllPortlets();
+                if ( colNodes.length > 0 )
+                {
+                    var zappedContentRestorer = new jetspeed.widget.IE6ZappedContentRestorer( colNodes );
+                    dojo.lang.setTimeout( zappedContentRestorer, zappedContentRestorer.showNext, 20 );
+                }
+            }
         },
         editModeLayoutMove: function()
         {
+            if ( dojo.render.html.ie60 )
+                jetspeed.page.displayAllPortlets( true );
             // minimize all portlets
             var portletArray = jetspeed.page.getPortletArray();
             for ( var i = 0; i < portletArray.length; i++ )
@@ -366,6 +401,8 @@ dojo.widget.defineWidget(
                         lepWidget.layoutMoveContainer.domNode.style.display = "block"
                 }
             }
+            if ( dojo.render.html.ie60 )
+                jetspeed.page.displayAllPortlets();
         }
 	}
 );
@@ -452,6 +489,30 @@ jetspeed.widget.RemovePageContentManager.prototype =
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
         dojo.raise( "RemovePageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+    }
+};
+
+jetspeed.widget.IE6ZappedContentRestorer = function( colNodes )
+{
+    this.colNodes = colNodes;
+    this.nextColNodeIndex = 0;
+};
+jetspeed.widget.IE6ZappedContentRestorer.prototype =
+{
+    showNext: function()
+    {
+        if ( this.colNodes && this.colNodes.length > this.nextColNodeIndex )
+        {
+            dojo.dom.insertAtIndex( jetspeed.widget.ie6ZappedContentHelper, this.colNodes[this.nextColNodeIndex], 0 );
+            dojo.lang.setTimeout( this, this.removeAndShowNext, 20 );
+        }
+    },
+    removeAndShowNext: function()
+    {
+        dojo.dom.removeNode( jetspeed.widget.ie6ZappedContentHelper );
+        this.nextColNodeIndex++;
+        if ( this.colNodes && this.colNodes.length > this.nextColNodeIndex )
+            dojo.lang.setTimeout( this, this.showNext, 20 );
     }
 };
 
