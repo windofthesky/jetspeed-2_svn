@@ -176,6 +176,13 @@ public interface NavigationalState
     String encode(PortletWindow window, PortletMode mode, WindowState state) throws UnsupportedEncodingException;
     
     /**
+     * Encodes the current navigational State into a string to be embedded within a PortalURL.
+     * 
+     * @return encoded new Navigational State 
+     */
+    String encode() throws UnsupportedEncodingException;
+    
+    /**
      * @return true if WindowStates and PortletModes will be saved in the Session
      */
     boolean isNavigationalParameterStateFull();

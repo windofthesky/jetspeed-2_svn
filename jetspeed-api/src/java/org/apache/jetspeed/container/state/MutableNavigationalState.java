@@ -73,4 +73,9 @@ public interface MutableNavigationalState extends NavigationalState
      * @param window
      */
     void clearParameters(PortletWindow window);
+    
+    /**
+     * Remove state for the given (possibly invalid) portlet window
+     */
+    void removeState(PortletWindow window);
 }

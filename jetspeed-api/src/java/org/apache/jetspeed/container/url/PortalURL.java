@@ -167,4 +167,9 @@ public interface PortalURL
      * @return a new renderURL as String
      */    
     String createNavigationalEncoding(PortletWindow window, PortletMode mode, WindowState state);
+
+    /**
+     * @return a Portal URL with encoded current navigational state
+     */
+    String getPortalURL();
 }

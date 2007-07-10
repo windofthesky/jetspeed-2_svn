@@ -261,6 +261,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         return encode(states, windowId, targetState, action, resource, navParamsStateFull, renderParamsStateFull);
     }
 
+    public String encode(PortletWindowRequestNavigationalStates states, boolean navParamsStateFull, boolean renderParamsStateFull)
+    throws UnsupportedEncodingException
+    {
+        return encode(states, null, null, false, false, navParamsStateFull, renderParamsStateFull);
+    }
     protected String encode(PortletWindowRequestNavigationalStates states, String targetWindowId, 
             PortletWindowRequestNavigationalState targetState, boolean action, boolean resource, boolean navParamsStateFull, 
             boolean renderParamsStateFull)
@@ -280,7 +285,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             {
                 windowId = (String)iter.next();
                 pwfns = states.getPortletWindowNavigationalState(windowId);
-                if ( windowId.equals(targetWindowId))
+                if ( targetWindowId != null && windowId.equals(targetWindowId))
                 {
                     // skip it for now, it will be encoded as the last one below
                 }
@@ -303,20 +308,22 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
             }
         }
-        encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, action, resource, false, false); 
-        if ( encodedState.length() > 0 )
+        if (targetWindowId != null)
         {
-            if ( !haveState )
+            encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, action, resource, false, false); 
+            if ( encodedState.length() > 0 )
             {
-                haveState = true;
+                if ( !haveState )
+                {
+                    haveState = true;
+                }
+                else
+                {
+                    buffer.append(PARAMETER_SEPARATOR);
+                }
+                buffer.append(encodedState);
             }
-            else
-            {
-                buffer.append(PARAMETER_SEPARATOR);
-            }
-            buffer.append(encodedState);
         }
-        
         String encodedNavState = null;
         if ( haveState )
         {

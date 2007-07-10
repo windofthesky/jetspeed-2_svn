@@ -46,8 +46,23 @@ public class PortletWindowRequestNavigationalStates
     }
     
     public void removePortletWindowNavigationalState(String windowId)
-    {
-        pwnStates.remove(windowId);
+    {        
+        boolean removed = pwnStates.remove(windowId) != null;
+        if (removed)
+        {
+            if (maximizedWindow != null && windowId.equals(maximizedWindow.getId().toString()))
+            {
+                maximizedWindow = null;
+            }
+            if (actionWindow != null && windowId.equals(actionWindow.getId().toString()))
+            {
+                actionWindow = null;
+            }
+            if (resourceWindow != null && windowId.equals(actionWindow.getId().toString()))
+            {
+                resourceWindow = null;
+            }
+        }
     }
     
     public PortletWindowRequestNavigationalState getPortletWindowNavigationalState(String windowId)

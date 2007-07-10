@@ -299,4 +299,18 @@ public abstract class AbstractPortalURL implements PortalURL
         this.characterEncoding = characterEncoding;
     }
     
+    public String getPortalURL()
+    {
+        try
+        {
+            return createPortletURL(navState.encode(), isSecure());
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // should never happen
+            e.printStackTrace();
+            // to keep the compiler happy
+            return null;
+        }
+    }
 }

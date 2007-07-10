@@ -316,6 +316,11 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         }
         return encodedState;
     }
+    
+    public String encode() throws UnsupportedEncodingException
+    {
+        return codec.encode(requestStates, isNavigationalParameterStateFull(), isRenderParameterStateFull());
+    }
 
     public Iterator getWindowIdIterator()
     {
@@ -334,5 +339,10 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 state.setClearParameters(true);
             }
         }
+    }
+    
+    public void removeState(PortletWindow window)
+    {
+        requestStates.removePortletWindowNavigationalState(window.getId().toString());
     }
 }
