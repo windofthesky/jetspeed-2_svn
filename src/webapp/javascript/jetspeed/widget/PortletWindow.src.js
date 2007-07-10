@@ -973,6 +973,13 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             pwGhost.style.top = "auto";
             jetspeed.widget.pwGhost = pwGhost;
         }
+
+        if ( dojo.render.html.ie60 && jetspeed.widget.ie6ZappedContentHelper == null )
+        {
+            var ie6Helper = document.createElement("span");
+            ie6Helper.id = "ie6ZappedContentHelper";
+            jetspeed.widget.ie6ZappedContentHelper = ie6Helper;
+        }
         
         if ( this.containerNode )
         {
@@ -1439,9 +1446,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
 
         this.resizeTo( w, h, true );
     
-        //if ( dojo.render.html.ie60 )
-        //    dojo.lang.setTimeout( this, this._IEPostResize, 10 );
-
         //dojo.debug( "makeHeightVariable [" + this.widgetId + "] containerNode NEW style.width=" + this.containerNode.style.width + " style.height=" + this.containerNode.style.height );
 
         if ( ! suppressSubmitChange && this.portlet )
@@ -1492,8 +1496,6 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
             {
                 if ( dojo.render.html.ie60 )
                 {
-                    //dojo.lang.setTimeout( this, this._IEPostResize, 10 );
-                    // IE will adjust consistently if step is deferred
                     this.containerNode.style.width = "";
                 }
                 else
@@ -1523,14 +1525,21 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         //dojo.debug( "resizeTo [" + this.widgetId + "] end w=" + w + " h=" + h + " container[w=" + dojo.html.getMarginBox( this.containerNode ).width + " h=" + dojo.html.getMarginBox( this.containerNode ).height + " desired-h=" + (h-this.lostHeight) + " style-width=" + this.containerNode.style.width + " style-height=" + this.containerNode.style.height + "] domNode[w=" + dojo.html.getMarginBox( this.domNode ).width + " h=" + dojo.html.getMarginBox( this.domNode ).height + "]" );
 	},
 
-    _IEPostResize: function()
-    {   // IE will adjust consistently if step is deferred - setting to 99 then 100 is to force it to re-render,
-        // which fixes the IE problem where part of containerNode scroll bars outside window bounds
-        //
-        // NOTE: not in use currently from resizeTo - slows down resize too much
-        this.containerNode.style.width = "99%";
-        this.containerNode.style.width = "";
+    _IEPostDrag: function()
+    {
+        if ( this.windowPositionStatic )
+        {
+            var colDomNode = this.domNode.parentNode;
+            dojo.dom.insertAtIndex( jetspeed.widget.ie6ZappedContentHelper, colDomNode, 0 );
+            dojo.lang.setTimeout( this, this._IERemoveHelper, 20 );
+        }
     },
+
+    _IERemoveHelper: function()
+    {
+        dojo.dom.removeNode( jetspeed.widget.ie6ZappedContentHelper );
+    },
+    
 
     _adjustPositionToDesktopState: function()
     {   // sets window dimension appropriatly based on 
@@ -1721,7 +1730,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( this.portlet && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
             this.portlet.submitChangedWindowState();
         if ( dojo.render.html.ie60 )
-            dojo.lang.setTimeout( this, this._IEPostResize, 10 );
+            dojo.lang.setTimeout( this, this._IEPostDrag, 10 );
     },
 
     titleLight: function()
@@ -2143,14 +2152,26 @@ dojo.extend(dojo.dnd.Mover, {
 		// e: Event: mouse event
 		dojo.dnd.autoScroll(e);
 		var m = this.marginBox;
+        var noMove = false;
         var x = m.l + e.pageX;
         var y = m.t + e.pageY;
+
+        if ( dojo.render.html.mozilla && this.firstEvtAdjustXY != null )
+        {   // initial event pageX and pageY seem to be relative to container when window is static
+            //m = this.firstEvtAdjustXY;
+            x = x + this.firstEvtAdjustXY.l;
+            y = y + this.firstEvtAdjustXY.t;
+            this.firstEvtAdjustXY = null;
+            noMove = true;
+        }
         dojo.marginBox(this.node, {l: x, t: y});
 
         var pwGhost = jetspeed.widget.pwGhost;
 
-        if ( this.windowPositionStatic )
+        if ( this.windowPositionStatic && ! noMove )
         {
+            //if ( ! this.subsequent || this.subsequent < 5 )
+            //{ dojo.debug( "eX=" + e.pageX + " eY=" + e.pageY + " mB: " + jetspeed.printobj( this.marginBox ) + " nB: " + jetspeed.printobj( dojo.getMarginBox( this.node ) ) ); this.subsequent = ( ! this.subsequent ? 1 : this.subsequent + 1 ) ; }
             var colIndex = -1;
             var widthHalf = this.widthHalf;
             var heightHalf = this.heightHalf;
@@ -2242,16 +2263,29 @@ dojo.extend(dojo.dnd.Mover, {
         this.marginBoxPrev = mP;
         this.staticWidth = null;
         var pwGhost = jetspeed.widget.pwGhost;
+        var isMoz = dojo.render.html.mozilla;
         var m = null;
         if ( this.windowPositionStatic )
         {
-            this.staticWidth = this.node.style.width;
-            this.node.style.position = "absolute";
-            m = dojo.marginBox( this.node );
+            m = { w: mP.w, h: mP.h };
             var colDomNode = this.node.parentNode;
+            var jsDNode = document.getElementById( jetspeed.id.DESKTOP );
+            this.staticWidth = this.node.style.width;
+            var nodeAbsPos = dojo.html.getAbsolutePosition( this.node, true );
+            var nodeMargExt = dojo._getMarginExtents( this.node );
+            m.l = nodeAbsPos.left - nodeMargExt.l;    // calculate manually to avoid calling getMarginBox during node insertion (mozilla is too fast to update)
+            m.t = nodeAbsPos.top - nodeMargExt.t;
+            if ( isMoz )
+            {   // set early to avoid fast reaction that causes below content to shift for a split second
+                dojo.setMarginBox( pwGhost, null, null, null, mP.h, null );
+                this.firstEvtAdjustXY = { l: m.l, t: m.t };
+            }
+
+            this.node.style.position = "absolute";
             colDomNode.insertBefore( pwGhost, this.node );
-            dojo.setMarginBox( pwGhost, null, null, null, mP.h, null );
-            document.getElementById( jetspeed.id.DESKTOP ).appendChild( this.node );
+            if ( ! isMoz )   // some browsers cannot set this until node is in document
+                dojo.setMarginBox( pwGhost, null, null, null, mP.h, null );
+            jsDNode.appendChild( this.node );
 
             var portletWindowsResult = jetspeed.ui.getPortletWindowChildren( colDomNode, pwGhost );
             this.prevColumnNode = colDomNode;
@@ -2262,7 +2296,7 @@ dojo.extend(dojo.dnd.Mover, {
             m = dojo.marginBox( this.node );
         }
         this.moveInitiated = true;
-		m.l -= this.marginBox.l;
+        m.l -= this.marginBox.l;
 		m.t -= this.marginBox.t;
 		this.marginBox = m;
 
@@ -2270,7 +2304,6 @@ dojo.extend(dojo.dnd.Mover, {
 
         if ( this.windowPositionStatic )
         {
-            //var setH = ( this.windowOrLayoutWidget.windowHeightToFit ? null : mP.h );
             dojo.setMarginBox(this.node, m.l, m.t, mP.w, null);
             this.widthHalf = mP.w / 2;
             this.heightHalf = mP.h / 2;
@@ -2292,6 +2325,7 @@ dojo.extend(dojo.dnd.Mover, {
             }
             var inCol = ( inColIndex >= 0 ? jetspeed.page.columns[ inColIndex ] : null );
             pwGhost.col = inCol;
+            //dojo.debug( "initial position: " + jetspeed.printobj( dojo.getMarginBox( this.node ) ) );
         }
 	},
     qualifyTargetColumn: function( /* jetspeed.om.Column */ column )
@@ -2300,7 +2334,7 @@ dojo.extend(dojo.dnd.Mover, {
         {
             if ( this.disqualifiedColumnIndexes != null && this.disqualifiedColumnIndexes[ column.getPageColumnIndex() ] != null )
             {
-                dojo.debug( "disqualified: " + column.toString() );
+                //dojo.debug( "disqualified: " + column.toString() );
                 return false;
             }
             return true;
