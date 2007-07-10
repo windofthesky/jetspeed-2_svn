@@ -54,6 +54,18 @@
     background-color: transparent;
 }
 
+#ie6ZappedContentHelper {
+    margin: 0px;
+    padding: 0px;
+    height: 0px;
+    left: auto;
+    top: auto;
+    width: 0px;
+    min-height: 0px;
+    position: static;
+    background-color: transparent;
+}
+
 /********** Outer Window ***************/
 
 .dojoFloatingPane {
