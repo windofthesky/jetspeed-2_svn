@@ -842,6 +842,8 @@ jetspeed.editPageInitiate = function()
             fromDesktop = false;
         jetspeed.page.editMode = true;
         var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+        if ( dojo.render.html.ie60 )
+            jetspeed.page.displayAllPortlets( true );
         if ( pageEditorWidget == null )
         {
             try
@@ -854,6 +856,8 @@ jetspeed.editPageInitiate = function()
             catch (e)
             {
                 jetspeed.url.loadingIndicatorHide();
+                if ( dojo.render.html.ie60 )
+                    jetspeed.page.displayAllPortlets();
             }
         }
         else
@@ -2159,6 +2163,22 @@ dojo.lang.extend( jetspeed.om.Page,
             dumpMsg += "}";
         }
         return dumpMsg;
+    },
+    displayAllPortlets: function( hideAll )
+    {
+        var portletArray = this.getPortletArray();
+        for ( var i = 0; i < portletArray.length; i++ )
+        {
+            var portlet = portletArray[i];
+            var windowWidget = portlet.getPortletWindow();
+            if ( windowWidget )
+            {
+                if ( hideAll )
+                    windowWidget.domNode.style.display = "none";
+                else
+                    windowWidget.domNode.style.display = "";
+            }
+        }
     },
     _debugDumpLastSavedWindowStateAllPortlets: function( useLastSaved )
     {
