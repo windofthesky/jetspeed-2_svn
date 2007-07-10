@@ -157,6 +157,12 @@
       <attainGoal name="multiproject:create-overview-page"/>
       <attainGoal name="site" />
       <attainGoal name="pdf" />            
+      
+      <copy toDir="${maven.docs.dest}/2.1/schemas">
+        <fileset dir="etc/xsd">
+          <filename name="*.xsd"/>
+        </fileset>      
+      </copy>
             
     </goal>
     
