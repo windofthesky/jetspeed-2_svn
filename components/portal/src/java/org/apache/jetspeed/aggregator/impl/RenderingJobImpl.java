@@ -196,7 +196,7 @@ public class RenderingJobImpl implements RenderingJob
     {
         long start = System.currentTimeMillis();
         boolean isParallelMode = false;
-        PortletWindow curWindow = null;
+        PortletWindow curWindow = this.window;
         try
         {
             log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
@@ -204,7 +204,7 @@ public class RenderingJobImpl implements RenderingJob
             // if the current thread is worker, then store attribues in that.
             if (this.workerAttributes != null)
             {
-                isParallelMode = (Thread.currentThread() instanceof Worker);                
+                isParallelMode = (Thread.currentThread() instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed());                
                 if (isParallelMode)
                 {
                     Iterator itAttrNames = this.workerAttributes.keySet().iterator();
@@ -247,11 +247,11 @@ public class RenderingJobImpl implements RenderingJob
             if (t instanceof UnavailableException)
             {
                 // no need to dump a full stack trace to the log
-                log.error("Error rendering portlet OID " + this.window.getId() + ": " + t.toString());
+                log.error("Error rendering portlet OID " + curWindow.getId() + ": " + t.toString());
             }
             else
             {
-                log.error("Error rendering portlet OID " + this.window.getId(), t);
+                log.error("Error rendering portlet OID " + curWindow.getId(), t);
             }
             fragment.overrideRenderedContent(t.getMessage());
         }
@@ -282,12 +282,12 @@ public class RenderingJobImpl implements RenderingJob
                 if (exceededTimeout)
                 {
                     // took too long to render
-                    log.info("Portlet Exceeded timeout: " + window.getPortletEntity().getPortletDefinition().getName() + " for window " + window.getId());
-                    portletTracking.incrementRenderTimeoutCount(window);
+                    log.info("Portlet Exceeded timeout: " + curWindow.getPortletEntity().getPortletDefinition().getName() + " for window " + curWindow.getId());
+                    portletTracking.incrementRenderTimeoutCount(curWindow);
                 }
                 else
                 {
-                    portletTracking.success(window);
+                    portletTracking.success(curWindow);
                 }
             }
         }

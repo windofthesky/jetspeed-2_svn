@@ -411,7 +411,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         // In parallel mode, adjust attributes by the values of the current thread
         Thread ct = Thread.currentThread();
 
-        if (ct instanceof Worker)
+        if (ct instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed())
         {
             // If cached attributes map is null, it should be re-created.
             
@@ -457,7 +457,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
         Thread ct = Thread.currentThread();
 
-        if (ct instanceof Worker)
+        if (ct instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed())
         {            
             value = CurrentWorkerContext.getAttribute(name);
 
@@ -628,8 +628,9 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         // In parallel mode, put attribute into worker.
 
         Thread ct = Thread.currentThread();
+        boolean currentWorkerContextUsed = CurrentWorkerContext.getCurrentWorkerContextUsed();
 
-        if (ct instanceof Worker) 
+        if (ct instanceof Worker || currentWorkerContextUsed) 
         {
             // when it is parallel rendering, the cached request attributes should be re-created later by setting it to null.
             cachedAttributes = null;
@@ -643,7 +644,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 CurrentWorkerContext.setAttribute(name, value);
             }
 
-            if (name.startsWith("org.apache.jetspeed"))
+            if (currentWorkerContextUsed || name.startsWith("org.apache.jetspeed"))
             {
                 setAttributeInternal(name, value);
             }
@@ -694,7 +695,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
         Thread ct = Thread.currentThread();
 
-        if (ct instanceof Worker) 
+        if (ct instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed()) 
         {
             // when it is parallel rendering, the cached request attributes should be re-created later by setting it to null.
             cachedAttributes = null;

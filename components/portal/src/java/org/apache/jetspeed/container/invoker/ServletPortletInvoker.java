@@ -172,13 +172,14 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
         // In case of parallel mode, get portlet definition object from the worker thread context.
         // Otherwise, refer the member variable.
-        boolean isParallelMode = (Thread.currentThread() instanceof Worker);
+        boolean isParallelMode = (Thread.currentThread() instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed());
 
         if (isParallelMode)
         {
             portletDefinition = (PortletDefinition) CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
         }
-        else
+        
+        if (portletDefinition == null)
         {
             portletDefinition = this.portletDefinition;
         }

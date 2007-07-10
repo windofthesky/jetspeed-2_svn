@@ -34,6 +34,13 @@ public final class CurrentWorkerContext
             }
         };
     
+    private static ThreadLocal currentWorkerContextUsed =
+        new ThreadLocal() {
+            protected synchronized Object initialValue() {
+                return new boolean [] { false };
+            }
+        };
+    
     private CurrentWorkerContext()
     {
     }
@@ -88,5 +95,14 @@ public final class CurrentWorkerContext
     {
         ((Hashtable) currentWorkerContext.get()).clear();
     }
+    
+    public static void setCurrentWorkerContextUsed(boolean used)
+    {
+        ((boolean []) currentWorkerContextUsed.get())[0] = used;
+    }
 
+    public static boolean getCurrentWorkerContextUsed()
+    {
+        return ((boolean []) currentWorkerContextUsed.get())[0];
+    }
 }

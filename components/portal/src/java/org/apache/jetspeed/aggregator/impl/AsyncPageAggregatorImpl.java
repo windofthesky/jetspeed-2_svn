@@ -29,6 +29,7 @@ import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -187,6 +188,9 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         // If the fragment is not root, skip the following.
         if (!isRoot)
             return;
+        
+        
+        CurrentWorkerContext.setCurrentWorkerContextUsed(parallelJobs.size() > 0 && sequentialJobs.size() > 0);
 
         // kick off the parallel rendering jobs
         Iterator iter = parallelJobs.iterator();

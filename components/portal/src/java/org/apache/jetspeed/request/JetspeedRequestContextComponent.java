@@ -133,7 +133,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         RequestContext rc = null;
 
         Thread ct = Thread.currentThread();
-        if (ct instanceof Worker)
+        if (ct instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed())
         {
             rc = (RequestContext) CurrentWorkerContext.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         }

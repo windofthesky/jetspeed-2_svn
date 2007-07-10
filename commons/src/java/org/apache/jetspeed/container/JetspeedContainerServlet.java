@@ -210,7 +210,7 @@ public class JetspeedContainerServlet extends HttpServlet
         
         try
         {
-            isParallelMode = (Thread.currentThread() instanceof Worker);
+            isParallelMode = (Thread.currentThread() instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed());
 
             if (isParallelMode)
             {
