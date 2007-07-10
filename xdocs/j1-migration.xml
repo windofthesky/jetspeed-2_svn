@@ -1041,27 +1041,27 @@ to the <b>processAction</b> method on the Portlet API.
 		<table>
 		<tr>
 		<td>Jetspeed-2 PSML</td>
-		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schema/psml.xsd'>http://portals.apache.org/jetspeed-2/2.1/schema/psml.xsd</a></td>
+		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd'>http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd</a></td>
 		</tr>
 		<tr>
 		<td>Jetspeed-2 Folder Metadata</td>
-		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schema/folder-metadata.xsd'>http://portals.apache.org/jetspeed-2/2.1/schema/folder-metadata.xsd</a></td>
+		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd'>http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd</a></td>
 		</tr>
 		<tr>
 		<td>Jetspeed-2 Seed Data</td>
-		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schema/j2-seed.xsd'>http://portals.apache.org/jetspeed-2/2.1/schema/j2-seed.xsd</a></td>
+		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schemas/j2-seed.xsd'>http://portals.apache.org/jetspeed-2/2.1/schemas/j2-seed.xsd</a></td>
 		</tr>
 		<tr>
 		<td>Jetspeed-2 Security Constraints</td>
-		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schema/page-security.xsd'>http://portals.apache.org/jetspeed-2/2.1/schema/page-security.xsd</a></td>
+		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schemas/page-security.xsd'>http://portals.apache.org/jetspeed-2/2.1/schemas/page-security.xsd</a></td>
 		</tr>
 		<tr>
 		<td>Jetspeed-2 Links</td>
-		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schema/link.xsd'>http://portals.apache.org/jetspeed-2/2.1/schema/link.xsd</a></td>
+		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd'>http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd</a></td>
 		</tr>
 		<tr>
 		<td>Jetspeed-2 Extended Portlet Descriptor</td>
-		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schema/jetspeed-portlet.xsd'>http://portals.apache.org/jetspeed-2/2.1/schema/jetspeed-portlet.xsd</a></td>
+		<td><a href='http://portals.apache.org/jetspeed-2/2.1/schemas/jetspeed-portlet.xsd'>http://portals.apache.org/jetspeed-2/2.1/schemas/jetspeed-portlet.xsd</a></td>
 		</tr>
 		</table>
 		</section>
