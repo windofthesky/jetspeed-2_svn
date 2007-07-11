@@ -665,7 +665,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     Folder folder = pageManager.getFolder(subsite);                    
                     pageManager.removeFolder(folder);
                 }                
-                audit.logAdminUserActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, USER_ADMINISTRATION);            
+                audit.logAdminUserActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, USER_ADMINISTRATION);            
                 // remove selected user from USERS_TOPIC
                 PortletMessaging.cancel(actionRequest,SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
                 // TODO: send message to site manager portlet
@@ -710,7 +710,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 if ( password != null && password.trim().length() > 0 )
                 {
                     userManager.setPassword(userName, null, password);
-                    audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_RESET, USER_ADMINISTRATION);                                                                                            
+                    audit.logAdminCredentialActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_RESET, USER_ADMINISTRATION);                                                                                            
                     passwordSet = true;
                 }
                 PasswordCredential credential = getCredential(actionRequest, userName);
@@ -723,7 +723,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (updateRequired != credential.isUpdateRequired())
                         {
                             userManager.setPasswordUpdateRequired(userName,updateRequired);
-                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_UPDATE_REQUIRED, USER_ADMINISTRATION);                                                                                                                        
+                            audit.logAdminCredentialActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_UPDATE_REQUIRED, USER_ADMINISTRATION);                                                                                                                        
                         }
                     }
                     String enabledStr = actionRequest.getParameter("user_cred_enabled");
@@ -734,7 +734,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         {
                             userManager.setPasswordEnabled(userName,enabled);
                             String activity = (enabled) ? AuditActivity.PASSWORD_ENABLED : AuditActivity.PASSWORD_DISABLED;
-                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, activity, USER_ADMINISTRATION);                                                                                                                                                                                
+                            audit.logAdminCredentialActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, activity, USER_ADMINISTRATION);                                                                                                                                                                                
                         }
                     }
                     String expiredFlagStr = actionRequest.getParameter("user_expired_flag");
@@ -744,17 +744,17 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         {
                             java.sql.Date today = new java.sql.Date(new Date().getTime());
                             userManager.setPasswordExpiration(userName,today);                            
-                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_EXPIRE, USER_ADMINISTRATION);                                                                                                                                                                                                            
+                            audit.logAdminCredentialActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_EXPIRE, USER_ADMINISTRATION);                                                                                                                                                                                                            
                         }
                         else if (expiredFlagStr.equals("extend"))
                         {
                             userManager.setPasswordExpiration(userName,null);
-                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_EXTEND, USER_ADMINISTRATION);                                                                                                                                                                                                                                        
+                            audit.logAdminCredentialActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_EXTEND, USER_ADMINISTRATION);                                                                                                                                                                                                                                        
                         }
                         else if (expiredFlagStr.equals("unlimited"))
                         {
                             userManager.setPasswordExpiration(userName,InternalCredential.MAX_DATE);
-                            audit.logAdminCredentialActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_UNLIMITED, USER_ADMINISTRATION);                                                                                                                                                                                                                                                                    
+                            audit.logAdminCredentialActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.PASSWORD_UNLIMITED, USER_ADMINISTRATION);                                                                                                                                                                                                                                                                    
                         }
                     }
                 }
@@ -795,7 +795,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 if (value != null)
                 {
                     user.getUserAttributes().put(attr.getName(), value);
-                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ATTRIBUTE, attr.getName(), value, USER_ADMINISTRATION);                                
+                    audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ATTRIBUTE, attr.getName(), value, value, USER_ADMINISTRATION);                                
                 }
             }
         }
@@ -819,8 +819,9 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     String userAttrName = userAttrNames[i];
                     String value = actionRequest.getParameter(userAttrName + ":value");
+                    String before = user.getUserAttributes().get(userAttrName, "");
                     user.getUserAttributes().put(userAttrName, value);
-                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_UPDATE_ATTRIBUTE, userAttrName, value, USER_ADMINISTRATION);                                                    
+                    audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_UPDATE_ATTRIBUTE, userAttrName, before, value, USER_ADMINISTRATION);                                                    
                 }                
             }        
         }
@@ -839,7 +840,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 Preferences attributes = user.getUserAttributes();
                 attributes.put(userAttrName, userAttrValue);
-                audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ATTRIBUTE, userAttrName, userAttrValue, USER_ADMINISTRATION);                                                
+                audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ATTRIBUTE, userAttrName, "", userAttrValue, USER_ADMINISTRATION);                                                
             }
         }
     }
@@ -861,8 +862,9 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     try
                     {
+                        String before = attributes.get(userAttrNames[ix], "");                        
                         attributes.remove(userAttrNames[ix]);
-                        audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_ATTRIBUTE, userAttrNames[ix], "", USER_ADMINISTRATION);                                                                        
+                        audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_ATTRIBUTE, userAttrNames[ix], before, "", USER_ADMINISTRATION);                                                                        
                     }
                     catch (Exception e) 
                     {
@@ -891,7 +893,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (roleManager.roleExists(roleNames[ix]))
                         {
                             roleManager.removeRoleFromUser(userName, roleNames[ix]);
-                            audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_ROLE, roleNames[ix], "", USER_ADMINISTRATION);                                                                                                    
+                            audit.logAdminAuthorizationActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_ROLE, roleNames[ix], USER_ADMINISTRATION);                                                                                                    
                         }
                     }
                     catch (SecurityException e)
@@ -916,7 +918,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 try
                 {
                     roleManager.addRoleToUser(userName, roleName);
-                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ROLE, roleName, "", USER_ADMINISTRATION);                                                                                                                        
+                    audit.logAdminAuthorizationActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_ROLE, roleName, USER_ADMINISTRATION);                                                                                                                        
                 }
                 catch (SecurityException e)
                 {
@@ -944,7 +946,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                         if (groupManager.groupExists(groupNames[ix]))
                         {
                             groupManager.removeUserFromGroup(userName, groupNames[ix]);
-                            audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_GROUP, groupNames[ix], "", USER_ADMINISTRATION);                                                                                                                                
+                            audit.logAdminAuthorizationActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_GROUP, groupNames[ix], USER_ADMINISTRATION);                                                                                                                                
                         }
                     }
                     catch (SecurityException e)
@@ -969,7 +971,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 try
                 {
                     groupManager.addUserToGroup(userName, groupName);
-                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_GROUP, groupName, "", USER_ADMINISTRATION);                                                                                                                                            
+                    audit.logAdminAuthorizationActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_GROUP, groupName, USER_ADMINISTRATION);                                                                                                                                            
                 }
                 catch (SecurityException e)
                 {
@@ -1079,7 +1081,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     profiler.setRuleForPrincipal(userPrincipal, 
                             profiler.getRule(ruleName),
                             locatorName);              
-                    audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_PROFILE, ruleName, locatorName, USER_ADMINISTRATION);                                                                                                                                            
+                    audit.logAdminAuthorizationActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_ADD_PROFILE, ruleName + "-" + locatorName, USER_ADMINISTRATION);                                                                                                                                            
                 }
                 catch (Exception e)
                 {
@@ -1114,7 +1116,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                             if (rule.getLocatorName().equals(locatorNames[ix]))
                             {
                                 profiler.deletePrincipalRule(rule);
-                                audit.logAdminAttributeActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_PROFILE, rule.getProfilingRule().getId(), rule.getLocatorName(), USER_ADMINISTRATION);                                                                                                                                                        
+                                audit.logAdminAuthorizationActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE_PROFILE, rule.getProfilingRule().getId() + "-" + rule.getLocatorName(), USER_ADMINISTRATION);                                                                                                                                                        
                             }
                         }
                     }
@@ -1140,7 +1142,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
                 }
                 userManager.addUser(userName, password);
-                audit.logAdminUserActivity(actionRequest.getRemoteUser(), getIPAddress(actionRequest), userName, AuditActivity.USER_CREATE, USER_ADMINISTRATION);            
+                audit.logAdminUserActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_CREATE, USER_ADMINISTRATION);            
                 
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, userName);

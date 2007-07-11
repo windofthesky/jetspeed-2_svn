@@ -62,9 +62,11 @@ public interface AuditActivity
     
     // General Categories
     public static final String CAT_USER_AUTHENTICATION = "authentication";
+    public static final String CAT_USER_ATTRIBUTE = "user-attribute";
     public static final String CAT_ADMIN_USER_MAINTENANCE = "user";
     public static final String CAT_ADMIN_CREDENTIAL_MAINTENANCE = "credential";
     public static final String CAT_ADMIN_ATTRIBUTE_MAINTENANCE = "attribute";
+    public static final String CAT_ADMIN_AUTHORIZATION_MAINTENANCE = "authorization";    
     
     /**
      * Enable or disable the service at runtime
@@ -111,6 +113,8 @@ public interface AuditActivity
      */
     public void logAdminCredentialActivity(String username, String ipaddress, String targetUser, String activity, String description);
     
+    public void logAdminAuthorizationActivity(String username, String ipaddress, String targetUser, String activity, String name, String description);
+    
     /**
      * Log auditable activity by an administrator on attirbutes on behalf of a user
      * 
@@ -119,11 +123,25 @@ public interface AuditActivity
      * @param targetUser
      * @param activity
      * @param name
-     * @param value
+     * @param beforeValue
+     * @param afterValue
      * @param description
      */
-    public void logAdminAttributeActivity(String username, String ipaddress, String targetUser, String activity, String name, String value, String description);
-    
+    public void logAdminAttributeActivity(String username, String ipaddress, String targetUser, String activity, String name, String beforeValue, String afterValue, String description);
+
+    /**
+     * Log auditable activity by an administrator on attirbutes on behalf of a user
+     * 
+     * @param username
+     * @param ipaddress
+     * @param activity
+     * @param name
+     * @param beforeValue
+     * @param afterValue
+     * @param description
+     */
+    public void logUserAttributeActivity(String username, String ipaddress, String activity, String name, String beforeValue, String afterValue, String description);
+
     /**
      * @return DataSource in use by the logger useful for writing decent tests
      */

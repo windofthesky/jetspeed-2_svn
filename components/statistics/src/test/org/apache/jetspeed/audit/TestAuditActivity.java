@@ -159,11 +159,25 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
         assertNotNull(userBean.getTimestamp());
         assertEquals(userBean.getIpAddress(), IP1);
         assertEquals(userBean.getDescription(), MSG_AUTHENTICATION_FAILURE);        
+
+        // Test logging User Attribute activity
+        audit.logUserAttributeActivity(USER, IP1, AuditActivity.USER_ADD_ATTRIBUTE, ATTRIBUTE_NAME_1, ATTRIBUTE_VALUE_BEFORE_1, ATTRIBUTE_VALUE_AFTER_1, MSG_ATTRIBUTE);
+        
+        userBean = lookupUserActivity(USER_QUERY, AuditActivity.USER_ADD_ATTRIBUTE);
+        assertEquals(userBean.getActivity(), AuditActivity.USER_ADD_ATTRIBUTE);
+        assertEquals(userBean.getCategory(), AuditActivity.CAT_USER_ATTRIBUTE);
+        assertEquals(userBean.getUserName(), USER);
+        assertNotNull(userBean.getTimestamp());
+        assertEquals(userBean.getIpAddress(), IP1);
+        assertEquals(userBean.getDescription(), MSG_ATTRIBUTE);        
+        assertEquals(userBean.getBeforeValue(), ATTRIBUTE_VALUE_BEFORE_1);
+        assertEquals(userBean.getAfterValue(), ATTRIBUTE_VALUE_AFTER_1);
+        
         
         // Log Admin Activity
         audit.logAdminUserActivity(ADMIN_USER, IP1, USER, AuditActivity.USER_CREATE, MSG_ADDING_USER);
         audit.logAdminCredentialActivity(ADMIN_USER, IP1, USER, AuditActivity.PASSWORD_CHANGE_SUCCESS, MSG_CHANGING_PW);
-        audit.logAdminAttributeActivity(ADMIN_USER, IP1, USER, AuditActivity.USER_ADD_ATTRIBUTE, ATTRIBUTE_NAME_1, ATTRIBUTE_VALUE_1, MSG_ATTRIBUTE);
+        audit.logAdminAttributeActivity(ADMIN_USER, IP1, USER, AuditActivity.USER_ADD_ATTRIBUTE, ATTRIBUTE_NAME_1, ATTRIBUTE_VALUE_BEFORE_1, ATTRIBUTE_VALUE_AFTER_1, MSG_ATTRIBUTE);
         
         int adminCount = this.countAdminActivity();
         assertEquals(adminCount, 3);
@@ -177,7 +191,8 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
         assertEquals(adminBean.getIpAddress(), IP1);
         assertEquals(adminBean.getDescription(), MSG_ADDING_USER);
         assertTrue(adminBean.getName() == null || adminBean.getName().equals(""));
-        assertTrue(adminBean.getValue() == null || adminBean.getValue().equals(""));
+        assertTrue(adminBean.getBeforeValue() == null || adminBean.getBeforeValue().equals(""));
+        assertTrue(adminBean.getAfterValue() == null || adminBean.getAfterValue().equals(""));
 
         adminBean = lookupAdminActivity(ADMIN_QUERY, AuditActivity.PASSWORD_CHANGE_SUCCESS);
         assertEquals(adminBean.getActivity(), AuditActivity.PASSWORD_CHANGE_SUCCESS);
@@ -188,7 +203,8 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
         assertEquals(adminBean.getIpAddress(), IP1);
         assertEquals(adminBean.getDescription(), MSG_CHANGING_PW);
         assertTrue(adminBean.getName() == null || adminBean.getName().equals(""));
-        assertTrue(adminBean.getValue() == null || adminBean.getValue().equals(""));
+        assertTrue(adminBean.getBeforeValue() == null || adminBean.getBeforeValue().equals(""));
+        assertTrue(adminBean.getAfterValue() == null || adminBean.getAfterValue().equals(""));
 
         adminBean = lookupAdminActivity(ADMIN_QUERY, AuditActivity.USER_ADD_ATTRIBUTE);
         assertEquals(adminBean.getActivity(), AuditActivity.USER_ADD_ATTRIBUTE);
@@ -199,11 +215,12 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
         assertEquals(adminBean.getIpAddress(), IP1);
         assertEquals(adminBean.getDescription(), MSG_ATTRIBUTE);
         assertEquals(adminBean.getName(), ATTRIBUTE_NAME_1);
-        assertEquals(adminBean.getValue(), ATTRIBUTE_VALUE_1);
+        assertEquals(adminBean.getBeforeValue(), ATTRIBUTE_VALUE_BEFORE_1);
+        assertEquals(adminBean.getAfterValue(), ATTRIBUTE_VALUE_AFTER_1);
         
         audit.setEnabled(false);
         assertFalse(audit.getEnabled());
-        audit.logAdminAttributeActivity(ADMIN_USER, IP1, USER, AuditActivity.USER_ADD_ATTRIBUTE, ATTRIBUTE_NAME_1, ATTRIBUTE_VALUE_1, MSG_ATTRIBUTE);        
+        audit.logAdminAttributeActivity(ADMIN_USER, IP1, USER, AuditActivity.USER_ADD_ATTRIBUTE, ATTRIBUTE_NAME_1, ATTRIBUTE_VALUE_BEFORE_1, ATTRIBUTE_VALUE_AFTER_1, MSG_ATTRIBUTE);        
         adminCount = this.countAdminActivity();
         assertEquals(adminCount, 3);        
     }
@@ -221,7 +238,8 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
     private static String USER = "nelson";
     private static String IP1 = "123.234.145.156";
     private static String ATTRIBUTE_NAME_1 = "attribute1";
-    private static String ATTRIBUTE_VALUE_1 = "value1";
+    private static String ATTRIBUTE_VALUE_BEFORE_1 = "value1BEFORE";
+    private static String ATTRIBUTE_VALUE_AFTER_1 = "value1AFTER";
     
 
     private ActivityBean lookupUserActivity(String query, String keyActivity) throws SQLException
@@ -242,7 +260,10 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
             bean.setUserName(rs.getString(3));
             bean.setTimestamp(rs.getTimestamp(4));
             bean.setIpAddress(rs.getString(5));
-            bean.setDescription(rs.getString(6));
+            bean.setName(rs.getString(6));
+            bean.setBeforeValue(rs.getString(7));
+            bean.setAfterValue(rs.getString(8));            
+            bean.setDescription(rs.getString(9));
             return bean;
         }
         catch (SQLException e)
@@ -291,8 +312,9 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
             bean.setTimestamp(rs.getTimestamp(5));
             bean.setIpAddress(rs.getString(6));
             bean.setName(rs.getString(7));
-            bean.setValue(rs.getString(8));
-            bean.setDescription(rs.getString(9));
+            bean.setBeforeValue(rs.getString(8));
+            bean.setAfterValue(rs.getString(9));
+            bean.setDescription(rs.getString(10));
             return bean;
         }
         catch (SQLException e)

@@ -64,11 +64,11 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
         return ds;
     }
     
-    public void logAdminAttributeActivity(String adminName, String ipAddress, String targetUser, String activity, String name, String value, String description)
+    public void logAdminAttributeActivity(String adminName, String ipAddress, String targetUser, String activity, String name, String beforeValue, String afterValue, String description)
     {
         if (enabled)
         {
-            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_ATTRIBUTE_MAINTENANCE, name, value);
+            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_ATTRIBUTE_MAINTENANCE, name, beforeValue, afterValue);
         }
     }
 
@@ -76,19 +76,27 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
     {
         if (enabled)
         {
-            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_CREDENTIAL_MAINTENANCE, "", "");
+            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_CREDENTIAL_MAINTENANCE, "", "", "");
         }
     }
 
+    public void logAdminAuthorizationActivity(String adminName, String ipAddress, String targetUser, String activity, String value, String description)
+    {
+        if (enabled)
+        {
+            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_AUTHORIZATION_MAINTENANCE, "", value, "");
+        }
+    }
+    
     public void logAdminUserActivity(String adminName, String ipAddress, String targetUser, String activity, String description)
     {
         if (enabled)
         {
-            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_USER_MAINTENANCE, "", "");
+            logAdminActivity(adminName, ipAddress, targetUser, activity, description, AuditActivity.CAT_ADMIN_USER_MAINTENANCE, "", "", "");
         }
     }
     
-    protected void logAdminActivity(String adminName, String ipAddress, String targetUser, String activity, String description, String category, String name, String value)
+    protected void logAdminActivity(String adminName, String ipAddress, String targetUser, String activity, String description, String category, String name, String beforeValue, String afterValue)
     {
         Connection con = null;
         PreparedStatement stm = null;        
@@ -96,7 +104,7 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
         {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             con = ds.getConnection();
-            stm  = con.prepareStatement("INSERT INTO ADMIN_ACTIVITY (ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE, DESCRIPTION) VALUES(?,?,?,?,?,?,?,?,?)");
+            stm  = con.prepareStatement("INSERT INTO ADMIN_ACTIVITY (ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES(?,?,?,?,?,?,?,?,?,?)");
             stm.setString(1, activity);
             stm.setString(2, category);
             stm.setString(3, adminName);
@@ -104,8 +112,9 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
             stm.setTimestamp(5, timestamp);
             stm.setString(6, ipAddress);
             stm.setString(7, name);
-            stm.setString(8, value);
-            stm.setString(9, description);            
+            stm.setString(8, beforeValue);
+            stm.setString(9, afterValue);
+            stm.setString(10, description);            
             stm.execute();            
         } 
         catch (SQLException e)
@@ -123,8 +132,18 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
             releaseConnection(con);
         }
     }
-
+    
     public void logUserActivity(String userName, String ipAddress, String activity, String description)
+    {
+        logUserActivities(userName, ipAddress, activity, "", "", "", description, AuditActivity.CAT_USER_AUTHENTICATION);
+    }
+ 
+    public void logUserAttributeActivity(String userName, String ipAddress, String activity, String name, String beforeValue, String afterValue, String description)
+    {
+        logUserActivities(userName, ipAddress, activity, name, beforeValue, afterValue, description, AuditActivity.CAT_USER_ATTRIBUTE);               
+    }
+    
+    protected void logUserActivities(String userName, String ipAddress, String activity, String name, String beforeValue, String afterValue, String description, String category)
     {
         if (enabled)
         {
@@ -134,13 +153,16 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
             {
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                 con = ds.getConnection();
-                stm  = con.prepareStatement("INSERT INTO USER_ACTIVITY (ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, DESCRIPTION) VALUES(?,?,?,?,?,?)");
+                stm  = con.prepareStatement("INSERT INTO USER_ACTIVITY (ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES(?,?,?,?,?,?,?,?,?)");
                 stm.setString(1, activity);
-                stm.setString(2, AuditActivity.CAT_USER_AUTHENTICATION);
+                stm.setString(2, category);
                 stm.setString(3, userName);
                 stm.setTimestamp(4, timestamp);
                 stm.setString(5, ipAddress);
-                stm.setString(6, description);
+                stm.setString(6, name);
+                stm.setString(7, beforeValue);
+                stm.setString(8, afterValue);                
+                stm.setString(9, description);
                 stm.executeUpdate();
             } 
             catch (SQLException e)

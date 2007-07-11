@@ -27,7 +27,8 @@ public class ActivityBean
     private Timestamp timestamp;
     private String ipAddress;
     private String name;
-    private String value;
+    private String beforeValue;
+    private String afterValue;
     private String description;
     
     public String getActivity()
@@ -109,14 +110,29 @@ public class ActivityBean
     {
         this.userName = userName;
     }
+
     
-    public String getValue()
+    public String getAfterValue()
     {
-        return value;
+        return afterValue;
+    }
+
+    
+    public void setAfterValue(String afterValue)
+    {
+        this.afterValue = afterValue;
+    }
+
+    
+    public String getBeforeValue()
+    {
+        return beforeValue;
+    }
+
+    
+    public void setBeforeValue(String beforeValue)
+    {
+        this.beforeValue = beforeValue;
     }
     
-    public void setValue(String value)
-    {
-        this.value = value;
-    }    
 }
