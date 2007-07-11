@@ -17,6 +17,7 @@
  * author: Steve Milek
  */
 
+jetspeed.widget.ie6PostDragAddDelay = 60; jetspeed.widget.ie6PostDragRmDelay = 120;
 dojo.provide("jetspeed.widget.PortletWindow");
 
 dojo.require("jetspeed.desktop.core");
@@ -1531,7 +1532,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             var colDomNode = this.domNode.parentNode;
             dojo.dom.insertAtIndex( jetspeed.widget.ie6ZappedContentHelper, colDomNode, 0 );
-            dojo.lang.setTimeout( this, this._IERemoveHelper, 20 );
+            dojo.lang.setTimeout( this, this._IERemoveHelper, jetspeed.widget.ie6PostDragRmDelay );
         }
     },
 
@@ -1730,7 +1731,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( this.portlet && this.windowState != jetspeed.id.ACTION_NAME_MAXIMIZE )
             this.portlet.submitChangedWindowState();
         if ( dojo.render.html.ie60 )
-            dojo.lang.setTimeout( this, this._IEPostDrag, 10 );
+            dojo.lang.setTimeout( this, this._IEPostDrag, jetspeed.widget.ie6PostDragAddDelay );
     },
 
     titleLight: function()

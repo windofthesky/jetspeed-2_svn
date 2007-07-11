@@ -1,3 +1,5 @@
+jetspeed.widget.ie6PostDragAddDelay=60;
+jetspeed.widget.ie6PostDragRmDelay=120;
 dojo.provide("jetspeed.widget.PortletWindow");
 dojo.require("jetspeed.desktop.core");
 dojo.require("dojo.widget.*");
@@ -1055,7 +1057,7 @@ this.onResized();
 if(this.windowPositionStatic){
 var _a5=this.domNode.parentNode;
 dojo.dom.insertAtIndex(jetspeed.widget.ie6ZappedContentHelper,_a5,0);
-dojo.lang.setTimeout(this,this._IERemoveHelper,20);
+dojo.lang.setTimeout(this,this._IERemoveHelper,jetspeed.widget.ie6PostDragRmDelay);
 }
 },_IERemoveHelper:function(){
 dojo.dom.removeNode(jetspeed.widget.ie6ZappedContentHelper);
@@ -1174,7 +1176,7 @@ if(this.portlet&&this.windowState!=jetspeed.id.ACTION_NAME_MAXIMIZE){
 this.portlet.submitChangedWindowState();
 }
 if(dojo.render.html.ie60){
-dojo.lang.setTimeout(this,this._IEPostDrag,10);
+dojo.lang.setTimeout(this,this._IEPostDrag,jetspeed.widget.ie6PostDragAddDelay);
 }
 },titleLight:function(){
 var _b7=[];
