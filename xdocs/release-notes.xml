@@ -102,6 +102,7 @@
   	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-739'>JS2-739</a>] - Improve Algorithms for Resource Validation and Template Localization</li>  	      	
   	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-740'>JS2-740</a>] - Allow overriding the default Spring assembly without having to modify it</li>
   	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-741'>JS2-741</a>] - More GroovyPortlet demos using the new Portals Bridges GroovyPortlet</li>
+  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-747'>JS2-747</a>] - A valve creating template pages when a user logs on first.</li>
   	      </ul>
   	    </subsection>
   	    <subsection name="New Feature">
