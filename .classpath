@@ -103,11 +103,11 @@
 	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-webmvc-2.0.5.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-ojb-2.0-rc2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-fileupload/jars/commons-fileupload-1.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-common-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-frameworks-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-jsf-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-velocity-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-portletfilter-1.0.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-common-1.0.3.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-frameworks-1.0.3.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-jsf-1.0.3.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-velocity-1.0.3.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.apache.portals.bridges/jars/portals-bridges-portletfilter-1.0.3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/javamail/jars/javamail-1.3.3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/taglibs/jars/random-1.0.2.jar"/>

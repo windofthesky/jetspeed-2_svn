@@ -99,11 +99,11 @@
     <classpathentry kind="var" path="M2_REPO/org/springframework/spring-webmvc/2.0.5/spring-webmvc-2.0.5.jar"/>  
     <classpathentry kind="var" path="M2_REPO/org/springframework/spring-ojb/2.0-rc2/spring-ojb-2.0-rc2.jar"/>
     <classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.2/commons-fileupload-1.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-common/1.0.2/portals-bridges-common-1.0.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-velocity/1.0.2/portals-bridges-velocity-1.0.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-frameworks/1.0.2/portals-bridges-frameworks-1.0.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-jsf/1.0.2/portals-bridges-jsf-1.0.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-portletfilter/1.0.2/portals-bridges-portletfilter-1.0.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-common/1.0.3/portals-bridges-common-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-velocity/1.0.3/portals-bridges-velocity-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-frameworks/1.0.3/portals-bridges-frameworks-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-jsf/1.0.3/portals-bridges-jsf-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-portletfilter/1.0.3/portals-bridges-portletfilter-1.0.3.jar"/>
     <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
     <classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.3.3/mail-1.3.3.jar"/>
     <classpathentry kind="var" path="M2_REPO/taglibs/random/1.0.2/random-1.0.2.jar"/>
