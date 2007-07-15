@@ -1,0 +1,82 @@
+Release Notes - Jetspeed 2 - Version 2.1.2
+
+
+** Bug
+    * [JS2-282] - Error when session expires and portlet window is maximized
+    * [JS2-471] - Document Derby as the default database
+    * [JS2-484] - UserDetailsPortlet doesn't "see" newly added roles until after logging out and in again
+    * [JS2-502] - cannot disable user
+    * [JS2-512] - Profiler admin portlet can not display other language except English.
+    * [JS2-525] - Roles and Groups appear in the User Details portlet when having been deleted
+    * [JS2-566] - Tapestry portlet's header doesn't display in jetspeed
+    * [JS2-580] - localization SSO Details portlet
+    * [JS2-657] - Installer fails with firewall
+    * [JS2-660] - Request attribute not available in jsp when using the JetspeedPowerTool
+    * [JS2-661] - Error in the antinstall-config script
+    * [JS2-665] - Duplicate Objects creation
+    * [JS2-667] - Portlet Selector is not returning to the correct page after navigation
+    * [JS2-668] - Adding Portlets to multiple layouts always adds to the top level layout
+    * [JS2-669] - Site Manager Admin portlet does not allow copying of a resource into the same folder where it exists
+    * [JS2-670] - Fragment Security Constraints only check View Mode
+    * [JS2-674] - Site component fails on profile navigations for subsites
+    * [JS2-675] - Site Manager Admin portlet: cannot view pages located via profiling rules with navigations or controls
+    * [JS2-681] - Login portlet doesn't run in Tomcat ROOT context
+    * [JS2-682] - Jetspeed thread waiting to lock for infinity time
+    * [JS2-687] - jetspeed deployment engine removes WEB-INF/tld/portlet.tld from portlet app web archive
+    * [JS2-688] - Unable to use Jetspeed services
+    * [JS2-689] - Spring Bean Factory creation of Prototype (non-singleton) beans causes serious performance degradation under load
+    * [JS2-690] - Caching issue with Print Mode
+    * [JS2-692] - Fragment ids are not automatically created, causing runtime errors
+    * [JS2-693] - Portal Site Manager  error in java script for button "view" 
+    * [JS2-694] - actionResponse.sendRedirect("some psml page.psml") fails on the desktop
+    * [JS2-696] - Creating actionURLs on the desktop with javascript: tags in them fails
+    * [JS2-697] - Maximized mode overlaps as popup on desktop
+    * [JS2-698] - Minimized mode functions only in un-tiled state on desktop
+    * [JS2-699] - When going back from view mode to edit mode, icon is not always updated on desktop
+    * [JS2-703] - Remove Print Mode Window Decoration on Desktop
+    * [JS2-705] - Desktop window dragging mouse position offset bug
+    * [JS2-714] - Filter Admin users from delegated-security portlets
+    * [JS2-717] - MenuElement interface does not support getUrl method
+    * [JS2-718] - forgot pass portlet: password reset link does not work
+    * [JS2-719] - Default ehcache configuration is setup for distributed operation which will fail the portal to startup when no network is available
+    * [JS2-725] - Dociumentation mismatch 
+    * [JS2-727] - Appy Findbugs patches
+    * [JS2-731] - DESKTOP_ATTRIBUTE should be DESKTOP_CONTEXT_ATTRIBUTE
+    * [JS2-733] - Desktop: non-movable portlets are deletable
+    * [JS2-735] - Jetty-6 ConcurrentModificationException on logout
+    * [JS2-737] - Desktop doesn't work on IE 6.0
+    * [JS2-745] - File System Page Manager does not accept folders with dots
+
+** Improvement
+    * [JS2-584] - enable adding Velocity context objects without recompilation
+    * [JS2-672] - Add createProperty API to the Preferences Provider component
+    * [JS2-673] - Set sql.src.path value in the project.properties
+    * [JS2-680] - Folder configuration form at a page edit area
+    * [JS2-683] - Folder/Page customizer improvement
+    * [JS2-685] - Add functionality to AJAX API to information about users
+    * [JS2-695] - The Desktop does NOT support the no-action layouts
+    * [JS2-700] - Display loading in progress message from desktop
+    * [JS2-701] - Package and compress the Jetspeed Desktop Javascript
+    * [JS2-702] - Optimize desktop menu loading
+    * [JS2-707] - When creating a new user, give option to create inside a subsite
+    * [JS2-709] - Update to latest dependencies
+    * [JS2-711] - Support JSP decorators as well as Velocity 
+    * [JS2-712] - Create new servlet session upon login (configurable)
+    * [JS2-713] - Put a hard-limit on session time-out for portal sessions
+    * [JS2-721] - Ability to determine if a Menu Option has a default page or not
+    * [JS2-723] - Option to configure DB PSML from the installer
+    * [JS2-739] - Improve Algorithms for Resource Validation and Template Localization
+    * [JS2-740] - Allow overriding the default Spring assembly without having to modify it
+    * [JS2-741] - More GroovyPortlet demos using the new Portals Bridges GroovyPortlet
+    * [JS2-747] - A valve creating template pages when a user logs on first.
+
+** New Feature
+    * [JS2-317] - Virtual Portal Implementation
+    * [JS2-691] - Allow user to customize all his pages and portlets (in user home folder) at once
+    * [JS2-716] - PSML and XML Import / Export Admin Portlet
+    * [JS2-724] - Audit logs for administrative actions
+    * [JS2-728] - Provide a Portals Bridges common.PortletResourceURLFactory implementation for Jetspeed
+    * [JS2-729] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams
+    * [JS2-732] - A GroovyPortlet demo using the new Portals Bridges GroovyPortlet 
+    * [JS2-743] - Maximize on Edit
+

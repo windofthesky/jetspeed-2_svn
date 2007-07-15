@@ -45,13 +45,13 @@
 					<td>Jetspeed-2 Standard with only the required Administrative Portlets</td>
 					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar">jetspeed-2.1.2-installer.jar</a></td>
 					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar.md5">here</a></td>
-					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar.arc">here</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar.asc">here</a></td>
 				</tr>
 				<tr>
 					<td>Jetspeed-2 Demo With lots of demo Portlets: RSS, JSF, JPetstore and many more</td>
 					<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar">Jetspeed-2.1.2-demo-installer.jar</a></td>
 					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar.md5">here</a></td>
-					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar.arc">here</a></td>
+					<td><a href="http://www.apache.org/dist/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar.asc">here</a></td>
 				</tr>
 			</table>
 				<p>
@@ -74,19 +74,47 @@
 						<td>jetspeed-2.1.2-src.tar.bz2</td>
 						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2">here</a></td>
 						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2.md5">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2.arc">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.bz2.asc">here</a></td>
 					</tr>
 					<tr>
 						<td>jetspeed-2.1.2-src.tar.gz</td>
 						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz">here</a></td>
 						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz.md5">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz.arc">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.tar.gz.asc">here</a></td>
 					</tr>
 					<tr>
 						<td>jetspeed-2.1.2-src.zip</td>
 						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip">here</a></td>
 						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip.md5">here</a></td>
-						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip.arc">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2-src.zip.asc">here</a></td>
+					</tr>
+				</table>
+			</subsection>
+			<subsection name="Jetspeed-2.1.2 Full Distribution (binaries, src and generated website)">
+				<table>
+					<tr>
+						<th/>
+						<th>Mirrors</th>
+						<th>Checksum</th>
+						<th>Signature</th>
+					</tr>
+					<tr>
+						<td>jetspeed-2.1.2.tar.bz2</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.tar.bz2">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.tar.bz2.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.tar.bz2.asc">here</a></td>
+					</tr>
+					<tr>
+						<td>jetspeed-2.1.2.tar.gz</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.tar.gz">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.tar.gz.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.tar.gz.asc">here</a></td>
+					</tr>
+					<tr>
+						<td>jetspeed-2.1.2.zip</td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.zip">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.zip.md5">here</a></td>
+						<td><a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/sources/jetspeed-2.1.2.zip.asc">here</a></td>
 					</tr>
 				</table>
 			</subsection>

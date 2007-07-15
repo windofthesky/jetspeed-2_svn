@@ -51,12 +51,11 @@
 				</li>
 				<li>Java 1.4.2_02 or higher</li>
 				<li>
-					Servlet 2.3 Engine:
+					Servlet 2.4 Engine:
 					<ul>
-						<li>Tomcat 5.0.x</li>
 						<li>Tomcat 5.5.x</li> 
 						<li>Jetty</li>
-						<li>Websphere 5.1, 6.0</li>
+						<li>Websphere 6.0</li>
 						<li>Geronimo</li>
 						<li>JBoss</li>
 						<li>Weblogic</li>
@@ -103,7 +102,7 @@
 		<section name="3 Servlet Engines">
 			<p>
 				In theory, Jetspeed 2 portals can be run under any
-				servlet container supporting the 2.3 specification or
+				servlet container supporting the 2.4 specification or
 				greater. Successful Jetspeed 2 portal applications have
 				been deployed using:
 				<ul>
