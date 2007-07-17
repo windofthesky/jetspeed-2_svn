@@ -705,6 +705,7 @@ this.portletInitDimensions();
 },postCreate:function(_69,_6a,_6b){
 if(this.movable&&this.titleBar){
 this.drag=new dojo.dnd.Moveable(this,{handle:this.titleBar});
+this.setTitleBarDragging();
 }
 this.domNode.id=this.widgetId;
 this.portletInitDimensions();
