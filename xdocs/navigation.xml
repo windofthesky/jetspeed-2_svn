@@ -58,7 +58,7 @@
             <item name="Quality Testing" href="quality-testing.html" />
         </menu>
         <menu name="Translation"> 	
-            <item name="Japanese" href="http://jetspeed-japan.sourceforge.jp/jetspeed-2-trans/ja/index.html" />
+            <item name="Japanese" href="http://jetspeed-japan.sourceforge.jp/jetspeed-2-trans/final/index.html" />
         </menu>
     </body>
 </project>
