@@ -1016,6 +1016,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         if ( this.movable && this.titleBar )
         {
             this.drag = new dojo.dnd.Moveable( this, {handle: this.titleBar});
+            this.setTitleBarDragging();
         }
         
         this.domNode.id = this.widgetId;  // BOZO: must set the id here - it gets defensively cleared by dojo
