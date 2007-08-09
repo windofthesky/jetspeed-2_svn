@@ -104,3 +104,14 @@
     </tr>
   </table>
 #end
+
+#macro (PageActionBar)
+ #set($_actions = $layoutDecoration.actions)
+  <div align="right">
+    #if($_actions.size() >0)
+    #foreach ($_action in $_actions)   
+     <a href="${_action.Action}" title="${_action.Name}" class="action pageAction" >${_action.Alt}</a>
+    #end   
+    #end
+  </div>
+#end
