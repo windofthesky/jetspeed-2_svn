@@ -45,6 +45,16 @@
 	 <section name="Configuration Migrating from Jetspeed 2.0 to 2.1">
 	  <p>The following items describe important functional changes in Jetspeed 2.1
 	  </p>
+	  <subsection name="Portlet API Caching">
+	  <p>Version 2.1 is the first Jetspeed version to support Portlet API Caching. In 2.0 the expiration-cache was set to -1 (infinity time) 
+	  for all layouts in the file WEB-INF\apps\jetspeed-layouts\WEB-INF\portlet.xml. When upgrading to version 2.1 or greater from 2.0, you will need 
+	  to update your database to disable portlet caching on the Jetspeed layouts. Updating the layouts can be achieved by either redeploying the jetspeed-layouts portlet application,
+	  or by updating your database as shown below (assuming the APPLICATION_ID value is 2) for the jetspeed-layouts application.
+<source><![CDATA[
+UPDATE PORTLET_DEFINITION P SET EXPIRATION_CACHE = 0 WHERE P.APPLICATION_ID = 2
+]]></source>
+	  </p>
+      </subsection>	  	  
 	  <subsection name="Portlet Preferences">
 	   <p>Portlet Preferences are now by default user specific on all pages. In Jetspeed 2.0, for shared pages, the Portlet Preferences were shared as well.</p>
 	   <p>To retain most of the old Jetspeed 2.0 behavior, allowing an administrator to still set/modify <i>initial</i> Preferences for other users,<br/> 
