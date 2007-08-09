@@ -759,25 +759,25 @@ function createResource()
     names[0] = "method";
     values[0] = "add";
     names[1] = "path";
-    values[1] = escape(node.widgetId);
+    values[1] = node.widgetId;
     names[2] = "name";
-    values[2] = escape(node.title);
+    values[2] = node.title;
     names[3] = "title";
-    values[3] = escape(document.getElementById("res.title").value);
+    values[3] = document.getElementById("res.title").value;
     names[4] = "defaultLayout";
-    values[4] = escape(document.getElementById("defaultLayout").value);
+    values[4] = document.getElementById("defaultLayout").value;
     var index = 5;
     var stitle = document.getElementById("res.short-title").value;
     if (stitle != null && stitle != "")
     {
         names[index] = "short-title";
-        values[index] = escape(stitle);
+        values[index] = stitle;
         index = index + 1;
     }
     if (node.object == "Link")
     {
         names[index] = "url";
-        values[index] = escape(document.getElementById("res.url").value);
+        values[index] = document.getElementById("res.url").value;
         index = index + 1;
     }
     ajaxInvoke(action, names, values, new ResourceAddHandler(parent, node) );     
@@ -852,9 +852,9 @@ function copyAction()
     names[0] = "method";
     values[0] = "copy";
     names[1] = "path";
-    values[1] = escape(source);
+    values[1] = source;
     names[2] = "name";
-    values[2] = escape(nodeName);
+    values[2] = nodeName;
     names[3] = "destination";
 	values[3] = destinationPath;
 	this.parent = parent;
@@ -933,9 +933,9 @@ function moveAction()
     names[0] = "method";
     values[0] = "move";
     names[1] = "path";
-    values[1] = escape(node.widgetId+nodeName);
+    values[1] = node.widgetId+nodeName;
     names[2] = "name";
-	values[2] = escape(nodeName);
+	values[2] = nodeName;
     names[3] = "destination";
     values[3] = document.getElementById('destination').value;
     ajaxInvoke(action, names, values, new ResourceMoveHandler(parent, node) );     
@@ -1014,7 +1014,7 @@ function deleteResource()
     names[0] = "method";
     values[0] = "remove";
     names[1] = "path";
-    values[1] = escape(node.widgetId);
+    values[1] = node.widgetId;
     ajaxInvoke(action, names, values, new ResourceDeleteHandler(parent, node) );     
 }
 var ResourceCopyHandler = function(parent, node1)
@@ -1860,7 +1860,7 @@ function ajaxInvoke(action, names, values, handler)
     {
         for (var ix=0;  ix<names.length; ix++)
         {
-            requestUrl = requestUrl + "&" + names[ix] + "=" + values[ix];
+            requestUrl = requestUrl + "&" + names[ix] + "=" + encodeURIComponent(values[ix]);
         }    
     }
     var mimeType = "text/xml";
@@ -2257,21 +2257,21 @@ function saveMetaEntrySubmit(selectedRowData, removeEntry)
         else
             values[0] = (rowData.__isNew)? "add-meta" : "update-meta";
         names[1] = "path"; 
-        values[1] = escape(dojo.byId("site.path").value);
+        values[1] = dojo.byId("site.path").value;
         names[2] = "name";
-        values[2] = escape(rowData.name);
+        values[2] = rowData.name;
         names[3] = "lang";
-        values[3] = escape(rowData.language);
+        values[3] = rowData.language;
         names[4] = "value";
-        values[4] = escape(rowData.value);
+        values[4] = rowData.value;
         if (rowData.__isNew == null)
         {
             var tId = rowData.Id;
             var masterData = table.getData( table.js_masterdata, tId );
             names[5] = "oldname";
-            values[5] = escape(masterData.name);
+            values[5] = masterData.name;
             names[6] = "oldlang";
-            values[6] = escape(masterData.language);
+            values[6] = masterData.language;
         }
         var kind = dojo.byId("site.kind").value;
         var action = "update" + kind;
@@ -2294,9 +2294,9 @@ function saveSecurityEntrySubmit(selectedRowData, removeEntry)
             names[0] = "method";
             values[0] = "remove-secdef";
             names[1] = "path"; 
-            values[1] = escape(dojo.byId("site.path").value);
+            values[1] = dojo.byId("site.path").value;
             names[2] = "id";
-            values[2] = escape(rowData.Id);
+            values[2] = rowData.Id;
         }
         else
         {
@@ -2306,15 +2306,15 @@ function saveSecurityEntrySubmit(selectedRowData, removeEntry)
             else
                 values[0] = (rowData.__isNew)? "add-secref" : "update-secref";
             names[1] = "path"; 
-            values[1] = escape(dojo.byId("site.path").value);
+            values[1] = dojo.byId("site.path").value;
             names[2] = "name";
-            values[2] = escape(rowData.name);
+            values[2] = rowData.name;
             if (rowData.__isNew == null)
             {
                 var tId = rowData.Id;
                 var masterData = table.getData( table.js_masterdata, tId );
                 names[3] = "oldname";
-                values[3] = escape(masterData.name);
+                values[3] = masterData.name;
             }
             names[4] = "kind";
             values[4] = rowData.kind;
@@ -2334,19 +2334,19 @@ function saveInfo()
     if (currentTabName == "infoTabFolder")
     {
         names[1] = "path"; 
-        values[1] = escape(dojo.byId("finfo.path").value);
+        values[1] = dojo.byId("finfo.path").value;
         names[2] = "name";
-        values[2] = escape(dojo.byId("finfo.name").value);
+        values[2] = dojo.byId("finfo.name").value;
         names[3] = "title";
-        values[3] = escape(dojo.byId("finfo.title").value);
+        values[3] = dojo.byId("finfo.title").value;
         names[4] = "short-title";
-        values[4] = escape(dojo.byId("finfo.short-title").value);
+        values[4] = dojo.byId("finfo.short-title").value;
         names[5] = "layout-decorator";
-        values[5] = escape(dojo.byId("finfo.layout-decorator").value);
+        values[5] = dojo.byId("finfo.layout-decorator").value;
         names[6] = "portlet-decorator";
-        values[6] = escape(dojo.byId("finfo.portlet-decorator").value);
+        values[6] = dojo.byId("finfo.portlet-decorator").value;
         names[7] = "default-page";
-        values[7] = escape(dojo.byId("finfo.default-page").value);
+        values[7] = dojo.byId("finfo.default-page").value;
         if (dojo.byId("finfo.hidden").checked)
         {
             names[8] = "hidden";
@@ -2357,19 +2357,19 @@ function saveInfo()
     else if (currentTabName == "infoTabPage")
     {        
         names[1] = "path"; 
-        values[1] = escape(dojo.byId("pinfo.path").value);
+        values[1] = dojo.byId("pinfo.path").value;
         names[2] = "name";
-        values[2] = escape(dojo.byId("pinfo.name").value);
+        values[2] = dojo.byId("pinfo.name").value;
         names[3] = "title";
-        values[3] = escape(dojo.byId("pinfo.title").value);
+        values[3] = dojo.byId("pinfo.title").value;
         names[4] = "short-title";
-        values[4] = escape(dojo.byId("pinfo.short-title").value);
+        values[4] = dojo.byId("pinfo.short-title").value;
         names[5] = "layout-decorator";
-        values[5] = escape(dojo.byId("pinfo.layout-decorator").value);
+        values[5] = dojo.byId("pinfo.layout-decorator").value;
         names[6] = "portlet-decorator";
-        values[6] = escape(dojo.byId("pinfo.portlet-decorator").value);
+        values[6] = dojo.byId("pinfo.portlet-decorator").value;
         names[7] = "theme";
-        values[7] = escape(dojo.byId("pinfo.theme").value);
+        values[7] = dojo.byId("pinfo.theme").value;
         if (dojo.byId("pinfo.hidden").checked)
         {
             names[8] = "hidden";
@@ -2380,17 +2380,17 @@ function saveInfo()
     else if (currentTabName == "infoTabLinks")
     {
         names[1] = "path"; 
-        values[1] = escape(dojo.byId("linfo.path").value);
+        values[1] = dojo.byId("linfo.path").value;
         names[2] = "name";
-        values[2] = escape(dojo.byId("linfo.name").value);
+        values[2] = dojo.byId("linfo.name").value;
         names[3] = "title";
-        values[3] = escape(dojo.byId("linfo.title").value);
+        values[3] = dojo.byId("linfo.title").value;
         names[4] = "short-title";
-        values[4] = escape(dojo.byId("linfo.short-title").value);
+        values[4] = dojo.byId("linfo.short-title").value;
         names[5] = "url";
-        values[5] = escape(dojo.byId("linfo.url").value);
+        values[5] = dojo.byId("linfo.url").value;
         names[6] = "target";
-        values[6] = escape(dojo.byId("linfo.target").value);
+        values[6] = dojo.byId("linfo.target").value;
         if (dojo.byId("linfo.hidden").checked)
         {
             names[7] = "hidden";
