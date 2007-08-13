@@ -476,11 +476,11 @@ function saveEntrySubmit( selectedRowData, removeEntry )
     }
     requestUrl += "&type=" + tTableWidget.js_type;
     
-    requestUrl += "&resource=" + escape( selectedRowData.name );
-    requestUrl += "&roles=" + escape( selectedRowData.roles );
-    requestUrl += "&actions=" + escape( selectedRowData.actions );
-    requestUrl += "&oldactions=" + escape( masterData.actions );
-
+    requestUrl += "&resource=" + encodeURIComponent( selectedRowData.name );
+    requestUrl += "&roles=" + encodeURIComponent( selectedRowData.roles );
+    requestUrl += "&actions=" + encodeURIComponent( selectedRowData.actions );
+    requestUrl += "&oldactions=" + encodeURIComponent( masterData.actions );
+    
     var mimeType = "text/xml";
     dojo.io.bind({
 

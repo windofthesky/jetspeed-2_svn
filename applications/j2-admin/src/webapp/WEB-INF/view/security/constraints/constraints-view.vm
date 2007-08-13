@@ -628,7 +628,7 @@ function saveDefinitionEntrySubmit( selectedRowData, removeEntry )
     var contextPath = document.location.protocol + "/" + "/" + document.location.host + "$req.ContextPath";
     var requestUrl = contextPath + "/ajaxapi?action=constraints" ;
 
-    requestUrl += "&name=" + escape( selectedRowData.name );
+    requestUrl += "&name=" + encodeURIComponent( selectedRowData.name );
     if ( removeEntry )
     {
         requestUrl += "&method=remove-def";
@@ -667,7 +667,7 @@ function saveDefinitionEntrySubmit( selectedRowData, removeEntry )
     }
     xmlData += '</security-constraints-def>';
     
-    requestUrl += "&xml=" + escape( xmlData );
+    requestUrl += "&xml=" + encodeURIComponent( xmlData );
 
     var mimeType = "text/xml";
     dojo.io.bind({
@@ -714,7 +714,7 @@ function saveGlobalEntrySubmit( selectedRowData, removeEntry )
     var contextPath = document.location.protocol + "/" + "/" + document.location.host + "$req.ContextPath";
     var requestUrl = contextPath + "/ajaxapi?action=constraints" ;
 
-    requestUrl += "&name=" + escape( selectedRowData.name );
+    requestUrl += "&name=" + encodeURIComponent( selectedRowData.name );
     if ( removeEntry )
     {
         requestUrl += "&method=remove-global";
@@ -731,7 +731,7 @@ function saveGlobalEntrySubmit( selectedRowData, removeEntry )
 
     var xmlData = '<global-security-constraints-ref>' + dojo.string.escapeXml( selectedRowData.name, true ) + '</global-security-constraints-ref>';
     
-    requestUrl += "&xml=" + escape( xmlData );
+    requestUrl += "&xml=" + encodeURIComponent( xmlData );
 
     var mimeType = "text/xml";
     dojo.io.bind({
