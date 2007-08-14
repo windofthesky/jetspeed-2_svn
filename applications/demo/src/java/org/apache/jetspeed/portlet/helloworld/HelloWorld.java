@@ -89,12 +89,21 @@ public class HelloWorld extends GenericPortlet
     {
         PortletContext context = getPortletContext();
         ResourceBundle resource = getPortletConfig().getResourceBundle(request.getLocale());
-        response.setContentType("text/html");
-
-        response.getWriter().println("<br/><b>"+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b>");
-        // response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");
-        
-        PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
-        rd.include(request, response);        
+        String contentType = request.getResponseContentType();
+        if (contentType.startsWith("text/html"))
+        {
+            response.setContentType("text/html");
+            response.getWriter().println("<br/><b>"+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b>");
+            PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello.jsp");
+            rd.include(request, response);                                
+        }
+        else if (contentType.startsWith("text/vnd.wap.wml"))
+        {
+            response.setContentType("text/vnd.wap.wml");            
+            response.getWriter().println("<br/><b>WML: "+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b>");
+            PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello-wml.jsp");
+            rd.include(request, response);                    
+        }            
+        // response.getWriter().println("<br/><b>Render URL = " + url +  "</b>");        
     }
 }
