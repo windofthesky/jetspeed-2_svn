@@ -188,11 +188,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
             {
                 RenderRequest renderRequest = (RenderRequest) portletRequest;
                 RenderResponse renderResponse = (RenderResponse) portletResponse;
-
-                renderResponse.setContentType("text/html");
-                // TODO: ???
-                // renderResponse.getWriter().print(portletDefinition.getName());
-
+                renderResponse.setContentType(requestContext.getMimeType());
                 portletInstance.render(renderRequest, renderResponse);
             }
         }
