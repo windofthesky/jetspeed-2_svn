@@ -177,8 +177,8 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      */
     public void doView( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
-        response.setContentType("text/html");
         RequestContext context = getRequestContext(request);
+        response.setContentType(context.getMimeType());        
         PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
         boolean maximized = (window != null);
         boolean solo = false;
