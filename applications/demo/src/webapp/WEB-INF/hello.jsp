@@ -19,7 +19,7 @@ limitations under the License.
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <fmt:setBundle basename="org.apache.jetspeed.portlet.helloworld.resources.HelloWorldResources" />
 <portlet:defineObjects/>
-<p><fmt:message key="hello.label.ThisIsATestLine"/></P>
+<p><fmt:message key="hello.label.ThisIsATestLine"/></p>
 <b><portlet:namespace/><fmt:message key="hello.label.TestAtPlutoOrg"/></b>
 
 <h2><fmt:message key="hello.label.WeNeedToDoSomething"/></h2>
