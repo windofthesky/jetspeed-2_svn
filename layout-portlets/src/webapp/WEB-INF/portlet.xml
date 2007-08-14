@@ -79,6 +79,10 @@ limitations under the License.
       <portlet-mode>edit</portlet-mode>
       <portlet-mode>help</portlet-mode>      
     </supports>
+    <supports>
+      <mime-type>text/vnd.wap.wml</mime-type>      
+      <portlet-mode>view</portlet-mode>    
+    </supports>
     <portlet-info>
       <title>One Column</title>
       <short-title>OneColumn</short-title>
@@ -328,6 +332,10 @@ limitations under the License.
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
     </supports>
+    <supports>
+      <mime-type>text/vnd.wap.wml</mime-type>      
+      <portlet-mode>view</portlet-mode>    
+    </supports>    
     <portlet-info>
       <title>One Column - No Actions</title>
       <short-title>OneColumnNoActions</short-title>
