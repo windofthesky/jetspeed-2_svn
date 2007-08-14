@@ -21,13 +21,12 @@ limitations under the License.
 <portlet:defineObjects/>
 <p><fmt:message key="hello.label.ThisIsATestLine"/></p>
 <b><portlet:namespace/><fmt:message key="hello.label.TestAtPlutoOrg"/></b>
-
-<h2><fmt:message key="hello.label.WeNeedToDoSomething"/></h2>
+<p><fmt:message key="hello.label.WeNeedToDoSomething"/></p>
 <p>
 <fmt:message key="hello.label.PortletModeIs">
    <fmt:param><%= renderRequest.getPortletMode().toString() %></fmt:param>
 </fmt:message>
 <fmt:message key="hello.label.WindowStateIs">
    <fmt:param><%= renderRequest.getWindowState().toString() %></fmt:param>
-</fmt:message> <br/>
+</fmt:message> 
 </p>
