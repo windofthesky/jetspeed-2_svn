@@ -200,7 +200,7 @@
     <repository>
       <id>org.apache</id>
       <name>Maven1 Apache</name>
-      <url>http://www.ibiblio.org/maven2</url>
+      <url>http://repo1.maven.org/maven</url>
       <layout>legacy</layout>
     </repository>
   </repositories>
@@ -227,11 +227,11 @@
   <properties>
 
     <!-- Default Build Properties -->        
-    <!--
+    
     <maven.test.skip>true</maven.test.skip>    
-    -->    
+        
     <!-- Build Dependency Version Properties -->
-    <ant.version>1.6.5</ant.version>
+    <ant.version>1.7</ant.version>
     <jmock.version>1.0.1</jmock.version>
     <junit.version>3.8.1</junit.version>
     <mockrunner.version>0.3.8</mockrunner.version>
@@ -538,6 +538,12 @@
         <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
         <version>${cglib.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>aopalliance</groupId>
@@ -616,7 +622,7 @@
         <groupId>regexp</groupId>
         <artifactId>regexp</artifactId>
         <version>${regexp.version}</version>
-      </dependency>
+      </dependency>      
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
@@ -631,6 +637,16 @@
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${commons-logging.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>logkit</groupId>
+            <artifactId>logkit</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>avalon-framework</groupId>
+            <artifactId>avalon-framework</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -682,7 +698,31 @@
         <artifactId>ehcache</artifactId>
         <version>${ehcache.version}</version>
       </dependency>
-
+      
+      <!-- defining dom4j (which is included by commons-configuration) just to be able to exclude
+           isorelax, msv and relaxngDatatype
+      -->
+      <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <optional>true</optional>
+        <version>[1.4,)</version>
+        <exclusions>
+          <exclusion>
+            <groupId>isorelax</groupId>
+            <artifactId>isorelax</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>msv</groupId>
+            <artifactId>msv</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>relaxngDatatype</groupId>
+            <artifactId>relaxngDatatype</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -992,47 +1032,6 @@
       <scope>test</scope>
     </dependency>
 
-		<!-- Transitive Dependencies forced out -->
-<!-- Commented out for now as the eclipse:eclipse adds these to the eclipse classpath :(
-     When the new m2 build evironment is working again these unneeded deps need to be tracked down and excluded from those dependencies which include them
-      		
-		<dependency>
-			<groupId>isorelax</groupId>
-			<artifactId>isorelax</artifactId>
-			<version>20020414</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>1.5.3</version>			
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>logkit</groupId>
-			<artifactId>logkit</artifactId>
-			<version>1.0.1</version>			
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>msv</groupId>
-			<artifactId>msv</artifactId>
-			<version>20020414</version>						
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>relaxngDatatype</groupId>
-			<artifactId>relaxngDatatype</artifactId>
-			<version>20020414</version>						
-			<scope>provided</scope>
-		</dependency>
-    <dependency>
-      <groupId>avalon-framework</groupId>
-      <artifactId>avalon-framework</artifactId>
-			<version>4.1.3</version>						
-      <scope>provided</scope>
-    </dependency>
--->
   </dependencies>
 
   <!-- Global Build Configuration -->
@@ -1103,6 +1102,7 @@
   <modules>
     <module>jetspeed-api</module>
     <module>jetspeed-commons</module>
+    <module>components</module>
   </modules>
   
 </project>
