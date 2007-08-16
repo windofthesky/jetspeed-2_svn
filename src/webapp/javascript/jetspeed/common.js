@@ -185,6 +185,14 @@ catch(e2){
 }
 return _1a;
 };
+if(window.djConfig!=null&&window.djConfig.isDebug){
+var ch=String.fromCharCode(160);
+jetspeed.debugindentch=ch;
+jetspeed.debugindentH=ch+ch;
+jetspeed.debugindent=ch+ch+ch+ch;
+jetspeed.debugindent2=jetspeed.debugindent+jetspeed.debugindent;
+jetspeed.debugindent3=jetspeed.debugindent+jetspeed.debugindent+jetspeed.debugindent;
+}
 jetspeed.url.LOADING_INDICATOR_ID="js-showloading";
 jetspeed.url.path={SERVER:null,JETSPEED:null,AJAX_API:null,DESKTOP:null,PORTAL:null,PORTLET:null,ACTION:null,RENDER:null,initialized:false};
 jetspeed.url.pathInitialize=function(_1c){
