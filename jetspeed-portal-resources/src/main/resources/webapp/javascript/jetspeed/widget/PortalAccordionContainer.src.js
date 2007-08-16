@@ -117,6 +117,9 @@ dojo.lang.extend( jetspeed.widget.PortalAccordionContainer,
                 currentLinkGroup.push( menuOption );
             }
         }        
+    },
+    selectChild: function(/*Widget*/ page)
+    {
     }
 });
 
