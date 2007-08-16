@@ -75,6 +75,7 @@ _e.push(_10);
 }
 }
 }
+},selectChild:function(_13){
 }});
 jetspeed.widget.PortalMenuOptionLink=function(){
 dojo.widget.HtmlWidget.call(this);
