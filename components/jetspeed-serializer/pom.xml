@@ -95,6 +95,14 @@
             <artifactId>xercesImpl</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- defining optional dependencies which are included transitively so their exclusions (defined in the root pom) are honored -->
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
     </dependencies>
 
 </project>
