@@ -1756,7 +1756,7 @@ dojo.lang.extend( jetspeed.om.Page,
                     if ( portletWindowPositionStatic && jetspeed.prefs.windowTiling )
                     {
                         var portletColumnIndex = pFrag.properties[ jetspeed.id.PORTLET_PROP_COLUMN ];
-                        if ( portletColumnIndex == null || portletColumnIndex == "" || portletColumnIndex < 0 || portletColumnIndex >= columnsInLayout.length )
+                        if ( portletColumnIndex == null || portletColumnIndex == "" || portletColumnIndex < 0 )
                         {
                             var minPortlets = -1; 
                             for ( var j = 0 ; j < columnsInLayout.length ; j++ )
@@ -1768,6 +1768,11 @@ dojo.lang.extend( jetspeed.om.Page,
                                 }
                             }
                         }
+                        else if ( portletColumnIndex >= columnsInLayout.length )
+                        {
+                            portletColumnIndex = columnsInLayout.length -1;
+                        }
+                        
                         portletsByColumn[portletColumnIndex].push( pFrag.id );
                         var portletPageColumnIndex = pageColumnStartIndex + new Number( portletColumnIndex );
                         portletPageColumnKey = portletPageColumnIndex.toString();
@@ -4892,13 +4897,18 @@ jetspeed.om.DojoDebugContentRetriever.prototype =
             if ( jetspeed.altDebugWindowContent )
                 content = jetspeed.altDebugWindowContent();
             else
-            {
                 content += '<div id="' + jetspeed.debug.debugContainerId + '"></div>';
-            }
             if ( ! contentListener )
                 contentListener = new jetspeed.om.BasicContentListener();
             contentListener.notifySuccess( content, bindArgs.url, domainModelObject ) ;
             this.initialized = true;
+            var window = jetspeed.debugWindow();
+            var clearJS = "javascript: void(document.getElementById('" + jetspeed.debug.debugContainerId + "').innerHTML='')";
+            var indent = "";
+            for ( var i = 0 ; i < 20 ; i++ )
+                indent += "&nbsp;";
+            var titleWithClearAnchor = window.title + indent + '<a href="' + clearJS + '"><span style="font-size: xx-small; font-weight: normal">Clear</span></a>';
+            window.titleBarText.innerHTML = titleWithClearAnchor;
         }
     }
 };
