@@ -1270,13 +1270,17 @@ _13a.properties[jetspeed.id.PORTLET_PROP_WINDOW_POSITION_STATIC]=_13d;
 _13a.properties[jetspeed.id.PORTLET_PROP_WINDOW_HEIGHT_TO_FIT]=_13e;
 if(_13d&&jetspeed.prefs.windowTiling){
 var _148=_13a.properties[jetspeed.id.PORTLET_PROP_COLUMN];
-if(_148==null||_148==""||_148<0||_148>=_135.length){
+if(_148==null||_148==""||_148<0){
 var _149=-1;
 for(var j=0;j<_135.length;j++){
 if(_149==-1||_138[j].length<_149){
 _149=_138[j].length;
 _148=j;
 }
+}
+}else{
+if(_148>=_135.length){
+_148=_135.length-1;
 }
 }
 _138[_148].push(_13a.id);
@@ -3717,6 +3721,14 @@ _407=new jetspeed.om.BasicContentListener();
 }
 _407.notifySuccess(_40a,_406.url,_408);
 this.initialized=true;
+var _40b=jetspeed.debugWindow();
+var _40c="javascript: void(document.getElementById('"+jetspeed.debug.debugContainerId+"').innerHTML='')";
+var _40d="";
+for(var i=0;i<20;i++){
+_40d+="&nbsp;";
+}
+var _40f=_40b.title+_40d+"<a href=\""+_40c+"\"><span style=\"font-size: xx-small; font-weight: normal\">Clear</span></a>";
+_40b.titleBarText.innerHTML=_40f;
 }
 }};
 
