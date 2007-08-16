@@ -19,10 +19,13 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.portlet.UnavailableException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -234,11 +237,28 @@ public class RenderingJobImpl implements RenderingJob
                 }
             }
             
-            this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
-            this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
-            this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
-            this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
-          //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
+            if (isParallelMode)
+            {
+                ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper) this.request).getRequest()).getRequest();
+                
+                synchronized (servletRequest)
+                {
+                    this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
+                    this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
+                    this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+                    this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
+                  //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
+                }
+            }
+            else
+            {
+                this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
+                this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
+                this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+                this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
+              //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
+            }
+            
             container.renderPortlet(this.window, this.request, this.response);               
             this.response.flushBuffer();                           
         }
@@ -354,7 +374,45 @@ public class RenderingJobImpl implements RenderingJob
         return this.dispatcher;
     }
 
-    public boolean isContentCached() {
+    public boolean isContentCached() 
+    {
         return this.contentIsCached;
+    }
+    
+    void setWorkerAttribute(String name, Object value)
+    {
+        if (this.workerAttributes == null)
+        {
+            this.workerAttributes = new HashMap();
+        }
+        
+        if (value != null)
+        {
+            this.workerAttributes.put(name, value);
+        }
+        else
+        {
+            this.workerAttributes.remove(name);
+        }
+    }
+    
+    Object getWorkerAttribute(String name)
+    {
+        Object value = null;
+        
+        if (this.workerAttributes != null)
+        {
+            value = this.workerAttributes.get(name);
+        }
+        
+        return value;
+    }
+    
+    void removeWorkerAttribute(String name)
+    {
+        if (this.workerAttributes != null)
+        {
+            this.workerAttributes.remove(name);
+        }
     }
 }
