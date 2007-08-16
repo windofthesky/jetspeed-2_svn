@@ -2142,9 +2142,21 @@ dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, beforeDragColumn, move
 	];
     for ( var i = 0 ; i < this.events.length ; i++ )
     {
-        dojo.event.connect.apply( dojo.event, this.events[i] ) ;
+        dojo.event.connect.apply( dojo.event, this.events[i] );
     }
-    this.events.push( firstMoveEvent ) ;
+    this.events.push( firstMoveEvent );
+    this.isDebug = false;  // djConfig.isDebug;
+    if ( this.isDebug )
+    {
+        this.devInit = false;
+        this.devLastX = null;
+        this.devLastY = null;
+        this.devLastTime = null;
+        this.devChgThreshold = 30;
+        this.devLrgThreshold = 200;
+        this.devChgSubsqThreshold = 10;
+        this.devTimeThreshold = 6000;
+    }
 };
 
 dojo.extend(dojo.dnd.Mover, {
@@ -2157,6 +2169,48 @@ dojo.extend(dojo.dnd.Mover, {
         var noMove = false;
         var x = m.l + e.pageX;
         var y = m.t + e.pageY;
+        var debugOn = false;
+        var debugTime = null;
+        var debugExcl = null;
+        if ( this.isDebug )
+        {
+            if ( ! this.devInit )
+            {
+                var dqCols = "";
+                if ( this.disqualifiedColumnIndexes != null )
+                    dqCols = jetspeed.debugindentH + "dqCols=[" + this.disqualifiedColumnIndexes.split( ", " ) + "]";
+                var title = this.windowOrLayoutWidget.title;
+                if ( title == null ) title = this.windowOrLayoutWidget.widgetId;
+                dojo.hostenv.println( 'DRAG "' + this.windowOrLayoutWidget.title + '"' + jetspeed.debugindentH + "m.l = " + m.l + jetspeed.debugindentH + "m.t = " + m.t + dqCols );
+                this.devInit = true;
+            }
+            debugTime = (new Date().getTime());
+            if ( this.devLastX == null || this.devLastY == null )
+            {
+                this.devLastX = x;
+                this.devLastY = y;
+            }
+            else
+            {
+                var pastLgThreshold = ( Math.abs( x - this.devLastX ) > this.devLrgThreshold ) || ( Math.abs( y - this.devLastY ) > this.devLrgThreshold );
+                if ( ! pastLgThreshold && this.devLastTime != null && ( (this.devLastTime + this.devTimeThreshold) > debugTime ) )
+                {   // too soon
+                }
+                else
+                {
+                    if ( Math.abs( x - this.devLastX ) > this.devChgThreshold )
+                    {
+                        this.devLastX = x;
+                        debugOn = true;
+                    }
+                    if ( Math.abs( y - this.devLastY ) > this.devChgThreshold )
+                    {
+                        this.devLastY = y;
+                        debugOn = true;
+                    }
+                }
+            }
+        }
 
         if ( dojo.render.html.mozilla && this.firstEvtAdjustXY != null )
         {   // initial event pageX and pageY seem to be relative to container when window is static
@@ -2172,15 +2226,13 @@ dojo.extend(dojo.dnd.Mover, {
 
         if ( this.windowPositionStatic && ! noMove )
         {
-            //if ( ! this.subsequent || this.subsequent < 5 )
-            //{ dojo.debug( "eX=" + e.pageX + " eY=" + e.pageY + " mB: " + jetspeed.printobj( this.marginBox ) + " nB: " + jetspeed.printobj( dojo.getMarginBox( this.node ) ) ); this.subsequent = ( ! this.subsequent ? 1 : this.subsequent + 1 ) ; }
             var colIndex = -1;
             var widthHalf = this.widthHalf;
             var heightHalf = this.heightHalf;
             var heightHalfMore = heightHalf + ( heightHalf * 0.20 );
             var noOfCols = jetspeed.page.columns.length;
             var candidates = [];
-            var xTest = x + widthHalf;
+            var xTest = e.pageX;
             var yTest = y + heightHalf;
             for ( var i = 0 ; i < noOfCols ; i++ )
             {
@@ -2189,11 +2241,26 @@ dojo.extend(dojo.dnd.Mover, {
                 {
                     if ( xTest >= colDims.left && xTest <= colDims.right )
                     {
-                        if ( yTest >= (colDims.top - 30) ) // && yTest <= (colDims.bottom + heightHalfMore) )
+                        if ( yTest >= (colDims.top - 30) )
                         {
                             candidates.push( i );
-                            candidates.push( Math.abs( yTest - ( colDims.top + ( ( colDims.bottom - colDims.top ) / 2 ) ) ) );
-                        }                            
+                            var lowY1 = Math.min( Math.abs( yTest - ( colDims.top ) ), Math.abs( e.pageY - ( colDims.top ) ) );
+                            var lowY2 = Math.min( Math.abs( yTest - ( colDims.yhalf ) ), Math.abs( e.pageY - ( colDims.yhalf ) ) );
+                            var lowY = Math.min( lowY1, lowY2 );
+                            candidates.push( lowY );
+                        }
+                        else if ( debugOn )
+                        {
+                            if ( debugExcl == null ) debugExcl = [];
+                            var offBy = (colDims.top - 30) - yTest;
+                            debugExcl.push( jetspeed.debugindent3 + dojo.string.padRight( String(i), 2, jetspeed.debugindentch ) + " y! " + dojo.string.padRight( String(offBy), 4, jetspeed.debugindentch ) + jetspeed.debugindentH + "t=" + colDims.top + jetspeed.debugindentH + "b=" + colDims.bottom + jetspeed.debugindentH + "l=" + colDims.left + jetspeed.debugindentH + "r=" + colDims.right );
+                        }
+                    }
+                    else if ( debugOn && xTest > colDims.width )
+                    {
+                        if ( debugExcl == null ) debugExcl = [];
+                        var offBy = xTest - colDims.width;
+                        debugExcl.push( jetspeed.debugindent3 + dojo.string.padRight( String(i), 2, jetspeed.debugindentch ) + " x! " + dojo.string.padRight( String(offBy), 4, jetspeed.debugindentch ) + jetspeed.debugindentH + "t=" + colDims.top + jetspeed.debugindentH + "b=" + colDims.bottom + jetspeed.debugindentH + "l=" + colDims.left + jetspeed.debugindentH + "r=" + colDims.right );
                     }
                 }
             }
@@ -2216,6 +2283,27 @@ dojo.extend(dojo.dnd.Mover, {
             }
 
             var col = ( colIndex >= 0 ? jetspeed.page.columns[ colIndex ] : null );
+
+            if ( debugOn )
+            {
+                //dojo.debug( "eX=" + e.pageX + " eY=" + e.pageY + " mB: " + jetspeed.printobj( this.marginBox ) + " nB: " + jetspeed.printobj( dojo.getMarginBox( this.node ) ) );
+                dojo.hostenv.println( jetspeed.debugindent + "x=" + x + jetspeed.debugindentH + "y=" + y + jetspeed.debugindentH + "col=" + colIndex + jetspeed.debugindentH + "xTest=" + xTest + jetspeed.debugindentH + "yTest=" + yTest );
+                var i = 0;
+                while ( i < candL )
+                {
+                    var colI = candidates[i];
+                    var colDims = this.columnDimensions[ colI ];
+                    dojo.hostenv.println( jetspeed.debugindent3 + dojo.string.padRight( String(colI), 2, jetspeed.debugindentch ) + " -> " + dojo.string.padRight( String(candidates[i+1]), 4, jetspeed.debugindentch ) + jetspeed.debugindentH + "t=" + colDims.top + jetspeed.debugindentH + "b=" + colDims.bottom + jetspeed.debugindentH + "l=" + colDims.left + jetspeed.debugindentH + "r=" + colDims.right );
+                    i = i + 2;
+                }
+                if ( debugExcl != null )
+                {
+                    for ( i = 0 ; i < debugExcl.length ; i++ )
+                        dojo.hostenv.println( debugExcl[i] );
+                }
+                this.devLastTime = debugTime;
+                this.devChgThreshold = this.devChgSubsqThreshold;
+            }
 
             if ( pwGhost.col != col && col != null )
             {
@@ -2321,7 +2409,11 @@ dojo.extend(dojo.dnd.Mover, {
                     {
                         var colAbsPos = dojo.html.getAbsolutePosition( col.domNode, true );
                         var marginBox = dojo.html.getMarginBox( col.domNode );
-                        this.columnDimensions[ i ] = { left: (colAbsPos.x), right: (colAbsPos.x + marginBox.width), top: (colAbsPos.y), bottom: (colAbsPos.y + marginBox.height) };
+                        var colDims = { left: (colAbsPos.x), right: (colAbsPos.x + marginBox.width), top: (colAbsPos.y), bottom: (colAbsPos.y + marginBox.height) };
+                        colDims.height = colDims.bottom - colDims.top;
+                        colDims.width = colDims.right - colDims.left;
+                        colDims.yhalf = colDims.top + ( colDims.height / 2 )
+                        this.columnDimensions[ i ] = colDims;
                     }
                 }
             }
