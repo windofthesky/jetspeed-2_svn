@@ -262,7 +262,15 @@ jetspeed.getDebugElement = function( clear )
     }
     return console ;   
 };
-
+if ( window.djConfig != null && window.djConfig.isDebug )
+{
+    var ch = String.fromCharCode(0x00a0);
+    jetspeed.debugindentch = ch;
+    jetspeed.debugindentH = ch + ch;
+    jetspeed.debugindent = ch + ch + ch + ch;
+    jetspeed.debugindent2 = jetspeed.debugindent + jetspeed.debugindent;
+    jetspeed.debugindent3 = jetspeed.debugindent + jetspeed.debugindent + jetspeed.debugindent;
+}
 
 // ... jetspeed.url
 jetspeed.url.LOADING_INDICATOR_ID = "js-showloading";
