@@ -30,6 +30,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -220,14 +221,31 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
         try
         {
-            servletRequest.setAttribute(ContainerConstants.PORTLET, portletInstance);
-            servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
-            servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
-            servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
-            servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
-            servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
-            RequestContext requestContext = (RequestContext)servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
+            RequestContext requestContext = (RequestContext) servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            
+            if (isParallelMode)
+            {
+                synchronized (servletRequest)
+                {
+                    servletRequest.setAttribute(ContainerConstants.PORTLET, portletInstance);
+                    servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
+                    servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
+                    servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
+                    servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
+                    servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
+                    servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest) servletRequest).getContextPath());
+                }
+            }
+            else
+            {
+                servletRequest.setAttribute(ContainerConstants.PORTLET, portletInstance);
+                servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
+                servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
+                servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
+                servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
+                servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
+                servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
+            }
 
             // Store same request attributes into the worker in parallel mode.
             if (isParallelMode)
