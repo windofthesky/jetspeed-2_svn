@@ -80,7 +80,11 @@ public class LdapGroupDaoImpl extends LdapPrincipalDaoImpl
         attrs.put(classes);
         attrs.put(getEntryPrefix(), principalUid);
         if(!StringUtils.isEmpty(getGroupObjectRequiredAttributeClasses()))
-        	attrs.put(getGroupObjectRequiredAttributeClasses(), "");
+        {
+        	String[] required = getGroupObjectRequiredAttributeClasses().split(",");
+        	for (int i=0; i<required.length; i++)
+        		attrs.put(required[i], "");
+        }
         for (int i=0;i<getAttributes().length;i++)
         	attrs.put(parseAttr(getAttributes()[i],principalUid)[0], parseAttr(getAttributes()[i],principalUid)[1]);
                 

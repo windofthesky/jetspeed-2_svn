@@ -79,7 +79,19 @@ public class LdapRoleDaoImpl extends LdapPrincipalDaoImpl
         attrs.put(classes);
         attrs.put(getEntryPrefix(), principalUid);
         if(!StringUtils.isEmpty(getRoleObjectRequiredAttributeClasses()))
-        	attrs.put(getRoleObjectRequiredAttributeClasses(), "");
+        {
+        	String key = getRoleObjectRequiredAttributeClasses();
+        	if ( key.indexOf(',') >= 0 )
+        	{
+        		String[] allKeys = key.split(",");
+        		for (int i=0; i<allKeys.length; i++)
+        			attrs.put( allKeys[i], "" );
+        	}
+        	else
+        	{
+        		attrs.put(getRoleObjectRequiredAttributeClasses(), "");
+        	}
+        }
         for (int i=0;i<getAttributes().length;i++)
         	attrs.put(parseAttr(getAttributes()[i],principalUid)[0], parseAttr(getAttributes()[i],principalUid)[1]);
         return attrs;
