@@ -256,7 +256,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
                 CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
                 CurrentWorkerContext.setAttribute(ContainerConstants.METHOD_ID, methodID);
                 CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());                
+                CurrentWorkerContext.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest) servletRequest).getContextPath());                
             }
 
             PortletRequestContext.createContext(portletDefinition, portletInstance, portletRequest, portletResponse);
