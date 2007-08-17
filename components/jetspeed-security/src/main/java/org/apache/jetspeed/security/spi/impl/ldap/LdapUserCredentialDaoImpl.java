@@ -177,8 +177,8 @@ public class LdapUserCredentialDaoImpl extends AbstractLdapDao implements LdapUs
     {
     	logger.debug("setPassword userDn = " + userDn);
         String rdn = getSubcontextName(userDn);
-        if (!StringUtils.isEmpty(getUserFilterBase()))
-        	rdn+="," + getUserFilterBase();
+        //if (!StringUtils.isEmpty(getUserFilterBase()))
+        //	rdn+="," + getUserFilterBase();
         logger.debug("setPassword rdn = " + rdn);
         Attributes attrs = new BasicAttributes(false);
 

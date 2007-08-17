@@ -156,8 +156,8 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         try
         {
             rdn = getSubcontextName(dn);
-            if(!StringUtils.isEmpty(getSearchDomain()))
-            	rdn+="," + getSearchDomain();
+            //if(!StringUtils.isEmpty(getSearchDomain()))
+            //	rdn+="," + getSearchDomain();
             ctx.destroySubcontext(rdn);
         }
         catch (NamingException e)

@@ -57,7 +57,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	 */
 	public String[] searchGroupMemberShipByGroup(final String userPrincipalUid, SearchControls cons) throws NamingException {
 		
-		String query = "(&(" + getGroupMembershipAttribute() + "=" + getUserDN(userPrincipalUid) + ")" + getGroupFilter()  + ")";
+		String query = "(&(" + getGroupMembershipAttribute() + "=" + userPrincipalUid + ")" + getGroupFilter()  + ")";
 		
 	    if (logger.isDebugEnabled())
 	    {
@@ -97,7 +97,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		        Iterator it = attrs.iterator();
 		        while(it.hasNext()) {
 		        	String cnfull = (String)it.next();
-		        	if(cnfull.toLowerCase().indexOf(getRoleFilterBase().toLowerCase())!=-1) {
+		        	if(cnfull.toLowerCase().indexOf(getGroupFilterBase().toLowerCase())!=-1) {
 			        	String cn = extractLdapAttr(cnfull,getRoleUidAttribute());
 			        	groupUids.add(cn);
 		        	}
@@ -153,6 +153,10 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		        	if(cnfull.toLowerCase().indexOf(getRoleFilterBase().toLowerCase())!=-1) {
 			        	String cn = extractLdapAttr(cnfull,getRoleUidAttribute());
 			        	newAttrs.add(cn);
+		        	}else{
+		        		// No conversion required (I think!)
+		        		String cn = cnfull;
+		        		newAttrs.add(cn);
 		        	}
 		        }
 		return (String[]) newAttrs.toArray(new String[newAttrs.size()]);
@@ -340,7 +344,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	throws NamingException
 	{
 	
-		String query = "(&(" + getUserRoleMembershipAttribute() + "=" + getRoleDN(rolePrincipalUid) + ")" + getUserFilter() + ")";
+		String query = "(&(" + getUserRoleMembershipAttribute() + "=" + rolePrincipalUid + ")" + getUserFilter() + ")";
 		if (logger.isDebugEnabled())
 		{
 		    logger.debug("query[" + query + "]");
