@@ -132,7 +132,8 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 
     public void doHelp( RenderRequest request, RenderResponse response ) throws PortletException, IOException
     {
-        response.setContentType("text/html");
+        RequestContext context = getRequestContext(request);
+        response.setContentType(context.getMimeType());        
         JetspeedPowerTool jpt = getJetspeedPowerTool(request);
 
         String absHelpPage = "";
