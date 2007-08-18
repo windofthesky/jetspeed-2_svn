@@ -205,7 +205,7 @@ _31.getContent();
 dojo.lang.setTimeout(this,this._doRefreshPage,10);
 },_doRefreshPage:function(){
 var _32=jetspeed.page.getPageUrl();
-_32=jetspeed.url.addQueryParameter(_32,"editPage","true",true);
+_32=jetspeed.url.addQueryParameter(_32,jetspeed.id.PG_ED_PARAM,"true",true);
 window.location.href=_32.toString();
 },editModeNormal:function(){
 var _33=dojo.render.html.ie60;
@@ -329,7 +329,7 @@ jetspeed.url.retrieveContent(_58,this,_57,jetspeed.debugContentDumpIds);
 },notifySuccess:function(_59,_5a,_5b){
 if(jetspeed.url.checkAjaxApiResponse(_5a,_59,true,"updatepage-remove-page")){
 var _5c=jetspeed.page.makePageUrl("/");
-_5c+="?"+jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER+"=true";
+_5c+="?"+jetspeed.id.PG_ED_PARAM+"=true";
 window.location.href=_5c;
 }
 },notifyFailure:function(_5d,_5e,_5f,_60){
@@ -390,7 +390,7 @@ var _70=jetspeed.page.makePageUrl(this.pagePath);
 if(!dojo.string.endsWith(_70,".psml",true)){
 _70+=".psml";
 }
-_70+="?"+jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER+"=true";
+_70+="?"+jetspeed.id.PG_ED_PARAM+"=true";
 window.location.href=_70;
 }
 },notifyFailure:function(_71,_72,_73,_74){

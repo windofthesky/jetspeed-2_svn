@@ -323,7 +323,7 @@ dojo.widget.defineWidget(
         _doRefreshPage: function()
         {
             var pageUrl = jetspeed.page.getPageUrl();
-            pageUrl = jetspeed.url.addQueryParameter( pageUrl, "editPage", "true", true );
+            pageUrl = jetspeed.url.addQueryParameter( pageUrl, jetspeed.id.PG_ED_PARAM, "true", true );
             window.location.href = pageUrl.toString();
         },
 
@@ -482,7 +482,7 @@ jetspeed.widget.RemovePageContentManager.prototype =
         if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-remove-page" ) )
         {
             var pageUrl = jetspeed.page.makePageUrl( "/" );
-            pageUrl += "?" + jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER + "=true";
+            pageUrl += "?" + jetspeed.id.PG_ED_PARAM + "=true";
             window.location.href = pageUrl;
         }
     },
@@ -560,7 +560,7 @@ jetspeed.widget.AddPageContentManager.prototype =
             var pageUrl = jetspeed.page.makePageUrl( this.pagePath );
             if ( ! dojo.string.endsWith( pageUrl, ".psml", true ) )
                 pageUrl += ".psml";
-            pageUrl += "?" + jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER + "=true";
+            pageUrl += "?" + jetspeed.id.PG_ED_PARAM + "=true";
             window.location.href = pageUrl;
         }
     },

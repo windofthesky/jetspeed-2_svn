@@ -520,7 +520,7 @@ this.windowActionButtonSync();
 }else{
 if(_4e==jetspeed.id.ACTION_NAME_REMOVEPORTLET){
 if(this.portlet){
-var _51=dojo.widget.byId(jetspeed.id.PAGE_EDITOR_WIDGET_ID);
+var _51=dojo.widget.byId(jetspeed.id.PG_ED_WID);
 if(_51!=null){
 _51.deletePortlet(this.portlet.entityId,this.title);
 }
