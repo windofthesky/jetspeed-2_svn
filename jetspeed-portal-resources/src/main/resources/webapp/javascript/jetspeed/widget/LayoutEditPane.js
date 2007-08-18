@@ -66,7 +66,7 @@ _f.getContent();
 this.pageEditorWidget.openColumnSizesEditor(this.layoutId);
 },addPortlet:function(){
 var _10=jetspeed.page.getPagePathAndQuery();
-_10=jetspeed.url.addQueryParameter(_10,"editPage","true",true);
+_10=jetspeed.url.addQueryParameter(_10,jetspeed.id.PG_ED_PARAM,"true",true);
 jetspeed.page.addPortletInitiate(this.layoutId,_10.toString());
 },addLayout:function(){
 var _11=this.getCurrentLayout();

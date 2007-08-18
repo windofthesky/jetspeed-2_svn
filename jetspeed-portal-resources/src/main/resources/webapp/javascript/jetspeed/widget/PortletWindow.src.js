@@ -790,7 +790,7 @@ dojo.lang.extend( jetspeed.widget.PortletWindow, {
         {
             if ( this.portlet )
             {
-                var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+                var pageEditorWidget = dojo.widget.byId( jetspeed.id.PG_ED_WID );
                 if ( pageEditorWidget != null )
                 {
                     pageEditorWidget.deletePortlet( this.portlet.entityId, this.title );

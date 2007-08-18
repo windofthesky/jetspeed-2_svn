@@ -113,8 +113,8 @@ jetspeed.id =
 
     MENU_WIDGET_ID_PREFIX: "jetspeed-menu-",
 
-    PAGE_EDITOR_WIDGET_ID: "jetspeed-page-editor",
-    PAGE_EDITOR_INITIATE_PARAMETER: "editPage",
+    PG_ED_WID: "jetspeed-page-editor",
+    PG_ED_PARAM: "editPage",
     PORTAL_ORIGINATE_PARAMETER: "portal",
 
     DEBUG_WINDOW_TAG: "js-dojo-debug"
@@ -841,7 +841,7 @@ jetspeed.editPageInitiate = function()
         if ( fromPortal != null && fromPortal == "true" )
             fromDesktop = false;
         jetspeed.page.editMode = true;
-        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PG_ED_WID );
         if ( dojo.render.html.ie60 )
             jetspeed.page.displayAllPortlets( true );
         if ( pageEditorWidget == null )
@@ -849,7 +849,7 @@ jetspeed.editPageInitiate = function()
             try
             {
                 jetspeed.url.loadingIndicatorShow( "loadpageeditor" );
-                pageEditorWidget = dojo.widget.createWidget( "jetspeed:PageEditor", { widgetId: jetspeed.id.PAGE_EDITOR_WIDGET_ID, editorInitiatedFromDesktop: fromDesktop } );
+                pageEditorWidget = dojo.widget.createWidget( "jetspeed:PageEditor", { widgetId: jetspeed.id.PG_ED_WID, editorInitiatedFromDesktop: fromDesktop } );
                 var allColumnsContainer = document.getElementById( jetspeed.id.COLUMNS );
                 allColumnsContainer.insertBefore( pageEditorWidget.domNode, allColumnsContainer.firstChild );
             }
@@ -871,23 +871,33 @@ jetspeed.editPageTerminate = function()
 {
     if ( jetspeed.page.editMode )
     {
-        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PG_ED_WID );
         pageEditorWidget.editModeNormal();  // in case we're in move-mode
         jetspeed.page.editMode = false;
         if ( ! pageEditorWidget.editorInitiatedFromDesktop )
         {
             var portalPageUrl = jetspeed.page.getPageUrl( true );
-            portalPageUrl = jetspeed.url.removeQueryParameter( portalPageUrl, jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER );
+            portalPageUrl = jetspeed.url.removeQueryParameter( portalPageUrl, jetspeed.id.PG_ED_PARAM );
             portalPageUrl = jetspeed.url.removeQueryParameter( portalPageUrl, jetspeed.id.PORTAL_ORIGINATE_PARAMETER );
             window.location.href = portalPageUrl;
         }
         else
         {
-            if ( pageEditorWidget != null )
-            {
-                pageEditorWidget.editPageHide();
+            var pageEditorInititate = jetspeed.url.getQueryParameter( window.location.href, jetspeed.id.PG_ED_PARAM );
+            if ( pageEditorInititate != null && pageEditorInititate == "true" )
+            {   // because of parameter, we must navigate
+                var dtPageUrl = window.location.href; // jetspeed.page.getPageUrl( false );
+                dtPageUrl = jetspeed.url.removeQueryParameter( dtPageUrl, jetspeed.id.PG_ED_PARAM );
+                window.location.href = dtPageUrl;
             }
-            jetspeed.page.syncPageControls();
+            else
+            {
+                if ( pageEditorWidget != null )
+                {
+                    pageEditorWidget.editPageHide();
+                }
+                jetspeed.page.syncPageControls();
+            }
         }
     }
 };
@@ -1208,7 +1218,7 @@ dojo.lang.extend( jetspeed.om.Page,
             this._portletsInitializeWindowState( portletsByPageColumn[ "z" ] );
 
             // detect edit mode force - likely to be temporary
-            var pageEditorInititate = jetspeed.url.getQueryParameter( window.location.href, jetspeed.id.PAGE_EDITOR_INITIATE_PARAMETER );
+            var pageEditorInititate = jetspeed.url.getQueryParameter( window.location.href, jetspeed.id.PG_ED_PARAM );
             if ( initiateEditMode || ( pageEditorInititate != null && pageEditorInititate == "true" ) || this.actions[ jetspeed.id.ACTION_NAME_VIEW ] != null )
             {
                 initiateEditMode = false;
@@ -2462,7 +2472,7 @@ dojo.lang.extend( jetspeed.om.Page,
     },
     _destroyEditPage: function()
     {
-        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PAGE_EDITOR_WIDGET_ID );
+        var pageEditorWidget = dojo.widget.byId( jetspeed.id.PG_ED_WID );
         if ( pageEditorWidget != null )
         {
             pageEditorWidget.editPageDestroy();

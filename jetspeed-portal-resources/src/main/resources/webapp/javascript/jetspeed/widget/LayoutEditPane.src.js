@@ -152,7 +152,7 @@ dojo.widget.defineWidget(
         addPortlet: function()
         {
             var jspage = jetspeed.page.getPagePathAndQuery();
-            jspage = jetspeed.url.addQueryParameter( jspage, "editPage", "true", true );
+            jspage = jetspeed.url.addQueryParameter( jspage, jetspeed.id.PG_ED_PARAM, "true", true );
             jetspeed.page.addPortletInitiate( this.layoutId, jspage.toString() );
         },
         addLayout: function()
