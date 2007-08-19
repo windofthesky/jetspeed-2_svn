@@ -74,15 +74,6 @@
             <groupId>ddlutils</groupId>
             <artifactId>ddlutils</artifactId>
         </dependency>
-        <!-- TODO Ate: these deps need to go away -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rdbms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-registry</artifactId>
-        </dependency>
         
         <!-- Runtime Dependencies -->
         <dependency>

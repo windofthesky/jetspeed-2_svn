@@ -23,11 +23,6 @@ import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.jetspeed.security.FolderPermission;
-import org.apache.jetspeed.security.FragmentPermission;
-import org.apache.jetspeed.security.PagePermission;
-import org.apache.jetspeed.security.PortalResourcePermission;
-import org.apache.jetspeed.security.PortletPermission;
 
 /**
  * Serialized Permission <permission type='folder' resource='/' actions='view,
@@ -118,31 +113,6 @@ public class JSPermission
 
 	}
 
-	public PortalResourcePermission getPermissionForType()
-	{
-		PortalResourcePermission newPermission = null; 
-		if ((this.type == null) || (this.type.equals(TYPE_UNKNOWN)))
-			return null;
-		try
-		{
-		if (type.equals(TYPE_FOLDER))
-			newPermission = new FolderPermission(this.resource,this.actions);
-		else if (type.equals(TYPE_FRAGMENT))
-			newPermission = new FragmentPermission(this.resource,this.actions);
-			else if (type.equals(TYPE_PAGE))
-				newPermission = new PagePermission(this.resource,this.actions);
-				else if (type.equals(TYPE_PORTAL))
-					newPermission = new PortletPermission(this.resource,this.actions);
-					else return null;
-			return newPermission;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-		
-	}
 	public JSPermission()
 	{
 	}

@@ -66,12 +66,10 @@
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-search</artifactId>
         </dependency>
-        <!-- TODO Ate
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-serializer</artifactId>
         </dependency>
-        -->
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
