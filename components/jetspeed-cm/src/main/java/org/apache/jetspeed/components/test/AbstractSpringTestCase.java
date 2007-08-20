@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.components.test;
 
+import java.io.File;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -84,5 +86,19 @@ public abstract class AbstractSpringTestCase extends TestCase
     protected String[] getBootConfigurations()
     {
         return null;
+    }
+    
+    /**
+     * return current project base directory delimited by path separator or empty String if
+     * basedir environment isn't defined (by maven-surefire plugin)
+    */
+    protected String getBasedir()
+    {
+        String basedir = System.getProperty("basedir");
+        if (basedir != null)
+        {
+            return basedir + File.separator;
+        }
+        return "";
     }
 }

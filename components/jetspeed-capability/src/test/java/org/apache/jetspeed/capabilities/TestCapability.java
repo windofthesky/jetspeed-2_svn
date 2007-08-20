@@ -25,7 +25,8 @@ import java.util.Set;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.serializer.JetspeedSerializer;
 
 
 /**
@@ -34,7 +35,7 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends DatasourceEnabledSpringTestCase
+public class TestCapability extends AbstractSpringTestCase
 {
     private Capabilities capabilities = null;
 
@@ -60,6 +61,19 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
     {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestCapability.class);
+    }
+
+    /**
+     * First test defined is used to setup the data(base)
+     * <b>DO NOT ADD TESTS ABOVE THIS ONE</b>
+     * 
+     */
+    public void testSetup() throws Exception
+    {
+        System.out.println("testSetup");
+        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
+        serializer.deleteData();
+        serializer.importData(getBasedir()+"target/classes/j2-seed.xml");
     }
 
     /**
@@ -517,8 +531,23 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
     
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "capabilities.xml", "transaction.xml" };
+        return new String[] 
+        { "capabilities.xml", "transaction.xml", "serializer.xml" };
     }
 
+    protected String[] getBootConfigurations()
+    {
+        return new String[]
+        { "boot/datasource.xml"};
+    }
+    /**
+     * Last test defined is used to cleanup the data(base)
+     * <b>DO NOT ADD TESTS BELOW THIS ONE</b>
+     */
+    public void testTeardown() throws Exception
+    {
+        System.out.println("testTeardown");
+        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
+        serializer.deleteData();
+    }
 }
