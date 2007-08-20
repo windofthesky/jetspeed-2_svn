@@ -22,7 +22,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
-    <maven>2.0.5</maven>
+    <maven>2.0.7</maven>
   </prerequisites>
 
   <artifactId>jetspeed-maven-plugins</artifactId>
@@ -31,25 +31,25 @@
   <parent>
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <artifactId>maven</artifactId>
-    <version>J2-M2-REDUX-SNAPSHOT</version>
+    <version>2.2-SNAPSHOT</version>
   </parent>
   <packaging>maven-plugin</packaging>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>2.0.5</version>
+      <version>2.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
-      <version>2.0.5</version>
+      <version>2.0.7</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>2.0.5</version>
+      <version>2.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>

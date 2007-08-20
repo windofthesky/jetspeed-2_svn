@@ -22,7 +22,7 @@
     
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
-        <maven>2.0.5</maven>
+        <maven>2.0.7</maven>
     </prerequisites>
     
     <artifactId>maven</artifactId>
@@ -31,7 +31,7 @@
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-2</artifactId>
-        <version>J2-M2-REDUX-SNAPSHOT</version>
+        <version>2.2-SNAPSHOT</version>
     </parent>
     <packaging>pom</packaging>
 
