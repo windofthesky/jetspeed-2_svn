@@ -1100,10 +1100,105 @@
   </build>
 
   <modules>
+    <module>maven</module>
+    <module>jetspeed-portal-resources</module>
     <module>jetspeed-api</module>
     <module>jetspeed-commons</module>
-    <module>maven</module>
     <module>components</module>    
   </modules>
+  
+  <profiles>
+    
+    <profile>
+      <id>setup</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>${pom.groupId}</groupId>
+              <artifactId>jetspeed-maven-plugins</artifactId>
+              <version>${pom.version}</version>
+              <dependencies>
+                <dependency>
+                  <groupId>${org.apache.jetspeed.production.jdbc.driver.groupId}</groupId>
+                  <artifactId>${org.apache.jetspeed.production.jdbc.driver.artifactId}</artifactId>
+                  <version>${org.apache.jetspeed.production.jdbc.driver.version}</version>
+                </dependency>
+              </dependencies>
+              <goals>
+                <goal>init-db</goal>
+              </goals>
+              <configuration>
+                <unpackResources>
+                  <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
+                  <resources>
+                    <unpack includes="ddl/${org.apache.jetspeed.production.database.default.name}/"/> 
+                  </resources>
+                </unpackResources>
+                <sqlScripts>
+                  <sqlScript>
+                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.production.database.default.name}/drop-schema.sql</path>
+                    <ignoreErrors>true</ignoreErrors>
+                  </sqlScript>
+                  <sqlScript>
+                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.production.database.default.name}/create-schema.sql</path>
+                  </sqlScript>
+                </sqlScripts>
+                <username>${org.apache.jetspeed.production.database.user}</username>
+                <password>${org.apache.jetspeed.production.database.password}</password>
+                <url>${org.apache.jetspeed.production.database.url}</url>
+                <driver>${org.apache.jetspeed.production.database.driver}</driver>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>      
+    <profile>
+      <id>test-setup</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>${pom.groupId}</groupId>
+              <artifactId>jetspeed-maven-plugins</artifactId>
+              <version>${pom.version}</version>
+              <dependencies>
+                <dependency>
+                  <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+                  <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+                  <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+                </dependency>
+              </dependencies>
+              <goals>
+                <goal>init-db</goal>
+              </goals>
+              <configuration>
+                <unpackResources>
+                  <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
+                  <resources>
+                    <unpack includes="ddl/${org.apache.jetspeed.test.database.default.name}/"/> 
+                  </resources>
+                </unpackResources>
+                <sqlScripts>
+                  <sqlScript>
+                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/drop-schema.sql</path>
+                    <ignoreErrors>true</ignoreErrors>
+                  </sqlScript>
+                  <sqlScript>
+                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/create-schema.sql</path>
+                  </sqlScript>
+                </sqlScripts>
+                <username>${org.apache.jetspeed.test.database.user}</username>
+                <password>${org.apache.jetspeed.test.database.password}</password>
+                <url>${org.apache.jetspeed.test.database.url}</url>
+                <driver>${org.apache.jetspeed.test.database.driver}</driver>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>      
+  </profiles>      
   
 </project>
