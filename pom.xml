@@ -1102,7 +1102,8 @@
   <modules>
     <module>jetspeed-api</module>
     <module>jetspeed-commons</module>
-    <module>components</module>
+    <module>maven</module>
+    <module>components</module>    
   </modules>
   
 </project>

@@ -26,7 +26,7 @@
   </prerequisites>
 
   <artifactId>jetspeed-maven-plugins</artifactId>
-  <name>Jetspeed Maven Plugins</name>
+  <name>Jetspeed 2 Maven Plugins</name>
   <description>Jetspeed Maven Plugins</description>
   <parent>
     <groupId>org.apache.portals.jetspeed-2</groupId>
