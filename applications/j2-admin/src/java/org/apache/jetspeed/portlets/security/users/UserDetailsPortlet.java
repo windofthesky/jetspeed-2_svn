@@ -1189,9 +1189,11 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 
                 // copy the entire dir tree from the template folder
-                Folder source = pageManager.getFolder(templateFolder);                
-                pageManager.deepCopyFolder(source, subsite, userName);
-                
+                if (!(templateFolder == null || templateFolder.trim().length() == 0))
+                {
+                    Folder source = pageManager.getFolder(templateFolder);                
+                    pageManager.deepCopyFolder(source, subsite, userName);
+                }               
                 // TODO: send message that site tree portlet invalidated
                 
                 String rule = actionRequest.getParameter(RULES_CONTROL);
