@@ -73,7 +73,7 @@ public class TestCapability extends AbstractSpringTestCase
         System.out.println("testSetup");
         JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
         serializer.deleteData();
-        serializer.importData(getBasedir()+"target/classes/j2-seed.xml");
+        serializer.importData(getBasedir()+"target/test-classes/j2-seed.xml");
     }
 
     /**

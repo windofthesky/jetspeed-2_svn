@@ -95,7 +95,7 @@
             <configuration>
               <skip>${maven.test.skip}</skip>
               <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
-              <targetBaseDirectory>${project.build.outputDirectory}</targetBaseDirectory>                            
+              <targetBaseDirectory>${project.build.testOutputDirectory}</targetBaseDirectory>                            
               <resources>
                 <unpack>
                   <entryset dir="webapp/WEB-INF/assembly" includes="capabilities.xml,transaction.xml"/>
