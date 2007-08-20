@@ -71,7 +71,7 @@
             <artifactId>javolution</artifactId>
         </dependency>
         <dependency>
-            <groupId>ddlutils</groupId>
+            <groupId>org.apache.ddlutils</groupId>
             <artifactId>ddlutils</artifactId>
         </dependency>
         

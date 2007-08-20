@@ -63,9 +63,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>ddlutils</groupId>
+      <groupId>org.apache.ddlutils</groupId>
       <artifactId>ddlutils</artifactId>
-      <version>1.0-RC1-PATCHED</version>
     </dependency>
   </dependencies>
   <build>
