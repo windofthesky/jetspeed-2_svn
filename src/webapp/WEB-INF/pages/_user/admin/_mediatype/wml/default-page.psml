@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="waphome"
+<page id="awaphome"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
@@ -22,12 +22,12 @@ limitations under the License.
      portlet-decorator="clear"
   />
   <title>WAP</title>
-  <fragment id="wap-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="wap-3" type="portlet" name="j2-admin::PortalLoginPortlet" />  
+  <fragment id="awap-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="awap-2" type="portlet" name="demo::HelloPortlet" />  
   </fragment>
 
   <security-constraints>
-    <security-constraints-ref>public-view</security-constraints-ref>
+    <security-constraints-ref>manager</security-constraints-ref>
   </security-constraints>
   
 </page>

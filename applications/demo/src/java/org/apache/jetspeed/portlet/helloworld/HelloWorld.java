@@ -100,7 +100,7 @@ public class HelloWorld extends GenericPortlet
         else if (contentType.startsWith("text/vnd.wap.wml"))
         {
             response.setContentType("text/vnd.wap.wml");            
-            response.getWriter().println("<br/><b>WML: "+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b>");
+            response.getWriter().println("<p><b>WML: "+resource.getString("helloworld.label.InitParamHello")+" = " + this.getInitParameter("hello") +  "</b></p>");
             PortletRequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/hello-wml.jsp");
             rd.include(request, response);                    
         }            

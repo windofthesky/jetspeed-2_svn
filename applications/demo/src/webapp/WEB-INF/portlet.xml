@@ -43,7 +43,7 @@ limitations under the License.
         </supports>
 	    <supports>
 	      <mime-type>text/vnd.wap.wml</mime-type>      
-	      <portlet-mode>view</portlet-mode>    
+	      <portlet-mode>VIEW</portlet-mode>    
 	    </supports>        
         <supported-locale>en</supported-locale>
         <supported-locale>ja</supported-locale>
