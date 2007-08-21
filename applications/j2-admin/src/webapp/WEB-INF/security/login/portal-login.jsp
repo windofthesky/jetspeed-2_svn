@@ -16,10 +16,12 @@ limitations under the License.
 --%>
 <%@page import="org.apache.jetspeed.login.LoginConstants"%>
 <%@page import="org.apache.jetspeed.request.RequestContext"%>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet"%>
 <%@taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
 <%@taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jstl/core_rt" prefix="c_rt"%>
 
+<portlet:defineObjects/>
 <fmt:setBundle basename="org.apache.jetspeed.portlets.security.resources.LoginResources" />
 <c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
 <c_rt:set var="loginDestination" value="<%=LoginConstants.DESTINATION%>"/>
@@ -37,10 +39,46 @@ limitations under the License.
   <c:set var="destAccount" value="/desktop/my-account.psml?${loginDestination}=${requestContext.request.contextPath}/desktop"/>
 </c:if>
 
+<c_rt:set var="contentType" value="<%=renderRequest.getResponseContentType()%>"/>
 <c:choose>
+<c:when test="${contentType == 'text/vnd.wap.wml'}">  
+ <c:choose>
+ <c:when test="${pageContext.request.userPrincipal != null}">
+ <p>Logged on... </p>
+ </c:when>
+ <c:otherwise> 
+ <c_rt:set var="errorCode" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.ERRORCODE)%>"/>
+ <c:choose>    
+      <c:when test="${not empty errorCode}">
+        <br>
+        <p><fmt:message key="login.label.ErrorCode.${errorCode}"/></p>
+        <br>
+      </c:when>
+      <c:otherwise>
+        <c_rt:set var="retryCount" value="<%=((RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV)).getSessionAttribute(LoginConstants.RETRYCOUNT)%>"/>
+        <c:if test="${not empty retryCount}">
+          <br>
+          <p><fmt:message key="login.label.InvalidUsernameOrPassword"><fmt:param value="${retryCount}"/></fmt:message></p>
+          <br>
+        </c:if>
+      </c:otherwise>
+    </c:choose>
+    <p>Username:  <input name="username" value='admin'/></p>
+    <p>Password:  <input name="password" value='blue'/></p>
+	<do type="accept" label="login">
+    <go href="<c:url context="${portalContextPath}" value="/portal"/>" method="post">
+	    <postfield name="org.apache.jetspeed.login.username" value="$(username)"/>
+	    <postfield name="org.apache.jetspeed.login.password" value="$(password)"/>
+	 </go>
+    </do>      
+</c:otherwise>
+</c:choose>
+</c:when>
+<c:otherwise>
+ <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
-    <a href='<c:url context="${portalContextPath}" value="${destLogout}"/>'><fmt:message key="login.label.Logout"/></a>
+    <a href='<c:url context="${portalContextPath}" value="${destAccount}"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
     <a href='<c:url context="${portalContextPath}" value="${destAccount}"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
@@ -79,4 +117,6 @@ limitations under the License.
       </table>
     </form>
   </c:otherwise>
+ </c:choose>
+</c:otherwise>
 </c:choose>

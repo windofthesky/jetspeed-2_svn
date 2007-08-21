@@ -16,11 +16,16 @@ limitations under the License.
 --%>
 <%@ page session="false"%>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
+<%@ page import="org.apache.jetspeed.request.RequestContext"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c_rt"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <fmt:setBundle basename="org.apache.jetspeed.portlet.helloworld.resources.HelloWorldResources" />
 <portlet:defineObjects/>
+<c_rt:set var="requestContext" value="<%=request.getAttribute(RequestContext.REQUEST_PORTALENV)%>"/>
+<c:set var="portalContextPath" value="${requestContext.request.contextPath}"/>
 <p><fmt:message key="hello.label.ThisIsATestLine"/></p>
-<b><portlet:namespace/><fmt:message key="hello.label.TestAtPlutoOrg"/></b>
+<p><b><portlet:namespace/><fmt:message key="hello.label.TestAtPlutoOrg"/></b></p>
 <p><fmt:message key="hello.label.WeNeedToDoSomething"/></p>
 <p>
 <fmt:message key="hello.label.PortletModeIs">
@@ -30,3 +35,6 @@ limitations under the License.
    <fmt:param><%= renderRequest.getWindowState().toString() %></fmt:param>
 </fmt:message> 
 </p>
+<do type="accept" label="logout">
+<go href="<c:url context="${portalContextPath}" value="/login/logout"/>"/>
+</do>
