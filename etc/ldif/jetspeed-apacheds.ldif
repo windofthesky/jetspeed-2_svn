@@ -1,0 +1,148 @@
+dn: o=sevenSeas
+objectClass: domain
+objectClass: extensibleObject
+objectClass: top
+o: sevenSeas
+
+dn: ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: OrgUnit2
+
+dn: ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: OrgUnit3
+
+dn: ou=People,ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: ou=People,ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: OrgUnit1
+
+dn: ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: cn=admin,ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: admin
+j2-classname: admin
+uid: admin
+uniquemember: admin
+uniquemember: joe
+
+dn: cn=user,ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: user
+j2-classname: user
+uid: user
+uniquemember: user
+uniquemember: joe
+
+dn: cn=user,ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: user
+j2-classname: user
+uid: user
+uniquemember: user
+
+dn: cn=admin,ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: admin
+givenname: Admin
+j2-role: admin
+j2-role: manager
+j2-role: user
+sn: admin
+uid: admin
+userpassword:: c2VjcmV0
+
+dn: cn=joe,ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: joe
+j2-role: cn=admin,ou=Roles,o=sevenSeas
+sn: joe
+uid: joe
+userpassword:: am9l
+
+dn: cn=admin,ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: admin
+j2-classname: admin
+uid: admin
+uniquemember: admin
+
+dn: cn=manager,ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: manager
+j2-classname: manager
+uid: manager
+uniquemember: admin
+
+dn: cn=manager,ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: manager
+j2-classname: manager
+uid: manager
+uniquemember: admin

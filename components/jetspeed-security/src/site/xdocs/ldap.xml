@@ -25,10 +25,379 @@
     </authors>
   </properties>
   <body>
-
-      <section name="LDAP Configuration">
+      <section name="Getting Started with LDAP and Jetspeed">
       <p>
-        This document attempts to document the configuration of the LDAP security module in Jetspeed. Out of the box,
+      Jetspeed supports several LDAP servers:
+      </p>
+      <ul>
+      <li><a href='http://directory.apache.org/'>Apache DS</a></li>
+      <li><a href='http://www.openldap.org/'>Open LDAP</a></li>
+      <li><a href='http://www-306.ibm.com/software/lotus/'>Domino</a></li>
+      <li><a href='http://www.sun.com/software/products/directory_srvr_ee/dir_srvr/index.xml'>Sun DS</a></li>
+      </ul>
+      <p>This getting started section only covers getting started with Apache DS</p>
+      <subsection name='Apache DS'>
+	  <p>The first step to getting started with Apache DS is to download and install it. Once it is up and running, you will need to add the Jetspeed LDAP schema
+	  to the Apache DS server configuration. The general instructions for adding a custom schema are documented here:
+	  </p>
+	  <p><a href='http://directory.apache.org/apacheds/1.0/custom-schema.html'>http://directory.apache.org/apacheds/1.0/custom-schema.html</a></p>
+	  <p>
+	  Apache DS 1.0 does not support dynamic schema updates via the LDAP protocol. 
+	  This feature will be added in the future however you can still change the schema used by Apache DS. It just requires a restart.
+	  To include addtional schemas in Apache DS, simply add the schema definitions to the Apache DS server.xml configuration file found under the <i>/conf</i> directory in the Apache DS distribution. 
+	  Find the property configuration named "bootstrapSchemas".   
+	  Since we are interested specifically in adding the Jetspeed schema, we want to add a bean definition appropriate to Jetspeed.  This looks like:	  
+	  </p>
+<source><![CDATA[
+<property name="bootstrapSchemas">
+      <set>
+        <bean class="org.apache.directory.server.core.schema.bootstrap.AutofsSchema"/>
+        <bean class="org.apache.directory.server.core.schema.bootstrap.CorbaSchema"/>
+	...
+	<bean class="org.apache.jetspeed.security.ldap.JetspeedSchema"/>
+      </set>
+</property>
+]]></source>
+<p>
+We simply added the Jetspeed schema definition at the end of the list of bean definitions. 
+The bean references a class named <i>org.apache.jetspeed.security.ldap.JetspeedSchema</i>. This class is included in a JAR file that Jetspeed provides for you.
+The JAR contains the Java-implementation of the Jetspeed schema for LDAP. You will need to download the jar file and drop it into the <i>/lib</i> directory in the Apache DS distribution.
+Download the Jetspeed 2.1.2 LDAP schema JAR file from here:
+</p>  
+<p><a href='http://people.apache.org/~taylor/LDAP/jetspeed-security-schema-2.1.3-dev.jar'>http://people.apache.org/~taylor/LDAP/jetspeed-security-schema-2.1.3-dev.jar</a></p>
+<p>After dropping in the jar file, restart the server. Apache DS should now be ready to support Jetspeed schemas.
+When the server starts up, make sure that there are no error messages printing out on the console related to this configuration</p>
+	  </subsection>
+	  <subsection name='Jetspeed Configuration'>
+	  <p>So, how do you tie Jetspeed into ApacheDS, now that ApacheDS has the required schema?  There are two major steps.  </p>
+	  <p>First, you need to modify the Spring configuration file for LDAP security in Jetspeed.</p> 
+	  <p>Second, you need to set up a working administrator account in the LDAP directory, so that you'll be able to log into Jetspeed.</p>
+	  <p>
+	  Before we begin, the LDAP code in Jetspeed was broken until recently, and therefore unusable without manual changes to the Java code (at least with Apache DS, according to our testing).  
+	  Therefore, you should make sure that you're using Jetspeed 2.1.3 or higher. 
+      (If 2.1.3 has not been release by the time you read this, you'll have to obtain the current LDAP implementation code from here:
+      </p>
+	  <p><a href='http://people.apache.org/~taylor/LDAP/jetspeed-security-2.1.3-dev.jar'>http://people.apache.org/~taylor/LDAP/jetspeed-security-2.1.3-dev.jar</a></p>
+	  <p>For the first step,you will need to download three Spring configuration files. When Jetspeed is deployed to Tomcat, 
+	  it should be placed under <i>WEB-INF/assembly/override/</i> directory. Download from here:
+	  </p>
+	  <p><a href='http://people.apache.org/~taylor/LDAP/security-spi-ldap.xml'>http://people.apache.org/~taylor/LDAP/security-spi-ldap.xml</a></p>
+	  <p><a href='http://people.apache.org/~taylor/LDAP/security-spi-ldap-atn.xml'>http://people.apache.org/~taylor/LDAP/security-spi-ldap-atn.xml</a></p>
+	  <p><a href='http://people.apache.org/~taylor/LDAP/security-spi-ldap-atz.xml'>http://people.apache.org/~taylor/LDAP/security-spi-ldap-atz.xml</a></p>
+	  <p>The <i>security-spi-ldap.xml</i> file will need to be modified. The other two do not need to be modified.</p>
+	  <p>One last step is to remove two files from the <i>WEB-INF/assembly</i> directory:</p>
+	  <table>
+	  <tr><td>cp security-spi-atn.xml alternate/</td></tr>
+	  <tr><td>cp security-spi-atz.xml alternate/</td></tr>
+	  </table>	  
+	  </subsection>
+	  <subsection name='Configuring security-spi-ldap.xml'>
+	  <p>The <i>security-spi-ldap.xml</i> configuration file for LDAP in Jetspeed is actually an XML file that configures the Jetspeed LDAP implementation.
+	   There are a total of 36 arguments (really!). While not all of these arguments may not actually be used by you, they must all be specified, 
+	   otherwise Jetspeed will fail to initialize. Here is a base assembly that you will need to modify to point to your LDAP server:
+		</p>
+<source><![CDATA[			
+<beans>
+  <!-- ************** Ldap Configuration ************** -->
+  <bean id="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig"
+      class="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig">
+      <!-- The LDAP initial context factory. -->
+      <constructor-arg index="0"><value>com.sun.jndi.ldap.LdapCtxFactory</value></constructor-arg>
+      <!-- The LDAP server name. -->
+      <constructor-arg index="1"><value>svn.bluesunrise.com</value></constructor-arg>
+      <!-- The LDAP server port. -->
+      <constructor-arg index="2"><value>10389</value></constructor-arg>
+      <!-- The LDAP server root context. -->
+      <constructor-arg index="3"><value>o=sevenSeas</value></constructor-arg>
+      <!-- The LDAP server root dn. -->
+      <constructor-arg index="4"><value>uid=admin,ou=system</value></constructor-arg>
+      <!-- The LDAP server root password. -->
+      <constructor-arg index="5"><value>secret</value></constructor-arg>
+      <!-- The roles filter. -->
+      <constructor-arg index="6"><value>(objectclass=jetspeed-2-role)</value></constructor-arg>
+      <!-- The groups filter. -->
+      <constructor-arg index="7"><value>(objectclass=jetspeed-2-group)</value></constructor-arg>
+      <!-- The user filter. -->
+      <constructor-arg index="8"><value>(objectclass=jetspeed-2-user)</value></constructor-arg>
+      <!-- The roleMembershipAttributes. -->
+      <constructor-arg index="9"><value>j2-role</value></constructor-arg>
+      <!-- The userRoleMembershipAttributes. -->
+      <constructor-arg index="10"><value>j2-role</value></constructor-arg>
+      <!-- The groupMembershipAttributes. -->
+      <constructor-arg index="11"><value>uniqueMember</value></constructor-arg>
+      <!-- The userGroupMembershipAttributes. -->
+      <constructor-arg index="12"><value>j2-group</value></constructor-arg>
+      <!-- The groupMembershipForRoleAttributes. -->
+      <constructor-arg index="13"><value>uniqueMember</value></constructor-arg>
+      <!-- The roleGroupMembershipForRoleAttributes. -->
+      <constructor-arg index="14"><value></value></constructor-arg>     
+      <!-- The defaultSearchBase. -->
+      <constructor-arg index="15"><value>o=sevenSeas</value></constructor-arg>
+      <!-- The roleFilterBase. -->
+      <constructor-arg index="16"><value>ou=Roles,ou=OrgUnit1</value></constructor-arg>
+      <!-- The groupFilterBase. -->
+      <constructor-arg index="17"><value>ou=Groups,ou=OrgUnit1</value></constructor-arg>
+      <!-- The userFilterBase. -->
+      <constructor-arg index="18"><value>ou=People,ou=OrgUnit1</value></constructor-arg>
+      <!-- The roleObjectClasses. -->
+      <constructor-arg index="19"><value>top,groupOfUniqueNames,jetspeed-2-role</value></constructor-arg>
+      <!-- The groupObjectClasses. -->
+      <constructor-arg index="20"><value>top,groupOfUniqueNames,jetspeed-2-group</value></constructor-arg>
+      <!-- The userObjectClasses. -->
+      <constructor-arg index="21"><value>top,person,organizationalPerson,inetorgperson,jetspeed-2-user</value></constructor-arg>
+      <!-- The roleIdAttribute. -->
+      <constructor-arg index="22"><value>cn</value></constructor-arg>
+      <!-- The groupIdAttribute. -->
+      <constructor-arg index="23"><value>cn</value></constructor-arg>
+	  	<!-- The userIdAttribute. -->
+      <constructor-arg index="24"><value>cn</value></constructor-arg>
+      <!-- The UidAttribute. -->
+      <constructor-arg index="25"><value>uid</value></constructor-arg>
+      <!-- The MemberShipSearchScope. -->
+      <constructor-arg index="26"><value>1</value></constructor-arg>
+      <!-- The roleUidAttribute. -->
+      <constructor-arg index="27"><value>cn</value></constructor-arg>
+      <!-- The groupUidAttribute. -->
+      <constructor-arg index="28"><value>cn</value></constructor-arg>
+	  <!-- The userUidAttribute. -->
+      <constructor-arg index="29"><value>uid</value></constructor-arg>
+	  <!-- The roleObjectRequiredAttributeClasses. -->
+      <constructor-arg index="30"><value>cn,j2-classname,uid,uniquemember</value></constructor-arg>
+	  <!-- The groupObjectRequiredAttributeClasses. -->
+      <constructor-arg index="31"><value>cn,j2-classname,uid,uniqueMember</value></constructor-arg>
+	  <!-- The userAttributes. -->
+      <constructor-arg index="32"><value>sn={u},cn={u},uid={u}</value></constructor-arg>
+	  <!-- The roleAttributes. -->
+      <constructor-arg index="33"><value></value></constructor-arg>
+	  <!-- The groupAttributes. -->
+      <constructor-arg index="34"><value></value></constructor-arg>
+	  <!-- The userPasswordAttribute. -->
+      <constructor-arg index="35"><value>userPassword</value></constructor-arg>
+	  <!-- The knownAttributes. -->
+      <constructor-arg index="36"><value>cn,sn,o,uid,ou,objectClass,userPassword,member,uniqueMember,memberOf,j2-role,j2-group</value></constructor-arg>
+  </bean>
+</beans>
+]]></source>
+		<p>Lets cover the most often used modifications. Further in the documentation on this page, we go into more detail of each parameter.
+		You will probably need to make changes in the following locations in order to make it work with your setup.  
+		I've listed them according to the constructor argument it uses in the XML file.  
+		Possible changes marked with a <b>(!)</b> will require a corresponding change to the LDIF file (explained later), 
+		so don't change them unless you understand what you're doing in both files.
+		</p>
+		<table>
+		<tr><td>1. The hostname of your LDAP server.  In our case, it was "localhost".  
+		       If your LDAP server is on the same computer that Jetspeed is running on, you'll probably want to set it to "localhost".</td></tr>
+		<tr><td>2. Our LDAP server runs on port 10389.  The default for most LDAP servers is port 389.</td></tr>
+        <tr><td>3.(!) We set the organization name as "o=sevenSeas", as was done in the ApacheDS example. 
+            If you want to use a different organization name, you can change it to anything of the form "o=yourOrganizationName".</td></tr>
+        <tr><td>15.(!) If you changed your organization name in #3, you need to make the exact same change here.</td></tr>
+		<tr><td>16.(!) We stored all Jetspeed keys in a group called "ou=OrgUnit1".  
+		    You can change the name of it to anything you want, as long as it's of the form "ou=yourOrganizationalUnit", 
+		    and your changes are reflected in #17, #18, and the LDIF file. 
+		     Within the "ou=OrgUnit1" directory, we stored all roles in a subdirectory called "ou=Roles".  
+		     Chances are you have no need to change that name as weell.</td></tr>
+		<tr><td>17.(!) As mentioned in #16, if you change the name of "ou=OrgUnit1", you need to change this value accordingly.</td></tr>
+	    <tr><td>18.(!) Same as #17.</td></tr>
+		</table>
+	    <p>The other arguments are unlikely to require changes unless the LDAP schema itself is changed.
+		Now, we need to set up at least one Jetspeed account in the LDAP directory.  And we cannot use the Jetspeed administrative portlets to do it,
+		 because we'd need to log in as an administrator to do so (and no accounts of ANY kind exist at this point). 
+		  Fortunately, we created an LDIF file that can be imported into ApacheDS and matches the above Jetspeed configuration exactly.
+       </p>
+       </subsection>
+       <subsection name='LDIF Import'>       
+       <p>
+	  LDAP Data Interchange Format (LDIF) is a standard data interchange format for representing LDAP directory content as well as directory update
+	   (Add, Modify, Delete, Rename) requests. The following text is the contents of the LDIF file for getting you started with a Jetspeed LDAP base configuration.
+	   The entries in the LDIF sample include definitions for creating the basic Jetspeed admin user and required roles to get a mimimal portal up and running.
+	  For your convenience, you can download this LDIF file from here:
+		</p>
+	  <p><a href='http://people.apache.org/~taylor/LDAP/jetspeed-apacheds.ldif'>http://people.apache.org/~taylor/LDAP/jetspeed-apacheds.ldif</a></p>
+	  <p>
+	  We recommend using <a href='http://directory.apache.org/studio/'>LDAP Studio</a> to import the Jetspeed LDIF file into the Apache DS server via File->Import
+	  </p>		
+<source><![CDATA[			
+dn: o=sevenSeas
+objectClass: domain
+objectClass: extensibleObject
+objectClass: top
+o: sevenSeas
+
+dn: ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: OrgUnit2
+
+dn: ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: OrgUnit3
+
+dn: ou=People,ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit2,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: ou=People,ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit3,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: OrgUnit1
+
+dn: ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: cn=admin,ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: admin
+j2-classname: admin
+uid: admin
+uniquemember: admin
+uniquemember: joe
+
+dn: cn=user,ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: user
+j2-classname: user
+uid: user
+uniquemember: user
+uniquemember: joe
+
+dn: cn=user,ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: user
+j2-classname: user
+uid: user
+uniquemember: user
+
+dn: cn=admin,ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: admin
+givenname: Admin
+j2-role: admin
+j2-role: manager
+j2-role: user
+sn: admin
+uid: admin
+userpassword:: c2VjcmV0
+
+dn: cn=joe,ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: joe
+j2-role: cn=admin,ou=Roles,o=sevenSeas
+sn: joe
+uid: joe
+userpassword:: am9l
+
+dn: cn=admin,ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: admin
+j2-classname: admin
+uid: admin
+uniquemember: admin
+
+dn: cn=manager,ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: manager
+j2-classname: manager
+uid: manager
+uniquemember: admin
+
+dn: cn=manager,ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: manager
+j2-classname: manager
+uid: manager
+uniquemember: admin
+]]></source>	
+<p>
+So what exactly does it produce, from a Jetspeed perspective?
+</p>
+<table>
+<tr><td>* Three roles, "cn=admin", "cn=manager", and "cn=user", all of which are required for normal operation of Jetspeed.</td></tr>
+<tr><td>* Three groups, each corresponding to one of the aforementioned roles.  They are not strictly required for normal operation of Jetspeed, but they show how groups are declared.
+  Nobody is assigned to any of these groups.</td></tr>
+<tr><td>* An administrator user, with name "admin" and password "secret".  
+ This user has both the "admin" and "manager" roles, so it has full access to Jetspeed's administrative portlets.</td></tr>
+<tr><td>* A normal user, with name "joe" and password "joe".  This account has the normal "user" role.</td></tr>
+</table>
+<p><b>WARNING:</b> If you modified any of the arguments from security-spi-ldap.xml that had a (!) next to their explanations, the above LDIF file will not work.  
+It will import into your LDAP server just fine, but Jetspeed will be unable to use it. 
+ Here's a list of the changes you'll need to make to the LDIF file, according to which argument you modified 
+ (if you didn't change it in the XML file, you don't need to change it in the LDIF file):
+</p>
+<table>
+<tr><td>3. If you changed your organization name (the default was "o=sevenSeas"), you need to change it every single time it appears in the LDIF file. 
+ A simple "find/replace" (which is supported by nearly every modern text editor) should do just fine, but if any references to 
+ "o=sevenSeas" are left over (i.e. if you miss one or two), then the LDAP server will reject the LDIF file as malformed.
+</td></tr>
+<tr><td>15. Same as #3.</td></tr>
+<tr><td>16. If you changed your organization unit (the default was "ou=OrgUnit1"), you need to change it every single time it appears in the LDIF file.
+  You can use the same "find/replace" trick as with #3.  As with #3, a mistake here will result in a malformed LDIF file.</td></tr>
+<tr><td>17. Same as #16.</td></tr>
+<tr><td>18. Same as #16.</td></tr>
+</table>
+	  </subsection>
+	  </section>	  
+      <section name="LDAP Configuration Reference">
+      <p>
+        This section is a reference with examples for the configuration of the LDAP security module in Jetspeed. Out of the box,
         Jetspeed searches for user, group &amp; role information in a relational database. However, it can also search
         this information in an LDAP directory.
       </p>
