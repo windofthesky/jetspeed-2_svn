@@ -401,114 +401,118 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             Unmarshaller unmarshaller = new Unmarshaller();
             unmarshaller.setResolver((XMLClassDescriptorResolver) classDescriptorResolver);            
             unmarshaller.setValidation(false); // results in better performance
-            document = (Document) unmarshaller.unmarshal(new SAX2EventProducer()
-                {
-                    public void setContentHandler(final ContentHandler handler)
+            
+            synchronized (xmlReader)
+            {
+                document = (Document) unmarshaller.unmarshal(new SAX2EventProducer()
                     {
-                    	xmlReader.setContentHandler(new ContentHandler()
-                            {
-                                private int menuDepth = 0;
-
-                                public void characters(char[] ch, int start, int length) throws SAXException
+                        public void setContentHandler(final ContentHandler handler)
+                        {
+                        	xmlReader.setContentHandler(new ContentHandler()
                                 {
-                                    handler.characters(ch, start, length);
-                                }
+                                    private int menuDepth = 0;
 
-                                public void endDocument() throws SAXException
-                                {
-                                    handler.endDocument();
-                                }
-
-                                public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
-                                {
-                                    handler.ignorableWhitespace(ch, start, length);
-                                }
-
-                                public void processingInstruction(String target, String data) throws SAXException
-                                {
-                                    handler.processingInstruction(target, data);
-                                }
-
-                                public void setDocumentLocator(Locator locator)
-                                {
-                                    handler.setDocumentLocator(locator);
-                                }
-
-                                public void startDocument() throws SAXException
-                                {
-                                    handler.startDocument();
-                                }
-
-								public void endElement(String uri, String localName, String qName) throws SAXException {
-                                    // always include all elements
-                                    handler.endElement(uri,localName,qName);
-                                    // track menu depth and insert menu-element nodes
-                                    // to encapsulate menu elements to support collection
-                                    // polymorphism in Castor
-                                    if (qName.equals("menu"))
+                                    public void characters(char[] ch, int start, int length) throws SAXException
                                     {
-                                        menuDepth--;
-                                        if (menuDepth > 0)
+                                        handler.characters(ch, start, length);
+                                    }
+
+                                    public void endDocument() throws SAXException
+                                    {
+                                        handler.endDocument();
+                                    }
+
+                                    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
+                                    {
+                                        handler.ignorableWhitespace(ch, start, length);
+                                    }
+
+                                    public void processingInstruction(String target, String data) throws SAXException
+                                    {
+                                        handler.processingInstruction(target, data);
+                                    }
+
+                                    public void setDocumentLocator(Locator locator)
+                                    {
+                                        handler.setDocumentLocator(locator);
+                                    }
+
+                                    public void startDocument() throws SAXException
+                                    {
+                                        handler.startDocument();
+                                    }
+
+    								public void endElement(String uri, String localName, String qName) throws SAXException {
+                                        // always include all elements
+                                        handler.endElement(uri,localName,qName);
+                                        // track menu depth and insert menu-element nodes
+                                        // to encapsulate menu elements to support collection
+                                        // polymorphism in Castor
+                                        if (qName.equals("menu"))
+                                        {
+                                            menuDepth--;
+                                            if (menuDepth > 0)
+                                            {
+                                                handler.endElement(null,null,"menu-element");
+                                            }
+                                        }
+                                        else if ((menuDepth > 0) &&
+                                                 (qName.equals("options") || qName.equals("separator") ||
+                                                		 qName.equals("include") || qName.equals("exclude")))
                                         {
                                             handler.endElement(null,null,"menu-element");
                                         }
-                                    }
-                                    else if ((menuDepth > 0) &&
-                                             (qName.equals("options") || qName.equals("separator") ||
-                                            		 qName.equals("include") || qName.equals("exclude")))
-                                    {
-                                        handler.endElement(null,null,"menu-element");
-                                    }
-								}
+    								}
 
-								public void endPrefixMapping(String prefix) throws SAXException {
-								}
+    								public void endPrefixMapping(String prefix) throws SAXException {
+    								}
 
-								public void skippedEntity(String name) throws SAXException {
-									handler.skippedEntity(name);
-								}
+    								public void skippedEntity(String name) throws SAXException {
+    									handler.skippedEntity(name);
+    								}
 
-								public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-                                    // track menu depth and insert menu-element nodes
-                                    // to encapsulate menu elements to support collection
-                                    // polymorphism in Castor
-									
-									if (qName.equals("menu"))
-                                    {
-                                        if (menuDepth > 0)
+    								public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+                                        // track menu depth and insert menu-element nodes
+                                        // to encapsulate menu elements to support collection
+                                        // polymorphism in Castor
+    									
+    									if (qName.equals("menu"))
+                                        {
+                                            if (menuDepth > 0)
+                                            {
+                                                handler.startElement(null,null,"menu-element", null);
+                                            }
+                                            menuDepth++;
+                                        }
+                                        else if ((menuDepth > 0) &&
+                                                 (qName.equals("options") || qName.equals("separator") ||
+                                                  qName.equals("include") || qName.equals("exclude")))
                                         {
                                             handler.startElement(null,null,"menu-element", null);
                                         }
-                                        menuDepth++;
-                                    }
-                                    else if ((menuDepth > 0) &&
-                                             (qName.equals("options") || qName.equals("separator") ||
-                                              qName.equals("include") || qName.equals("exclude")))
-                                    {
-                                        handler.startElement(null,null,"menu-element", null);
-                                    }
 
-                                    // always include all elements
-                                    handler.startElement(null,null, qName, atts);
-								}
+                                        // always include all elements
+                                        handler.startElement(null,null, qName, atts);
+    								}
 
-								public void startPrefixMapping(String prefix, String uri) throws SAXException {
-								}
-                            });
-                    }
-                    public void start() throws SAXException
-                    {
-                        try
-                        {
-                        	xmlReader.parse(readerInput);
+    								public void startPrefixMapping(String prefix, String uri) throws SAXException {
+    								}
+                                });
                         }
-                        catch (IOException ioe)
+                        public void start() throws SAXException
                         {
-                            throw new SAXException(ioe);
+                            try
+                            {
+                            	xmlReader.parse(readerInput);
+                            }
+                            catch (IOException ioe)
+                            {
+                                throw new SAXException(ioe);
+                            }
                         }
-                    }
-                });
-
+                    });
+            }
+            
             document.setPath(path);
             AbstractBaseElement documentImpl = (AbstractBaseElement)document;
             documentImpl.setHandlerFactory(handlerFactory);

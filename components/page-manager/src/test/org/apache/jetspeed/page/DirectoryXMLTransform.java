@@ -21,7 +21,6 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -158,7 +157,7 @@ public class DirectoryXMLTransform extends DirectoryHelper
                     
                     Transformer transformer = getXSLTForFile(child);
                     if (transformer != null){
-                        FileWriter f_out = new FileWriter(toFile);
+                        FileOutputStream f_out = new FileOutputStream(toFile);
                         try{
                             transformer.transform(new StreamSource(child), new StreamResult(f_out));
                             f_out.flush();
