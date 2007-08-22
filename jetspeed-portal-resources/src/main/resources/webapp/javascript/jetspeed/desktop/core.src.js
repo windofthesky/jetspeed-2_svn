@@ -324,15 +324,42 @@ jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
     navToPageUrl = currentPage.makePageUrl( navToPageUrl );
     if ( navToPageUrl != null )
     {
+        jetspeed.updatePageBegin();
         var currentLayoutDecorator = currentPage.layoutDecorator;
         var currentEditMode = currentPage.editMode;
         currentPage.destroy();
         var newJSPage = new jetspeed.om.Page( currentLayoutDecorator, navToPageUrl, (! djConfig.preventBackButtonFix && ! backOrForwardPressed), currentEditMode );
         jetspeed.page = newJSPage;
-        newJSPage.retrievePsml();
+        newJSPage.retrievePsml( new jetspeed.om.PageContentListenerCreateWidget( true ) );
         window.focus();   // to prevent IE from sending alt-arrow to tab container
     }
 };
+
+jetspeed.updatePageBegin = function()
+{
+    if ( dojo.render.html.ie60 )
+    {
+        document.body.attachEvent( "onclick", jetspeed.ie6StopMouseEvts );
+        document.body.setCapture();
+    }
+}
+jetspeed.ie6StopMouseEvts = function( e )
+{
+    if ( e )
+    {
+        e.cancelBubble = true;
+        e.returnValue = false;
+    }
+}
+jetspeed.updatePageEnd = function()
+{
+    if ( dojo.render.html.ie60 )
+    {
+        document.body.releaseCapture();
+        document.body.detachEvent( "onclick", jetspeed.ie6StopMouseEvts );
+        document.body.releaseCapture();
+    }
+}
 
 // ... jetspeed.doRender
 jetspeed.doRender = function( bindArgs, portletEntityId )
@@ -355,11 +382,11 @@ jetspeed.doRender = function( bindArgs, portletEntityId )
 };
 
 // ... jetspeed.doRenderAll
-jetspeed.doRenderAll = function( url, windowArray, isPageLoad )
+jetspeed.doRenderAll = function( url, windowArray, isPageLoad, isUpdatePage )
 {
     var debugMsg = jetspeed.debug.doRenderDoAction;
     var debugPageLoad = jetspeed.debug.pageLoad && isPageLoad;
-    if ( ! windowArray )
+    if ( ! windowArray || windowArray == null )
         windowArray = jetspeed.page.getPortletArray();
     var renderMsg = "";
     var suppressGetActions = true;
@@ -981,14 +1008,17 @@ jetspeed.om.PageContentListenerUpdate.prototype =
 };
 
 // ... jetspeed.om.PageContentListenerCreateWidget
-jetspeed.om.PageContentListenerCreateWidget = function()
+jetspeed.om.PageContentListenerCreateWidget = function( isUpdatePage )
 {
+    if ( typeof isUpdatePage == "undefined" )
+        isUpdatePage = false ;
+    this.isUpdatePage = isUpdatePage ;
 };
 jetspeed.om.PageContentListenerCreateWidget.prototype =
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Page */ page )
     {
-        page.loadFromPSML( data );
+        page.loadFromPSML( data, this.isUpdatePage );
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Page */ page )
     {
@@ -1152,7 +1182,7 @@ dojo.lang.extend( jetspeed.om.Page,
         jetspeed.url.retrieveContent( { url: psmlUrl, mimetype: mimetype }, pageContentListener, this, jetspeed.debugContentDumpIds );
     },
 
-    loadFromPSML: function( psml )
+    loadFromPSML: function( psml, isUpdatePage )
     {
         // parse PSML
         var parsedRootLayoutFragment = this._parsePSML( psml );
@@ -1211,7 +1241,7 @@ dojo.lang.extend( jetspeed.om.Page,
             // render portlets
             if ( windowsToRender && windowsToRender.length > 0 )
             {
-                jetspeed.doRenderAll( null, windowsToRender, true );
+                jetspeed.doRenderAll( null, windowsToRender, true, isUpdatePage );
             }
 
             // initialize portlet window state
@@ -1227,7 +1257,7 @@ dojo.lang.extend( jetspeed.om.Page,
             }
 
             // load menus
-            this.retrieveMenuDeclarations( true, initiateEditMode );
+            this.retrieveMenuDeclarations( true, initiateEditMode, isUpdatePage );
     
             // render page buttons
             this.renderPageControls();
@@ -1246,6 +1276,10 @@ dojo.lang.extend( jetspeed.om.Page,
                 portlet.renderAction( null, jetspeed.prefs.printModeOnly.action );
 
                 this._portletsInitializeWindowState( portletsByPageColumn[ "z" ] );
+            }
+            if ( isUpdatePage )
+            {
+                jetspeed.updatePageEnd() ;
             }
         }
     },
@@ -2340,9 +2374,9 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         return menuNamesArray;
     },
-    retrieveMenuDeclarations: function( includeMenuDefs, initiateEditMode )
+    retrieveMenuDeclarations: function( includeMenuDefs, initiateEditMode, isUpdatePage )
     {
-        contentListener = new jetspeed.om.MenusAjaxApiContentListener( includeMenuDefs, initiateEditMode );
+        contentListener = new jetspeed.om.MenusAjaxApiContentListener( includeMenuDefs, initiateEditMode, isUpdatePage );
 
         this.clearMenus();
 
@@ -3730,7 +3764,7 @@ jetspeed.om.PortletActionContentListener.prototype =
         {
             if ( jetspeed.debug.doRenderDoAction )
                 dojo.debug( "PortletActionContentListener calling doRenderAll=" + renderUrl );
-            jetspeed.doRenderAll( renderUrl );
+            jetspeed.doRenderAll( renderUrl, null, false, false );
         }
         else
         {
@@ -4005,10 +4039,11 @@ dojo.lang.extend( jetspeed.om.MenuAjaxApiContentListener,
 });
 
 // ... jetspeed.om.MenusAjaxApiContentListener
-jetspeed.om.MenusAjaxApiContentListener = function( /* boolean */ includeMenuDefs, /* boolean */ initiateEditMode )
+jetspeed.om.MenusAjaxApiContentListener = function( /* boolean */ includeMenuDefs, /* boolean */ initiateEditMode, /* boolean */ isUpdatePage )
 {
     this.includeMenuDefs = includeMenuDefs;
     this.initiateEditMode = initiateEditMode;
+    this.isUpdatePage = isUpdatePage ;
 };
 dojo.inherits( jetspeed.om.MenusAjaxApiContentListener, jetspeed.om.MenuAjaxApiContentListener);
 dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
@@ -4052,6 +4087,8 @@ dojo.lang.extend( jetspeed.om.MenusAjaxApiContentListener,
             jetspeed.notifyRetrieveAllMenusFinished();
         if ( this.initiateEditMode )
             jetspeed.editPageInitiate();
+        if ( this.isUpdatePage )
+            jetspeed.updatePageEnd();
     }
 });
 

@@ -1744,6 +1744,9 @@ dojo.event.connect.apply(dojo.event,this.events[i]);
 }
 };
 dojo.extend(dojo.dnd.Moveable,{onMouseDown:function(e){
+if(e&&e.button==2){
+return;
+}
 if(this.mover!=null){
 this.mover.destroy();
 }else{
