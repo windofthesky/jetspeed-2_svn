@@ -228,8 +228,13 @@
 
     <!-- Default Build Properties -->        
     
-    <maven.test.skip>true</maven.test.skip>    
-        
+    <maven.test.skip>true</maven.test.skip>
+    
+    <!-- default test jdbc driver artifact definition which is *required* to have proper default values to keep installed POMs valid -->
+    <org.apache.jetspeed.test.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
+    <org.apache.jetspeed.test.jdbc.driver.artifactId>derby</org.apache.jetspeed.test.jdbc.driver.artifactId>
+    <org.apache.jetspeed.test.jdbc.driver.version>${org.apache.derby.version}</org.apache.jetspeed.test.jdbc.driver.version>
+    
     <!-- Build Dependency Version Properties -->
     <ant.version>1.7</ant.version>
     <jmock.version>1.0.1</jmock.version>
@@ -264,7 +269,8 @@
     <commons-lang.version>2.1</commons-lang.version>
     <commons-logging.version>1.1</commons-logging.version>
     <commons-pool.version>1.3</commons-pool.version>
-    <ddlutils.version>1.0</ddlutils.version>
+    <!-- ddlutils svn r551445 with patch applied from http://issues.apache.org/jira/browse/DDLUTILS-75#action_12521579 -->
+      <ddlutils.version>r551445-patched-75</ddlutils.version>
     <directory.version>0.9.3</directory.version>
     <ehcache.version>1.2.4</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
@@ -1058,8 +1064,33 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <!-- when forked, debugging in Eclipse won't work -->
-            <forkMode>never</forkMode>
+            <disableXmlReport>true</disableXmlReport>
+            <trimStackTrace>false</trimStackTrace>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            
+            <!-- workaround for still not fixed SUREFIRE-288: Surefire tries to instantiate nested TestCase classes -->
+            <excludes>
+              <exclude>**/*$*</exclude>
+            </excludes>
+            <!-- database related tests system properties -->	
+            <systemProperties>
+              <property>
+                <name>org.apache.jetspeed.test.database.user</name>
+                <value>${org.apache.jetspeed.test.database.user}</value>
+              </property>
+              <property>
+                <name>org.apache.jetspeed.test.database.password</name>
+                <value>${org.apache.jetspeed.test.database.password}</value>
+              </property>
+              <property>
+                <name>org.apache.jetspeed.test.database.url</name>
+                <value>${org.apache.jetspeed.test.database.url}</value>
+              </property>
+              <property>
+                <name>org.apache.jetspeed.test.database.driver</name>
+                <value>${org.apache.jetspeed.test.database.driver}</value>
+              </property>
+            </systemProperties>
           </configuration>
         </plugin>
         <plugin>
@@ -1085,6 +1116,7 @@
     </plugins>        
     <resources>
       <resource>
+        <!-- default from Super POM -->
         <directory>${basedir}/src/main/resources</directory>
       </resource>
       <resource>
@@ -1094,9 +1126,22 @@
           <include>**/*.properties</include>
           <include>**/*.dtd</include>
           <include>**/*.vm</include>
+          <include>**/*.conf</include>
         </includes>
       </resource>
     </resources>    
+    <testResources>
+      <!-- default from Super POM -->
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
   </build>
 
   <modules>
@@ -1109,6 +1154,18 @@
   
   <profiles>
     
+    <profile>
+      <id>test</id>
+      <activation>
+        <property>
+          <name>maven.test.skip</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <properties>
+        <maven.test.skip>false</maven.test.skip>
+      </properties>
+    </profile>
     <profile>
       <id>setup</id>
       <build>
