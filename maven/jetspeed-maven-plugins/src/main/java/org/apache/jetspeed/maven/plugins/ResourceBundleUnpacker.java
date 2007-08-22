@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -76,7 +77,7 @@ public class ResourceBundleUnpacker
         }
     }
     
-    public static void unpackResources(File resourceBundleFile, String targetBaseDirectory, Resources[] resources, Log log) throws MojoExecutionException
+    public static void unpackResources(File resourceBundleFile, String targetBaseDirectory, Resources[] resources, Log log, boolean verbose) throws MojoExecutionException
     {
         File targetBaseDir = new File(targetBaseDirectory);
         if ( targetBaseDir.exists())
@@ -93,11 +94,14 @@ public class ResourceBundleUnpacker
         {
             zis = new ZipInputStream( new FileInputStream( resourceBundleFile ) );
             ZipEntry ze = null;
+            InputStream is = null;
+            File firstDestFile;
 
             while ( ( ze = zis.getNextEntry() ) != null )
             {
                 if (!ze.isDirectory())
                 {
+                    firstDestFile = null;
                     for ( int i = 0; i < resources.length; i++ )
                     {
                         String destFileName = resources[i].getDestFileName(ze.getName(), targetBaseDirectory);
@@ -112,7 +116,14 @@ public class ResourceBundleUnpacker
                                 }
                                 if ( destFile.lastModified() >= ze.getTime() || !resources[i].isOverwrite() )
                                 {
-                                    log.info(ze.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
+                                    if (verbose)
+                                    {
+                                        log.info(ze.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
+                                    }
+                                    else
+                                    {
+                                        log.debug(ze.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
+                                    }
                                     continue;
                                 }
                             }
@@ -125,10 +136,19 @@ public class ResourceBundleUnpacker
                             FileOutputStream fos = null;
                             try
                             {
+                                if (firstDestFile == null)
+                                {
+                                    firstDestFile = destFile;
+                                    is = zis;
+                                }
+                                else
+                                {
+                                    is = new FileInputStream(firstDestFile);
+                                }
                                 fos = new FileOutputStream( destFile );
 
                                 while ( ( length =
-                                    zis.read( buffer ) ) >= 0 )
+                                    is.read( buffer ) ) >= 0 )
                                 {
                                     fos.write( buffer, 0, length );
                                 }
@@ -138,6 +158,17 @@ public class ResourceBundleUnpacker
                             }
                             finally
                             {
+                                if (is != zis)
+                                {
+                                    try
+                                    {
+                                        is.close();
+                                    }
+                                    catch (IOException e)
+                                    {                                        
+                                    }
+                                }
+                                
                                 if ( fos != null )
                                 {
                                     try
@@ -150,7 +181,14 @@ public class ResourceBundleUnpacker
                                 }
                             }
                             destFile.setLastModified(ze.getTime());
-                            log.info(ze.getName()+" extracted to "+destFile.getAbsolutePath());
+                            if (verbose)
+                            {
+                                log.info(ze.getName()+" extracted to "+destFile.getAbsolutePath());
+                            }
+                            else
+                            {
+                                log.debug(ze.getName()+" extracted to "+destFile.getAbsolutePath());
+                            }
                         }
                     }
                 }

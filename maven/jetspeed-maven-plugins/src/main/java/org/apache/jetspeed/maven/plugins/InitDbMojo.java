@@ -217,7 +217,7 @@ public class InitDbMojo extends AbstractMojo
             {
                 unpackResources.setTargetBaseDirectory(project.getBuild().getDirectory());
             }
-            ResourceBundleUnpacker.unpackResources(file, unpackResources.getTargetBaseDirectory(), resources, getLog());
+            ResourceBundleUnpacker.unpackResources(file, unpackResources.getTargetBaseDirectory(), resources, getLog(), false);
         }
         
         if ( (sqlScripts != null && sqlScripts.length > 0) || seedConfig != null )

@@ -59,6 +59,12 @@ public class UnpackResourcesMojo extends AbstractMojo
     private boolean skip;
     
     /**
+     * When true, INFO log copied/skipped resources
+     * @parameter default-value="false"
+     */
+    private boolean verbose;
+    
+    /**
      * @parameter
      */
     private PlexusConfiguration resources;
@@ -155,6 +161,6 @@ public class UnpackResourcesMojo extends AbstractMojo
             targetBaseDirectory = project.getBuild().getDirectory();
         }
         File file = ResourceBundleUnpacker.getRemoteResourceBundle(resourceBundle, downloader, localRepository, remoteRepositories, artifactRepositoryFactory, mavenSession);
-        ResourceBundleUnpacker.unpackResources(file, targetBaseDirectory, unpackResources, getLog());
+        ResourceBundleUnpacker.unpackResources(file, targetBaseDirectory, unpackResources, getLog(), verbose);
     }
 }
