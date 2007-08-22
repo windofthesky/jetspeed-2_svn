@@ -165,4 +165,19 @@ public class MockRenderJob  implements RenderingJob
         return false;
     }
 
+    public Object getWorkerAttribute(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void removeWorkerAttribute(String name)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void setWorkerAttribute(String name, Object value)
+    {
+        // TODO Auto-generated method stub
+    }
 }

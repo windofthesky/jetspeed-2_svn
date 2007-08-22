@@ -181,7 +181,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
         Worker worker = this.getWorker();
 
         AccessControlContext context = AccessController.getContext();
-        ((RenderingJobImpl) job).setWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR, context);
+        job.setWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR, context);
         
         if (worker==null)
         {
@@ -238,7 +238,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 
                 if (job != null)
                 {
-                    AccessControlContext context = (AccessControlContext) ((RenderingJobImpl) job).getWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR);
+                    AccessControlContext context = (AccessControlContext) job.getWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR);
                     worker.setJob(job, context);
                     runningJobs--;
                     return;
