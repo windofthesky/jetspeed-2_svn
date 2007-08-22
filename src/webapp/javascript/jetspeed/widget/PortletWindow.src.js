@@ -2526,6 +2526,7 @@ dojo.extend(dojo.dnd.Moveable, {
 	onMouseDown: function(e){
 		// summary: event processor for onmousedown, creates a Mover for the node
 		// e: Event: mouse event
+        if ( e && e.button == 2 ) return ;
         if ( this.mover != null )
         {
             this.mover.destroy();
