@@ -62,5 +62,10 @@ public interface RenderingJob extends Runnable
 
     boolean isContentCached();
     
+    void setWorkerAttribute(String name, Object value);
+    
+    Object getWorkerAttribute(String name);
+    
+    void removeWorkerAttribute(String name);
 }
 

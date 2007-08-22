@@ -379,7 +379,7 @@ public class RenderingJobImpl implements RenderingJob
         return this.contentIsCached;
     }
     
-    void setWorkerAttribute(String name, Object value)
+    public void setWorkerAttribute(String name, Object value)
     {
         if (this.workerAttributes == null)
         {
@@ -396,7 +396,7 @@ public class RenderingJobImpl implements RenderingJob
         }
     }
     
-    Object getWorkerAttribute(String name)
+    public Object getWorkerAttribute(String name)
     {
         Object value = null;
         
@@ -408,7 +408,7 @@ public class RenderingJobImpl implements RenderingJob
         return value;
     }
     
-    void removeWorkerAttribute(String name)
+    public void removeWorkerAttribute(String name)
     {
         if (this.workerAttributes != null)
         {
