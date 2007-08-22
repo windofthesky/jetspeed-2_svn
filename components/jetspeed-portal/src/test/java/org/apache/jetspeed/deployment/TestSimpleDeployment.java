@@ -108,7 +108,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
     
     public void testFileSystemManagerOnDir() throws Exception
     {
-        File demoApp = new File("./test/testdata/deploy/webapp");
+        File demoApp = new File("src/test/testdata/deploy/webapp");
         assertTrue(demoApp.exists());
         
         DirectoryHelper dirHelper = new DirectoryHelper(demoApp);
@@ -361,7 +361,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
         try
         {
             super.setUp();
-            copyFrom = new File("./test/deployment/deploy");
+            copyFrom = new File("src/test/deployment/deploy");
             deploySrc = new File("./target/deployment/deploy");
             deploySrc.mkdirs();
             deployRootFile = new File("./target/deployment/templates/decorators");
@@ -370,7 +370,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
             webAppsDirFile.mkdirs();
 
             webAppsDir = webAppsDirFile.getCanonicalPath();
-            testDb = new File("./test/db/hsql/Registry").getCanonicalPath();           
+//            testDb = new File("src/test/db/hsql/Registry").getCanonicalPath();           
             
             copyDeployables();
 //            windowAccess = new PortletWindowAccessorImpl(entityAccess, true);  

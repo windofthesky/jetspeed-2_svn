@@ -74,13 +74,31 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+            <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+            <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+            <scope>test</scope>
+        </dependency>      
         <!--
-            Note: junit is normally required only for test, but 
+            Note: tyrex and junit is normally required only for test, but 
             in this case, abstract test cases are included in the
             component build... this should probably be fixed...
             for now, assume that junit will be provided if these
             test classes are used.
         -->
+        <dependency>
+            <groupId>tyrex</groupId>
+            <artifactId>tyrex</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -89,4 +107,59 @@
         
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/spi/ldap/**.java</exclude>
+                        <!-- workaround for still not fixed SUREFIRE-288: Surefire tries to instantiate nested TestCase classes -->
+                        <exclude>**/*$*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-maven-plugins</artifactId>
+                <version>${pom.version}</version>
+                <dependencies>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>unpack-test-resources</id>
+                        <goals>
+                            <goal>unpack-resources</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
+                            <targetBaseDirectory>${project.build.testOutputDirectory}</targetBaseDirectory>                            
+                            <resources>
+                                <unpack>
+                                    <entryset dir="webapp/WEB-INF/assembly" includes="prefs.xml,transaction.xml,cache.xml,security-*.xml"/>
+                                    <entryset dir="db-ojb"/>
+                                </unpack>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+    </build>
+    
 </project>

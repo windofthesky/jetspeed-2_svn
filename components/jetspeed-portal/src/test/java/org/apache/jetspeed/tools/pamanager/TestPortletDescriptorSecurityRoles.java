@@ -78,7 +78,7 @@ public class TestPortletDescriptorSecurityRoles extends AbstractRequestContextTe
     public void testSecurityRoles() throws Exception
     {
         System.out.println("Testing securityRoles");
-        File warFile = new File("./test/testdata/deploy/webapp");
+        File warFile = new File("src/test/testdata/deploy/webapp");
         PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/" );
 
         MutablePortletApplication app = paWar.createPortletApp();

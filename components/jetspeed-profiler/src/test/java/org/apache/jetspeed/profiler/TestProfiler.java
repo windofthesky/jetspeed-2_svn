@@ -42,6 +42,7 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.serializer.JetspeedSerializer;
 
 /**
  * TestProfiler
@@ -132,6 +133,18 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     };
 
     
+    /**
+     * First test defined is used to setup the data(base)
+     * <b>DO NOT ADD TESTS ABOVE THIS ONE</b>
+     * 
+     */
+    public void testSetup() throws Exception
+    {
+        System.out.println("testSetup");
+        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
+        serializer.deleteData();
+        serializer.importData("target/test-classes/j2-seed.xml");
+    }
     
     public void testUserRoleFallback() 
     throws Exception
@@ -519,7 +532,8 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     protected String[] getConfigurations()
     {
-        return new String[]{"profiler.xml", "transaction.xml"};
+        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml",
+                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-spi-atz.xml", "security-atz.xml" };
     }
 
     
@@ -708,4 +722,15 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         assertTrue("didnt find expected number of fallback rules, expected = " + EXPECTED_FALLBACK, fallbackCount == 1);
     }
     
+
+    /**
+     * Last test defined is used to cleanup the data(base)
+     * <b>DO NOT ADD TESTS BELOW THIS ONE</b>
+     */
+    public void testTeardown() throws Exception
+    {
+        System.out.println("testTeardown");
+        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
+        serializer.deleteData();
+    }
 }

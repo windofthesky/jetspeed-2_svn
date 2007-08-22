@@ -61,6 +61,74 @@
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-serializer</artifactId>
         </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+            <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+            <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+            <scope>test</scope>
+        </dependency>      
+        <!--
+            Note: tyrex and junit is normally required only for test, but 
+            in this case, abstract test cases are included in the
+            component build... this should probably be fixed...
+            for now, assume that junit will be provided if these
+            test classes are used.
+        -->
+        <dependency>
+            <groupId>tyrex</groupId>
+            <artifactId>tyrex</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-maven-plugins</artifactId>
+                <version>${pom.version}</version>
+                <dependencies>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>unpack-test-resources</id>
+                        <goals>
+                            <goal>unpack-resources</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
+                            <targetBaseDirectory>${project.build.testOutputDirectory}</targetBaseDirectory>                            
+                            <resources>
+                                <unpack>
+                                    <entryset dir="webapp/WEB-INF/assembly" includes="profiler.xml,transaction.xml,security-*.xml"/>
+                                    <entryset dir="db-ojb"/>
+                                    <entryset dir="seed/min" includes="j2-seed.xml"/>
+                                </unpack>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    </build>
 </project>

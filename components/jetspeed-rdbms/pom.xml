@@ -62,6 +62,17 @@
       <groupId>ojb</groupId>
       <artifactId>db-ojb</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+      <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+      <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+      <scope>test</scope>
+    </dependency>      
     <!--
       Note: tyrex and junit are normally required only for test, but 
       in this case, abstract test cases are included in the component

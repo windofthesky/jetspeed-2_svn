@@ -63,7 +63,7 @@ public class TestCastorFileSystemDocumentHandler extends TestCase
             "/JETSPEED-INF/castor/page-mapping.xml",
             "folder.metadata",
             FolderMetaDataImpl.class,
-            "testdata/pages",
+            "src/test/testdata/pages",
             new FileCache());
             
         Map handlerMap = new HashMap();

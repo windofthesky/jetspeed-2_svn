@@ -163,7 +163,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                     String userName = (String)_it.next();
                     if ( !anonymousUser.equals(userName) )
                     {
-                        userManager.removeUser((String)_it.next());
+                        userManager.removeUser((String)userName);
                     }
                 }
                 

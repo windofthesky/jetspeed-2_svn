@@ -165,7 +165,7 @@ public class TestNekoRewriter extends TestCase
         Class[] rewriterClasses = new Class[]{ RulesetRewriterImpl.class, RulesetRewriterImpl.class};
         
         Class[] adaptorClasses = new Class[]{ NekoParserAdaptor.class, SaxParserAdaptor.class};
-        return new JetspeedRewriterController("test/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays.asList(rewriterClasses), Arrays.asList(adaptorClasses));
+        return new JetspeedRewriterController("src/test/webapp/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays.asList(rewriterClasses), Arrays.asList(adaptorClasses));
     }
 
     /*
@@ -188,7 +188,7 @@ public class TestNekoRewriter extends TestCase
      */
     private FileReader getTestReader(String filename) throws IOException
     {
-        return new FileReader("test/rewriter/" + filename);
+        return new FileReader("src/test/rewriter/" + filename);
     }
 
     /**

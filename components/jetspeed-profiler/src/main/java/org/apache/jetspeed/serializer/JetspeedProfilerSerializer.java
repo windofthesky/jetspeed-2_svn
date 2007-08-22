@@ -32,8 +32,10 @@ import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.security.BasePrincipal;
+import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
 import org.apache.jetspeed.serializer.objects.JSProfilingRule;
@@ -85,11 +87,12 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
 
             try
             {
+                String anonymousUser = userManager.getAnonymousUser();
                 Iterator _itUsers = userManager.getUsers("");
                 while (_itUsers.hasNext())
                 {
-                    JSUser _user = (JSUser) _itUsers.next();
-                    Principal principal = _user.getPrincipal();
+                    User _user = (User) _itUsers.next();                    
+                    Principal principal = SecurityHelper.getPrincipal(_user.getSubject(), UserPrincipal.class);
                     if (principal != null)
                     {
                         Collection col = pm.getRulesForPrincipal(principal);

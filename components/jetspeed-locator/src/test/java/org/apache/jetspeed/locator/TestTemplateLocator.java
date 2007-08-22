@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.locator;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import junit.framework.Test;
@@ -125,7 +126,7 @@ public class TestTemplateLocator extends TestCase
     protected void setUp() throws Exception
     {
         ArrayList roots = new ArrayList(1);
-        roots.add("./testdata/templates");
+        roots.add("target/test-classes/templates");
         ArrayList classes = new ArrayList(2);
         classes.add(JetspeedTemplateDescriptor.class);
         classes.add(JetspeedLocatorDescriptor.class);

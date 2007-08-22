@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+	<bean id="serializer" class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
+	  <constructor-arg index="0">
+	    <list>
+	    	<bean class="org.apache.jetspeed.serializer.JetspeedSecuritySerializer">
+	    		<constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager"/>
+	    		<constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager"/>
+	    		<constructor-arg index="2" ref="org.apache.jetspeed.security.UserManager"/>
+	    		<constructor-arg index="3" ref="org.apache.jetspeed.security.spi.PasswordCredentialProvider"/>
+	    		<constructor-arg index="4" ref="org.apache.jetspeed.security.PermissionManager"/>
+	    	</bean>
+	    	<bean class="org.apache.jetspeed.serializer.JetspeedProfilerSerializer">
+	      	<constructor-arg index="0" ref="org.apache.jetspeed.profiler.Profiler"/>
+	      	<constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager"/>
+	      </bean>
+	    </list>
+	  </constructor-arg>
+	  <constructor-arg index="1">
+	    <map>
+	    	<entry key="process_users"><value type="java.lang.Boolean">true</value></entry>
+	    	<entry key="process_profiler"><value type="java.lang.Boolean">true</value></entry>
+	    </map>
+	  </constructor-arg>
+	</bean>
+	
+</beans>

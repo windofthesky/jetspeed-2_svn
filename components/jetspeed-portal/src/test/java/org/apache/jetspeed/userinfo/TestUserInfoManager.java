@@ -96,7 +96,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 
     private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("test/testdata/deploy/portlet.xml"), "unit-test");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("src/test/testdata/deploy/portlet.xml"), "unit-test");
         portletApp = pad.createPortletApplication();
         assertNotNull("App is null", portletApp);
 
@@ -130,7 +130,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
 
         // With linked attributes
-        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader("test/testdata/deploy/jetspeed-portlet.xml"), portletApp);
+        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader("src/test/testdata/deploy/jetspeed-portlet.xml"), portletApp);
         extMetaData.load();
 
         // persist the app

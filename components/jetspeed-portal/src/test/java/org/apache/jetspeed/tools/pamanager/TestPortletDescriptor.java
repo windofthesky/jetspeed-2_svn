@@ -94,7 +94,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
     public void testLoadPortletApplicationTree() throws Exception
     {
         System.out.println("Testing loadPortletApplicationTree");
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("src/test/testdata/deploy/portlet.xml"), "unit-test");
         MutablePortletApplication app = pad.createPortletApplication();
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
@@ -303,7 +303,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
           
         }
 
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet2.xml"), "HW_App");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("src/test/testdata/deploy/portlet2.xml"), "HW_App");
         app = pad.createPortletApplication();
 
         app.setName("HW_App");
@@ -347,7 +347,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
 
     public void testInfusingWebXML() throws Exception
     {
-        File warFile = new File("./test/testdata/deploy/webapp");
+        File warFile = new File("src/test/testdata/deploy/webapp");
         PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/" );
 
         SAXBuilder builder = new SAXBuilder(false);
@@ -369,7 +369,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
             }
         });
 
-        FileReader srcReader = new FileReader("./test/testdata/deploy/webapp/WEB-INF/web.xml");
+        FileReader srcReader = new FileReader("src/test/testdata/deploy/webapp/WEB-INF/web.xml");
         FileReader targetReader = null;
         Document  doc = builder.build(srcReader);
 

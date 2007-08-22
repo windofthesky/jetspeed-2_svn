@@ -346,7 +346,7 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "statistics.xml", "transaction.xml", "boot/datasource.xml"};
+        { "statistics.xml", "transaction.xml"};
     }
 
     protected String[] getBootConfigurations()

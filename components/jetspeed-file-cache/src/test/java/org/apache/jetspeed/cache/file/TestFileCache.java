@@ -40,7 +40,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class TestFileCache extends TestCase implements FileCacheEventListener
 {    
-    protected static final String TEST_DIRECTORY = "./testdata";
+    protected static final String TEST_DIRECTORY = "target/test-classes";
     protected static final int CACHE_SIZE = 20;
     protected static final int SCAN_RATE = 10;
     String refreshedEntry = null;
@@ -228,7 +228,6 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
             System.out.println(entry.getFile().getName());
         }
     }
-            
 }
 
 

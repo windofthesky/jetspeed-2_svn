@@ -97,7 +97,7 @@ interface PageManagerTestShared
             throws Exception
         {
             Map extensionsToXslt = new HashMap();
-            extensionsToXslt.put("psml","resources/stripIds.xslt");
+            extensionsToXslt.put("psml","src/main/resources/stripIds.xslt");
                 
             File pagesDirFile = new File("target/testdata/" + pagesDirName);
             
@@ -110,12 +110,12 @@ interface PageManagerTestShared
                         return !pathname.getName().equals("CVS") && !pathname.getName().equals(".svn") && !pathname.getName().endsWith("~");
                     }
                 };
-            dirHelper.copyFrom(new File("testdata/" + pagesDirName), noCVSorSVNorBackups);
+            dirHelper.copyFrom(new File("src/test/testdata/" + pagesDirName), noCVSorSVNorBackups);
             
             // copy documents under webapp/pages folder and strip fragment Ids
             File webappDestDirFile = new File("target/testdata/" + pagesDirName+"/webapp-no-ids");
             dirHelper.setBaseDirectory(webappDestDirFile);
-            File webappPagesDirFile = new File("../../src/webapp/WEB-INF/pages");
+            File webappPagesDirFile = new File("target/webapp/WEB-INF/pages");
             dirHelper.copyFromAndTransform(webappPagesDirFile, noCVSorSVNorBackups);
 
             // copy documents under webapp/pages folder without transforming them

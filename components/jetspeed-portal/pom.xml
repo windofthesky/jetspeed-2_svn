@@ -183,6 +183,22 @@
             <artifactId>mockrunner</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+            <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+            <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+            <scope>test</scope>
+        </dependency>      
+        <dependency>
+            <groupId>tyrex</groupId>
+            <artifactId>tyrex</artifactId>
+            <scope>provided</scope>
+        </dependency>
         
         <!-- Runtime Dependencies -->
         <dependency>
@@ -205,4 +221,63 @@
                      
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- some tests require forking -->
+                    <forkMode>always</forkMode>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                        <exclude>**/TestAggregator.java</exclude>
+                        <exclude>**/Abstract*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-maven-plugins</artifactId>
+                <version>${pom.version}</version>
+                <dependencies>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>unpack-test-resources</id>
+                        <goals>
+                            <goal>unpack-resources</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
+                            <targetBaseDirectory>${project.build.testOutputDirectory}</targetBaseDirectory>                            
+                            <resources>
+                                <unpack>
+                                    <entryset dir="webapp/WEB-INF/assembly"/>
+                                    <entryset dir="db-ojb"/>
+                                </unpack>
+                                <unpack dest="webapp">
+                                    <entryset dir="webapp"/>
+                                </unpack>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+    </build>
 </project>

@@ -69,14 +69,6 @@
     </dependency>      
   </dependencies>
   
-  <properties>
-    <!-- Enable unit test again
-      Weirdly enough, defining -Dmaven.test.skip=true on the commandline doesn't work
-      with maven.test.skip=true defined in the root pom ??? 
-    -->
-    <maven.test.skip>false</maven.test.skip>    
-  </properties>
-  
     <build>
     <plugins>
       <plugin>

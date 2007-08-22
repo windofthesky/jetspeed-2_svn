@@ -85,8 +85,8 @@ public class TestConstraintsAction extends TestCase
         String[] bootConfigs = null;
         String[] appConfigs =
         { //"src/webapp/WEB-INF/assembly/layout-api.xml",
-                "src/test/resources/assembly/test-layout-constraints-api.xml",
-                "src/test/resources/assembly/page-manager.xml"};
+                "src/test/assembly/test-layout-constraints-api.xml",
+                "src/test/assembly/page-manager.xml"};
         
                 
         cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+  <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer"/> 
+  
+  <bean id="PlatformConfigurator" class="org.apache.jetspeed.components.rdbms.ojb.DatabasePlatformConfigurator" init-method="init">
+    <constructor-arg index='0'>
+      <ref bean="JetspeedDS"/>
+    </constructor-arg>         
+    <!-- JNDI Name -->
+    <constructor-arg index='1'>
+      <value>JetspeedDS</value>
+    </constructor-arg>                  
+  </bean>
+  
+  <bean id="JetspeedDS" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName"><value>${org.apache.jetspeed.test.database.driver}</value></property>
+    <property name="url"><value>${org.apache.jetspeed.test.database.url}</value></property>
+    <property name="username"><value>${org.apache.jetspeed.test.database.user}</value></property>
+    <property name="password"><value>${org.apache.jetspeed.test.database.password}</value></property>
+  </bean>    
+  
+</beans>

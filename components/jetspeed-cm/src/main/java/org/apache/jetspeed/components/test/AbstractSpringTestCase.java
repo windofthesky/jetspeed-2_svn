@@ -87,18 +87,4 @@ public abstract class AbstractSpringTestCase extends TestCase
     {
         return null;
     }
-    
-    /**
-     * return current project base directory delimited by path separator or empty String if
-     * basedir environment isn't defined (by maven-surefire plugin)
-    */
-    protected String getBasedir()
-    {
-        String basedir = System.getProperty("basedir");
-        if (basedir != null)
-        {
-            return basedir + File.separator;
-        }
-        return "";
-    }
 }

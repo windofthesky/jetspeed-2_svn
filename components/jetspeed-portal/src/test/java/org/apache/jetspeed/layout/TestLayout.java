@@ -65,7 +65,7 @@ public class TestLayout extends TestCase
         String[] bootConfigs = null;
         String[] appConfigs =
         { //"src/webapp/WEB-INF/assembly/layout-api.xml",
-                "src/test/resources/assembly/test-layout-api.xml"};
+                "src/test/assembly/test-layout-api.xml"};
         
                 
         cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");
