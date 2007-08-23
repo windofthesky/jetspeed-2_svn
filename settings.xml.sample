@@ -32,6 +32,13 @@ defined or extended with these settings to perform a complete J2 build and
 deployment. -->
 <settings xmlns="http://maven.apache.org/POM/4.0.0">
 
+	<!-- custom plugin resolution groups -->
+
+    <pluginGroups>
+      <pluginGroup>org.apache.portals.jetspeed-2</pluginGroup>
+    </pluginGroups>
+
+
     <!-- Local Repository Location -->
 
     <!--

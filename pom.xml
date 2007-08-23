@@ -1144,16 +1144,77 @@
     </testResources>
   </build>
 
-  <modules>
-    <module>maven</module>
-    <module>jetspeed-portal-resources</module>
-    <module>jetspeed-api</module>
-    <module>jetspeed-commons</module>
-    <module>components</module>    
-  </modules>
-  
   <profiles>
-    
+    <profile>
+      <id>all</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>maven</module>
+        <module>jetspeed-portal-resources</module>
+        <module>jetspeed-api</module>
+        <module>jetspeed-commons</module>
+        <module>components</module>    
+      </modules>
+    </profile>
+    <profile>
+      <id>init</id>
+      <modules>
+        <module>maven</module>
+        <module>jetspeed-portal-resources</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>init-db</id>
+      <build>
+        <plugins>
+          <plugin>
+            <inherited>false</inherited>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-maven-plugins</artifactId>
+            <version>${pom.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+                <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+                <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+              </dependency>
+            </dependencies>
+            <executions>
+              <execution>
+                <id>pom-init-db</id>
+                <phase>test-compile</phase>
+                <goals>
+                  <goal>init-db</goal>
+                </goals>
+                <configuration>
+                  <unpackResources>
+                    <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
+                    <resources>
+                      <unpack includes="ddl/${org.apache.jetspeed.test.database.default.name}/"/> 
+                    </resources>
+                  </unpackResources>
+                  <sqlScripts>
+                    <sqlScript>
+                      <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/drop-schema.sql</path>
+                      <ignoreErrors>true</ignoreErrors>
+                    </sqlScript>
+                    <sqlScript>
+                      <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/create-schema.sql</path>
+                    </sqlScript>
+                  </sqlScripts>
+                  <username>${org.apache.jetspeed.test.database.user}</username>
+                  <password>${org.apache.jetspeed.test.database.password}</password>
+                  <url>${org.apache.jetspeed.test.database.url}</url>
+                  <driver>${org.apache.jetspeed.test.database.driver}</driver>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>test</id>
       <activation>
@@ -1165,9 +1226,16 @@
       <properties>
         <maven.test.skip>false</maven.test.skip>
       </properties>
+      <modules>
+        <module>maven</module>
+        <module>jetspeed-portal-resources</module>
+        <module>jetspeed-api</module>
+        <module>jetspeed-commons</module>
+        <module>components</module>    
+      </modules>
     </profile>
     <profile>
-      <id>setup</id>
+      <id>prod-db</id>
       <build>
         <pluginManagement>
           <plugins>
@@ -1212,7 +1280,7 @@
       </build>
     </profile>      
     <profile>
-      <id>test-setup</id>
+      <id>test-db</id>
       <build>
         <pluginManagement>
           <plugins>
@@ -1227,9 +1295,13 @@
                   <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
                 </dependency>
               </dependencies>
-              <goals>
-                <goal>init-db</goal>
-              </goals>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>init-db</goal>
+                  </goals>
+                </execution>
+              </executions>
               <configuration>
                 <unpackResources>
                   <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
