@@ -95,9 +95,9 @@ deployment. -->
                 <org.apache.jetspeed.test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</org.apache.jetspeed.test.database.driver>
                 <org.apache.jetspeed.test.database.user></org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>derby</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>10.2.1.6</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>derby</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>10.2.1.6</org.apache.jetspeed.production.jdbc.driver.version>
                 <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/derby-10.2.1.6.jar</org.apache.jetspeed.production.jdbc.drivers.path>
                 <org.apache.jetspeed.production.database.default.name>derby</org.apache.jetspeed.production.database.default.name>
                 <org.apache.jetspeed.production.database.url>jdbc:derby:/tmp/j2;create=true</org.apache.jetspeed.production.database.url>
@@ -127,9 +127,9 @@ deployment. -->
                 <org.apache.jetspeed.test.database.driver>org.apache.derby.jdbc.ClientDriver</org.apache.jetspeed.test.database.driver>
                 <org.apache.jetspeed.test.database.user>SETUSERNAME</org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>derbyclient</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>10.2.1.6</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>derbyclient</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>10.2.1.6</org.apache.jetspeed.production.jdbc.driver.version>
                 <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/derbyclient-10.2.1.6.jar</org.apache.jetspeed.production.jdbc.drivers.path>
                 <org.apache.jetspeed.production.database.default.name>derby</org.apache.jetspeed.production.database.default.name>
                 <org.apache.jetspeed.production.database.url>jdbc:derby://localhost/j2;create=true</org.apache.jetspeed.production.database.url>
@@ -159,9 +159,9 @@ deployment. -->
                 <org.apache.jetspeed.test.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.test.database.driver>
                 <org.apache.jetspeed.test.database.user>root</org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>mysql</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>mysql-connector-java</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>5.0.4-bin</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>mysql</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>mysql-connector-java</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>5.0.4-bin</org.apache.jetspeed.production.jdbc.driver.version>
                 <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/mysql-connector-java-5.0.4-bin.jar</org.apache.jetspeed.production.jdbc.drivers.path>
                 <org.apache.jetspeed.production.database.default.name>mysql</org.apache.jetspeed.production.database.default.name>
                 <org.apache.jetspeed.production.database.url>jdbc:mysql://localhost/j2</org.apache.jetspeed.production.database.url>
@@ -191,9 +191,9 @@ deployment. -->
                 <org.apache.jetspeed.test.database.driver>net.sourceforge.jtds.jdbc.Driver</org.apache.jetspeed.test.database.driver>
                 <org.apache.jetspeed.test.database.user>sa</org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password>sa</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>jtds</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>jtds</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>1.2</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>jtds</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>jtds</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>1.2</org.apache.jetspeed.production.jdbc.driver.version>
                 <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/jtds-1.2.jar</org.apache.jetspeed.production.jdbc.drivers.path>
                 <org.apache.jetspeed.production.database.default.name>mssql</org.apache.jetspeed.production.database.default.name>
                 <org.apache.jetspeed.production.database.url>jdbc:jtds:sqlserver://localhost:1433/j2</org.apache.jetspeed.production.database.url>
@@ -223,9 +223,9 @@ deployment. -->
                 <org.apache.jetspeed.test.database.driver>org.hsqldb.jdbcDriver</org.apache.jetspeed.test.database.driver>
                 <org.apache.jetspeed.test.database.user>sa</org.apache.jetspeed.test.database.user>
                 <org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>hsqldb</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>hsqldb</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>1.8.0.7</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>hsqldb</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>hsqldb</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>1.8.0.7</org.apache.jetspeed.production.jdbc.driver.version>
                 <org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/hsqldb-1.8.0.7.jar</org.apache.jetspeed.production.jdbc.drivers.path>
                 <org.apache.jetspeed.production.database.default.name>hsql</org.apache.jetspeed.production.database.default.name>
                 <org.apache.jetspeed.production.database.url>jdbc:hsqldb:file:/tmp/j2;shutdown=true</org.apache.jetspeed.production.database.url>
@@ -255,9 +255,9 @@ deployment. -->
 				<org.apache.jetspeed.test.database.driver>oracle.jdbc.driver.OracleDriver</org.apache.jetspeed.test.database.driver>
 				<org.apache.jetspeed.test.database.user>SETUSERNAME</org.apache.jetspeed.test.database.user>
 				<org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>SETGROUPID</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>SETARTIFACTID</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>SETVERSION</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>SETGROUPID</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>SETARTIFACTID</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>SETVERSION</org.apache.jetspeed.production.jdbc.driver.version>
 				<org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/ojdbc14.jar</org.apache.jetspeed.production.jdbc.drivers.path>
 				<org.apache.jetspeed.production.database.default.name>oracle</org.apache.jetspeed.production.database.default.name>
 				<org.apache.jetspeed.production.database.url>jdbc:oracle:thin:@localhost:1521:SETINSTANCE</org.apache.jetspeed.production.database.url>
@@ -286,9 +286,9 @@ deployment. -->
 				<org.apache.jetspeed.test.database.driver>org.postgresql.Driver</org.apache.jetspeed.test.database.driver>
 				<org.apache.jetspeed.test.database.user>SETUSERNAME</org.apache.jetspeed.test.database.user>
 				<org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>postgresql</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>postgresql</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>8.1-404.jdbc3</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>postgresql</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>postgresql</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>8.1-404.jdbc3</org.apache.jetspeed.production.jdbc.driver.version>
 				<org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/postgresql-8.1-404.jdbc3.jar</org.apache.jetspeed.production.jdbc.drivers.path>
 				<org.apache.jetspeed.production.database.default.name>postgres</org.apache.jetspeed.production.database.default.name>
 				<org.apache.jetspeed.production.database.url>jdbc:postgresql://localhost/SETDATABASENAME</org.apache.jetspeed.production.database.url>
@@ -318,9 +318,9 @@ deployment. -->
 				<org.apache.jetspeed.test.database.driver>com.ibm.db2.jcc.DB2Driver</org.apache.jetspeed.test.database.driver>
 				<org.apache.jetspeed.test.database.user>SETUSERNAME</org.apache.jetspeed.test.database.user>
 				<org.apache.jetspeed.test.database.password>SETPASSWORD</org.apache.jetspeed.test.database.password>
-				<org.apache.jetspeed.production.jdbc.driver.groupId>SETGROUPID</org.apache.jetspeed.test.jdbc.driver.groupId>
-				<org.apache.jetspeed.production.jdbc.driver.artifactId>SETARTIFACTID</org.apache.jetspeed.test.jdbc.driver.artifactId>
-				<org.apache.jetspeed.production.jdbc.driver.version>SETVERSION</org.apache.jetspeed.test.jdbc.driver.version>
+				<org.apache.jetspeed.production.jdbc.driver.groupId>SETGROUPID</org.apache.jetspeed.production.jdbc.driver.groupId>
+				<org.apache.jetspeed.production.jdbc.driver.artifactId>SETARTIFACTID</org.apache.jetspeed.production.jdbc.driver.artifactId>
+				<org.apache.jetspeed.production.jdbc.driver.version>SETVERSION</org.apache.jetspeed.production.jdbc.driver.version>
 				<org.apache.jetspeed.production.jdbc.drivers.path>${org.apache.jetspeed.server.home}/shared/lib/db2jcc.jar,${org.apache.jetspeed.server.home}/shared/lib/db2jcc_license_cu.jar</org.apache.jetspeed.production.jdbc.drivers.path>
 				<org.apache.jetspeed.production.database.default.name>db2</org.apache.jetspeed.production.database.default.name>
 				<org.apache.jetspeed.production.database.url>jdbc:db2://192.168.2.100:50000/SETINSTANCE</org.apache.jetspeed.production.database.url>
