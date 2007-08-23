@@ -70,7 +70,7 @@ public class StandardNavigationsMenuDefinition extends StandardMenuDefinitionImp
      *
      * @return element list
      */
-    public List getMenuElements()
+    public synchronized List getMenuElements()
     {
         // instantiate menu elements if necessary
         if (menuElements == null)

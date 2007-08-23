@@ -159,7 +159,6 @@ public class NodeSetImpl implements NodeSet
         if (subset == null)
         {
             subset = new NodeSetImpl(resolveToPath, comparator);
-            subsets.put(type, subset);
 
             Iterator nodeItr = nodes.values().iterator();
             while (nodeItr.hasNext())
@@ -169,6 +168,11 @@ public class NodeSetImpl implements NodeSet
                 {
                     subset.add(node);
                 }
+            }
+            
+            synchronized (subsets)
+            {
+                subsets.put(type, subset);
             }
         }
 

@@ -189,8 +189,15 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         if (!isRoot)
             return;
         
+        int parallelJobCount = parallelJobs.size();
+        int sequentialJobCount = sequentialJobs.size();
         
-        CurrentWorkerContext.setCurrentWorkerContextUsed(parallelJobs.size() > 0 && sequentialJobs.size() > 0);
+        if (log.isInfoEnabled())
+        {
+            log.info("Aggregating " + page.getPath() + ". Parallel: " + parallelJobCount + ", Sequential: " + sequentialJobCount);
+        }
+        
+        CurrentWorkerContext.setCurrentWorkerContextUsed(parallelJobCount > 0 && sequentialJobCount > 0);
 
         // kick off the parallel rendering jobs
         Iterator iter = parallelJobs.iterator();
