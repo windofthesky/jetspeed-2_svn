@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Collections;
 
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.impl.GenericMetadataImpl;
@@ -86,7 +87,7 @@ public class PageMetadataImpl extends GenericMetadataImpl
             {
                 if (localizedText == null)
                 {
-                    localizedText = new HashMap(getFields().size());
+                    localizedText = Collections.synchronizedMap(new HashMap(getFields().size()));
                 }
                 namedLocalizedText = new HashMap(getFields().size());
                 localizedText.put(name, namedLocalizedText);

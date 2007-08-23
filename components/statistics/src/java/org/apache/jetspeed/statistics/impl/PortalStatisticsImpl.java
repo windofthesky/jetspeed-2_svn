@@ -208,10 +208,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             if (portletBatch == null)
             {
-                portletBatch = new BatchedPortletStatistics(ds,
-                        this.maxRecordToFlush_Portlet,
-                        this.maxTimeMsToFlush_Portlet, "portletLogBatcher");
-                portletBatch.startThread();
+                synchronized (this)
+                {
+                    if (portletBatch == null)
+                    {
+                        portletBatch = new BatchedPortletStatistics(ds,
+                                this.maxRecordToFlush_Portlet,
+                                this.maxTimeMsToFlush_Portlet, "portletLogBatcher");
+                        portletBatch.startThread();
+                    }
+                }
             }
             portletBatch.addStatistic(record);
 
@@ -220,10 +226,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             if (pageBatch == null)
             {
-                pageBatch = new BatchedPageStatistics(ds,
-                        this.maxRecordToFlush_Page, this.maxTimeMsToFlush_Page,
-                        "pageLogBatcher");
-                pageBatch.startThread();
+                synchronized (this)
+                {
+                    if (pageBatch == null)
+                    {
+                        pageBatch = new BatchedPageStatistics(ds,
+                                this.maxRecordToFlush_Page, this.maxTimeMsToFlush_Page,
+                                "pageLogBatcher");
+                        pageBatch.startThread();
+                    }
+                }
             }
             pageBatch.addStatistic(record);
 
@@ -232,10 +244,16 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         {
             if (userBatch == null)
             {
-                userBatch = new BatchedUserStatistics(ds,
-                        this.maxRecordToFlush_User, this.maxTimeMsToFlush_User,
-                        "userLogBatcher");
-                userBatch.startThread();
+                synchronized (this)
+                {
+                    if (userBatch == null)
+                    {
+                        userBatch = new BatchedUserStatistics(ds,
+                                this.maxRecordToFlush_User, this.maxTimeMsToFlush_User,
+                                "userLogBatcher");
+                        userBatch.startThread();
+                    }
+                }
             }
             userBatch.addStatistic(record);
 

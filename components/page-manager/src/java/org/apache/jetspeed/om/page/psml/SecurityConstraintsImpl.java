@@ -238,7 +238,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @param pageSecurity
      * @return all security constraints
      */
-    private List getAllSecurityConstraints(PageSecurity pageSecurity)
+    private synchronized List getAllSecurityConstraints(PageSecurity pageSecurity)
     {
         // return previously cached security constraints; note that
         // cache is assumed valid until owning document is evicted

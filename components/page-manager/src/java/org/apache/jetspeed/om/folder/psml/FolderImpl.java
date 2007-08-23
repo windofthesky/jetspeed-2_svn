@@ -502,7 +502,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * @return all nodes immediatley under this
      * @throws DocumentException
      */
-    public NodeSet getAllNodes() throws DocumentException
+    public synchronized NodeSet getAllNodes() throws DocumentException
     {
         if((allNodes == null) && (folderHandler != null))
         {            

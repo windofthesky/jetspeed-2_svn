@@ -97,9 +97,11 @@ public class BaseDecoration implements Decoration, Serializable
             this.desktopStylesheet = null;
         }
         
-        log.info( "BaseDecoration basePath: " + basePath.toString() );
-        log.info( "BaseDecoration baseClientPath: " + baseClientPath.toString() );
-        
+        if (log.isDebugEnabled())
+        {
+            log.debug( "BaseDecoration basePath: " + basePath.toString() );
+            log.debug( "BaseDecoration baseClientPath: " + baseClientPath.toString() );
+        }
     }
     
     public void init(Properties config, ResourceValidator validator, PathResolverCache cache)
