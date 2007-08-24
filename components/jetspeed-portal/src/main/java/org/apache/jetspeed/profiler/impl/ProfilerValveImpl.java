@@ -205,7 +205,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // replaced with a newly created session context
                 PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
                 String pipeline = request.getPipeline().getName();
-                if ((sessionContext == null) || !sessionContext.isValid() || !pipeline.equals(sessionContext.getPipeline()))
+                if ((sessionContext == null) || !sessionContext.isValid() || hasPipelineChanged(pipeline, sessionContext.getPipeline()))                     
                 {                    
                     sessionContext = portalSite.newSessionContext();
                     sessionContext.setPipeline(pipeline);
@@ -297,6 +297,17 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             throw new PipelineException(e.toString(), e);
         }
     }
+    
+    protected boolean hasPipelineChanged(String requestPipeline, String sessionPipeline)
+    {
+        if (!requestPipeline.equals(sessionPipeline))
+        {
+            if (requestPipeline.equals(PortalReservedParameters.JETSPEED_CONFIG_PIPELINE_NAME)
+             || sessionPipeline.equals(PortalReservedParameters.JETSPEED_CONFIG_PIPELINE_NAME))
+                return true;
+        }
+        return false;
+    }    
 
     /**
      * Returns the <code>PageActionAccess</code> for the current user request.

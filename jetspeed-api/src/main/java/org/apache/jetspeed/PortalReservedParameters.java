@@ -37,6 +37,7 @@ public interface PortalReservedParameters
     public final static String DESKTOP_CONFIG_PIPELINE = "dtconfig-pipeline";
     public final static String CONFIG_PIPELINE_NAME = "ConfigurePipeline";
     public final static String DESKTOP_CONFIG_PIPELINE_NAME = "DesktopConfigurePipeline";
+    public final static String JETSPEED_CONFIG_PIPELINE_NAME = "JetspeedPipeline";
     
     // Session and Request attribute keys
     public static final String PAGE_ATTRIBUTE = "org.apache.jetspeed.Page";
