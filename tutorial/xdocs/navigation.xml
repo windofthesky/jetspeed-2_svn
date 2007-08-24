@@ -44,7 +44,7 @@
         </menu>
         <menu name="03. Portlet Application Configuration">
             <item name="Generating a Portlet Application" href="03/portlet-app.html" />
-            <item name="Building and Deploying" href="03/built-it.html" />            
+            <item name="Building and Deploying" href="03/build-it.html" />            
             <item name="Configuring Portal Pages" href="03/pages.html" />                                    
         </menu>
         <menu name="04. Portlet Development 101">
