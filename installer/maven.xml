@@ -39,12 +39,10 @@
 
     <mkdir dir="${basedir}/resources" />
 
-  	<!--
     <get usetimestamp="true" dest="${basedir}/resources/tomcat-5.5.23.zip"
       src="http://www.bluesunrise.com/maven/tomcat/dist/tomcat-5.5.23.zip" />
     <get usetimestamp="true" dest="${basedir}/resources/tomcat-5.5.23-compat.zip"
       src="http://www.bluesunrise.com/maven/tomcat/dist/tomcat-5.5.23-compat.zip" />
--->
   	
     <unzip src="${basedir}/resources/tomcat-5.5.23.zip" dest="${maven.build.dir}/tomcat" />
     <unzip src="${basedir}/resources/tomcat-5.5.23-compat.zip" dest="${maven.build.dir}/tomcat-compat" />
