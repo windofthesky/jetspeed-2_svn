@@ -429,12 +429,12 @@
         </tr>
         <tr>
           <td><code>j2:start.production.server</code></td>
-          <td>Starts the HSQLDB production database for usage by the portal. This goal is optional to those who use the default embedded Derby database.</td>
+          <td>Starts a HSQLDB production database for usage by the portal. This goal is optional to those who use the default embedded Derby database.</td>
         </tr>
         <tr>
           <td><code>j2:start.test.server</code></td>
           <td>
-            Starts the HSQLDB test database to be used for the testcases during the build of Jetspeed 2.
+            Starts a HSQLDB test database to be used for the testcases during the build of Jetspeed 2.
             This goal is optional for those who use the default embedded Derby database for testing Jetspeed 2.
           </td>
         </tr>
