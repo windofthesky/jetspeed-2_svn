@@ -342,16 +342,16 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         String country = locale.getCountry();
         String variant = locale.getVariant();
 
-        basePath.addSegment( mediaType ).addSegment( language );
+        basePath = basePath.addSegment( mediaType ).addSegment( language );
 
         if ( country != null )
         {
-            basePath.addSegment( country );
+            basePath = basePath.addSegment( country );
         }
 
         if (variant != null)
         {
-            basePath.addSegment( variant );
+            basePath = basePath.addSegment( variant );
         }
         return basePath;
     }
