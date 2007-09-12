@@ -44,6 +44,7 @@ import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
@@ -260,7 +261,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
             // been accessed, flush the cache and rebuild the map.
             currentRequest = getRequest();
 
-            boolean actionRequest = false;
+            boolean postAllowed = false;
             
             // determine the possible additional query string parameters provided on the RequestDispatcher include path
             // per the specs, these are prepended to existing parameters or altogether new parameters
@@ -295,13 +296,13 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
             if (context != null)
             {
-                PortalURL url = context.getPortalURL();
-                actionRequest = context.getActionWindow() != null;
-                Iterator iter = url.getNavigationalState().getParameterNames(portletWindow);
+                NavigationalState ns = context.getPortalURL().getNavigationalState();
+                postAllowed = ns.getPortletWindowOfAction() != null || ns.getPortletWindowOfResource() != null;
+                Iterator iter = ns.getParameterNames(portletWindow);
                 while (iter.hasNext())
                 {
                     String name = (String) iter.next();
-                    String[] values = url.getNavigationalState().getParameterValues(portletWindow, name);
+                    String[] values = ns.getParameterValues(portletWindow, name);
                     navParameters.put(name, values);
                 }
             }
@@ -329,7 +330,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 String[] first = (String[])queryParameters.get(key);
                 String[] next = null, last = null, result = null;
                 
-                if ( portletMergePortalParametersWithPortletParameters == false && !actionRequest )
+                if ( portletMergePortalParametersWithPortletParameters == false && !postAllowed )
                 {
                     next = (String[])navParameters.get(key);
                 }
