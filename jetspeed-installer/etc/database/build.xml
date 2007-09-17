@@ -74,7 +74,7 @@
   </target>
   
   <target name='setupDBPSML'>
-    <copy file="${installDir}/webapps/${portalName}/WEB-INF/assembly/page-manager.xml" tofile="${installDir}/webapps/${portalName}/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
+    <copy file="${basedir}/../webapps/${portalName}/WEB-INF/assembly/page-manager.xml" tofile="${basedir}/../webapps/${portalName}/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
 	</target>
 	
   <target name="runSetupDB" 
