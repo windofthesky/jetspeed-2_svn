@@ -291,12 +291,23 @@ limitations under the License.
 		<constructor-arg index='2'>
 			<ref bean="org.apache.jetspeed.security.SecurityAccessController" />
 		</constructor-arg>
-		<!-- 
-       <constructor-arg index='3'>
+        <constructor-arg index='3'>
+            <null/>
+            <!--
 	        <ref bean="decorationContentCache"/>
-        </constructor-arg>       		
-         -->
-         <!-- When clicking on Edit Mode, also switch to Maximize -->
+            -->
+        </constructor-arg>
+        <constructor-arg index='4'>
+            <value>false</value>
+        </constructor-arg>
+        <constructor-arg index='5'>
+            <map>
+                <entry key='CustomDecoratorActionsAdapter'>
+                    <ref bean="CustomDecoratorActionsAdapter" />
+                </entry>
+            </map>
+        </constructor-arg>
+        <!-- When clicking on Edit Mode, also switch to Maximize -->
         <property name="maximizeOnEdit"><value>false</value></property>         
   </bean>
 

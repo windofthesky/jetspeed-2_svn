@@ -41,6 +41,8 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
  */
 public class PickANumberPortlet extends GenericServletPortlet
 {
+    private static final PortletMode ABOUT_MODE = new PortletMode("about");
+    private static final PortletMode EDIT_DEFAULTS_MODE = new PortletMode("edit_defaults");
     private static final PortletMode PRINT_MODE = new PortletMode("print");
     
     /**
@@ -78,6 +80,16 @@ public class PickANumberPortlet extends GenericServletPortlet
      */
     
     private static final String DEFAULT_VIEW_PAGE = "/WEB-INF/demo/simple/PickANumber.jsp";
+    
+    /**
+     * Default about page when preference does not exist
+     */
+    private static final String DEFAULT_ABOUT_PAGE = "/WEB-INF/demo/simple/PickANumberAbout.jsp";
+    
+    /**
+     * Default edit_defaults page when preference does not exist
+     */
+    private static final String DEFAULT_EDIT_DEFAULTS_PAGE = "/WEB-INF/demo/simple/PickANumberEditDefaults.jsp";
     
     /**
      * Attribute name of Guess Count
@@ -121,11 +133,23 @@ public class PickANumberPortlet extends GenericServletPortlet
     {
         if ( !request.getWindowState().equals(WindowState.MINIMIZED))
         {
+            PortletMode curMode = request.getPortletMode();
+            
             // Handle custom PRINT_MODE ourselves as GenericPortlet nor GenericServletPortlet do
-            if (PRINT_MODE.equals(request.getPortletMode()))
+            if (PRINT_MODE.equals(curMode))
             {
                 // simply delegate to doView rendering
                 doView(request, response);
+            }
+            else if (ABOUT_MODE.equals(curMode))
+            {
+                request.setAttribute(PARAM_VIEW_PAGE, DEFAULT_ABOUT_PAGE);
+                doView(request, response);
+            }
+            else if (EDIT_DEFAULTS_MODE.equals(curMode))
+            {
+                request.setAttribute(PARAM_EDIT_PAGE, DEFAULT_EDIT_DEFAULTS_PAGE);
+                doEdit(request, response);
             }
             else
             {
@@ -288,6 +312,7 @@ public class PickANumberPortlet extends GenericServletPortlet
             return;
         }
         PortletPreferences prefs = request.getPreferences();
+        
         try
         {
             prefs.setValue(TOP_RANGE_NAME, topRange);

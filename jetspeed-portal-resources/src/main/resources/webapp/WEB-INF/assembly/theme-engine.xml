@@ -32,5 +32,12 @@ limitations under the License.
 		<ref bean="ResourceValidator" />
 	</constructor-arg>
   </bean>  
-	
+
+  <bean id="CustomDecoratorActionsAdapter"
+      class="org.apache.jetspeed.decoration.CustomDecoratorActionsFactory">
+    <constructor-arg index="0">
+        <ref bean="PortalConfiguration"/>
+    </constructor-arg>
+  </bean>
+  
 </beans>

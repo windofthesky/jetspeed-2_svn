@@ -18,6 +18,7 @@ package org.apache.jetspeed.decoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -79,19 +80,19 @@ public class DecorationValve extends AbstractValve implements Valve
 
     private final PortletWindowAccessor windowAccessor;
     
-    private HashMap decoratorActionsAdapterCache = new HashMap();
+    private Map decoratorActionsAdapterMap;
     
-    private DecoratorActionsFactory defaultDecoratorActionsFactory;
+    private DecoratorActionsFactory defaultDecoratorActionsAdapter;
 
     private JetspeedContentCache cache = null;
     
     private boolean useSessionForThemeCaching = false;
     
     private boolean maxOnEdit = false;
-         
-     /**
-      * For security constraint checks
-      */
+    
+    /*
+     * For security constraint checks
+     */
      protected SecurityAccessController accessController;
 
      public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,SecurityAccessController accessController)
@@ -105,17 +106,40 @@ public class DecorationValve extends AbstractValve implements Valve
          this(decorationFactory, windowAccessor, accessController, cache, false);
      }
      
-     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
-                                 SecurityAccessController accessController, JetspeedContentCache cache,
-                                 boolean useSessionForThemeCaching)
-     {       
+    public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+                                SecurityAccessController accessController, JetspeedContentCache cache,
+                                boolean useSessionForThemeCaching)
+    {
+        this(decorationFactory, windowAccessor, accessController, cache, false, null);
+    }
+     
+    public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+                                SecurityAccessController accessController, JetspeedContentCache cache,
+                                boolean useSessionForThemeCaching, Map decoratorActionsAdapterMap)
+    {
+        this(decorationFactory, windowAccessor, accessController, cache, false, decoratorActionsAdapterMap, new DefaultDecoratorActionsFactory());
+    }
+    
+    public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+                                SecurityAccessController accessController, JetspeedContentCache cache,
+                                boolean useSessionForThemeCaching, Map decoratorActionsAdapterMap, 
+                                DecoratorActionsFactory defaultDecoratorActionsAdapter)
+    {       
         this.decorationFactory = decorationFactory;
         this.windowAccessor = windowAccessor;
-        this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();        
+        
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
         this.cache = cache;
         this.useSessionForThemeCaching = useSessionForThemeCaching;
+        this.decoratorActionsAdapterMap = decoratorActionsAdapterMap;
+        
+        if (this.decoratorActionsAdapterMap == null)
+        {
+            this.decoratorActionsAdapterMap = new HashMap();
+        }
+        
+        this.defaultDecoratorActionsAdapter = defaultDecoratorActionsAdapter;
     }
     
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
@@ -276,35 +300,36 @@ public class DecorationValve extends AbstractValve implements Valve
     
     public DecoratorActionsFactory getDecoratorActionsAdapter(Decoration decoration)
     {
+        DecoratorActionsFactory adapter = this.defaultDecoratorActionsAdapter;
+        
         // FIXME: why always get this property
-        String decoratorActionsAdapterClassName = decoration.getProperty("actions.factory");
-        if ( decoratorActionsAdapterClassName == null )
+        String decoratorActionsAdapterName = decoration.getProperty("actions.factory");
+        
+        if ( decoratorActionsAdapterName != null )
         {
-            decoratorActionsAdapterClassName = defaultDecoratorActionsFactory.getClass().getName();
-        }
-        synchronized (decoratorActionsAdapterCache)
-        {
-            DecoratorActionsFactory adapter = (DecoratorActionsFactory)decoratorActionsAdapterCache.get(decoratorActionsAdapterClassName);
-            if ( adapter == null )
+            adapter = (DecoratorActionsFactory) this.decoratorActionsAdapterMap.get(decoratorActionsAdapterName);
+            
+            if (adapter == null)
             {
                 try
                 {
-                    adapter = (DecoratorActionsFactory)Class.forName(decoratorActionsAdapterClassName).newInstance();
+                    adapter = (DecoratorActionsFactory) Class.forName(decoratorActionsAdapterName).newInstance();
                     adapter.setMaximizeOnEdit(this.maxOnEdit);
                 }
                 catch (Exception e)
                 {
-                    log.error("Failed to instantiate custom DecoratorActionsAdaptor "+decoratorActionsAdapterClassName+", falling back to default.",e);
-                    adapter = (DecoratorActionsFactory)decoratorActionsAdapterCache.get(defaultDecoratorActionsFactory.getClass().getName());
-                    if ( adapter == null )
-                    {
-                        adapter = defaultDecoratorActionsFactory;
-                    }
+                    log.error("Failed to instantiate custom DecoratorActionsAdaptor "+decoratorActionsAdapterName+", falling back to default.",e);
+                    adapter = this.defaultDecoratorActionsAdapter;
                 }
-                decoratorActionsAdapterCache.put(decoratorActionsAdapterClassName,adapter);
+                
+                synchronized (this.decoratorActionsAdapterMap)
+                {
+                    this.decoratorActionsAdapterMap.put(decoratorActionsAdapterName,adapter);
+                }
             }
-            return adapter;
         }
+        
+        return adapter;
     }
     
     /**
@@ -626,7 +651,7 @@ public class DecorationValve extends AbstractValve implements Valve
     public void setMaximizeOnEdit(boolean maxOnEdit)
     {
         this.maxOnEdit = maxOnEdit;
-        this.defaultDecoratorActionsFactory.setMaximizeOnEdit(maxOnEdit);
+        this.defaultDecoratorActionsAdapter.setMaximizeOnEdit(maxOnEdit);
     }
     
     public boolean getMaximizeOnEdit()

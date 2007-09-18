@@ -157,14 +157,13 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
                         template.getCustomState()));
 
         HashMap resourcesMap = (HashMap)actionResourcesMap.get();
-        ResourceBundle bundle = null;
+        ResourceBundle bundle = DecoratorAction.getResourceBundle(rc.getLocale());
         String localizedName = null;
         
         if (resourcesMap == null)
         {
             resourcesMap = new HashMap();
             actionResourcesMap.set(resourcesMap);
-            bundle = DecoratorAction.getResourceBundle(rc.getLocale());
             resourcesMap.put(DecoratorAction.RESOURCE_BUNDLE, bundle);
             localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
             resourcesMap.put(actionName,localizedName);

@@ -266,6 +266,10 @@ limitations under the License.
             <portlet-mode>VIEW</portlet-mode>
             <portlet-mode>HELP</portlet-mode>
             <portlet-mode>EDIT</portlet-mode>
+            <!--  support custom about mode -->
+            <portlet-mode>about</portlet-mode>
+            <!--  support custom edit_defaults mode -->
+            <portlet-mode>edit_defaults</portlet-mode>
             <!--  support custom print mode -->
             <portlet-mode>print</portlet-mode>
         </supports>
@@ -1308,6 +1312,14 @@ limitations under the License.
     </portlet>
     
     
+    <custom-portlet-mode>
+        <description>a Custom About Mode</description>            
+        <portlet-mode>about</portlet-mode>
+    </custom-portlet-mode>
+    <custom-portlet-mode>
+        <description>a Custom Edit_defaults Mode</description>            
+        <portlet-mode>edit_defaults</portlet-mode>
+    </custom-portlet-mode>
     <custom-portlet-mode>
         <description>a Custom Print Mode</description>            
         <portlet-mode>print</portlet-mode>
