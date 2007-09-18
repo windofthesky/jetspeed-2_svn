@@ -84,6 +84,9 @@
              but instead merge with them, where user prefs override.
             boolean
           -->    
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.page.PageManager" />
+        </constructor-arg>
         <constructor-arg type="boolean">
             <value>false</value>
         </constructor-arg>        

@@ -30,6 +30,7 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.query.Criteria;
@@ -88,12 +89,22 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         PortletEntityImpl.rcc = rcc;
     }
 
-    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc, boolean mergeSharedPreferences)
+    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc, PageManager pageManager)
     {
         super();
         this.registry = registry;        
         PortletEntityImpl.registry = registry;
         PortletEntityImpl.rcc = rcc;
+        PortletEntityImpl.pm = pageManager;
+    }
+    
+    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc, PageManager pageManager, boolean mergeSharedPreferences)
+    {
+        super();
+        this.registry = registry;        
+        PortletEntityImpl.registry = registry;
+        PortletEntityImpl.rcc = rcc;
+        PortletEntityImpl.pm = pageManager;
         this.mergeSharedPreferences = mergeSharedPreferences;
     }
     
@@ -101,6 +112,12 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     {
         PortletEntityImpl.pac = proxy;
     }
+    
+    public void setPageManager(PageManager pageManager)
+    {
+        PortletEntityImpl.pm = pageManager;
+    }
+    
     /**
      * 
      * <p>

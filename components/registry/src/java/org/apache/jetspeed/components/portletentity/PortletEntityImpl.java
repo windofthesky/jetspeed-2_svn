@@ -22,12 +22,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.portlet.PortletMode;
+
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.persistence.store.PersistenceStore;
 import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
@@ -39,17 +43,21 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.common.Preference;
 import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletApplicationEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.util.StringUtils;
 
@@ -67,7 +75,9 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected static PortletEntityAccessComponent pac;    
     protected static PortletRegistry registry;
     protected static RequestContextComponent rcc;
+    protected static PageManager pm;
     
+    protected PrefsPreferenceSetImpl pagePreferenceSet;
     protected Map perPrincipalPrefs = new HashMap();
     protected Map originalValues;
     private PortletApplicationEntity applicationEntity = null;
@@ -121,8 +131,15 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public PreferenceSet getPreferenceSet()
     {
-        Principal currentUser = getPrincipal();
-        return getPreferenceSet(currentUser);
+        if (isEditDefaultsMode())
+        {
+            return getPreferenceSetFromPage();
+        }
+        else
+        {
+            Principal currentUser = getPrincipal();
+            return getPreferenceSet(currentUser);
+        }
     }
 
     public PreferenceSet getPreferenceSet(Principal principal)
@@ -141,6 +158,47 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
                 {
                     mergePreferencesSet(preferenceSet);
                 }
+                backupValues(preferenceSet);
+                dirty = true;
+            }
+        }
+        catch (BackingStoreException e)
+        {
+            String msg = "Preference backing store failed: " + e.toString();
+            IllegalStateException ise = new IllegalStateException(msg);
+            ise.initCause(e);
+            throw ise;
+        }
+        return preferenceSet;
+    }
+    
+    private PreferenceSet getPreferenceSetFromPage()
+    {
+        PrefsPreferenceSetImpl preferenceSet = this.pagePreferenceSet;
+        
+        try
+        {
+            if (preferenceSet == null || !dirty)
+            {
+                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + 
+                                            getId() +"/"+ PrefsPreference.PORTLET_PREFERENCES_ROOT;
+
+                Preferences prefNode = Preferences.systemRoot().node(prefNodePath);
+                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
+                this.pagePreferenceSet = preferenceSet;
+                
+                List fragmentPreferences = this.fragment.getPreferences();
+                
+                if (fragmentPreferences != null)
+                {
+                    for (Iterator it = fragmentPreferences.iterator(); it.hasNext(); )
+                    {
+                        FragmentPreference preference = (FragmentPreference) it.next();
+                        List preferenceValues = preference.getValueList();
+                        preferenceSet.add(preference.getName(), preferenceValues);
+                    }
+                }
+                
                 backupValues(preferenceSet);
                 dirty = true;
             }
@@ -254,7 +312,15 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public void store() throws IOException
     {
-        store(getPrincipal());
+        if (isEditDefaultsMode())
+        {
+            storeToPage();
+        }
+        else
+        {
+            Principal currentUser = getPrincipal();
+            store(currentUser);
+        }
     }
     
     public void store(Principal principal) throws IOException
@@ -267,6 +333,51 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
         PreferenceSet preferenceSet = (PreferenceSet)perPrincipalPrefs.get(principal);
         pac.storePreferenceSet(preferenceSet, this);
+        dirty = false;
+        if (preferenceSet != null)
+        {
+            backupValues(preferenceSet);
+        }
+    }
+    
+    private void storeToPage() throws IOException
+    {
+        if (pm == null)
+        {
+            throw new IllegalStateException("You must set pageManager before "
+                    + "invoking PortletEntityImpl.store().");
+        }
+        
+        PreferenceSet preferenceSet = this.pagePreferenceSet;
+        List preferences = new ArrayList();
+        
+        for (Iterator it = preferenceSet.iterator(); it.hasNext(); )
+        {
+            Preference pref = (Preference) it.next();
+            
+            FragmentPreference preference = pm.newFragmentPreference();
+            preference.setName(pref.getName());
+            List preferenceValues = new ArrayList();
+            
+            for (Iterator iterVals = pref.getValues(); iterVals.hasNext(); )
+            {
+                preferenceValues.add(iterVals.next());
+            }
+            
+            preference.setValueList(preferenceValues);
+            preferences.add(preference);
+        }
+        
+        this.fragment.setPreferences(preferences);
+        
+        try
+        {
+            pm.updatePage(rcc.getRequestContext().getPage());
+        }
+        catch (Exception e)
+        {
+        }
+        
         dirty = false;
         if (preferenceSet != null)
         {
@@ -587,4 +698,37 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         this.timeoutCount = timeoutCount;
     }
 
+    private boolean isEditDefaultsMode()
+    {
+        boolean editDefaultsMode = false;
+        
+        PortletWindow curWindow = null;
+        
+        if (this.portletWindows != null)
+        {
+            try
+            {
+                curWindow = (PortletWindow) this.portletWindows.iterator().next();
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        
+        if (rcc != null)
+        {
+            RequestContext context = rcc.getRequestContext();
+            
+            try
+            {
+                PortletMode curMode = context.getPortalURL().getNavigationalState().getMode(curWindow);
+                editDefaultsMode = (JetspeedActions.EDIT_DEFAULTS_MODE.equals(curMode));
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        
+        return editDefaultsMode;
+    }
 }
