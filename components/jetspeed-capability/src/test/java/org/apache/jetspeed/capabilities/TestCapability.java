@@ -90,7 +90,7 @@ public class TestCapability extends AbstractSpringTestCase
         {
             Client client = (Client) caps.next();
             int evalOrder = client.getEvalOrder();
-            if (lastOrder >= evalOrder)
+            if (lastOrder > evalOrder)
             {
                 assertTrue("Client result set is not ordered!", false);
             }
