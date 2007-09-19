@@ -1100,6 +1100,8 @@
 	<copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
       <fileset dir="${portal.webapp.dir.assembly}/alternate/">
         <include name="request-context.xml"/>
+        <include name="db-page-manager.xml" />
+        <include name="interceptors.xml" />
       </fileset>
      </copy>
 
