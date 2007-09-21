@@ -481,8 +481,7 @@ public class ConnectionRepositoryEntry
         public void setLogWriter(PrintWriter out) throws SQLException {
         }
     }
-
-	@Override
+	
 	public Connection getConnection() throws SQLException {
 		if(externalDs != null)
 		{
@@ -493,8 +492,7 @@ public class ConnectionRepositoryEntry
 		   return super.getConnection();
 		}
 	}
-
-	@Override
+	
 	public Connection getConnection(String username, String password)
 			throws SQLException {
 		
