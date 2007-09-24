@@ -43,7 +43,7 @@ this.createPageDialog.destroy();
 jetspeed.widget.PageEditPane.superclass.destroy.apply(this,arguments);
 },postCreate:function(_b,_c,_d){
 jetspeed.widget.PageEditPane.superclass.postCreate.apply(this,arguments);
-if(!dojo.render.html.ie){
+if(!jetspeed.UAie){
 if(this.pageEditContainer!=null){
 this.pageEditContainer.style.backgroundColor="#d3d3d3";
 }

@@ -16,7 +16,6 @@ this.templateCssPath=new dojo.uri.Uri(jetspeed.prefs.getLayoutRootUrl()+"/css/Po
 jetspeed.widget.PortalTabContainer.superclass.postMixInProperties.call(this,_1,_2,_3);
 },postCreate:function(_4,_5,_6){
 jetspeed.widget.PortalTabContainer.superclass.postCreate.call(this,_4,_5,_6);
-this.contextMenuCreate();
 },addTab:function(_7){
 if(!_7){
 return;
@@ -70,6 +69,5 @@ this.addTab(_14);
 }
 }
 },onKey:function(e){
-},contextMenuCreate:function(){
 }});
 

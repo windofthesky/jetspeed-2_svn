@@ -105,7 +105,7 @@ dojo.widget.defineWidget(
         {
             jetspeed.widget.PageEditPane.superclass.postCreate.apply( this, arguments );
 
-            if ( ! dojo.render.html.ie )
+            if ( ! jetspeed.UAie )
             {   /* in IE6, if fieldset background color is set the fieldset will not be rendered nicely (with rounded borders) */
                 if ( this.pageEditContainer != null )
                     this.pageEditContainer.style.backgroundColor = "#d3d3d3";

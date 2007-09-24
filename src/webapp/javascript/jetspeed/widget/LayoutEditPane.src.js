@@ -88,7 +88,7 @@ dojo.widget.defineWidget(
 
         postCreate: function( args, fragment, parent )
         {
-            if ( ! jetspeed.browser_IE )
+            if ( ! jetspeed.UAie )
             {   /* in IE6, if fieldset background color is set the fieldset will not be rendered nicely (with rounded borders) */
                 if ( this.pageEditContainer != null )
                     this.pageEditContainer.style.backgroundColor = "#d3d3d3";
@@ -196,7 +196,7 @@ dojo.widget.defineWidget(
             //dojo.debug( "layout (" + this.layoutId + " / " + this.widgetId + ") endDragging (a) : before " + jetspeed.printobj( beforeDragColumnRowInfo ) );
             if ( beforeDragColumnRowInfo != null )
             {
-                var afterDragColumnRowInfo = jetspeed.page.getPortletCurrentColumnRow( this.containingColumn.domNode );
+                var afterDragColumnRowInfo = jetspeed.page.getPortletCurColRow( this.containingColumn.domNode );
                 //dojo.debug( "layout (" + this.layoutId + ") endDragging (b) : after " + jetspeed.printobj( afterDragColumnRowInfo ) );
                 if ( afterDragColumnRowInfo != null && ( afterDragColumnRowInfo.row != beforeDragColumnRowInfo.row || afterDragColumnRowInfo.column != beforeDragColumnRowInfo.column || afterDragColumnRowInfo.layout != beforeDragColumnRowInfo.layout ) )
                 {
@@ -209,11 +209,11 @@ dojo.widget.defineWidget(
 
         getContainingColumn: function()
         {
-            return jetspeed.page.getColumnContainingNode( this.domNode );
+            return jetspeed.page.getColWithNode( this.domNode );
         },
         getPageColumnIndex: function()
         {
-            return jetspeed.page.getColumnIndexContainingNode( this.domNode );
+            return jetspeed.page.getColIndexForNode( this.domNode );
         },
         
         editModeRedisplay: function()
