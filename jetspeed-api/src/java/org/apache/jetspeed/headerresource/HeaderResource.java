@@ -110,6 +110,8 @@ public interface HeaderResource
     
     public final static String HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION = "desktop.window.action";
     
+    public final static String HEADER_DEBUG_REQUIRES = "jetspeed.desktop.debug";
+    
     /**
      * Output all content (that has not already been output)
      * 
