@@ -644,7 +644,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
         headerResource.dojoAddCoreLibraryRequire( "dojo.widget.Button" );
         headerResource.dojoAddCoreLibraryRequire( "dojo.widget.ContentPane" );
         headerResource.dojoAddCoreLibraryRequire( "dojo.widget.LayoutContainer" );
-        headerResource.dojoAddModuleLibraryRequire( "jetspeed.desktop.core" );        
+        headerResource.dojoAddModuleLibraryRequire( "jetspeed.selector" );
     }
 
     /* (non-Javadoc)
