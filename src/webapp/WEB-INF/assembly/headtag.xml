@@ -248,13 +248,13 @@
                 <value>dojo.event.*</value>
                 <value>dojo.io.*</value>
                 <value>dojo.widget.*</value>
-                <value>dojo.collections.ArrayList</value>
-                <value>dojo.collections.Set</value>
-                <value>dojo.widget.TaskBar</value>
-                <value>dojo.widget.FloatingPane</value>
                 <value>dojo.widget.TabContainer</value>
                 <value>dojo.widget.AccordionContainer</value>
                 <value>dojo.widget.Menu2</value>
+                <value>dojo.html.iframe</value>
+
+                <!-- needed for admin portlets -->
+                <!--
                 <value>dojo.widget.Checkbox</value>
                 <value>dojo.widget.Dialog</value>
                 <value>dojo.widget.Button</value>
@@ -263,8 +263,7 @@
                 <value>dojo.widget.ContentPane</value>
                 <value>dojo.widget.LinkPane</value>
                 <value>dojo.widget.SplitContainer</value>
-                <value>dojo.widget.Tree</value>
-                <value>dojo.widget.Tooltip</value>
+                <value>dojo.widget.Tree</value> -->
             </list>
         </constructor-arg>
     </bean>
@@ -273,12 +272,11 @@
         <constructor-arg index="0">
             <list>
                 <value>jetspeed.desktop.core</value>
-                <value>jetspeed.widget.PortalTaskBar</value>
                 <value>jetspeed.widget.PortletWindow</value>
                 <value>jetspeed.widget.PortalTabContainer</value>
                 <value>jetspeed.widget.PortalAccordionContainer</value>
                 <value>jetspeed.widget.PortalBreadcrumbContainer</value>
-                <value>jetspeed.widget.PortletDefContainer</value>
+                <value>jetspeed.widget.PortalTooltipManager</value>
             </list>
         </constructor-arg>
     </bean>
