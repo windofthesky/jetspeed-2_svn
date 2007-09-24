@@ -688,8 +688,29 @@ public class HeaderAggregatorImpl implements PageAggregator
         headerDynamicConfigurationDefault.put( HeaderResource.HEADER_CONFIG_DOJO_PATH, dojoPath );
         
         // dojo parameters - djConfig parameters
+        boolean dojoDebugEnabled = false;
         String dojoParamDebug = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_ISDEBUG );
-        String dojoParamDebugAtAllCosts = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_DEBUGALLCOSTS );
+        String dojoParamDebugAtAllCosts = null;
+        if ( dojoParamDebug != null )
+        	dojoParamDebug = dojoParamDebug.toLowerCase();
+        if ( dojoParamDebug == null || dojoParamDebug.length() == 0 || dojoParamDebug.equals( "false" ) )
+        {
+        	dojoParamDebug = null;
+        }
+        else if ( dojoParamDebug.equals( "true" ) )
+        {
+        	dojoDebugEnabled = true;
+        	dojoParamDebugAtAllCosts = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_DEBUGALLCOSTS );
+        	if ( dojoParamDebugAtAllCosts != null )
+        	{
+        		dojoParamDebugAtAllCosts = dojoParamDebugAtAllCosts.toLowerCase();
+        		if ( ! dojoParamDebugAtAllCosts.equals( "true") )
+        		{
+        			dojoParamDebugAtAllCosts = null;
+        		}
+        	}
+        }
+        
         String dojoParamPreventBackBtnFix = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAM_PREVENT_BACKBUTTON_FIX );
         String dojoParams = (String)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_PARAMS );
         if ( dojoParamDebug != null || dojoParamDebugAtAllCosts != null || dojoParamPreventBackBtnFix != null || dojoParams != null )
@@ -878,6 +899,9 @@ public class HeaderAggregatorImpl implements PageAggregator
         List dojoRequiresModules = (List)dojoConfigMap.get( HeaderResource.HEADER_CONFIG_DOJO_REQUIRES_MODULES );
         if ( dojoRequiresModules != null && dojoRequiresModules.size() > 0 )
         {
+        	HashMap addedReqs = null;
+        	if ( dojoDebugEnabled )
+        		addedReqs = new HashMap();
             StringBuffer dojoRequiresContent = new StringBuffer();
             Iterator dojoRequiresModulesIter = dojoRequiresModules.iterator();
             while ( dojoRequiresModulesIter.hasNext() )
@@ -898,10 +922,19 @@ public class HeaderAggregatorImpl implements PageAggregator
                         else
                         {
                             dojoRequiresContent.append( "    dojo.require(\"").append( dojoReq ).append( "\");" ).append( EOL );
+                            if ( dojoDebugEnabled )
+                            	addedReqs.put( dojoReq, dojoReq ); 
                         }
                     }
                 }
             }
+            if ( dojoDebugEnabled )
+            {
+            	if ( addedReqs.get( HeaderResource.HEADER_DEBUG_REQUIRES ) == null )
+            	{
+            		dojoRequiresContent.append( "    dojo.require(\"").append( HeaderResource.HEADER_DEBUG_REQUIRES ).append( "\");" ).append( EOL );
+            	}
+            }            
             namedResourcesDefault.put( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_MODULES, dojoRequiresContent.toString() );
             registerAndOrderNamedHeaderResource( HeaderResource.HEADER_SECTION_DOJO_REQUIRES_MODULES, null, dojoEnableName, headerDynamicConfigurationDefault );
         }
