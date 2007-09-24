@@ -19,12 +19,12 @@ limitations under the License.
 
 /*  begin dojo styles  */
 
-.blueocean .dojoFloatingPaneTitleBar {
+.blueocean .portletWindowTitleBar {
     /* background: #B0C4DE; */  /* lightsteelblue */
     background: url(../images/desktopmore/stripe_blue_m4.gif);
 }
 
-.blueocean .dojoFloatingPaneTitleText {
+.blueocean .portletWindowTitleText {
 	color: #ffffff;
 }
 
@@ -34,38 +34,7 @@ limitations under the License.
     margin-top: 4px;
 }
 
-/* minimize/maximize icons are specified by CSS only */
-.blueocean .dojoFloatingPaneMinimizeIcon,
-.blueocean .dojoFloatingPaneMaximizeIcon,
-.blueocean .dojoFloatingPaneRestoreIcon,
-.blueocean .dojoFloatingPaneCloseIcon {
-	vertical-align: middle;
-	height: 22px;
-	width: 22px;
-	float: right;
-}
-.blueocean .dojoFloatingPaneMinimizeIcon {
-	background-image: url(../images/desktop/minimize.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-.blueocean .dojoFloatingPaneMaximizeIcon {
-    background-image: url(../images/desktop/maximize.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-.blueocean .dojoFloatingPaneRestoreIcon {
-    background-image: url(../images/desktop/restore.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-.blueocean .dojoFloatingPaneCloseIcon {
-	background-image: url(../images/desktop/close.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-.blueocean .dojoFloatingPaneTitleBarIcon {
+.blueocean .portletWindowTitleBarIcon {
     margin-top: 3px;
     margin-left: 2px;
     margin-right: 3px;
