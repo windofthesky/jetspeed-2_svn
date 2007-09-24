@@ -99,6 +99,8 @@ public class ConnectionRepositoryEntry
     private String password = null;
     private boolean jetspeedEngineScoped = true;
 
+	private DataSource externalDs;
+
     public ConnectionRepositoryEntry()
     {
         super();
@@ -283,7 +285,8 @@ public class ConnectionRepositoryEntry
             }
             Context initialContext = new InitialContext();
             ds = (DataSource) initialContext.lookup(jndiName);
-            jcd.setDatasourceName(jndiName);
+            externalDs = ds;
+			jcd.setDatasourceName(jndiName);
         } 
         else 
         {
@@ -478,5 +481,29 @@ public class ConnectionRepositoryEntry
         public void setLogWriter(PrintWriter out) throws SQLException {
         }
     }
+	
+	public Connection getConnection() throws SQLException {
+		if(externalDs != null)
+		{
+			return externalDs.getConnection();
+		}
+		else
+		{
+		   return super.getConnection();
+		}
+	}
+	
+	public Connection getConnection(String username, String password)
+			throws SQLException {
+		
+		if(externalDs != null)
+		{
+			return externalDs.getConnection(username, password);
+		}
+		else
+		{
+		   return super.getConnection(username, password);
+		}		
+	}
 
 }
