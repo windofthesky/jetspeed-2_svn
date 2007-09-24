@@ -31,12 +31,6 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
 
 #desktopIncludeHeaderContent()
 
-<script language="JavaScript" type="text/javascript">
-    function notifyRetrieveAllMenusFinished()
-    {
-    }
-    dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );
-</script>
 </head>
 
 <body class="layout-${jetspeedDesktop.getLayoutDecorationName()}">

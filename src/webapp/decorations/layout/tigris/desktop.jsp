@@ -38,12 +38,6 @@ limitations under the License.
 
 <%= desktop.getHeaderResource().getContent()%>
 
-<script language="JavaScript" type="text/javascript">
-    function notifyRetrieveAllMenusFinished()
-    {
-    }
-    dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );
-</script>
 </head>
 
 <body class="<%= layoutStyleClass %>">
