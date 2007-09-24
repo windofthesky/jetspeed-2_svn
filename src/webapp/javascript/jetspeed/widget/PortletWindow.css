@@ -28,12 +28,10 @@
 
 .desktopColumn {
     float: left;
-    /* background-color: transparent; */
 }
 .desktopColumnClear {
     float: left;
     clear: both;
-    /* background-color: transparent; */
 }
 .desktopLayoutHeader {
     float: left;
@@ -44,8 +42,6 @@
 }
 *html .desktopColumn {
     overflow: hidden;
-    /* background-color: transparent; */
-    /* background-color: #666; */
 }
 
 #pwGhost {
@@ -68,7 +64,7 @@
 
 /********** Outer Window ***************/
 
-.dojoFloatingPane {
+.portletWindow {
     /* essential css */
     position: absolute;
     overflow-y: hidden;     /* dojo says 'visible' with this explanation "so drop shadow is displayed"" */
@@ -88,7 +84,7 @@
 
 /********** Title Bar ****************/
 
-.dojoFloatingPaneTitleBar {
+.portletWindowTitleBar {
     vertical-align: top;
     margin: 2px 2px 2px 2px;
     z-index: 10;
@@ -100,7 +96,7 @@
     vertical-align: middle;
 }
 
-.dojoFloatingPaneTitleText {
+.portletWindowTitleText {
     float: left;
     padding: 2px 4px 2px 2px;
     white-space: nowrap;
@@ -108,7 +104,7 @@
     font: small-caption;
 }
 
-.dojoFloatingPaneActions{
+.portletWindowActions{
     float: right;
     position: absolute;
     right: 2px;
@@ -117,7 +113,7 @@
 }
 
 
-.dojoFloatingPaneActionItem {
+.portletWindowActionItem {
     vertical-align: middle;
     margin-right: 1px;
     height: 22px;
@@ -150,7 +146,18 @@
     background-position: center center;
 }
 
-.dojoFloatingPaneTitleBarIcon {
+.portalTooltip {
+	border: solid black 1px;
+	background: beige;
+	color: black;
+	position: absolute;
+	font-size: small;
+	padding: 2px 2px 2px 2px;
+	z-index: 10;
+	display: block;
+}
+
+.portletWindowTitleBarIcon {
     /* essential css */
     float: left;
 
@@ -163,10 +170,10 @@
 }
 
 /* minimize/maximize icons are specified by CSS only */
-.dojoFloatingPaneMinimizeIcon,
-.dojoFloatingPaneMaximizeIcon,
-.dojoFloatingPaneRestoreIcon,
-.dojoFloatingPaneCloseIcon {
+.portletWindowMinimizeIcon,
+.portletWindowMaximizeIcon,
+.portletWindowRestoreIcon,
+.portletWindowCloseIcon {
     vertical-align: middle;
     height: 22px;
     width: 22px;
@@ -175,17 +182,16 @@
 }
 
 /* bar at bottom of window that holds resize handle */
-.dojoFloatingPaneResizebar {
+.portletWindowResizebar {
+    display: block;
     z-index: 10;
     height: 13px;
     background-color: ThreeDFace;
-    /*padding: 0px;
-    margin: 0px;*/
 }
 
 /************* Client Area ***************/
 
-.dojoFloatingPaneClient {
+.portletWindowClient {
     position: relative;
     z-index: 10;
     border: 1px solid;
@@ -193,8 +199,81 @@
     margin: 2px;
     background-color: ThreeDFace;
     padding: 8px;
-    /*font-family: Verdana, Helvetica, Garamond, sans-serif;
-    font-size: 12px;*/
     overflow: auto;
 }
 
+.portletWindowResizeHandle {
+	float: right;
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+	width: 13px;
+	height: 13px;
+	z-index: 20;
+	cursor: nw-resize;
+	background-image: url(grabCorner.gif);
+	line-height: 0px;
+}
+
+.portletWindowIFrameCover {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    margin: 0px;
+    padding: 0px;
+
+    display: none;
+    z-index: 100;
+
+    background-color: transparent;
+}
+
+.portletWindowIFrameCoverIE {
+    background-color: ThreeDFace !important;
+}
+
+.PContent {
+    z-index: 10;
+}
+
+.portletIFramePContent {
+    /*padding-left: 0px !important;*/
+    height: 100%;
+    border-width: 0px !important;
+    margin: 0px;
+    padding: 0px;
+}
+
+.iframePortletTableContainer {
+    height: 100%;
+    border-width: 0px !important;
+    margin: 0px;
+    padding: 0px;
+    border-spacing: 0px 0px !important;
+    /*overflow: hidden;*/
+}
+
+.iframePortletTbodyContainer {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    border-width: 0px !important;
+}
+
+.iframePortletTbodyContainer td {
+    /*padding: 0px;*/
+    border-width: 0px !important;
+    margin: 0px;
+    padding: 0px;
+}
+
+.iframePortletTbodyContainer iframe {
+    /*border-width: 0px;*/
+}
+
+
+.portletWindowIFrameClient {
+    padding: 0px;
+}
