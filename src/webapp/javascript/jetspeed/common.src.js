@@ -26,13 +26,19 @@ if ( window.dojo )
     dojo.require( "dojo.uri.Uri" );
 }
 
-// ... jetspeed base objects
+
+// jetspeed base objects
+
 if ( ! window.jetspeed )
     jetspeed = {};
 if ( ! jetspeed.url )
     jetspeed.url = {};
+if ( ! jetspeed.om )
+    jetspeed.om = {};
 
-// ... jetspeed version
+
+// jetspeed version
+
 jetspeed.version = 
 {
     major: 2, minor: 1, patch: 0, flag: "dev",
@@ -48,31 +54,49 @@ jetspeed.version =
 
 if ( ! window.dojo )
 {
-    jetspeed.no_dojo_load_notifying = false;
-    jetspeed.no_dojo_post_load = false;
-    jetspeed.pageLoadedListeners = [];
+    var jsObj = jetspeed;
+    jsObj.no_dojo_load_notifying = false;
+    jsObj.no_dojo_post_load = false;
+    jsObj.pageLoadedListeners = [];
 
     window.onload = function()
     {
         if ( ! window.dojo )
         {
-            jetspeed.no_dojo_load_notifying = true;
-            jetspeed.no_dojo_post_load = true;
-            var pll = jetspeed.pageLoadedListeners;
+            var _jsObj = jetspeed;
+            _jsObj.no_dojo_load_notifying = true;
+            _jsObj.no_dojo_post_load = true;
+            var pll = _jsObj.pageLoadedListeners;
 	        for( var x=0; x < pll.length; x++ )
             {
 		        pll[x]();
 	        }
-            jetspeed.pageLoadedListeners = [];
+            _jsObj.pageLoadedListeners = [];
         }
     };
-};
+}
+else
+{
+    var jsObj = jetspeed;
+    var djRH = dojo.render.html;
+    if ( djRH.mozilla )
+        jsObj.UAmoz = true;
+    else if ( djRH.ie )
+    {
+        jsObj.UAie = true;
+        if ( djRH.ie60 || djRH.ie50 || djRH.ie55 )
+            jsObj.UAie6 = true;
+    }
+    else if ( djRH.safari )
+        jsObj.UAsaf = true ;
+    else if ( djRH.opera )
+        jsObj.UAope = true ;
+}
 
-/*
-Call styles:
-	jetspeed.addOnLoad( functionPointer )
-	jetspeed.addOnLoad( object, "functionName" )
-*/
+
+// Call styles:
+//	jetspeed.addOnLoad( functionPointer )
+//	jetspeed.addOnLoad( object, "functionName" )
 jetspeed.addOnLoad = function( obj, fcnName )
 {
     if ( window.dojo )
@@ -114,165 +138,16 @@ jetspeed.callPageLoaded = function()
 	}
 };
 
-jetspeed.printobj = function( obj, omitLineBreaks, omitEmptyValsProperties, arrayLengthsOnly )
+jetspeed.getBody = function()
 {
-    var props = [];
-    for( var prop in obj )
-    {
-        try
-        {
-            var propVal = obj[prop];
-            if ( arrayLengthsOnly )
-            {
-                if ( dojo.lang.isArray( propVal ) )
-                {
-                    propVal = "[" + propVal.length + "]";
-                }
-            }
-            propVal = propVal + "";
-            if ( ! omitEmptyValsProperties || propVal.length > 0 )
-                props.push( prop + ': ' + propVal );
-        }
-        catch(E)
-        {
-            props.push( prop + ': ERROR - ' + E.message );
-        }
-    }
-    props.sort();
-    var buff = "";
-    for( var i = 0; i < props.length; i++ )
-    {
-        if ( buff.length > 0 )
-            buff += ( omitLineBreaks ? ", " : "\r\n" );
-        buff += props[i];
-    }
-    return buff;
+    var jsObj = jetspeed;
+    if ( jsObj.docBody == null )
+        jsObj.docBody = document.body || document.getElementsByTagName( "body" )[0];
+    return jsObj.docBody;
 };
 
-jetspeed.println = function( line )
-{
-    try
-    {
-        var console = jetspeed.getDebugElement();
-        if( !console )
-        {
-            console = document.getElementsByTagName( "body" )[0] || document.body;
-        }
-        var div = document.createElement( "div" );
-        div.appendChild( document.createTextNode( line ) );
-        console.appendChild( div );
-    }
-    catch (e)
-    {
-        try
-        {   // safari needs the output wrapped in an element for some reason
-            document.write("<div>" + line + "</div>");
-        }
-        catch(e2)
-        {
-            window.status = line;
-        }
-    }
-};
+// jetspeed.url
 
-jetspeed.debugNodeTree = function( node, string )
-{
-    if ( ! node ) return ;
-    
-    if ( string )
-    {
-        if ( string.length > 0 )
-            jetspeed.println( string );
-    }
-    else
-    {
-        jetspeed.println( 'node: ' );
-    }
-    if ( node.nodeType != 1 && node.nodeType != 3 )
-    {
-        if ( node.length && node.length > 0 && ( node[0].nodeType == 1 || node[0].nodeType == 3 ) )
-        {
-            for ( var i = 0 ; i < node.length ; i++ )
-            {
-                jetspeed.debugNodeTree( node[i], " [" + i + "]" )
-            }
-        }
-        else
-        {
-            jetspeed.println( " node is not a node! " + node.length );
-        }   
-        return ;
-    }
-    if ( node.innerXML )
-    {
-        jetspeed.println( node.innerXML );
-    }
-    else if ( node.xml )
-    {
-        jetspeed.println( node.xml );
-    }
-    else if ( typeof XMLSerializer != "undefined" )
-    {
-        jetspeed.println( (new XMLSerializer()).serializeToString( node ) );
-    }
-    else
-    {
-        jetspeed.println( " node != null (IE no XMLSerializer)" );
-    }
-};
-jetspeed.debugShallow = function( obj, string )
-{
-    if ( string )
-        jetspeed.println( string );
-    else
-        jetspeed.println( 'Object: ' + obj );
-    var props = [];
-    for(var prop in obj){
-        try {
-            props.push(prop + ': ' + obj[prop]);
-        } catch(E) {
-            props.push(prop + ': ERROR - ' + E.message);
-        }
-    }
-    props.sort();
-    for(var i = 0; i < props.length; i++) {
-        jetspeed.println( props[i] );
-    }
-};
-jetspeed.getDebugElement = function( clear )
-{
-    var console = null ;
-    try {
-        var console = document.getElementById("debug_container");
-        if(!console)
-        {
-            var consoleContainer = document.getElementsByTagName("body")[0] || document.body;
-            var console = document.createElement("div");
-            console.setAttribute( "id", "debug_container" );
-            consoleContainer.appendChild(console);
-        }
-        else if ( clear )
-        {
-            console.innerHTML = "";
-        }
-    } catch (e) {
-        try {
-
-        } catch(e2){}
-    }
-    return console ;   
-};
-if ( window.djConfig != null && window.djConfig.isDebug )
-{
-    var ch = String.fromCharCode(0x00a0);
-    jetspeed.debugindentch = ch;
-    jetspeed.debugindentH = ch + ch;
-    jetspeed.debugindent = ch + ch + ch + ch;
-    jetspeed.debugindent2 = jetspeed.debugindent + jetspeed.debugindent;
-    jetspeed.debugindent3 = jetspeed.debugindent + jetspeed.debugindent + jetspeed.debugindent;
-}
-
-// ... jetspeed.url
 jetspeed.url.LOADING_INDICATOR_ID = "js-showloading";
 jetspeed.url.path =
 {
@@ -289,7 +164,9 @@ jetspeed.url.path =
 
 jetspeed.url.pathInitialize = function( force )
 {
-    if ( ! force && jetspeed.url.path.initialized ) return;
+    var jsU = jetspeed.url;
+    var jsUP = jsU.path;
+    if ( ! force && jsUP.initialized ) return;
     var baseTags = document.getElementsByTagName( "base" );
 
     var baseTagHref = null;
@@ -298,7 +175,7 @@ jetspeed.url.pathInitialize = function( force )
     else
         baseTagHref = window.location.href;
 
-    var baseTag = jetspeed.url.parse( baseTagHref );
+    var baseTag = jsU.parse( baseTagHref );
 
     var basePath = baseTag.path;
     
@@ -320,18 +197,18 @@ jetspeed.url.pathInitialize = function( force )
     else
         jetspeedPath = basePath.substring( 0, sepPos );
     
-    //dojo.debug( "pathInitialize  new-JETSPEED=" + jetspeedPath + " orig-JETSPEED=" + jetspeed.url.path.JETSPEED + " new-SERVER=" + serverUri + " orig-SERVER=" + document.location.protocol + "//" + document.location.host );
+    //dojo.debug( "pathInitialize  new-JETSPEED=" + jetspeedPath + " orig-JETSPEED=" + jsUP.JETSPEED + " new-SERVER=" + serverUri + " orig-SERVER=" + document.location.protocol + "//" + document.location.host );
     
-    jetspeed.url.path.JETSPEED = jetspeedPath;
-    jetspeed.url.path.SERVER = serverUri;
-    jetspeed.url.path.AJAX_API = jetspeed.url.path.JETSPEED + "/ajaxapi";
-    jetspeed.url.path.DESKTOP = jetspeed.url.path.JETSPEED + "/desktop";
-    jetspeed.url.path.PORTAL = jetspeed.url.path.JETSPEED + "/portal";
-    jetspeed.url.path.PORTLET = jetspeed.url.path.JETSPEED + "/portlet";
-    jetspeed.url.path.ACTION = jetspeed.url.path.JETSPEED + "/action";
-    jetspeed.url.path.RENDER = jetspeed.url.path.JETSPEED + "/render";
+    jsUP.JETSPEED = jetspeedPath;
+    jsUP.SERVER = serverUri;
+    jsUP.AJAX_API = jsUP.JETSPEED + "/ajaxapi";
+    jsUP.DESKTOP = jsUP.JETSPEED + "/desktop";
+    jsUP.PORTAL = jsUP.JETSPEED + "/portal";
+    jsUP.PORTLET = jsUP.JETSPEED + "/portlet";
+    jsUP.ACTION = jsUP.JETSPEED + "/action";
+    jsUP.RENDER = jsUP.JETSPEED + "/render";
 
-    jetspeed.url.path.initialized = true;
+    jsUP.initialized = true;
 };
 jetspeed.url.parse = function( url )
 {   // taken from dojo.uri.Uri
@@ -385,7 +262,7 @@ jetspeed.url.JSUri.prototype =
     }
 };
 jetspeed.url.scheme =
-{   // used to make jetspeed.url.validateUrlStartsWithHttp cleaner
+{   // used to make jetspeed.url.urlStartsWithHttp cleaner
     HTTP_PREFIX: "http://",
     HTTP_PREFIX_LEN: "http://".length,
     HTTPS_PREFIX: "https://",
@@ -460,7 +337,7 @@ jetspeed.url.addPath = function( url, path )
     var urlObj = jetspeed.url.parse( modUri );
     return urlObj.toString();
 };
-jetspeed.url.validateUrlStartsWithHttp = function( url )
+jetspeed.url.urlStartsWithHttp = function( url )
 {
     if ( url )
     {
@@ -640,6 +517,38 @@ jetspeed.url.getQueryParameter = function( urlObj, paramname )
     return null;
 };
 
+
+// jetspeed.om.Id
+
+jetspeed.om.Id = function( /* ... */ )  // intended as a simple, general object with an id and a getId() function
+{
+    var idBuff = "";
+    for ( var i = 0; i < arguments.length; i++ )
+    {
+        if( dojo.lang.isString( arguments[i] ) )
+        {
+            if ( idBuff.length > 0 )
+                idBuff += "-";
+            idBuff += arguments[i];
+        }
+        else if ( dojo.lang.isObject( arguments[i] ) )
+        {
+            for ( var slotKey in arguments[i] )
+            {
+                this[ slotKey ] = arguments[i][slotKey];
+            }
+        }
+    }
+    this.id = idBuff;
+};
+jetspeed.om.Id.prototype =
+{
+    getId: function()
+    {
+        return this.id;
+    }
+};
+
 if ( window.dojo )
 {
     jetspeed.url.BindArgs = function( bindArgs )
@@ -672,7 +581,7 @@ if ( window.dojo )
                 var dmId = null;
                 if ( this.debugContentDumpIds )
                 {
-                    dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
+                    dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : ( ( this.domainModelObject && this.domainModelObject.id ) ? String( this.domainModelObject.id ) : "" ) );
                     for ( var debugContentIndex = 0 ; debugContentIndex < this.debugContentDumpIds.length; debugContentIndex++ )
                     {
                         if ( dmId.match( new RegExp( this.debugContentDumpIds[ debugContentIndex ] ) ) )
