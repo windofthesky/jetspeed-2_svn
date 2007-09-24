@@ -19,11 +19,11 @@ limitations under the License.
 
 /*  begin dojo styles  */
 
-.tigris .dojoFloatingPaneTitleBar {
+.tigris .portletWindowTitleBar {
     background: #98FB98;    /* palegreen */ 
 }
 
-.tigris .dojoFloatingPaneTitleText {
+.tigris .portletWindowTitleText {
 	color: #4682B4;  /* steelblue */
 }
 
@@ -32,38 +32,7 @@ limitations under the License.
 	width: 11px;
 }
 
-/* minimize/maximize icons are specified by CSS only */
-.tigris .dojoFloatingPaneMinimizeIcon,
-.tigris .dojoFloatingPaneMaximizeIcon,
-.tigris .dojoFloatingPaneRestoreIcon,
-.tigris .dojoFloatingPaneCloseIcon {
-	vertical-align: middle;
-	height: 22px;
-	width: 22px;
-	float: right;
-}
-.tigris .dojoFloatingPaneMinimizeIcon {
-	background-image: url(../images/desktop/minimize.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-.tigris .dojoFloatingPaneMaximizeIcon {
-    background-image: url(../images/desktop/maximize.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-.tigris .dojoFloatingPaneRestoreIcon {
-    background-image: url(../images/desktop/restore.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-.tigris .dojoFloatingPaneCloseIcon {
-	background-image: url(../images/desktop/close.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-.tigris .dojoFloatingPaneTitleBarIcon {
+.tigris .portletWindowTitleBarIcon {
     margin-top: 3px;
     margin-left: 2px;
     margin-right: 3px;   /* these margin settings are restated from desktop/widget/HtmlFloatingPane.css - to override the .tigris img styles in this file */
