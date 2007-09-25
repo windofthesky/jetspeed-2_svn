@@ -484,6 +484,8 @@ limitations under the License.
         <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
           <fileset dir="${basedir}/../src/webapp/WEB-INF/assembly/alternate">
             <include name="request-context.xml"/>
+	        <include name="db-page-manager.xml" />
+	        <include name="interceptors.xml" />
           </fileset>
          </copy>
          <mkdir dir="${temp.assembly.dir}/boot/"/>             
@@ -541,6 +543,13 @@ limitations under the License.
             <dependency groupId="tyrex"
                         artifactId="tyrex"
                         version="1.0.1"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-page-manager"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-portal-site"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+
         </dependencies>
 
         <!-- create sysproperty set to configure import utility -->
