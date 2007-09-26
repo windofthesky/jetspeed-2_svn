@@ -481,11 +481,6 @@ limitations under the License.
             <include name="transaction.xml"/>           
           </fileset>
          </copy>
-       <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
-            <fileset dir="\${basedir}/../src/webapp/WEB-INF/assembly/alternate">
-             <include name="request-context.xml"/>
-           </fileset>
-          </copy>
          <mkdir dir="${temp.assembly.dir}/boot/"/>             
          <copy todir="${temp.assembly.dir}/boot/" overwrite="true" failonerror="true">
          	<fileset dir="\${basedir}/../src/webapp/WEB-INF/assembly/boot">
@@ -493,7 +488,14 @@ limitations under the License.
           </fileset>
          </copy>
 -->        
-        <echo message=" IN SEED establishing dependency to org.apache.pluto.version=${org.apache.pluto.version}"/>
+        <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
+             <fileset dir="\${basedir}/dbpsml/assembly/alternate">
+     	        <include name="db-page-manager.xml" />
+     	        <include name="interceptors.xml" />                          	
+            </fileset>
+           </copy>
+
+    	<echo message=" IN SEED establishing dependency to org.apache.pluto.version=${org.apache.pluto.version}"/>
         <echo message="    portlet-api.version=${portlet-api.version}"/>
         <echo message="    org.apache.jetspeed.deploy.version=${org.apache.jetspeed.deploy.version}"/>
         <echo message="    org.apache.jetspeed.deploy.groupid=${org.apache.jetspeed.deploy.groupid}"/>
