@@ -57,7 +57,7 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	 */
 	public String[] searchGroupMemberShipByGroup(final String userPrincipalUid, SearchControls cons) throws NamingException {
 		
-		String query = "(&(" + getGroupMembershipAttribute() + "=" + userPrincipalUid + ")" + getGroupFilter()  + ")";
+		String query = "(&(" + getGroupMembershipAttribute() + "=" + getUserDN(userPrincipalUid) + ")" + getGroupFilter()  + ")";
 		
 	    if (logger.isDebugEnabled())
 	    {
