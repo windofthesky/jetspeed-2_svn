@@ -35,7 +35,14 @@ limitations under the License.
 
   <bean id="CustomDecoratorActionsAdapter"
       class="org.apache.jetspeed.decoration.CustomDecoratorActionsFactory">
+    <!--
+      If true, admin rights can be delegated to others based on constraints and permissions. 
+      Otherwise, only users with the admin role can use admin actions such as edit_defaults.
+    -->
     <constructor-arg index="0">
+        <value>true</value>
+    </constructor-arg>
+    <constructor-arg index="1">
         <ref bean="PortalConfiguration"/>
     </constructor-arg>
   </bean>

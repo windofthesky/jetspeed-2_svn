@@ -26,6 +26,7 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
@@ -44,16 +45,29 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
     private final List supportedActions;
     private final List supportedSoloActions;
     
+    private boolean adminRightsDelegatable = true;    
     private PortalConfiguration configuration;
+    private String adminRoleName = "admin";
     
     public CustomDecoratorActionsFactory()
     {
-        this(null);
+        this(true);
     }
     
-    public CustomDecoratorActionsFactory(PortalConfiguration configuration)
+    public CustomDecoratorActionsFactory(boolean adminRightsDelegatable)
     {
+        this(adminRightsDelegatable, null);
+    }
+    
+    public CustomDecoratorActionsFactory(boolean adminRightsDelegatable, PortalConfiguration configuration)
+    {
+        this.adminRightsDelegatable = adminRightsDelegatable;
         this.configuration = configuration;
+        
+        if (this.configuration != null)
+        {
+            this.adminRoleName = this.configuration.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN, this.adminRoleName);
+        }
         
         ArrayList list = new ArrayList(JetspeedActions.getStandardPortletModes());
         list.add(JetspeedActions.ABOUT_MODE);
@@ -99,18 +113,22 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
         // else if (printModeIndex != -1)
         //   support switching to different modes once in "solo" state, even back to "print"
         
-        String adminRoleName = "admin";
-        
-        if (this.configuration != null)
-        {
-            adminRoleName = this.configuration.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN, adminRoleName);
-        }
-        
-        // Remove editDefaultsMode if the user does not have admin role.
         int editDefaultsModeIndex = actionTemplates.indexOf(EDIT_DEFAULTS_MODE_TEMPLATE);
         if (editDefaultsModeIndex != -1)
         {
-            if (!rc.getRequest().isUserInRole(adminRoleName))
+            if (this.adminRightsDelegatable)
+            {
+                try
+                {
+                    ContentPage page = rc.getPage();
+                    page.checkAccess(JetspeedActions.EDIT_DEFAULTS);
+                }
+                catch (SecurityException e)
+                {
+                    actionTemplates.remove(editDefaultsModeIndex);
+                }
+            }
+            else if (!rc.getRequest().isUserInRole(this.adminRoleName))
             {
                 actionTemplates.remove(editDefaultsModeIndex);
             }
