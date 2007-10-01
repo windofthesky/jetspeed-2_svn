@@ -31,8 +31,6 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.pluto.om.window.PortletWindow;
-import org.apache.jetspeed.administration.PortalConfiguration;
-import org.apache.jetspeed.administration.PortalConfigurationConstants;
 
 public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFactory
 {
@@ -45,30 +43,8 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
     private final List supportedActions;
     private final List supportedSoloActions;
     
-    private boolean adminRightsDelegatable = true;    
-    private PortalConfiguration configuration;
-    private String adminRoleName = "admin";
-    
     public CustomDecoratorActionsFactory()
     {
-        this(true);
-    }
-    
-    public CustomDecoratorActionsFactory(boolean adminRightsDelegatable)
-    {
-        this(adminRightsDelegatable, null);
-    }
-    
-    public CustomDecoratorActionsFactory(boolean adminRightsDelegatable, PortalConfiguration configuration)
-    {
-        this.adminRightsDelegatable = adminRightsDelegatable;
-        this.configuration = configuration;
-        
-        if (this.configuration != null)
-        {
-            this.adminRoleName = this.configuration.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN, this.adminRoleName);
-        }
-        
         ArrayList list = new ArrayList(JetspeedActions.getStandardPortletModes());
         list.add(JetspeedActions.ABOUT_MODE);
         list.add(JetspeedActions.EDIT_DEFAULTS_MODE);
@@ -116,19 +92,12 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
         int editDefaultsModeIndex = actionTemplates.indexOf(EDIT_DEFAULTS_MODE_TEMPLATE);
         if (editDefaultsModeIndex != -1)
         {
-            if (this.adminRightsDelegatable)
+            try
             {
-                try
-                {
-                    ContentPage page = rc.getPage();
-                    page.checkAccess(JetspeedActions.EDIT_DEFAULTS);
-                }
-                catch (SecurityException e)
-                {
-                    actionTemplates.remove(editDefaultsModeIndex);
-                }
+                ContentPage page = rc.getPage();
+                page.checkAccess(JetspeedActions.EDIT_DEFAULTS);
             }
-            else if (!rc.getRequest().isUserInRole(this.adminRoleName))
+            catch (SecurityException e)
             {
                 actionTemplates.remove(editDefaultsModeIndex);
             }
