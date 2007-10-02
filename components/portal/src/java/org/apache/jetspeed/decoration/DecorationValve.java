@@ -88,6 +88,8 @@ public class DecorationValve extends AbstractValve implements Valve
     private boolean useSessionForThemeCaching = false;
     
     private boolean maxOnEdit = false;
+    
+    private boolean autoSwitchingToEditDefaultsModes = true;
          
      /**
       * For security constraint checks
@@ -386,7 +388,7 @@ public class DecorationValve extends AbstractValve implements Valve
                         }
                         if ( ! equalsCurrentMode || isAjaxRequest )
                         {
-                            if ( content.supportsPortletMode(customMode) 
+                            if ( (content.supportsPortletMode(customMode) || isAutoSwitchableCustomMode(customMode))
                                  && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
                                  && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
                                  )
@@ -632,5 +634,28 @@ public class DecorationValve extends AbstractValve implements Valve
     public boolean getMaximizeOnEdit()
     {
         return this.maxOnEdit;
+    }
+    
+    public void setAutoSwitchingToEditDefaultsModes(boolean autoSwitchingToEditDefaultsModes)
+    {
+        this.autoSwitchingToEditDefaultsModes = autoSwitchingToEditDefaultsModes;
+    }
+    
+    public boolean getAutoSwitchingToEditDefaultsModes()
+    {
+        return this.autoSwitchingToEditDefaultsModes;
+    }
+    
+    private boolean isAutoSwitchableCustomMode(PortletMode customMode)
+    {
+        if (this.autoSwitchingToEditDefaultsModes)
+        {
+            if (JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
