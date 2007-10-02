@@ -98,10 +98,6 @@ public class PortletObjectProxy extends BaseObjectProxy
             {
             }
         }
-        else
-        {
-            System.out.println("!!!!! not generic portlet: " + this.portletObject);
-        }
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
