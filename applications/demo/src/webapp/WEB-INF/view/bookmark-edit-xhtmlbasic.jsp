@@ -18,7 +18,7 @@ limitations under the License.
 <%@ page import="javax.portlet.*"%>
 <%@ page import="java.util.*"%>
 <%@ taglib uri='/WEB-INF/portlet.tld' prefix='portlet'%>
-<portlet:actionURL portletMode="edit" var="myAction">
+<portlet:actionURL var="myAction">
 <portlet:param name="add" value="add"/>
 </portlet:actionURL>
 <portlet:actionURL portletMode="view" var="myCancel"/>

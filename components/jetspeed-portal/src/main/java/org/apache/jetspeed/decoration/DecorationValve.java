@@ -366,7 +366,8 @@ public class DecorationValve extends AbstractValve implements Valve
             
             DecoratorActionsFactory actionsAdapter = getDecoratorActionsAdapter(decoration);
             
-            Iterator iter = actionsAdapter.getSupportedActions(requestContext, pa, window, currentMappedMode, currentMappedState, decoration).iterator();
+            List supportedActions = actionsAdapter.getSupportedActions(requestContext, pa, window, currentMappedMode, currentMappedState, decoration);
+            Iterator iter = supportedActions.iterator();
             
             String currentModeAction = null;
             String currentStateAction = null;
@@ -388,7 +389,7 @@ public class DecorationValve extends AbstractValve implements Valve
                         }
                         if ( ! equalsCurrentMode || isAjaxRequest )
                         {
-                            if ( (content.supportsPortletMode(customMode) || isAutoSwitchableCustomMode(customMode))
+                            if ( (content.supportsPortletMode(customMode) || isAutoSwitchableCustomMode(content, customMode))
                                  && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
                                  && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
                                  )
@@ -646,11 +647,11 @@ public class DecorationValve extends AbstractValve implements Valve
         return this.autoSwitchingToEditDefaultsModes;
     }
     
-    private boolean isAutoSwitchableCustomMode(PortletMode customMode)
+    private boolean isAutoSwitchableCustomMode(ContentTypeSet content, PortletMode customMode)
     {
         if (this.autoSwitchingToEditDefaultsModes)
         {
-            if (JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))
+            if (content.supportsPortletMode(PortletMode.EDIT) && JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))
             {
                 return true;
             }
