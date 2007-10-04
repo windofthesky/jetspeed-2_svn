@@ -36,8 +36,8 @@ limitations under the License.
   #set($numberOfColumns=$renderRequest.getAttribute("numberOfColumns"))
   #set($lastColumn = $numberOfColumns - 1)  
 #end    
-   
-<!-- Decorator  $decorator  ${decoTop} - ${decoBottom}-->
+
+## Decorator  $decorator  ${decoTop} - ${decoBottom}
 #if ($isRoot)
   #parse($myFragment.decoration.header)
    #set($layoutClass = "portal-nested-layout")
