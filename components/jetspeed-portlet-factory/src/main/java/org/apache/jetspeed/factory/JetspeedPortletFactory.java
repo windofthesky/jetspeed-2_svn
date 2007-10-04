@@ -56,15 +56,24 @@ public class JetspeedPortletFactory implements PortletFactory
     
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
     private final Map classLoaderMap;
+    
+    private boolean portletProxyUsed = false;
 
     /**
      * 
      */
     public JetspeedPortletFactory()
     {
+        this(false);
+    }
+    
+    public JetspeedPortletFactory(boolean portletProxyUsed)
+    {
         this.portletCache =  Collections.synchronizedMap(new HashMap());
         this.validatorCache = Collections.synchronizedMap(new HashMap());
         classLoaderMap = Collections.synchronizedMap(new HashMap());
+        
+        this.portletProxyUsed = portletProxyUsed;
     }
 
     public void registerPortletApplication(PortletApplication pa, ClassLoader cl)
@@ -205,7 +214,15 @@ public class JetspeedPortletFactory implements PortletFactory
                 // wrap new Portlet inside PortletInstance which ensures the destroy
                 // method will wait for all its invocation threads to complete
                 // and thereby releasing all its ClassLoader locks as needed for local portlets.
-                portlet = new JetspeedPortletInstance(pd.getName(), (Portlet)clazz.newInstance());
+                
+                if (this.portletProxyUsed)
+                {
+                    portlet = new JetspeedPortletProxyInstance(pd.getName(), (Portlet)clazz.newInstance());
+                }
+                else
+                {
+                    portlet = new JetspeedPortletInstance(pd.getName(), (Portlet)clazz.newInstance());
+                }
             }
               finally
             {
