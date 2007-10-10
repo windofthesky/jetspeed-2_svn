@@ -479,6 +479,7 @@ limitations under the License.
         <ref bean="localizationValve"/>
         <ref bean="profilerValve"/>                        
         <ref bean="containerValve"/>
+        <ref bean="resourceValve"/>
         <ref bean="portletValveTitleInHeader"/>    
     </list>
     </constructor-arg>

@@ -25,6 +25,7 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
@@ -156,6 +157,11 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
     
     protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action)
     {   
+        return createPortletURL(encodedNavState, secure, window, action, false);
+    }
+    
+    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action, boolean resource)
+    {   
         StringBuffer buffer = new StringBuffer("");
         buffer.append(getBaseURL(secure));
         if (action)
@@ -177,13 +183,22 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
             buffer.append(getPath());
         }
-        PortletEntity pe = window.getPortletEntity();
-        buffer.append( "?entity=" ).append( pe.getId() );
         
-        PortletDefinition portlet = pe.getPortletDefinition();
-        MutablePortletApplication app = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-        String uniqueName = app.getName() + "::" + portlet.getName();
-        buffer.append( "&portlet=" ).append( uniqueName );
+        if ( !resource )
+        {
+            PortletEntity pe = window.getPortletEntity();
+            buffer.append( "?entity=" ).append( pe.getId() );
+            
+            PortletDefinition portlet = pe.getPortletDefinition();
+            MutablePortletApplication app = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+            String uniqueName = app.getName() + "::" + portlet.getName();
+            buffer.append( "&portlet=" ).append( uniqueName );
+            
+        }
+        else
+        {
+            buffer.append("?encoder=desktop");
+        }
 
         return buffer.toString();
     }        
@@ -192,7 +207,8 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
     {
         try
         {
-            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window, action);
+            boolean resource = !action && parameters.containsKey(PortalReservedParameters.PORTLET_RESOURCE_URL_REQUEST_PARAMETER);
+            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window, action, resource);
         }
         catch (UnsupportedEncodingException e)
         {
