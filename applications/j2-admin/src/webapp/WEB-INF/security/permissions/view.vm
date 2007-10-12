@@ -38,162 +38,160 @@ javascript: alert( dojo.html.disableSelection(dojo.byId( "resourceName" )) )
 dojo.lang.shallowCopy(this.portlets) ;
 -->
 
-<div dojoType="LayoutContainer"
-    layoutChildPriority="left-right"
-    style="width: 100%">
+<div dojoType="LayoutContainer" widgetId="permsRootLContainer" class="permsRootLContainer"
+     layoutChildPriority="left-right">
 
-  <div id="mainTabContainer" dojoType="TabContainer" selectedChild="portlets" doLayout="false">
+    <div dojoType="LayoutContainer" widgetId="permsTabLContainer" class="permsTabLContainer" layoutAlign="top" layoutChildPriority="none">
 
-    <div id="portlets" dojoType="ContentPane" label="Portlets">
-      <div class="tableContainer">
+        <div id="permsTabContainer" dojoType="TabContainer" selectedChild="portlets" doLayout="false">
 
-        <table dojoType="jetspeed:EditorTable" widgetId="portletsTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
-          <col width="45%"></col>
-          <col width="15%"></col>
-          <col width="35%"></col>
-          <thead>
-          <tr>
-          <th field="name" dataType="String">Resource</th>
-          <th field="actions" dataType="String">Actions</th>
-          <th field="roles" dataType="String">Roles</th>        
-          </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+            <div id="portlets" dojoType="ContentPane" label="Portlets">
+                <div class="tableContainer">
 
-      </div>
+                    <table dojoType="jetspeed:EditorTable" widgetId="portletsTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+                        <col width="45%"></col>
+                        <col width="15%"></col>
+                        <col width="35%"></col>
+                        <thead>
+                            <tr>
+                                <th field="name" dataType="String">Resource</th>
+                                <th field="actions" dataType="String">Actions</th>
+                                <th field="roles" dataType="String">Roles</th>        
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div id="folders" dojoType="ContentPane" label="Folders">
+                <div class="tableContainer">
+
+                    <table dojoType="jetspeed:EditorTable" widgetId="foldersTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+                        <col width="45%"></col>
+                        <col width="15%"></col>
+                        <col width="35%"></col>
+                        <thead>
+                            <tr>
+                                <th field="name" dataType="String">Resource</th>
+                                <th field="actions" dataType="String">Actions</th>
+                                <th field="roles" dataType="String">Roles</th>        
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div id="pages" dojoType="ContentPane" label="Pages">
+                <div class="tableContainer">
+
+                    <table dojoType="jetspeed:EditorTable" widgetId="pagesTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
+                        <col width="45%"></col>
+                        <col width="15%"></col>
+                        <col width="35%"></col>
+                        <thead>
+                            <tr>
+                                <th field="name" dataType="String">Resource</th>
+                                <th field="actions" dataType="String">Actions</th>
+                                <th field="roles" dataType="String">Roles</th>    
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="folders" dojoType="ContentPane" label="Folders">
-      <div class="tableContainer">
 
-        <table dojoType="jetspeed:EditorTable" widgetId="foldersTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
-        <col width="45%"></col>
-        <col width="15%"></col>
-        <col width="35%"></col>
-        <thead>
-        <tr>
-        <th field="name" dataType="String">Resource</th>
-        <th field="actions" dataType="String">Actions</th>
-        <th field="roles" dataType="String">Roles</th>        
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-        </table>
+    <div dojoType="LayoutContainer" widgetId="editorLContainer" class="editorLContainer" layoutAlign="client" layoutChildPriority="top-bottom">
 
-      </div>
-    </div>
+        <div dojoType="LayoutContainer" widgetId="editorLTop" class="editorLTop" layoutAlign="top">
 
-    <div id="pages" dojoType="ContentPane" label="Pages">
-      <div class="tableContainer">
+            <div dojoType="ContentPane"
+                 widgetId="resourceNameLContainer"
+                 class="resourceNameLContainer"
+                 layoutAlign="left">
+                <b>Resource</b><br/>
+                <input name="resourceName" id="resourceName" type="text" size="45" onChange="updateSelectedRow()">
+            </div>
 
-        <table dojoType="jetspeed:EditorTable" widgetId="pagesTable" class="permissions" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" templateCssPath="/j2-admin/css/security-permissions.css" cellpadding="0" cellspacing="0" border="0">
-        <col width="45%"></col>
-        <col width="15%"></col>
-        <col width="35%"></col>
-        <thead>
-        <tr>
-        <th field="name" dataType="String">Resource</th>
-        <th field="actions" dataType="String">Actions</th>
-        <th field="roles" dataType="String">Roles</th>    
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-        </table>
+            <div dojoType="ContentPane"
+                 widgetId="editorControls"
+                 class="editorControlsLContainer buttonbox"
+                 layoutAlign="client">
 
-      </div>
-    </div>
+                <button widgetId="deleteButton" dojoType="Button" onclick="deleteEntry()">
+                    Delete
+                </button>
 
-  </div>
+                <button widgetId="revertButton" dojoType="Button" onclick="revertEntry()">
+                    Revert
+                </button>
 
-  <div dojoType="LayoutContainer" layoutChildPriority='none' style="width: 100%; height: 200px; border: 1px solid grey;">
+                <button widgetId="saveButton" dojoType="Button" onclick="saveEntry()">
+                    Save
+                </button>
+                
+                <button widgetId="newButton" dojoType="Button" onclick="newEntry()">
+                    New
+                </button>
 
-    <div dojoType="LayoutContainer" widgetId="editorTop" minHeight="20" layoutAlign="top" style="padding: 4px; border-bottom: thin inset grey; width: 100%; height: 55px">
+            </div>
+        </div>
 
-      <div dojoType="LayoutContainer"
-	    widgetId="resourceNameContainer"
-	    minHeight="20"
-            layoutAlign="left"
-	    style="padding: 4px; border-right: thin inset grey; width: 70%; height: 55px">
-        <b>Resource</b><br/>
-        <input name="resourceName" id="resourceName" type="text" size="50" onChange="updateSelectedRow()">
-      </div>
+        <div dojoType="LayoutContainer" widgetId="editorLBottom" class="editorLBottom" layoutAlign="client">
 
-      <div dojoType="LayoutContainer"
-	    widgetId="editorControls"
-	    minHeight="20"
-            layoutAlign="right"
-	    style="width: 20%; height: 55px">
-        <div class="buttonbox">
+            <div dojoType="ContentPane"
+                 widgetId="actionsContainer"
+                 class="actionsLContainer"
+                 layoutAlign="right">
+                <b>Actions</b><br/>
+                <input type="checkbox" name="actionview" id="actionview" dojoType="Checkbox" /> <label for="actionview">View</label><br />
+                <input type="checkbox" name="actionedit" id="actionedit" dojoType="Checkbox" /> <label for="actionedit">Edit</label><br />
+                <input type="checkbox" name="actionhelp" id="actionhelp" dojoType="Checkbox" /> <label for="actionhelp">Help</label><br />
+            </div>
 
-        <button widgetId="newButton" dojoType="Button" onclick="newEntry()">
-            New
-        </button>
+            <div dojoType="ContentPane"
+                 widgetId="rolesContainer"
+                 class="rolesLContainer"
+                 layoutAlign="client">
 
-        <button widgetId="saveButton" dojoType="Button" onclick="saveEntry()">
-            Save
-        </button>
+                <b>Roles</b><br />
+                #foreach ($role in $roles)
+                <input type="checkbox" name="role_$velocityCount" id="role_$velocityCount" dojoType="Checkbox" /> <label for="role_$velocityCount">$role.Principal.Name</label><br />
+                #end
 
-        <button widgetId="revertButton" dojoType="Button" onclick="revertEntry()">
-            Revert
-        </button>
+            </div>
 
-        <button widgetId="deleteButton" dojoType="Button" onclick="deleteEntry()">
-            Delete
-        </button>
 
         </div>
-      </div>
-      
+
+        <div dojoType="dialog" id="SaveWarningDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
+            <form onsubmit="return false;">
+                <table>
+                    <tr>
+                        <td>Please Save or Revert changes to the selected permissions record before proceeding.</td><td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right" class="buttonboxright">
+                            <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide();" >Cancel</button>
+                            <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide(); revertEntry();">Revert</button>
+                            <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide(); saveEntry();">Save</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
     </div>
-
-    <div dojoType="LayoutContainer"
-	widgetId="rolesContainer"
-	minHeight="20"
-        layoutAlign="left"
-	style="padding: 4px; border-right: thin inset grey; width: 50%; height: 100px; overflow-y: auto; overflow-x: hidden">
-
-      <b>Roles</b><br />
-#foreach ($role in $roles)
-      <input type="checkbox" name="role_$velocityCount" id="role_$velocityCount" dojoType="Checkbox" /> <label for="role_$velocityCount">$role.Principal.Name</label><br />
-#end
-
-    </div>
-
-    <div dojoType="LayoutContainer"
-	widgetId="actionsContainer"
-	minHeight="20"
-        layoutAlign="left"
-	style="padding: 4px; width: 50%; height: 100px; overflow-y: auto; overflow-x: hidden" >
-      <b>Actions</b><br/>
-      <input type="checkbox" name="actionview" id="actionview" dojoType="Checkbox" /> <label for="actionview">View</label><br />
-      <input type="checkbox" name="actionedit" id="actionedit" dojoType="Checkbox" /> <label for="actionedit">Edit</label><br />
-      <input type="checkbox" name="actionhelp" id="actionhelp" dojoType="Checkbox" /> <label for="actionhelp">Help</label><br />
-    </div>
-
-  </div>
-
-  <div dojoType="dialog" id="SaveWarningDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
-    <form onsubmit="return false;">
-    <table>
-      <tr>
-        <td>Please Save or Revert changes to the selected permissions record before proceeding.</td><td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td colspan="2" align="right" class="buttonboxright">
-          <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide();" >Cancel</button>
-          <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide(); revertEntry();">Revert</button>
-          <button dojoType="Button" onClick="dojo.widget.byId( 'SaveWarningDialog' ).hide(); saveEntry();">Save</button>
-        </td>
-      </tr>
-    </table>
-    </form>
-  </div>
-
-</div>
 
 <script language="JavaScript" type="text/javascript">
     rolePrincipals = new Array();
@@ -333,7 +331,7 @@ function updateEditor( rowData )
 function getTableWidget( containedInTab )
 {
     if ( ! containedInTab )
-        containedInTab = dojo.widget.byId( "mainTabContainer" ).selectedChildWidget;
+        containedInTab = dojo.widget.byId( "permsTabContainer" ).selectedChildWidget;
     return dojo.widget.byId( containedInTab.widgetId + "Table" );
 }
 function checkForChanges()
@@ -563,7 +561,7 @@ function debugCurrentTableData()
 
 function addListeners()
 {
-    var tabContainer = dojo.widget.byId("mainTabContainer");
+    var tabContainer = dojo.widget.byId("permsTabContainer");
     dojo.event.connect("around", tabContainer, "selectChild", function(invocation) {
         if ( checkForChanges() )
         {
