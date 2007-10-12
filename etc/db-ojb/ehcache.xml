@@ -417,8 +417,18 @@
                             replicateUpdates=false, replicateUpdatesViaCopy=false,
                             replicateRemovals=true"/>
   -->                           
-            </cache>
-            
+   </cache>
+
+   <cache name="desktopContentCache"
+          maxElementsInMemory="500"
+          maxElementsOnDisk="250"
+          eternal="false"
+          overflowToDisk="false"
+          timeToIdleSeconds="600"
+          timeToLiveSeconds="600"
+          memoryStoreEvictionPolicy="LFU">
+   </cache>
+   
     <!--
     Sample distributed cache named sampleDistributedCache1.
     This cache replicates using defaults.
