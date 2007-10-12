@@ -82,7 +82,7 @@ function addPortletToPage(theNewPortlet,pID)
    //dojo.widget.byId("AddPortletDialog").hide();   
    var portletDef = new jetspeed.selector.PortletDef( theNewPortlet );   
    var pagePath = jetspeed.url.removeAllQueryParameters( jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + getReturnPagePath() );
-   jetspeed.selector.addNewPortletDefinition( portletDef, null, pagePath, getAddToLayoutId() );
+   jetspeed.selector.addNewPortletDefinition( portletDef, pagePath, getAddToLayoutId() );
    selectorPortlets[pID].count = parseInt(selectorPortlets[pID].count) + 1;
    var cell = document.getElementById(theNewPortlet);
    if (cell != null)
@@ -122,24 +122,28 @@ function highlightSelectedCategory(cat)
              a.setAttribute("style", "font-weight:normal");
     }
 }
+function clearTable( tableNode )
+{
+    if ( ! tableNode ) return;
+    while ( tableNode.hasChildNodes() )
+    {
+        var lastChild = tableNode.lastChild;
+        var childNodeName = lastChild.nodeName;
+        if ( childNodeName && childNodeName.toLowerCase() == "tbody" )
+            break;
+        tableNode.removeChild( lastChild );
+    }
+}
+
 function createPagination(Pagenumber,PageCount)
 {
     var pagtable1 = document.getElementById('pagtable1');   
-    while (pagtable1.hasChildNodes())
-    {
-      pagtable1.removeChild(pagtable1.lastChild);
-    }
-    var pagtable3 = document.getElementById('pagtable3');   
-    while (pagtable3.hasChildNodes())
-    {
-      pagtable3.removeChild(pagtable3.lastChild);
-    }
-    
+    var pagtable3 = document.getElementById('pagtable3');
     var pagtable = document.getElementById('pagtable2');   
-    while (pagtable.hasChildNodes())
-    {
-      pagtable.removeChild(pagtable.lastChild);
-    }    
+    clearTable( pagtable1 );
+    clearTable( pagtable3 );
+    clearTable( pagtable );
+
     var pgRoww = null;
     var pgCol=null;
     var a = null;    
@@ -236,10 +240,8 @@ function displayGridPortlet()
   	//getting portlet table and deleting all items
   	//befor adding the new
   	var ptable = document.getElementById('ptable');
-  while (ptable.hasChildNodes())
-  {
-      ptable.removeChild(ptable.lastChild);
-  }
+    clearTable( ptable );
+
   	var outerRow = null;
   	var iz = 0;
   	var ri = 0;
@@ -352,7 +354,7 @@ function getAddToLayoutId()
 {
    var jsLayoutId = jetspeed.url.getQueryParameter( document.location.href, "jslayoutid" );
    if ( jsLayoutId == null )
-		jsLayoutId = "$jslayoutid";
+		jsLayoutId = "$!jslayoutid";
    return jsLayoutId;
 }
 function getReturnURL()
