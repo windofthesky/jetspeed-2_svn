@@ -55,9 +55,7 @@ dojo.widget.defineWidget(
 		columnSizeDialogBg: null,
 		columnSizeDialogFg: null,
 
-
         detail: null,
-
         
         // fields
         editorInitiatedFromDesktop: false,
@@ -65,25 +63,38 @@ dojo.widget.defineWidget(
 		isContainer: true,
         widgetsInTemplate: true,
 
+        dbOn: djConfig.isDebug,
+
+        // style classes
+        styleBase: "pageEditorPaneContainer",
+        styleBaseAdd: ( jetspeed.UAie ? "pageEditorPaneContainerIE" : "pageEditorPaneContainerNotIE" ),
+        styleDetail: "pageEditorDetailContainer",
+        styleDetailAdd: ( jetspeed.UAie ? "pageEditorDetailContainerIE" : "pageEditorDetailContainerNotIE" ),
 
         // protocol - dojo.widget.Widget create
 
         postMixInProperties: function( args, fragment, parent )
         {
-            jetspeed.widget.PageEditor.superclass.postMixInProperties.apply( this, arguments );
+            var jsObj = jetspeed;
+            jsObj.widget.PageEditor.superclass.postMixInProperties.apply( this, arguments );
+    
+            this.layoutImagesRoot = jsObj.prefs.getLayoutRootUrl() + "/images/desktop/";
+            this.labels = jsObj.prefs.pageEditorLabels;
+            this.dialogLabels = jsObj.prefs.pageEditorDialogLabels;
 
-            this.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.css" ) ;
-            this.templatePath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.html" ) ;
+            this.templateCssPath = new dojo.uri.Uri( jsObj.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.css" ) ;
+            this.templatePath = new dojo.uri.Uri( jsObj.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.html" ) ;
         },
 
         fillInTemplate: function( args, fragment )
         {
+            var djObj = dojo;
             var self = this;
 
-            this.deletePortletDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePortletConfirmed: function() { this.hide(); self.deletePortletConfirmed( this.portletEntityId ); } }, this.deletePortletDialog );
+            this.deletePortletDialog = djObj.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePortletConfirmed: function() { this.hide(); self.deletePortletConfirmed( this.portletEntityId ); } }, this.deletePortletDialog );
 			this.deletePortletDialog.setCloseControl( this.deletePortletDialog.deletePortletCancel.domNode );
 
-            this.deleteLayoutDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deleteLayoutConfirmed: function() { this.hide(); self.deleteLayoutConfirmed( this.portletEntityId ); } }, this.deleteLayoutDialog );
+            this.deleteLayoutDialog = djObj.widget.createWidget( "dialog", { widgetsInTemplate: true, deleteLayoutConfirmed: function() { this.hide(); self.deleteLayoutConfirmed( this.portletEntityId ); } }, this.deleteLayoutDialog );
 			this.deleteLayoutDialog.setCloseControl( this.deleteLayoutDialog.deleteLayoutCancel.domNode );
 
             var columnSizeParams = {};
@@ -111,7 +122,7 @@ dojo.widget.defineWidget(
                 }
             };
 
-            this.columnSizeDialog = dojo.widget.createWidget( "dialog", columnSizeParams, this.columnSizeDialog );
+            this.columnSizeDialog = djObj.widget.createWidget( "dialog", columnSizeParams, this.columnSizeDialog );
             this.columnSizeDialog.setCloseControl( this.columnSizeDialog.columnSizeCancel.domNode );
 
             jetspeed.widget.PageEditor.superclass.fillInTemplate.call( this );
@@ -135,31 +146,38 @@ dojo.widget.defineWidget(
         editPageBuild: function()
         {
             var jsObj = jetspeed;
-            jsObj.url.loadingIndicatorHide();
-
-            var layoutImagesUrl = jsObj.prefs.getLayoutRootUrl() + "/images/desktop/"; 
+            var jsPage = jsObj.page;
+            var djObj = dojo;
+            //jsObj.url.loadingIndicatorHide();
+            
+            var layoutImagesRoot = this.layoutImagesRoot;
+            var labels =  this.labels;
+            var dialogLabels =  this.dialogLabels;
 
             var pageEditorWidgets = new Array();
             var layoutEditPaneWidgets = new Array();
-            var pageEditPaneWidget = dojo.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jsObj.page.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jsObj.page.themeDefinitions.portletDecorations, layoutImagesRoot: layoutImagesUrl } );
+            var pageEditPaneWidget = djObj.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jsPage.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jsPage.themeDefinitions.portletDecorations, layoutImagesRoot: layoutImagesRoot, labels: labels, dialogLabels: dialogLabels } );
             pageEditPaneWidget.pageEditorWidget = this;
-            dojo.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
+            djObj.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
             pageEditorWidgets.push( pageEditPaneWidget );
 
-            var rootLayoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsObj.page.rootFragmentId, isRootLayout: true, layoutDefinitions: jsObj.page.themeDefinitions.layouts, layoutImagesRoot: layoutImagesUrl } );
+            var rootLayoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsPage.rootFragmentId, isRootLayout: true, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: layoutImagesRoot, labels: labels, dialogLabels: dialogLabels } );
             rootLayoutEditPaneWidget.pageEditorWidget = this;
-            dojo.dom.insertAfter( rootLayoutEditPaneWidget.domNode, pageEditPaneWidget.domNode );
+            djObj.dom.insertAfter( rootLayoutEditPaneWidget.domNode, pageEditPaneWidget.domNode );
             pageEditorWidgets.push( rootLayoutEditPaneWidget );
             layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
             
             if ( jsObj.prefs.windowTiling )
             {
-                for ( var i = 0 ; i < jsObj.page.columns.length; i++ )
+                var doc = document;
+                var layoutHeaderLayoutInfo = jsPage.layoutInfo.columnLayoutHeader;
+                var col, layoutEditPaneWidget;
+                for ( var i = 0 ; i < jsPage.columns.length; i++ )
                 {
-                    var col = jsObj.page.columns[i];
+                    col = jsPage.columns[i];
                     if ( col.layoutHeader )
                     {
-                        var layoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutId: col.layoutId, layoutDefinitions: jsObj.page.themeDefinitions.layouts, layoutImagesRoot: layoutImagesUrl } );
+                        layoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutColumn: col, layoutId: col.layoutId, layoutInfo: layoutHeaderLayoutInfo, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: layoutImagesRoot, labels: labels, dialogLabels: dialogLabels } );
                         layoutEditPaneWidget.pageEditorWidget = this;
                         if ( col.domNode.firstChild != null )
                             col.domNode.insertBefore( layoutEditPaneWidget.domNode, col.domNode.firstChild );
@@ -170,14 +188,21 @@ dojo.widget.defineWidget(
                         layoutEditPaneWidgets.push( layoutEditPaneWidget );
                     }
                 }
+                if ( jsObj.UAie )   // provide background when prevent IE bleed-through problem
+                {
+                    this.bgIframe = new jsObj.widget.BackgroundIframe( this.domNode, "ieLayoutBackgroundIFrame", djObj );
+                }
             }
             this.pageEditorWidgets = pageEditorWidgets;
             this.layoutEditPaneWidgets = layoutEditPaneWidgets;
             this.editPageSyncPortletActions();
 
+            jsObj.url.loadingIndicatorHide();
+
             if ( jsObj.UAie6 )
-                jsObj.page.displayAllPWins();
+                jsPage.displayAllPWins();
         },
+
         editPageSyncPortletActions: function()
         {
             var portlets = jetspeed.page.getPortletArray()
@@ -189,13 +214,15 @@ dojo.widget.defineWidget(
                 }
             }
         },
+
         editPageHide: function()
         {
-            if ( this.pageEditorWidgets != null )
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
             {
-                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].hide();
+                    pageEditorWidgets[i].hide();
                 }
             }
             this.hide();
@@ -204,11 +231,12 @@ dojo.widget.defineWidget(
         editPageShow: function()
         {
             var jsObj = jetspeed;
-            if ( this.pageEditorWidgets != null )
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
             {
-                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].editModeRedisplay();
+                    pageEditorWidgets[i].editModeRedisplay();
                 }
             }
             this.show();
@@ -218,12 +246,13 @@ dojo.widget.defineWidget(
         },
         editPageDestroy: function()
         {
-            if ( this.pageEditorWidgets != null )
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
             {
-                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].destroy();
-                    this.pageEditorWidgets[i] = null;
+                    pageEditorWidgets[i].destroy();
+                    pageEditorWidgets[i] = null;
                 }
             }
             if ( this.deletePortletDialog != null )
@@ -242,7 +271,7 @@ dojo.widget.defineWidget(
             this.deletePortletDialog.portletEntityId = portletEntityId;
             this.deletePortletDialog.portletTitle = portletTitle;
             this.deletePortletTitle.innerHTML = portletTitle;
-            this.deletePortletDialog.show();
+            this._openDialog( this.deletePortletDialog );
         },
         deletePortletConfirmed: function( portletEntityId )
         {
@@ -254,7 +283,7 @@ dojo.widget.defineWidget(
             this.deleteLayoutDialog.layoutId = layoutId;
             this.deleteLayoutDialog.layoutTitle = layoutId;
             this.deleteLayoutTitle.innerHTML = layoutId;
-            this.deleteLayoutDialog.show();
+            this._openDialog( this.deleteLayoutDialog );
         },
         deleteLayoutConfirmed: function()
         {
@@ -290,8 +319,8 @@ dojo.widget.defineWidget(
                 }
                 this.columnSizeDialog.layoutId = layoutId;
                 this.columnSizeDialog.columnCount = spinnerCount;
-                this.columnSizeDialog.show();
-            }            
+                this._openDialog( this.columnSizeDialog );
+            }
         },
         columnSizeConfirmed: function( layoutId, columnSizes )
         {
@@ -329,47 +358,49 @@ dojo.widget.defineWidget(
             window.location.href = pageUrl.toString();
         },
 
-        editModeNormal: function()
+        editMoveModeExit: function()
         {
             var jsObj = jetspeed;
             var isIE6 = jsObj.UAie6;
             if ( isIE6 )
                 jsObj.page.displayAllPWins( true );
-            // restore all portlets (that were not previously minimized)
-            var portletArray = jsObj.page.getPortletArray();
+
+            // restore all windows (that were not already minimized prior to move-mode)
+            var pWin;
             var colNodes = [];
-            for ( var i = 0; i < portletArray.length; i++ )
+            var pWins = jsObj.page.getPWins();
+            for ( var i = 0; i < pWins.length; i++ )
             {
-                var portletWindow = portletArray[i].getPWin();
-                if ( portletWindow != null )
+                pWin = pWins[i];
+                pWin.restoreFromMinimizeWindowTemporarily();
+                if ( isIE6 && pWin.posStatic )
                 {
-                    portletWindow.restoreFromMinimizeWindowTemporarily();
-                    if ( isIE6 && portletWindow.windowPositionStatic )
+                    var colDomNode = pWin.domNode.parentNode;
+                    var added = false;
+                    for ( var j = 0 ; j < colNodes.length ; j++ )
                     {
-                        var colDomNode = portletWindow.domNode.parentNode;
-                        var added = false;
-                        for ( var j = 0 ; j < colNodes.length ; j++ )
+                        if ( colNodes[j] == colDomNode )
                         {
-                            if ( colNodes[j] == colDomNode )
-                            {
-                                added = true;
-                                break;
-                            }
+                            added = true;
+                            break;
                         }
-                        if ( ! added )
-                            colNodes.push( colDomNode );
                     }
+                    if ( ! added )
+                        colNodes.push( colDomNode );
                 }
             }
-            if ( this.layoutEditPaneWidgets != null )
+
+            var lepWidgets = this.layoutEditPaneWidgets;
+            if ( lepWidgets != null )
             {
-                for ( var i = 0 ; i < this.layoutEditPaneWidgets.length ; i++ )
+                for ( var i = 0 ; i < lepWidgets.length ; i++ )
                 {
-                    var lepWidget = this.layoutEditPaneWidgets[i];
-                    if ( lepWidget.layoutMoveContainer != null )
-                        lepWidget.layoutMoveContainer.domNode.style.display = "none";
+                    lepWidgets[i]._disableMoveMode();
                 }
             }
+
+            jsObj.widget.showAllPortletWindows();
+
             if ( isIE6 )
             {
                 jsObj.page.displayAllPWins();
@@ -380,33 +411,131 @@ dojo.widget.defineWidget(
                 }
             }
         },
-        editModeLayoutMove: function()
+
+        editMoveModeStart: function()
         {
             var jsObj = jetspeed;
+            var hideTiledWins = false;
+
             if ( jsObj.UAie6 )
                 jsObj.page.displayAllPWins( true );
-            // minimize all portlets
-            var portletArray = jsObj.page.getPortletArray();
-            for ( var i = 0; i < portletArray.length; i++ )
+
+            var pWinObjsToRemainVisible = [];
+            var pWinIdsToRemainVisible = [];
+            if ( this.dbOn )   // keep showing debug window if appropriate
             {
-                var portletWindow = portletArray[i].getPWin();
-                if ( portletWindow != null )
+                var pWinDebug = jsObj.debugWindow();
+                if ( pWinDebug && ( ! hideTiledWins || ! pWinDebug.posStatic || jsObj.debug.dragWindow ) )
                 {
-                    portletWindow.minimizeWindowTemporarily();
+                    pWinObjsToRemainVisible.push( pWinDebug );
+                    pWinIdsToRemainVisible.push( pWinDebug.widgetId );
+                }
+            }        
+
+            // minimize or hide all windows
+            if ( ! hideTiledWins )
+            {
+                var pWin;
+                var pWins = jsObj.page.getPWins();
+                for ( var i = 0; i < pWins.length; i++ )
+                {
+                    pWin = pWins[i];
+                    if ( pWin.posStatic )
+                    {
+                        pWinObjsToRemainVisible.push( pWin );
+                        pWinIdsToRemainVisible.push( pWin.widgetId );
+                        pWin.minimizeWindowTemporarily();
+                    }
                 }
             }
-            // display layout-move-handle widget
-            if ( this.layoutEditPaneWidgets != null )
+            jsObj.widget.hideAllPortletWindows( pWinIdsToRemainVisible );
+
+            var lepWidgets = this.layoutEditPaneWidgets;
+            if ( lepWidgets != null )
             {
-                for ( var i = 0 ; i < this.layoutEditPaneWidgets.length ; i++ )
+                for ( var i = 0 ; i < lepWidgets.length ; i++ )
                 {
-                    var lepWidget = this.layoutEditPaneWidgets[i];
-                    if ( ! lepWidget.isRootLayout && lepWidget.layoutMoveContainer != null )
-                        lepWidget.layoutMoveContainer.domNode.style.display = "block"
+                    lepWidgets[i]._enableMoveMode();
                 }
             }
+
             if ( jsObj.UAie6 )
-                jsObj.page.displayAllPWins();
+            {
+                setTimeout(function() {
+                    jsObj.page.displayAllPWins( false, pWinObjsToRemainVisible );
+                }, 20);
+            }
+        },
+        onBrowserWindowResize: function()
+        {   // called after ie6 resize window
+            var deletePDialog = this.deletePortletDialog;
+            var deleteLDialog = this.deleteLayoutDialog;
+            var colSizeDialog = this.columnSizeDialog;
+            if ( deletePDialog && deletePDialog.isShowing() )
+            {
+                deletePDialog.domNode.style.display = "none";
+                deletePDialog.domNode.style.display = "block";
+            }
+            if ( deleteLDialog && deleteLDialog.isShowing() )
+            {
+                deleteLDialog.domNode.style.display = "none";
+                deleteLDialog.domNode.style.display = "block";
+            }
+            if ( colSizeDialog && colSizeDialog.isShowing() )
+            {
+                colSizeDialog.domNode.style.display = "none";
+                colSizeDialog.domNode.style.display = "block";
+            }
+
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
+            {
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
+                {
+                    pageEditorWidgets[i].onBrowserWindowResize();
+                }
+            }
+        },
+
+        _openDialog: function( dialogWidget )
+        {   // this is to address a mozilla bug where insertion point is always invisible in text boxes
+            var isMoz = jetspeed.UAmoz;
+            if ( isMoz )
+            {
+                dialogWidget.domNode.style.position = "fixed";  // this fix involves setting position to fixed instead of absolute,
+                if ( ! dialogWidget._fixedIPtBug )              // and the change to var x and var y initialization in placeModalDialog
+                {
+                    var _dialog = dialogWidget;
+                    _dialog.placeModalDialog = function() {
+			            // summary: position modal dialog in center of screen
+
+			            var scroll_offset = dojo.html.getScroll().offset;
+			            var viewport_size = dojo.html.getViewport();
+			
+			            // find the size of the dialog (dialog needs to be showing to get the size)
+			            var mb;
+			            if(_dialog.isShowing()){
+				            mb = dojo.html.getMarginBox(_dialog.domNode);
+			            }else{
+				            dojo.html.setVisibility(_dialog.domNode, false);
+				            dojo.html.show(_dialog.domNode);
+				            mb = dojo.html.getMarginBox(_dialog.domNode);
+				            dojo.html.hide(_dialog.domNode);
+				            dojo.html.setVisibility(_dialog.domNode, true);
+                        }
+                        //var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
+			            //var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
+                        var x = (viewport_size.width - mb.width)/2;
+			            var y = (viewport_size.height - mb.height)/2;
+			            with(_dialog.domNode.style){
+				            left = x + "px";
+				            top = y + "px";
+			            }
+                    };
+                    _dialog._fixedIPtBug = true;
+                }
+		    }
+            dialogWidget.show();
         }
 	}
 );
@@ -460,7 +589,7 @@ jetspeed.widget.EditPageGetThemesContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
-        dojo.raise( "EditPageGetThemesContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "EditPageGetThemesContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -492,7 +621,7 @@ jetspeed.widget.RemovePageContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "RemovePageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "RemovePageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -570,7 +699,7 @@ jetspeed.widget.AddPageContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "AddPageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "AddPageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -612,7 +741,7 @@ jetspeed.widget.MoveLayoutContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "MoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "MoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -652,7 +781,7 @@ jetspeed.widget.UpdateFragmentContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "UpdateFragmentContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "UpdateFragmentContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -690,7 +819,7 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "UpdatePageInfoContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "UpdatePageInfoContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -724,7 +853,7 @@ jetspeed.widget.RemovePortletContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "RemovePortletContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "RemovePortletContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -758,7 +887,7 @@ jetspeed.widget.RemoveLayoutContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "RemoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "RemoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -793,6 +922,6 @@ jetspeed.widget.AddLayoutContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "AddLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "AddLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };

@@ -43,23 +43,33 @@ dojo.widget.defineWidget(
         layoutId: null,
         layoutDefinitions: null,
 
+        layoutColumn: null,
+        layoutInfo: null,
+        parentLayoutInfo: null,
+
         // template parameters
         pageEditContainer: null,
         pageEditLNContainer: null,
         layoutNameSelect: null,
+        buttonGroupRight: null,
         deleteLayoutButton: null,
-        editModeLayoutMoveButton: null,
-        editModeNormalButton: null,
+        editMoveModeButton: null,
+        editMoveModeExitButton: null,
         layoutMoveContainer: null,
-        
+
         // fields
 		isContainer: true,
         widgetsInTemplate: true,
         isLayoutPane: true,
 
         // drag variables
-        containingColumn: null,
-        windowPositionStatic: true,
+        drag: null,
+        posStatic: true,
+
+        // move modes
+        moveModeLayoutRelative: "movemode_layout",
+        moveModes: [ "movemode_layout", "movemode_portlet" ],
+
 
         // protocol - dojo.widget.Widget create
 
@@ -88,13 +98,14 @@ dojo.widget.defineWidget(
 
         postCreate: function( args, fragment, parent )
         {
-            if ( ! jetspeed.UAie )
-            {   /* in IE6, if fieldset background color is set the fieldset will not be rendered nicely (with rounded borders) */
-                if ( this.pageEditContainer != null )
-                    this.pageEditContainer.style.backgroundColor = "#d3d3d3";
-                if ( this.pageEditLNContainer != null )
-                    this.pageEditLNContainer.style.backgroundColor = "#eeeeee";
-            }
+            var djObj = dojo;
+            var djH = djObj.html;
+
+            var pageEditorProto = jetspeed.widget.PageEditor.prototype;
+            if ( this.pageEditContainer != null )
+                djH.addClass( this.pageEditContainer, pageEditorProto.styleBaseAdd );
+            if ( this.pageEditLNContainer != null )
+                djH.addClass( this.pageEditLNContainer, pageEditorProto.styleDetailAdd );
 
             if ( this.layoutNameSelect != null )
             {
@@ -124,18 +135,12 @@ dojo.widget.defineWidget(
             }
             this.syncButtons();
             
-            this.layoutMoveContainer = dojo.widget.createWidget( "jetspeed:LayoutEditPaneMoveHandle",
+            this.layoutMoveContainer = djObj.widget.createWidget( "jetspeed:LayoutEditPaneMoveHandle",
 				{
 					layoutImagesRoot: this.layoutImagesRoot
 				});
 			this.addChild( this.layoutMoveContainer );
 			this.domNode.appendChild( this.layoutMoveContainer.domNode );
-        },
-
-        initializeDrag: function()
-        {
-            this.containingColumn = this.getContainingColumn();
-            this.drag = new dojo.dnd.Moveable( this, {handle: this.layoutMoveContainer.domNode});
         },
 
         // methods
@@ -172,50 +177,171 @@ dojo.widget.defineWidget(
         {
             this.pageEditorWidget.deleteLayout( this.layoutId );
         },
-        editModeNormal: function()
+        editMoveModeExit: function()
         {
-            this.pageEditorWidget.editModeNormal();
-            if ( this.editModeLayoutMoveButton != null )
-                this.editModeLayoutMoveButton.domNode.style.display = "block";
-            if ( this.editModeNormalButton != null )
-                this.editModeNormalButton.domNode.style.display = "none";
+            this.pageEditorWidget.editMoveModeExit();
+            if ( this.editMoveModeButton != null )
+                this.editMoveModeButton.domNode.style.display = "block";
+            if ( this.editMoveModeExitButton != null )
+                this.editMoveModeExitButton.domNode.style.display = "none";
         },
-        editModeLayoutMove: function()
+        editMoveModeStart: function()
         {
-            this.pageEditorWidget.editModeLayoutMove();
-            if ( this.editModeLayoutMoveButton != null )
-                this.editModeLayoutMoveButton.domNode.style.display = "none";
-            if ( this.editModeNormalButton != null )
-                this.editModeNormalButton.domNode.style.display = "block";
+            this.pageEditorWidget.editMoveModeStart();
+            if ( this.editMoveModeButton != null )
+                this.editMoveModeButton.domNode.style.display = "none";
+            if ( this.editMoveModeExitButton != null )
+                this.editMoveModeExitButton.domNode.style.display = "block";
         },
 
-        endDragging: function()
+        _enableMoveMode: function()
         {
-            if ( this.drag == null || this.containingColumn == null || this.containingColumn.domNode == null ) return;
-            var beforeDragColumnRowInfo = this.drag.beforeDragColumnRowInfo;
-            //dojo.debug( "layout (" + this.layoutId + " / " + this.widgetId + ") endDragging (a) : before " + jetspeed.printobj( beforeDragColumnRowInfo ) );
-            if ( beforeDragColumnRowInfo != null )
+            if ( this.layoutMoveContainer && this.drag )
             {
-                var afterDragColumnRowInfo = jetspeed.page.getPortletCurColRow( this.containingColumn.domNode );
-                //dojo.debug( "layout (" + this.layoutId + ") endDragging (b) : after " + jetspeed.printobj( afterDragColumnRowInfo ) );
-                if ( afterDragColumnRowInfo != null && ( afterDragColumnRowInfo.row != beforeDragColumnRowInfo.row || afterDragColumnRowInfo.column != beforeDragColumnRowInfo.column || afterDragColumnRowInfo.layout != beforeDragColumnRowInfo.layout ) )
+                this.layoutMoveContainer.domNode.style.display = "block";
+            }
+        },
+        _disableMoveMode: function()
+        {
+            if ( this.layoutMoveContainer && this.drag )
+            {
+                this.layoutMoveContainer.domNode.style.display = "none";
+            }
+        },
+
+        initializeDrag: function()
+        {
+            var layoutCol = this.layoutColumn;
+            if ( layoutCol != null && layoutCol.domNode != null )
+            {
+                this.dragStartStaticWidth = layoutCol.domNode.style.width;
+                this.drag = new dojo.dnd.Moveable( this, {handle: this.layoutMoveContainer.domNode });
+            }
+        },
+        
+        startDragging: function( e, moveableObj, djObj, jsObj )
+        {
+            var dragLayoutColumn = this.layoutColumn;
+            if ( dragLayoutColumn != null )
+            {
+                var dragNode = dragLayoutColumn.domNode;
+                if ( dragNode )
                 {
-                    //dojo.debug( "layout (" + this.layoutId + ") endDragging (c)" );
-                    //var moveLayoutContentManager = new jetspeed.widget.MoveLayoutContentManager( this.layoutId, afterDragColumnRowInfo.layout, afterDragColumnRowInfo.column, afterDragColumnRowInfo.row, this.pageEditorWidget );
-                    //moveLayoutContentManager.getContent();
+                    if ( this.buttonGroupRight )
+                        this.buttonGroupRight.style.display = "none";
+                    var notifyOnAbsolute = true;
+                    moveableObj.beforeDragColRowInfo = jsObj.page.getPortletCurColRow( dragNode );
+                    moveableObj.node = dragNode;
+		            moveableObj.mover = new djObj.dnd.Mover( this, dragNode, dragLayoutColumn, moveableObj, e, notifyOnAbsolute, djObj, jsObj );
                 }
             }
         },
 
-        getContainingColumn: function()
+        dragChangeToAbsolute: function( moverObj, layoutColNode, mbLayoutColNode, djObj, jsObj )
         {
-            return jetspeed.page.getColWithNode( this.domNode );
+            var mbLayoutColNodeFresh = djObj.getMarginBox( layoutColNode, null, jsObj );
+            //dojo.debug( "dragChangeToAbsolute - passed-mb=" + jsObj.printobj( mbLayoutColNode ) + "  fresh-mb=" + jsObj.printobj( mbLayoutColNodeFresh ) );
+            var reduceWidth = 400 - mbLayoutColNode.w;
+            if ( reduceWidth < 0 )
+            {
+                mbLayoutColNode.l = mbLayoutColNode.l + ( reduceWidth * -1 );  // ( mbLayoutColNode.w + reduceWidth );
+                mbLayoutColNode.w = 400;
+                djObj.setMarginBox( layoutColNode, mbLayoutColNode.l, null, mbLayoutColNode.w, null, null, jsObj );
+            }
+            
+            if ( jsObj.UAie )
+            {
+                var bgIframeNode = this.pageEditorWidget.bgIframe.iframe;
+                this.domNode.appendChild( bgIframeNode );
+                bgIframeNode.style.display = "block";
+                djObj.setMarginBox( bgIframeNode, null, null, null, mbLayoutColNode.h, null, jsObj );
+                //djObj.debug( "layout bgIframe mb: " + jsObj.printobj( djObj.getMarginBox( bgIframeNode, null, jsObj ) ) );
+            }
+        },
+
+        endDragging: function( posObj )
+        {
+            var jsObj = jetspeed;
+            var djObj = dojo;
+            var layoutCol = this.layoutColumn;
+            if ( this.drag == null || layoutCol == null || layoutCol.domNode == null ) return;
+            var dNode = layoutCol.domNode;
+            dNode.style.position = "static";
+            dNode.style.width = this.dragStartStaticWidth;
+            dNode.style.left = "auto";
+            dNode.style.top = "auto";
+
+            if ( this.buttonGroupRight )
+                this.buttonGroupRight.style.display = "block";
+
+            if ( jsObj.UAie )
+                this.pageEditorWidget.bgIframe.iframe.style.display = "none";
+
+            var beforeDragColRowInfo = this.drag.beforeDragColRowInfo;
+            var afterDragColRowInfo = jsObj.page.getPortletCurColRow( dNode );
+            if ( beforeDragColRowInfo != null && afterDragColRowInfo != null )
+            {
+                var ind = jsObj.debugindent;
+                //djObj.hostenv.println( "move-layout[" + this.layoutId + " / " + dNode.id + "]" );
+                //djObj.hostenv.println( ind + "before (col=" + beforeDragColRowInfo.column + " row=" + beforeDragColRowInfo.row + " layout=" + beforeDragColRowInfo.layout + ")" );
+                //djObj.hostenv.println( ind + "before-" + jetspeed.debugColumn( beforeDragColRowInfo.columnObj, true ) );
+                //djObj.hostenv.println( ind + "after (col=" + afterDragColRowInfo.column + " row=" + afterDragColRowInfo.row + " layout=" + afterDragColRowInfo.layout + ")" );
+                //djObj.hostenv.println( ind + "after-" + jetspeed.debugColumn( afterDragColRowInfo.columnObj, true ) );
+
+                if ( afterDragColRowInfo != null && ( afterDragColRowInfo.row != beforeDragColRowInfo.row || afterDragColRowInfo.column != beforeDragColRowInfo.column || afterDragColRowInfo.layout != beforeDragColRowInfo.layout ) )
+                {
+                    var moveLayoutContentManager = new jsObj.widget.MoveLayoutContentManager( this.layoutId, afterDragColRowInfo.layout, afterDragColRowInfo.column, afterDragColRowInfo.row, this.pageEditorWidget );
+                    moveLayoutContentManager.getContent();
+                }
+            }
+        },
+
+        getLayoutColumn: function()
+        {
+            return this.layoutColumn;
         },
         getPageColumnIndex: function()
         {
-            return jetspeed.page.getColIndexForNode( this.domNode );
+            if ( this.layoutColumn )
+            {
+                var parentColObj = jetspeed.page.getColWithNode( this.layoutColumn.domNode );
+                if ( parentColObj != null )
+                    return parentColObj.getPageColumnIndex();
+            }
+            return null;
         },
-        
+        _getLayoutInfoMoveable: function()
+        {
+            return this.layoutInfo;
+        },
+        _getWindowMarginBox: function( layoutColumnLayoutInfo, jsObj )
+        {
+            if ( this.layoutColumn )
+            {
+                var parentLayoutInfo = this.parentLayoutInfo;
+                if ( jsObj.UAope && parentLayoutInfo == null )  // needs parentNode layout-info 
+                {
+                    var pageLayoutInfo = jsObj.page.layoutInfo;
+                    var parentColIndex = jsObj.page.getColIndexForNode( this.layoutColumn.domNode );
+                    if ( parentColIndex != null )
+                    {
+                        var parentCol = jsObj.page.columns[parentColIndex];
+                        if ( parentCol.layoutHeader )
+                            parentLayoutInfo = pageLayoutInfo.columnLayoutHeader;
+                        else
+                            parentLayoutInfo = pageLayoutInfo.column;
+                    }
+                    else
+                    {
+                        parentLayoutInfo = pageLayoutInfo.columns;
+                    }
+                    this.parentLayoutInfo = parentLayoutInfo;
+                }
+                return jsObj.ui.getMarginBox( this.layoutColumn.domNode, layoutColumnLayoutInfo, parentLayoutInfo, jsObj );
+            }
+            return null;
+        },
+
         editModeRedisplay: function()
         {
             this.show();
@@ -227,18 +353,23 @@ dojo.widget.defineWidget(
             {
                 if ( this.deleteLayoutButton != null )
                     this.deleteLayoutButton.domNode.style.display = "none";
-                if ( this.editModeLayoutMoveButton != null )
-                    this.editModeLayoutMoveButton.domNode.style.display = "block";
-                if ( this.editModeNormalButton != null )
-                    this.editModeNormalButton.domNode.style.display = "none";
+                if ( this.editMoveModeButton != null )
+                    this.editMoveModeButton.domNode.style.display = "block";
+                if ( this.editMoveModeExitButton != null )
+                    this.editMoveModeExitButton.domNode.style.display = "none";
             }
             else
             {
-                if ( this.editModeLayoutMoveButton != null )
-                    this.editModeLayoutMoveButton.domNode.style.display = "none";
-                if ( this.editModeNormalButton != null )
-                    this.editModeNormalButton.domNode.style.display = "none";
+                if ( this.editMoveModeButton != null )
+                    this.editMoveModeButton.domNode.style.display = "none";
+                if ( this.editMoveModeExitButton != null )
+                    this.editMoveModeExitButton.domNode.style.display = "none";
             }
+        },
+
+        onBrowserWindowResize: function()
+        {   // called after ie6 resize window
+            // nothing to do here
         }
 	}
 );

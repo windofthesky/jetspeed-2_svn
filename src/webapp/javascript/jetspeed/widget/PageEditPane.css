@@ -52,8 +52,10 @@ limitations under the License.
 
 .dojoDialog .deletePageDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
 .dojoDialog .deletePageDialog h2 { margin-top: 0; padding-top: 0; }
-.dojoDialog .deletePageDialog p { clear: both; }
-.dojoDialog .deletePageDialog .dojoButton { float: right; margin-right: 5px }
+.dojoDialog .deletePageDialog p {  }
+.dojoDialog .deletePageDialog .dojoButton { margin-right: 5px }
+.dojoDialog .dialogBottom { position: relative; width: 100%; height: 30px; margin: 3px }
+.dojoDialog .dialogButtonContainerRight { position: absolute; bottom: 2px; left: 2px; }
 
 .dojoDialog .createPageDialog { background: #eee; width: 20em; border: 1px solid #999; padding : 4px; -moz-border-radius: 5px; }
 .dojoDialog .createPageDialog h2 { margin-top: 0; padding-top: 0; }

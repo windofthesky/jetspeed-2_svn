@@ -22,31 +22,52 @@
    /* needed to honor explicit size of left nav column when windowTiling is false */
 }
 
+#jetspeedDesktop { 
+   /* do not change overflow setting - must be overflow: visible; */
+   overflow: visible;
+ }
+
 #jetspeedColumns {
     width: 100%;
 }
 
 .desktopColumn {
+    /* do not change float or overflow setting - must be float: left; overflow: visible; */
+    /* NOTE: since we use float, usage of margin, border or padding on columns will cause
+             the relative (% based) widths to fail in all tested browsers; these styles
+             will work properly if applied to portletWindow */
+    
     float: left;
+    overflow: visible;
+
+    /*min-height: 1px;*/
 }
-.desktopColumnClear {
+.ie6desktopColumn { 
+    /* do not change - must be overflow-y: visible; overflow-x: hidden */
+    /* do not use for styles other than overflow-y and overflow-x */
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+}
+.desktopColumnClear-PRIVATE {
+    /* do not change float or clear setting - must be float: left; clear: both; */
+    /* do not use for styles other than float and clear */
     float: left;
     clear: both;
 }
 .desktopLayoutHeader {
+    /* do not change float or clear setting - must be float: left; clear: both; */
     float: left;
     clear: both;
 }
 .columnSpacer { 
     
 }
-*html .desktopColumn {
-    overflow: hidden;
-}
+
 
 #pwGhost {
-    border: 1px dashed #F00;
-    margin: 2px;
+    border-style: dashed;
+    border-color: #F00;
+    /* border-width, margin, and padding must NOT be set - pwGhost is set with same class names as PortletWindow */
     background-color: transparent;
 }
 
@@ -67,8 +88,7 @@
 .portletWindow {
     /* essential css */
     position: absolute;
-    overflow-y: hidden;     /* dojo says 'visible' with this explanation "so drop shadow is displayed"" */
-                            /* we says 'hidden' cause IE likes to kindly expand div to fit content otherwise */
+    overflow-y: hidden;     /* 'hidden' because IE likes to kindly expand div to fit content otherwise */
     overflow-x: hidden;
 
     z-index: 10;
@@ -78,14 +98,38 @@
     /* styling css */
     border: 1px solid;
     border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
-    background-color: ThreeDFace;
+    background-color: ThreeDFace; 
+
+    _zoom: 1; /* force IE6 layout mode for consistency of layout calculations */
+}
+
+
+
+.clear .portletWindow {
+    border-bottom-width: 5px !important;
+    border-right-width: 5px !important;
+    border-left-width: 5px !important;
+    border-top-width: 5px !important;
+/*
+    border-style: none !important;
+    border-right-style: none !important;
+    border-left-style: none !important;
+    border-top-style: none !important;
+    border-bottom-style: none !important;
+*/
+    border-style: solid;                        
+
+    border-left-color: #FF0000 !important;
+    border-right-color: #FF0000 !important;
+    border-top-color: #FF0000 !important;
+    border-bottom-color: #FF0000 !important;
+    background-color: #FF0000 !important;
 }
 
 
 /********** Title Bar ****************/
 
 .portletWindowTitleBar {
-    vertical-align: top;
     margin: 2px 2px 2px 2px;
     z-index: 10;
     background-color: #7596c6;
@@ -200,11 +244,13 @@
     background-color: ThreeDFace;
     padding: 8px;
     overflow: auto;
+
+    _zoom: 1; /* force IE6 layout mode for consistency of layout calculations */
 }
 
 .portletWindowResizeHandle {
 	float: right;
-	position: absolute;
+	position: static;
 	right: 2px;
 	bottom: 2px;
 	width: 13px;
@@ -232,6 +278,7 @@
 
 .portletWindowIFrameCoverIE {
     background-color: ThreeDFace !important;
+    filter: Alpha(Opacity="0");
 }
 
 .PContent {
@@ -273,7 +320,16 @@
     /*border-width: 0px;*/
 }
 
-
 .portletWindowIFrameClient {
     padding: 0px;
+}
+
+.ie6BackgroundIFrame {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: Alpha(Opacity="0");
 }

@@ -103,21 +103,21 @@ dojo.widget.defineWidget(
 
         postCreate: function( args, fragment, parent )
         {
-            jetspeed.widget.PageEditPane.superclass.postCreate.apply( this, arguments );
-
-            if ( ! jetspeed.UAie )
-            {   /* in IE6, if fieldset background color is set the fieldset will not be rendered nicely (with rounded borders) */
-                if ( this.pageEditContainer != null )
-                    this.pageEditContainer.style.backgroundColor = "#d3d3d3";
-                if ( this.pageEditLDContainer != null )
-                    this.pageEditLDContainer.style.backgroundColor = "#eeeeee";
-                if ( this.pageEditPDContainer != null )
-                    this.pageEditPDContainer.style.backgroundColor = "#eeeeee";
-            }
+            var jsObj = jetspeed;
+            var djH = dojo.html;
+            jsObj.widget.PageEditPane.superclass.postCreate.apply( this, arguments );
+            
+            var pageEditorProto = jsObj.widget.PageEditor.prototype;
+            if ( this.pageEditContainer != null )
+                djH.addClass( this.pageEditContainer, pageEditorProto.styleBaseAdd );
+            if ( this.pageEditLDContainer != null )
+                djH.addClass( this.pageEditLDContainer, pageEditorProto.styleDetailAdd );
+            if ( this.pageEditPDContainer != null )
+                djH.addClass( this.pageEditPDContainer, pageEditorProto.styleDetailAdd );
 
             if ( this.layoutDecoratorSelect != null )
             {    
-                var currentLayoutDecorator = jetspeed.page.layoutDecorator;
+                var currentLayoutDecorator = jsObj.page.layoutDecorator;
     
                 var layoutDecoratorData = [];
                 if ( this.layoutDecoratorDefinitions )
@@ -140,7 +140,7 @@ dojo.widget.defineWidget(
 
             if ( this.portletDecoratorSelect != null )
             {    
-                var currentPortletDecorator = jetspeed.page.portletDecorator;
+                var currentPortletDecorator = jsObj.page.portletDecorator;
     
                 var portletDecoratorData = [];
                 if ( this.portletDecoratorDefinitions )
@@ -167,7 +167,7 @@ dojo.widget.defineWidget(
 
         deletePage: function()
         {
-            this.deletePageDialog.show();
+            this.pageEditorWidget._openDialog( this.deletePageDialog );
         },
         deletePageConfirmed: function()
         {
@@ -176,7 +176,7 @@ dojo.widget.defineWidget(
         },
         createPage: function()
         {
-            this.createPageDialog.show();
+            this.pageEditorWidget._openDialog( this.createPageDialog );
         },
         createPageConfirmed: function( pageName, pageTitle, pageShortTitle )
         {
@@ -201,6 +201,21 @@ dojo.widget.defineWidget(
         editModeRedisplay: function()
         {
             this.show();
+        },
+        onBrowserWindowResize: function()
+        {   // called after ie6 resize window
+            var deletePageDialog = this.deletePageDialog;
+            var createPageDialog = this.createPageDialog;
+            if ( deletePageDialog && deletePageDialog.isShowing() )
+            {
+                deletePageDialog.domNode.style.display = "none";
+                deletePageDialog.domNode.style.display = "block";
+            }
+            if ( createPageDialog && createPageDialog.isShowing() )
+            {
+                createPageDialog.domNode.style.display = "none";
+                createPageDialog.domNode.style.display = "block";
+            }
         }
 	}
 );

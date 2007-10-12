@@ -18,8 +18,6 @@ limitations under the License.
 .layoutEditPane { position: relative; width: 100% }  
 /*   ^^^ width: 100% is need to avoid IE auto-containing bug: http://www.satzansatz.de/cssd/rpfloat.html */
 
-.layoutEditPane .container{ }
-
 .layoutEditPane label,
 .layoutEditPane input,
 .layoutEditPane select

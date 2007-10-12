@@ -24,11 +24,8 @@ jetspeed.widget.PortletWindow = function()
 {
     this.windowInitialized = false;
     this.actionButtons = {};
-    this.actionMenus = {};
     this.actionMenuWidget = null;
     this.tooltips = [];
-    this.subWidgetStartIndex = -1;
-    this.subWidgetEndIndex = -1;
     
     // content load vars
 	this._onLoadStack = [];
@@ -41,7 +38,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     nextIndex: 1,
 
     resizable: true,
-    movable: true,
+    moveable: true,
+    moveAllowTilingChg: true,
 
     decName: null,      // decoration name
     decConfig: null,    // decoration config
@@ -51,6 +49,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
     titleMouseIn: 0,
     titleLit: false,
+
+    colWidth_pbE: 0,
 
     portlet: null,
     altInitParams: null,
@@ -66,6 +66,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     scriptSeparation: false,
     adjustPaths: false,
     parseContent: true,
+
+    childWidgets: null,
 
     dbProfile: (djConfig.isDebug && jetspeed.debug.profile),
     dbOn: djConfig.isDebug,
@@ -222,11 +224,16 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         
         this.domNode = dNode;
         var dNodeCss = jsCss.cssPosition.concat();
+        if ( jsPage.maximizedOnInit != null )
+        {
+            dNodeCss[ jsCss.cssNoSelNm ] = " visibility: ";
+            dNodeCss[ jsCss.cssNoSel ] = "hidden";
+            dNodeCss[ jsCss.cssNoSelEnd ] = ";";
+        }
         this.dNodeCss = dNodeCss;
         this.containerNode = cNode;
         var cNodeCss = jsCss.cssOverflow.concat();
         this.cNodeCss = cNodeCss;
-
 
         // ... initWindowTitle
         this.setPortletTitle( iP[ jsId.PP_WINDOW_TITLE ] );
@@ -256,49 +263,38 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         
         var untiledDims = {};            // untiled
-        var tiledDims = { width: null }; // tiled
+        var tiledDims = { w: null }; // tiled
         
         // to allow for an initial untiled placement based on tiled position,
         //   only record dimsUntiled when value is specified (not defaulted) or if window is already untiled
         if ( wWidth != null && wWidth > 0 )
-            untiledDims.width = wWidth = Math.floor( wWidth );
+            untiledDims.w = wWidth = Math.floor( wWidth );
         else
-            untiledDims.width = wWidth = jsPrefs.windowWidth;
+            untiledDims.w = wWidth = jsPrefs.windowWidth;
     
         if ( wHeight != null && wHeight > 0 )
-            untiledDims.height = tiledDims.height = wHeight = Math.floor(wHeight);
+            untiledDims.h = tiledDims.h = wHeight = Math.floor(wHeight);
         else
-            untiledDims.height = tiledDims.height = wHeight = jsPrefs.windowHeight;
+            untiledDims.h = tiledDims.h = wHeight = jsPrefs.windowHeight;
             
         if ( wLeft != null && wLeft >= 0 )
-            untiledDims.left = Math.floor( wLeft );
+            untiledDims.l = Math.floor( wLeft );
         else if ( ! posStatic )
-            untiledDims.left = (((winIndex -2) * 30 ) + 200);
+            untiledDims.l = (((winIndex -2) * 30 ) + 200);
     
         if ( wTop != null && wTop >= 0 )
-            untiledDims.top = Math.floor(wTop);
+            untiledDims.t = Math.floor(wTop);
         else if ( ! posStatic )
-            untiledDims.top = (((winIndex -2) * 30 ) + 170);
+            untiledDims.t = (((winIndex -2) * 30 ) + 170);
         
         this.dimsUntiled = untiledDims;
         this.dimsTiled = tiledDims;
 
-        // xxx
-        //var dimCss = "display: none; width: " + wWidth + "px" + ( ( wHeight != null && wHeight > 0 ) ? ( "; height: " + wHeight + "px" ) : "");
-        //if ( ! posStatic )
-        //    dimCss += "; left: " + wLeft + "px; top: " + wTop + "px;";
-        //dNode.style.cssText = dimCss;
-
         this.exclPContent = iP[ jsId.PP_EXCLUDE_PCONTENT ];
-
-        // --- former end of preBuild()
 
         jsPage.putPWin( this );
 
-        // --- former beginning of build()
-
-		// necessary for safari, khtml (for computing width/height)
-		docBody.appendChild( dNode );
+		docBody.appendChild( dNode );   // necessary for safari, khtml (for computing width/height)
 
         // ... initWindowIcon
         if ( tbIconNode )
@@ -342,160 +338,47 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             var windowTitleBarButtons = null;
             var djEvtObj = djObj.event;
-            var incl, aNm;
-            var mANms = new Array();
-            var noImg = false;
-            if ( wDC.windowActionButtonOrder != null )
-            {   // all possible button actions must be added here (no support for adding action buttons after init)
-                // this includes buttons for the current mode and state (which will be initially hidden)
-                var btnActionNames = new Array();
-                if ( tPortlet )
-                {
-                    for ( var aI = (wDC.windowActionButtonOrder.length-1) ; aI >= 0 ; aI-- )
-                    {
-                        aNm = wDC.windowActionButtonOrder[ aI ];
-                        incl = false;
-                        if ( tPortlet.getAction( aNm ) != null || jsPrefs.windowActionDesktop[ aNm ] != null )
-                        {
-                            incl = true;
-                        }
-                        else if ( aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU )
-                        {
-                            incl = true;
-                        }
-                        if ( incl )
-                        {
-                            btnActionNames.push( aNm );
-                        }
-                    }
-                }
-                else
-                {
-                    for ( var aI = (wDC.windowActionButtonOrder.length-1) ; aI >= 0 ; aI-- )
-                    {
-                        aNm = wDC.windowActionButtonOrder[ aI ];
-                        incl = false;
-                        if ( aNm == jsId.ACT_MINIMIZE || aNm == jsId.ACT_MAXIMIZE || aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || jsPrefs.windowActionDesktop[ aNm ] != null )
-                        {
-                            incl = true;
-                        }
-                        if ( incl )
-                        {
-                            btnActionNames.push( aNm );
-                        }
-                    }
-                }   // if ( tPortlet )
-                var btnMax = ( wDC.windowActionButtonMax == null ? -1 : wDC.windowActionButtonMax );
-                if ( btnMax != -1 && btnActionNames.length >= btnMax )
-                {
-                    var removedBtns = 0;
-                    var mustRemoveBtns = btnActionNames.length - btnMax + 1;
-                    for ( var i = 0 ; i < btnActionNames.length && removedBtns < mustRemoveBtns ; i++ )
-                    {
-                        if ( btnActionNames[i] != jsId.ACT_MENU )
-                        {
-                            mANms.push( btnActionNames[i] );
-                            btnActionNames[i] = null;
-                            removedBtns++;
-                        }
-                    }
-                }
-                if ( wDC.windowActionNoImage )
-                {
-                    for ( var i = 0 ; i < btnActionNames.length ; i++ )
-                    {
-                        if ( wDC.windowActionNoImage[ btnActionNames[ i ] ] != null )
-                        {
-                            if ( btnActionNames[ i ] == jsId.ACT_MENU )
-                            {
-                                noImg = true;
-                            }
-                            else
-                            {
-                                mANms.push( btnActionNames[i] );
-                            }
-                            btnActionNames[ i ] = null;
-                        }
-                    }
-                }
-                var tooltipMgr = jsPage.tooltipMgr;
-                for ( var i = 0 ; i < btnActionNames.length ; i++ )
-                {
-                    if ( btnActionNames[i] != null )
-                    {
-                        this._createActionButtonNode( btnActionNames[i], doc, docBody, tooltipMgr, jsObj, jsPrefs, jsUI, djEvtObj );
-                    }
-                }
-            }   // if ( wDC.windowActionButtonOrder != null )
-
-            if ( wDC.windowActionMenuOrder )
+            
+            var tooltipMgr = jsPage.tooltipMgr;
+            if ( wDC.windowActionButtonTooltip )
             {
-                if ( tPortlet )
-                {
-                    for ( var aI = 0 ; aI < wDC.windowActionMenuOrder.length ; aI++ )
-                    {
-                        aNm = wDC.windowActionMenuOrder[ aI ];
-                        incl = false;
-                        if ( tPortlet.getAction( aNm ) != null || jsPrefs.windowActionDesktop[ aNm ] != null )
-                        {
-                            incl = true;
-                        }
-                        if ( incl )
-                        {
-                            mANms.push( aNm );
-                        }
-                    }
-                }
-                else
-                {
-                    for ( var aI = 0 ; aI < wDC.windowActionMenuOrder.length ; aI++ )
-                    {
-                        aNm = wDC.windowActionMenuOrder[ aI ];
-                        if ( jsPrefs.windowActionDesktop[ aNm ] != null )
-                        {
-                            mANms.push( aNm );
-                        }
-                    }
-                }   // if ( tPortlet )
-            }   // if ( wDC.windowActionMenuOrder != null )
+                if ( this.actionLabels[ jsId.ACT_DESKTOP_MOVE_TILED ] != null && this.actionLabels[ jsId.ACT_DESKTOP_MOVE_UNTILED ] != null )
+                    this.tooltips.push( tooltipMgr.addNode( tbNode, null, true, 1200, this, "getTitleBarTooltip", jsObj, jsUI, djEvtObj ) );
+            }
 
-            if ( mANms.length > 0 || this.dbOn )
+            var btnActionNames = ( tPortlet ) ? wDC.windowActionButtonNames : wDC.windowActionButtonNamesNp;
+            if ( btnActionNames == null )
             {
-                var added = new Object();
-                var finalNms = new Array();
-                for ( var i = 0 ; i < mANms.length ; i++ )
+                btnActionNames = this._buildActionStructures( wDC, tPortlet, docBody, jsObj, jsId, jsPrefs, djObj );
+            }
+            var aNm;
+            for ( var i = 0 ; i < btnActionNames.length ; i++ )
+            {
+                aNm = btnActionNames[i];
+                if ( aNm != null )
                 {
-                    aNm = mANms[i];
-                    if ( aNm != null && added[ aNm ] == null && this.actionButtons[ aNm ] == null )
+                    if ( ! tPortlet || ( aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || tPortlet.getAction( aNm ) != null || jsPrefs.windowActionDesktop[ aNm ] != null ) )
                     {
-                        finalNms.push( aNm );
-                        added[ aNm ] = true;
-                    }
-                }
-                
-                if ( this.dbOn )
-                {
-                    finalNms.push( { aNm: this.dbMenuDims, dev: true } );
-                }
-                if ( finalNms.length > 0 )
-                {
-                    this._createActionMenu( finalNms, docBody );
-                    if ( noImg )
-                    {
-                        jsUI.evtConnect( "after", tbNode, "oncontextmenu", this, "windowActionMenuOpen", djEvtObj );
+                        this._createActionButtonNode( aNm, doc, docBody, tooltipMgr, wDC, jsObj, jsPrefs, jsUI, djObj, djEvtObj );
                     }
                 }
             }
+            this.actionMenuWidget = ( tPortlet ) ? wDC.windowActionMenuWidget : wDC.windowActionMenuWidgetNp;
 
-            this.windowActionButtonSync();
+            if ( this.actionMenuWidget && wDC.windowActionMenuHasNoImg )
+            {
+                jsUI.evtConnect( "after", tbNode, "oncontextmenu", this, "actionMenuOpen", djEvtObj );
+            }
+
+            this.actionBtnSync( jsObj, jsId );
 
             if ( wDC.windowDisableResize )
                 this.resizable =  false;
             if ( wDC.windowDisableMove )
-                this.movable =  false;
+                this.moveable =  false;
         }
 
-        // --- init drag handle
+        // ... init drag handle
         var isResizable = this.resizable;
         var rhWidget = null;
         if ( isResizable && rbNode )
@@ -505,11 +388,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.resizeHandle = rhWidget;
             if ( rhWidget )
             {
-                //if ( this.posStatic && jsObj.UAmoz )  // jsObj.UAie
-                    rhWidget.domNode.style.position = "static";  // until 2006-11-15, was set to absolute for all but mozilla
-                                                                          // but setting to static for all seems to fix IE failure to initially display resize handle
-                //else
-                //    rhWidget.domNode.style.position = "absolute";
                 rbNode.appendChild( rhWidget.domNode );
             }
 		}
@@ -518,34 +396,59 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.resizable = false;
         }
 
-		// Prevent IE bleed-through problem
-        if ( ie6 )
-		    this.bgIframe = new djObj.html.BackgroundIframe( dNode );
+		docBody.removeChild( dNode );   // counteract body.appendChild above
 
-		// counteract body.appendChild above
-		docBody.removeChild( dNode );
-
-        // --- former end of build()
-        
-        winContainerNode.appendChild( dNode );
-        
-        // --- former beginning of postBuild()
-    
-        //dNode.style.display = "";   // xxxx
-
-        if ( ! wDC.layoutExtents )
+        if ( ! wDC.windowTitlebar || ! wDC.windowResizebar )
         {
-            var dimCss = "display: block; width: " + wWidth + "px" + ( ( wHeight != null && wHeight > 0 ) ? ( "; height: " + wHeight + "px" ) : "");
+            var disIdx = jsObj.css.cssDis;
+            if ( this.tbNodeCss && ! wDC.windowTitlebar )
+                this.tbNodeCss[ disIdx ] = "none";
+
+            if ( this.rbNodeCss && ! wDC.windowResizebar )
+                this.rbNodeCss[ disIdx ] = "none";
+        }
+
+        var nodeAdded = false;
+        var winChildNodes = winContainerNode.childNodes;
+        if ( posStatic && winChildNodes )
+        {
+            var rowProp = iP[ jsId.PP_ROW ];
+            if ( rowProp != null  )
+            {
+                var rowInt = new Number(rowProp);
+                if ( rowInt >= 0 )
+                {
+                    var winChildNodesLast = winChildNodes.length -1;
+                    if ( winChildNodesLast >= rowInt )
+                    {
+                        var childAtRowInt = winChildNodes[rowInt];
+                        if ( childAtRowInt )
+                        {
+                            winContainerNode.insertBefore( dNode, childAtRowInt );
+                            nodeAdded = true;
+                        } 
+                    }
+                }
+            }
+        }
+        if ( ! nodeAdded )
+            winContainerNode.appendChild( dNode );
+
+        if ( ! wDC.layout )
+        {
+            var dimCss = "display: block; visibility: hidden; width: " + wWidth + "px" + ( ( wHeight != null && wHeight > 0 ) ? ( "; height: " + wHeight + "px" ) : "");
             dNode.style.cssText = dimCss;
-            //this.testLost();
-            this._createLayoutExtents( wDC, false, dNode, cNode, tbNode, rbNode, djObj, jsObj );
+            this._createLayoutInfo( wDC, false, dNode, cNode, tbNode, rbNode, djObj, jsObj, jsUI );
         }
         
-        if ( this.movable && tbNode )
+        if ( this.moveable && tbNode )
         {
             this.drag = new djObj.dnd.Moveable( this, {handle: tbNode});
             this._setTitleBarDragging( true, jsCss );
         }
+
+        if ( ie6 && posStatic )
+            tiledDims.w = Math.max( 0, winContainerNode.offsetWidth - this.colWidth_pbE );
 
         this._setAsTopZIndex( jsPage, jsCss, dNodeCss, posStatic );
         this._alterCss( true, true );
@@ -553,12 +456,16 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( ! posStatic )
             this._addUntiledEvents();
 
+        if ( ie6 )   // prevent IE bleed-through problem
+            this.bgIframe = new jsObj.widget.BackgroundIframe( dNode, null, djObj );
+
         this.windowInitialized = true;
 
         if ( jsObj.debug.createWindow )
             djObj.debug( "createdWindow [" + ( tPortlet ? tPortlet.entityId : initWidgetId ) + ( tPortlet ? (" / " + initWidgetId) : "" ) + "]" + " width=" + dNode.style.width + " height=" + dNode.style.height + " left=" + dNode.style.left + " top=" + dNode.style.top ) ;
 
 
+        this.windowState = jsId.ACT_RESTORE;  // "normal"
         var iWS = null;
         if ( tPortlet )
             iWS = tPortlet.getCurrentActionState();
@@ -567,13 +474,22 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         if ( iWS == jsId.ACT_MINIMIZE )
         {
-            this.minimizeWindow();
-            this.windowActionButtonSync();
-            this.needsRenderOnRestore = true;
+            this.minimizeOnNextRender = true;
         }
-        else if ( iWS == jsId.ACT_MAXIMIZE )
-        {   // needs delay so that widths are fully realized before maximize occurs
-            djObj.lang.setTimeout( this, this._postCreateMaximizeWindow, 1500 );
+        // jsId.ACT_MAXIMIZE is handled in jetspeed.page.loadPostRender
+
+        if ( jsObj.widget.pwGhost == null && jsPage != null )
+        {   // ... drag ghost
+            var pwGhost = doc.createElement("div");
+            pwGhost.id = "pwGhost";
+            var defaultWndC = jsPage.getPortletDecorationDefault();
+            if ( ! defaultWndC ) defaultWndC = decNm;
+            pwGhost.className = dNodeClass;
+            pwGhost.style.position = "static";
+            pwGhost.style.width = "";
+            pwGhost.style.left = "auto";
+            pwGhost.style.top = "auto";
+            jsObj.widget.pwGhost = pwGhost;
         }
 
         if ( ie6 && jsObj.widget.ie6ZappedContentHelper == null )
@@ -582,26 +498,184 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             ie6Helper.id = "ie6ZappedContentHelper";
             jsObj.widget.ie6ZappedContentHelper = ie6Helper;
         }
-
-        if ( jsObj.widget.pwGhost == null && jsPage != null )
-        {   // ... PortletWindow drag ghost
-            var pwGhost = doc.createElement("div");
-            pwGhost.id = "pwGhost";
-            var defaultWndC = jsPage.getPortletDecorationDefault();
-            if ( ! defaultWndC ) defaultWndC = decNm;
-            pwGhost.className = jsId.P_CLASS + ( defaultWndC ? ( " " + defaultWndC ) : "" ) + " " + dNodeClass;
-            pwGhost.style.position = "static";
-            pwGhost.style.width = "";
-            pwGhost.style.left = "auto";
-            pwGhost.style.top = "auto";
-            jsObj.widget.pwGhost = pwGhost;
-        }
     },  // build()
 
 
     // build functions
 
-    _createActionButtonNode: function( aNm, doc, docBody, tooltipMgr, jsObj, jsPrefs, jsUI, djEvtObj )
+    /*  static  */
+    _buildActionStructures: function( wDC, tPortlet, docBody, jsObj, jsId, jsPrefs, djObj )
+    {   // should be called once for each used portlet decorator - twice if the decorator is used by a non-portlet window
+        var btnActionNames = new Array();
+        var aNm, incl, noMenuImg = false;
+        var tMenuActionNames = new Array();
+        var tBtnActionNameMap = new Object();
+        if ( wDC.windowActionButtonOrder != null )
+        {   // all possible button actions must be added here (no support for adding action buttons after init)
+            // this includes buttons for the current mode and state (which will be initially hidden)
+            if ( tPortlet )
+            {
+                for ( var aI = (wDC.windowActionButtonOrder.length-1) ; aI >= 0 ; aI-- )
+                {
+                    aNm = wDC.windowActionButtonOrder[ aI ];
+                    btnActionNames.push( aNm );
+                    tBtnActionNameMap[ aNm ] = true;
+                }
+            }
+            else
+            {
+                for ( var aI = (wDC.windowActionButtonOrder.length-1) ; aI >= 0 ; aI-- )
+                {
+                    aNm = wDC.windowActionButtonOrder[ aI ];
+                    incl = false;
+                    if ( aNm == jsId.ACT_MINIMIZE || aNm == jsId.ACT_MAXIMIZE || aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || jsPrefs.windowActionDesktop[ aNm ] != null )
+                    {
+                        incl = true;
+                    }
+                    if ( incl )
+                    {
+                        btnActionNames.push( aNm );
+                        tBtnActionNameMap[ aNm ] = true;
+                    }
+                }
+            }   // if ( tPortlet )
+            var btnMax = ( wDC.windowActionButtonMax == null ? -1 : wDC.windowActionButtonMax );
+            if ( btnMax != -1 && btnActionNames.length >= btnMax )
+            {
+                var removedBtns = 0;
+                var mustRemoveBtns = btnActionNames.length - btnMax + 1;
+                for ( var i = 0 ; i < btnActionNames.length && removedBtns < mustRemoveBtns ; i++ )
+                {
+                    aNm = btnActionNames[i];
+                    if ( aNm != jsId.ACT_MENU )
+                    {
+                        tMenuActionNames.push( aNm );
+                        btnActionNames[i] = null;
+                        delete tBtnActionNameMap[ aNm ];
+                        removedBtns++;
+                    }
+                }
+            }
+            if ( wDC.windowActionNoImage )
+            {
+                for ( var i = 0 ; i < btnActionNames.length ; i++ )
+                {
+                    aNm = btnActionNames[i];
+                    if ( wDC.windowActionNoImage[ aNm ] != null )
+                    {
+                        if ( aNm == jsId.ACT_MENU )
+                        {
+                            noMenuImg = true;
+                        }
+                        else
+                        {
+                            tMenuActionNames.push( aNm );
+                        }
+                        btnActionNames[i] = null;
+                        delete tBtnActionNameMap[ aNm ];
+                    }
+                }
+            }
+        }   // if ( wDC.windowActionButtonOrder != null )
+
+        if ( wDC.windowActionMenuOrder )
+        {
+            if ( tPortlet )
+            {
+                for ( var aI = 0 ; aI < wDC.windowActionMenuOrder.length ; aI++ )
+                {
+                    aNm = wDC.windowActionMenuOrder[ aI ];
+                    tMenuActionNames.push( aNm );
+                }
+            }
+            else
+            {
+                for ( var aI = 0 ; aI < wDC.windowActionMenuOrder.length ; aI++ )
+                {
+                    aNm = wDC.windowActionMenuOrder[ aI ];
+                    if ( jsPrefs.windowActionDesktop[ aNm ] != null )
+                    {
+                        tMenuActionNames.push( aNm );
+                    }
+                }
+            }   // if ( tPortlet )
+        }   // if ( wDC.windowActionMenuOrder != null )
+
+        var menuActionNames = new Array();
+        if ( tMenuActionNames.length > 0 || this.dbOn )
+        {
+            var added = new Object();
+            for ( var i = 0 ; i < tMenuActionNames.length ; i++ )
+            {
+                aNm = tMenuActionNames[i];
+                if ( aNm != null && added[ aNm ] == null && tBtnActionNameMap[ aNm ] == null )
+                {
+                    menuActionNames.push( aNm );
+                    added[ aNm ] = true;
+                }
+            }
+            if ( this.dbOn )
+            {
+                menuActionNames.push( { aNm: this.dbMenuDims, dev: true } );
+            }
+        }
+
+        var actionMenuWidget = null;
+        if ( menuActionNames.length > 0 )
+        {
+            var menuItemsByName = {};
+            var aNm, menulabel, menuitem, isDev;
+            actionMenuWidget = djObj.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", contextMenuForWindow: false }, null );
+            actionMenuWidget.onItemClick = function( mi )
+            {
+                var _aN = mi.jsActNm;
+                var _pWin = this.pWin;
+                if ( ! mi.jsActDev )
+                    _pWin.actionProcess( _aN );
+                else
+                    _pWin.actionProcessDev( _aN );
+            };
+
+            for ( var i = 0 ; i < menuActionNames.length ; i++ )
+            {
+                aNm = menuActionNames[i];
+                isDev = false;
+                if ( ! aNm.dev )
+                    menulabel = this.actionLabels[ aNm ];
+                else
+                {
+                    isDev = true;
+                    menulabel = aNm = aNm.aNm;
+                }
+                menuitem = djObj.widget.createWidget( "MenuItem2", { caption: menulabel, jsActNm: aNm, jsActDev: isDev } );
+                menuItemsByName[ aNm ] = menuitem;
+                actionMenuWidget.addChild( menuitem );
+            }
+            actionMenuWidget.menuItemsByName = menuItemsByName;
+            docBody.appendChild( actionMenuWidget.domNode );
+            jsObj.ui.addPopupMenuWidget( actionMenuWidget );
+        }
+
+        wDC.windowActionMenuHasNoImg = noMenuImg;
+        if ( tPortlet )
+        {
+            wDC.windowActionButtonNames = btnActionNames;
+            wDC.windowActionMenuNames = menuActionNames;
+            wDC.windowActionMenuWidget = actionMenuWidget;
+            //dojo.debug( "set portlet button names (" + this.widgetId + ") [" + btnActionNames.join( ", " ) + "]" );
+            //dojo.debug( "portlet wDC.windowActionButtonOrder [" + wDC.windowActionButtonOrder.join( ", " ) + "]" );
+        }
+        else
+        {
+            wDC.windowActionButtonNamesNp = btnActionNames;
+            wDC.windowActionMenuNamesNp = menuActionNames;
+            wDC.windowActionMenuWidgetNp = actionMenuWidget;
+            //dojo.debug( "set non-portlet button names (" + this.widgetId + ") [" + btnActionNames.join( ", " ) + "]" );
+        }
+        return btnActionNames;
+    },
+
+    _createActionButtonNode: function( aNm, doc, docBody, tooltipMgr, wDC, jsObj, jsPrefs, jsUI, djObj, djEvtObj )
     {
         if ( aNm != null )
         {
@@ -613,161 +687,97 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.actionButtons[ aNm ] = aBtn;
             this.tbNode.appendChild( aBtn );
 
-            jsUI.evtConnect( "after", aBtn, "onclick", this, "windowActionButtonClick", djEvtObj );
-            if ( this.decConfig != null && this.decConfig.windowActionButtonTooltip )
+            jsUI.evtConnect( "after", aBtn, "onclick", this, "actionBtnClick", djEvtObj );
+            if ( wDC.windowActionButtonTooltip )
             {
-                this.tooltips.push( tooltipMgr.addNode( aBtn, this._getActionLabel( aNm ), true, jsObj, jsUI, djEvtObj ) );
+                var actionLabel = this.actionLabels[ aNm ];
+                this.tooltips.push( tooltipMgr.addNode( aBtn, actionLabel, true, null, null, null, jsObj, jsUI, djEvtObj ) );
             }
             else
             {
-                jsUI.evtConnect( "after", aBtn, "onmousedown", djEvtObj.browser, "stopEvent", djEvtObj );
+                jsUI.evtConnect( "after", aBtn, "onmousedown", jsObj, "_stopEvent", djEvtObj );
             }
         }
+    },
+    getTitleBarTooltip: function()
+    {
+        if ( ! this.getLayoutActionsEnabled() ) return null;
+        if ( this.posStatic )
+            return this.actionLabels[ jetspeed.id.ACT_DESKTOP_MOVE_TILED ];
+        else
+            return this.actionLabels[ jetspeed.id.ACT_DESKTOP_MOVE_UNTILED ];
     },
 
-    _getActionLabel: function( aNm )
-    {
-        if ( aNm == null ) return null;
-        var actionlabel = null;
-        var actionLabelPrefs = jetspeed.prefs.desktopActionLabels;
-        if ( actionLabelPrefs != null )
-            actionlabel = actionLabelPrefs[ aNm ];
-        if ( actionlabel == null || actionlabel.length == 0 )
-        {
-            if ( this.portlet )
-            {
-                var portletActionDef = this.portlet.getAction( aNm );
-                if ( portletActionDef != null )
-                    actionlabel = portletActionDef.label;
-            }
-        }
-        if ( actionlabel == null || actionlabel.length == 0 )
-        {
-            actionlabel = dojo.string.capitalize( aNm );
-        }
-        return actionlabel;
-    },
-    _createActionMenu: function( menuActionNames, docBody )
-    {
-        if ( menuActionNames == null || menuActionNames.length == 0 ) return;
-        var pWin = this;
-        var aNm, menulabel, menuitem, isDev;
-        var miOnClick = function( mi ) { var _aN = mi.jsActNm; if ( ! mi.jsActDev ) pWin.windowActionProcess( _aN ); else pWin.windowActionProcessDev( _aN ); };
-        var titleBarContextMenu = dojo.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", contextMenuForWindow: false, onItemClick: miOnClick }, null );
-        for ( var i = 0 ; i < menuActionNames.length ; i++ )
-        {
-            aNm = menuActionNames[i];
-            isDev = false;
-            if ( ! aNm.dev )
-                menulabel = this._getActionLabel( aNm );
-            else
-            {
-                isDev = true;
-                menulabel = aNm = aNm.aNm;
-            }
-            menuitem = dojo.widget.createWidget( "MenuItem2", { caption: menulabel, jsActNm: aNm, jsActDev: isDev } );
-            this.actionMenus[ aNm ] = menuitem;
-            titleBarContextMenu.addChild( menuitem );
-        }
-        docBody.appendChild( titleBarContextMenu.domNode );
-        this.actionMenuWidget = titleBarContextMenu;
-    },
-
-    // layout extents static methods - used for defining cached portlet decorator layoutExtents object
+    // layout extents static methods - used for defining cached portlet decorator layout object
 
     /*  static  */
-    _createLayoutExtents: function( decorationConfig, forIFrameStyles, dNode, cNode, tbNode, rbNode, djObj, jsObj )
+    _createLayoutInfo: function( decorationConfig, forIFrameStyles, dNode, cNode, tbNode, rbNode, djObj, jsObj, jsUI )
     {   // should be called once for each used portlet decorator
         var dNodeCompStyle = djObj.gcs( dNode );
         var cNodeCompStyle = djObj.gcs( cNode );
-        var tbNodeCompStyle = null, rbNodeCompStyle = null;
 
-        var layoutExtents = { dNode: this._createNodeLEs( dNode, dNodeCompStyle, djObj, jsObj ),
-                              cNode: this._createNodeLEs( cNode, cNodeCompStyle, djObj, jsObj ) };
+        var dLayoutInfo = jsUI.getLayoutExtents( dNode, dNodeCompStyle, djObj, jsObj );
+        var cLayoutInfo = jsUI.getLayoutExtents( cNode, cNodeCompStyle, djObj, jsObj );
+        var layoutInfo = { dNode: dLayoutInfo,
+                           cNode: cLayoutInfo };
+
+        var cMarginTop = Math.max( 0, cLayoutInfo.mE.t );
+        var cMarginBottom = Math.max( 0, cLayoutInfo.mE.h - cLayoutInfo.mE.t );
+        var cNode_mBh_adj_tb_mBh = 0;
+        var cNode_mBh_adj_rb_mBh = 0;
+
+        var tbLayoutInfo = null;
         if ( tbNode )
         {
-            tbNodeCompStyle = djObj.gcs( tbNode );
-            layoutExtents.tbNode = this._createNodeLEs( tbNode, tbNodeCompStyle, djObj, jsObj );
+            var tbNodeCompStyle = djObj.gcs( tbNode );
+            tbLayoutInfo = jsUI.getLayoutExtents( tbNode, tbNodeCompStyle, djObj, jsObj );
             var dragCursor = tbNodeCompStyle.cursor;
             if ( dragCursor == null || dragCursor.length == 0 )
                 dragCursor = "move";
             decorationConfig.dragCursor = dragCursor;
+            tbLayoutInfo.mBh = djObj.getMarginBox( tbNode, tbNodeCompStyle, jsObj ).h;
+            var tbMarginBottom = Math.max( 0, tbLayoutInfo.mE.h - tbLayoutInfo.mE.t );
+            cNode_mBh_adj_tb_mBh = ( tbLayoutInfo.mBh - tbMarginBottom ) + Math.max( 0, (tbMarginBottom - cMarginTop) );
+            layoutInfo.tbNode = tbLayoutInfo;
         }
 
+        var rbLayoutInfo = null;
         if ( rbNode )
         {
-            rbNodeCompStyle = djObj.gcs( rbNode );
-            layoutExtents.rbNode = this._createNodeLEs( rbNode, rbNodeCompStyle, djObj, jsObj );
+            var rbNodeCompStyle = djObj.gcs( rbNode );
+            rbLayoutInfo = jsUI.getLayoutExtents( rbNode, rbNodeCompStyle, djObj, jsObj );
+            rbLayoutInfo.mBh = djObj.getMarginBox( rbNode, rbNodeCompStyle, jsObj ).h;
+            var rbMarginTop = Math.max( 0, rbLayoutInfo.mE.t );
+            cNode_mBh_adj_rb_mBh = ( rbLayoutInfo.mBh - rbMarginTop ) + Math.max( 0, (rbMarginTop - cMarginBottom) );
+            layoutInfo.rbNode = rbLayoutInfo;
         }
 
-        var dNodeMarginBox = djObj.getMarginBox( dNode, dNodeCompStyle, jsObj ) ;
-        var dNodeContentBox = djObj.getContentBox( dNode, dNodeCompStyle, jsObj ) ;
-
-		layoutExtents.lostHeight=
-			( dNodeMarginBox.h - dNodeContentBox.h )
-			+ ( tbNode ? djObj.getMarginBox(tbNode, tbNodeCompStyle, jsObj).h : 0 )
-			+ ( rbNode ? djObj.getMarginBox(rbNode, rbNodeCompStyle, jsObj).h : 0 );
-
-		layoutExtents.lostWidth = dNodeMarginBox.w - dNodeContentBox.w;
+        layoutInfo.cNode_mBh_LessBars = cNode_mBh_adj_tb_mBh + cNode_mBh_adj_rb_mBh;
 
         if ( ! forIFrameStyles )
-            decorationConfig.layoutExtents = layoutExtents;
+            decorationConfig.layout = layoutInfo;
         else
-            decorationConfig.layoutExtentsIFrame = layoutExtents;
-    },
-
-    testLost: function()
-    {
-        var djObj = dojo;
-        var jsObj = jetspeed;
-        var dNode = this.domNode;
-        var tbNode = this.tbNode;
-        var rbNode = this.rbNode;
-        var dNodeCompStyle = djObj.gcs( dNode );
-        var tbNodeCompStyle = djObj.gcs( tbNode );
-        var rbNodeCompStyle = djObj.gcs( rbNode );
-        var dNodeMarginBox = djObj.getMarginBox( dNode, dNodeCompStyle, jsObj ) ;
-        var dNodeContentBox = djObj.getContentBox( dNode, dNodeCompStyle, jsObj ) ;
-
-        var tbmb = djObj.getMarginBox(tbNode, tbNodeCompStyle, jsObj);
-        var rbmb = djObj.getMarginBox(rbNode, rbNodeCompStyle, jsObj);
-
-        var lost = { id: this.widgetId, dMBw: dNodeMarginBox.w, dMBh: dNodeMarginBox.h, dCBw: dNodeContentBox.h, dCBh: dNodeContentBox.w, tbMBh: tbmb.h, rbMBh: rbmb.h, dNodePos: dNodeCompStyle.position, dNodeDis: dNodeCompStyle.display, dNodeWidth: dNodeCompStyle.width, dNodeHeight: dNodeCompStyle.height };
-		lost.lostHeight =
-			( dNodeMarginBox.h - dNodeContentBox.h )
-			+ ( tbNode ? djObj.getMarginBox(tbNode, tbNodeCompStyle, jsObj).h : 0 )
-			+ ( rbNode ? djObj.getMarginBox(rbNode, rbNodeCompStyle, jsObj).h : 0 );
-
-		lost.lostWidth = dNodeMarginBox.w - dNodeContentBox.w;
-
-        var lostStr = jetspeed.printobj( lost );
-        if ( jetspeed.lostFirst == null )
-            jetspeed.lostFirst = lostStr;
-
-        return lostStr;
-    },
-
-    /*  static  */
-    _createNodeLEs: function( node, nodeCS, djObj, jsObj )
-    {
-        var padborder = djObj._getPadBorderExtents( node, nodeCS );
-        var margin = djObj._getMarginExtents( node, nodeCS, jsObj);
-        return { padborder: padborder,
-                 margin: margin,
-                 lessW: ( padborder.w + margin.w ),
-                 lessH: ( padborder.h + margin.h ) };
-    },
+            decorationConfig.layoutIFrame = layoutInfo;
+    },  // _createLayoutInfo
 
 
     // action functions
 
-    windowActionButtonClick: function( evt )
+    actionBtnClick: function( evt )
     {
         if ( evt == null || evt.target == null ) return;
-        this.windowActionProcess( evt.target.actionName, evt );
+        this.actionProcess( evt.target.actionName, evt );
     },
-    windowActionMenuOpen: function( evt )
+    actionMenuOpen: function( evt )
     {
+        var jsObj = jetspeed;
+        var jsId = jsObj.id;
+
+        var menuWidget = this.actionMenuWidget;
+        if ( ! menuWidget ) return;
+        if ( menuWidget.isShowingNow )
+            menuWidget.close();
+
         var aState = null;
         var aMode = null;
         if ( this.portlet )
@@ -775,30 +785,28 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             aState = this.portlet.getCurrentActionState();
             aMode = this.portlet.getCurrentActionMode();
         }
-        for ( var aNm in this.actionMenus )
+        
+        var menuItemsByName = menuWidget.menuItemsByName;
+        var menuItem, miDisplay;
+        for ( var aNm in menuItemsByName )
         {
-            var menuitem = this.actionMenus[ aNm ];
-            if ( this._isWindowActionEnabled( aNm, aState, aMode ) )
-            {
-                menuitem.domNode.style.display = "";   // instead of menuitem.enable();
-            }
-            else
-            {
-                menuitem.domNode.style.display = "none";   // instead of menuitem.disable();
-            }
+            menuItem = menuItemsByName[ aNm ];
+            miDisplay = ( this._isActionEnabled( aNm, aState, aMode, jsObj, jsId ) ) ? "" : "none";
+            menuItem.domNode.style.display = miDisplay;   // instead of menuItem.enable()/disable()
         }
-        this.actionMenuWidget.onOpen( evt );
+        menuWidget.pWin = this;
+        menuWidget.onOpen( evt );
     },
-    windowActionProcessDev: function( /* String */ aNm, evt )
+    actionProcessDev: function( /* String */ aNm, evt )
     {
-        if ( aNm == this.dbMenuDims )
+        if ( aNm == this.dbMenuDims && jetspeed.debugPWinPos )
         {
-            this.dumpPos();
+            jetspeed.debugPWinPos( this );
         }
     },
-    windowActionProcess: function( /* String */ aNm, evt )
+    actionProcess: function( /* String */ aNm, evt )
     {   // evt arg is needed only for opening action menu
-        //dojo.debug( "windowActionProcess [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " actionName=" + aNm );
+        //dojo.debug( "actionProcess [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + ( this.portlet ? (" / " + this.widgetId) : "" ) + "]" + " actionName=" + aNm );
         var jsObj = jetspeed;
         var jsId = jsObj.id;
         if ( aNm == null ) return;
@@ -823,7 +831,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         else if ( aNm == jsId.ACT_MENU )
         {
-            this.windowActionMenuOpen( evt );
+            this.actionMenuOpen( evt );
         }
         else if ( aNm == jsId.ACT_MINIMIZE )
         {   // make no associated content request - just notify server of change
@@ -838,7 +846,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             if ( ! this.portlet )
             {
-                this.windowActionButtonSync();
+                this.actionBtnSyncDefer();
             }
         }
         else if ( aNm == jsId.ACT_RESTORE )
@@ -869,7 +877,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             if ( ! this.portlet )
             {
-                this.windowActionButtonSync();
+                this.actionBtnSyncDefer();
             }
         }
         else if ( aNm == jsId.ACT_MAXIMIZE )
@@ -887,7 +895,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             else
             {
-                this.windowActionButtonSync();
+                this.actionBtnSync( jsObj, jsId );
             }
         }
         else if ( aNm == jsId.ACT_REMOVEPORTLET )
@@ -906,13 +914,14 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             if ( this.portlet )
                 this.portlet.renderAction( aNm );
         }
-    },
+    },  // actionProcess
 
-    _isWindowActionEnabled: function( aNm, aState, aMode )
+    _isActionEnabled: function( aNm, aState, aMode, jsObj, jsId )
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
         var enabled = false;
+        var winState = this.windowState;
         if ( this.minimizeTempRestore != null )
         {
             if ( this.portlet )
@@ -930,21 +939,22 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         else if ( aNm == jsId.ACT_MENU )
         {
-            if ( ! this._windowActionMenuIsEmpty() )
+            if ( ! this._actionMenuIsEmpty( jsObj, jsId ) )
                 enabled = true;
         }
         else if ( jsObj.prefs.windowActionDesktop[ aNm ] != null )
         {
             if ( this.getLayoutActionsEnabled() )
             {
+                var ie6Minimized = ( this.ie6 && winState == jsId.ACT_MINIMIZE );
                 if ( aNm == jsId.ACT_DESKTOP_HEIGHT_EXPAND )
                 {
-                    if ( ! this.heightToFit )
+                    if ( ! this.heightToFit && ! ie6Minimized )
                         enabled = true;
                 }
                 else if ( aNm == jsId.ACT_DESKTOP_HEIGHT_NORMAL )
                 {
-                    if ( this.heightToFit )
+                    if ( this.heightToFit && ! ie6Minimized )
                         enabled = true;
                 }
                 else if ( aNm == jsId.ACT_DESKTOP_TILE && jsObj.prefs.windowTiling )
@@ -993,21 +1003,21 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {   // adjust visible action buttons - BOZO:NOW: this non-portlet case needs more attention
             if ( aNm == jsId.ACT_MAXIMIZE )
             {
-                if ( aNm != this.windowState && this.minimizeTempRestore == null )
+                if ( aNm != winState && this.minimizeTempRestore == null )
                 {
                     enabled = true;
                 }
             }
             else if ( aNm == jsId.ACT_MINIMIZE )
             {
-                if ( aNm != this.windowState )
+                if ( aNm != winState )
                 {
                     enabled = true;
                 }
             }
             else if ( aNm == jsId.ACT_RESTORE )
             {
-                if ( this.windowState == jsId.ACT_MAXIMIZE || this.windowState == jsId.ACT_MINIMIZE )
+                if ( winState == jsId.ACT_MAXIMIZE || winState == jsId.ACT_MINIMIZE )
                 {
                     enabled = true;
                 }
@@ -1018,31 +1028,45 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
         }
         return enabled;
-    },
-    _windowActionMenuIsEmpty: function()
-    {   // meant to be called from within _isWindowActionEnabled call for ACT_MENU
-        var aState = null;
-        var aMode = null;
-        if ( this.portlet )
-        {
-            aState = this.portlet.getCurrentActionState();
-            aMode = this.portlet.getCurrentActionMode();
-        }
+    },  // _isActionEnabled
+
+    _actionMenuIsEmpty: function( jsObj, jsId )
+    {   // meant to be called from within _isActionEnabled call for ACT_MENU
         var actionMenuIsEmpty = true;
-        for ( var aNm in this.actionMenus )
+        var menuWidget = this.actionMenuWidget;
+        if ( menuWidget )
         {
-            var menuitem = this.actionMenus[ aNm ];
-            if ( aNm != jetspeed.id.ACT_MENU && this._isWindowActionEnabled( aNm, aState, aMode ) )
+            var aState = null;
+            var aMode = null;
+            if ( this.portlet )
             {
-                actionMenuIsEmpty = false;
-                break;
+                aState = this.portlet.getCurrentActionState();
+                aMode = this.portlet.getCurrentActionMode();
+            }
+
+            for ( var aNm in menuWidget.menuItemsByName )
+            {
+                if ( aNm != jsId.ACT_MENU && this._isActionEnabled( aNm, aState, aMode, jsObj, jsId ) )
+                {
+                    actionMenuIsEmpty = false;
+                    break;
+                }
             }
         }
         return actionMenuIsEmpty ;
     },
 
-    windowActionButtonSync: function()
+    actionBtnSyncDefer: function()
+    {   // delay helps mozilla update btn visibility on minimize and restore-from-minimized
+        dojo.lang.setTimeout( this, this.actionBtnSync, 10 );
+    },
+
+    actionBtnSync: function( jsObj, jsId )
     {
+        if ( ! jsObj )
+        {
+            jsObj = jetspeed; jsId = jsObj.id;
+        }
         var hideButtons = this.decConfig.windowActionButtonHide;
         var aState = null;
         var aMode = null;
@@ -1056,49 +1080,59 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var showBtn = false;
             if ( ! hideButtons || this.titleLit )
             {
-                showBtn = this._isWindowActionEnabled( aNm, aState, aMode );
+                showBtn = this._isActionEnabled( aNm, aState, aMode, jsObj, jsId );
             }
             var buttonNode = this.actionButtons[ aNm ];
-            if ( showBtn )
-                buttonNode.style.display = "";
-            else
-                buttonNode.style.display = "none";
+            buttonNode.style.display = ( showBtn ) ? "" : "none";
         }
     },
 
     _postCreateMaximizeWindow: function()
     {
+        var jsObj = jetspeed;
+        var jsId = jsObj.id;
         this.maximizeWindow();
-        this.windowActionButtonSync();
+        if ( this.portlet )
+        {
+            this.portlet.renderAction( jsId.ACT_MAXIMIZE );
+        }
+        else
+        {
+            this.actionBtnSync( jsObj, jsId );
+        }
     },
 
     minimizeWindowTemporarily: function()
     {
+        var jsObj = jetspeed;
+        var jsId = jsObj.id;
         if ( this.minimizeTempRestore == null )
         {
             this.minimizeTempRestore = this.windowState;
-            if ( this.windowState != jetspeed.id.ACT_MINIMIZE )
+            if ( this.windowState != jsId.ACT_MINIMIZE )
             {
-                this.minimizeWindow();
+                this.minimizeWindow( false );
             }
-            this.windowActionButtonSync();
+            this.actionBtnSync( jsObj, jsId );
         }
     },
     restoreFromMinimizeWindowTemporarily: function()
     {
+        var jsObj = jetspeed;
+        var jsId = jsObj.id;
         var restoreToWindowState = this.minimizeTempRestore;
         this.minimizeTempRestore = null;
         if ( restoreToWindowState )
         {
-            if ( restoreToWindowState != jetspeed.id.ACT_MINIMIZE )
+            if ( restoreToWindowState != jsId.ACT_MINIMIZE )
             {
                 this.restoreWindow();
             }
-            this.windowActionButtonSync();
+            this.actionBtnSync( jsObj, jsId );
         }
     },
     
-    minimizeWindow: function( evt )
+    minimizeWindow: function( minimizeOnLoad )
     {
         if ( ! this.tbNode )
             return;
@@ -1106,88 +1140,44 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var jsObj = jetspeed;
         if ( this.windowState == jetspeed.id.ACT_MAXIMIZE )
         {
-            this.showAllPortletWindows() ;
-            this.restoreWindow( evt );
+            jsObj.widget.showAllPortletWindows() ;
+            this.restoreWindow();
         }
-
-        this._updtDimsObj( false );
+        else if ( ! minimizeOnLoad )
+        {
+            this._updtDimsObj( false, false );
+        }
 
         var disIdx = jsObj.css.cssDis;
         this.cNodeCss[ disIdx ] = "none";
         if ( this.rbNodeCss )
             this.rbNodeCss[ disIdx ] = "none";
 
-        //this._alterCss( true, true );
-
-        //dojo.html.setContentBox( this.domNode, { height: dojo.html.getMarginBox( this.tbNode ).height } );
-
-        // BOZO:WIDGET: xxxx this needs lots of attention!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
-        this.containerNode.style.display = "none";
-        if ( this.rbNode )
-            this.rbNode.style.display = "none";
-        dojo.html.setContentBox( this.domNode, { height: dojo.html.getMarginBox( this.tbNode ).height } );
-
-
-        //this.domNode.style.height = "";         // xxxx   hack to avoid setting minimized height in dims object - call to setContentBox was used previously
-        //this.containerNode.style.height = "";   // xxxx   hack to avoid setting minimized height in dims object - call to setContentBox was used previously
-    
         this.windowState = jsObj.id.ACT_MINIMIZE;
-    },
-    showAllPortletWindows: function()
-    {
-        var allPWwidgets = jetspeed.page.getPWins( false );
-        for ( var i = 0 ; i < allPWwidgets.length ; i++ )
-        {
-            var showPWwidget = allPWwidgets[i] ;
-            if ( showPWwidget )
-            {
-                showPWwidget.domNode.style.display = "";
-            }
-        }
-    },
-    hideAllPortletWindows: function( excludeWidgetIds )
-    {
-        var allPWwidgets = jetspeed.page.getPWins( false );
-        for ( var i = 0 ; i < allPWwidgets.length ; i++ )
-        {
-            var hidePWwidget = allPWwidgets[i] ;
-            if ( hidePWwidget && excludeWidgetIds && excludeWidgetIds.length > 0 )
-            {
-                for ( var exclI = 0 ; exclI < excludeWidgetIds.length ; exclI++ )
-                {
-                    if ( hidePWwidget.widgetId == excludeWidgetIds[exclI] )
-                    {
-                        hidePWwidget = null;
-                        break;
-                    }
-                }
-            }
-            if ( hidePWwidget )
-            {
-                hidePWwidget.domNode.style.display = "none";
-            }
-        }
-    },
-    maximizeWindow: function( evt )
+        if ( this.ie6 )
+            this.containerNode.style.display = "none";   // in ie6, this needs to happen before bulk changes in alterCss
+        this._alterCss( true, true );
+    },  // minimizeWindow
+
+    maximizeWindow: function()
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
         var dNode = this.domNode;
         var hideAllBut = [ this.widgetId ];
-        //if ( this.dbOn )
+        //if ( this.dbOn )   // show debug window when other window is maximized
         //    hideAllBut.push( jetspeed.debugWindowId() );
-        this.hideAllPortletWindows( hideAllBut ) ;
+        jsObj.widget.hideAllPortletWindows( hideAllBut ) ;
         if ( this.windowState == jsId.ACT_MINIMIZE )
         {
-            this.restoreWindow( evt );
+            this.restoreWindow();
         }
         var preMaxPosStatic = this.posStatic;
         this.preMaxPosStatic = preMaxPosStatic;
         this.preMaxHeightToFit = this.heightToFit;
         var tiledStateWillChange = preMaxPosStatic;
 
-        this._updtDimsObj( tiledStateWillChange );
+        this._updtDimsObj( false, tiledStateWillChange );
 
         var jetspeedDesktop = document.getElementById( jsId.DESKTOP );
         var yPos = dojo.html.getAbsolutePosition( jetspeedDesktop, true ).y;    // passing true to fix position at top (so not affected by vertically scrolled window)
@@ -1195,10 +1185,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var docPadding = dojo.html.getPadding( jsObj.docBody );
         
         // hardcoded to fill document.body width leaving 1px on each side
-        this.dimsUntiledTemp = { width: viewport.width - docPadding.width - 2,
-                                 height: viewport.height - docPadding.height - yPos,
-                                 left: 1,
-                                 top: yPos };
+        this.dimsUntiledTemp = { w: viewport.width - docPadding.width - 2,
+                                 h: viewport.height - docPadding.height - yPos,
+                                 l: 1,
+                                 t: yPos };
 
         this._setTitleBarDragging( true, jsObj.css, false );
 
@@ -1211,8 +1201,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             jetspeedDesktop.appendChild( dNode );
 
 		this.windowState = jsId.ACT_MAXIMIZE;
-	},
-	restoreWindow: function( evt )
+	},  // maximizeWindow
+
+	restoreWindow: function()
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
@@ -1227,7 +1218,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var lastPI = null;
         if ( this.windowState == jsId.ACT_MAXIMIZE )
         {
-            this.showAllPortletWindows() ;
+            jsObj.widget.showAllPortletWindows() ;
             this.posStatic = this.preMaxPosStatic;
             this.heightToFit = this.preMaxHeightToFit;
             this.dimsUntiledTemp = null;
@@ -1238,86 +1229,181 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( this.rbNodeCss )
             this.rbNodeCss[ disIdx ] = "block";
         
-        var dimsPrevious = this.getDimsObj( this.posStatic );
-        
         this.windowState = jsId.ACT_RESTORE;  // "normal"
 
         this._setTitleBarDragging( true, jsObj.css );
 
-        this._alterCss( true, true );
-
-        if ( this.posStatic && currentlyAbsolute )
-        {   // tiled window in maximized needs to be placed back in previous column/row
-            if ( dimsPrevious != null && dimsPrevious.columnInfo != null && dimsPrevious.columnInfo.columnIndex != null )
-            {
-                var columnElmt = jsObj.page.columns[ dimsPrevious.columnInfo.columnIndex ];
-                if ( dimsPrevious.columnInfo.previousSibling )
-                    dojo.dom.insertAfter( dNode, dimsPrevious.columnInfo.previousSibling );
-                else if ( dimsPrevious.columnInfo.nextSibling )
-                    dojo.dom.insertBefore( dNode, dimsPrevious.columnInfo.nextSibling );
-                else
-                    columnElmt.domNode.appendChild( dNode );
-            }
-            else
-            {
-                if ( jsObj.page.columns != null && jsObj.page.columns.length > 0 )
-                    dojo.dom.prependChild( dNode, jsObj.page.columns[ 0 ].domNode );
-            }
-        }
-	},
-    _updtDimsObj: function( tiledStateWillChange )
-    {
-        var jsObj = jetspeed;
-        var jsId = jsObj.id;
-        var djObj = dojo;
-        var dNode = this.domNode;
-        var posStatic = this.posStatic;
-        var dimsCurrent = this.getDimsObj( posStatic );
-        if ( posStatic )
+        var ie6 = this.ie6;
+        
+        if ( ! ie6 )
         {
-            if ( tiledStateWillChange )
-            {   // record col/row location
-                var columnInfo = {};
-                var sibling = djObj.dom.getPreviousSiblingElement( dNode );
-                if ( sibling )
-                    columnInfo.previousSibling = sibling;
-                else
-                {
-                    sibling = djObj.dom.getNextSiblingElement( dNode );
-                    if ( sibling )
-                        columnInfo.nextSibling = sibling;
-                }
-                columnInfo.columnIndex = this.getPageColumnIndex();
-                dimsCurrent.columnInfo = columnInfo;
-            }
-            /*
-            if ( this.windowState != jsId.ACT_MINIMIZE && this.windowState != jsId.ACT_MAXIMIZE )
-            {
-                var h = null, cssH = this.dNodeCss[ jsObj.css.cssH ];
-                if ( cssH != null && cssH.length > 0 )
-                    h = new Number( cssH );
-                if ( isNaN( h ) )
-                    h = null;
-                dimsCurrent.height = h;
-            }
-            dimsCurrent.width = null;
-            */
+            this._alterCss( true, true );
         }
         else
         {
-            //if ( this.windowState != jsId.ACT_MINIMIZE && this.windowState != jsId.ACT_MAXIMIZE )
-            //{
-            //    var domNodeMarginBox = djObj.html.getMarginBox( dNode ) ;
-            //    this.dimsUntiled =
-            //    {
-            //        width: domNodeMarginBox.width,
-            //        height: domNodeMarginBox.height,
-            //        left: dNode.style.left,
-            //        top: dNode.style.top,
-            //    };
-            //}
+            var iNodeCss = null;
+            if ( this.heightToFit )
+            {
+                iNodeCss = this.iNodeCss;
+                // blank out height so that it can be recalculated based on actual content height
+                this.iNodeCss = null;   // if not null, _alterCss will not set content relative height
+            }
+            this._alterCss( true, true );
+            this._updtDimsObj( false, false, true, false, true );  // force update width and height
+            if ( iNodeCss != null )
+                this.iNodeCss = iNodeCss;
+            this._alterCss( false, false, true );   // resize
         }
+
+        if ( this.posStatic && currentlyAbsolute )
+        {   // tiled window in maximized or window just set from untiled to tiled - needs to be placed back in previous column/row
+            this._tileWindow( jsObj );
+        }
+    },  // restoreWindow
+
+    _tileWindow: function( jsObj )
+    {
+        if ( ! this.posStatic ) return;
+        var dNode = this.domNode;
+        var dimsPrevious = this.getDimsObj( this.posStatic );
+        var cannotPlace = true;
+        if ( dimsPrevious != null )
+        {
+            var colInfo = dimsPrevious.colInfo;
+            if ( colInfo != null && colInfo.colI != null )
+            {
+                var colObj = jsObj.page.columns[ colInfo.colI ];
+                var colNode = ( (colObj != null) ? colObj.domNode : null);
+                if ( colNode != null )
+                {
+                    var colChildAtIndex = null;
+                    var colNodeChildLen = colNode.childNodes.length;
+                    if ( colNodeChildLen == 0 )
+                    {
+                        colNode.appendChild( dNode );
+                        cannotPlace = false;
+                    }
+                    else
+                    {
+                        var colChild, colChildId, colChildIndex = 0;
+                        if ( colInfo.pSibId != null || colInfo.nSibId != null )
+                        {
+                            colChild = colNode.firstChild;
+                            do
+                            {
+                                colChildId = colChild.id;
+                                if ( colChildId == null ) continue;
+                                if ( colChildId == colInfo.pSibId )
+                                {
+                                    dojo.dom.insertAfter( dNode, colChild );
+                                    cannotPlace = false;
+                                }
+                                else if ( colChildId == colInfo.nSibId )
+                                {
+                                    dojo.dom.insertBefore( dNode, colChild );
+                                    cannotPlace = false;
+                                }
+                                else if ( colChildIndex == colInfo.elmtI )
+                                {
+                                    colChildAtIndex = colChild;
+                                }
+                                colChild = colChild.nextSibling;
+                                colChildIndex++;
+                            } while ( cannotPlace && colChild != null )
+                        }
+                    }
+                    if ( cannotPlace )
+                    {
+                        if ( colChildAtIndex != null )
+                        {
+                            dojo.dom.insertBefore( dNode, colChildAtIndex );
+                        }
+                        else
+                        {
+                            dojo.dom.prependChild( dNode, colNode );
+                        }
+                        cannotPlace = false;
+                    }
+                }
+            }
+        }
+        if ( cannotPlace )
+        {
+            var defaultColumn = jsObj.page.getColumnDefault();
+            if ( defaultColumn != null )
+                dojo.dom.prependChild( dNode, defaultColumn.domNode );
+        }
+	},  // _tileWindow
+
+    getDimsObj: function( posStatic, doNotReturnTemp )
+    {
+        return ( posStatic ? ( (this.dimsTiledTemp != null && ! doNotReturnTemp) ? this.dimsTiledTemp : this.dimsTiled ) : ( (this.dimsUntiledTemp != null && ! doNotReturnTemp) ? this.dimsUntiledTemp : this.dimsUntiled ) );
     },
+    _updtDimsObj: function( updtOnlyIfPropIsUndefined, tiledStateWillChange, ltNoTouch, whNoTouch, whForce, copyToAndSetTemp )
+    {
+        var jsObj = jetspeed;
+        var djObj = dojo;
+        var dNode = this.domNode;
+        var posStatic = this.posStatic;
+
+        var dimsCurrent = this.getDimsObj( posStatic, copyToAndSetTemp );
+
+        var lORtIsUndef = ( ! ltNoTouch && ! posStatic && ( ! updtOnlyIfPropIsUndefined || dimsCurrent.l == null || dimsCurrent.t == null ) );
+        var wORhIsUndef = ( ! whNoTouch && ( ! updtOnlyIfPropIsUndefined || lORtIsUndef || whForce || dimsCurrent.w == null || dimsCurrent.h == null ) );
+        
+        if ( wORhIsUndef || lORtIsUndef )
+        {
+            var dNodeLayoutInfo = this._getLayoutInfo().dNode;
+            if ( wORhIsUndef )
+            {
+                var dNodeMarginSize = jsObj.ui.getMarginBoxSize( dNode, dNodeLayoutInfo );
+                dimsCurrent.w = dNodeMarginSize.w;
+                dimsCurrent.h = dNodeMarginSize.h;
+                if ( ! posStatic ) lORtIsUndef = true;
+            }
+            if ( lORtIsUndef )
+            {
+                var winAbsPos = djObj.html.getAbsolutePosition( dNode, true );
+                dimsCurrent.l = winAbsPos.x - dNodeLayoutInfo.mE.l - dNodeLayoutInfo.pbE.l;
+                dimsCurrent.t = winAbsPos.y - dNodeLayoutInfo.mE.t - dNodeLayoutInfo.pbE.t;
+            }
+        }
+        if ( posStatic )
+        {
+            if ( tiledStateWillChange || copyToAndSetTemp && dimsCurrent.colInfo == null )
+            {   // record col/row location
+                var nodeIndex = 0, backNode = dNode.previousSibling, nextNode = dNode.nextSibling;
+                var prevId = ( backNode != null ? backNode.id : null ), nextId = ( nextNode != null ? nextNode.id : null );
+                if ( backNode != null ) prevId = backNode.id;
+                while ( backNode != null )
+                {
+                    nodeIndex++;
+                    backNode = backNode.previousSibling;
+                }
+                dimsCurrent.colInfo = { elmtI: nodeIndex, pSibId: prevId, nSibId: nextId, colI: this.getPageColumnIndex() };
+            }
+            
+            if ( copyToAndSetTemp )
+            {
+                this.dimsTiledTemp = { w: dimsCurrent.w,
+                                       h: dimsCurrent.h,
+                                       colInfo: dimsCurrent.colInfo };
+                dimsCurrent = this.dimsTiledTemp;
+            }
+        }
+        else
+        {
+            if ( copyToAndSetTemp )
+            {
+                this.dimsUntiledTemp = { w: dimsCurrent.w,
+                                         h: dimsCurrent.h,
+                                         l: dimsCurrent.l,
+                                         t: dimsCurrent.t };
+                dimsCurrent = this.dimsUntiledTemp;
+            }
+        }
+        return dimsCurrent;
+    },  // _updtDimsObj
 
     getLayoutActionsEnabled: function()
     {
@@ -1353,17 +1439,17 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         this.tbNodeCss[ jsCss.cssCur ] = cursorVal;
         if ( ! suppressStyleUpdate )
             tbNode.style.cursor = cursorVal;
-    },
+    },  // _setTitleBarDragging
 
     onMouseDown: function( /*Event*/ evt )
     {   // summary: callback for click anywhere in window
-        this.bringToTop();
+        this.bringToTop( evt, false, false, jetspeed );
     },
-    bringToTop: function( evt, inclStatic )
+
+    bringToTop: function( evt, inclStatic, suppressSubmitChange, jsObj )
     {
         if ( ! this.posStatic )
         {   // bring-to-front
-            var jsObj = jetspeed;
             var jsPage = jsObj.page;
             var jsCss = jsObj.css;
             var dNodeCss = this.dNodeCss;
@@ -1374,8 +1460,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 var zTop = this._setAsTopZIndex( jsPage, jsCss, dNodeCss, false );
                 if ( this.windowInitialized )
                 {
-                    this.domNode.style.zIndex = String( zTop );
-                    if ( this.portlet && this.windowState != jetspeed.id.ACT_MAXIMIZE )
+                    this.domNode.style.zIndex = zTop;
+                    if ( ! suppressSubmitChange && this.portlet && this.windowState != jetspeed.id.ACT_MAXIMIZE )
                         this.portlet.submitWinState();
                 }
                 //dojo.debug( "bringToTop [" + this.widgetId + "] zIndex   before=" + zCur + " after=" + zTop );
@@ -1386,22 +1472,27 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var zTop = this._setAsTopZIndex( jsPage, jsCss, dNodeCss, true );
             if ( this.windowInitialized )
             {
-                this.domNode.style.zIndex = String( zTop );
+                this.domNode.style.zIndex = zTop;
             }
         }
-    },
+    },  // bringToTop
+
     _setAsTopZIndex: function( jsPage, jsCss, dNodeCss, posStatic )
     {
-        var zTop = jsPage.getPWinTopZIndex( posStatic );
+        var zTop = String( jsPage.getPWinTopZIndex( posStatic ) );
         dNodeCss[ jsCss.cssZIndex ] = zTop;
         return zTop;
     },
+
     makeUntiled: function()
     {
         var jsObj = jetspeed;
-        this._updtDimsObj( true );
+
+        this._updtDimsObj( false, true );
         
-        this._makeUntiledDims();
+        this.posStatic = false;
+        this._updtDimsObj( true, false );
+
         this._setAsTopZIndex( jsObj.page, jsObj.css, this.dNodeCss, false );
 
         this._alterCss( true, true );
@@ -1416,43 +1507,26 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.portlet.submitWinState();
 
         this._addUntiledEvents();
-    },
-    _makeUntiledDims: function()
-    {
-        var dNode = this.domNode ;
+    },  // makeUntiled
 
-        this.posStatic = false;
-
-        var dimsUntiled = this.getDimsObj( false );
-
-        if ( dimsUntiled.width == null || dimsUntiled.height == null ||
-             dimsUntiled.left == null || dimsUntiled.top == null )
-        {   // determine initial untiled position based on current tiled position
-            var djH = dojo.html;
-            var winAbsPos = djH.getAbsolutePosition( dNode, true );
-            var winMarginTop = djH.getPixelValue( dNode, "margin-top", true );
-            var winMarginLeft = djH.getPixelValue( dNode, "margin-left", true );
-            var dNodeMarginBox = djH.getMarginBox( dNode );
-            dimsUntiled.width = dNodeMarginBox.width;
-            dimsUntiled.height = dNodeMarginBox.height;
-            dimsUntiled.left = winAbsPos.x - winMarginTop;
-            dimsUntiled.top = winAbsPos.y - winMarginLeft;
-        }
-    },
     makeTiled: function()
     {
         this.posStatic = true;
 
         var jsObj = jetspeed;
-        var zTop = this._setAsTopZIndex( jsObj.page, jsObj.css, this.dNodeCss, true );
+        this._setAsTopZIndex( jsObj.page, jsObj.css, this.dNodeCss, true );
         
-        this.restoreWindow();
+        this._alterCss( true, true );
+
+        //this.restoreWindow();
+        this._tileWindow( jsObj );
 
         if ( this.portlet )
             this.portlet.submitWinState();
 
         this._removeUntiledEvents();
-    },
+    },  // makeTiled
+
     _addUntiledEvents: function()
     {
         if ( this._untiledEvts == null )
@@ -1469,36 +1543,36 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
-    makeHeightToFit: function( suppressSubmitChange, suppressLogging )
-    {   // suppressLogging is to support contentChanged
+    makeHeightToFit: function( suppressSubmitChange )
+    {
         var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
 
         this.heightToFit = true;
 
-        this._alterCss( false, true );
-                //  xxxx   previously called adjPosToDeskState twice - once before resize call, and once after
+        if ( this.ie6 )
+        {
+            var iNodeCss = this.iNodeCss;
+            // blank out height so that it can be recalculated based on actual content height
+            this.iNodeCss = null;   // if not null, _alterCss will not set content relative height
+            this._alterCss( false, true );
+            this._updtDimsObj( false, false, true, false, true );  // force update width and height
+            this.iNodeCss = iNodeCss;
+        }
 
-        //if ( suppressLogging == null || suppressLogging != true )
-        //{   // flags are to avoid init problems with dojo-debug window when height-to-fit is set (causing stack overflow when dojo.debug() is called)
-            //dojo.debug( "makeHeightToFit [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
-        //}
-    
+        this._alterCss( false, true );
+
         if ( ! suppressSubmitChange && this.portlet )
             this.portlet.submitWinState();
-    },
+    },  // makeHeightToFit
+
     makeHeightVariable: function( suppressSubmitChange, isResizing )
     {
-        //var domNodePrevMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-                // xxxx   previously called getMarginBox twice - once before adjPosToDeskState call, and once after
-
-        //dojo.debug( "makeHeightVariable [" + this.widgetId + "] prev w=" + domNodePrevMarginBox.width + " h=" + domNodePrevMarginBox.height + "  new w=" + domNodeMarginBox.width + " h=" + domNodeMarginBox.height );
-        //dojo.debug( "makeHeightVariable [" + this.widgetId + "] containerNode PREV style.width=" + this.containerNode.style.width + " style.height=" + this.containerNode.style.height );
-        
         var dimsCurrent = this.getDimsObj( this.posStatic );
 
-        var domNodeMarginBox = dojo.html.getMarginBox( this.domNode ) ;
-        dimsCurrent.width = domNodeMarginBox.width;
-        dimsCurrent.height = domNodeMarginBox.height + 3;   // the plus 3 is mysteriously useful for avoiding initial scrollbar
+        var dNodeLayoutInfo = this._getLayoutInfo().dNode;
+        var dNodeMarginBox = jetspeed.ui.getMarginBoxSize( this.domNode, dNodeLayoutInfo );
+        dimsCurrent.w = dNodeMarginBox.w;
+        dimsCurrent.h = dNodeMarginBox.h;
 
         this.heightToFit = false;
 
@@ -1511,14 +1585,14 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         if ( ! suppressSubmitChange && this.portlet )
             this.portlet.submitWinState();
-    },
+    },  // makeHeightVariable
 
     resizeTo: function( w, h, force )
     {
         var dimsCurrent = this.getDimsObj( this.posStatic );
 
-        dimsCurrent.width = w;
-        dimsCurrent.height = h;
+        dimsCurrent.w = w;
+        dimsCurrent.h = h;
 
         this._alterCss( false, false, true );
 
@@ -1532,34 +1606,86 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 this.windowIsSizing = true;
             }
         }
-    },
+        this.resizeNotifyChildWidgets();
+    },  // resizeTo
 
-    getDimsObj: function( posStatic )
+    resizeNotifyChildWidgets: function()
     {
-        return ( posStatic ? ( (this.dimsTiledTemp != null) ? this.dimsTiledTemp : this.dimsTiled ) : ( (this.dimsUntiledTemp != null) ? this.dimsUntiledTemp : this.dimsUntiled ) );
+        if ( this.childWidgets )
+        {
+            var childWidgets = this.childWidgets;
+            var childWidgetsLen = childWidgets.length, childWidget;
+            for ( var i = 0 ; i < childWidgetsLen ; i++ )
+            {
+                try
+                {
+                    childWidget = childWidgets[i];
+                    if ( childWidget )
+                        childWidget.checkSize();
+                }
+                catch(e)
+                {
+                }
+            }
+        }
     },
 
-    _alterCss: function( changeTiledState, changeHeightToFit, changeResize, changePosition, suppressStyleUpdate )
+    _getLayoutInfo: function()
+    {
+        var iframesInfoCur = this.iframesInfo;
+        return ( ( ! ( iframesInfoCur && iframesInfoCur.layout ) ) ? this.decConfig.layout : this.decConfig.layoutIFrame );
+    },
+    _getLayoutInfoMoveable: function()
+    {
+        return this._getLayoutInfo().dNode;
+    },
+
+    onBrowserWindowResize: function()
+    {
+        if ( this.ie6 )
+        {
+            this._resetIE6TiledSize( false );
+        }
+    },
+
+    _resetIE6TiledSize: function( changeTiledState )
+    {
+        var posStatic = this.posStatic;
+        if ( posStatic )
+        {
+            var dNode = this.domNode;
+            var dimsCurrent = this.getDimsObj( posStatic );
+            dimsCurrent.w = Math.max( 0, this.domNode.parentNode.offsetWidth - this.colWidth_pbE );
+            this._alterCss( changeTiledState, false, false, false, true );    // changeWidth
+        }
+    },
+
+    _alterCss: function( changeTiledState, changeHeightToFit, changeResize, changePosition, changeWidth, suppressStyleUpdate )
     {
         var jsObj = jetspeed;
         var jsCss = jsObj.css;
         var iframesInfoCur = this.iframesInfo;
         var iframeLayout = ( iframesInfoCur && iframesInfoCur.layout );
-        var layoutExtents = ( ! iframeLayout ? this.decConfig.layoutExtents : this.decConfig.layoutExtentsIFrame );
+        var layoutInfo = ( ! iframeLayout ? this.decConfig.layout : this.decConfig.layoutIFrame );
+
+        var dNodeCss = this.dNodeCss, cNodeCss = null, tbNodeCss = null, rbNodeCss = null, iNodeCssSet = false, iNodeCss = this.iNodeCss, iCvrIE6Css = null;
+        if ( iNodeCss && iframeLayout )
+            iCvrIE6Css = iframesInfoCur.iframeCoverIE6Css;
+
         var posStatic = this.posStatic;
+        var effectivePosStatic = ( posStatic && iNodeCss == null );
         var heightToFit = this.heightToFit;
 
-        var setWidth = ( changeTiledState || ( changeResize && ! posStatic ) );
+        var setWidth = ( changeTiledState || changeWidth || ( changeResize && ! effectivePosStatic ) );
         var setHeight = ( changeHeightToFit || changeResize );
         var setPosition = ( changeTiledState || changePosition );
         var setOverflow = ( changeHeightToFit || ( changeResize && iframeLayout ) );
 
-        var dNodeCss = this.dNodeCss, cNodeCss = null, tbNodeCss = null, rbNodeCss = null;
         var dimsCurrent = this.getDimsObj( posStatic );
 
         if ( changeTiledState )
         {
-            dNodeCss[ jsCss.cssPos ] = ( posStatic ? "static" : "absolute" );
+            dNodeCss[ jsCss.cssPos ] = ( posStatic ? "relative" : "absolute" );
         }
 
         var setIFrame = null, setIFrameH = null;
@@ -1610,9 +1736,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             else
             {
-                dNodeCss[ lIdx ] = dimsCurrent.left;
+                dNodeCss[ lIdx ] = dimsCurrent.l;
                 dNodeCss[ luIdx ] = "px";
-                dNodeCss[ tIdx ] = dimsCurrent.top;
+                dNodeCss[ tIdx ] = dimsCurrent.t;
                 dNodeCss[ tuIdx ] = "px";
             }
         }
@@ -1621,7 +1747,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {
             cNodeCss = this.cNodeCss;
             var hIdx = jsCss.cssH, huIdx = jsCss.cssHU;
-            if ( heightToFit )
+            if ( heightToFit && iNodeCss == null )
             {
                 dNodeCss[ hIdx ] = "";
                 dNodeCss[ huIdx ] = "";
@@ -1630,21 +1756,47 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             else
             {
-                var h = dimsCurrent.height;
-                dNodeCss[ hIdx ] = (h - layoutExtents.dNode.lessH);
+                var h = dimsCurrent.h;
+                var disIdx = jsObj.css.cssDis;
+                var dNodeCBHeight;
+                var cNodeCBHeight;
+                if ( cNodeCss[ disIdx ] == "none" )
+                {
+                    dNodeCBHeight = layoutInfo.tbNode.mBh;
+                    cNodeCBHeight = "";
+                    cNodeCss[ huIdx ] = "";
+                }
+                else
+                {
+                    dNodeCBHeight = (h - layoutInfo.dNode.lessH);
+                    cNodeCBHeight = dNodeCBHeight - layoutInfo.cNode.lessH - layoutInfo.cNode_mBh_LessBars;
+                    cNodeCss[ huIdx ] = "px";
+                }
+                dNodeCss[ hIdx ] = dNodeCBHeight;
                 dNodeCss[ huIdx ] = "px";
-                cNodeCss[ hIdx ] = (h - layoutExtents.cNode.lessH - layoutExtents.lostHeight);
-                cNodeCss[ huIdx ] = "px";
+                cNodeCss[ hIdx ] = cNodeCBHeight;
+                if ( iNodeCss )
+                {
+                    iNodeCss[ hIdx ] = dNodeCBHeight;
+                    iNodeCss[ huIdx ] = "px";
+                    iNodeCssSet = true;
+                    if ( iCvrIE6Css )
+                    {
+                        iCvrIE6Css[ hIdx ] = cNodeCBHeight;
+                        iCvrIE6Css[ huIdx ] = cNodeCss[ huIdx ];
+                    }
+                }
             }
         }
 
         if ( setWidth )
         {
+            var w = dimsCurrent.w;
             cNodeCss = this.cNodeCss;
             tbNodeCss = this.tbNodeCss;
             rbNodeCss = this.rbNodeCss;
             var wIdx = jsCss.cssW, wuIdx = jsCss.cssWU;
-            if ( posStatic )
+            if ( effectivePosStatic && ( ! this.ie6 || ! w ) )
             {
                 dNodeCss[ wIdx ] = "";
                 dNodeCss[ wuIdx ] = "";
@@ -1663,21 +1815,31 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             else
             {
-                var w = dimsCurrent.width;
-                var wChild = (w - layoutExtents.lostWidth);
-                dNodeCss[ wIdx ] = (w - layoutExtents.dNode.lessW);
+                var dNodeCBWidth = (w - layoutInfo.dNode.lessW);
+                dNodeCss[ wIdx ] = dNodeCBWidth;
                 dNodeCss[ wuIdx ] = "px";
-                cNodeCss[ wIdx ] = (wChild - layoutExtents.cNode.lessW);
+                cNodeCss[ wIdx ] = dNodeCBWidth - layoutInfo.cNode.lessW;
                 cNodeCss[ wuIdx ] = "px";
                 if ( tbNodeCss )
                 {
-                    tbNodeCss[ wIdx ] = (wChild - layoutExtents.tbNode.lessW);
+                    tbNodeCss[ wIdx ] = dNodeCBWidth - layoutInfo.tbNode.lessW;
                     tbNodeCss[ wuIdx ] = "px";
                 }
                 if ( rbNodeCss )
                 {
-                    rbNodeCss[ wIdx ] = (wChild - layoutExtents.rbNode.lessW);
+                    rbNodeCss[ wIdx ] = dNodeCBWidth- layoutInfo.rbNode.lessW;
                     rbNodeCss[ wuIdx ] = "px";
+                }
+                if ( iNodeCss )
+                {
+                    iNodeCss[ wIdx ] = dNodeCBWidth;
+                    iNodeCss[ wuIdx ] = "px";
+                    iNodeCssSet = true;
+                    if ( iCvrIE6Css )
+                    {
+                        iCvrIE6Css[ wIdx ] = cNodeCss[ wIdx ];
+                        iCvrIE6Css[ wuIdx ] = cNodeCss[ wuIdx ];
+                    }
                 }
             }
         }
@@ -1691,11 +1853,17 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 this.tbNode.style.cssText = tbNodeCss.join( "" );
             if ( rbNodeCss )
                 this.rbNode.style.cssText = rbNodeCss.join( "" );
+            if ( iNodeCssSet )
+            {
+                this.bgIframe.iframe.style.cssText = iNodeCss.join( "" );
+                if ( iCvrIE6Css )
+                    iframesInfoCur.iframeCover.style.cssText = iCvrIE6Css.join( "" );
+            }
         }
         if ( setIFrame && setIFrameH )
             this._deferSetIFrameH( setIFrame, setIFrameH, false, 50 );
             //window.setTimeout( function() { setIFrame.height = setIFrameH; }, 50 ) ;
-    },
+    },  // _alterCss
 
     _deferSetIFrameH: function( setIFrame, setIFrameH, forceRefresh, waitFor, forceRefreshWaitFor )
     {
@@ -1716,20 +1884,27 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }, waitFor ) ;
     },
 
+    _getWindowMarginBox: function( dNodeLayoutInfo, jsObj )
+    {
+        var dNode = this.domNode;
+        if ( dNodeLayoutInfo == null )
+            dNodeLayoutInfo = this._getLayoutInfo().dNode;
+        var parentLayoutInfo = null;
+        if ( jsObj.UAope )  // needs parentNode layout-info 
+            parentLayoutInfo = ( this.posStatic ? jsObj.page.layoutInfo.column : jsObj.page.layoutInfo.desktop );
+        return jsObj.ui.getMarginBox( dNode, dNodeLayoutInfo, parentLayoutInfo, jsObj );
+    },
+
     _forceRefreshZIndex: function()
     {   // attempts to force a refresh with a zIndex change
         var jsObj = jetspeed;
         var zTop = this._setAsTopZIndex( jsObj.page, jsObj.css, this.dNodeCss, this.posStatic );
-        this.domNode.style.zIndex = String( zTop );
+        this.domNode.style.zIndex = zTop;
     },
     _forceRefreshZIndexAndForget: function()
     {   // attempts to force a refresh with a zIndex change - does not record new zIndex value in dNodeCss
         var zTop = jetspeed.page.getPWinTopZIndex( this.posStatic );
         this.domNode.style.zIndex = String( zTop );
-    },
-    _forceRefreshFromCss: function()
-    {
-        this.domNode.style.cssText = this.dNodeCss.join( "" );
     },
 
     getIFrames: function( includeSize )
@@ -1763,7 +1938,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.inContentChgd = true;
             if ( this.heightToFit )
             {
-                this.makeHeightToFit( true, true );
+                this.makeHeightToFit( true );
             }
             this.inContentChgd = false;
         }
@@ -1776,11 +1951,11 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var jsPage = jsObj.page;
         var djObj = dojo;
         var djEvtObj = djObj.event;
-        var actionCtxMenu = this.actionMenuWidget;
-        if ( actionCtxMenu != null )
+        var wDC = this.decConfig;
+
+        if ( this.actionMenuWidget && wDC && wDC.windowActionMenuHasNoImg )
         {
-            actionCtxMenu.destroy();
-            this.actionMenuWidget = actionCtxMenu = null;
+            jsUI.evtDisconnect( "after", this.tbNode, "oncontextmenu", this, "actionMenuOpen", djEvtObj );
         }
         
         jsPage.tooltipMgr.removeNodes( this.tooltips );
@@ -1792,15 +1967,15 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var aBtns = this.actionButtons;
         if ( aBtns )
         {
-            var hasTooltip = ( this.decConfig != null && this.decConfig.windowActionButtonTooltip );
+            var hasTooltip = ( wDC && wDC.windowActionButtonTooltip );
             for ( var aNm in aBtns )
             {
                 var aBtn = aBtns[ aNm ];
                 if ( aBtn )
                 {
-                    jsUI.evtDisconnect( "after", aBtn, "onclick", this, "windowActionButtonClick", djEvtObj );
+                    jsUI.evtDisconnect( "after", aBtn, "onclick", this, "actionBtnClick", djEvtObj );
                     if ( ! hasTooltip )
-                        jsUI.evtDisconnect( "after", aBtn, "onmousedown", djEvtObj.browser, "stopEvent", djEvtObj );
+                        jsUI.evtDisconnect( "after", aBtn, "onmousedown", jsObj, "_stopEvent", djEvtObj );
                 }
             }
             this.actionButtons = aBtns = null;
@@ -1818,29 +1993,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.resizeHandle = null;
         }
 
-        if ( this.subWidgetEndIndex > this.subWidgetStartIndex )
-        {
-            djObj.debug( "closeWindow subwidgets " + this.subWidgetStartIndex + " / " + this.subWidgetEndIndex );
-            var djWMgr = djObj.widget.manager;
-            for ( var i = this.subWidgetEndIndex -1 ; i >= this.subWidgetStartIndex ; i-- )
-            {
-                try
-                {
-                    if ( djWMgr.widgets.length > i )
-                    {
-			            var subWidget = djWMgr.widgets[i];
-                        if ( subWidget != null )
-                        {
-                            var swT = subWidget.widgetType;
-                            var swI = subWidget.widgetId;
-                            subWidget.destroy();
-                            djObj.debug( "destroyed sub-widget[" + i + "]: " + swT + " " + swI ) ;
-                        }
-                    }
-		        }
-                catch(e){ }
-            }
-        }
+        this._destroyChildWidgets( djObj );
 
         this._removeUntiledEvents();
 
@@ -1854,35 +2007,34 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         this.containerNode = null;
         this.tbNode = null;
         this.rbNode = null;
-    },
-    dumpPos: function()
+    },  // closeWindow
+
+    _destroyChildWidgets: function( djObj )
     {
-        var djObj = dojo;
-        var djH = djObj.html;
-        var dNode = this.domNode;
-        var cNode = this.containerNode;
-        var winAbsPos = djH.getAbsolutePosition( dNode, true );
-        var dNodeMarginBox = djH.getMarginBox( dNode );
-        var cNodeMarginBox = djH.getMarginBox( cNode );
-        var cNodeContentBox = djH.getContentBox( cNode );
-        var layoutExtents = this.decConfig.layoutExtents;
-        var ind = jetspeed.debugindent;
-        djObj.hostenv.println( "wnd-dims [" + this.widgetId + "]  abs.x=" + winAbsPos.x + "  abs.y=" + winAbsPos.y + "  z=" + dNode.style.zIndex );
-        djObj.hostenv.println( ind + "mb.width=" + dNodeMarginBox.width + "  mb.height=" + dNodeMarginBox.height );
-        djObj.hostenv.println( ind + "style.width=" + dNode.style.width + "  style.height=" + dNode.style.height );
-        djObj.hostenv.println( ind + "cnt.mb.width=" + cNodeMarginBox.width + "  cnt.mb.height=" + cNodeMarginBox.height );
-        djObj.hostenv.println( ind + "cnt.cb.width=" + cNodeContentBox.width + "  cnt.cb.height=" + cNodeContentBox.height );
-        djObj.hostenv.println( ind + "cnt.style.width=" + cNode.style.width + "  cnt.style.height=" + cNode.style.height );
-        djObj.hostenv.println( ind + "dNodeCss=" + this.dNodeCss.join("") );
-        djObj.hostenv.println( ind + "cNodeCss=" + this.cNodeCss.join("") );
-        djObj.hostenv.println( ind + "layoutExtents: " + "dNode.lessW=" + layoutExtents.dNode.lessW + " dNode.lessH=" + layoutExtents.dNode.lessH + " lostW=" + layoutExtents.lostWidth + " lostH=" + layoutExtents.lostHeight + " cNode.lessW=" + layoutExtents.cNode.lessW + " cNode.lessH=" + layoutExtents.cNode.lessH );
-        djObj.hostenv.println( ind + "dimsTiled=" + jetspeed.printobj( this.dimsTiled ) );
-        djObj.hostenv.println( ind + "dimsUntiled=" + jetspeed.printobj( this.dimsUntiled ) );
-        if ( this.dimsTiledTemp != null )
-            djObj.hostenv.println( ind + "dimsTiledTemp=" + jetspeed.printobj( this.dimsTiledTemp ) );
-        if ( this.dimsUntiledTemp != null )
-            djObj.hostenv.println( ind + "dimsUntiledTemp=" + jetspeed.printobj( this.dimsUntiledTemp ) );
-        //" document-width=" + dojo.html.getMarginBox( document[ "body" ] ).width + " document-height=" + dojo.html.getMarginBox( document[ "body" ] ).height
+        if ( this.childWidgets )
+        {
+            var childWidgets = this.childWidgets;
+            var childWidgetsLen = childWidgets.length, childWidget, swT, swI;
+            djObj.debug( "PortletWindow [" + this.widgetId + "] destroy child widgets (" + childWidgetsLen + ")" );
+
+            for ( var i = (childWidgetsLen -1) ; i >= 0 ; i-- )
+            {
+                try
+                {
+                    childWidget = childWidgets[i];
+                    if ( childWidget )
+                    {
+                        swT = childWidget.widgetType;
+                        swI = childWidget.widgetId;
+                        childWidget.destroy();
+                        djObj.debug( "destroyed child widget[" + i + "]: " + swT + " " + swI ) ;
+                    }
+                    childWidgets[i] = null;
+		        }
+                catch(e){ }
+            }
+            this.childWidgets = null;
+        }
     },
     
     getPageColumnIndex: function()
@@ -1896,28 +2048,55 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( this.portlet && this.windowState != jetspeed.id.ACT_MAXIMIZE )
             this.portlet.submitWinState();
     },
-    endDragging: function( posObj )
+    endDragging: function( posObj, changeToUntiled, changeToTiled )
     {
+        var jsObj = jetspeed;
+        var ie6 = this.ie6;
+        if ( changeToUntiled )
+            this.posStatic = false;
+        else if ( changeToTiled )
+            this.posStatic = true;
         var posStatic = this.posStatic;
         if ( ! posStatic )
         {
+            var dimsCurrent = this.getDimsObj( posStatic );
             if ( posObj && posObj.left != null && posObj.top != null )
             {
-                var dimsCurrent = this.getDimsObj( posStatic );
-                dimsCurrent.left = posObj.left; 
-                dimsCurrent.top = posObj.top;
-                this._alterCss( false, false, false, true, true );
+                dimsCurrent.l = posObj.left; 
+                dimsCurrent.t = posObj.top;
+                if ( ! changeToUntiled )
+                    this._alterCss( false, false, false, true, false, true );
+            }
+            if ( changeToUntiled )
+            {
+                this._updtDimsObj( false, false, true );
+                this._alterCss( true, true, false, true );
+                this._addUntiledEvents();
             }
         }
         else
         {
-            this._alterCss( true );
+            if ( changeToTiled )
+            {
+                this._setAsTopZIndex( jsObj.page, jsObj.css, this.dNodeCss, posStatic );
+                this._updtDimsObj( false, false );
+            }
+            if ( ! ie6)
+            {
+                this._alterCss( true );
+                this.resizeNotifyChildWidgets();
+            }
+            else
+            {
+                this._resetIE6TiledSize( changeToTiled );
+            }
         }
-        if ( this.portlet && this.windowState != jetspeed.id.ACT_MAXIMIZE )
+        if ( this.portlet && this.windowState != jsObj.id.ACT_MAXIMIZE )
             this.portlet.submitWinState();
-        if ( this.ie6 )
-            dojo.lang.setTimeout( this, this._IEPostDrag, jetspeed.widget.ie6PostDragAddDelay );
+        if ( ie6 )
+            dojo.lang.setTimeout( this, this._IEPostDrag, jsObj.widget.ie6PostDragAddDelay );
     },
+
 
     /*   // BOZO:WIDGET: titleDim feature requires event.connects onMouseOver:titleMouseOver, onMouseOut:titleMouseOut
     titleLight: function()
@@ -1932,7 +2111,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         for ( var aNm in this.actionButtons )
         {
-            var showBtn = this._isWindowActionEnabled( aNm, aState, aMode );
+            var showBtn = this._isActionEnabled( aNm, aState, aMode );
             if ( showBtn )
                 lght.push( this.actionButtons[ aNm ] );
         }
@@ -2000,16 +2179,18 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             cWinState.zIndex = dNodeStyle.zIndex;
         if ( volatileOnly )
             return cWinState;
-        cWinState.width = dNodeStyle.width;
-        cWinState.height = dNodeStyle.height;
+
+        var dimsCurrent = this.getDimsObj( posStatic );
+        cWinState.width = (dimsCurrent.w ? String( dimsCurrent.w ) : "");
+        cWinState.height = (dimsCurrent.h ? String( dimsCurrent.h ) : "");
 
         cWinState[ jetspeed.id.PP_WINDOW_POSITION_STATIC ] = posStatic;
         cWinState[ jetspeed.id.PP_WINDOW_HEIGHT_TO_FIT ] = this.heightToFit;
 
         if ( ! posStatic )
         {
-            cWinState.left = dNodeStyle.left;
-            cWinState.top = dNodeStyle.top;
+            cWinState.left = (dimsCurrent.l != null ? String( dimsCurrent.l ) : "");
+            cWinState.top = (dimsCurrent.t != null ? String( dimsCurrent.t ) : "");
         }
         else
         {
@@ -2022,10 +2203,11 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             else
             {
-                dojo.raise( "Cannot not find row/col/layout for window: " + this.widgetId ) ;
+                throw new Error( "Can't find row/col/layout for window: " + this.widgetId );
                 // BOZO:NOW: test this with maximize/minimize
             }
         }
+        //dojo.debug( "getCurWinState: {" + jetspeed.printobj( cWinState ) + "} - {" + jetspeed.printobj( dimsCurrent ) + "}" );
         return cWinState;
     },
     getCurWinStateForPersist: function( volatileOnly )
@@ -2082,10 +2264,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
           A better use of ContentPane features, particularly, scriptSeparation=true, can be accomplished as follows:
               - code: 
-                      this.executeScripts = true;
-                      this.scriptSeparation = true;
-                      this.adjustPaths = false;
-                      this.setContent( initialHtmlStr );
+                      // this.executeScripts = true;
+                      // this.scriptSeparation = true;
+                      // this.adjustPaths = false;
+                      // this.setContent( initialHtmlStr );
 
               - this requires script content to follow the conventions shown in: security/permissions/view-dojo-scriptScope.vm,
                 which works in both portal and desktop, should allow (at least with scripts name collisions), coexistence
@@ -2096,6 +2278,18 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     {
         var jsObj = jetspeed;
         var djObj = dojo;
+        var ie6 = this.ie6;
+        var iNodeCss = null;
+        if ( ie6 )
+        {
+            iNodeCss = this.iNodeCss;
+            if ( this.heightToFit )
+            {   // blank out height while loading new content - so that it can be recalculated based on actual content height
+                this.iNodeCss = null;   // if not null, _alterCss will not set content relative height
+                this._alterCss( false, true );
+            }
+        }
+
         var initialHtmlStr = html.toString();
         
         if ( ! this.exclPContent )
@@ -2105,9 +2299,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         var setContentObj = this._splitAndFixPaths_scriptsonly( initialHtmlStr, url );
 
-        this.subWidgetStartIndex = djObj.widget.manager.widgets.length;
-
-        this.setContent( setContentObj, djObj );
+        var childWidgets = this.setContent( setContentObj, djObj );
+        this.childWidgets = ( ( childWidgets && childWidgets.length > 0 ) ? childWidgets : null );
 
         if ( setContentObj.scripts != null && setContentObj.scripts.length != null && setContentObj.scripts.length > 0 )
         {
@@ -2135,11 +2328,11 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 iframeCoverDiv.className = coverCl;
                 cNode.appendChild( iframeCoverDiv );
                 if ( jsObj.UAie )
-                {
+                {   // transparent background node will not block events to iframe in ie6 or ie7 - extra style class sets opacity filter
                     iframeCoverDiv.className = (coverCl + "IE") + " " + coverCl;
-                    djObj.html.setOpacity( iframeCoverDiv, 0.1 );
+                    if ( ie6 )   // as usual, in ie6 we need to set the width and height of this absolute positioned node
+                        iframesInfoCur.iframeCoverIE6Css = jsObj.css.cssWidthHeight.concat();
                 }
-                
                 iframesInfoCur.iframeCover = iframeCoverDiv;
                 jsObj.page.regPWinIFrameCover( this );
             }
@@ -2158,9 +2351,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 var cNode = this.containerNode;
                 cNode.firstChild.className = "PContent portletIFramePContent";
                 cNode.className = wDC.cNodeClass + " portletWindowIFrameClient";
-                if ( ! wDC.layoutExtentsIFrame )
+                if ( ! wDC.layoutIFrame )
                 {
-                    this._createLayoutExtents( wDC, true, this.domNode, cNode, this.tbNode, this.rbNode, djObj, jsObj );
+                    this._createLayoutInfo( wDC, true, this.domNode, cNode, this.tbNode, this.rbNode, djObj, jsObj, jsObj.ui );
                 }
             }
         }
@@ -2176,7 +2369,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         if ( iframeLayoutChg )
         {
-            this._alterCss( false, false, true );
+            this._alterCss( false, false, true );   // resize
         }
 
         if ( this.restoreOnNextRender )
@@ -2184,42 +2377,81 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.restoreOnNextRender = false;
             this.restoreWindow();
         }
+
+        if ( ie6 )
+        {   // now that we have content, we finally can know the height of heightToFit windows
+            this._updtDimsObj( false, false, true, false, true );  // force update width and height
+            if ( iNodeCss == null )
+            {
+                var jsCss = jsObj.css;
+                iNodeCss = jsCss.cssHeight.concat();
+                iNodeCss[ jsCss.cssDis ] = "inline";
+            }
+            this.iNodeCss = iNodeCss;
+            this._alterCss( false, false, true );   // resize
+        }
+
+        if ( this.minimizeOnNextRender )
+        {
+            this.minimizeOnNextRender = false;
+            this.minimizeWindow( true );
+            this.actionBtnSync( jsObj, jsObj.id );
+            this.needsRenderOnRestore = true;
+        }
+
         if ( setIFrame100P )
         {
             this._deferSetIFrameH( setIFrame100P, ( ! jsObj.UAie ? "100%" : "99%" ), true );
-        }
-        this.subWidgetEndIndex = djObj.widget.manager.widgets.length;
-    },
+        }        
+    },  // setPortletContent
 
-    setContent: function(data, djObj){
-        // summary:
+    setContent: function(data, djObj)
+    {   // summary:
         //      Replaces old content with data content, include style classes from old content
         //  data String||DomNode:   new content, be it Document fragment or a DomNode chain
         //          If data contains style tags, link rel=stylesheet it inserts those styles into DOM
-        if(this._callOnUnload){ this.onUnload(); }// this tells a remote script clean up after itself
-        this._callOnUnload = true;
-
-        this._setContent(data.xml, djObj);
+        var components = null;
+        var step = 1;
+        try
+        {
+            if(this._callOnUnload){ this.onUnload(); }   // this tells a remote script clean up after itself
+            this._callOnUnload = true;
         
-        if(this.parseContent){
-            var node = this.containerNode;
-            var parser = new djObj.xml.Parse();
-            var frag = parser.parseElement(node, null, true);
-            // createSubComponents not createComponents because frag has already been created
-            djObj.widget.getParser().createSubComponents(frag, this);
-        }
+            step = 2;
+            this._setContent(data.xml, djObj);
+        
+            step = 3;
+            if ( this.parseContent )
+            {
+                var node = this.containerNode;
+                var parser = new djObj.xml.Parse();
+                var frag = parser.parseElement(node, null, true);
+                // createSubComponents not createComponents because frag has already been created
+                components = djObj.widget.getParser().createSubComponents( frag, null );
+            }
 
-        //this.onLoad();   // BOZO:WIDGET: why is this disabled?
+            //this.onLoad();   // BOZO:WIDGET: why is this disabled?
+        }
+        catch(e)
+        {
+            dojo.hostenv.println( "ERROR in PortletWindow [" + this.widgetId + "] setContent while " + ( step == 1 ? "running onUnload" : ( step ==2 ? "setting innerHTML" : "creating dojo widgets" ) ) + " - " + jetspeed.formatError( e ) );
+        }
+        return components;
     },
-    _setContent: function(cont, djObj){
-        //this.destroyChildren();    // BOZO:WIDGET: what to do here ?
-        try{
+    _setContent: function( cont, djObj )
+    {
+        this._destroyChildWidgets( djObj );
+        try
+        {
             var node = this.containerNode;
-            while(node.firstChild){
+            while(node.firstChild)
+            {
                 djObj.html.destroyNode(node.firstChild);
             }
             node.innerHTML = cont;
-        }catch(e){
+        }
+        catch(e)
+        {
             e.text = "Couldn't load content:"+e.description;
             this._handleDefaults(e, "onContentError");
         }
@@ -2374,6 +2606,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.title = newPortletTitle;
         else
             this.title = "";
+        //if ( this.portlet ) this.title = this.portlet.entityId;
         if ( this.windowInitialized && this.tbTextNode )
         {
             this.tbTextNode.innerHTML = this.title;
@@ -2465,15 +2698,84 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     {
         dojo.dom.removeNode( jetspeed.widget.ie6ZappedContentHelper );
     }
-});
+});  // jetspeed.widget.PortletWindow
 
-jetspeed.widget.WinScroller = function( jsObj )
+jetspeed.widget.showAllPortletWindows = function()
 {
-    if ( ! jsObj ) jsObj = jetspeed;
+    var jsObj = jetspeed;
+    var jsCss = jsObj.css;
+    var disIdx = jsCss.cssDis, noSelNmIdx = jsCss.cssNoSelNm, noSelIdx = jsCss.cssNoSel, noSelEndIdx = jsCss.cssNoSelEnd;
+    var allPWwidgets = jsObj.page.getPWins( false );
+    var showPWwidget, dNodeCss;
+    for ( var i = 0 ; i < allPWwidgets.length ; i++ )
+    {
+        showPWwidget = allPWwidgets[i] ;
+        if ( showPWwidget )
+        {
+            dNodeCss = showPWwidget.dNodeCss;
+            dNodeCss[ noSelNmIdx ] = "";
+            dNodeCss[ noSelIdx ] = "";
+            dNodeCss[ noSelEndIdx ] = "";
+            dNodeCss[ disIdx ] = "block";
+            showPWwidget.domNode.style.display = "block";
+            showPWwidget.domNode.style.visibility = "visible";
+        }
+    }
+};  // showAllPortletWindows
+
+jetspeed.widget.hideAllPortletWindows = function( excludeWidgetIds )
+{
+    var jsObj = jetspeed;
+    var jsCss = jsObj.css;
+    var disIdx = jsCss.cssDis, noSelNmIdx = jsCss.cssNoSelNm, noSelIdx = jsCss.cssNoSel, noSelEndIdx = jsCss.cssNoSelEnd;
+    var allPWwidgets = jsObj.page.getPWins( false );
+    var hidePWwidget, thisPWwidget, dNodeCss;
+    for ( var i = 0 ; i < allPWwidgets.length ; i++ )
+    {
+        thisPWwidget = allPWwidgets[i];
+        hidePWwidget = true;
+        if ( thisPWwidget && excludeWidgetIds && excludeWidgetIds.length > 0 )
+        {
+            for ( var exclI = 0 ; exclI < excludeWidgetIds.length ; exclI++ )
+            {
+                if ( thisPWwidget.widgetId == excludeWidgetIds[exclI] )
+                {
+                    hidePWwidget = false;
+                    break;
+                }
+            }
+        }
+        if ( thisPWwidget )
+        {
+            dNodeCss = thisPWwidget.dNodeCss;
+            dNodeCss[ noSelNmIdx ] = "";
+            dNodeCss[ noSelIdx ] = "";
+            dNodeCss[ noSelEndIdx ] = "";
+            if ( hidePWwidget )
+            {
+                dNodeCss[ disIdx ] = "none";
+                thisPWwidget.domNode.style.display = "none";
+            }
+            else
+            {
+                dNodeCss[ disIdx ] = "block";
+                thisPWwidget.domNode.style.display = "block";
+            }
+            thisPWwidget.domNode.style.visibility = "visible";
+        }
+    }
+};  // hideAllPortletWindows
+
+
+jetspeed.widget.WinScroller = function()
+{
+    var jsObj = this.jsObj;
     this.UAmoz = jsObj.UAmoz;
     this.UAope = jsObj.UAope;
 };
 dojo.extend( jetspeed.widget.WinScroller, {
+    jsObj: jetspeed,
+    djObj: dojo,
     typeNm: "WinScroller",
     V_AS_T: 32,                 // dojo.dnd.V_TRIGGER_AUTOSCROLL
     V_AS_V: 16,                 // dojo.dnd.V_AUTOSCROLL_VALUE
@@ -2519,7 +2821,7 @@ dojo.extend( jetspeed.widget.WinScroller, {
     {
         return ( ( prevErrMsg != null ? (prevErrMsg + "; ") : "" ) + this.typeNm + " " + ( wndORlayout == null ? "<unknown>" : wndORlayout.widgetId ) + " " + msg + " (" + ex.toString() + ")" );
     }
-});
+});  // jetspeed.widget.WinScroller
 
 jetspeed.widget.CreatePortletWindowResizeHandler = function( portletWindow, jsObj )
 {
@@ -2538,7 +2840,7 @@ jetspeed.widget.CreatePortletWindowResizeHandler = function( portletWindow, jsOb
 jetspeed.widget.PortletWindowResizeHandle = function( portletWindow, jsObj )
 {
     this.pWin = portletWindow;
-    jsObj.widget.WinScroller.call(this, jsObj);
+    jsObj.widget.WinScroller.call(this);
 };
 dojo.inherits( jetspeed.widget.PortletWindowResizeHandle, jetspeed.widget.WinScroller );
 dojo.extend( jetspeed.widget.PortletWindowResizeHandle, {
@@ -2601,13 +2903,13 @@ dojo.extend( jetspeed.widget.PortletWindowResizeHandle, {
 		var mb = djObj.html.getMarginBox( node );
 		this.startSize = { w: mb.width, h: mb.height };
 
-        var d = node.ownerDocument ;
+        var d = node.ownerDocument;
         var resizeTempEvts = [];
         resizeTempEvts.push( jsUI.evtConnect( "after", docBody, "onmousemove", this, "_changeSizing", djEvtObj, 25 ) );
         resizeTempEvts.push( jsUI.evtConnect( "after", docBody, "onmouseup", this, "_endSizing", djEvtObj ) );
         // cancel text selection and text dragging
-        resizeTempEvts.push( jsUI.evtConnect( "after", d, "ondragstart",   djEvtObj.browser, "stopEvent", djEvtObj ) );
-        resizeTempEvts.push( jsUI.evtConnect( "after", d, "onselectstart", djEvtObj.browser, "stopEvent", djEvtObj ) );
+        resizeTempEvts.push( jsUI.evtConnect( "after", d, "ondragstart", jsObj, "_stopEvent", djEvtObj ) );
+        resizeTempEvts.push( jsUI.evtConnect( "after", d, "onselectstart", jsObj, "_stopEvent", djEvtObj ) );
 
         jsObj.page.displayAllPWinIFrameCovers( false );
 
@@ -2670,14 +2972,28 @@ dojo.extend( jetspeed.widget.PortletWindowResizeHandle, {
 
 		this._isSizing = false;
 	}
-});
+});  // jetspeed.widget.PortletWindowResizeHandle
 
 jetspeed.widget.ie6PostDragAddDelay = 60; jetspeed.widget.ie6PostDragRmDelay = 120;
+
+jetspeed.widget.BackgroundIframe = function( node, iframeClass, djObj ) {
+    //  see dojo.html.BackgroundIframe
+    if ( ! iframeClass )
+        iframeClass = this.defaultStyleClass;
+    var html="<iframe src='' frameborder='0' scrolling='no' class='" + iframeClass + "'>";
+    this.iframe = djObj.doc().createElement(html);
+    this.iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didnt work.
+    node.appendChild(this.iframe);
+}
+dojo.lang.extend(jetspeed.widget.BackgroundIframe, {
+    defaultStyleClass: "ie6BackgroundIFrame",
+	iframe: null
+});
 
 if ( ! dojo.dnd )
     dojo.dnd = {};
 
-dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, beforeDragColumn, moveableObj, e, djObj, jsObj){
+dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, dragLayoutColumn, moveableObj, e, notifyOnAbsolute, djObj, jsObj){
 	// summary: an object, which makes a node follow the mouse, 
 	//	used as a default mover, and as a base class for custom movers
 	// node: Node: a node (or node's id) to be moved
@@ -2686,81 +3002,96 @@ dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, beforeDragColumn, move
     var jsUI = jsObj.ui;
     var djEvtObj = djObj.event;
 
-    jsObj.widget.WinScroller.call(this, jsObj);
+    jsObj.widget.WinScroller.call(this);
 
+    if ( jsObj.widget._movingInProgress )
+    {
+        if ( djConfig.isDebug )
+            jsObj.debugAlert( "ERROR - Mover initiation before previous Mover was destroyed" );
+    }
+    jsObj.widget._movingInProgress = true;
     this.moveInitiated = false;
     this.moveableObj = moveableObj;
     this.windowOrLayoutWidget = windowOrLayoutWidget;
 	this.node = dragNode;
+    this.nodeLayoutColumn = dragLayoutColumn;
     this.posStatic = windowOrLayoutWidget.posStatic;
-    if ( e.ctrlKey && this.posStatic )
-        this.changeToUntiled = true ;
+    this.notifyOnAbsolute = notifyOnAbsolute;
+    if ( e.ctrlKey && windowOrLayoutWidget.moveAllowTilingChg )
+    {
+        if ( this.posStatic )
+            this.changeToUntiled = true ;
+        else if ( jsObj.prefs.windowTiling )
+        {
+            this.changeToTiled = true ;
+            this.changeToTiledStarted = false;
+        }
+    }
     this.posRecord = {};
-    this.disqualifiedColumnIndexes = null;
-    if ( beforeDragColumn != null )
-        this.disqualifiedColumnIndexes = beforeDragColumn.getDescendantCols();
+    this.disqualifiedColumnIndexes = ( dragLayoutColumn != null ) ? dragLayoutColumn.getDescendantCols() : {};
 
-	this.marginBox = {l: e.pageX, t: e.pageY};
+    this.marginBox = {l: e.pageX, t: e.pageY};
 
 	var doc = this.node.ownerDocument;
     var moverEvts = [];
     var firstEvt = jsUI.evtConnect( "after", doc, "onmousemove", this, "onFirstMove", djEvtObj );
     moverEvts.push( jsUI.evtConnect( "after", doc, "onmousemove", this, "onMouseMove", djEvtObj ) );
-    moverEvts.push( jsUI.evtConnect( "after", doc, "onmouseup",   this, "mouseUpDestroy", djEvtObj ) );
+    moverEvts.push( jsUI.evtConnect( "after", doc, "onmouseup", this, "mouseUpDestroy", djEvtObj ) );
 
     // cancel text selection and text dragging
-    moverEvts.push( jsUI.evtConnect( "after", doc, "ondragstart",   djEvtObj.browser, "stopEvent", djEvtObj ) );
-    moverEvts.push( jsUI.evtConnect( "after", doc, "onselectstart", djEvtObj.browser, "stopEvent", djEvtObj ) );
+    moverEvts.push( jsUI.evtConnect( "after", doc, "ondragstart", jsObj, "_stopEvent", djEvtObj ) );
+    moverEvts.push( jsUI.evtConnect( "after", doc, "onselectstart", jsObj, "_stopEvent", djEvtObj ) );
+    if ( jsObj.UAie6 )
+        moverEvts.push( jsUI.evtConnect( "after", doc, "onmousedown", jsObj, "mouseUpDestroy", djEvtObj ) );
 
     jsObj.page.displayAllPWinIFrameCovers( false );
 
     moverEvts.push( firstEvt );  // disconnected with pop() in onFirstMove
     this.events = moverEvts;
 
+    this.pSLastColChgIdx = null;    // pS: posStatic
+    this.pSLastColChgTime = null;
+    this.pSLastNaturalColChgYTest = null;
+    this.pSLastNaturalColChgHistory = null;
+    this.pSLastNaturalColChgChoiceMap = null;
+    
     this.isDebug = false;
     if ( jsObj.debug.dragWindow )
     {
         this.isDebug = true;
-        this.devInit = false;
-        this.devLastX = null; this.devLastY = null; this.devLastTime = null;
+        this.devKeepLastMsg = null;
+        this.devKeepLastCount = 0;
+        this.devLastX = null; this.devLastY = null; this.devLastTime = null, this.devLastColI = null;
         this.devChgTh = 30;       // Th: Threshold
         this.devLrgTh = 200;
         this.devChgSubsqTh = 10;
         this.devTimeTh = 6000;
-        this.devI = jsObj.debugindent; this.devIH = jsObj.debugindentH; this.devI3 = jsObj.debugindent3; this.devICH = jsObj.debugindentch;
+        this.devI = jsObj.debugindent; this.devIH = jsObj.debugindentH; this.devIT = jsObj.debugindentT; this.devI3 = jsObj.debugindent3; this.devICH = jsObj.debugindentch;
     }
 };
 dojo.inherits( dojo.dnd.Mover, jetspeed.widget.WinScroller );
 dojo.extend(dojo.dnd.Mover, {
     typeNm: "Mover",
+    pSColChgTimeTh: 3000,   // pS: posStatic; Th: Threshold
 	// mouse event processors
 	onMouseMove: function( e ){
 		// summary: event processor for onmousemove
 		// e: Event: mouse event
-        var jsObj = jetspeed;
-        var djObj = dojo;
+        var jsObj = this.jsObj;
+        var djObj = this.djObj;
         var isMoz = this.UAmoz;
 		this.autoScroll( e );
 		var m = this.marginBox;
         var noMove = false;
         var x = m.l + e.pageX;
         var y = m.t + e.pageY;
+        var debugEnabled = this.isDebug;
         var debugOn = false;
-        var debugTime = null, debugExcl = null, indent, indentH, indent3, indentCH;
+        var debugTime = null, debugExcl = null, indent, indentH, indent3, indentCH, indentT;
 
-        if ( this.isDebug )
+        if ( debugEnabled )
         {
-            indent = this.devI; indentH = this.devIH; indent3 = this.devI3; indentCH = this.devICH;
-            if ( ! this.devInit )
-            {
-                var dqCols = "";
-                if ( this.disqualifiedColumnIndexes != null )
-                    dqCols = indentH + "dqCols=[" + this.disqualifiedColumnIndexes.split( ", " ) + "]";
-                var title = this.windowOrLayoutWidget.title;
-                if ( title == null ) title = this.windowOrLayoutWidget.widgetId;
-                djObj.hostenv.println( 'DRAG "' + this.windowOrLayoutWidget.title + '"' + indentH + "m.l = " + m.l + indentH + "m.t = " + m.t + dqCols );
-                this.devInit = true;
-            }
+            indent = this.devI; indentH = this.devIH; indent3 = this.devI3; indentCH = this.devICH, indentT = this.devIT;
             debugTime = (new Date().getTime());
             if ( this.devLastX == null || this.devLastY == null )
             {
@@ -2797,290 +3128,588 @@ dojo.extend(dojo.dnd.Mover, {
             this.firstEvtAdjustXY = null;
             noMove = true;
         }
-        djObj.setMarginBox( this.node, x, y, null, null, djObj.gcs( this.node ), jsObj );
+        
+        jsObj.ui.setMarginBox( this.node, x, y, null, null, this.nodeLayoutInfo, jsObj, djObj );
         
         var posRecord = this.posRecord;
         posRecord.left = x;
         posRecord.top = y;
 
-        var pwGhost = jsObj.widget.pwGhost;
-
-        if ( this.posStatic && ! noMove )
+        var changeToTiledStart = false;
+        var posStatic = this.posStatic;
+        if ( ! posStatic )
         {
-            var colIndex = -1;
-            var widthHalf = this.widthHalf;
+            if ( ! noMove && this.changeToTiled && ! this.changeToTiledStarted )
+            {
+                changeToTiledStart = true;
+                posStatic = true;  // will change this.posStatic after we start successfully
+            }
+        }
+        if ( posStatic && ! noMove )
+        {
+            var colInfoArray = this.columnInfoArray;
+            var colObjArray = jsObj.page.columns;
             var heightHalf = this.heightHalf;
-            var heightHalfMore = heightHalf + ( heightHalf * 0.20 );
-            var noOfCols = jsObj.page.columns.length;
-            var candidates = [];
+            var noOfCols = colObjArray.length;
             var xTest = e.pageX;
             var yTest = y + heightHalf;
+            var lastColIdx = this.pSLastColChgIdx;
+            var lastColChoiceMap = this.pSLastNaturalColChgChoiceMap;
+            var lowEntryI = null, candidates = [], lastColCurrentLowY = null;
+            var colInfo, lowY1, lowY2, lowY3, lowY, candidateI, prevLowEntry, nextLowEntry, nextLowEntryI;
             for ( var i = 0 ; i < noOfCols ; i++ )
             {
-                var colDims = this.columnDimensions[ i ];
-                if ( colDims != null )
+                colInfo = colInfoArray[ i ];
+                if ( colInfo != null )
                 {
-                    if ( xTest >= colDims.left && xTest <= colDims.right )
+                    if ( xTest >= colInfo.left && xTest <= colInfo.right )
                     {
-                        if ( yTest >= (colDims.top - 30) )
+                        if ( yTest >= (colInfo.top - 30) || ( lastColChoiceMap != null && lastColChoiceMap[ i ] != null ) )
                         {
-                            candidates.push( i );
-                            var lowY1 = Math.min( Math.abs( yTest - ( colDims.top ) ), Math.abs( e.pageY - ( colDims.top ) ) );
-                            var lowY2 = Math.min( Math.abs( yTest - ( colDims.yhalf ) ), Math.abs( e.pageY - ( colDims.yhalf ) ) );
-                            var lowY = Math.min( lowY1, lowY2 );
-                            candidates.push( lowY );
+                            lowY1 = Math.min( Math.abs( yTest - ( colInfo.top ) ), Math.abs( e.pageY - ( colInfo.top ) ) );
+                            lowY2 = Math.min( Math.abs( yTest - ( colInfo.yhalf ) ), Math.abs( e.pageY - ( colInfo.yhalf ) ) );
+                            lowY3 = Math.min( Math.abs( yTest - colInfo.bottom ), Math.abs( e.pageY - colInfo.bottom ) );
+                            lowY = Math.min( lowY1, lowY2 );
+                            lowY = Math.min( lowY, lowY3 );
+                            prevLowEntry = null;
+                            nextLowEntryI = lowEntryI;
+                            while ( nextLowEntryI != null )
+                            {
+                                nextLowEntry = candidates[nextLowEntryI];
+                                if ( lowY < nextLowEntry.lowY )
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    prevLowEntry = nextLowEntry;
+                                    nextLowEntryI = nextLowEntry.nextIndex;
+                                }
+                            }
+                            candidates.push( { index: i, lowY: lowY, nextIndex: nextLowEntryI, lowYAlign: ( (! debugEnabled) ? null : ( lowY == lowY1 ? "^" : ( lowY == lowY2 ? "~" : "_" ) ) ) } );
+                            candidateI = (candidates.length -1);
+                            if ( prevLowEntry != null )
+                                prevLowEntry.nextIndex = candidateI;
+                            else
+                                lowEntryI = candidateI;
+
+                            if ( i == lastColIdx )
+                                lastColCurrentLowY = lowY;
                         }
-                        else if ( debugOn )
+                        else if ( debugEnabled )
                         {
                             if ( debugExcl == null ) debugExcl = [];
-                            var offBy = (colDims.top - 30) - yTest;
-                            debugExcl.push( indent3 + djObj.string.padRight( String(i), 2, indentCH ) + " y! " + djObj.string.padRight( String(offBy), 4, indentCH ) + indentH + "t=" + colDims.top + indentH + "b=" + colDims.bottom + indentH + "l=" + colDims.left + indentH + "r=" + colDims.right );
+                            var offBy = (colInfo.top - 30) - yTest;
+                            debugExcl.push( djObj.string.padRight( String(i), 2, indentCH ) + " y! " + djObj.string.padRight( String(offBy), 4, indentCH ) );
                         }
                     }
-                    else if ( debugOn && xTest > colDims.width )
+                    else if ( debugEnabled && xTest > colInfo.width )
                     {
                         if ( debugExcl == null ) debugExcl = [];
-                        var offBy = xTest - colDims.width;
-                        debugExcl.push( indent3 + djObj.string.padRight( String(i), 2, indentCH ) + " x! " + djObj.string.padRight( String(offBy), 4, indentCH ) + indentH + "t=" + colDims.top + indentH + "b=" + colDims.bottom + indentH + "l=" + colDims.left + indentH + "r=" + colDims.right );
+                        var offBy = xTest - colInfo.width;
+                        debugExcl.push( djObj.string.padRight( String(i), 2, indentCH ) + " x! " + djObj.string.padRight( String(offBy), 4, indentCH ) );
                     }
                 }
-            }
-            var candL = candidates.length;
-            if ( candL > 0 )
+            }   // for ( var i = 0 ; i < noOfCols ; i++ )
+
+            var colIndex = -1;
+            var col2ndIndex = -1, col3rdIndex = -1;
+            var col1stLowY = null, col2ndLowY = null, col3rdLowY = null, col2ndDiff = null, col3rdDiff = null;
+            if ( lowEntryI != null )
             {
-                var lowValIndex = -1;
-                var lowVal = 0;
-                var i = 1;
-                while ( i < candL )
+                nextLowEntry = candidates[ lowEntryI ];
+                colIndex = nextLowEntry.index;
+                col1stLowY = nextLowEntry.lowY;
+                if ( nextLowEntry.nextIndex != null )
                 {
-                    if ( lowValIndex == -1 || lowVal > candidates[i] )
+                    nextLowEntry = candidates[ nextLowEntry.nextIndex ];
+                    col2ndIndex = nextLowEntry.index;
+                    col2ndLowY = nextLowEntry.lowY;
+                    col2ndDiff = col2ndLowY - col1stLowY;
+                    if ( nextLowEntry.nextIndex != null )
                     {
-                        lowValIndex = candidates[i-1];
-                        lowVal = candidates[i];
+                        nextLowEntry = candidates[ nextLowEntry.nextIndex ];
+                        col3rdIndex = nextLowEntry.index;
+                        col3rdLowY = nextLowEntry.lowY;
+                        col3rdDiff = col3rdLowY - col1stLowY;;
                     }
-                    i = i + 2;
                 }
-                colIndex = lowValIndex;
             }
 
-            var col = ( colIndex >= 0 ? jsObj.page.columns[ colIndex ] : null );
+            var debugNewColMsg = null;
+            var currentTime = (new Date().getTime());
+            var lastNaturalColChgYTest = this.pSLastNaturalColChgYTest;
+            if ( lastColCurrentLowY == null || ( lastNaturalColChgYTest != null && Math.abs( yTest - lastNaturalColChgYTest ) >= Math.max( ( heightHalf - Math.floor( heightHalf * 0.3 ) ), Math.min( heightHalf, 21 ) ) ) )
+            {   // lastCol is excluded from candidates (reset) OR first column selection OR mouse is beyond threshold of last column selection
+                if ( colIndex >= 0 )
+                {
+                    this.pSLastNaturalColChgYTest = yTest;
+                    this.pSLastNaturalColChgHistory = [ colIndex ];
+                    lastColChoiceMap = {};
+                    lastColChoiceMap[ colIndex ] = true ;
+                    this.pSLastNaturalColChgChoiceMap = lastColChoiceMap;
+                }
+            }
+            else if ( lastNaturalColChgYTest == null )
+            {
+                this.pSLastNaturalColChgYTest = yTest;
+                colIndex = lastColIdx;
+                this.pSLastNaturalColChgHistory = [ colIndex ];
+                lastColChoiceMap = {};
+                lastColChoiceMap[ colIndex ] = true ;
+                this.pSLastNaturalColChgChoiceMap = lastColChoiceMap;
+            }
+            else
+            {
+                var leastRecentColIndex = null;
+                var expireTime = this.pSLastColChgTime + this.pSColChgTimeTh;
+                if ( expireTime < currentTime )   // BOZO:NOW: a change in placement within current column should reset this timer
+                {   // time has expired since the last change in column selection
+                    // alternate through column candidates
+                    // - choose the column that has either not yet been selected or the one that was selected furthest in the past
+                    var lastChgHistory = this.pSLastNaturalColChgHistory;
+                    var lastChgHistoryLen = ( lastChgHistory == null ? 0 : lastChgHistory.length );
+                    var leastRecentSelectionIndex = null, currentHasBeenSelected;
+                    
+                    nextLowEntryI = lowEntryI;
+                    while ( nextLowEntryI != null )
+                    {
+                        nextLowEntry = candidates[nextLowEntryI];
+                        colI = nextLowEntry.index;
+                        if ( lastChgHistoryLen == 0 )
+                        {
+                            leastRecentColIndex = colI;
+                            break;
+                        }
+                        else
+                        {
+                            currentHasBeenSelected = false;
+                            for ( var i = (lastChgHistoryLen -1) ; i >= 0 ; i-- )
+                            {
+                                if ( lastChgHistory[i] == colI )
+                                {
+                                    if ( leastRecentSelectionIndex == null || leastRecentSelectionIndex > i )
+                                    {
+                                        leastRecentSelectionIndex = i;
+                                        leastRecentColIndex = colI;
+                                    }
+                                    currentHasBeenSelected = true;
+                                    break;
+                                }
+                            }
+                            if ( ! currentHasBeenSelected )
+                            {
+                                leastRecentColIndex = colI;
+                                break;
+                            }
+                        }
+                        nextLowEntryI = nextLowEntry.nextIndex;
+                    }
+
+                    if ( leastRecentColIndex != null )
+                    {
+                        colIndex = leastRecentColIndex;
+                        lastColChoiceMap[ colIndex ] = true ;
+                        if ( lastChgHistoryLen == 0 || lastChgHistory[ (lastChgHistoryLen -1) ] != colIndex )
+                            lastChgHistory.push( colIndex );
+                    }
+                }
+                else
+                {
+                    colIndex = lastColIdx;
+                }
+                if ( debugEnabled && leastRecentColIndex != null )
+                {
+                    djObj.hostenv.println( indent + "ColChg YTest=" + lastNaturalColChgYTest + " LeastRecentColI=" + leastRecentColIndex + " History=[" + ( this.pSLastNaturalColChgHistory ? this.pSLastNaturalColChgHistory.join( ", " ) : "" ) + "] Map={" + jsObj.printobj( this.pSLastNaturalColChgChoiceMap ) + "} expire=" + (currentTime - expireTime) + "}" );
+                }
+            }
+
+            if ( debugEnabled && debugNewColMsg != null )
+            {
+                if ( this.devKeepLastMsg != null )
+                {
+                    djObj.hostenv.println( this.devKeepLastMsg );
+                    this.devKeepLastMsg = null;
+                    this.devKeepLastCount = 0;
+                }
+                djObj.hostenv.println( debugNewColMsg );
+            }
+
+            var col = ( colIndex >= 0 ? colObjArray[ colIndex ] : null );
+            
+            if ( debugEnabled )
+            {
+                if ( this.devLastColI != colIndex )
+                    debugOn = true;
+                this.devLastColI = colIndex;
+            }
+            
+            var pwGhost = jsObj.widget.pwGhost;
+            if ( changeToTiledStart )
+            {
+                if ( col != null )
+                {
+                    jsObj.ui.setMarginBox( pwGhost, null, null, null, m.h, this.nodeLayoutInfo, jsObj, djObj );
+                    pwGhost.col = null;
+                    this.changeToTiledStarted = true;
+                    this.posStatic = true;
+                }
+            }
+
+            var beforeNode = null, appended = false, appendedDefault = false;
+            if ( pwGhost.col != col && col != null )
+            {
+                this.pSLastColChgTime = currentTime;
+                this.pSLastColChgIdx = colIndex;
+                var pwGhostLastCol = pwGhost.col;
+                if ( pwGhostLastCol != null )
+                    djObj.dom.removeNode( pwGhost );
+				pwGhost.col = col;
+                var newColInfo = colInfoArray[ colIndex ];
+                var newColChildCount = newColInfo.childCount + 1;
+                newColInfo.childCount = newColChildCount;
+                if ( newColChildCount == 1 )
+                    colObjArray[ colIndex ].domNode.style.height = "";
+				col.domNode.appendChild( pwGhost );
+                appendedDefault = true;
+                var lastColInfo = ( lastColIdx != null ? ( (lastColIdx != colIndex) ? colInfoArray[ lastColIdx ] : null ) : ( pwGhostLastCol != null ? colInfoArray[ pwGhostLastCol.getPageColumnIndex() ] : null ) );
+                if ( lastColInfo != null )
+                {   // check if lastColIdx is now empty
+                    var lastColChildCount = lastColInfo.childCount -1;
+                    if ( lastColChildCount < 0 ) lastColChildCount = 0;
+                    lastColInfo.childCount = lastColChildCount;
+                    if ( lastColChildCount == 0 )
+                        colObjArray[ lastColInfo.pageColIndex ].domNode.style.height = "1px";
+                }
+			}
+            var pWinsAndColsResult = null, colPWinsAndCols = null;
+            if ( col != null )
+            {
+                pWinsAndColsResult = jsObj.ui.getPWinAndColChildren( col.domNode, pwGhost, true, false, true, false );
+                colPWinsAndCols = pWinsAndColsResult.matchingNodes;
+            }
+            if ( colPWinsAndCols != null && colPWinsAndCols.length > 1 )
+            {
+                var ghostIndex = pWinsAndColsResult.matchNodeIndexInMatchingNodes;
+                var yAboveWindow = -1;
+                var yBelowWindow = -1;
+                if ( ghostIndex > 0 )
+                {
+                    var yAboveWindow = djObj.html.getAbsolutePosition( colPWinsAndCols[ ghostIndex -1 ], true ).y;
+                    if ( (y - 25) <= yAboveWindow )
+                    {
+                        djObj.dom.removeNode( pwGhost );
+                        beforeNode = colPWinsAndCols[ ghostIndex -1 ];
+                        djObj.dom.insertBefore( pwGhost, beforeNode, true );
+                    }
+                }
+                if ( ghostIndex != (colPWinsAndCols.length -1) )
+                {
+                    var yBelowWindow = djObj.html.getAbsolutePosition( colPWinsAndCols[ ghostIndex +1 ], true ).y;
+                    if ( (y + 10) >= yBelowWindow )
+                    {
+                        if ( ghostIndex + 2 < colPWinsAndCols.length )
+                        {
+                            beforeNode = colPWinsAndCols[ ghostIndex +2 ];
+                            djObj.dom.insertBefore( pwGhost, beforeNode, true );
+                        }
+                        else
+                        {
+                            col.domNode.appendChild( pwGhost );
+                            appended = true;
+                        }
+                    }
+                }
+            }
 
             if ( debugOn )
             {
                 //djObj.debug( "eX=" + e.pageX + " eY=" + e.pageY + " mB: " + jsObj.printobj( this.marginBox ) + " nB: " + jsObj.printobj( djObj.getMarginBox( this.node, null, jsObj ) ) );
-                djObj.hostenv.println( indent + "x=" + x + indentH + "y=" + y + indentH + "col=" + colIndex + indentH + "xTest=" + xTest + indentH + "yTest=" + yTest );
-                var i = 0;
-                while ( i < candL )
+                var placement = "";
+                if ( beforeNode != null || appended || appendedDefault )
                 {
-                    var colI = candidates[i];
-                    var colDims = this.columnDimensions[ colI ];
-                    djObj.hostenv.println( indent3 + djObj.string.padRight( String(colI), 2, indentCH ) + " -> " + djObj.string.padRight( String(candidates[i+1]), 4, indentCH ) + indentH + "t=" + colDims.top + indentH + "b=" + colDims.bottom + indentH + "l=" + colDims.left + indentH + "r=" + colDims.right );
-                    i = i + 2;
+                    placement = "put=";
+                    if ( beforeNode != null )
+                        placement += "before(" + beforeNode.id + ")";
+                    else if ( appended )
+                        placement += "end";
+                    else if ( appendedDefault )
+                        placement += "end-default";
                 }
+                djObj.hostenv.println( indent + "col=" + colIndex + indentH + placement + indentH + "x=" + x + indentH + "y=" + y + indentH + "ePGx=" + e.pageX + indentH + "ePGy=" + e.pageY + indentH + "yTest=" + yTest );
+                var candMsg = "", colI, colInfo;
+                nextLowEntryI = lowEntryI;
+                while ( nextLowEntryI != null )
+                {
+                    nextLowEntry = candidates[nextLowEntryI];
+                    colI = nextLowEntry.index;
+                    colInfo = colInfoArray[ nextLowEntry.index ];
+                    
+                    candMsg += ( candMsg.length > 0 ? indentT : "" ) + colI + nextLowEntry.lowYAlign + ( colI < 10 ? indentCH : "" ) + " -> " + djObj.string.padRight( String(nextLowEntry.lowY), 4, indentCH );
+                    nextLowEntryI = nextLowEntry.nextIndex;
+                }
+                djObj.hostenv.println( indent3 + candMsg );
                 if ( debugExcl != null )
                 {
+                    var exclMsg = "";
                     for ( i = 0 ; i < debugExcl.length ; i++ )
-                        djObj.hostenv.println( debugExcl[i] );
+                    {
+                        exclMsg += ( i > 0 ? indentT : "" ) + debugExcl[i];
+                    }
+                    djObj.hostenv.println( indent3 + exclMsg );
                 }
                 this.devLastTime = debugTime;
                 this.devChgTh = this.devChgSubsqTh;
             }
 
-            if ( pwGhost.col != col && col != null )
-            {
-                djObj.dom.removeNode( pwGhost );
-				pwGhost.col = col;
-				col.domNode.appendChild( pwGhost );
-			}
-
-            var portletWindowsResult = null, portletWindowsInCol = null;
-            if ( col != null )
-            {
-                portletWindowsResult = jsObj.ui.getPWinChildren( col.domNode, pwGhost );
-                portletWindowsInCol = portletWindowsResult.portletWindowNodes;
-            }
-            if ( portletWindowsInCol != null && portletWindowsInCol.length > 1 )
-            {
-                var ghostIndex = portletWindowsResult.matchIndex;
-                var yAboveWindow = -1;
-                var yBelowWindow = -1;
-                if ( ghostIndex > 0 )
-                {
-                    var yAboveWindow = djObj.html.getAbsolutePosition( portletWindowsInCol[ ghostIndex -1 ], true ).y;
-                    if ( (y - 25) <= yAboveWindow )
-                    {
-                        djObj.dom.removeNode( pwGhost );
-                        djObj.dom.insertBefore( pwGhost, portletWindowsInCol[ ghostIndex -1 ], true );
-                    }
-                }
-                if ( ghostIndex != (portletWindowsInCol.length -1) )
-                {
-                    var yBelowWindow = djObj.html.getAbsolutePosition( portletWindowsInCol[ ghostIndex +1 ], true ).y;
-                    if ( (y + 10) >= yBelowWindow )
-                    {
-                        if ( ghostIndex + 2 < portletWindowsInCol.length )
-                            djObj.dom.insertBefore( pwGhost, portletWindowsInCol[ ghostIndex +2 ], true );
-                        else
-                            col.domNode.appendChild( pwGhost );
-                    }
-                }
-            }
         }
-	},
-	// utilities
+	},   // Mover.onMouseMove
+
 	onFirstMove: function(){
 		// summary: makes the node absolute; it is meant to be called only once
-        var jsObj = jetspeed;
-        var djObj = dojo;
+        var jsObj = this.jsObj;
+        var jsUI = jsObj.ui;
+        var djObj = this.djObj;
         var wndORlayout = this.windowOrLayoutWidget;
         var node = this.node;
-        var compStyle = dojo.gcs( node );
-        var mP = djObj.getMarginBox( node, compStyle, jsObj );
-        this.marginBoxPrev = mP;
+        var nodeLayoutInfo = wndORlayout._getLayoutInfoMoveable();
+        this.nodeLayoutInfo = nodeLayoutInfo;
+        var mP = wndORlayout._getWindowMarginBox( nodeLayoutInfo, jsObj );
         this.staticWidth = null;
         var pwGhost = jsObj.widget.pwGhost;
         var isMoz = this.UAmoz;
         var changeToUntiled = this.changeToUntiled;
+        var changeToTiled = this.changeToTiled;
         var m = null;
+
         if ( this.posStatic )
         {
+            if ( ! changeToUntiled )
+            {
+                var inColIndex = wndORlayout.getPageColumnIndex();
+                var inCol = ( inColIndex >= 0 ? jsObj.page.columns[ inColIndex ] : null );
+                pwGhost.col = inCol;
+                this.pSLastColChgTime = new Date().getTime();
+                this.pSLastColChgIdx = inColIndex;
+            }
+
             m = { w: mP.w, h: mP.h };
             var colDomNode = node.parentNode;
             var jsDNode = document.getElementById( jsObj.id.DESKTOP );
             var nodeStyle = node.style;
             this.staticWidth = nodeStyle.width;
             var nodeAbsPos = djObj.html.getAbsolutePosition( node, true );
-            var nodeMargExt = djObj._getMarginExtents( node, compStyle, jsObj );
+            //dojo.debug( "start node abs: " + jsObj.printobj( nodeAbsPos ) );
+            var nodeMargExt = nodeLayoutInfo.mE;
+            //dojo.debug( "start node me: " + jsObj.printobj( nodeMargExt ) );
             m.l = nodeAbsPos.left - nodeMargExt.l;    // calculate manually to avoid calling getMarginBox during node insertion (mozilla is too fast to update)
             m.t = nodeAbsPos.top - nodeMargExt.t;
-            if ( isMoz && ! changeToUntiled )
+            if ( isMoz )
             {   // set early to avoid fast reaction that causes below content to shift for a split second
-                djObj.setMarginBox( pwGhost, null, null, null, mP.h, null, jsObj );
+                if ( ! changeToUntiled )
+                    jsUI.setMarginBox( pwGhost, null, null, null, mP.h, nodeLayoutInfo, jsObj, djObj );
                 this.firstEvtAdjustXY = { l: m.l, t: m.t };
             }
             nodeStyle.position = "absolute";
-            nodeStyle.zIndex = jsObj.page.getPWinHighZIndex() + 1;
+            if ( ! changeToUntiled )
+                nodeStyle.zIndex = jsObj.page.getPWinHighZIndex() + 1;
+            else
+                nodeStyle.zIndex = ( wndORlayout._setAsTopZIndex( jsObj.page, jsObj.css, wndORlayout.dNodeCss, false ) );
 
             if ( ! changeToUntiled )
             {
                 colDomNode.insertBefore( pwGhost, node );
                 if ( ! isMoz )   // some browsers cannot set this until node is in document
-                    djObj.setMarginBox( pwGhost, null, null, null, mP.h, null, jsObj );
+                    jsUI.setMarginBox( pwGhost, null, null, null, mP.h, nodeLayoutInfo, jsObj, djObj );
 
                 jsDNode.appendChild( node );
 
-                var portletWindowsResult = jsObj.ui.getPWinChildren( colDomNode, pwGhost );
+                var pWinsAndColsResult = jsUI.getPWinAndColChildren( colDomNode, pwGhost, true, false, true );
                 this.prevColumnNode = colDomNode;
-                this.prevIndexInCol = portletWindowsResult.matchIndex;
+                this.prevIndexInCol = pWinsAndColsResult.matchNodeIndexInMatchingNodes;
             }
             else
             {
-                wndORlayout._updtDimsObj( true );
+                wndORlayout._updtDimsObj( false, true );
                 jsDNode.appendChild( node );
             }
         }
         else
         {
-            m = djObj.getMarginBox( node, compStyle, jsObj );
+            m = mP;
         }
         this.moveInitiated = true;
+        //djObj.debug( "initial  marginBox: " + jsObj.printobj( this.marginBox ) );
         m.l -= this.marginBox.l;
 		m.t -= this.marginBox.t;
 		this.marginBox = m;
+        //djObj.debug( "adjusted marginBox: " + jsObj.printobj( this.marginBox ) );
 
-        jsObj.ui.evtDisconnectWObj( this.events.pop(), djObj.event );
+        jsUI.evtDisconnectWObj( this.events.pop(), djObj.event );
 
-        if ( this.posStatic )
+        var dqCols = this.disqualifiedColumnIndexes;
+        var debugEnabled = ( this.isDebug || jsObj.debug.dragWindowStart ), indentT;
+        if ( debugEnabled )
         {
-            djObj.setMarginBox( node, m.l, m.t, mP.w, null, null, jsObj );
-            this.widthHalf = mP.w / 2;
+            indentT = jsObj.debugindentT;
+            var indentH = jsObj.debugindentH;
+            var dqColsStr = "";
+            if ( dqCols != null )
+                dqColsStr = indentH + "dqCols=[" + jsObj.objectKeys( dqCols ).join( ", " ) + "]";
+            var title = wndORlayout.title;
+            if ( title == null ) title = node.id;
+            djObj.hostenv.println( 'DRAG "' + title + '"' + indentH + ( ( this.posStatic && ! changeToUntiled ) ? ( "col=" + ( pwGhost.col ? pwGhost.col.getPageColumnIndex() : "null" ) + indentH ) : "" ) + "m.l = " + m.l + indentH + "m.t = " + m.t + dqColsStr );
+        }
+
+        if ( this.posStatic || changeToTiled )
+        {
             this.heightHalf = mP.h / 2;
             if ( ! changeToUntiled )
             {
-                var inColIndex = wndORlayout.getPageColumnIndex();
-    
-                this.columnDimensions = new Array( jsObj.page.columns.length );
-                for ( var i = 0 ; i < jsObj.page.columns.length ; i++ )
+                var columnObjArray = jsObj.page.columns || [];
+                var noOfCols = columnObjArray.length;
+                var columnInfoArray = new Array( noOfCols );
+                var columnContainerNode = djObj.byId( jsObj.id.COLUMNS );
+                if ( columnContainerNode )
                 {
-                    var col = jsObj.page.columns[i];
-                    if ( ! col.columnContainer && ! col.layoutHeader )
-                    {
-                        if ( this.qualifyTargetColumn( col ) )
-                        {
-                            var colAbsPos = djObj.html.getAbsolutePosition( col.domNode, true );
-                            var marginBox = djObj.html.getMarginBox( col.domNode );
-                            var colDims = { left: (colAbsPos.x), right: (colAbsPos.x + marginBox.width), top: (colAbsPos.y), bottom: (colAbsPos.y + marginBox.height) };
-                            colDims.height = colDims.bottom - colDims.top;
-                            colDims.width = colDims.right - colDims.left;
-                            colDims.yhalf = colDims.top + ( colDims.height / 2 )
-                            this.columnDimensions[ i ] = colDims;
-                        }
-                    }
+                    var pageLayoutInfo = jsObj.page.layoutInfo;
+                    this._getChildColInfo( columnContainerNode, columnInfoArray, jsObj.page.columns, dqCols, pageLayoutInfo, pageLayoutInfo.columns, pageLayoutInfo.desktop, node, ( debugEnabled ? 1 : null ), indentT, djObj, jsObj );
+                    if ( debugEnabled )
+                        djObj.hostenv.println( indentT + "--------------------" );
                 }
-                var inCol = ( inColIndex >= 0 ? jsObj.page.columns[ inColIndex ] : null );
-                pwGhost.col = inCol;
+                this.columnInfoArray = columnInfoArray;
             }
-            else
-            {
-                /*m = djObj.getMarginBox( node, compStyle, jsObj );
-                m.l -= this.marginBox.l;
-		        m.t -= this.marginBox.t;
-                this.marginBox = m;
+        }
 
-                this.widthHalf = mP.w / 2;
-                this.heightHalf = mP.h / 2;
-                */
-                wndORlayout._makeUntiledDims();
+        if ( this.posStatic )
+        {
+            jsUI.setMarginBox( node, m.l, m.t, mP.w, null, nodeLayoutInfo, jsObj, djObj );  // djObj.setMarginBox( node, m.l, m.t, mP.w, null, null, jsObj );
+            //djObj.debug( "initial node set-dims  l=" + node.style.left + "  t=" + node.style.top + "  w=" + node.style.width + "  h=" + node.style.height );
+
+            if ( this.notifyOnAbsolute )
+            {   // BOZO:NOW: consider making width smaller during drag  // this.nodeLayoutColumn
+                wndORlayout.dragChangeToAbsolute( this, node, this.marginBox, djObj, jsObj );
+                //this.heightHalf = mP.h / 2;
+            }
+
+            if ( changeToUntiled )
+            {
                 this.posStatic = false;
             }
-            //djObj.debug( "initial position: " + jsObj.printobj( djObj.getMarginBox( node, compStyle, jsObj ) ) );
+            //djObj.debug( "initial position: " + jsObj.printobj( djObj.getMarginBox( node, null, jsObj ) ) );
         }
-	},
-    qualifyTargetColumn: function( column )
-    {
-        if ( column != null && ! column.layoutActionsDisabled )
+	},   // Mover.onFirstMove
+
+    
+    _getChildColInfo: function( parentNode, columnInfoArray, columnObjArray, disqualifiedColIndexes, pageLayoutInfo, parentNodeLayoutInfo, parentNodeParentLayoutInfo, dragNode, debugDepth, debugIndent, djObj, jsObj )
+    {   // getColFromColNode
+        var childNodes = parentNode.childNodes;
+        var childNodesLen = ( childNodes ? childNodes.length : 0 );
+        if ( childNodesLen == 0 ) return;
+        var absPosParent = djObj.html.getAbsolutePosition( parentNode, true );
+        var mbParent = jsObj.ui.getMarginBox( parentNode, parentNodeLayoutInfo, parentNodeParentLayoutInfo, jsObj );
+        var colLayoutInfo = pageLayoutInfo.column;
+        var child, col, pageColIndexStr, pageColIndex, layoutId, isLayout, mbCol, absLeftCol, absTopCol, heightCol, colInfo, highHeightCol, colGetChildren;
+        var colTopOffset = null, debugNextDepth = ( debugDepth != null ? (debugDepth + 1) : null ), tDebugNextDepth, debugMsg;
+        for ( var i = 0 ; i < childNodesLen ; i++ )
         {
-            if ( this.disqualifiedColumnIndexes != null && this.disqualifiedColumnIndexes[ column.getPageColumnIndex() ] != null )
+            child = childNodes[i];
+            pageColIndexStr = child.getAttribute( "columnindex" );
+            pageColIndex = ( pageColIndexStr == null ? -1 : new Number( pageColIndexStr ) );
+            if ( pageColIndex >= 0 )
             {
-                //dojo.debug( "disqualified: " + column.toString() );
-                return false;
+                layoutId = child.getAttribute( "layoutid" );
+                isLayout = ( layoutId != null && layoutId.length > 0 );
+                colGetChildren = true;
+                tDebugNextDepth = debugNextDepth;
+                debugMsg = null;
+                if ( ! isLayout && ( ! ( child === dragNode ) ) )
+                {
+                    col = columnObjArray[pageColIndex];
+                    if ( col && ! col.layoutActionsDisabled && ( disqualifiedColIndexes == null || disqualifiedColIndexes[ pageColIndex ] == null ) )
+                    {
+                        mbCol = jsObj.ui.getMarginBox( child, colLayoutInfo, parentNodeLayoutInfo, jsObj );
+                        if ( colTopOffset == null )
+                        {
+                            colTopOffset = mbCol.t - mbParent.t;
+                            highHeightCol = mbParent.h - colTopOffset;
+                        }
+                        absLeftCol = absPosParent.left + ( mbCol.l - mbParent.l );
+                        absTopCol = absPosParent.top + colTopOffset;
+                        heightCol = mbCol.h;
+                        if ( heightCol < highHeightCol )
+                            heightCol = highHeightCol; // heightCol + Math.floor( ( highHeightCol - heightCol ) / 2 );
+                        if ( heightCol < 40 )
+                            heightCol = 40;
+                            
+                        var colChildNodes = child.childNodes;
+                        colInfo = { left: absLeftCol, top: absTopCol, right: (absLeftCol + mbCol.w), bottom: (absTopCol + heightCol), childCount: ( colChildNodes ? colChildNodes.length : 0 ), pageColIndex: pageColIndex };
+                        colInfo.height = colInfo.bottom - colInfo.top;
+                        colInfo.width = colInfo.right - colInfo.left;
+                        colInfo.yhalf = colInfo.top + ( colInfo.height / 2 );
+                        columnInfoArray[ pageColIndex ] = colInfo;
+                        colGetChildren = ( colInfo.childCount > 0 );
+                        if ( debugDepth != null )
+                            debugMsg = ( jsObj.debugDims( colInfo, true ) + " yhalf=" + colInfo.yhalf + ( mbCol.h != heightCol ? ( " hreal=" + mbCol.h ) : "" ) + " childC=" + colInfo.childCount + "}" );
+                    }
+                }
+                if ( debugDepth != null )
+                {
+                    if ( isLayout )
+                        tDebugNextDepth = debugNextDepth + 1;
+                    if ( debugMsg == null )
+                        debugMsg = "---";
+                    djObj.hostenv.println( djObj.string.repeat( debugIndent, debugDepth ) + "["+( ( pageColIndex < 10 ? " " : "" ) + pageColIndexStr )+"] " + debugMsg );
+                }
+                if ( colGetChildren )
+                    this._getChildColInfo( child, columnInfoArray, columnObjArray, disqualifiedColIndexes, pageLayoutInfo, ( isLayout ? pageLayoutInfo.columnLayoutHeader : colLayoutInfo ), parentNodeLayoutInfo, dragNode, tDebugNextDepth, debugIndent, djObj, jsObj );
             }
-            return true;
         }
-        return false;
-    },
+    },  // _getChildColInfo
+
     mouseUpDestroy: function()
     {
-        var djObj = dojo;
-        var jsObj = jetspeed;
+        //dojo.debug( "mover mouseUpDestroy [" + this.windowOrLayoutWidget.widgetId + "]" );
+        var djObj = this.djObj;
+        var jsObj = this.jsObj;
         this.destroy( djObj, djObj.event, jsObj, jsObj.ui );
     },
 	destroy: function( djObj, djEvtObj, jsObj, jsUI ){
 		// summary: stops the move, deletes all references, so the object can be garbage-collected
         var wndORlayout = this.windowOrLayoutWidget;
+        //dojo.debug( "mover destroy [" + wndORlayout.widgetId + "]" );
+        var node = this.node;
         var errMsg = null;
-        if ( this.moveInitiated )
+        if ( this.moveInitiated && wndORlayout && node )
         {
+            this.moveInitiated = false;
             try
             {
-                var pwGhost = jsObj.widget.pwGhost;
                 if ( this.posStatic )
                 {
-                    var n = this.node;
-                    var nStyle = n.style;
+                    var pwGhost = jsObj.widget.pwGhost;
+                    var nStyle = node.style;
                     if ( pwGhost && pwGhost.col )
                     {
                         wndORlayout.column = 0;
-                        djObj.dom.insertBefore( n, pwGhost, true );
+                        djObj.dom.insertBefore( node, pwGhost, true );
+                        //dojo.debug( "moved into column: " + pwGhost.col.toString() );
                     }
                     else
                     {
-                        djObj.dom.insertAtIndex( n, this.prevColumnNode, this.prevIndexInCol );
+                        if ( this.prevColumnNode != null && this.prevIndexInCol != null )
+                            djObj.dom.insertAtIndex( node, this.prevColumnNode, this.prevIndexInCol );
+                        else
+                        {
+                            var defaultColumn = jsObj.page.getColumnDefault();
+                            if ( defaultColumn != null )
+                                djObj.dom.prependChild( node, defaultColumn.domNode );
+                        }
                     }
                     if ( pwGhost )
                         djObj.dom.removeNode( pwGhost );
                 }
-                wndORlayout.endDragging( this.posRecord );     // xxxx   used to pass the pos info only when window was minimized
+                wndORlayout.endDragging( this.posRecord, this.changeToUntiled, this.changeToTiled );
             }
             catch(ex)
             {
@@ -3110,11 +3739,11 @@ dojo.extend(dojo.dnd.Mover, {
         {
             errMsg = this._getErrMsg( ex, "destroy clean-up error", wndORlayout, errMsg );
         }
-
+        jsObj.widget._movingInProgress = false;
         if ( errMsg != null )
             djObj.raise( errMsg );
-	}
-});
+	}   // Mover.destroy
+});  // dojo.dnd.Mover
 
 dojo.dnd.Moveable = function( windowOrLayoutWidget, opt ){
 	// summary: an object, which makes a node moveable
@@ -3126,104 +3755,105 @@ dojo.dnd.Moveable = function( windowOrLayoutWidget, opt ){
 	//		delay: Number: delay move by this number of pixels
 	//		skip: Boolean: skip move of form elements
 	//		mover: Object: a constructor of custom Mover
-    var jsUI = jetspeed.ui;
-    var djEvtObj = dojo.event;
-    this.enabled = true;
-    this.mover = null;
+    var jsObj = jetspeed;
+    var jsUI = jsObj.ui;
+    var djObj = dojo;
+    var djEvtObj = djObj.event;
     this.windowOrLayoutWidget = windowOrLayoutWidget;
 	this.handle = opt.handle;
-    this.minMove = 20;
     var moveableEvts = [];
     moveableEvts.push( jsUI.evtConnect( "after", this.handle, "onmousedown", this, "onMouseDown", djEvtObj ) );
 
     // cancel text selection and text dragging
-    moveableEvts.push( jsUI.evtConnect( "after", this.handle, "ondragstart",   djEvtObj.browser, "stopEvent", djEvtObj ) );
-    moveableEvts.push( jsUI.evtConnect( "after", this.handle, "onselectstart", djEvtObj.browser, "stopEvent", djEvtObj ) );
+    moveableEvts.push( jsUI.evtConnect( "after", this.handle, "ondragstart", jsObj, "_stopEvent", djEvtObj ) );
+    moveableEvts.push( jsUI.evtConnect( "after", this.handle, "onselectstart", jsObj, "_stopEvent", djEvtObj ) );
 	this.events = moveableEvts;
 };
 
 dojo.extend(dojo.dnd.Moveable, {
+    minMove: 5,
+    enabled: true,
+    mover: null,
 	// mouse event processors
 	onMouseDown: function( e ){
 		// summary: event processor for onmousedown, creates a Mover for the node
 		// e: Event: mouse event
         if ( e && e.button == 2 ) return ;
+        var djObj = dojo;
+        var djEvtObj = djObj.event;
+        var jsObj = jetspeed;
+        var jsUI = jetspeed.ui;
+        //dojo.debug( "moveable onmousedown [" + this.windowOrLayoutWidget.widgetId + "] - mover=" + this.mover + " tempEvents=" + this.tempEvents );
         if ( this.mover != null || this.tempEvents != null )
         {
-            var djObj = dojo;
-            var djEvtObj = djObj.event;
-            var jsObj = jetspeed;
-            this._cleanUpLastEvt( djObj, djEvtObj, jsObj, jsObj.ui );
-            djEvtObj.browser.stopEvent( e );
+            this._cleanUpLastEvt( djObj, djEvtObj, jsObj, jsUI );
+            jsObj.stopEvent( e );
         }
         else if ( this.enabled )
         {
-            var jsUI = jetspeed.ui;
-            var djEvtObj = dojo.event;
-            var moveableTempEvts = [];
-            moveableTempEvts.push( jsUI.evtConnect( "after", this.handle, "onmousemove", this, "onMouseMove", djEvtObj ) );
-            moveableTempEvts.push( jsUI.evtConnect( "after", this.handle, "onmouseup", this, "onMouseUp", djEvtObj ) );
-            moveableTempEvts.push( jsUI.evtConnect( "after", this.handle, "onmouseout", this, "onMouseOut", djEvtObj ) );
-            this.tempEvents = moveableTempEvts;
-            
+            if ( this.tempEvents != null )
+            {
+                if ( djConfig.isDebug )
+                    jsObj.debugAlert( "ERROR: Moveable onmousedown tempEvent already defined" );
+            }
+            else
+            {
+                var moveableTempEvts = [];
+                var doc = this.handle.ownerDocument;
+                moveableTempEvts.push( jsUI.evtConnect( "after", doc, "onmousemove", this, "onMouseMove", djEvtObj ) );
+                //moveableTempEvts.push( jsUI.evtConnect( "after", doc, "onmouseup", this, "onMouseUp", djEvtObj ) );
+                this.tempEvents = moveableTempEvts;
+            }
+            if ( ! this.windowOrLayoutWidget.posStatic )
+                this.windowOrLayoutWidget.bringToTop( e, false, true, jsObj );
             this._lastX = e.pageX;
             this._lastY = e.pageY;
             this._mDownEvt = e;
         }
+        jsObj.stopEvent( e );
 	},
-
-    onMouseOut: function( e )
-    {
-        this.onMouseMove( e, true ) ;
-    },
 
     onMouseMove: function( e, force )
     {
+        var jsObj = jetspeed;
         var djObj = dojo;
         var djEvtObj = djObj.event;
         if ( force || Math.abs(e.pageX - this._lastX) > this.minMove || Math.abs(e.pageY - this._lastY) > this.minMove )
         {
-            var jsObj = jetspeed;
-
             this._cleanUpLastEvt( djObj, djEvtObj, jsObj, jsObj.ui );
 
-            var dragNode = null;
             var wndORlayout = this.windowOrLayoutWidget;
-            var beforeDragColumn = null;
-            this.beforeDragColumnRowInfo = null;
+            var dragLayoutColumn = null;
+            this.beforeDragColRowInfo = null;
             if ( ! wndORlayout.isLayoutPane )
             {
-                dragNode = wndORlayout.domNode;
+                var dragNode = wndORlayout.domNode;
+                if ( dragNode != null )
+                {
+                    this.node = dragNode;
+		            this.mover = new djObj.dnd.Mover( wndORlayout, dragNode, dragLayoutColumn, this, e, false, djObj, jsObj );
+                }
             }
             else
             {
-                beforeDragColumn = wndORlayout.containingColumn;
-                if ( beforeDragColumn != null )
-                {
-                    dragNode = beforeDragColumn.domNode;
-                    if ( dragNode != null )
-                        this.beforeDragColumnRowInfo = jsObj.page.getPortletCurColRow( dragNode );
-                }
-            }
-            if ( dragNode != null )
-            {
-                this.node = dragNode;
-		        this.mover = new djObj.dnd.Mover( wndORlayout, dragNode, beforeDragColumn, this, e, djObj, jsObj );
+                wndORlayout.startDragging( e, this, djObj, jsObj );
             }
         }
-        djEvtObj.browser.stopEvent( e );
+        jsObj.stopEvent( e );
     },
     onMouseUp: function( e )
     {
+        //dojo.debug( "moveable onmouseup [" + this.windowOrLayoutWidget.widgetId + "]" );
         var djObj = dojo;
         var jsObj = jetspeed;
         this._cleanUpLastEvt( djObj, djObj.event, jsObj, jsObj.ui );
     },
     _cleanUpLastEvt: function( djObj, djEvtObj, jsObj, jsUI )
     {
+        //dojo.debug( "moveable _cleanUpLastEvt [" + this.windowOrLayoutWidget.widgetId + "]" );
         if ( this._mDownEvt != null )
         {
-            djEvtObj.browser.stopEvent( this._mDownEvt );
+            jsObj.stopEvent( this._mDownEvt );
             this._mDownEvt = null;
         }
         if ( this.mover != null )
@@ -3239,235 +3869,235 @@ dojo.extend(dojo.dnd.Moveable, {
     {
         this._cleanUpLastEvt( djObj, djEvtObj, jsObj, jsUI );
         jsUI.evtDisconnectWObjAry( this.events, djEvtObj );
-		this.events = this.node = this.handle = this.windowOrLayoutWidget = this.beforeDragColumnRowInfo = null;
+		this.events = this.node = this.handle = this.windowOrLayoutWidget = this.beforeDragColRowInfo = null;
 	},
     enable: function() { this.enabled = true; },
     disable: function() { this.enabled = false; }
-});
+});  // dojo.dnd.Moveable
 
-	dojo.getMarginBox = function(node, computedStyle, jsObj){
-		var s = computedStyle||dojo.gcs(node), me = dojo._getMarginExtents(node, s, jsObj);
-		var	l = node.offsetLeft - me.l,	t = node.offsetTop - me.t; 
-		if(jsObj.UAmoz){
-			// Mozilla:
-			// If offsetParent has a computed overflow != visible, the offsetLeft is decreased
-			// by the parent's border.
-			// We don't want to compute the parent's style, so instead we examine node's
-			// computed left/top which is more stable.
-			var sl = parseFloat(s.left), st = parseFloat(s.top);
-			if (!isNaN(sl) && !isNaN(st)) {
-				l = sl, t = st;
-			} else {
-				// If child's computed left/top are not parseable as a number (e.g. "auto"), we
-				// have no choice but to examine the parent's computed style.
-				var p = node.parentNode;
-				if (p) {
-					var pcs = dojo.gcs(p);
-					if (pcs.overflow != "visible"){
-						var be = dojo._getBorderExtents(p, pcs);
-						l += be.l, t += be.t;
-					}
-				}
-			}
-		}
-		// On Opera, offsetLeft includes the parent's border
-		else if(jsObj.UAope){
-			var p = node.parentNode;
-			if(p){
-				var be = dojo._getBorderExtents(p);
-				l -= be.l, t -= be.t;
-			}
-		}
-		return { 
-			l: l, 
-			t: t, 
-			w: node.offsetWidth + me.w, 
-			h: node.offsetHeight + me.h 
-		};
-	};
+dojo.getMarginBox = function(node, computedStyle, jsObj){
+    var s = computedStyle||dojo.gcs(node), me = dojo._getMarginExtents(node, s, jsObj);
+    var l = node.offsetLeft - me.l, t = node.offsetTop - me.t; 
+    if(jsObj.UAmoz){
+        // Mozilla:
+        // If offsetParent has a computed overflow != visible, the offsetLeft is decreased
+        // by the parent's border.
+        // We don't want to compute the parent's style, so instead we examine node's
+        // computed left/top which is more stable.
+        var sl = parseFloat(s.left), st = parseFloat(s.top);
+        if (!isNaN(sl) && !isNaN(st)) {
+            l = sl, t = st;
+        } else {
+            // If child's computed left/top are not parseable as a number (e.g. "auto"), we
+            // have no choice but to examine the parent's computed style.
+            var p = node.parentNode;
+            if (p) {
+                var pcs = dojo.gcs(p);
+                if (pcs.overflow != "visible"){
+                    var be = dojo._getBorderExtents(p, pcs);
+                    l += be.l, t += be.t;
+                }
+            }
+        }
+    }
+    // On Opera, offsetLeft includes the parent's border
+    else if(jsObj.UAope){
+        var p = node.parentNode;
+        if(p){
+            var be = dojo._getBorderExtents(p);
+            l -= be.l, t -= be.t;
+        }
+    }
+    return { 
+        l: l, 
+        t: t, 
+        w: node.offsetWidth + me.w, 
+        h: node.offsetHeight + me.h 
+    };
+};
 
-	dojo.getContentBox = function(node, computedStyle, jsObj){
-		// clientWidth/Height are important since the automatically account for scrollbars
-		// fallback to offsetWidth/Height for special cases (see #3378)
-		var s=computedStyle||gcs(node), pe=dojo._getPadExtents(node, s), be=dojo._getBorderExtents(node, s), w=node.clientWidth, h;
-		if (!w) {
-			w=node.offsetWidth, h=node.offsetHeight;
-		} else {
-			h=node.clientHeight, be.w = be.h = 0; 
-		}
-		// On Opera, offsetLeft includes the parent's border
-		if(jsObj.UAope){ pe.l += be.l; pe.t += be.t; };
-		return { 
-			l: pe.l, 
-			t: pe.t, 
-			w: w - pe.w - be.w, 
-			h: h - pe.h - be.h
-		};
-	};
+dojo.getContentBox = function(node, computedStyle, jsObj){
+    // clientWidth/Height are important since the automatically account for scrollbars
+    // fallback to offsetWidth/Height for special cases (see #3378)
+    var s=computedStyle||dojo.gcs(node), pe=dojo._getPadExtents(node, s), be=dojo._getBorderExtents(node, s), w=node.clientWidth, h;
+    if (!w) {
+        w=node.offsetWidth, h=node.offsetHeight;
+    } else {
+        h=node.clientHeight, be.w = be.h = 0; 
+    }
+    // On Opera, offsetLeft includes the parent's border
+    if(jsObj.UAope){ pe.l += be.l; pe.t += be.t; };
+    return { 
+        l: pe.l, 
+        t: pe.t, 
+        w: w - pe.w - be.w, 
+        h: h - pe.h - be.h
+    };
+};
 
-	dojo.setMarginBox = function(node, leftPx, topPx, widthPx, heightPx, computedStyle, jsObj){
-		var s = computedStyle || dojo.gcs(node);
-		// Some elements have special padding, margin, and box-model settings. 
-		// To use box functions you may need to set padding, margin explicitly.
-		// Controlling box-model is harder, in a pinch you might set dojo.boxModel.
-		var bb=dojo._usesBorderBox(node), pb=bb ? { l:0, t:0, w:0, h:0 } : dojo._getPadBorderExtents(node, s), mb=dojo._getMarginExtents(node, s, jsObj);
-		if(widthPx != null && widthPx>=0){ widthPx = Math.max(widthPx - pb.w - mb.w, 0); }
-		if(heightPx != null && heightPx>=0){ heightPx = Math.max(heightPx - pb.h - mb.h, 0); }
-		dojo._setBox(node, leftPx, topPx, widthPx, heightPx);
-	};
+dojo.setMarginBox = function(node, leftPx, topPx, widthPx, heightPx, computedStyle, jsObj){
+    var s = computedStyle || dojo.gcs(node);
+    // Some elements have special padding, margin, and box-model settings. 
+    // To use box functions you may need to set padding, margin explicitly.
+    // Controlling box-model is harder, in a pinch you might set dojo.boxModel.
+    var bb=dojo._usesBorderBox(node), pb=bb ? { l:0, t:0, w:0, h:0 } : dojo._getPadBorderExtents(node, s), mb=dojo._getMarginExtents(node, s, jsObj);
+    if(widthPx != null && widthPx>=0){ widthPx = Math.max(widthPx - pb.w - mb.w, 0); }
+    if(heightPx != null && heightPx>=0){ heightPx = Math.max(heightPx - pb.h - mb.h, 0); }
+    dojo._setBox(node, leftPx, topPx, widthPx, heightPx);
+};
 
-	dojo._setBox = function(node, l, t, w, h, u){
-		u = u || "px";
-		with(node.style){
-			if(l != null && !isNaN(l)){ left = l+u; }
-			if(t != null && !isNaN(t)){ top = t+u; }
-			if(w != null && w >=0){ width = w+u; }
-			if(h != null && h >=0){ height = h+u; }
-		}
-	};
+dojo._setBox = function(node, l, t, w, h, u){
+    u = u || "px";
+    with(node.style){
+        if(l != null && !isNaN(l)){ left = l+u; }
+        if(t != null && !isNaN(t)){ top = t+u; }
+        if(w != null && w >=0){ width = w+u; }
+        if(h != null && h >=0){ height = h+u; }
+    }
+};
 
-    dojo._usesBorderBox = function(node){
-		// We could test the computed style of node to see if a particular box
-		// has been specified, but there are details and we choose not to bother.
-		var n = node.tagName;
-		// For whatever reason, TABLE and BUTTON are always border-box by default.
-		// If you have assigned a different box to either one via CSS then
-		// box functions will break.
-		return false; // (dojo.boxModel=="border-box")||(n=="TABLE")||(n=="BUTTON");
-	};
+dojo._usesBorderBox = function(node){
+    // We could test the computed style of node to see if a particular box
+    // has been specified, but there are details and we choose not to bother.
+    var n = node.tagName;
+    // For whatever reason, TABLE and BUTTON are always border-box by default.
+    // If you have assigned a different box to either one via CSS then
+    // box functions will break.
+    return false; // (dojo.boxModel=="border-box")||(n=="TABLE")||(n=="BUTTON");
+};
 
-	dojo._getPadExtents = function(n, computedStyle){
-		// Returns special values specifically useful 
-		// for node fitting.
-		// l/t = left/top padding (respectively)
-		// w = the total of the left and right padding 
-		// h = the total of the top and bottom padding
-		// If 'node' has position, l/t forms the origin for child nodes. 
-		// The w/h are used for calculating boxes.
-		// Normally application code will not need to invoke this directly,
-		// and will use the ...box... functions instead.
-		var s=computedStyle||dojo.gcs(n), px=dojo._toPixelValue, l=px(n, s.paddingLeft), t=px(n, s.paddingTop);
-		return { 
-			l: l,
-			t: t,
-			w: l+px(n, s.paddingRight),
-			h: t+px(n, s.paddingBottom)
-		};
-	};
+dojo._getPadExtents = function(n, computedStyle){
+    // Returns special values specifically useful 
+    // for node fitting.
+        // l/t = left/top padding (respectively)
+    // w = the total of the left and right padding 
+    // h = the total of the top and bottom padding
+    // If 'node' has position, l/t forms the origin for child nodes. 
+    // The w/h are used for calculating boxes.
+    // Normally application code will not need to invoke this directly,
+    // and will use the ...box... functions instead.
+    var s=computedStyle||dojo.gcs(n), px=dojo._toPixelValue, l=px(n, s.paddingLeft), t=px(n, s.paddingTop);
+    return { 
+        l: l,
+        t: t,
+        w: l+px(n, s.paddingRight),
+        h: t+px(n, s.paddingBottom)
+    };
+};
 
-	dojo._getPadBorderExtents = function(n, computedStyle){
-		// l/t = the sum of left/top padding and left/top border (respectively)
-		// w = the sum of the left and right padding and border
-		// h = the sum of the top and bottom padding and border
-		// The w/h are used for calculating boxes.
-		// Normally application code will not need to invoke this directly,
-		// and will use the ...box... functions instead.
-		var s=computedStyle||dojo.gcs(n), p=dojo._getPadExtents(n, s), b=dojo._getBorderExtents(n, s);
-		return { 
-			l: p.l + b.l,
-			t: p.t + b.t,
-			w: p.w + b.w,
-			h: p.h + b.h
-		};
-	};
+dojo._getPadBorderExtents = function(n, computedStyle){
+    // l/t = the sum of left/top padding and left/top border (respectively)
+    // w = the sum of the left and right padding and border
+    // h = the sum of the top and bottom padding and border
+    // The w/h are used for calculating boxes.
+    // Normally application code will not need to invoke this directly,
+    // and will use the ...box... functions instead.
+    var s=computedStyle||dojo.gcs(n), p=dojo._getPadExtents(n, s), b=dojo._getBorderExtents(n, s);
+    return { 
+        l: p.l + b.l,
+        t: p.t + b.t,
+        w: p.w + b.w,
+        h: p.h + b.h
+    };
+};
 
-	dojo._getMarginExtents = function(n, computedStyle, jsObj){
-		var 
-			s=computedStyle||dojo.gcs(n), 
-			px=dojo._toPixelValue,
-			l=px(n, s.marginLeft),
-			t=px(n, s.marginTop),
-			r=px(n, s.marginRight),
-			b=px(n, s.marginBottom);
-		if (jsObj.UAsaf && (s.position != "absolute")){
-			// FIXME: Safari's version of the computed right margin
-			// is the space between our right edge and the right edge 
-			// of our offsetParent. 
-			// What we are looking for is the actual margin value as 
-			// determined by CSS.
-			// Hack solution is to assume left/right margins are the same.
-			r = l;
-		}
-		return { 
-			l: l,
-			t: t,
-			w: l+r,
-			h: t+b
-		};
-	};
+dojo._getMarginExtents = function(n, computedStyle, jsObj){
+    var 
+        s=computedStyle||dojo.gcs(n), 
+        px=dojo._toPixelValue,
+        l=px(n, s.marginLeft),
+        t=px(n, s.marginTop),
+        r=px(n, s.marginRight),
+        b=px(n, s.marginBottom);
+    if (jsObj.UAsaf && (s.position != "absolute")){
+        // FIXME: Safari's version of the computed right margin
+        // is the space between our right edge and the right edge 
+        // of our offsetParent. 
+        // What we are looking for is the actual margin value as 
+        // determined by CSS.
+        // Hack solution is to assume left/right margins are the same.
+        r = l;
+    }
+    return { 
+        l: l,
+        t: t,
+        w: l+r,
+        h: t+b
+    };
+};
 
 
-	dojo._getBorderExtents = function(n, computedStyle){
-		// l/t = the sum of left/top border (respectively)
-		// w = the sum of the left and right border
-		// h = the sum of the top and bottom border
-		// The w/h are used for calculating boxes.
-		// Normally application code will not need to invoke this directly,
-		// and will use the ...box... functions instead.
-		var 
-			ne='none',
-			px=dojo._toPixelValue, 
-			s=computedStyle||dojo.gcs(n), 
-			bl=(s.borderLeftStyle!=ne ? px(n, s.borderLeftWidth) : 0),
-			bt=(s.borderTopStyle!=ne ? px(n, s.borderTopWidth) : 0);
-		return { 
-			l: bl,
-			t: bt,
-			w: bl + (s.borderRightStyle!=ne ? px(n, s.borderRightWidth) : 0),
-			h: bt + (s.borderBottomStyle!=ne ? px(n, s.borderBottomWidth) : 0)
-		};
-	};
+dojo._getBorderExtents = function(n, computedStyle){
+    // l/t = the sum of left/top border (respectively)
+    // w = the sum of the left and right border
+    // h = the sum of the top and bottom border
+    // The w/h are used for calculating boxes.
+    // Normally application code will not need to invoke this directly,
+    // and will use the ...box... functions instead.
+    var 
+        ne='none',
+        px=dojo._toPixelValue, 
+        s=computedStyle||dojo.gcs(n), 
+        bl=(s.borderLeftStyle!=ne ? px(n, s.borderLeftWidth) : 0),
+        bt=(s.borderTopStyle!=ne ? px(n, s.borderTopWidth) : 0);
+    return { 
+        l: bl,
+        t: bt,
+        w: bl + (s.borderRightStyle!=ne ? px(n, s.borderRightWidth) : 0),
+        h: bt + (s.borderBottomStyle!=ne ? px(n, s.borderBottomWidth) : 0)
+    };
+};
 
-	if(!jetspeed.UAie){
-		// non-IE branch
-		var dv = document.defaultView;
-		dojo.getComputedStyle = ((jetspeed.UAsaf) ? function(node){
-				var s = dv.getComputedStyle(node, null);
-				if(!s && node.style){ 
-					node.style.display = ""; 
-					s = dv.getComputedStyle(node, null);
-				}
-				return s || {};
-			} : function(node){
-				return dv.getComputedStyle(node, null);
-			}
-		)
+if(!jetspeed.UAie){
+    // non-IE branch
+    var dv = document.defaultView;
+    dojo.getComputedStyle = ((jetspeed.UAsaf) ? function(node){
+            var s = dv.getComputedStyle(node, null);
+            if(!s && node.style){ 
+                node.style.display = ""; 
+                s = dv.getComputedStyle(node, null);
+            }
+            return s || {};
+        } : function(node){
+            return dv.getComputedStyle(node, null);
+        }
+    );
 
-		dojo._toPixelValue = function(element, value){
-			// style values can be floats, client code may want
-			// to round for integer pixels.
-			return (parseFloat(value) || 0); 
-		}
-	}else{
-		// IE branch
-		dojo.getComputedStyle = function(node){
-			return node.currentStyle;
-		}
+    dojo._toPixelValue = function(element, value){
+        // style values can be floats, client code may want
+        // to round for integer pixels.
+        return (parseFloat(value) || 0); 
+    };
+}else{
+    // IE branch
+    dojo.getComputedStyle = function(node){
+        return node.currentStyle;
+    };
 
-		dojo._toPixelValue = function(element, avalue){
-			if(!avalue){return 0;}
-			// style values can be floats, client code may
-			// want to round this value for integer pixels.
-			if(avalue.slice&&(avalue.slice(-2)=='px')){ return parseFloat(avalue); }
-			with(element){
-				var sLeft = style.left;
-				var rsLeft = runtimeStyle.left;
-				runtimeStyle.left = currentStyle.left;
-				try{
-					// 'avalue' may be incompatible with style.left, which can cause IE to throw
-					// this has been observed for border widths using "thin", "medium", "thick" constants
-					// those particular constants could be trapped by a lookup
-					// but perhaps there are more
-					style.left = avalue;
-					avalue = style.pixelLeft;
-				}catch(e){
-					avalue = 0;
-				}
-				style.left = sLeft;
-				runtimeStyle.left = rsLeft;
-			}
-			return avalue;
-		}
-	};
+    dojo._toPixelValue = function(element, avalue){
+        if(!avalue){return 0;}
+        // style values can be floats, client code may
+        // want to round this value for integer pixels.
+        if(avalue.slice&&(avalue.slice(-2)=='px')){ return parseFloat(avalue); }
+        with(element){
+            var sLeft = style.left;
+            var rsLeft = runtimeStyle.left;
+            runtimeStyle.left = currentStyle.left;
+            try{
+                // 'avalue' may be incompatible with style.left, which can cause IE to throw
+                // this has been observed for border widths using "thin", "medium", "thick" constants
+                // those particular constants could be trapped by a lookup
+                // but perhaps there are more
+                style.left = avalue;
+                avalue = style.pixelLeft;
+            }catch(e){
+                avalue = 0;
+            }
+            style.left = sLeft;
+            runtimeStyle.left = rsLeft;
+        }
+        return avalue;
+    };
+}
 
-    dojo.gcs = dojo.getComputedStyle;
+dojo.gcs = dojo.getComputedStyle;
