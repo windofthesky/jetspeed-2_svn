@@ -107,6 +107,44 @@ jetspeed.println = function( line )
     }
 };
 
+jetspeed.objectKeys = function( obj )
+{
+    var keys = new Array();
+    if ( obj != null )
+    {
+        for( var key in obj )
+            keys.push( key );
+    }
+    return keys;
+};
+
+jetspeed.debugNodes = function( nodes )
+{
+    if ( ! nodes || nodes.length == null ) return null;
+    var jsObj = jetspeed;
+    var djObj = dojo;
+    var out = "", node;
+    var nodesLen = nodes.length;
+    var leftPad = ( nodesLen >= 100 ? 3 : ( nodesLen >= 10 ? 2 : 1 ) );
+    for ( var i = 0 ; i < nodesLen ; i++ )
+    {
+        node = nodes[i];
+        out += "\r\n";
+        out += "[" + djObj.string.padLeft( String(i), leftPad, "0" ) + "] ";
+        if ( ! node )
+            out += "null";
+        else
+            out += jsObj.debugNode( node );
+    }
+    return out;
+}
+
+jetspeed.debugNode = function( node )
+{
+    if ( ! node ) return null;
+    return node.nodeName + " " + node.id + " " + node.className;
+}
+
 jetspeed.debugNodeTree = function( node, string )
 {
     if ( ! node ) return ;
@@ -208,6 +246,7 @@ if ( window.djConfig != null && window.djConfig.isDebug )
     var ch = String.fromCharCode(0x00a0);
     jetspeed.debugindentch = ch;
     jetspeed.debugindentH = ch + ch;
+    jetspeed.debugindentT = ch + ch + ch;
     jetspeed.debugindent = ch + ch + ch + ch;
     jetspeed.debugindent2 = jetspeed.debugindent + jetspeed.debugindent;
     jetspeed.debugindent3 = jetspeed.debugindent + jetspeed.debugindent + jetspeed.debugindent;

@@ -118,6 +118,6 @@ jetspeed.selector.PortletAddAjaxApiCallbackCL.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
-        dojo.raise( "PortletAddAjaxApiCallbackCL error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "PortletAddAjaxApiCallbackCL error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };

@@ -52,45 +52,72 @@ jetspeed.version =
     }
 };
 
-if ( ! window.dojo )
+jetspeed.initcommon = function()
 {
     var jsObj = jetspeed;
-    jsObj.no_dojo_load_notifying = false;
-    jsObj.no_dojo_post_load = false;
-    jsObj.pageLoadedListeners = [];
-
-    window.onload = function()
+    if ( ! window.dojo )
     {
-        if ( ! window.dojo )
+        var jsObj = jetspeed;
+        jsObj.no_dojo_load_notifying = false;
+        jsObj.no_dojo_post_load = false;
+        jsObj.pageLoadedListeners = [];
+    
+        window.onload = function()
         {
-            var _jsObj = jetspeed;
-            _jsObj.no_dojo_load_notifying = true;
-            _jsObj.no_dojo_post_load = true;
-            var pll = _jsObj.pageLoadedListeners;
-	        for( var x=0; x < pll.length; x++ )
+            if ( ! window.dojo )
             {
-		        pll[x]();
-	        }
-            _jsObj.pageLoadedListeners = [];
-        }
-    };
-}
-else
-{
-    var jsObj = jetspeed;
-    var djRH = dojo.render.html;
-    if ( djRH.mozilla )
-        jsObj.UAmoz = true;
-    else if ( djRH.ie )
-    {
-        jsObj.UAie = true;
-        if ( djRH.ie60 || djRH.ie50 || djRH.ie55 )
-            jsObj.UAie6 = true;
+                var _jsObj = jetspeed;
+                _jsObj.no_dojo_load_notifying = true;
+                _jsObj.no_dojo_post_load = true;
+                var pll = _jsObj.pageLoadedListeners;
+    	        for( var x=0; x < pll.length; x++ )
+                {
+    		        pll[x]();
+    	        }
+                _jsObj.pageLoadedListeners = [];
+            }
+        };
     }
-    else if ( djRH.safari )
-        jsObj.UAsaf = true ;
-    else if ( djRH.opera )
-        jsObj.UAope = true ;
+    else
+    {
+        var djRH = dojo.render.html;
+        if ( djRH.ie )
+        {
+            jsObj.UAie = true;
+            if ( djRH.ie60 || djRH.ie50 || djRH.ie55 )
+                jsObj.UAie6 = true;
+    
+            jsObj.stopEvent = function(/*Event*/evt)
+            {   // do no use in event connect
+                evt = evt || window.event;
+                evt.cancelBubble = true;
+                evt.returnValue = false;
+    	    };
+    	    jsObj._stopEvent = function(/*Event*/evt)
+            {   // use in event connect
+                jetspeed.stopEvent( evt );
+        	};
+        }
+        else
+        {
+            if ( djRH.mozilla )
+                jsObj.UAmoz = true;
+            else if ( djRH.safari )
+                jsObj.UAsaf = true ;
+            else if ( djRH.opera )
+                jsObj.UAope = true ;
+    
+            jsObj.stopEvent = function(/*Event*/evt)
+            {   // do no use in event connect
+                evt.preventDefault();
+                evt.stopPropagation();
+        	};
+            jsObj._stopEvent = function(/*Event*/evt)
+            {   // use in event connect
+                jetspeed.stopEvent( evt );
+        	};
+        }
+    }
 }
 
 
@@ -145,6 +172,39 @@ jetspeed.getBody = function()
         jsObj.docBody = document.body || document.getElementsByTagName( "body" )[0];
     return jsObj.docBody;
 };
+
+jetspeed.formatError = function( ex )
+{
+    if ( ex == null ) return "";
+    var msg = " error:";
+    if ( ex.message != null )
+        msg += " " + ex.message;
+    var lineNo = ex.number||ex.lineNumber||ex.lineNo;
+    if ( lineNo == null || lineNo == "0" || lineNo.length == 0 )
+        lineNo = null;
+    var fileNm = ex.fileName;
+    if ( fileNm != null )
+    {
+        var lastDirSep = fileNm.lastIndexOf( "/" );
+        if ( lastDirSep != -1 && lastDirSep < (fileNm.length -1) )
+            fileNm = fileNm.substring( lastDirSep + 1 );
+    }
+    if ( fileNm == null || fileNm.length == 0 )
+        fileNm = null;
+    var errType = ex.type;
+    if ( errType == null || errType.length == 0 || errType == "unknown" )
+        errType = null;
+
+    if ( lineNo != null || fileNm != null || errType != null )
+    {
+        msg += " (" + ( fileNm != null ? ( " " + fileNm ) : "" );
+        msg += ( lineNo != null ? (" line " + lineNo) : "" );
+        msg += ( errType != null ? (" type " + errType) : "" );
+        msg += " )";
+    }
+    return msg;
+};
+
 
 // jetspeed.url
 
@@ -614,10 +674,10 @@ if ( window.dojo )
             {
                 if ( this.hideLoadingIndicator )
                     jetspeed.url.loadingIndicatorHide();
-                throw e;
+                dojo.raise( "dojo.io.bind " + jetspeed.formatError( e ) );
             }
         },
-    
+
         error: function( type, error )
         {
             //dojo.debug( "r e t r i e v e C o n t e n t . e r r o r" ) ;
@@ -687,25 +747,6 @@ if ( window.dojo )
         return success;
     };
     
-    jetspeed.url.formatBindError = function( /* Object */ bindError )
-    {
-        if ( bindError == null ) return "";
-        var msg = " error:";
-        if ( bindError.message != null )
-            msg += " " + bindError.message;
-        if ( bindError.number != null && bindError.number != "0" )
-        {
-            msg += " (" + bindError.number;
-            if ( bindError.type != null && bindError.type != "unknown" )
-                msg += "/" + bindError.type;
-            msg += ")";
-        }
-        else if ( bindError.type != null && bindError.type != "unknown" )
-        {
-            msg += " (" + bindError.type + ")";
-        }
-        return msg;
-    };
     jetspeed.url.loadingIndicatorShow = function( actionName )
     {
         if ( typeof actionName == "undefined" )
@@ -744,3 +785,5 @@ if ( window.dojo )
             loading.style[ "display" ] = "none";
     };
 }
+
+jetspeed.initcommon();

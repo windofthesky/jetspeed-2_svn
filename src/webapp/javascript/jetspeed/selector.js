@@ -62,6 +62,6 @@ break;
 }
 return _13;
 },notifyFailure:function(_19,_1a,_1b,_1c){
-dojo.raise("PortletAddAjaxApiCallbackCL error ["+_1c.toString()+"] url: "+_1b+" type: "+_19+jetspeed.url.formatBindError(_1a));
+dojo.raise("PortletAddAjaxApiCallbackCL error ["+_1c.toString()+"] url: "+_1b+" type: "+_19+jetspeed.formatError(_1a));
 }};
 

@@ -46,6 +46,7 @@ jetspeed.debug =
     submitWinState: false,
     ajaxPageNav: false,
     dragWindow: false,
+    dragWindowStart: false,
 
     profile: true,
 
@@ -64,6 +65,12 @@ jetspeed.debug =
 //jetspeed.debugContentDumpIds = [ "moveabs-layout" ];            // dump move layout response
 //jetspeed.debugContentDumpIds = [ "js-cp-selector.*" ];          // dump portlet selector
 
+
+jetspeed.debugAlert = function( msg )
+{
+    if ( msg )
+        alert( msg );
+};
 
 // debug window
 
@@ -90,6 +97,8 @@ jetspeed.debugWindowLoad = function()
         wP[ jsId.PP_EXCLUDE_PCONTENT ] = false;
         wP[ jsId.PP_CONTENT_RETRIEVER ] = new jsObj.om.DojoDebugContentRetriever();
         wP[ jsId.PP_WINDOW_STATE ] = dbWSt.windowState;
+        if ( dbWSt.windowState == jsId.ACT_MAXIMIZE )
+            jsObj.page.maximizedOnInit = dbWId;
         var pwP = jsObj.widget.PortletWindow.prototype.altInitParamsDef( null, wP );
         jsObj.ui.createPortletWindow( pwP, null, jsObj );
         pwP.retrieveContent( null, null );
@@ -97,7 +106,7 @@ jetspeed.debugWindowLoad = function()
 
         djObj.event.connect( "after", djObj.hostenv, "println", dbWW, "contentChanged" );
     
-        djObj.event.connect( dbWW, "windowActionButtonSync", jsObj, "debugWindowSave" );
+        djObj.event.connect( dbWW, "actionBtnSync", jsObj, "debugWindowSave" );
         djObj.event.connect( dbWW, "endSizing", jsObj, "debugWindowSave" );
         djObj.event.connect( dbWW, "endDragging", jsObj, "debugWindowSave" );
     }
@@ -142,25 +151,12 @@ jetspeed.debugWindowSave = function()
     if ( ! debugWindowWidget.posStatic )
     {
         var currentState = debugWindowWidget.getCurWinStateForPersist( false );
-        var cWidth = currentState.width; var cHeight = currentState.height; var cTop = currentState.top; var cLeft = currentState.left;
-        if ( debugWindowWidget.windowState == jetspeed.id.ACT_MINIMIZE )
-        {
-            var dimsCurrent = debugWindowWidget.getDimsObj( debugWindowWidget.posStatic );
-            if ( dimsCurrent != null )
-            {
-                if ( dimsCurrent.height != null && dimsCurrent.height > 0 )
-                    cHeight = dimsCurrent.height;
-            }
-            else
-            {
-                var debugWindowState = jetspeed.debugWindowReadCookie( false );
-                if ( debugWindowState.height != null && debugWindowState.height > 0 )
-                    cHeight = debugWindowState.height;
-            }
-        }
-
-        var stateCookieVal = cWidth + "|" + cHeight + "|" + cTop + "|" + cLeft + "|" + debugWindowWidget.windowState;
+        var cWidth = currentState.width, cHeight = currentState.height, cTop = currentState.top, cLeft = currentState.left;
+        var cWinState = debugWindowWidget.windowState;
+        if ( ! cWinState ) cWinState = jetspeed.id.ACT_RESTORE;
+        var stateCookieVal = cWidth + "|" + cHeight + "|" + cTop + "|" + cLeft + "|" + cWinState;
         dojo.io.cookie.setCookie( jetspeed.id.DEBUG_WINDOW_TAG, stateCookieVal, 30, "/" );
+        var readstateCookieVal = dojo.io.cookie.getCookie( jetspeed.id.DEBUG_WINDOW_TAG );
     }
 };
 
@@ -235,8 +231,8 @@ jetspeed.debugDumpWindowsPerCol = function()
     for ( var i = 0 ; i < jetspeed.page.columns.length ; i++ )
     {
         var columnElmt = jetspeed.page.columns[i];
-        var windowNodesInColumn = jetspeed.ui.getPWinChildren( columnElmt.domNode, null );
-        var portletWindowsInColumn = jetspeed.ui.getPWinsFromNodes( windowNodesInColumn.portletWindowNodes );
+        var windowNodesInColumn = jetspeed.ui.getPWinAndColChildren( columnElmt.domNode, null );
+        var portletWindowsInColumn = jetspeed.ui.getPWinsFromNodes( windowNodesInColumn.matchingNodes );
         var dumpClosure = { dumpMsg: "" };
         if ( portletWindowsInColumn != null )
         {
@@ -274,16 +270,63 @@ jetspeed.debugLayoutInfo = function()
     }
     return dumpMsg;
 };
-jetspeed.debugColumnInfo = function()
+
+jetspeed.debugColumns = function( includePWins, includeDims )
 {
-    var jsPage = jetspeed.page;
-    var dumpMsg = "";
-    for ( var i = 0; i < jsPage.columns.length; i++ )
+    var jsObj = jetspeed;
+    var jsPage = jsObj.page;
+    var suppressDims = (! includeDims);
+    var allCols = jsPage.columns, col;
+    if ( ! allCols ) return null;
+    var columnContainerNode = dojo.byId( jsObj.id.COLUMNS );
+    var buff = "";
+    var exclPWins = ! includePWins;
+    return jsObj._debugColumnTree( suppressDims, columnContainerNode, buff, "\r\n", jsObj.debugindentT, exclPWins, jsObj, jsPage );
+};
+jetspeed._debugColumnTree = function( suppressDims, parentNode, buff, indent, indentAddNextLevel, exclPWins, jsObj, jsPage )
+{
+    var childrenResult = jsObj.ui.getPWinAndColChildren( parentNode, null, false, true, true, exclPWins );
+    var childNodes = childrenResult.matchingNodes;
+    if ( ! childNodes || childNodes.length == 0 ) return buff;
+    var child, col, pWin, pWinTitle, nextIndent = (indent + indentAddNextLevel);
+    for ( var i = 0 ; i < childNodes.length ; i++ )
     {
-        if ( i > 0 ) dumpMsg += "\r\n";
-        dumpMsg += jsPage.columns[i].toString();
+        child = childNodes[i];
+        col = jsPage.getColFromColNode( child );
+        pWin = null;
+        if ( ! col )
+            pWin = jsPage.getPWinFromNode( child );
+        buff += indent;
+        if ( col )
+        {
+            buff += jsObj.debugColumn( col, suppressDims );
+            buff = jsObj._debugColumnTree( suppressDims, child, buff, nextIndent, indentAddNextLevel, exclPWins, jsObj, jsPage );
+        }
+        else if ( pWin )
+        {
+            pWinTitle = pWin.title;
+            buff += pWin.widgetId + ( ( pWinTitle && pWinTitle.length > 0 ) ? ( " - " + pWinTitle ) : "" );
+        }
+        else
+        {
+            buff += jsObj.debugNode( child );
+        }
     }
-    return dumpMsg;
+    return buff;
+};
+jetspeed.debugColumn = function( col, suppressDims )
+{
+    if ( ! col ) return null;
+    var dNodeCol = col.domNode;
+    var out = "column[" + dojo.string.padLeft( String(col.pageColumnIndex), 2, " " ) + "]";
+    out += " colContainer=" + ( col.columnContainer ? "T" : "F" ) + " layoutHeader=" + ( col.layoutHeader ? "T" : "F" ) + " id=" + ( dNodeCol != null ? dNodeCol.id : "null" ) + " layoutCol=" + col.layoutColumnIndex + " layoutId=" + col.layoutId + " size=" + col.size;
+    if ( dNodeCol != null && ! suppressDims )
+    {
+        var colAbsPos = dojo.html.getAbsolutePosition( dNodeCol, true );
+        var marginBox = dojo.html.getMarginBox( dNodeCol );
+        out += " dims={" + "left:" + (colAbsPos.x) + ", right:" + (colAbsPos.x + marginBox.width) + ", top:" + (colAbsPos.y) + ", bottom:" + (colAbsPos.y + marginBox.height) + "}";
+    }
+    return out;
 };
 jetspeed.debugSavedWinState = function()
 {
@@ -330,6 +373,113 @@ jetspeed.debugWinStateAll = function( useLastSaved )
     return dumpMsg;
 };
 
+// Portlet Window debug info functions
+
+jetspeed.debugPWinPos = function( pWin )
+{
+    var jsObj = jetspeed;
+    var djObj = dojo;
+    var isIE = jsObj.UAie;
+    var djH = djObj.html;
+    var dNode = pWin.domNode;
+    var cNode = pWin.containerNode;
+    var tbNode = pWin.tbNode;
+    var rbNode = pWin.rbNode;
+    var dAbsPos = djH.getAbsolutePosition( dNode, true );
+    var cAbsPos = djH.getAbsolutePosition( cNode, true );
+    var tAbsPos = djH.getAbsolutePosition( tbNode, true );
+    var rAbsPos = djH.getAbsolutePosition( rbNode, true );
+    var dCompStyle = djObj.gcs( dNode ), cCompStyle = djObj.gcs( cNode ), tCompStyle = djObj.gcs( tbNode ), rCompStyle = djObj.gcs( rbNode );
+    var bgIfrmAbsPos = null;
+    if ( jsObj.UAie6 )
+        bgIfrmAbsPos = djH.getAbsolutePosition( pWin.bgIframe.iframe, true );
+    var coverIfrm = null;
+    var coverIfrmAbsPos = null;
+    var coverCompStyle = null;
+    if ( pWin.iframesInfo != null && pWin.iframesInfo.iframeCover != null )
+    {
+        coverIfrm = pWin.iframesInfo.iframeCover;
+        coverIfrmAbsPos = djH.getAbsolutePosition( coverIfrm, true );
+        coverCompStyle = djObj.gcs( coverIfrm );
+    }
+    var layoutInfo = pWin._getLayoutInfo();
+    var ind = jsObj.debugindent;
+    var indH = jsObj.debugindentH;
+    djObj.hostenv.println( "wnd-dims [" + pWin.widgetId + "  " + pWin.title + "]" + "  z=" + dNode.style.zIndex + " hfit=" + pWin.heightToFit );
+    djObj.hostenv.println( ind + "d.abs {x=" + dAbsPos.x + " y=" + dAbsPos.y + "}" + ( isIE ? ( "  hasLayout=" + dNode.currentStyle.hasLayout ) : "" ) );
+    djObj.hostenv.println( ind + "c.abs {x=" + cAbsPos.x + " y=" + cAbsPos.y + "}" + ( isIE ? ( "  hasLayout=" + cNode.currentStyle.hasLayout ) : "" ) );
+    djObj.hostenv.println( ind + "t.abs {x=" + tAbsPos.x + " y=" + tAbsPos.y + "}" + ( isIE ? ( "  hasLayout=" + tbNode.currentStyle.hasLayout ) : "" ) );
+    djObj.hostenv.println( ind + "r.abs {x=" + rAbsPos.x + " y=" + rAbsPos.y + "}" + ( isIE ? ( "  hasLayout=" + rbNode.currentStyle.hasLayout ) : "" ) );
+    if ( bgIfrmAbsPos != null )
+        djObj.hostenv.println( ind + "ibg.abs {x=" + bgIfrmAbsPos.x + " y=" + bgIfrmAbsPos.y + "}" + indH + " z=" + pWin.bgIframe.iframe.currentStyle.zIndex + ( isIE ? ( " hasLayout=" + pWin.bgIframe.iframe.currentStyle.hasLayout ) : "" ) );
+    if ( coverIfrmAbsPos != null )
+        djObj.hostenv.println( ind + "icv.abs {x=" + coverIfrmAbsPos.x + " y=" + coverIfrmAbsPos.y + "}" + indH + " z=" + coverCompStyle.zIndex + ( isIE ? ( " hasLayout=" + coverIfrm.currentStyle.hasLayout ) : "" ) );
+    djObj.hostenv.println( ind + "d.mb " + jsObj.debugDims( djObj.getMarginBox( dNode, dCompStyle, jsObj ) ) + indH + " d.offset {w=" + dNode.offsetWidth + " h=" + dNode.offsetHeight + "}" );
+    djObj.hostenv.println( ind + "d.cb " + jsObj.debugDims( djObj.getContentBox( dNode, dCompStyle, jsObj ) ) + indH + " d.client {w=" + dNode.clientWidth + " h=" + dNode.clientHeight + "}" );
+    djObj.hostenv.println( ind + "d.style {" + jsObj._debugPWinStyle( dNode, dCompStyle, "width", true ) + jsObj._debugPWinStyle( dNode, dCompStyle, "height" ) + indH + jsObj._debugPWinStyle( dNode, dCompStyle, "left" ) + jsObj._debugPWinStyle( dNode, dCompStyle, "top" ) + indH + " pos=" + dCompStyle.position.substring(0,1) + " ofx=" + dCompStyle.overflowX.substring(0,1) + " ofy=" + dCompStyle.overflowY.substring(0,1) + "}" );
+    djObj.hostenv.println( ind + "c.mb " + jsObj.debugDims( djObj.getMarginBox( cNode, cCompStyle, jsObj ) ) + indH + " c.offset {w=" + cNode.offsetWidth + " h=" + cNode.offsetHeight + "}" );
+    djObj.hostenv.println( ind + "c.cb " + jsObj.debugDims( djObj.getContentBox( cNode, cCompStyle, jsObj ) ) + indH + " c.client {w=" + cNode.clientWidth + " h=" + cNode.clientHeight + "}" );
+    djObj.hostenv.println( ind + "c.style {" + jsObj._debugPWinStyle( cNode, cCompStyle, "width", true ) + jsObj._debugPWinStyle( cNode, cCompStyle, "height" ) + indH + jsObj._debugPWinStyle( cNode, cCompStyle, "left" ) + jsObj._debugPWinStyle( cNode, cCompStyle, "top" ) + indH + " ofx=" + cCompStyle.overflowX.substring(0,1) + " ofy=" + cCompStyle.overflowY.substring(0,1) + " d=" + cCompStyle.display.substring(0,1) + "}" );
+    djObj.hostenv.println( ind + "t.mb " + jsObj.debugDims( djObj.getMarginBox( tbNode, tCompStyle, jsObj ) ) + indH + " t.offset {w=" + tbNode.offsetWidth + " h=" + tbNode.offsetHeight + "}" );
+    djObj.hostenv.println( ind + "t.cb " + jsObj.debugDims( djObj.getContentBox( tbNode, tCompStyle, jsObj ) ) + indH + " t.client {w=" + tbNode.clientWidth + " h=" + tbNode.clientHeight + "}" );
+    djObj.hostenv.println( ind + "t.style {" + jsObj._debugPWinStyle( tbNode, tCompStyle, "width", true ) + jsObj._debugPWinStyle( tbNode, tCompStyle, "height" ) + indH + jsObj._debugPWinStyle( tbNode, tCompStyle, "left" ) + jsObj._debugPWinStyle( tbNode, tCompStyle, "top" ) + "}" );
+    djObj.hostenv.println( ind + "r.mb " + jsObj.debugDims( djObj.getMarginBox( rbNode, rCompStyle, jsObj ) ) + indH + " r.offset {w=" + rbNode.offsetWidth + " h=" + rbNode.offsetHeight + "}" );
+    djObj.hostenv.println( ind + "r.cb " + jsObj.debugDims( djObj.getContentBox( rbNode, rCompStyle, jsObj ) ) + indH + " r.client {w=" + rbNode.clientWidth + " h=" + rbNode.clientHeight + "}" );
+    djObj.hostenv.println( ind + "r.style {" + jsObj._debugPWinStyle( rbNode, rCompStyle, "width", true ) + jsObj._debugPWinStyle( rbNode, rCompStyle, "height" ) + indH + jsObj._debugPWinStyle( rbNode, rCompStyle, "left" ) + jsObj._debugPWinStyle( rbNode, rCompStyle, "top" ) + "}" );
+    if ( bgIfrmAbsPos != null )
+    {
+        var iNode = pWin.bgIframe.iframe;
+        var iCompStyle = djObj.gcs( iNode );
+        djObj.hostenv.println( ind + "ibg.mb " + jsObj.debugDims( djObj.getMarginBox( iNode, iCompStyle, jsObj ) ) );
+        djObj.hostenv.println( ind + "ibg.cb " + jsObj.debugDims( djObj.getContentBox( iNode, iCompStyle, jsObj ) ) );
+        djObj.hostenv.println( ind + "ibg.style {" + jsObj._debugPWinStyle( iNode, iCompStyle, "width", true ) + jsObj._debugPWinStyle( iNode, iCompStyle, "height" ) + indH + jsObj._debugPWinStyle( iNode, iCompStyle, "left" ) + jsObj._debugPWinStyle( iNode, iCompStyle, "top" ) + indH + " pos=" + iCompStyle.position.substring(0,1) + " ofx=" + iCompStyle.overflowX.substring(0,1) + " ofy=" + iCompStyle.overflowY.substring(0,1) + " d=" + iCompStyle.display.substring(0,1) + "}" );
+    }
+    if ( coverIfrm )
+    {
+        djObj.hostenv.println( ind + "icv.mb " + jsObj.debugDims( djObj.getMarginBox( coverIfrm, coverCompStyle, jsObj ) ) );
+        djObj.hostenv.println( ind + "icv.cb " + jsObj.debugDims( djObj.getContentBox( coverIfrm, coverCompStyle, jsObj ) ) );
+        djObj.hostenv.println( ind + "icv.style {" + jsObj._debugPWinStyle( coverIfrm, coverCompStyle, "width", true ) + jsObj._debugPWinStyle( coverIfrm, coverCompStyle, "height" ) + indH + jsObj._debugPWinStyle( coverIfrm, coverCompStyle, "left" ) + jsObj._debugPWinStyle( coverIfrm, coverCompStyle, "top" ) + indH + " pos=" + coverCompStyle.position.substring(0,1) + " ofx=" + coverCompStyle.overflowX.substring(0,1) + " ofy=" + coverCompStyle.overflowY.substring(0,1) + " d=" + coverCompStyle.display.substring(0,1) + "}" );
+    }
+    //djObj.hostenv.println( ind + "dNodeCss=" + pWin.dNodeCss.join("") );
+    //djObj.hostenv.println( ind + "cNodeCss=" + pWin.cNodeCss.join("") );
+    // + " ieHasLayout=" + layoutInfo.dNode.ieHasLayout
+    var leN = layoutInfo.dNode;
+    djObj.hostenv.println( ind + "dLE {" + "-w=" + leN.lessW + " -h=" + leN.lessH + " mw=" + leN.mE.w + " mh=" + leN.mE.h + " bw=" + leN.bE.w + " bh=" + leN.bE.h + " pw=" + leN.pE.w + " ph=" + leN.pE.h + "}" );
+    leN = layoutInfo.cNode;
+    djObj.hostenv.println( ind + "cLE {" + "-w=" + leN.lessW + " -h=" + leN.lessH + " mw=" + leN.mE.w + " mh=" + leN.mE.h + " bw=" + leN.bE.w + " bh=" + leN.bE.h + " pw=" + leN.pE.w + " ph=" + leN.pE.h + "}" );
+    leN = layoutInfo.tbNode;
+    djObj.hostenv.println( ind + "tLE {" + "-w=" + leN.lessW + " -h=" + leN.lessH + " mw=" + leN.mE.w + " mh=" + leN.mE.h + " bw=" + leN.bE.w + " bh=" + leN.bE.h + " pw=" + leN.pE.w + " ph=" + leN.pE.h + "}" );
+    leN = layoutInfo.rbNode;
+    djObj.hostenv.println( ind + "rLE {" + "-w=" + leN.lessW + " -h=" + leN.lessH + " mw=" + leN.mE.w + " mh=" + leN.mE.h + " bw=" + leN.bE.w + " bh=" + leN.bE.h + " pw=" + leN.pE.w + " ph=" + leN.pE.h + "}" );
+
+    djObj.hostenv.println( ind + "cNode_mBh_LessBars=" + layoutInfo.cNode_mBh_LessBars );
+    djObj.hostenv.println( ind + "dimsTiled " + jsObj.debugDims( pWin.dimsTiled ) );
+    djObj.hostenv.println( ind + "dimsUntiled " + jsObj.debugDims( pWin.dimsUntiled ) );
+    if ( pWin.dimsTiledTemp != null )
+        djObj.hostenv.println( ind + "dimsTiledTemp " + jsObj.debugDims( pWin.dimsTiledTemp ) );
+    if ( pWin.dimsUntiledTemp != null )
+        djObj.hostenv.println( ind + "dimsUntiledTemp=" + jsObj.debugDims( pWin.dimsUntiledTemp ) );
+    djObj.hostenv.println( ind + "--------------------" );
+    //" document-width=" + dojo.html.getMarginBox( document[ "body" ] ).width + " document-height=" + dojo.html.getMarginBox( document[ "body" ] ).height
+},
+jetspeed.debugDims = function( box, suppressEnd )
+{
+    return ( "{w=" + ( box.w == undefined ? ( box.width == undefined ? "null" : box.width ) : box.w ) + " h=" + ( box.h == undefined ? ( box.height == undefined ? "null" : box.height ) : box.h ) + ( box.l != undefined ? (" l=" + box.l) : ( box.left == undefined ? "" : (" l=" + box.left) ) ) + ( box.t != undefined ? (" t=" + box.t) : ( box.top == undefined ? "" : (" t=" + box.top) ) ) + ( box.right != undefined ? (" r=" + box.right) : "" ) + ( box.bottom != undefined ? (" b=" + box.bottom) : "" ) + ( ! suppressEnd ? "}" : "" ) ) ;
+};
+jetspeed._debugPWinStyle = function( node, compStyle, propName, omitLeadingSpace )
+{
+    var sStyle = node.style[ propName ];
+    var cStyle = compStyle[ propName ];
+    if ( sStyle == "auto" ) sStyle = "a";
+    if ( cStyle == "auto" ) cStyle = "a";
+    var showVal = null;
+    if ( sStyle == cStyle )
+        showVal = ('"' + cStyle + '"');
+    else
+        showVal = ('"' + sStyle + '"/' + cStyle);
+    return ( (omitLeadingSpace ? "" : " ") + propName.substring( 0, 1 ) + '=' + showVal);
+};
+
 
 // profile functions
 
@@ -363,3 +513,8 @@ if ( jetspeed.debug.profile )
         }
     }        
 }
+
+window.getPWin = function( portletWindowId )
+{
+    return jetspeed.page.getPWin( portletWindowId );
+};
