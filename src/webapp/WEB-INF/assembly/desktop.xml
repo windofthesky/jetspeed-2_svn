@@ -31,19 +31,22 @@ limitations under the License.
         <constructor-arg index="1">
             <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
         </constructor-arg>
-        <constructor-arg index="2">   <!-- desktop servlet path -->
+        <constructor-arg index="2">
+            <ref bean="desktopContentCache" />
+        </constructor-arg>
+        <constructor-arg index="3">   <!-- desktop servlet path -->
             <value>/desktop</value>
         </constructor-arg>        
-        <constructor-arg index="3">   <!-- default desktop layout extension -->
+        <constructor-arg index="4">   <!-- default desktop layout extension -->
             <value>.jsp</value>
         </constructor-arg>
         <!-- Optional decoration defaults for desktop - bean id 'DesktopConfiguration' (in headtag.xml)
              supports the settings 'desktop.decoration.layout' and 'desktop.decoration.portlet', which if
              specified, override the values set here -->
-        <constructor-arg index="4">   <!-- default desktop layout decoration  -->
+        <constructor-arg index="5">   <!-- default desktop layout decoration  -->
             <value>tigris</value>
         </constructor-arg>
-        <constructor-arg index="5">   <!-- default desktop portlet decoration -->
+        <constructor-arg index="6">   <!-- default desktop portlet decoration -->
             <value>tigris</value>
         </constructor-arg>
  	    
