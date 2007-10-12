@@ -251,19 +251,6 @@
                 <value>dojo.widget.TabContainer</value>
                 <value>dojo.widget.AccordionContainer</value>
                 <value>dojo.widget.Menu2</value>
-                <value>dojo.html.iframe</value>
-
-                <!-- needed for admin portlets -->
-                <!--
-                <value>dojo.widget.Checkbox</value>
-                <value>dojo.widget.Dialog</value>
-                <value>dojo.widget.Button</value>
-                <value>dojo.widget.Select</value>
-                <value>dojo.widget.LayoutContainer</value>
-                <value>dojo.widget.ContentPane</value>
-                <value>dojo.widget.LinkPane</value>
-                <value>dojo.widget.SplitContainer</value>
-                <value>dojo.widget.Tree</value> -->
             </list>
         </constructor-arg>
     </bean>
@@ -416,9 +403,10 @@
                     <!-- note: current value is empty due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
                     <value></value>
                 </entry>
-                <entry key="header.dojo.style.bodyexpand">   <!-- dojo.style.bodyexpand.noscroll -->
+                <entry key="header.dojo.style.bodyexpand">   <!-- dojo.style.bodyexpand -->
                     <!-- make the body expand to fill the visible window -->
                     <value>html, body { width: 100%; height: 100%; padding: 0 0 0 0; margin: 0 0 0 0; }</value>
+                    <!-- <value>html, body { padding: 0 0 0 0; margin: 0 0 0 0; }</value> -->
                 </entry>
                 <entry key="header.dojo.style.bodyexpand.noscroll">   <!-- dojo.style.bodyexpand.noscroll -->
                     <!-- make the body expand to fill the visible window - erase window level scrollbars -->
