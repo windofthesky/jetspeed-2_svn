@@ -27,6 +27,8 @@ import javax.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.decoration.Theme;
@@ -54,9 +56,30 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     private final static String DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsPath";
     private final static String DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsAllowed";
     private final static String DOJO_CONFIG_ACTION_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopActionLabels";
-
-    private final static String[] DESKTOP_ACTIONS = new String[] { "menu", "tile", "untile", "heightexpand", "heightnormal", "restore", "removeportlet", "loadportletrender", "loadportletaction", "loadportletupdate", "addportlet", "editpage", "loadpage", "loadpageeditor" };
+    private final static String DOJO_CONFIG_PAGEEDITOR_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pageEditorLabels";
+    private final static String DOJO_CONFIG_PAGEEDITOR_DIALOG_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pageEditorDialogLabels";
+    
+    private final static String[] DESKTOP_ACTION_RESOURCE_NAMES = new String[] 
+                                                                 { "menu", "tile", "untile", "heightexpand", "heightnormal",
+    															   "restore", "removeportlet", "minimized", "maximized", "normal",
+    															   "help", "edit", "view", "print", "addportlet", "editpage", 
+    															   "movetiled", "moveuntiled", "loadpage", "loadpageeditor",
+    															   "loadportletrender", "loadportletaction", "loadportletupdate"
+    															 };
+    private final static String[] DESKTOP_PAGEEDITOR_RESOURCE_NAMES = new String[]
+                                                                 { "title", "changelayout", "changelayouttheme", "changeportlettheme",
+    	                                                           "newpage", "deletepage", "addlayout", "addportlet", "columnsizes",
+    	                                                           "deletelayout", "movemode", "movemode_exit" 
+    	                                                         };
+    private final static String[] DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAMES = new String[]
+                                                                 { "columnsizes", "columnsizes_column1", "columnsizes_column2", "columnsizes_column3",
+    	                                                           "columnsizes_column4", "columnsizes_column5", "newpage", "newpage_name",
+    	                                                           "newpage_title", "newpage_titleshort", "deletepage", "deletelayout",
+    	                                                           "removeportlet", "ok", "cancel", "yes", "no"
+                                                                 };
     private final static String DESKTOP_ACTION_RESOURCE_NAME_PREFIX = "desktop.action.";
+    private final static String DESKTOP_PAGEEDITOR_RESOURCE_NAME_PREFIX = "desktop.pageeditor.";
+    private final static String DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAME_PREFIX = "desktop.pageeditor.dialog.";
     
     private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
 
@@ -74,21 +97,24 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     /** tool for directing output to html &lt;head&gt; */
     private HeaderResourceFactory headerResourceFactory;
     
+    private JetspeedCache desktopContentCache;
+    
     /** base portal URL to override default URL server info from servlet */
     private BasePortalURL baseUrlAccess = null;
     
-    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, String desktopServletPath, String defaultLayoutTemplateExtension )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, JetspeedCache desktopContentCache, String desktopServletPath, String defaultLayoutTemplateExtension )
     {
-        this( decorationFactory, headerResourceFactory, desktopServletPath, defaultLayoutTemplateExtension, null, null, null );
+        this( decorationFactory, headerResourceFactory, desktopContentCache, desktopServletPath, defaultLayoutTemplateExtension, null, null, null );
     }
-    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, JetspeedCache desktopContentCache, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration )
     {
-        this( decorationFactory, headerResourceFactory, desktopServletPath, defaultLayoutTemplateExtension, defaultDesktopLayoutDecoration, defaultDesktopPortletDecoration, null );
+        this( decorationFactory, headerResourceFactory, desktopContentCache, desktopServletPath, defaultLayoutTemplateExtension, defaultDesktopLayoutDecoration, defaultDesktopPortletDecoration, null );
     }
-    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration, BasePortalURL baseUrlAccess )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, JetspeedCache desktopContentCache, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration, BasePortalURL baseUrlAccess )
     {
         this.decorationFactory = decorationFactory;
         this.headerResourceFactory = headerResourceFactory;
+        this.desktopContentCache = desktopContentCache;
         
         if ( desktopServletPath != null && desktopServletPath.length() > 0 )
         {
@@ -124,7 +150,12 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         
         this.baseUrlAccess = baseUrlAccess;
     }
-    
+    /*
+        CacheElement cachedElement = desktopContentCache.createElement(content.getCacheKey(), content);
+        cachedElement.setTimeToIdleSeconds(desktopContentCache.getTimeToIdleSeconds());
+        cachedElement.setTimeToLiveSeconds(desktopContentCache.getTimeToLiveSeconds());
+        desktopContentCache.put(cachedElement);
+     */
     public void render( RequestContext request )    
     {
         String layoutDecorationTemplatePath = null;
@@ -157,70 +188,114 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_REQUEST_CONTEXT_ATTRIBUTE, request );
             request.getRequest().setAttribute( JetspeedDesktopContext.DESKTOP_COMPONENT_MANAGER_ATTRIBUTE, Jetspeed.getComponentManager() );
             
-            String portletDecorationsBasePath = decorationFactory.getPortletDecorationsBasePath();
-            String portletDecorationsBaseRelative = portletDecorationsBasePath;
-            if ( portletDecorationsBaseRelative != null && portletDecorationsBaseRelative.length() > 1 && portletDecorationsBaseRelative.indexOf( '/' ) == 0 )
-            {
-                portletDecorationsBaseRelative = portletDecorationsBaseRelative.substring( 1 );
-            }
-            StringBuffer dojoConfigAddOn = new StringBuffer();
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutBasePath() ).append( "\";" ).append( EOL );
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutDecorationName() ).append( "\";" ).append( EOL );
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME ).append( " = \"" ).append( portletDecorationsBasePath ).append( "\";" ).append( EOL );
-            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( decorationFactory.getDesktopPortletDecorations( request ) );
-            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME ).append( " = " ).append( portletDecorationNamesContent ).append( ";" );
-            hr.addHeaderSectionFragment( DOJO_CONFIG_LAYOUT_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
+            String layoutDecorationName = desktopContext.getLayoutDecorationName();
+            boolean inclStyleLayout = hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT );
+            String dojoConfigContentCacheKey = DOJO_CONFIG_LAYOUT_VAR_NAME + "." + layoutDecorationName;
+            String styleLayoutContentCacheKey = ( inclStyleLayout ? (HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT + "." + layoutDecorationName) : (String)null );
+            String dojoConfigContent = getCachedContent( dojoConfigContentCacheKey );
+            String styleLayoutContent = ( inclStyleLayout ? getCachedContent( styleLayoutContentCacheKey ) : (String)null );
             
-            if ( hr.isHeaderSectionIncluded( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT ) )
+            
+            
+            
+            if ( dojoConfigContent == null || ( styleLayoutContent == null && inclStyleLayout ) )
             {
-                hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT, HeaderResource.HEADER_TYPE_LINK_TAG );
-                StringBuffer desktopThemeStyleLink = new StringBuffer();
-                int stylesheetCount = 0;
-                Iterator stylesheetIter = theme.getStyleSheets().iterator();
-                while ( stylesheetIter.hasNext() )
-                {
-                    String stylesheetHref = (String)stylesheetIter.next();
-                    if ( stylesheetHref != null && stylesheetHref.length() > 0 )
-                    {
-                        if ( ! stylesheetHref.startsWith( portletDecorationsBaseRelative ) )
-                        {   // exclude portlet decorations - in desktop these are loaded via javascript
-                            if ( stylesheetCount > 0 )
-                            {
-                                desktopThemeStyleLink.append( EOL );
-                            }
-                            desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" );
-                            desktopThemeStyleLink.append( desktopContext.getPortalResourceUrl( stylesheetHref ) ).append( "\"/>" );
-                            stylesheetCount++;
-                        }
-                    }
-                }
-                hr.addHeaderSectionFragment( "desktop.style.layout", HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT, desktopThemeStyleLink.toString() );
+	            String portletDecorationsBasePath = decorationFactory.getPortletDecorationsBasePath();
+	            String portletDecorationsBaseRelative = portletDecorationsBasePath;
+	            if ( portletDecorationsBaseRelative != null && portletDecorationsBaseRelative.length() > 1 && portletDecorationsBaseRelative.indexOf( '/' ) == 0 )
+	            {
+	                portletDecorationsBaseRelative = portletDecorationsBaseRelative.substring( 1 );
+	            }
+	            
+	            if ( dojoConfigContent == null )
+	            {
+		            StringBuffer dojoConfigAddOn = new StringBuffer();
+		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutBasePath() ).append( "\";" ).append( EOL );
+		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_VAR_NAME ).append( " = \"" ).append( layoutDecorationName ).append( "\";" ).append( EOL );
+		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME ).append( " = \"" ).append( portletDecorationsBasePath ).append( "\";" ).append( EOL );
+		            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( decorationFactory.getDesktopPortletDecorations( request ) );
+		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME ).append( " = " ).append( portletDecorationNamesContent ).append( ";" );
+		            dojoConfigContent = dojoConfigAddOn.toString();
+		            setCachedContent( dojoConfigContentCacheKey, dojoConfigContent );
+	            }
+	            
+	            if ( inclStyleLayout )
+	            {
+	                if ( styleLayoutContent == null )
+	                {
+		                StringBuffer desktopThemeStyleLink = new StringBuffer();
+		                int stylesheetCount = 0;
+		                Iterator stylesheetIter = theme.getStyleSheets().iterator();
+		                while ( stylesheetIter.hasNext() )
+		                {
+		                    String stylesheetHref = (String)stylesheetIter.next();
+		                    if ( stylesheetHref != null && stylesheetHref.length() > 0 )
+		                    {
+		                        if ( ! stylesheetHref.startsWith( portletDecorationsBaseRelative ) )
+		                        {   // exclude portlet decorations - in desktop these are loaded via javascript
+		                            if ( stylesheetCount > 0 )
+		                            {
+		                                desktopThemeStyleLink.append( EOL );
+		                            }
+		                            desktopThemeStyleLink.append( "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen, projection\" href=\"" );
+		                            desktopThemeStyleLink.append( desktopContext.getPortalResourceUrl( stylesheetHref ) ).append( "\"/>" );
+		                            stylesheetCount++;
+		                        }
+		                    }
+		                }
+		                styleLayoutContent = desktopThemeStyleLink.toString();
+			            setCachedContent( styleLayoutContentCacheKey, styleLayoutContent );
+	                }
+	            }
+            }
+            if ( dojoConfigContent != null )
+            {
+            	hr.addHeaderSectionFragment( DOJO_CONFIG_LAYOUT_VAR_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigContent );
+            }
+            if ( inclStyleLayout && styleLayoutContent != null && styleLayoutContent.length() > 0 )
+            {
+            	hr.setHeaderSectionType( HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT, HeaderResource.HEADER_TYPE_LINK_TAG );
+            	hr.addHeaderSectionFragment( "desktop.style.layout", HeaderResource.HEADER_SECTION_DESKTOP_STYLE_LAYOUT, styleLayoutContent );            	
             }
             
-            // desktop action labels
-            StringBuffer desktopActionLabels = new StringBuffer();
-            ResourceBundle messages = desktopContext.getLayoutResourceBundle( request.getLocale() );
-            for ( int i = 0 ; i < DESKTOP_ACTIONS.length ; i++ )
+            String layoutDecorationLocaleSuffix = "." + layoutDecorationName + "." + request.getLocale().toString();
+            String desktopActionLabelsCacheKey = DOJO_CONFIG_ACTION_LABELS_NAME + layoutDecorationLocaleSuffix;
+            String pageEditorLabelsCacheKey = DOJO_CONFIG_PAGEEDITOR_LABELS_NAME + layoutDecorationLocaleSuffix;
+            String pageEditorDialogLabelsCacheKey = DOJO_CONFIG_PAGEEDITOR_DIALOG_LABELS_NAME + layoutDecorationLocaleSuffix;
+            
+            String desktopActionLabelsContent = getCachedContent( desktopActionLabelsCacheKey );
+            String pageEditorLabelsContent = getCachedContent( pageEditorLabelsCacheKey );
+            String pageEditorDialogLabelsContent = getCachedContent( pageEditorDialogLabelsCacheKey );
+            if ( desktopActionLabelsContent == null || pageEditorLabelsContent == null || pageEditorDialogLabelsContent == null )
             {
-                String actionLabel = messages.getString( DESKTOP_ACTION_RESOURCE_NAME_PREFIX + DESKTOP_ACTIONS[ i ] );
-                if ( actionLabel != null )
-                {
-                    if ( desktopActionLabels.length() == 0 )
-                    {
-                        desktopActionLabels.append( "{ " );
-                    }
-                    else
-                    {
-                        desktopActionLabels.append( ", " );
-                    }
-                    desktopActionLabels.append( DESKTOP_ACTIONS[ i ] ).append( ": \"" ).append( actionLabel ).append( "\"" );
-                }
+            	ResourceBundle messages = desktopContext.getLayoutResourceBundle( request.getLocale() );            	
+            	if ( desktopActionLabelsContent == null )
+            	{
+            		desktopActionLabelsContent = getResourcesAsJavascriptObject( DESKTOP_ACTION_RESOURCE_NAME_PREFIX, DESKTOP_ACTION_RESOURCE_NAMES, messages, DOJO_CONFIG_ACTION_LABELS_NAME, "    ", true );
+            		setCachedContent( desktopActionLabelsCacheKey, desktopActionLabelsContent );
+            	}
+            	if ( pageEditorLabelsContent == null )
+            	{
+            		pageEditorLabelsContent = getResourcesAsJavascriptObject( DESKTOP_PAGEEDITOR_RESOURCE_NAME_PREFIX, DESKTOP_PAGEEDITOR_RESOURCE_NAMES, messages, DOJO_CONFIG_PAGEEDITOR_LABELS_NAME, "    ", true );
+            		setCachedContent( pageEditorLabelsCacheKey, pageEditorLabelsContent );
+            	}
+            	if ( pageEditorDialogLabelsContent == null )
+            	{
+            		pageEditorDialogLabelsContent = getResourcesAsJavascriptObject( DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAME_PREFIX, DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAMES, messages, DOJO_CONFIG_PAGEEDITOR_DIALOG_LABELS_NAME, "    ", true );
+            		setCachedContent( pageEditorDialogLabelsCacheKey, pageEditorDialogLabelsContent );
+            	}
             }
-            if ( desktopActionLabels.length() > 0 )
+            if ( desktopActionLabelsContent != null && desktopActionLabelsContent.length() > 0 )
             {
-                dojoConfigAddOn = new StringBuffer();
-                dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_ACTION_LABELS_NAME ).append( " = " ).append( desktopActionLabels.toString() ).append( " };" ).append( EOL );
-                hr.addHeaderSectionFragment( DOJO_CONFIG_ACTION_LABELS_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, dojoConfigAddOn.toString() );
+                hr.addHeaderSectionFragment( DOJO_CONFIG_ACTION_LABELS_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, desktopActionLabelsContent );
+            }
+            if ( pageEditorLabelsContent != null && pageEditorLabelsContent.length() > 0 )
+            {
+                hr.addHeaderSectionFragment( DOJO_CONFIG_PAGEEDITOR_LABELS_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, pageEditorLabelsContent );
+            }
+            if ( pageEditorDialogLabelsContent != null && pageEditorDialogLabelsContent.length() > 0 )
+            {
+                hr.addHeaderSectionFragment( DOJO_CONFIG_PAGEEDITOR_DIALOG_LABELS_NAME, HeaderResource.HEADER_SECTION_DOJO_CONFIG, pageEditorDialogLabelsContent );
             }
             
             dispatcher.include( request.getRequest(), request.getResponse() );
@@ -246,6 +321,59 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                 log.error( "Failed to write desktop layout decoration exception information to servlet output writer", ioe );
             }
         }
+    }
+    
+    private String getCachedContent( String cacheKey )
+    {
+    	CacheElement cachedElement = desktopContentCache.get(cacheKey);
+        if (cachedElement != null)
+         return (String)cachedElement.getContent();  
+        return null;
+    }
+    private void setCachedContent( String cacheKey, String content )
+    {
+    	System.out.println( "S e t   cached desktop content: " + cacheKey );
+        
+    	CacheElement cachedElement = desktopContentCache.createElement( cacheKey, content );
+    	cachedElement.setTimeToIdleSeconds(desktopContentCache.getTimeToIdleSeconds());
+    	cachedElement.setTimeToLiveSeconds(desktopContentCache.getTimeToLiveSeconds());
+    	desktopContentCache.put( cachedElement );
+    }
+
+    private String getResourcesAsJavascriptObject( String resourceNamePrefix, String[] resourceNames, ResourceBundle messages, String varName, String indent, boolean ifEmptyReturnEmptyString )
+    {
+    	StringBuffer jsObjBuffer = new StringBuffer();
+        boolean atLeastOneFound = false;
+        if ( indent != null )
+        	jsObjBuffer.append( indent );
+        if ( varName != null )
+        	jsObjBuffer.append( varName ).append( " = " );
+        jsObjBuffer.append( "{" );
+        for ( int i = 0 ; i < resourceNames.length ; i++ )
+        {
+            String resourceValue = null;
+        	try
+        	{
+        		resourceValue = messages.getString( resourceNamePrefix + resourceNames[ i ] );
+        	}
+        	catch ( java.util.MissingResourceException ex ) { }
+            if ( resourceValue != null )
+            {
+                if ( atLeastOneFound )
+                {
+                    jsObjBuffer.append( ", " );
+                }
+                else
+                {
+                	atLeastOneFound = true;
+                }
+                jsObjBuffer.append( resourceNames[ i ] ).append( ": \"" ).append( resourceValue ).append( "\"" );
+            }
+        }
+        jsObjBuffer.append( " };" );
+        if ( ! atLeastOneFound && ifEmptyReturnEmptyString )
+        	return "";
+        return jsObjBuffer.toString();
     }
     
     public boolean isDesktopEnabled( RequestContext requestContext )
