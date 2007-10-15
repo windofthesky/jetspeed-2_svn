@@ -74,7 +74,7 @@
 		<subsection name="Jetspeed-2 Development Guide">
 		<ul>
 			<li><a href="guide-j2-development.html">Guide to Jetspeed-2 development</a></li>
-			<li><a href="../how-to-help.html">Guide to helping with Jetpseed-2</a></li>
+			<li><a href="../how-to-help.html">Guide to helping with Jetspeed-2</a></li>
 			<li><a href="guide-tomcat-sso-cross-context-j2-realm.html">Tomcat SSO and Cross Context Webapps Guide</a></li>
 		</ul>
 		</subsection>

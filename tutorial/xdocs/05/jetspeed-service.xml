@@ -179,6 +179,7 @@
 	</p>
 	 <source>	
 	 <![CDATA[
+	    super.init();	 
         admin = (PortalAdministration) getPortletContext().getAttribute(
 				CommonPortletServices.CPS_PORTAL_ADMINISTRATION);
 		if (null == admin) {

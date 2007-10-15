@@ -177,7 +177,7 @@
             <a href="../multiproject/jetspeed-security/arch.html"><code>RdbmsPolicy</code></a><br/></td>
             <td>Jetspeed-2 default implementation for <a href="http://java.sun.com/products/jaas/">JAAS services</a>.  Jetspeed-2 leverages JAAS as 
             a generic security standard framework to expose security functionality to the portal engine.  The JAAS services
-            leverage Jetspeed-2 coarsed grained services for which specific implementations are provided through Jetpseed-2 security SPI.</td>
+            leverage Jetspeed-2 coarsed grained services for which specific implementations are provided through Jetspeed-2 security SPI.</td>
           </tr>
           <tr>
             <td><a href="../multiproject/jetspeed-security/arch.html"><code>UserManager</code></a><br/>
