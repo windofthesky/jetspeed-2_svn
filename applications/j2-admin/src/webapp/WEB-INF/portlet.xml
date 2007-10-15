@@ -1492,7 +1492,7 @@ limitations under the License.
         <portlet-mode>view</portlet-mode>
         <portlet-mode>edit</portlet-mode>
     </supports>
-    <resource-bundle>org.apache.jetspeed.portlets.site.resources.Site</resource-bundle>
+    <resource-bundle>org.apache.jetspeed.portlets.site.resources.SiteResources</resource-bundle>
     <portlet-info>
         <title>Portal Site Manager</title>
         <short-title>Site</short-title>
