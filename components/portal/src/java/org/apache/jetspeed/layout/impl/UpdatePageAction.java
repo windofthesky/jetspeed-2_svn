@@ -220,7 +220,18 @@ public class UpdatePageAction
                     return false;                    
                 }                
                 count = removeFragment(requestContext, resultMap, page, fragmentId);                
-            }            
+            }
+            else if (method.equals("update-portlet-decorator"))
+            {
+                String fragmentId = getActionParameter(requestContext, PORTLETID);
+            	String portletDecorator = getActionParameter(requestContext, "portlet-decorator");
+                if (isBlank(fragmentId) || isBlank(portletDecorator))
+                {
+                    resultMap.put(REASON, "Missing parameter to update portlet decorator");                
+                    return false;                    
+                }                
+                count = updatePortletDecorator(requestContext, resultMap, page, fragmentId, portletDecorator);
+            }
             else
             {
                 success = false;
@@ -241,6 +252,19 @@ public class UpdatePageAction
             success = false;
         }
         return success;
+    }
+    
+    protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String portletDecorator)
+    throws PortletEntityNotStoredException, FailedToRetrievePortletWindow
+    {
+    	int count = 0;
+    	Fragment fragment = page.getFragmentById(fragmentId);
+        if (fragment != null)
+        {                
+        	fragment.setDecorator( portletDecorator );
+        	count++;
+        }
+    	return count;
     }
     
     protected int updateFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String layout)
