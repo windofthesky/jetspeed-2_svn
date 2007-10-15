@@ -57,6 +57,7 @@ jetspeed.id =
     
     P_CLASS: "portlet",
     PWIN_CLASS: "portletWindow",
+    PWIN_CLIENT_CLASS: "portletWindowClient",
     PWIN_GHOST_CLASS: "ghostPane",
     PW_ID_PREFIX: "pw_",
     COL_CLASS: "desktopColumn",
@@ -96,6 +97,7 @@ jetspeed.id =
     ACT_HELP: "help",
     ACT_ADDPORTLET: "addportlet",
     ACT_REMOVEPORTLET: "removeportlet",
+    ACT_CHANGEPORTLETTHEME: "changeportlettheme",
 
     ACT_DESKTOP_TILE: "tile",
     ACT_DESKTOP_UNTILE: "untile",
@@ -161,7 +163,6 @@ jetspeed.prefs =
 
     
     windowActionButtonMax: 5,
-    windowActionButtonHide: false,
     windowActionButtonTooltip: true,
     //windowActionButtonOrder, windowActionNotPortlet, windowActionMenuOrder - see jetspeed.initializeDesktop
     
@@ -178,13 +179,6 @@ jetspeed.prefs =
     getPortletDecorationBaseUrl: function( portletDecorationName )
     {
         return jetspeed.prefs.getPortletDecorationsRootUrl() + "/" + portletDecorationName;
-    },
-
-    getPortletDecorationConfig: function( portletDecorationName )
-    {
-        if ( jetspeed.prefs.portletDecorationsConfig == null || portletDecorationName == null )
-            return null;
-        return jetspeed.prefs.portletDecorationsConfig[ portletDecorationName ];
     },
 
     getActionLabel: function( actionName, nullIfNotSpecified, jsPrefs, djObj )
@@ -297,7 +291,7 @@ jetspeed.initializeDesktop = function()
     jsPrefs.portletDecorationsConfig = {};
     for ( var i = 0 ; i < jsPrefs.portletDecorationsAllowed.length ; i++ )
     {
-        jsObj.loadPortletDecorationConfig( jsPrefs.portletDecorationsAllowed[ i ] );
+        jsObj.loadPortletDecorationConfig( jsPrefs.portletDecorationsAllowed[ i ], jsPrefs, jsId );
     }
 
     if ( jsObj.UAie6 )
@@ -323,9 +317,9 @@ jetspeed.initializeDesktop = function()
     }
     jsObj.url.loadingIndicatorShow();
 
+    var windowActionLabels = {};
     if ( jsPrefs.windowActionButtonOrder )
     {   
-        var windowActionLabels = {};
         var actionName, actionLabel;
         for ( var aI = 0 ; aI < jsPrefs.windowActionButtonOrder.length ; aI++ )
         {
@@ -346,8 +340,8 @@ jetspeed.initializeDesktop = function()
         actionLabel = jsPrefs.getActionLabel( actionName, true, jsPrefs, djObj );
         if ( actionLabel != null )
             windowActionLabels[ actionName ] = actionLabel;
-        jsObj.widget.PortletWindow.prototype.actionLabels = windowActionLabels;
     }
+    jsObj.widget.PortletWindow.prototype.actionLabels = windowActionLabels;
 
     jsObj.page = new jsObj.om.Page();
 
@@ -752,9 +746,26 @@ jetspeed.doNothingNav = function()
     // JSF h:commandLink uses the above anchor onclick practice
     false;
 };
-jetspeed.loadPortletDecorationStyles = function( portletDecorationName )
+
+jetspeed.loadPortletDecorationStyles = function( portletDecorationName, jsPrefs, suppressFailover )
 {
-    var portletDecorationConfig = jetspeed.prefs.getPortletDecorationConfig( portletDecorationName );
+    var portletDecorationConfig = null;
+    var portletDecorations = jsPrefs.portletDecorationsConfig;
+    if ( portletDecorationName && portletDecorations )
+        portletDecorationConfig = portletDecorations[ portletDecorationName ];
+    
+    if ( portletDecorationConfig == null && ! suppressFailover )
+    {
+        var portletDecorationsAllowed = jsPrefs.portletDecorationsAllowed;
+        for ( var i = 0 ; i < portletDecorationsAllowed.length ; i++ )
+        {
+            portletDecorationName = portletDecorationsAllowed[ i ];
+            portletDecorationConfig = portletDecorations[ portletDecorationName ];
+            if ( portletDecorationConfig != null )
+                break;
+        }
+    }
+
     if ( portletDecorationConfig != null && ! portletDecorationConfig._initialized )
     {
         var pdBaseUrl = jetspeed.prefs.getPortletDecorationBaseUrl( portletDecorationName );
@@ -767,15 +778,14 @@ jetspeed.loadPortletDecorationStyles = function( portletDecorationName )
     }
     return portletDecorationConfig;
 };
-jetspeed.loadPortletDecorationConfig = function( portletDecorationName )
+jetspeed.loadPortletDecorationConfig = function( portletDecorationName, jsPrefs, jsId )
 {   // setup default portlet decoration config
-    var jsPrefs = jetspeed.prefs;
     var pdConfig = {};
     jsPrefs.portletDecorationsConfig[ portletDecorationName ] = pdConfig;
+    pdConfig.name = portletDecorationName;
     pdConfig.windowActionButtonOrder = jsPrefs.windowActionButtonOrder;
     pdConfig.windowActionNotPortlet = jsPrefs.windowActionNotPortlet;
     pdConfig.windowActionButtonMax = jsPrefs.windowActionButtonMax;
-    pdConfig.windowActionButtonHide = jsPrefs.windowActionButtonHide;
     pdConfig.windowActionButtonTooltip = jsPrefs.windowActionButtonTooltip;
     pdConfig.windowActionMenuOrder = jsPrefs.windowActionMenuOrder;
     pdConfig.windowActionNoImage = jsPrefs.windowActionNoImage;
@@ -784,40 +794,46 @@ jetspeed.loadPortletDecorationConfig = function( portletDecorationName )
     pdConfig.windowTitlebar = jsPrefs.windowTitlebar;
     pdConfig.windowResizebar = jsPrefs.windowResizebar;
 
-    // load portlet decoration config
-    var portletDecorationConfigUri = jsPrefs.getPortletDecorationBaseUrl( portletDecorationName ) + "/" + portletDecorationName + ".js";
-    dojo.hostenv.loadUri( portletDecorationConfigUri, function(hash) {
-				for ( var j in hash )
+    pdConfig.dNodeClass = jsId.P_CLASS + " " + portletDecorationName + " " + jsId.PWIN_CLASS + " " + jsId.PWIN_CLASS + "-" + portletDecorationName;
+    pdConfig.cNodeClass = jsId.P_CLASS + " " + portletDecorationName + " " + jsId.PWIN_CLIENT_CLASS;
+
+    if ( jsPrefs.portletDecorationsProperties )
+    {
+        var pdProps = jsPrefs.portletDecorationsProperties[ portletDecorationName ];
+        if ( pdProps )
+        {
+            for ( var pDecNm in pdProps )
+            {
+                pdConfig[ pDecNm ] = pdProps[ pDecNm ];
+            }
+            if ( pdProps.windowActionNoImage != null )
+            {
+                var noImageMap = {};
+                for ( var i = 0 ; i < pdProps.windowActionNoImage.length; i++ )
                 {
-                    pdConfig[ j ] = hash[j];
+                    noImageMap[ pdProps.windowActionNoImage[ i ] ] = true;
                 }
-                if ( pdConfig.windowActionNoImage != null )
+                pdConfig.windowActionNoImage = noImageMap;
+            }
+            if ( pdProps.windowIconPath != null )
+            {
+                pdConfig.windowIconPath = dojo.string.trim( pdProps.windowIconPath );
+                if ( pdConfig.windowIconPath == null || pdConfig.windowIconPath.length == 0 )
+                    pdConfig.windowIconPath = null;
+                else
                 {
-                    var noImageMap = {};
-                    for ( var i = 0 ; i < pdConfig.windowActionNoImage.length; i++ )
-                    {
-                        noImageMap[ pdConfig.windowActionNoImage[ i ] ] = true;
-                    }
-                    pdConfig.windowActionNoImage = noImageMap;
+                    var winIconsPath = pdConfig.windowIconPath;
+                    var firstCh = winIconsPath.charAt(0);
+                    if ( firstCh != "/" )
+                        winIconsPath = "/" + winIconsPath;
+                    var lastCh = winIconsPath.charAt( winIconsPath.length -1 );
+                    if ( lastCh != "/" )
+                        winIconsPath = winIconsPath + "/";
+                    pdConfig.windowIconPath = winIconsPath;
                 }
-                if ( pdConfig.windowIconPath != null )
-                {
-                    pdConfig.windowIconPath = dojo.string.trim( pdConfig.windowIconPath );
-                    if ( pdConfig.windowIconPath == null || pdConfig.windowIconPath.length == 0 )
-                        pdConfig.windowIconPath = null;
-                    else
-                    {
-                        var winIconsPath = pdConfig.windowIconPath;
-                        var firstCh = winIconsPath.charAt(0);
-                        if ( firstCh != "/" )
-                            winIconsPath = "/" + winIconsPath;
-                        var lastCh = winIconsPath.charAt( winIconsPath.length -1 );
-                        if ( lastCh != "/" )
-                            winIconsPath = winIconsPath + "/";
-                        pdConfig.windowIconPath = winIconsPath;
-                    }
-                }
-			});
+            }
+        }
+    }
 };
 
 jetspeed.notifyRetrieveAllMenusFinished = function()
@@ -939,16 +955,18 @@ jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* Str
 
 jetspeed.editPageInitiate = function( jsObj )
 {
-    if ( ! jsObj.page.editMode )
+    var jsPage = jsObj.page;
+    if ( ! jsPage.editMode )
     {
+        var jsCss = jsObj.css;
         var fromDesktop = true;
         var fromPortal = jsObj.url.getQueryParameter( window.location.href, jsObj.id.PORTAL_ORIGINATE_PARAMETER );
         if ( fromPortal != null && fromPortal == "true" )
             fromDesktop = false;
-        jsObj.page.editMode = true;
+        jsPage.editMode = true;
         var pageEditorWidget = dojo.widget.byId( jsObj.id.PG_ED_WID );
         if ( jsObj.UAie6 )
-            jsObj.page.displayAllPWins( true );
+            jsPage.displayAllPWins( true );
         if ( pageEditorWidget == null )
         {
             try
@@ -962,26 +980,38 @@ jetspeed.editPageInitiate = function( jsObj )
             {
                 jsObj.url.loadingIndicatorHide();
                 if ( jsObj.UAie6 )
-                    jsObj.page.displayAllPWins();
+                    jsPage.displayAllPWins();
             }
         }
         else
         {
             pageEditorWidget.editPageShow();
         }
-        jsObj.page.syncPageControls( jsObj );
+        if ( fromDesktop )
+        {
+            var pWins = jsPage.portlet_windows;
+            for ( var windowId in pWins )
+            {
+                var pWin = pWins[ windowId ];
+                if ( pWin )
+                    pWin.editPageInitiate( jsCss );
+            }
+        }
+        jsPage.syncPageControls( jsObj );
     }
 };
 jetspeed.editPageTerminate = function( jsObj )
 {
-    if ( jsObj.page.editMode )
+    var jsPage = jsObj.page;
+    if ( jsPage.editMode )
     {
+        var jsCss = jsObj.css;
         var pageEditorWidget = dojo.widget.byId( jsObj.id.PG_ED_WID );
         pageEditorWidget.editMoveModeExit();  // in case we're in move-mode
-        jsObj.page.editMode = false;
+        jsPage.editMode = false;
         if ( ! pageEditorWidget.editorInitiatedFromDesktop )
         {
-            var portalPageUrl = jsObj.page.getPageUrl( true );
+            var portalPageUrl = jsPage.getPageUrl( true );
             portalPageUrl = jsObj.url.removeQueryParameter( portalPageUrl, jsObj.id.PG_ED_PARAM );
             portalPageUrl = jsObj.url.removeQueryParameter( portalPageUrl, jsObj.id.PORTAL_ORIGINATE_PARAMETER );
             window.location.href = portalPageUrl;
@@ -991,7 +1021,7 @@ jetspeed.editPageTerminate = function( jsObj )
             var pageEditorInititate = jsObj.url.getQueryParameter( window.location.href, jsObj.id.PG_ED_PARAM );
             if ( pageEditorInititate != null && pageEditorInititate == "true" )
             {   // because of parameter, we must navigate
-                var dtPageUrl = window.location.href; // jsObj.page.getPageUrl( false );
+                var dtPageUrl = window.location.href; // jsPage.getPageUrl( false );
                 dtPageUrl = jsObj.url.removeQueryParameter( dtPageUrl, jsObj.id.PG_ED_PARAM );
                 window.location.href = dtPageUrl;
             }
@@ -1001,9 +1031,17 @@ jetspeed.editPageTerminate = function( jsObj )
                 {
                     pageEditorWidget.editPageHide();
                 }
-                jsObj.page.syncPageControls( jsObj );
+                jsPage.syncPageControls( jsObj );
+            }
+            var pWins = jsPage.portlet_windows;
+            for ( var windowId in pWins )
+            {
+                var pWin = pWins[ windowId ];
+                if ( pWin )
+                    pWin.editPageTerminate( jsCss );
             }
         }
+        
     }
 };
 
@@ -1191,8 +1229,9 @@ dojo.lang.extend( jetspeed.om.Page,
     loadFromPSML: function( psml, isPageUpdate )
     {
         var jsObj = jetspeed;
+        var jsPrefs = jsObj.prefs;
         var djObj = dojo;
-        var printModeOnly = jsObj.prefs.printModeOnly ;
+        var printModeOnly = jsPrefs.printModeOnly ;
         if ( djConfig.isDebug && jsObj.debug.profile && printModeOnly == null )
         {
             djObj.profile.start( "loadFromPSML" );
@@ -1204,7 +1243,10 @@ dojo.lang.extend( jetspeed.om.Page,
 
         // create layout model
         this.portletsByPageColumn = {};
-        this.columnsStructure = this._layoutCreateModel( parsedRootLayoutFragment, null, this.portletsByPageColumn, true, djObj, jsObj );
+        var portletDecorationsUsed = {};
+        if ( this.portletDecorator )
+            portletDecorationsUsed[ this.portletDecorator ] = true;
+        this.columnsStructure = this._layoutCreateModel( parsedRootLayoutFragment, null, this.portletsByPageColumn, true, portletDecorationsUsed, djObj, jsObj );
 
         this.rootFragmentId = parsedRootLayoutFragment.id ;
 
@@ -1216,8 +1258,14 @@ dojo.lang.extend( jetspeed.om.Page,
                 initiateEditMode = true;
         }
 
+        // load portlet decorator css
+        for ( var pDecNm in portletDecorationsUsed )
+        {
+            jsObj.loadPortletDecorationStyles( pDecNm, jsPrefs, true );
+        }
+
         // create columns
-        if ( jsObj.prefs.windowTiling )
+        if ( jsPrefs.windowTiling )
         {
             this._createColsStart( document.getElementById( jsObj.id.DESKTOP ), jsObj.id.COLUMNS );
         }
@@ -1308,9 +1356,10 @@ dojo.lang.extend( jetspeed.om.Page,
     _parsePSML: function( psml )
     {
         var jsObj = jetspeed;
+        var djObj = dojo;
         var pageElements = psml.getElementsByTagName( "page" );
         if ( ! pageElements || pageElements.length > 1 || pageElements[0] == null )
-            dojo.raise( "Expected one <page> in PSML" );
+            djObj.raise( "Expected one <page> in PSML" );
         var pageElement = pageElements[0];
         var children = pageElement.childNodes;
         var simpleValueLNames = new RegExp( "(name|path|profiledPath|title|short-title)" );
@@ -1319,7 +1368,7 @@ dojo.lang.extend( jetspeed.om.Page,
         for ( var i = 0 ; i < children.length ; i++ )
         {
             var child = children[i];
-            if ( child.nodeType != 1 )   // dojo.dom.ELEMENT_NODE
+            if ( child.nodeType != 1 )   // djObj.dom.ELEMENT_NODE
                 continue;
             var childLName = child.nodeName;
             if ( childLName == "fragment" )
@@ -1329,7 +1378,11 @@ dojo.lang.extend( jetspeed.om.Page,
             else if ( childLName == "defaults" )
             {
                 this.layoutDecorator = child.getAttribute( "layout-decorator" );
-                this.portletDecorator = child.getAttribute( "portlet-decorator" );
+                var defaultpd = child.getAttribute( "portlet-decorator" );
+                var pdsAllowed = jsObj.prefs.portletDecorationsAllowed;
+                if ( ! pdsAllowed || djObj.lang.indexOf( pdsAllowed, defaultpd ) == -1 )
+                    defaultpd = jsObj.prefs.windowDecoration;
+                this.portletDecorator = defaultpd;
             }
             else if ( childLName && childLName.match( simpleValueLNames  ) )
             {
@@ -1346,7 +1399,7 @@ dojo.lang.extend( jetspeed.om.Page,
 
         if ( rootFragment == null )
         {
-            dojo.raise( "No root fragment in PSML" );
+            djObj.raise( "No root fragment in PSML" );
             return null;
         }
         if ( this.requiredLayoutDecorator != null && this.pageUrlFallback != null )
@@ -1354,14 +1407,14 @@ dojo.lang.extend( jetspeed.om.Page,
             if ( this.layoutDecorator != this.requiredLayoutDecorator )
             {
                 if ( jsObj.debug.ajaxPageNav ) 
-                    dojo.debug( "ajaxPageNavigation _parsePSML different layout decorator (" + this.requiredLayoutDecorator + " != " + this.layoutDecorator + ") - fallback to normal page navigation - " + this.pageUrlFallback );
+                    djObj.debug( "ajaxPageNavigation _parsePSML different layout decorator (" + this.requiredLayoutDecorator + " != " + this.layoutDecorator + ") - fallback to normal page navigation - " + this.pageUrlFallback );
                 jsObj.pageNavigate( this.pageUrlFallback, null, true );
                 return null;
             }
             else if ( this.addToHistory )
             {
                 var currentPageUrl = this.getPageUrl();
-                dojo.undo.browser.addToHistory({
+                djObj.undo.browser.addToHistory({
 	    	        back: function() { if ( jsObj.debug.ajaxPageNav ) dojo.debug( "back-nav-button: " + currentPageUrl ); jsObj.updatePage( currentPageUrl, true ); },
 		            forward: function() { if ( jsObj.debug.ajaxPageNav ) dojo.debug( "forward-nav-button: " + currentPageUrl ); jsObj.updatePage( currentPageUrl, true ); },
 		            changeUrl: escape( this.getPath() )
@@ -1371,7 +1424,7 @@ dojo.lang.extend( jetspeed.om.Page,
         else if ( ! djConfig.preventBackButtonFix && jsObj.prefs.ajaxPageNavigation )
         {
             var currentPageUrl = this.getPageUrl();
-            dojo.undo.browser.setInitialState({
+            djObj.undo.browser.setInitialState({
                 back: function() { if ( jsObj.debug.ajaxPageNav ) dojo.debug( "back-nav-button initial: " + currentPageUrl ); jsObj.updatePage( currentPageUrl, true ); },
                 forward: function() { if ( jsObj.debug.ajaxPageNav ) dojo.debug( "forward-nav-button initial: " + currentPageUrl ); jsObj.updatePage( currentPageUrl, true ); },
                 changeUrl: escape( this.getPath() )
@@ -1549,8 +1602,9 @@ dojo.lang.extend( jetspeed.om.Page,
         return ( rowA - rowB );
     },
 
-    _layoutCreateModel: function( layoutFragment, parentColumn, portletsByPageColumn, omitLayoutHeader, djObj, jsObj )
+    _layoutCreateModel: function( layoutFragment, parentColumn, portletsByPageColumn, omitLayoutHeader, portletDecorationsUsed, djObj, jsObj )
     {
+        var jsId = jsObj.id;
         var allColumnsStartIndex = this.columns.length;
         var colModelResult = this._layoutCreateColsModel( layoutFragment, parentColumn, omitLayoutHeader );
         var columnsInLayout = colModelResult.columnsInLayout;
@@ -1573,17 +1627,17 @@ dojo.lang.extend( jetspeed.om.Page,
                 if ( childFragInColIndex == null || childFragInColIndex < 0 || childFragInColIndex >= columnsInLayoutLen )
                     childFragInColIndex = ( columnsInLayoutLen > 0 ? ( columnsInLayoutLen -1 ) : 0 );
                 columnsInLayoutPopulated[ childFragInColIndex ] = true;
-                this._layoutCreateModel( childFrag, columnsInLayout[childFragInColIndex], portletsByPageColumn, false, djObj, jsObj ) ;
+                this._layoutCreateModel( childFrag, columnsInLayout[childFragInColIndex], portletsByPageColumn, false, portletDecorationsUsed, djObj, jsObj ) ;
             }
             else
             {
-                this._layoutCreatePortlet( childFrag, layoutFragment, columnsInLayout, allColumnsStartIndex, portletsByPageColumn, portletsByLayoutColumn, djObj, jsObj ) ;
+                this._layoutCreatePortlet( childFrag, layoutFragment, columnsInLayout, allColumnsStartIndex, portletsByPageColumn, portletsByLayoutColumn, portletDecorationsUsed, djObj, jsObj ) ;
             }
         }
         return columnsInLayout;
     },  // _layoutCreateModel
 
-    _layoutCreatePortlet: function( pFrag, layoutFragment, columnsInLayout, pageColumnStartIndex, portletsByPageColumn, portletsByLayoutColumn, djObj, jsObj )
+    _layoutCreatePortlet: function( pFrag, layoutFragment, columnsInLayout, pageColumnStartIndex, portletsByPageColumn, portletsByLayoutColumn, portletDecorationsUsed, djObj, jsObj )
     {
         if ( pFrag && jsObj.debugPortletEntityIdFilter )
         {
@@ -1663,7 +1717,25 @@ dojo.lang.extend( jetspeed.om.Page,
             {
                 this.maximizedOnInit = pFrag.id;
             }
-            var portlet = new jsObj.om.Portlet( pFrag.name, pFrag.id, null, pFrag.properties, pFrag.actions, pFrag.currentActionState, pFrag.currentActionMode, pFrag.decorator, pFrag.layoutActionsDisabled );
+            var pDecNm = pFrag.decorator;
+            if ( pDecNm != null && pDecNm.length > 0 )
+            {
+                if ( djObj.lang.indexOf( jsObj.prefs.portletDecorationsAllowed, pDecNm ) == -1 )
+                    pDecNm = null;
+            }
+            if ( pDecNm == null || pDecNm.length == 0 )
+            {
+                if ( djConfig.isDebug && jsObj.debug.windowDecorationRandom )
+                    pDecNm = jsObj.prefs.portletDecorationsAllowed[ Math.floor( Math.random() * jsObj.prefs.portletDecorationsAllowed.length ) ];
+                else
+                    pDecNm = this.portletDecorator;
+            }
+            var pProps = pFrag.properties || {};
+            pProps[ jsObj.id.PP_WINDOW_DECORATION ] = pDecNm;
+            portletDecorationsUsed[ pDecNm ] = true;
+            var pActions = pFrag.actions || {};
+
+            var portlet = new jsObj.om.Portlet( pFrag.name, pFrag.id, null, pProps, pActions, pFrag.currentActionState, pFrag.currentActionMode, pFrag.layoutActionsDisabled );
             portlet.initialize();
 
             this.putPortlet( portlet ) ;
@@ -1959,24 +2031,6 @@ dojo.lang.extend( jetspeed.om.Page,
         return ( aZIndex - bZIndex );
     },
 
-    getPortletDecorationDefault: function()
-    {
-        var jsObj = jetspeed;
-        var pd = null;
-        if ( djConfig.isDebug && jsObj.debug.windowDecorationRandom )
-        {
-            pd = jsObj.prefs.portletDecorationsAllowed[ Math.floor( Math.random() * jsObj.prefs.portletDecorationsAllowed.length ) ];
-        }
-        else
-        {
-            var defaultpd = this.getPortletDecorator();
-            if ( dojo.lang.indexOf( jsObj.prefs.portletDecorationsAllowed, defaultpd ) != -1 )
-                pd = defaultpd;
-            else
-                pd = jsObj.prefs.windowDecoration;
-        }
-        return pd;
-    },
     getPortletArray: function()
     {
         if (! this.portlets) return null;
@@ -2115,6 +2169,8 @@ dojo.lang.extend( jetspeed.om.Page,
 
     displayAllPWins: function( hideAll, pWinArray )
     {   // currently used only for ie6 page editor transitions
+        return;   // cause of blank page during ie6 page editor transition - no longer seems to be needed
+        /*
         var pWin;
         if ( ! pWinArray )
         {
@@ -2135,6 +2191,7 @@ dojo.lang.extend( jetspeed.om.Page,
                     pWin.domNode.style.display = ( hideAll ? "none" : "" );
             }
         }
+        */
     },
 
     onBrowserWindowResize: function()
@@ -2679,7 +2736,7 @@ dojo.lang.extend( jetspeed.om.Page,
     {
         return this.layoutDecorator;
     },
-    getPortletDecorator : function()
+    getPortletDecorator: function()
     {
         return this.portletDecorator;
     }
@@ -2775,19 +2832,12 @@ dojo.lang.extend( jetspeed.om.Column,
 }); // jetspeed.om.Column
 
 // ... jetspeed.om.Portlet
-jetspeed.om.Portlet = function( portletName, portletEntityId, alternateContentRetriever, properties, actions, currentActionState, currentActionMode, decorator, layoutActionsDisabled )
+jetspeed.om.Portlet = function( portletName, portletEntityId, alternateContentRetriever, properties, actions, currentActionState, currentActionMode, layoutActionsDisabled )
 {   // new jetspeed.om.Portlet( pFrag.name, pFrag.id, alternateContentRetriever, pFrag.properties, pFrag.decorator, portletPageColumnIndex ) ;
     this.name = portletName;
     this.entityId = portletEntityId;
-    if ( properties )
-        this.properties = properties;
-    else
-        this.properties = {};
-    
-    if ( actions )
-        this.actions = actions;
-    else
-        this.actions = {};
+    this.properties = properties;
+    this.actions = actions;
 
     jetspeed.page.setPageModePortletActions( this );
 
@@ -2796,14 +2846,6 @@ jetspeed.om.Portlet = function( portletName, portletEntityId, alternateContentRe
 
     if ( alternateContentRetriever )
         this.contentRetriever = alternateContentRetriever;
-
-    if ( decorator != null && decorator.length > 0 )
-    {
-        if ( dojo.lang.indexOf( jetspeed.prefs.portletDecorationsAllowed, decorator ) != -1 )
-        {
-            this.properties[ jetspeed.id.PP_WINDOW_DECORATION ] = decorator;
-        }
-    }
 
     this.layoutActionsDisabled = false ;
     if ( typeof layoutActionsDisabled != "undefined" )
