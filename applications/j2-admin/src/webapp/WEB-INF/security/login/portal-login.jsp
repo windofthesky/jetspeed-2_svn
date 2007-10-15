@@ -78,7 +78,7 @@ limitations under the License.
  <c:choose>
   <c:when test="${pageContext.request.userPrincipal != null}">
     <fmt:message key="login.label.Welcome"><fmt:param><c:out value="${pageContext.request.userPrincipal.name}"/></fmt:param></fmt:message><br>
-    <a href='<c:url context="${portalContextPath}" value="${destAccount}"/>'><fmt:message key="login.label.Logout"/></a>
+    <a href='<c:url context="${portalContextPath}" value="${destLogout}"/>'><fmt:message key="login.label.Logout"/></a>
     <br>
     <a href='<c:url context="${portalContextPath}" value="${destAccount}"/>'><fmt:message key="login.label.ChangePassword"/></a>
   </c:when>
