@@ -77,6 +77,8 @@ public interface HeaderResource
     
     public final static String HEADER_INTERNAL_JETSPEED_VAR_NAME = "jetspeed";
     public final static String HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME = "djConfig." + HEADER_INTERNAL_JETSPEED_VAR_NAME;  // internal use - not a configuration entry name
+    public final static String HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE = HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".";  // internal use - not a configuration entry name
+    
     
     // header configuration - dojo
     public final static String HEADER_CONFIG_DOJO_ENABLE = "dojo.enable";
@@ -91,22 +93,34 @@ public interface HeaderResource
     public final static String HEADER_CONFIG_DOJO_REQUIRES_MODULES = "dojo.requires.modules";
     
     // header configuration - desktop
-    public final static String HEADER_CONFIG_DESKTOP_LAYOUT_DECORATION_DEFAULT = "desktop.decoration.layout";
-    public final static String HEADER_CONFIG_DESKTOP_PORTLET_DECORATION_DEFAULT = "desktop.decoration.portlet";
-    public final static String HEADER_CONFIG_DESKTOP_PAGE_AJAXNAVIGATION = "desktop.page.ajaxnavigation";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_TILING = "desktop.window.tiling";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND = "desktop.window.heightexpand";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT = "desktop.window.height";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_WIDTH = "desktop.window.width";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER = "desktop.window.action.button.order";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE = "desktop.window.action.noimage";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER = "desktop.window.action.menu.order";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_HIDE = "desktop.window.action.button.hide";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP = "desktop.window.action.button.tooltip";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX = "desktop.window.action.button.maximum";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED = "desktop.window.icon.enabled";
-    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ICON_PATH = "desktop.window.icon.path";
-    public final static String HEADER_CONFIG_DESKTOP_PAGE_ACTION_BUTTON_TOOLTIP = "desktop.page.action.button.tooltip";
+    public final static String HEADER_CONFIG_DESKTOP_LAYOUT_DECORATION_DEFAULT = "decoration.layout";
+    public final static String HEADER_CONFIG_DESKTOP_PORTLET_DECORATION_DEFAULT = "decoration.portlet";
+    public final static String HEADER_CONFIG_DESKTOP_PAGE_AJAXNAVIGATION = "page.ajaxnavigation";
+    public final static String HEADER_CONFIG_DESKTOP_PAGE_ACTION_BUTTON_TOOLTIP = "page.action.button.tooltip";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_TILING = "window.tiling";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT_EXPAND = "window.heightexpand";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_HEIGHT = "window.height";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_WIDTH = "window.width";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER = "window.action.button.order";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE = "window.action.noimage";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER = "window.action.menu.order";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX = "window.action.button.maximum";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP = "window.action.button.tooltip";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED = "window.icon.enabled";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_ICON_PATH = "window.icon.path";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_TITLEBAR_ENABLED = "window.titlebar.enabled";
+    public final static String HEADER_CONFIG_DESKTOP_WINDOW_RESIZEBAR_ENABLED = "window.resizebar.enabled";
+    
+    public final static String DESKTOP_JSON_WINDOW_ACTION_BUTTON_ORDER = "windowActionButtonOrder";
+    public final static String DESKTOP_JSON_WINDOW_ACTION_NOIMAGE = "windowActionNoImage";
+    public final static String DESKTOP_JSON_WINDOW_ACTION_MENU_ORDER = "windowActionMenuOrder";
+    public final static String DESKTOP_JSON_WINDOW_ACTION_BUTTON_MAX = "windowActionButtonMax";
+    public final static String DESKTOP_JSON_WINDOW_ACTION_BUTTON_TOOLTIP = "windowActionButtonTooltip";
+    public final static String DESKTOP_JSON_WINDOW_ICON_ENABLED = "windowIconEnabled";
+    public final static String DESKTOP_JSON_WINDOW_ICON_PATH = "windowIconPath";
+    public final static String DESKTOP_JSON_WINDOW_TITLEBAR_ENABLED = "windowTitlebar";
+    public final static String DESKTOP_JSON_WINDOW_RESIZEBAR_ENABLED = "windowResizebar";
+    
     
     public final static String HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION = "desktop.window.action";
     
