@@ -15,9 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/* since IE6 doesn't support chained class selectors, we create a separate class
+   for the combination of .portletWindow and the portlet decorator name
+   if not for IE6, the next selector would be: ".blueocean.portletWindow" instead of ".portletWindow-blueocean"
+*/
+.portletWindow-blueocean {
+    margin: 2px !important;
+}
 
-
-/*  begin dojo styles  */
+.blueocean .portletWindowClient {
+    margin: 2px !important;
+}
 
 .blueocean .portletWindowTitleBar {
     /* background: #B0C4DE; */  /* lightsteelblue */
@@ -37,8 +45,5 @@ limitations under the License.
 .blueocean .portletWindowTitleBarIcon {
     margin-top: 3px;
     margin-left: 2px;
-    margin-right: 3px;
+    margin-right: 3px;   /* these margin settings are restated from desktop/widget/PortletWindow.css - to override the .blueocean img styles in this file */
 }
-
-
-/*  end dojo styles  */
