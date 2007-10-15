@@ -48,7 +48,7 @@ jetspeed.debug =
     dragWindow: false,
     dragWindowStart: false,
 
-    profile: true,
+    profile: false,
 
     windowDecorationRandom: false,
 
@@ -205,7 +205,7 @@ jetspeed.om.DojoDebugContentRetriever.prototype =
 
             if ( dbWindow )
             {
-                var clearJS = "javascript: void(document.getElementById('" + dbNodeId + "').innerHTML='')";
+                var clearJS = "javascript: void(jetspeed.debugWindowClear())";
                 var indent = "";
                 for ( var i = 0 ; i < 20 ; i++ )
                     indent += "&nbsp;";
@@ -214,6 +214,16 @@ jetspeed.om.DojoDebugContentRetriever.prototype =
             }
         }
     }
+};
+
+jetspeed.debugWindowClear = function()
+{
+    var jsObj = jetspeed;
+    var dbNodeId = jsObj.debug.debugContainerId;
+    var dbWindow = jsObj.debugWindow();
+    document.getElementById(dbNodeId).innerHTML='';
+    if ( dbWindow && dbWindow.drag )
+        dbWindow.drag.onMouseUp();
 };
 
 // debug info functions
@@ -322,9 +332,10 @@ jetspeed.debugColumn = function( col, suppressDims )
     out += " colContainer=" + ( col.columnContainer ? "T" : "F" ) + " layoutHeader=" + ( col.layoutHeader ? "T" : "F" ) + " id=" + ( dNodeCol != null ? dNodeCol.id : "null" ) + " layoutCol=" + col.layoutColumnIndex + " layoutId=" + col.layoutId + " size=" + col.size;
     if ( dNodeCol != null && ! suppressDims )
     {
+        //var colCompStyle = dojo.gcs( dNodeCol );
         var colAbsPos = dojo.html.getAbsolutePosition( dNodeCol, true );
         var marginBox = dojo.html.getMarginBox( dNodeCol );
-        out += " dims={" + "left:" + (colAbsPos.x) + ", right:" + (colAbsPos.x + marginBox.width) + ", top:" + (colAbsPos.y) + ", bottom:" + (colAbsPos.y + marginBox.height) + "}";
+        out += " dims={" + "l=" + (colAbsPos.x) + " t=" + (colAbsPos.y) + " r=" + (colAbsPos.x + marginBox.width) + " b=" + (colAbsPos.y + marginBox.height) + " wOff=" + dNodeCol.offsetWidth + " hOff=" + dNodeCol.offsetHeight + " wCl=" + dNodeCol.clientWidth + " hCl=" + dNodeCol.clientHeight + "}";
     }
     return out;
 };
