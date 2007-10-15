@@ -104,29 +104,6 @@
 }
 
 
-
-.clear .portletWindow {
-    border-bottom-width: 5px !important;
-    border-right-width: 5px !important;
-    border-left-width: 5px !important;
-    border-top-width: 5px !important;
-/*
-    border-style: none !important;
-    border-right-style: none !important;
-    border-left-style: none !important;
-    border-top-style: none !important;
-    border-bottom-style: none !important;
-*/
-    border-style: solid;                        
-
-    border-left-color: #FF0000 !important;
-    border-right-color: #FF0000 !important;
-    border-top-color: #FF0000 !important;
-    border-bottom-color: #FF0000 !important;
-    background-color: #FF0000 !important;
-}
-
-
 /********** Title Bar ****************/
 
 .portletWindowTitleBar {
@@ -148,22 +125,6 @@
     font: small-caption;
 }
 
-.portletWindowActions{
-    float: right;
-    position: absolute;
-    right: 2px;
-    top: 2px;
-    vertical-align: middle;
-}
-
-
-.portletWindowActionItem {
-    vertical-align: middle;
-    margin-right: 1px;
-    height: 22px;
-    width: 22px;
-}
-
 .portletWindowActionButton {
     margin-top: 5px;
     margin-right: 3px;
@@ -171,6 +132,8 @@
     cursor: default;
 
     float: right;
+
+    z-index: 12;
 
     background-repeat: no-repeat;
     background-position: top center;
