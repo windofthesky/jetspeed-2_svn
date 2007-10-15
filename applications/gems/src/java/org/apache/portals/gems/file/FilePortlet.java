@@ -21,6 +21,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -31,6 +34,7 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.portals.bridges.common.GenericServletPortlet;
 
@@ -42,7 +46,7 @@ import org.apache.portals.bridges.common.GenericServletPortlet;
  */
 public class FilePortlet extends GenericServletPortlet
 {
-
+    public static final String PARAM_USE_LANGUAGE = "use-language";
     /**
      * Name of portlet preference for source file url
      */
@@ -76,9 +80,14 @@ public class FilePortlet extends GenericServletPortlet
      */
     private String defaultSourceBasePath = null;
 
+    private boolean useLanguage = false;
+    
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
+        String use = config.getInitParameter(PARAM_USE_LANGUAGE);
+        if (use != null && use.equalsIgnoreCase("true"))
+            this.useLanguage = true;
         this.defaultSourceFile = config.getInitParameter(PARAM_SOURCE_FILE);
         this.defaultSourceBasePath = config
                 .getInitParameter(PARAM_SOURCE_BASE_PATH);
@@ -136,15 +145,14 @@ public class FilePortlet extends GenericServletPortlet
                 response.getPortletOutputStream().write(bytes);
                 return;
             }
-        } else
+        } 
+        else
         {
-            String path = (String) request
-                    .getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
+            String path = (String) request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
             if (null == path)
             {
                 PortletPreferences prefs = request.getPreferences();
-                path = prefs
-                        .getValue(PARAM_SOURCE_FILE, this.defaultSourceFile);
+                path = prefs.getValue(PARAM_SOURCE_FILE, this.defaultSourceFile);
             }
 
             if (null == path && this.defaultSourceBasePath != null)
@@ -168,20 +176,45 @@ public class FilePortlet extends GenericServletPortlet
             {
                 response.setContentType("text/html");
                 response.getWriter().println("Could not find source document.");
-            } else
+            } 
+            else
             {
-                // default to 'content' area
-                File temp = new File(path);
-                if (webappLocation)
-                {
-                    path = "/WEB-INF/" + temp.getPath();
-                }
-                setContentType(path, response);
-                renderFile(response, path);
+                setContentType(path, response);                
+                List paths = fallback(path, request.getLocale().getLanguage());
+                renderFile(response, paths);
             }
         }
     }
 
+    protected List fallback(String path, String language)
+    {
+        List paths = new LinkedList();
+        if (this.useLanguage)
+        {
+            if (webappLocation)
+            {
+                path = concatenatePaths("/WEB-INF/", path);                
+            }            
+            String fallbackPath = path;
+            File temp = new File(path);
+            String parentPath = temp.getParent();
+            String name = temp.getName();
+            path = concatenatePaths(parentPath, language);
+            path = concatenatePaths(path, name);
+            paths.add(path);
+            paths.add(fallbackPath);
+        }
+        else
+        {
+            if (webappLocation)
+            {
+                path = concatenatePaths("/WEB-INF/", path);                
+            }                        
+            paths.add(path);
+        }
+        return paths;
+    }
+    
     protected void setContentType(String path, RenderResponse response)
     {
         // Note these content types need to be added to the portlet.xml
@@ -209,27 +242,45 @@ public class FilePortlet extends GenericServletPortlet
         }
     }
 
-    protected void renderFile(RenderResponse response, String fileName)
+    protected void renderFile(RenderResponse response, List paths)
             throws PortletException, IOException
     {
-        InputStream is = null;
-
-        if (this.webappLocation)
+        boolean drained = false;
+        Iterator it = paths.iterator();
+        while (it.hasNext())
         {
-            is = this.getPortletContext().getResourceAsStream(fileName);
-        } else
-        {
-            is = new FileInputStream(fileName);
+            String fileName = (String)it.next();
+            InputStream is = null;
+            try
+            {
+                if (this.webappLocation)
+                {
+                    is = this.getPortletContext().getResourceAsStream(fileName);
+                } else
+                {
+                    is = new FileInputStream(fileName);
+                }
+                if (is != null)
+                {
+                    drain(is, response.getPortletOutputStream());
+                    response.getPortletOutputStream().flush();
+                    is.close();
+                    drained = true;
+                    break;
+                }
+            }
+            catch (Exception e)
+            {
+                // do nothing, find next file
+            }
         }
-        if (is == null)
+        if (!drained)
         {
+            String fileName = (String)paths.get(0);
             byte[] bytes = ("File " + fileName + " not found.").getBytes();
             response.getPortletOutputStream().write(bytes);
-            return;
+            return;            
         }
-        drain(is, response.getPortletOutputStream());
-        response.getPortletOutputStream().flush();
-        is.close();
     }
 
     static final int BLOCK_SIZE = 4096;
@@ -264,4 +315,43 @@ public class FilePortlet extends GenericServletPortlet
         if (ar.length == 1) return pageRoot + sep + path;
         return pageRoot + sep + ar[0] + sep + ar[1];
     }
+    
+    protected static String concatenatePaths(String base, String path)
+    {
+        String result = "";
+        if (base == null)
+        {
+            if (path == null)
+            {
+                return result;
+            }
+            return path;
+        }
+        else
+        {
+            if (path == null)
+            {
+                return base;
+            }
+        }
+        if (base.endsWith(Folder.PATH_SEPARATOR)) 
+        {
+            if (path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                result = base.concat(path.substring(1));
+                return result;
+            }
+        
+        }
+        else
+        {
+            if (!path.startsWith(Folder.PATH_SEPARATOR)) 
+            {
+                result = base.concat(Folder.PATH_SEPARATOR).concat(path);
+                return result;
+            }
+        }
+        return base.concat(path);
+    }
+    
 }

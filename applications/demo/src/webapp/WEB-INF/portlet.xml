@@ -870,7 +870,11 @@ limitations under the License.
         <init-param>
             <name>portlet-icon</name>
             <value>folder-remote.png</value>
-        </init-param>                                        
+        </init-param>   
+        <init-param>
+        	<name>use-language</name>
+        	<value>true</value>
+        </init-param>                                     
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
@@ -904,6 +908,7 @@ limitations under the License.
             </preference>
         </portlet-preferences>
     </portlet>
+
     <!--
     <portlet id="SSOProxyPortlet">
     <portlet-name>SSOProxyPortletPortlet</portlet-name>
