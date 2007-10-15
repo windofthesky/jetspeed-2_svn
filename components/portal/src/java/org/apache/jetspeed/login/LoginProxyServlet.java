@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,12 +41,23 @@ import org.apache.jetspeed.security.activeauthentication.IdentityToken;
  */
 public class LoginProxyServlet extends HttpServlet
 {
+    private boolean credentialsFromRequest = true;
+    
+    public void init(ServletConfig config) throws ServletException
+    {
+        super.init(config);
+        String s = config.getInitParameter("credentialsFromRequest");
+        if (s != null)
+        {
+            credentialsFromRequest = s.equalsIgnoreCase("true");
+        }
+    }
 
     public void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException
     {
         String parameter;
-
+        String username;
         request.setCharacterEncoding( "UTF-8" );
                 
         HttpSession session = request.getSession(true);
@@ -55,17 +67,25 @@ public class LoginProxyServlet extends HttpServlet
             session.setAttribute(LoginConstants.DESTINATION, parameter);
         else
             session.removeAttribute(LoginConstants.DESTINATION);
-        String username = request.getParameter(LoginConstants.USERNAME);
-        if (username != null)
-            session.setAttribute(LoginConstants.USERNAME, username);
+        if (credentialsFromRequest)
+        {
+            username = request.getParameter(LoginConstants.USERNAME);
+            if (username != null)
+                session.setAttribute(LoginConstants.USERNAME, username);
+            else
+                session.removeAttribute(LoginConstants.USERNAME);
+            parameter = request.getParameter(LoginConstants.PASSWORD);
+            if (parameter != null)
+                session.setAttribute(LoginConstants.PASSWORD, parameter);
+            else
+                session.removeAttribute(LoginConstants.PASSWORD);
+        }
         else
-            session.removeAttribute(LoginConstants.USERNAME);
-        parameter = request.getParameter(LoginConstants.PASSWORD);
-        if (parameter != null)
-            session.setAttribute(LoginConstants.PASSWORD, parameter);
-        else
-            session.removeAttribute(LoginConstants.PASSWORD);
-
+        {
+            username = (String)session.getAttribute(LoginConstants.USERNAME);
+            parameter = (String)session.getAttribute(LoginConstants.PASSWORD);            
+        }
+        
         // Globaly override all psml themes
         if (request
                 .getParameter(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE) != null)

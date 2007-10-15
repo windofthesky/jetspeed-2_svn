@@ -118,6 +118,10 @@ limitations under the License.
   <servlet>
     <servlet-name>LoginProxyServlet</servlet-name>
     <servlet-class>org.apache.jetspeed.login.LoginProxyServlet</servlet-class>
+	<init-param>
+		<param-name>credentialsFromRequest</param-name>
+		<param-value>true</param-value>
+	</init-param>        
   </servlet>
 
   <servlet>
