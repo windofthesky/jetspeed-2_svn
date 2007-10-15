@@ -59,48 +59,48 @@
         <constructor-arg index="0">
             <map>
                 <!-- layout and portlet decorations -->
-                <entry key="desktop.decoration.layout">
+                <entry key="decoration.layout">
                     <!-- default layout decoration for desktop
                          this is used when a selected layout decoration does not support desktop -->
                     <value>blueocean</value>
                 </entry>
 
-                <entry key="desktop.decoration.portlet">
+                <entry key="decoration.portlet">
                     <!-- default portlet decoration for desktop
                          this is used when a selected portlet decoration does not support desktop -->
                     <value>tigris</value>
                 </entry>
 
                 <!-- page navigation -->
-                <entry key="desktop.page.ajaxnavigation">
+                <entry key="page.ajaxnavigation">
                     <!-- enable ajax page navigation - default is false -->
                     <!-- when set to true, the dojo parameter dojo.parameter.preventBackButtonFix should be set to false -->
                     <value>true</value>
                 </entry>
 
                 <!-- window modes -->
-                <entry key="desktop.window.tiling">
+                <entry key="window.tiling">
                     <!-- enable window tiling mode - default is true -->
                     <value>true</value>
                 </entry>
-                <entry key="desktop.window.heightexpand">
+                <entry key="window.heightexpand">
                     <!-- default tiled windows to expand in height to fit content - default is false -->
                     <value>true</value>
                 </entry>
 
                 <!-- window dimensions -->
-                <entry key="desktop.window.height">
+                <entry key="window.height">
                     <!-- default window height -->
                     <value>200</value>
                 </entry>
-                <entry key="desktop.window.width">
+                <entry key="window.width">
                     <!-- default window width -->
                     <value>280</value>
                 </entry>
 
                 <!-- window actions -->
                 <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
-                <entry key="desktop.window.action.button.order">
+                <entry key="window.action.button.order">
                     <!-- order, left to right, that action buttons should be rendered -->
                     <!-- all listed actions are expected to have associated images at derived path {windowtheme}/images/{action}.gif -->
                     <!-- no image mapping is offered because if it is to be supported, it should be from DecoratorAction -->
@@ -118,15 +118,11 @@
                         <value>removeportlet</value>   <!-- activated only when in page edit mode -->
                     </list>
                 </entry>
-                <entry key="desktop.window.action.button.maximum">
+                <entry key="window.action.button.maximum">
                     <!-- maximum number of action buttons allowed - overflow items will be displayed at top of action menu -->
                     <value>10</value>
                 </entry>
-                <entry key="desktop.window.action.button.hide">
-                    <!-- hide action buttons unless mouse is over window title bar -->
-                    <value>false</value>
-                </entry>
-                <entry key="desktop.window.action.noimage">
+                <entry key="window.action.noimage">
                     <!-- list of actions that do no have images -->
                     <list>
                         <value>tile</value>
@@ -135,7 +131,7 @@
                         <value>heightnormal</value>
                     </list>
                 </entry>
-                <entry key="desktop.window.action.menu.order">
+                <entry key="window.action.menu.order">
                     <!-- order, top to bottom, the actions should appear in action menu -->
                     <list>
                         <value>tile</value>
@@ -144,24 +140,24 @@
                         <value>heightnormal</value>
                     </list>
                 </entry>
-                <entry key="desktop.window.action.button.tooltip">
+                <entry key="window.action.button.tooltip">
                     <!-- display tooltips for window action buttons -->
                     <value>true</value>
                 </entry>
 
                 <!-- window icons -->
                 <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
-                <entry key="desktop.window.icon.enabled">
+                <entry key="window.icon.enabled">
                     <!-- display icon for each window -->
                     <value>true</value>
                 </entry>
-                <entry key="desktop.window.icon.path">
+                <entry key="window.icon.path">
                     <!-- path to window icons -->
                     <value>/images/portlets/small/</value> <!-- /javascript/jetspeed/windowicons/ -->
                 </entry>
 
                 <!-- page actions -->
-                <entry key="desktop.page.action.button.tooltip">
+                <entry key="page.action.button.tooltip">
                     <!-- display tooltips for page action buttons -->
                     <value>true</value>
                 </entry>
