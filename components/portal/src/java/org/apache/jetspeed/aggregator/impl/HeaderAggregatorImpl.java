@@ -567,7 +567,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             if ( canAddHeaderNamedResourceFragment( windowActionButtonOrderName, namedResourcesAddedFragmentsDefault, null ) )
             {
-                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonOrder = " ).append( actionButtonOrderContent ).append( ";" ).append( EOL );
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_BUTTON_ORDER ).append( " = " ).append( actionButtonOrderContent ).append( ";" ).append( EOL );
             }
         }
         
@@ -577,7 +577,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             if ( canAddHeaderNamedResourceFragment( windowActionNoImageName, namedResourcesAddedFragmentsDefault, null ) )
             {
-                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionNoImage = " ).append( actionNoImageContent ).append( ";" ).append( EOL );
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_NOIMAGE ).append( " = " ).append( actionNoImageContent ).append( ";" ).append( EOL );
             }
         }
         
@@ -587,32 +587,24 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             if ( canAddHeaderNamedResourceFragment( windowActionMenuOrderName, namedResourcesAddedFragmentsDefault, null ) )
             {
-                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionMenuOrder = " ).append( actionMenuOrderContent ).append( ";" ).append( EOL );
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_MENU_ORDER ).append( " = " ).append( actionMenuOrderContent ).append( ";" ).append( EOL );
             }
         }
 
         headerDynamicConfigurationDefault.put( HeaderResource.HEADER_INTERNAL_CONFIG_DESKTOP_WINDOW_ACTION, actionList );
-
-
-        String windowActionButtonHideName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_HIDE;
-        String windowActionButtonHide = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowActionButtonHideName ) );
-        if ( windowActionButtonHide != null && canAddHeaderNamedResourceFragment( windowActionButtonHideName, namedResourcesAddedFragmentsDefault, null ) )
-        {
-            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonHide = " ).append( windowActionButtonHide ).append( ";" ).append( EOL );
-        }
         
         String windowActionButtonTooltipName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP;
         String windowActionButtonTooltip = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowActionButtonTooltipName ) );
         if ( windowActionButtonTooltip != null && canAddHeaderNamedResourceFragment( windowActionButtonTooltipName, namedResourcesAddedFragmentsDefault, null ) )
         {
-            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonTooltip = " ).append( windowActionButtonTooltip ).append( ";" ).append( EOL );
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_BUTTON_TOOLTIP ).append( " = " ).append( windowActionButtonTooltip ).append( ";" ).append( EOL );
         }
 
         String windowActionButtonMaxName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX;
         String windowActionButtonMax = HeaderResourceLib.makeJSONInteger( desktopConfigMap.get( windowActionButtonMaxName ), false );
         if ( windowActionButtonMax != null && canAddHeaderNamedResourceFragment( windowActionButtonMaxName, namedResourcesAddedFragmentsDefault, null ) )
         {
-            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowActionButtonMax = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
+            desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_BUTTON_MAX ).append( " = " ).append( windowActionButtonMax ).append( ";" ).append( EOL );
         }
         
         String windowIconEnabledName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED;
@@ -621,7 +613,7 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             if ( canAddHeaderNamedResourceFragment( windowIconEnabledName, namedResourcesAddedFragmentsDefault, null ) )
             {
-                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowIconEnabled = " ).append( iconEnabledContent ).append( ";" ).append( EOL );
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ICON_ENABLED ).append( " = " ).append( iconEnabledContent ).append( ";" ).append( EOL );
             }
         }
         
@@ -631,7 +623,27 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             if ( canAddHeaderNamedResourceFragment( windowIconPathName, namedResourcesAddedFragmentsDefault, null ) )
             {
-                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME ).append( ".windowIconPath = \"" ).append( iconPathContent ).append( "\";" ).append( EOL );
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_ICON_PATH ).append( " = \"" ).append( iconPathContent ).append( "\";" ).append( EOL );
+            }
+        }
+        
+        String windowTitlebarEnabledName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_TITLEBAR_ENABLED;
+        String titlebarEnabledContent = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowTitlebarEnabledName ) );
+        if ( titlebarEnabledContent != null && titlebarEnabledContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowTitlebarEnabledName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_TITLEBAR_ENABLED ).append( " = " ).append( titlebarEnabledContent ).append( ";" ).append( EOL );
+            }
+        }
+        
+        String windowResizebarEnabledName = HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_RESIZEBAR_ENABLED;
+        String resizebarEnabledContent = HeaderResourceLib.makeJSONBoolean( desktopConfigMap.get( windowResizebarEnabledName ) );
+        if ( resizebarEnabledContent != null && resizebarEnabledContent.length() > 0 )
+        {
+            if ( canAddHeaderNamedResourceFragment( windowResizebarEnabledName, namedResourcesAddedFragmentsDefault, null ) )
+            {
+                desktopDojoConfigContent.append( "    " ).append( HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME_SCOPE ).append( HeaderResource.DESKTOP_JSON_WINDOW_TITLEBAR_ENABLED ).append( " = " ).append( resizebarEnabledContent ).append( ";" ).append( EOL );
             }
         }
         
