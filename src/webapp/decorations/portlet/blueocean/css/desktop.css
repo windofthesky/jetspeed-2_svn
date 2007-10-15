@@ -47,3 +47,7 @@ limitations under the License.
     margin-left: 2px;
     margin-right: 3px;   /* these margin settings are restated from desktop/widget/PortletWindow.css - to override the .blueocean img styles in this file */
 }
+
+.blueocean .portletWindowClient {
+    background-color: #ffffff;
+}
