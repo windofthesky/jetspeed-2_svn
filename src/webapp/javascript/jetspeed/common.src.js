@@ -89,9 +89,13 @@ jetspeed.initcommon = function()
     
             jsObj.stopEvent = function(/*Event*/evt)
             {   // do no use in event connect
-                evt = evt || window.event;
-                evt.cancelBubble = true;
-                evt.returnValue = false;
+                try
+                {
+                    evt = evt || window.event;
+                    evt.cancelBubble = true;
+                    evt.returnValue = false;
+                }
+                catch(ex) { }
     	    };
     	    jsObj._stopEvent = function(/*Event*/evt)
             {   // use in event connect

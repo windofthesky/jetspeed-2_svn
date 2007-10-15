@@ -44,9 +44,13 @@ if(_5.ie60||_5.ie50||_5.ie55){
 _1.UAie6=true;
 }
 _1.stopEvent=function(_6){
+try{
 _6=_6||window.event;
 _6.cancelBubble=true;
 _6.returnValue=false;
+}
+catch(ex){
+}
 };
 _1._stopEvent=function(_7){
 jetspeed.stopEvent(_7);
