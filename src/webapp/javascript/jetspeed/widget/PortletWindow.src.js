@@ -41,14 +41,16 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     moveable: true,
     moveAllowTilingChg: true,
 
-    decName: null,      // decoration name
-    decConfig: null,    // decoration config
-
     posStatic: false,
     heightToFit: false,
 
-    titleMouseIn: 0,
-    titleLit: false,
+    decName: null,       // decoration name
+    decConfig: null,     // decoration config
+    titlebarEnabled: true,
+    resizebarEnabled: true,
+    editPageEnabled: false,
+
+    iframeCoverContainerClass: "portletWindowIFrameClient",
 
     colWidth_pbE: 0,
 
@@ -150,33 +152,15 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         // ... initWindowDecoration
         var decNm = iP[ jsId.PP_WINDOW_DECORATION ];
-        if ( ! decNm )
-        {
-            decNm = this.portletDecorationName;
-            if ( ! decNm )
-                decNm = jsPage.getPortletDecorationDefault();
-        }
+        //if ( ! decNm )
+        //    decNm = jsPage.getPortletDecorator();
         this.decName = decNm ;
-        var wDC = jsObj.loadPortletDecorationStyles( decNm );
-        if ( wDC == null ) wDC = {};    // this should not occur
+        var wDC = jsObj.loadPortletDecorationStyles( decNm, jsPrefs );
+        if ( wDC == null ) { djObj.raise( "No portlet decoration is available: " + this.widgetId ); }    // this should not occur
         this.decConfig = wDC;
 
         var dNodeClass = wDC.dNodeClass;
         var cNodeClass = wDC.cNodeClass;
-        if ( dNodeClass == null || cNodeClass == null )
-        {
-            dNodeClass = jsId.PWIN_CLASS;
-            cNodeClass = "portletWindowClient";
-            if ( decNm )
-            {
-                dNodeClass = decNm + " " + dNodeClass;
-                cNodeClass = decNm + " " + cNodeClass;
-            }
-            dNodeClass = jsId.P_CLASS + " " + dNodeClass;
-            cNodeClass = jsId.P_CLASS + " " + cNodeClass;
-            wDC.dNodeClass = dNodeClass;
-            wDC.cNodeClass = cNodeClass;
-        }
 
         // ... create window nodes
         var dNode = doc.createElement( "div" );
@@ -336,46 +320,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             {
                 tbNode.unselectable = "on";
             }
-            var windowTitleBarButtons = null;
-            var djEvtObj = djObj.event;
-            
-            var tooltipMgr = jsPage.tooltipMgr;
-            if ( wDC.windowActionButtonTooltip )
-            {
-                if ( this.actionLabels[ jsId.ACT_DESKTOP_MOVE_TILED ] != null && this.actionLabels[ jsId.ACT_DESKTOP_MOVE_UNTILED ] != null )
-                    this.tooltips.push( tooltipMgr.addNode( tbNode, null, true, 1200, this, "getTitleBarTooltip", jsObj, jsUI, djEvtObj ) );
-            }
 
-            var btnActionNames = ( tPortlet ) ? wDC.windowActionButtonNames : wDC.windowActionButtonNamesNp;
-            if ( btnActionNames == null )
-            {
-                btnActionNames = this._buildActionStructures( wDC, tPortlet, docBody, jsObj, jsId, jsPrefs, djObj );
-            }
-            var aNm;
-            for ( var i = 0 ; i < btnActionNames.length ; i++ )
-            {
-                aNm = btnActionNames[i];
-                if ( aNm != null )
-                {
-                    if ( ! tPortlet || ( aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || tPortlet.getAction( aNm ) != null || jsPrefs.windowActionDesktop[ aNm ] != null ) )
-                    {
-                        this._createActionButtonNode( aNm, doc, docBody, tooltipMgr, wDC, jsObj, jsPrefs, jsUI, djObj, djEvtObj );
-                    }
-                }
-            }
-            this.actionMenuWidget = ( tPortlet ) ? wDC.windowActionMenuWidget : wDC.windowActionMenuWidgetNp;
-
-            if ( this.actionMenuWidget && wDC.windowActionMenuHasNoImg )
-            {
-                jsUI.evtConnect( "after", tbNode, "oncontextmenu", this, "actionMenuOpen", djEvtObj );
-            }
-
-            this.actionBtnSync( jsObj, jsId );
-
-            if ( wDC.windowDisableResize )
-                this.resizable =  false;
-            if ( wDC.windowDisableMove )
-                this.moveable =  false;
+            this._setupTitlebar( wDC, null, tPortlet, docBody, doc, jsObj, jsId, jsPrefs, jsUI, jsPage, djObj );
         }
 
         // ... init drag handle
@@ -401,11 +347,19 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( ! wDC.windowTitlebar || ! wDC.windowResizebar )
         {
             var disIdx = jsObj.css.cssDis;
-            if ( this.tbNodeCss && ! wDC.windowTitlebar )
-                this.tbNodeCss[ disIdx ] = "none";
+            if ( ! wDC.windowTitlebar )
+            {
+                this.titlebarEnabled = false;
+                if ( this.tbNodeCss )
+                    this.tbNodeCss[ disIdx ] = "none";
+            }
 
-            if ( this.rbNodeCss && ! wDC.windowResizebar )
-                this.rbNodeCss[ disIdx ] = "none";
+            if ( ! wDC.windowResizebar )
+            {
+                this.resizebarEnabled = false;
+                if ( this.rbNodeCss )
+                    this.rbNodeCss[ disIdx ] = "none";
+            }
         }
 
         var nodeAdded = false;
@@ -482,8 +436,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {   // ... drag ghost
             var pwGhost = doc.createElement("div");
             pwGhost.id = "pwGhost";
-            var defaultWndC = jsPage.getPortletDecorationDefault();
-            if ( ! defaultWndC ) defaultWndC = decNm;
             pwGhost.className = dNodeClass;
             pwGhost.style.position = "static";
             pwGhost.style.width = "";
@@ -601,6 +553,18 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }   // if ( tPortlet )
         }   // if ( wDC.windowActionMenuOrder != null )
 
+        var aNmChgPortletTheme = jsId.ACT_CHANGEPORTLETTHEME;
+        var portletDecorationsAllowed = jsPrefs.portletDecorationsAllowed;
+        if ( jsPrefs.pageEditorLabels && portletDecorationsAllowed && portletDecorationsAllowed.length > 1 )
+        {
+            var chgPortletThemeLabel = jsPrefs.pageEditorLabels[ aNmChgPortletTheme ];
+            if ( chgPortletThemeLabel )
+            {
+                tMenuActionNames.push( aNmChgPortletTheme );
+                this.actionLabels[ aNmChgPortletTheme ] = chgPortletThemeLabel;
+            }
+        }
+
         var menuActionNames = new Array();
         if ( tMenuActionNames.length > 0 || this.dbOn )
         {
@@ -614,6 +578,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                     added[ aNm ] = true;
                 }
             }
+            // 
+            // jetspeed.prefs.pageEditorLabels.changeportlettheme
+            // desktop.pageeditor.changeportlettheme
+            
             if ( this.dbOn )
             {
                 menuActionNames.push( { aNm: this.dbMenuDims, dev: true } );
@@ -624,8 +592,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( menuActionNames.length > 0 )
         {
             var menuItemsByName = {};
-            var aNm, menulabel, menuitem, isDev;
-            actionMenuWidget = djObj.widget.createWidget( "PopupMenu2", { id: this.widgetId + "_ctxmenu", contextMenuForWindow: false }, null );
+            var aNm, menulabel, menuitem, submenuWidget, submenuWidgetId, isDev;
+            var menuWidgetIdBase = wDC.name + "_menu" + ( ! tPortlet ? "Np" : "" );
+            var actionMenuWidgetId = menuWidgetIdBase;
+            actionMenuWidget = djObj.widget.createWidget( "PopupMenu2", { id: actionMenuWidgetId, contextMenuForWindow: false }, null );
             actionMenuWidget.onItemClick = function( mi )
             {
                 var _aN = mi.jsActNm;
@@ -639,15 +609,37 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             for ( var i = 0 ; i < menuActionNames.length ; i++ )
             {
                 aNm = menuActionNames[i];
+                submenuWidgetId = null;
                 isDev = false;
                 if ( ! aNm.dev )
+                {
                     menulabel = this.actionLabels[ aNm ];
+                    if ( aNm == aNmChgPortletTheme )
+                    {
+                        submenuWidgetId = menuWidgetIdBase + "_sub_" + aNm;
+                        submenuWidget = djObj.widget.createWidget( "PopupMenu2", { id: submenuWidgetId, contextMenuForWindow: false }, null );
+                        submenuWidget.onItemClick = function( mi )
+                        {
+                            var _pDecNm = mi.jsPDecNm;
+                            var _pWin = actionMenuWidget.pWin;
+                            _pWin.changeDecorator( _pDecNm );
+                        };
+                        for ( var j = 0 ; j < portletDecorationsAllowed.length ; j++ )
+                        {
+                            var portletDecorationName = portletDecorationsAllowed[ j ];
+                            var submenuitem = djObj.widget.createWidget( "MenuItem2", { caption: portletDecorationName, jsPDecNm: portletDecorationName } );
+                            submenuWidget.addChild( submenuitem );
+                        }
+                        docBody.appendChild( submenuWidget.domNode );
+                        jsObj.ui.addPopupMenuWidget( submenuWidget );
+                    }
+                }
                 else
                 {
                     isDev = true;
                     menulabel = aNm = aNm.aNm;
                 }
-                menuitem = djObj.widget.createWidget( "MenuItem2", { caption: menulabel, jsActNm: aNm, jsActDev: isDev } );
+                menuitem = djObj.widget.createWidget( "MenuItem2", { caption: menulabel, submenuId: submenuWidgetId, jsActNm: aNm, jsActDev: isDev } );
                 menuItemsByName[ aNm ] = menuitem;
                 actionMenuWidget.addChild( menuitem );
             }
@@ -673,6 +665,91 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             //dojo.debug( "set non-portlet button names (" + this.widgetId + ") [" + btnActionNames.join( ", " ) + "]" );
         }
         return btnActionNames;
+    },
+
+    _setupTitlebar: function( wDC, wDCRemove, tPortlet, docBody, doc, jsObj, jsId, jsPrefs, jsUI, jsPage, djObj )
+    {
+        var djEvtObj = djObj.event;
+        var aNm;
+        var tooltipMgr = jsPage.tooltipMgr;
+        var tbNode = this.tbNode;
+        var wDCChg = ( wDCRemove && wDC );
+        if ( wDCRemove )
+        {
+            if ( this.actionMenuWidget && wDCRemove.windowActionMenuHasNoImg )
+            {
+                jsUI.evtDisconnect( "after", tbNode, "oncontextmenu", this, "actionMenuOpen", djEvtObj );
+            }
+        
+            jsPage.tooltipMgr.removeNodes( this.tooltips );
+            this.tooltips = ttps = [];
+
+            var aBtns = this.actionButtons;
+            if ( aBtns )
+            {
+                var hasTooltip = ( wDCRemove && wDCRemove.windowActionButtonTooltip );
+                for ( aNm in aBtns )
+                {
+                    var aBtn = aBtns[ aNm ];
+                    if ( aBtn )
+                    {
+                        jsUI.evtDisconnect( "after", aBtn, "onclick", this, "actionBtnClick", djEvtObj );
+                        if ( ! hasTooltip )
+                            jsUI.evtDisconnect( "after", aBtn, "onmousedown", jsObj, "_stopEvent", djEvtObj );
+                        if ( wDCChg )
+                            djObj.dom.removeNode( aBtn );
+                    }
+                }
+                this.actionButtons = aBtns = {};
+            }
+        }
+
+        if ( wDC )
+        {
+            if ( wDC.windowActionButtonTooltip )
+            {
+                if ( this.actionLabels[ jsId.ACT_DESKTOP_MOVE_TILED ] != null && this.actionLabels[ jsId.ACT_DESKTOP_MOVE_UNTILED ] != null )
+                    this.tooltips.push( tooltipMgr.addNode( tbNode, null, true, 1200, this, "getTitleBarTooltip", jsObj, jsUI, djEvtObj ) );
+            }
+    
+            var btnActionNames = ( tPortlet ) ? wDC.windowActionButtonNames : wDC.windowActionButtonNamesNp;
+            if ( btnActionNames == null )
+            {
+                btnActionNames = this._buildActionStructures( wDC, tPortlet, docBody, jsObj, jsId, jsPrefs, djObj );
+            }
+            for ( var i = 0 ; i < btnActionNames.length ; i++ )
+            {
+                aNm = btnActionNames[i];
+                if ( aNm != null )
+                {
+                    if ( ! tPortlet || ( aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || tPortlet.getAction( aNm ) != null || jsPrefs.windowActionDesktop[ aNm ] != null ) )
+                    {
+                        this._createActionButtonNode( aNm, doc, docBody, tooltipMgr, wDC, jsObj, jsPrefs, jsUI, djObj, djEvtObj );
+                    }
+                }
+            }
+            this.actionMenuWidget = ( tPortlet ) ? wDC.windowActionMenuWidget : wDC.windowActionMenuWidgetNp;
+    
+            if ( this.actionMenuWidget && wDC.windowActionMenuHasNoImg )
+            {
+                jsUI.evtConnect( "after", tbNode, "oncontextmenu", this, "actionMenuOpen", djEvtObj );
+            }
+
+            if ( this.ie6 && ! wDC._ie6used )
+            {
+                wDC._ie6used = true;
+                this.actionBtnSyncDefer();
+            }
+            else
+            {
+                this.actionBtnSync( jsObj, jsId );
+            }
+    
+            if ( wDC.windowDisableResize )
+                this.resizable =  false;
+            if ( wDC.windowDisableMove )
+                this.moveable =  false;
+        }
     },
 
     _createActionButtonNode: function( aNm, doc, docBody, tooltipMgr, wDC, jsObj, jsPrefs, jsUI, djObj, djEvtObj )
@@ -787,11 +864,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         
         var menuItemsByName = menuWidget.menuItemsByName;
-        var menuItem, miDisplay;
         for ( var aNm in menuItemsByName )
         {
-            menuItem = menuItemsByName[ aNm ];
-            miDisplay = ( this._isActionEnabled( aNm, aState, aMode, jsObj, jsId ) ) ? "" : "none";
+            var menuItem = menuItemsByName[ aNm ];
+            var miDisplay = ( this._isActionEnabled( aNm, aState, aMode, jsObj, jsId ) ) ? "" : "none";
             menuItem.domNode.style.display = miDisplay;   // instead of menuItem.enable()/disable()
         }
         menuWidget.pWin = this;
@@ -969,6 +1045,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 }
             }
         }
+        else if ( aNm == jsId.ACT_CHANGEPORTLETTHEME )
+        {
+            enabled = this.editPageEnabled;
+        }
         else if ( this.portlet )
         {
             var actionDef = this.portlet.getAction( aNm );
@@ -994,9 +1074,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                     }
                 }
             }
-            else
+            else if ( aNm == this.dbMenuDims )
             {
-                enabled = true;        // BOZO:NOW: debug menu item
+                enabled = true;
             }
         }
         else
@@ -1022,9 +1102,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                     enabled = true;
                 }
             }
-            else
+            else if ( aNm == this.dbMenuDims )
             {
-                enabled = true;    // BOZO:NOW: debug menu item
+                enabled = true;
             }
         }
         return enabled;
@@ -1067,7 +1147,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {
             jsObj = jetspeed; jsId = jsObj.id;
         }
-        var hideButtons = this.decConfig.windowActionButtonHide;
         var aState = null;
         var aMode = null;
         if ( this.portlet )
@@ -1077,13 +1156,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         for ( var aNm in this.actionButtons )
         {
-            var showBtn = false;
-            if ( ! hideButtons || this.titleLit )
-            {
-                showBtn = this._isActionEnabled( aNm, aState, aMode, jsObj, jsId );
-            }
+            var showBtn = this._isActionEnabled( aNm, aState, aMode, jsObj, jsId );
             var buttonNode = this.actionButtons[ aNm ];
-            buttonNode.style.display = ( showBtn ) ? "" : "none";
+            buttonNode.style.display = ( showBtn ) ? "block" : "none";
         }
     },
 
@@ -1226,7 +1301,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         
         var disIdx = jsCss.cssDis;
         this.cNodeCss[ disIdx ] = "block";
-        if ( this.rbNodeCss )
+        if ( this.rbNodeCss && this.resizebarEnabled )
             this.rbNodeCss[ disIdx ] = "block";
         
         this.windowState = jsId.ACT_RESTORE;  // "normal"
@@ -1420,22 +1495,38 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         
         var resizeHandle = this.resizeHandle;
         var cursorVal = null;
+        var wDC = this.decConfig;
+
+        var enableResize = enableDrag;
+        if ( enableResize && ! this.resizebarEnabled )
+            enableResize = false;
+        if ( enableDrag && ! this.titlebarEnabled )
+            enableDrag = false;
+
         if ( enableDrag )
         {
-            cursorVal = this.decConfig.dragCursor;
-            if ( resizeHandle )
-                resizeHandle.domNode.style.display = "";
+            cursorVal = wDC.dragCursor;
             if ( this.drag )
                 this.drag.enable();
         }
         else
         {
-            cursorVal = "default";
-            if ( resizeHandle )
-                resizeHandle.domNode.style.display = "none";
+            cursorVal = "default";            
             if ( this.drag )
                 this.drag.disable();
         }
+
+        if ( enableResize )
+        {
+            if ( resizeHandle )
+                resizeHandle.domNode.style.display = "";
+        }
+        else
+        {
+            if ( resizeHandle )
+                resizeHandle.domNode.style.display = "none";
+        }
+
         this.tbNodeCss[ jsCss.cssCur ] = cursorVal;
         if ( ! suppressStyleUpdate )
             tbNode.style.cursor = cursorVal;
@@ -1587,6 +1678,119 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.portlet.submitWinState();
     },  // makeHeightVariable
 
+    editPageInitiate: function( jsCss, suppressAlterCss )
+    {
+        this.editPageEnabled = true;
+        var wDC = this.decConfig;
+        if ( ! wDC.windowTitlebar || ! wDC.windowResizebar )
+        {
+            var disIdx = jsCss.cssDis;
+            if ( ! wDC.windowTitlebar )
+            {
+                this.titlebarEnabled = true;
+                if ( this.tbNodeCss )
+                    this.tbNodeCss[ disIdx ] = "block";
+            }
+            if ( ! wDC.windowResizebar )
+            {
+                this.resizebarEnabled = true;
+                if ( this.rbNodeCss )
+                    this.rbNodeCss[ disIdx ] = "block";
+            }
+            this._setTitleBarDragging( true, jsCss );
+            if ( ! suppressAlterCss )
+                this._alterCss( true, true );
+        }
+    },
+
+    editPageTerminate: function( jsCss, suppressAlterCss )
+    {
+        this.editPageEnabled = false;
+        var wDC = this.decConfig;
+        if ( ! wDC.windowTitlebar || ! wDC.windowResizebar )
+        {
+            var disIdx = jsCss.cssDis;
+            if ( ! wDC.windowTitlebar )
+            {
+                this.titlebarEnabled = false;
+                if ( this.tbNodeCss )
+                    this.tbNodeCss[ disIdx ] = "none";
+            }
+            if ( ! wDC.windowResizebar )
+            {
+                this.resizebarEnabled = false;
+                if ( this.rbNodeCss )
+                    this.rbNodeCss[ disIdx ] = "none";
+            }
+            this._setTitleBarDragging( true, jsCss );
+            if ( ! suppressAlterCss )
+                this._alterCss( true, true );
+        }
+    },
+
+    changeDecorator: function( portletDecorationName )
+    {
+        var jsObj = jetspeed;
+        var jsCss = jsObj.css;
+        var jsId = jsObj.id;
+        var jsUI = jsObj.ui;
+        var jsPrefs = jsObj.prefs;
+        var djObj = dojo;
+
+        var wDCRemove = this.decConfig;
+        if ( wDCRemove && wDCRemove.name == portletDecorationName ) return;
+        
+        var wDC = jsObj.loadPortletDecorationStyles( portletDecorationName, jsPrefs );
+        if ( ! wDC ) return;
+
+        var tPortlet = this.portlet;
+        if ( tPortlet )
+            tPortlet._submitAjaxApi( "updatepage", "&method=update-portlet-decorator&portlet-decorator=" + portletDecorationName );
+        this.decConfig = wDC;
+        this.decName = wDC.name;
+
+        var dNode = this.domNode;
+        var cNode = this.containerNode;
+
+        var iframesInfoCur = this.iframesInfo;
+        var iframeLayout = ( iframesInfoCur && iframesInfoCur.layout );
+        var layoutInfo = ( ! iframeLayout ? wDC.layout : wDC.layoutIFrame );
+        if ( ! layoutInfo )
+        {
+            if ( ! iframeLayout )
+                this._createLayoutInfo( wDC, false, dNode, cNode, this.tbNode, this.rbNode, djObj, jsObj, jsUI );
+            else
+                this._createLayoutInfo( wDC, true, dNode, cNode, this.tbNode, this.rbNode, djObj, jsObj, jsUI );
+        }
+
+        this._setupTitlebar( wDC, wDCRemove, this.portlet, jsObj.docBody, document, jsObj, jsObj.id, jsPrefs, jsUI, jsObj.page, djObj );
+
+        dNode.className = wDC.dNodeClass;
+        if ( iframeLayout )
+            cNode.className = wDC.cNodeClass + " " + this.iframeCoverContainerClass;
+        else
+            cNode.className = wDC.cNodeClass;
+        
+        var disIdx = jsCss.cssDis;
+        this.titlebarEnabled = true;
+        if ( this.tbNodeCss )
+            this.tbNodeCss[ disIdx ] = "block";
+        this.resizebarEnabled = true;
+        if ( this.rbNodeCss )
+            this.rbNodeCss[ disIdx ] = "block";
+        
+        if ( this.editPageEnabled )
+        {
+            this.editPageInitiate( jsCss, true );
+        }
+        else
+        {
+            this.editPageTerminate( jsCss, true );
+        }
+        this._setTitleBarDragging( true, jsCss );
+        this._alterCss( true, true );
+    },
+    
     resizeTo: function( w, h, force )
     {
         var dimsCurrent = this.getDimsObj( this.posStatic );
@@ -1953,33 +2157,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var djEvtObj = djObj.event;
         var wDC = this.decConfig;
 
-        if ( this.actionMenuWidget && wDC && wDC.windowActionMenuHasNoImg )
-        {
-            jsUI.evtDisconnect( "after", this.tbNode, "oncontextmenu", this, "actionMenuOpen", djEvtObj );
-        }
-        
-        jsPage.tooltipMgr.removeNodes( this.tooltips );
-        this.tooltips = ttps = null;
-
         if ( this.iframesInfo )
             jsPage.unregPWinIFrameCover( this );
 
-        var aBtns = this.actionButtons;
-        if ( aBtns )
-        {
-            var hasTooltip = ( wDC && wDC.windowActionButtonTooltip );
-            for ( var aNm in aBtns )
-            {
-                var aBtn = aBtns[ aNm ];
-                if ( aBtn )
-                {
-                    jsUI.evtDisconnect( "after", aBtn, "onclick", this, "actionBtnClick", djEvtObj );
-                    if ( ! hasTooltip )
-                        jsUI.evtDisconnect( "after", aBtn, "onmousedown", jsObj, "_stopEvent", djEvtObj );
-                }
-            }
-            this.actionButtons = aBtns = null;
-        }
+        this._setupTitlebar( null, wDC, this.portlet, jsObj.docBody, document, jsObj, jsObj.id, jsObj.prefs, jsUI, jsPage, djObj );
 
         if ( this.drag )
         {
@@ -2096,77 +2277,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( ie6 )
             dojo.lang.setTimeout( this, this._IEPostDrag, jsObj.widget.ie6PostDragAddDelay );
     },
-
-
-    /*   // BOZO:WIDGET: titleDim feature requires event.connects onMouseOver:titleMouseOver, onMouseOut:titleMouseOut
-    titleLight: function()
-    {
-        var lght = [];
-        var aState = null;
-        var aMode = null;
-        if ( this.portlet )
-        {
-            aState = this.portlet.getCurrentActionState();
-            aMode = this.portlet.getCurrentActionMode();
-        }
-        for ( var aNm in this.actionButtons )
-        {
-            var showBtn = this._isActionEnabled( aNm, aState, aMode );
-            if ( showBtn )
-                lght.push( this.actionButtons[ aNm ] );
-        }
-        for ( var i = 0 ; i < lght.length ; i++ )
-        {
-            lght[i].style.display = "" ;
-        }
-        this.titleLit = true ;
-    },
-    titleDim: function( immediateForce )
-    {
-        var dim = [];
-        for ( var aNm in this.actionButtons )
-        {
-            var buttonNode = this.actionButtons[ aNm ];
-            if ( buttonNode.style.display != "none" )
-            {
-                dim.push( buttonNode );
-            }
-        }
-    
-        for ( var i = 0 ; i < dim.length ; i++ )
-        {
-            dim[i].style.display = "none" ;
-        }
-
-        this.titleLit = false ;
-    },
-    titleMouseOver: function( evt )
-    {
-        if ( this.decConfig.windowActionButtonHide )
-        {
-            var self = this ;
-            this.titleMouseIn = 1 ;   // was ++
-            window.setTimeout( function() { if ( self.titleMouseIn > 0 ) { self.titleLight(); self.titleMouseIn = 0; } }, 270 ) ;
-        }
-    },
-    titleMouseOut: function( evt )
-    {
-        if ( this.decConfig.windowActionButtonHide )
-        {
-            var self = this ;
-            var nTitleMouseIn = this.titleMouseIn ;
-            if ( nTitleMouseIn > 0 )
-            {
-                nTitleMouseIn = 0 ; // was Math.max( 0, ( nTitleMouseIn - 1 ) );
-                this.titleMouseIn = nTitleMouseIn ;
-            }
-            if ( nTitleMouseIn == 0 && this.titleLit )
-            {
-                window.setTimeout( function() { if ( self.titleMouseIn == 0 && self.titleLit ) { self.titleDim(); } }, 200 ) ;
-            }
-        }
-    },
-    */
 
     getCurWinState: function( volatileOnly )
     {
@@ -2350,7 +2460,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 var wDC = this.decConfig;
                 var cNode = this.containerNode;
                 cNode.firstChild.className = "PContent portletIFramePContent";
-                cNode.className = wDC.cNodeClass + " portletWindowIFrameClient";
+                cNode.className = wDC.cNodeClass + " " + this.iframeCoverContainerClass;
                 if ( ! wDC.layoutIFrame )
                 {
                     this._createLayoutInfo( wDC, true, this.domNode, cNode, this.tbNode, this.rbNode, djObj, jsObj, jsObj.ui );
