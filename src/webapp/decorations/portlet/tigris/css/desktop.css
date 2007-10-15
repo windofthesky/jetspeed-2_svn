@@ -15,9 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/* since IE6 doesn't support chained class selectors, we create a separate class
+   for the combination of .portletWindow and the portlet decorator name
+   if not for IE6, the next selector would be: ".tigris.portletWindow" instead of ".portletWindow-tigris"
+*/
+.portletWindow-tigris {
+    margin: 2px !important;
+}
 
-
-/*  begin dojo styles  */
+.tigris .portletWindowClient {
+    margin: 2px !important;
+}
 
 .tigris .portletWindowTitleBar {
     background: #98FB98;    /* palegreen */ 
@@ -35,11 +43,8 @@ limitations under the License.
 .tigris .portletWindowTitleBarIcon {
     margin-top: 3px;
     margin-left: 2px;
-    margin-right: 3px;   /* these margin settings are restated from desktop/widget/HtmlFloatingPane.css - to override the .tigris img styles in this file */
+    margin-right: 3px;   /* these margin settings are restated from desktop/widget/PortletWindow.css - to override the .tigris img styles in this file */
 }
-
-/*  end dojo styles  */
-
 
 
 /*  begin portlet decorator tigris additions  */
