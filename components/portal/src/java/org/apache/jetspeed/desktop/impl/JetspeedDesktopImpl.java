@@ -19,7 +19,7 @@ package org.apache.jetspeed.desktop.impl;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ResourceBundle;
-
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -31,6 +31,7 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.decoration.DecorationFactory;
+import org.apache.jetspeed.decoration.PortletDecoration;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;
@@ -55,6 +56,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     private final static String DOJO_CONFIG_LAYOUT_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".layoutName";
     private final static String DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsPath";
     private final static String DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsAllowed";
+    private final static String DOJO_CONFIG_PORTLET_DECORATIONS_CONFIG_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".portletDecorationsProperties";    
     private final static String DOJO_CONFIG_ACTION_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".desktopActionLabels";
     private final static String DOJO_CONFIG_PAGEEDITOR_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pageEditorLabels";
     private final static String DOJO_CONFIG_PAGEEDITOR_DIALOG_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pageEditorDialogLabels";
@@ -67,9 +69,9 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     															   "loadportletrender", "loadportletaction", "loadportletupdate"
     															 };
     private final static String[] DESKTOP_PAGEEDITOR_RESOURCE_NAMES = new String[]
-                                                                 { "title", "changelayout", "changelayouttheme", "changeportlettheme",
+                                                                 { "title", "changelayout", "changepagelayouttheme", "changepageportlettheme",
     	                                                           "newpage", "deletepage", "addlayout", "addportlet", "columnsizes",
-    	                                                           "deletelayout", "movemode", "movemode_exit" 
+    	                                                           "deletelayout", "movemode", "movemode_exit", "changeportlettheme"
     	                                                         };
     private final static String[] DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAMES = new String[]
                                                                  { "columnsizes", "columnsizes_column1", "columnsizes_column2", "columnsizes_column3",
@@ -213,10 +215,95 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutBasePath() ).append( "\";" ).append( EOL );
 		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_VAR_NAME ).append( " = \"" ).append( layoutDecorationName ).append( "\";" ).append( EOL );
 		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME ).append( " = \"" ).append( portletDecorationsBasePath ).append( "\";" ).append( EOL );
-		            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( decorationFactory.getDesktopPortletDecorations( request ) );
+		            Set desktopPortletDecorationsNames = decorationFactory.getDesktopPortletDecorations( request );
+		            String portletDecorationNamesContent = HeaderResourceLib.makeJSONStringArray( desktopPortletDecorationsNames );
 		            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_ALLOWED_VAR_NAME ).append( " = " ).append( portletDecorationNamesContent ).append( ";" );
+
+		            StringBuffer pDecsOut = new StringBuffer();
+		            Iterator desktopPortletDecorationsNamesIter = desktopPortletDecorationsNames.iterator();
+		            while ( desktopPortletDecorationsNamesIter.hasNext() )
+		            {
+		                String desktopPortletDecorationName = (String)desktopPortletDecorationsNamesIter.next();
+		            
+		                PortletDecoration desktopPortletDecoration = decorationFactory.getPortletDecoration( desktopPortletDecorationName, request );
+		                
+		                StringBuffer pOut = new StringBuffer();
+		                
+		                String actionButtonOrderContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_ORDER );
+		                if ( actionButtonOrderContent != null && actionButtonOrderContent.length() > 0 )
+		                {
+		                    pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_BUTTON_ORDER ).append( ": " ).append( actionButtonOrderContent );
+		                }
+		                
+		                String actionNoImageContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_NOIMAGE );
+		                if ( actionNoImageContent != null && actionNoImageContent.length() > 0 )
+		                {
+		                	pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_NOIMAGE ).append( ": " ).append( actionNoImageContent );
+		                }
+		                
+		                String actionMenuOrderContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_MENU_ORDER );
+		                if ( actionMenuOrderContent != null && actionMenuOrderContent.length() > 0 )
+		                {
+		                	pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_MENU_ORDER ).append( ": " ).append( actionMenuOrderContent );
+		                }
+		                
+		                String windowActionButtonTooltip = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_TOOLTIP );
+		                if ( windowActionButtonTooltip != null && windowActionButtonTooltip.length() > 0 )
+		                {
+		                    pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_BUTTON_TOOLTIP ).append( ": " ).append( windowActionButtonTooltip );
+		                }
+
+		                String windowActionButtonMax = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ACTION_BUTTON_MAX );
+		                if ( windowActionButtonMax != null && windowActionButtonMax.length() > 0 )
+		                {
+		                    pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ACTION_BUTTON_MAX ).append( ": " ).append( windowActionButtonMax );
+		                }
+		                
+		                String iconEnabledContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ICON_ENABLED );
+		                if ( iconEnabledContent != null && iconEnabledContent.length() > 0 )
+		                {
+		                	pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ICON_ENABLED ).append( ": " ).append( iconEnabledContent );
+		                }
+		                
+		                String iconPathContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_ICON_PATH );
+		                if ( iconPathContent != null && iconPathContent.length() > 0 )
+		                {
+		                	pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_ICON_PATH ).append( ": " ).append( iconPathContent ).append( ";" ).append( EOL );
+		                }
+		                
+		                String titlebarEnabledContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_TITLEBAR_ENABLED );
+		                if ( titlebarEnabledContent != null && titlebarEnabledContent.length() > 0 )
+		                {
+		                	pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_TITLEBAR_ENABLED ).append( ": " ).append( titlebarEnabledContent );
+		                }
+		                
+		                String resizebarEnabledContent = desktopPortletDecoration.getProperty( HeaderResource.HEADER_CONFIG_DESKTOP_WINDOW_RESIZEBAR_ENABLED );
+		                if ( resizebarEnabledContent != null && resizebarEnabledContent.length() > 0 )
+		                {
+		                	pOut.append( ( pOut.length() > 0 ) ? ", " : "" ).append( HeaderResource.DESKTOP_JSON_WINDOW_RESIZEBAR_ENABLED ).append( ": " ).append( resizebarEnabledContent );
+		                }
+		                
+		                if ( pOut.length() > 0 )
+		                {
+		                	if ( pDecsOut.length() == 0 )
+		                	{
+		                		pDecsOut.append( DOJO_CONFIG_PORTLET_DECORATIONS_CONFIG_VAR_NAME ).append( " = { " );
+		                	}
+		                	else
+		                	{
+		                		pDecsOut.append( ", " );
+		                	}
+		                	pDecsOut.append( "\"" ).append( desktopPortletDecorationName ).append( "\": { " ).append( pOut.toString() ).append( " }" ).append( EOL );
+		                }
+		            }   // while ( desktopPortletDecorationsNamesIter.hasNext() )
+		            if ( pDecsOut.length() > 0 )
+		            {
+		            	pDecsOut.append( " }" );
+			            dojoConfigAddOn.append( EOL ).append( "    " ).append( pDecsOut.toString() ).append( ";" );
+		            }
+		            
 		            dojoConfigContent = dojoConfigAddOn.toString();
-		            setCachedContent( dojoConfigContentCacheKey, dojoConfigContent );
+		            setCachedContent( dojoConfigContentCacheKey, dojoConfigContent );		            
 	            }
 	            
 	            if ( inclStyleLayout )
@@ -322,7 +409,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
             }
         }
     }
-    
+
     private String getCachedContent( String cacheKey )
     {
     	CacheElement cachedElement = desktopContentCache.get(cacheKey);
@@ -332,8 +419,6 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     }
     private void setCachedContent( String cacheKey, String content )
     {
-    	System.out.println( "S e t   cached desktop content: " + cacheKey );
-        
     	CacheElement cachedElement = desktopContentCache.createElement( cacheKey, content );
     	cachedElement.setTimeToIdleSeconds(desktopContentCache.getTimeToIdleSeconds());
     	cachedElement.setTimeToLiveSeconds(desktopContentCache.getTimeToLiveSeconds());
