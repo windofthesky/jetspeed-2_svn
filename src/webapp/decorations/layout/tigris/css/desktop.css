@@ -17,12 +17,6 @@ limitations under the License.
 
 /*  begin jetspeed desktop settings  */
 
-DIV.portlet
-{
-    margin: 2px;    /* necessary to override margin settings from decorations/layout/css/standard-columns.css */
-                    /* needs to match margin setting for .portletWindowClient */
-}
-
 .layout-tigris #jetspeedPageControls {
     float: right;
     width: 100px;
