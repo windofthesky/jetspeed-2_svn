@@ -134,6 +134,7 @@
         </constructor-arg>
     </bean>
     
+    <!-- The default Worker Monitor -->
     <bean id="org.apache.jetspeed.aggregator.WorkerMonitor"
           class="org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl"
           init-method="start"  destroy-method="stop" >
@@ -156,6 +157,29 @@
         </constructor-arg>          
           
     </bean>
+    
+    <!--
+    Commonj Work Manager and Worker Monitor
+    
+    If you want to use Commonj Work Manager provided by the container, uncomment the followings
+    and replace 'org.apache.jetspeed.aggregator.WorkerMonitor' with 'org.apache.jetspeed.aggregator.CommonjWorkerMonitor' in this file.
+    -->
+    
+    <!--
+    <bean id="JetspeedWorkManager" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef"><value>false</value></property> 
+        <property name="jndiName">
+            <value>java:comp/env/wm/jetspeed</value>
+        </property>
+    </bean>
+    <bean id="org.apache.jetspeed.aggregator.CommonjWorkerMonitor"
+          class="org.apache.jetspeed.aggregator.impl.CommonjWorkerMonitorImpl"
+          init-method="start"  destroy-method="stop" >
+        <constructor-arg index="0">
+            <ref bean="JetspeedWorkManager" />           
+        </constructor-arg>
+    </bean>
+    -->
 
     <bean id="HeaderAggregatorPortal" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
         <constructor-arg index="0">

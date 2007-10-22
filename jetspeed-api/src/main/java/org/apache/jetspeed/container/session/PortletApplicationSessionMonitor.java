@@ -18,6 +18,7 @@ package org.apache.jetspeed.container.session;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionActivationListener;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -34,4 +35,5 @@ public interface PortletApplicationSessionMonitor extends HttpSessionBindingList
     String getPortalSessionId();
     String getContextPath();
     void invalidateSession();
+    HttpSession getSession();
 }

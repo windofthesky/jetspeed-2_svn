@@ -28,8 +28,12 @@
   />   
           
   <bean id="ServletPortletInvokerFactory"
-        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory" 
-  /> 	
+        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory">
+    <!-- Set the following argument to true when you are running the system with parallel rendering mode under WebSphere. -->
+    <constructor-arg index="0">
+        <value>false</value>
+    </constructor-arg>
+  </bean>
 	
   <bean id="javax.portlet.ActionRequest"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"

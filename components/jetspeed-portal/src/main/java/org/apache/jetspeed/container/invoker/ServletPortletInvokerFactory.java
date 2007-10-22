@@ -23,6 +23,22 @@ package org.apache.jetspeed.container.invoker;
  */
 public class ServletPortletInvokerFactory 
 {
+
+    /**
+     * Wheter the servlet request instance should be wrapped or not if it is under WebSphere environment.
+     */
+    protected boolean wrapRequestOfWebSphere;
+    
+    public ServletPortletInvokerFactory()
+    {
+        this(false);
+    }
+
+    public ServletPortletInvokerFactory(boolean wrapRequestOfWebSphere)
+    {
+        this.wrapRequestOfWebSphere = wrapRequestOfWebSphere;
+    }
+
     /**
      * <p>
      * createInstance
@@ -34,7 +50,7 @@ public class ServletPortletInvokerFactory
      */
     public ServletPortletInvoker createInstance() 
     {  
-        return new ServletPortletInvoker();        
+        return new ServletPortletInvoker(this.wrapRequestOfWebSphere);        
     }
 
     /**

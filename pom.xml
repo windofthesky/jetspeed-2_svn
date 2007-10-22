@@ -313,6 +313,8 @@
     <xalan.version>2.4.1</xalan.version>
     <xerces.version>2.3.0</xerces.version>
     <xml-apis.version>1.0.b2</xml-apis.version>
+    <asm.version>2.2</asm.version>
+    <commonj.version>1.1</commonj.version>
   </properties>
 
   <!-- Dependency Configuration -->
@@ -1003,7 +1005,27 @@
         <artifactId>ant</artifactId>
         <version>${ant.version}</version>
       </dependency>
+      
+      <!-- ASM -->
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm-attrs</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
 
+      <!-- CommonJ -->
+      <dependency>
+        <groupId>commonj</groupId>
+        <artifactId>commonj-twm</artifactId>
+        <version>${commonj.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      
     </dependencies>
   </dependencyManagement>
 

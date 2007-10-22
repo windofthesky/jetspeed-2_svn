@@ -34,7 +34,7 @@ public final class CurrentWorkerContext
             }
         };
     
-    private static ThreadLocal currentWorkerContextUsed =
+    private static ThreadLocal parallelRenderingMode =
         new ThreadLocal() {
             protected synchronized Object initialValue() {
                 return new boolean [] { false };
@@ -96,13 +96,13 @@ public final class CurrentWorkerContext
         ((Hashtable) currentWorkerContext.get()).clear();
     }
     
-    public static void setCurrentWorkerContextUsed(boolean used)
+    public static void setParallelRenderingMode(boolean parallelMode)
     {
-        ((boolean []) currentWorkerContextUsed.get())[0] = used;
+        ((boolean []) parallelRenderingMode.get())[0] = parallelMode;
     }
 
-    public static boolean getCurrentWorkerContextUsed()
+    public static boolean getParallelRenderingMode()
     {
-        return ((boolean []) currentWorkerContextUsed.get())[0];
+        return ((boolean []) parallelRenderingMode.get())[0];
     }
 }

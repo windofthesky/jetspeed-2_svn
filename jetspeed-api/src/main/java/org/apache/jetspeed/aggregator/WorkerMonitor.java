@@ -60,10 +60,6 @@ public interface WorkerMonitor
      */
     int getRunningJobsCount();
     
-    void setQueue(Queue queue);
-    
-    Worker getWorker();
-    
     /** 
      * Start processing a job, assign it to a worker thread.
      * 
@@ -71,10 +67,4 @@ public interface WorkerMonitor
      */
     void process(RenderingJob job);
     
-    /**
-     * Release a job on completion
-     * 
-     * @param worker
-     */
-    void release(Worker worker);
 }

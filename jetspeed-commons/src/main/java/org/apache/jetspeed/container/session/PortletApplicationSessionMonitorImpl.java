@@ -70,6 +70,11 @@ public class PortletApplicationSessionMonitorImpl implements PortletApplicationS
         return portalSessionId;
     }
     
+    public HttpSession getSession()
+    {
+        return session;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortletApplicationSessionMonitor#getContextPath()
      */
