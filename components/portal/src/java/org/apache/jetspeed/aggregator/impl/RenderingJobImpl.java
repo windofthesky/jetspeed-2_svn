@@ -36,7 +36,6 @@ import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -169,7 +168,9 @@ public class RenderingJobImpl implements RenderingJob
     {       
         try
         {
-            if (this.timeout > 0) {
+            if (this.timeout > 0) 
+            {
+                CurrentWorkerContext.setParallelRenderingMode(true);
                 this.startTimeMillis = System.currentTimeMillis();
             }
 
@@ -179,7 +180,6 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
-            
             synchronized (portletContent)
             {
                log.debug("Notifying completion of rendering job for fragment " + fragment.getId());                
@@ -207,7 +207,7 @@ public class RenderingJobImpl implements RenderingJob
             // if the current thread is worker, then store attribues in that.
             if (this.workerAttributes != null)
             {
-                isParallelMode = (Thread.currentThread() instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed());                
+                isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
                 if (isParallelMode)
                 {
                     Iterator itAttrNames = this.workerAttributes.keySet().iterator();

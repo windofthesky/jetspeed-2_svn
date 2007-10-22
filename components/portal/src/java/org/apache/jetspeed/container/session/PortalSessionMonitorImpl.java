@@ -64,6 +64,11 @@ public class PortalSessionMonitorImpl implements PortalSessionMonitor
     {
         return sessionKey;
     }
+    
+    public HttpSession getSession()
+    {
+        return session;
+    }
 
 
     /* (non-Javadoc)

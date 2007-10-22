@@ -45,6 +45,13 @@ limitations under the License.
           <param-value>48</param-value>
       </init-param>
   </filter>
+  
+  <!--
+  <filter>
+    <filter-name>PortalFilter</filter-name>
+    <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
+  </filter>
+  -->
 
   <filter-mapping>
     <filter-name>XXSUrlAttackFilter</filter-name>
@@ -56,14 +63,7 @@ limitations under the License.
       <servlet-name>default</servlet-name>
   </filter-mapping>
   
-  <!--
-  <filter>
-    <filter-name>PortalFilter</filter-name>
-    <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
-  </filter>
-  -->
 <!--      
-    
   <filter-mapping>
     <filter-name>PortalFilter</filter-name>
     <url-pattern>/*</url-pattern>    
@@ -286,6 +286,20 @@ limitations under the License.
       <res-type>javax.sql.DataSource</res-type>
       <res-auth>Container</res-auth>
   </resource-ref>
+  
+  <!-- JNDI CommonJ WorkManager resource -->
+  <!--
+  If you want to use Commonj Work Manager provided by the container in parallel rendering, uncomment the following.
+  -->
+  <!--
+  <resource-ref>
+    <description>WorkManager</description>
+    <res-ref-name>wm/jetspeed</res-ref-name>
+    <res-type>commonj.work.WorkManager</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  -->
 
   <!-- Protect LogInRedirectory.jsp.  This will require a login when called -->
   <security-constraint>

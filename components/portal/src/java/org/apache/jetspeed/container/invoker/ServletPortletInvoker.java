@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.container.invoker;
 
+import java.lang.reflect.Constructor;
 import java.io.IOException;
 
 import javax.portlet.ActionRequest;
@@ -43,7 +44,6 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
@@ -78,8 +78,21 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     protected PortletDefinition portletDefinition;
     protected boolean activated = false;
     protected String servletMappingName;
+    
+    /**
+     * Wheter the servlet request instance should be wrapped or not if it is under WebSphere environment.
+     */
+    protected boolean wrapRequestOfWebSphere;
 
- 
+    public ServletPortletInvoker()
+    {
+        this(false);
+    }
+    
+    public ServletPortletInvoker(boolean wrapRequestOfWebSphere)
+    {
+        this.wrapRequestOfWebSphere = wrapRequestOfWebSphere;
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#passivate()
@@ -173,7 +186,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
         // In case of parallel mode, get portlet definition object from the worker thread context.
         // Otherwise, refer the member variable.
-        boolean isParallelMode = (Thread.currentThread() instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed());
+        boolean isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
 
         if (isParallelMode)
         {
@@ -194,11 +207,6 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         }
         String portletApplicationName = webApplicationDefinition.getContextRoot();
 
-        // gather all required data from request and response
-        ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest()).getRequest()).getRequest();
-
-        ServletResponse servletResponse = ((HttpServletResponseWrapper) portletResponse).getResponse();
-
         ServletContext appContext = jetspeedContext.getContext(portletApplicationName);
         if (null == appContext)
         {
@@ -218,6 +226,10 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             log.error(message);
             throw new PortletException(message);
         }
+
+        // gather all required data from request and response
+        ServletRequest servletRequest = getServletRequestForContainer(portletRequest, appContext);
+        ServletResponse servletResponse = getServletResponseForContainer(portletResponse);
 
         try
         {
@@ -297,4 +309,75 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
     }
 
+    protected ServletRequest getServletRequestForContainer(PortletRequest portletRequest, ServletContext appContext)
+    {
+        ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest()).getRequest()).getRequest();
+        
+        if (this.wrapRequestOfWebSphere && CurrentWorkerContext.getParallelRenderingMode())
+        {
+            String entAppNameOnWebSphere = (String) appContext.getAttribute("com.ibm.websphere.servlet.enterprise.application.name");
+            
+            // If the container is WebSphere, wrap the request.
+            if (entAppNameOnWebSphere != null)
+            {
+                try
+                {
+                    servletRequest = wrapWebSphereSRTServletRequest(servletRequest);
+                }
+                catch (Throwable th)
+                {
+                    log.error("Failed to load websphere system classes.", th);
+                }
+            }
+        }
+        
+        return servletRequest;
+    }
+
+    protected ServletResponse getServletResponseForContainer(PortletResponse portletResponse)
+    {
+        ServletResponse servletResponse = ((HttpServletResponseWrapper) portletResponse).getResponse();
+        return servletResponse;
+    }
+
+    private static Class adjustedSRTServletRequestClazz;
+    private static Constructor adjustedSRTServletRequestClazzConstructor;
+    
+    private static ServletRequest wrapWebSphereSRTServletRequest(ServletRequest servletRequest) throws Throwable
+    {
+        if (adjustedSRTServletRequestClazzConstructor == null)
+        {
+            if (adjustedSRTServletRequestClazz == null)
+            {
+                synchronized (ServletPortletInvoker.class)
+                {
+                    if (adjustedSRTServletRequestClazz == null)
+                    {
+                        adjustedSRTServletRequestClazz = new AdjustedSRTServletRequestClassLoader().defineAdjustedSRTServletRequestClass();
+                    }
+                }
+            }
+            
+            adjustedSRTServletRequestClazzConstructor = adjustedSRTServletRequestClazz.getConstructors()[0];
+        }
+
+        Object [] args = new Object [] { servletRequest };
+        return (ServletRequest) adjustedSRTServletRequestClazzConstructor.newInstance(args);
+    }
+    
+    private static class AdjustedSRTServletRequestClassLoader extends ClassLoader
+    {
+        public AdjustedSRTServletRequestClassLoader()
+        {
+            super(PortletRequestContext.class.getClassLoader());
+        }
+        
+        public Class defineAdjustedSRTServletRequestClass() throws Throwable
+        {
+            byte [] bytes = AdjustedSRTServletRequestDump.dumpInner1();
+            Class inner1 = defineClass("org.apache.jetspeed.container.invoker.AdjustedSRTServletRequest$1", bytes, 0, bytes.length);
+            bytes = AdjustedSRTServletRequestDump.dump();
+            return defineClass("org.apache.jetspeed.container.invoker.AdjustedSRTServletRequest", bytes, 0, bytes.length);
+        }
+    }
 }

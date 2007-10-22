@@ -100,7 +100,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
     public void start()
     {
         addWorkers(this.minWorkers);
-        setQueue(new FIFOQueue());
+        this.queue = new FIFOQueue();
 
         jobMonitor = new RenderingJobTimeoutMonitor(1000);
         jobMonitor.start();
@@ -112,11 +112,6 @@ public class WorkerMonitorImpl implements WorkerMonitor
     		jobMonitor.endThread();
     	jobMonitor = null;
     	
-    }
-    
-    public void setQueue(Queue queue)
-    {
-        this.queue = queue;
     }
 
     /**
@@ -152,7 +147,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
      *
      * @return a Worker from the idle pool or null if non available
      */
-    public Worker getWorker()
+    protected Worker getWorker()
     {
         synchronized(this.workers)
         {
@@ -214,7 +209,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
      * Put back the worker in the idle queue unless there are pending jobs and
      * worker can still be committed to a new job before being released.
      */
-    public void release(Worker worker)
+    protected void release(Worker worker)
     {
         // if worker can still proces some jobs assign the first
         // backlog job to this worker, else reset job count and put

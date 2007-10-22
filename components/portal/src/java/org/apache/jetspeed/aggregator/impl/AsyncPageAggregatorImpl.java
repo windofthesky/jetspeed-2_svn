@@ -197,7 +197,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
             log.info("Aggregating " + page.getPath() + ". Parallel: " + parallelJobCount + ", Sequential: " + sequentialJobCount);
         }
         
-        CurrentWorkerContext.setCurrentWorkerContextUsed(parallelJobCount > 0 && sequentialJobCount > 0);
+        CurrentWorkerContext.setParallelRenderingMode(parallelJobCount > 0);
 
         // kick off the parallel rendering jobs
         Iterator iter = parallelJobs.iterator();
@@ -237,6 +237,9 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         {
             log.error("Exception during synchronizing all portlet rendering jobs.", e);
         }
+        
+        // Now, restore it to non parallel mode for rendering layout portlets.
+        CurrentWorkerContext.setParallelRenderingMode(false);
         
         // render layout fragments.
         iter = layoutFragments.iterator();

@@ -200,7 +200,7 @@ public class WorkerImpl extends Thread implements Worker
             this.jobCount++;
 
             // release the worker
-            monitor.release(this);
+            ((WorkerMonitorImpl) monitor).release(this);
         }
     }
     

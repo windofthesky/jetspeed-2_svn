@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -132,8 +131,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     {
         RequestContext rc = null;
 
-        Thread ct = Thread.currentThread();
-        if (ct instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed())
+        if (CurrentWorkerContext.getParallelRenderingMode())
         {
             rc = (RequestContext) CurrentWorkerContext.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         }

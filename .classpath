@@ -119,5 +119,8 @@
 	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.5.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/ehcache/jars/ehcache-1.2.4.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portlet-api/jars/portlet-api-1.0.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-2.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-attrs-2.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commonj/jars/commonj-twm-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

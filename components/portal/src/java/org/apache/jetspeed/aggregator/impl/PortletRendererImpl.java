@@ -511,7 +511,12 @@ public class PortletRendererImpl implements PortletRenderer
                                                          statistics, expirationCache, contentIsCached );
             
         }
-        setTimeoutOnJob(timeoutMetadata, rJob);
+        
+        if (isParallel)
+        {
+            setTimeoutOnJob(timeoutMetadata, rJob);
+        }
+        
         return rJob;
     }
  

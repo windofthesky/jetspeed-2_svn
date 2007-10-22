@@ -122,6 +122,19 @@ limitations under the License.
         	<groupId>ehcache</groupId>
         	<artifactId>ehcache</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>asm</groupId>
+        	<artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>asm</groupId>
+        	<artifactId>asm-attrs</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>commonj</groupId>
+        	<artifactId>commonj-twm</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>

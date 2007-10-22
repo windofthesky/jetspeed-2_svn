@@ -45,7 +45,6 @@ import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 
 /**
@@ -210,7 +209,7 @@ public class JetspeedContainerServlet extends HttpServlet
         
         try
         {
-            isParallelMode = (Thread.currentThread() instanceof Worker || CurrentWorkerContext.getCurrentWorkerContextUsed());
+            isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
 
             if (isParallelMode)
             {

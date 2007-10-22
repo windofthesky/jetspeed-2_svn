@@ -23,6 +23,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * PortalSessionsManagerImpl
  *
@@ -31,6 +34,9 @@ import javax.servlet.http.HttpSession;
  */
 public class PortalSessionsManagerImpl implements PortalSessionsManager
 {
+
+    private static Log log = LogFactory.getLog(PortalSessionsManagerImpl.class);
+    
     private static final class PortalSessionRegistry
     {
         long portalSessionKey;
@@ -139,6 +145,13 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     {
         if ( portalSession != null && paSession != null )
         {
+            if (portalSession == paSession)
+            {
+                // On WebSphere 6.1.0.11, strange symptoms like this occur...
+                log.warn("servlet context name of paSession(" + paSession.getId() + "): " + paSession.getServletContext().getServletContextName());
+                return;
+            }
+
             PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(portalSession.getId());
             if (psr == null)
             {
@@ -225,7 +238,9 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             psr.psm = new PortalSessionMonitorImpl(-1);
             portalSessionsRegistry.put(restoredPasm.getPortalSessionId(), psr);
         }
+        
         // save the restored instance
+        restoredPasm.getSession().setAttribute(PortletApplicationSessionMonitor.SESSION_KEY, restoredPasm);
         psr.sessionMonitors.put(restoredPasm.getContextPath(), restoredPasm);
     }
 
