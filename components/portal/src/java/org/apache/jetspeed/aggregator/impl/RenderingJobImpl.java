@@ -277,37 +277,47 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
-            long end = System.currentTimeMillis();            
-            boolean exceededTimeout = portletTracking.exceededTimeout(end - start, window);
-            if (fragment.getOverriddenContent() != null)
-                portletContent.completeWithError();
-            else
-                portletContent.complete();
-            
-            if (isParallelMode)
+            try
             {
-                this.renderer.addTitleToHeader(curWindow, fragment,
-                                               this.request, this.response,
-                                               this.dispatcher, this.contentIsCached);
-            
-                CurrentWorkerContext.removeAllAttributes();
-            }
-            
-            if (fragment.getType().equals(ContentFragment.PORTLET))
-            {
-                if (statistics != null)
+                if (isParallelMode)
                 {
-                    statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);
+                    this.renderer.addTitleToHeader(curWindow, fragment,
+                                                   this.request, this.response,
+                                                   this.dispatcher, this.contentIsCached);
+                
+                    CurrentWorkerContext.removeAllAttributes();
                 }
-                if (exceededTimeout)
+                
+                if (fragment.getType().equals(ContentFragment.PORTLET))
                 {
-                    // took too long to render
-                    log.info("Portlet Exceeded timeout: " + curWindow.getPortletEntity().getPortletDefinition().getName() + " for window " + curWindow.getId());
-                    portletTracking.incrementRenderTimeoutCount(curWindow);
+                    long end = System.currentTimeMillis();
+                    boolean exceededTimeout = portletTracking.exceededTimeout(end - start, window);
+                    
+                    if (statistics != null)
+                    {
+                        statistics.logPortletAccess(requestContext, fragment.getName(), PortalStatistics.HTTP_OK, end - start);
+                    }
+                    if (exceededTimeout)
+                    {
+                        // took too long to render
+                        log.info("Portlet Exceeded timeout: " + curWindow.getPortletEntity().getPortletDefinition().getName() + " for window " + curWindow.getId());
+                        portletTracking.incrementRenderTimeoutCount(curWindow);
+                    }
+                    else
+                    {
+                        portletTracking.success(curWindow);
+                    }
+                }
+            }
+            finally
+            {
+                if (fragment.getOverriddenContent() != null)
+                {
+                    portletContent.completeWithError();
                 }
                 else
                 {
-                    portletTracking.success(curWindow);
+                    portletContent.complete();
                 }
             }
         }
