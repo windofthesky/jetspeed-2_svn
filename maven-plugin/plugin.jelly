@@ -281,7 +281,7 @@
     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/conf/tomcat/${context_file_source}"
           tofile="${portal.conf.dir}/tomcat/context.xml" overwrite="true">
       <filterset begintoken="@" endtoken="@">
-        <filter token="CONTEXT" value="${org.apache.jetspeed.portal.artifactId}"/>
+        <filter token="CONTEXT" value="${org.apache.jetspeed.portal.contextName}"/>
         <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
         <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
         <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
@@ -585,22 +585,21 @@
     
   <goal name="j2:portal.deploy">
     <attainGoal name="j2:remove.wars"/>
-    <echo message="Deploying ${org.apache.jetspeed.portal.artifactId}"/>
-    <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}"/>
+    <echo message="Deploying ${org.apache.jetspeed.portal.artifactId} under context ${org.apache.jetspeed.portal.contextName}"/>
+    <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.contextName}"/>
     <copy file="${maven.repo.local}/${org.apache.jetspeed.portal.groupId}/wars/${org.apache.jetspeed.portal.artifactId}-${org.apache.jetspeed.portal.currentVersion}.war"
-          tofile="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"
+          tofile="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.contextName}.war"
           verbose="true" />
-    <unwar src="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"
-           dest="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}"/>
+    <unwar src="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.contextName}.war"
+           dest="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.contextName}"/>
 
     <j:set var="portal.conf.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.conf.dir}"/>      
 
     <copy file="${portal.conf.dir}/tomcat/context.xml"
-          tofile="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/${org.apache.jetspeed.portal.artifactId}.xml"
+          tofile="${org.apache.jetspeed.server.home}/conf/Catalina/localhost/${org.apache.jetspeed.portal.contextName}.xml"
           overwrite="true"/>
 
-    <attainGoal name="j2:catalina.base.shared"/>
-    <attainGoal name="j2:catalina.shared"/>
+    <attainGoal name="j2:copy.shared.deps"/>
   </goal>
     
   <goal name="j2:baseDeploy">
@@ -643,8 +642,8 @@
     
   <goal name="j2:remove.wars">
       <echo>Remove war files, make sure to shutdown server first...</echo>
-      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}"/>
-      <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.artifactId}.war"/>
+      <delete dir="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.contextName}"/>
+      <delete file="${org.apache.jetspeed.deploy.war.dir}/${org.apache.jetspeed.portal.contextName}.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/demo"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/demo.war"/>
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/j2-admin"/>
@@ -656,7 +655,7 @@
       <delete dir="${org.apache.jetspeed.deploy.war.dir}/jpetstore"/>
       <delete file="${org.apache.jetspeed.deploy.war.dir}/jpetstore.war"/>
       <j:set var="context_dir" value="${org.apache.jetspeed.server.home}/conf/Catalina/localhost"/>
-      <delete file="${context_dir}/${org.apache.jetspeed.portal.artifactId}.xml"/>
+      <delete file="${context_dir}/${org.apache.jetspeed.portal.contextName}.xml"/>
       <delete file="${context_dir}/j2-admin.xml"/>
       <delete file="${context_dir}/jpetstore.xml"/>
   </goal>
@@ -673,11 +672,6 @@
     <j:if test="${recreateDB}">
       <attainGoal name="j2:db.recreate"/>
     </j:if>
-
-    <attainGoal name="j2:remove.wars"/>
-      
-    <!-- Dependency copying -->
-    <attainGoal name="j2:copy.shared.deps"/>
 
     <attainGoal name="${deployType}"/>
   </goal>
