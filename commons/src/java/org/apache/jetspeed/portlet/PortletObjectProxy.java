@@ -39,6 +39,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.jetspeed.util.BaseObjectProxy;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 
@@ -74,7 +75,17 @@ public class PortletObjectProxy extends BaseObjectProxy
     {
         Class proxiedClass = proxiedObject.getClass();
         ClassLoader classLoader = proxiedClass.getClassLoader();
-        Class [] proxyInterfaces = new Class [] { Portlet.class };
+        Class [] proxyInterfaces = null;
+        
+        if (proxiedObject instanceof SupportsHeaderPhase)
+        {
+            proxyInterfaces = new Class [] { Portlet.class, SupportsHeaderPhase.class };
+        }
+        else
+        {
+            proxyInterfaces = new Class [] { Portlet.class };
+        }
+        
         InvocationHandler handler = new PortletObjectProxy(proxiedObject);
         return Proxy.newProxyInstance(classLoader, proxyInterfaces, handler);
     }
@@ -117,6 +128,10 @@ public class PortletObjectProxy extends BaseObjectProxy
             {
                 result = method.invoke(this.portletObject, args);
             }
+        }
+        else if (declaringClass == SupportsHeaderPhase.class)
+        {
+            result = method.invoke(this.portletObject, args);
         }
         else
         {
