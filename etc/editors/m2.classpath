@@ -117,5 +117,8 @@
     <classpathentry kind="var" path="M2_REPO/myfaces/myfaces-api/1.1.0/myfaces-api-1.1.4.jar"/>
     <classpathentry kind="var" path="M2_REPO/myfaces/myfaces-impl/1.1.0/myfaces-impl-1.1.4.jar"/>
     <classpathentry kind="var" path="M2_REPO/myfaces/tomahawk/1.1.0/tomahawk-1.1.4.jar"/>
+    <classpathentry kind="var" path="M2_REPO/asm/asm/2.2/asm-2.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/asm/asm-attr/2.2/asm-attr-2.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commonj/commonj-twm/1.1/asm-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
