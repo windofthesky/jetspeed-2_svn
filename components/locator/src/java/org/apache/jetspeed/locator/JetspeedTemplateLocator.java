@@ -136,18 +136,16 @@ public class JetspeedTemplateLocator implements TemplateLocator
     {
         for (int ix = 0; ix < roots.size(); ix++)
         {        
-            TemplateDescriptor template = locateTemplate(locator, (String)roots.get(ix));
+            TemplateDescriptor template = locateTemplate(locator, (String)roots.get(ix), this.useNameCache);
             if (null == template)
             {
                 // Try to locate it directly on file system, perhaps it was recently added
-                useNameCache = false;
-                template = locateTemplate(locator, (String)roots.get(ix));
+                template = locateTemplate(locator, (String)roots.get(ix), false);
                 if (null != template)
                 {
                     // add it to the map
                     templateMap.put(template.getAbsolutePath(), null);
                 }
-                useNameCache = true;   
             }
             if (template != null)
             {
@@ -166,7 +164,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
      *
      * @return TemplateDescriptor the exact path to the template, or null if not found.
      */
-    private TemplateDescriptor locateTemplate(LocatorDescriptor locator, String root)
+    private TemplateDescriptor locateTemplate(LocatorDescriptor locator, String root, boolean useCache)
     {
         String templateName = locator.getName();       
         String path = locator.toPath();
@@ -183,7 +181,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
             realPath = root + workingPath;
 
             // the current template exists, return the corresponding path
-            if (templateExists(realPath))
+            if (templateExists(realPath, useCache))
             {
                 if (log.isDebugEnabled())
                 {
@@ -213,19 +211,23 @@ public class JetspeedTemplateLocator implements TemplateLocator
      *
      * @return True when the template is found, otherwise false.
      */
-    public boolean templateExists(String templateKey)
+    public boolean templateExists(String templateKey, boolean useCache)
     {
         if (null == templateKey)
         {
             return false;
         }
-        if (useNameCache == true)
+        if (useCache == true)
         {
             return templateMap.containsKey(templateKey);
         }
         return (new File(templateKey).exists());
     }
-    
+
+    public boolean templateExists(String templateKey)
+    {
+        return templateExists(templateKey, this.useNameCache);
+    }
    
     public LocatorDescriptor createFromString(String path)
         throws TemplateLocatorException
