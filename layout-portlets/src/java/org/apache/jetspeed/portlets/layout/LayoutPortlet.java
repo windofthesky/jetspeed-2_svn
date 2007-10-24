@@ -162,7 +162,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 TemplateDescriptor template = null;
                 Configuration props = getConfiguration(request, helpPage);
                 String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
-                String path = helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext;                               
+                String path = helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help" + ext;                               
                 template = jpt.getTemplate(path, JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE);
                 if (template == null)
                 {

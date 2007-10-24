@@ -58,6 +58,12 @@
                     <td>no*</td>
                     <td>yes</td>
                 </tr>
+                <tr>
+                    <td>AsyncPageAggregator + CommonJ</td>
+                    <td>A multi-threaded, asynchronous PSML page aggregator running CommonJ Work Monitor threads, tested only with IBM Websphere 6.1 only.</td>
+                    <td>yes</td>
+                    <td>yes</td>
+                </tr>                
             </table>            
             <i>* multi-threading is accomplished with the Jetspeed Desktop combined with the PortletAggregator</i>
         </section>
@@ -228,7 +234,7 @@ For other web containers like Tomcat which doesn't have this "problem", nothing 
     </bean>
 ]]>            			
 <p>                        				
-   Also replace all references to org.apache.jetspeed.aggregator.WorkerMonitor with org.apache.jetspeed.aggregator.CommonjWorkerMonitor in WEB-INF/assembly/aggregation.xml:
+   Also replace all references to org.apache.jetspeed.aggregator.WorkerMonitor with org.apache.jetspeed.aggregator.CommonjWorkerMonitor in WEB-INF/assembly/aggregation.xml.
 </p>
 		</subsection>
         </section>
