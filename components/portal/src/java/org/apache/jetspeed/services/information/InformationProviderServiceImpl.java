@@ -59,20 +59,39 @@ public class InformationProviderServiceImpl implements Factory, InformationProvi
 
     public DynamicInformationProvider getDynamicProvider(HttpServletRequest request)
     {
-        DynamicInformationProvider provider =
-            (DynamicInformationProvider) request.getAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider");
+        DynamicInformationProvider provider = null;
+        
+        boolean isParallel = CurrentWorkerContext.getParallelRenderingMode();
+        ServletRequest servletRequest = null;
+        
+        if (isParallel)
+        {
+            // request should be an instance of org.apache.jetspeed.engine.servlet.ServletRequestImpl
+            // unwrap the real request instance provided by the container to synchronize
+            servletRequest = ((HttpServletRequestWrapper) request).getRequest();
+
+            // if it is not an instance of HttpServletRequestWrapper any more, then it is not AdjustedSRTServletRequest instance.
+            if (servletRequest instanceof HttpServletRequestWrapper)
+            {
+                servletRequest = ((HttpServletRequestWrapper) servletRequest).getRequest();
+            }
+            
+            synchronized (servletRequest)
+            {
+                provider = (DynamicInformationProvider) servletRequest.getAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider");
+            }
+        }
+        else
+        {
+            provider = (DynamicInformationProvider) request.getAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider");
+        }
 
         if (provider == null)
         {
             provider = new DynamicInformationProviderImpl(request, servletConfig);
             
-            if (CurrentWorkerContext.getParallelRenderingMode())
+            if (isParallel)
             {
-                // request should be an instance of org.apache.jetspeed.engine.servlet.ServletRequestImpl
-                // unwrap the real request instance provided by the container to synchronize
-                
-                ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper) request).getRequest()).getRequest();
-
                 synchronized (servletRequest)
                 {
                     servletRequest.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
