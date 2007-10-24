@@ -334,7 +334,10 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
             {
                 user = (User) userIter.next();
                 userName = SecurityHelper.getPrincipal(user.getSubject(), UserPrincipal.class).getName();
-                ums.removeUser(userName);
+                if (!userName.equals(ums.getAnonymousUser()))
+                {
+                    ums.removeUser(userName);
+                }
             }
         }
         catch (SecurityException e)
