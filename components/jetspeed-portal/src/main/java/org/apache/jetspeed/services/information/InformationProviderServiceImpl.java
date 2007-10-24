@@ -19,6 +19,9 @@ package org.apache.jetspeed.services.information;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.pluto.factory.Factory;
 import org.apache.pluto.services.information.DynamicInformationProvider;
@@ -54,7 +57,7 @@ public class InformationProviderServiceImpl implements Factory, InformationProvi
         return staticInformationProvider;
     }
 
-    public DynamicInformationProvider getDynamicProvider(javax.servlet.http.HttpServletRequest request)
+    public DynamicInformationProvider getDynamicProvider(HttpServletRequest request)
     {
         DynamicInformationProvider provider =
             (DynamicInformationProvider) request.getAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider");
@@ -65,9 +68,14 @@ public class InformationProviderServiceImpl implements Factory, InformationProvi
             
             if (CurrentWorkerContext.getParallelRenderingMode())
             {
-                synchronized (request)
+                // request should be an instance of org.apache.jetspeed.engine.servlet.ServletRequestImpl
+                // unwrap the real request instance provided by the container to synchronize
+                
+                ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper) request).getRequest()).getRequest();
+
+                synchronized (servletRequest)
                 {
-                    request.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
+                    servletRequest.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
                 }
             }
             else
