@@ -269,6 +269,11 @@
   <goal name="j2:portal.conf.tomcat" prereqs="j2:_check.required.properties">
     <j:set var="portal.conf.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.conf.dir}"/>      
     <mkdir dir="${portal.conf.dir}/tomcat"/>
+    <j:set var="contextPath" value="/${org.apache.jetspeed.portal.contextName}"/>
+    <!-- for Tomcat 5.0 which requires the context path to be defined check and adjust for ROOT deployment -->
+    <j:if test="${contextPath == '/ROOT'}">
+      <j:set var="contextPath" value=""/>        
+    </j:if>
     <j:set var="catalina_version_major" value="${org.apache.jetspeed.catalina.version.major}"/>
     <j:choose>
       <j:when test="${catalina_version_major == '5.5'}">
@@ -277,11 +282,12 @@
       <j:otherwise>
         <j:set var="context_file_source" value="jetspeed-tomcat-5.xml"/>
       </j:otherwise>
-    </j:choose>
+    </j:choose>    
     <copy file="${org.apache.jetspeed.plugin.root}/plugin-resources/conf/tomcat/${context_file_source}"
           tofile="${portal.conf.dir}/tomcat/context.xml" overwrite="true">
       <filterset begintoken="@" endtoken="@">
         <filter token="CONTEXT" value="${org.apache.jetspeed.portal.contextName}"/>
+        <filter token="CONTEXTPATH" value="${contextPath}"/>
         <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
         <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
         <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>
