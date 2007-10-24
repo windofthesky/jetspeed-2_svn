@@ -375,8 +375,28 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         public Class defineAdjustedSRTServletRequestClass() throws Throwable
         {
             byte [] bytes = AdjustedSRTServletRequestDump.dumpInner1();
+            
+            //if (log.isDebugEnabled())
+            //{
+            //    java.io.File classFile = java.io.File.createTempFile("AdjustedSRTServletRequest$1.class.", ".tmp");
+            //    java.io.FileOutputStream fos = new java.io.FileOutputStream(classFile);
+            //    fos.write(bytes, 0, bytes.length);
+            //    fos.close();
+            //    log.debug("Generated a class. See " + classFile.getCanonicalPath());
+            //}
+            
             Class inner1 = defineClass("org.apache.jetspeed.container.invoker.AdjustedSRTServletRequest$1", bytes, 0, bytes.length);
             bytes = AdjustedSRTServletRequestDump.dump();
+            
+            //if (log.isDebugEnabled())
+            //{
+            //    java.io.File classFile = java.io.File.createTempFile("AdjustedSRTServletRequest.class.", ".tmp");
+            //    java.io.FileOutputStream fos = new java.io.FileOutputStream(classFile);
+            //    fos.write(bytes, 0, bytes.length);
+            //    fos.close();
+            //    log.debug("Generated a class. See " + classFile.getCanonicalPath());
+            //}
+            
             return defineClass("org.apache.jetspeed.container.invoker.AdjustedSRTServletRequest", bytes, 0, bytes.length);
         }
     }
