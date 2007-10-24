@@ -17,7 +17,10 @@
 package org.apache.jetspeed.components.test;
 
 import java.io.File;
+import java.util.Properties;
 
+import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -54,12 +57,18 @@ public abstract class AbstractSpringTestCase extends TestCase
             if (bootConfigurations != null)
             {
                 ApplicationContext bootContext = new ClassPathXmlApplicationContext(bootConfigurations, true);
-                ctx = new ClassPathXmlApplicationContext(getConfigurations(), true, bootContext);
+                ctx = new ClassPathXmlApplicationContext(getConfigurations(), false, bootContext);
             }
             else
             {
-                ctx = new ClassPathXmlApplicationContext(getConfigurations(), true);
+                ctx = new ClassPathXmlApplicationContext(getConfigurations(), false);
             }
+            PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
+            Properties p = new Properties();
+            p.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, System.getProperty("user.dir")+"/target/test-classes/webapp");
+            ppc.setProperties(p);
+            ctx.addBeanFactoryPostProcessor(ppc);
+            ctx.refresh();
         }
     }
 
