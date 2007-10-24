@@ -54,6 +54,8 @@ public abstract class RegistrySupportedTestCase extends AbstractPrefsSupportedTe
     {
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
+        confList.add("jetspeed-base.xml");
+        confList.add("page-manager.xml");
         confList.add("registry.xml");
         return (String[]) confList.toArray(new String[1]);
     }
