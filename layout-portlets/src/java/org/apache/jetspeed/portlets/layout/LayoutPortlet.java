@@ -86,14 +86,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected PortletWindowAccessor windowAccess;
     protected TemplateLocator decorationLocator;
     
-    //B: mk
-    private Map layoutTemplateProperties = new HashMap();
+    private Map layoutTemplatesCache = new HashMap();
     public static final String DEFAULT_TEMPLATE_EXT = ".vm";
     public static final String TEMPLATE_EXTENSION_KEY = "template.extension";
     public static final String DEFAULT_TEMPLATE_TYPE = "velocity";
     public static final String TEMPLATE_TYPE_KEY = "template.type";
     
-    //E: mk
     public void init( PortletConfig config ) throws PortletException
     {
         super.init(config);
@@ -157,11 +155,31 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_HELP, helpPage);
             }
 
-            //Mohan: closed task
-            Configuration props = getConfiguration(request, helpPage);
-            String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
-            absHelpPage = jpt.getTemplate(helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help" + ext,
-                    JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+            String templateKey = helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE  + "-help";
+            CachedTemplate ct = (CachedTemplate)layoutTemplatesCache.get(templateKey);
+            if (ct == null)
+            {
+                TemplateDescriptor template = null;
+                Configuration props = getConfiguration(request, helpPage);
+                String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
+                String path = helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext;                               
+                template = jpt.getTemplate(path, JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE);
+                if (template == null)
+                {
+                    String msg = "*** FAILED getTemplate:" + path;
+                    throw new TemplateLocatorException(msg);
+                }
+                else
+                {
+                    synchronized(layoutTemplatesCache)
+                    {
+                        ct = new CachedTemplate(templateKey, template, props);
+                        layoutTemplatesCache.put(templateKey, ct);
+                    }                
+                }
+            }
+                
+            absHelpPage = ct.getTemplate().getAppRelativePath();            
             log.debug("Path to help page for LayoutPortlet " + absHelpPage);
             request.setAttribute(PARAM_VIEW_PAGE, absHelpPage);
         }
@@ -253,13 +271,32 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 }
             }
             
-            //Mohan: closed task
-            Configuration props = getConfiguration(request, viewPage);
-            String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
-
-            
-            absViewPage = jpt.getTemplate(viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext,
-                    JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAppRelativePath();
+            String templateKey = viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE;
+            CachedTemplate ct = (CachedTemplate)layoutTemplatesCache.get(templateKey);
+            if (ct == null)
+            {
+                TemplateDescriptor template = null;
+                Configuration props = getConfiguration(request, viewPage);
+                String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
+                String path = viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext;
+                
+                template = jpt.getTemplate(path, JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE);
+                if (template == null)
+                {
+                    String msg = "*** FAILED getTemplate:" + path;
+                    throw new TemplateLocatorException(msg);
+                }
+                else
+                {
+                    synchronized(layoutTemplatesCache)
+                    {
+                        ct = new CachedTemplate(templateKey, template, props);
+                        layoutTemplatesCache.put(templateKey, ct);
+                    }
+                
+                }
+            }
+            absViewPage = ct.getTemplate().getAppRelativePath();
             log.debug("Path to view page for LayoutPortlet " + absViewPage);
             request.setAttribute(PARAM_VIEW_PAGE, absViewPage);
         }
@@ -608,7 +645,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         catch (TemplateLocatorException e)
         {
             log.error("Unable to locate template: " + path, e);
-//            System.out.println("Unable to locate template: " + path);
             throw e;
         }
     }
@@ -652,13 +688,8 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         {
             key = templatePropertiesPath;
         }
-        props = (Configuration)this.layoutTemplateProperties.get(key);
-        
-        if ( props != null )
+        if (log.isDebugEnabled())
         {
-            return props;
-        }
-        if (log.isDebugEnabled()){
             log.debug(
                     "Template descriptor path:<" + templatePropertiesPath + ">"
             );
@@ -701,7 +732,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             }
         }
 
-        this.layoutTemplateProperties.put(key, props);
         if (log.isDebugEnabled())
         {
             log.debug("Template layout.properties extension is:<" + props.getString(TEMPLATE_EXTENSION_KEY));
@@ -709,4 +739,35 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         return props;
     }
 
+    class CachedTemplate
+    {
+        private String key;
+        private TemplateDescriptor template;
+        private Configuration config;
+        
+        public CachedTemplate(String key, TemplateDescriptor template, Configuration config)
+        {
+            this.key = key;
+            this.template = template;
+            this.config = config;
+        }
+
+        
+        public Configuration getConfig()
+        {
+            return config;
+        }
+
+        
+        public String getKey()
+        {
+            return key;
+        }
+
+        
+        public TemplateDescriptor getTemplate()
+        {
+            return template;
+        }
+    }
 }

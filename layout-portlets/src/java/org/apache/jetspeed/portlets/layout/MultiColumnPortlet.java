@@ -121,10 +121,15 @@ public class MultiColumnPortlet extends LayoutPortlet
 
         ContentPage requestPage = context.getPage();       
         PageEditAccess pageEditAccess = (PageEditAccess)context.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
-        if ( requestPage == null || pageEditAccess == null )
+        if ( requestPage == null)
         {
             // Targetting this portlet REQUIRES that the ProfilerValve has been invoked!
-            throw new PortletException("Current request page or PageEditAccess not available.");
+            throw new PortletException("Current request page not available.");
+        }
+        if (pageEditAccess == null)
+        {
+            // Targetting this portlet REQUIRES that the ProfilerValve has been invoked!
+            throw new PortletException("Current PageEditAccess not available.");            
         }
         
         Boolean editing = ( pageEditAccess.isEditing() && 
@@ -244,10 +249,10 @@ public class MultiColumnPortlet extends LayoutPortlet
                         {
                             Fragment fragment = pageManager.newFragment();
                             fragment.setType(Fragment.LAYOUT);
-                            fragment.setName(layout);
-                            
+                            fragment.setName(layout);                            
                             targetFragment.getFragments().add(fragment);
-                            pageManager.updatePage(requestPage);            
+                            pageManager.updatePage(requestPage);
+                            clearLayoutAttributes(request);                            
                         }
                         catch (Exception e)
                         {
@@ -263,8 +268,8 @@ public class MultiColumnPortlet extends LayoutPortlet
                             pageManager.updatePage(requestPage);
                             entityAccess.updatePortletEntity(window.getPortletEntity(), targetFragment);
                             entityAccess.storePortletEntity(window.getPortletEntity());
-
                             windowAccess.createPortletWindow(window.getPortletEntity(), targetFragment.getId());
+                            clearLayoutAttributes(request);
                             return;
                         }
                         catch (Exception e)
@@ -311,7 +316,7 @@ public class MultiColumnPortlet extends LayoutPortlet
                                             && !jsPageShortTitle.equals("") ? jsPageShortTitle
                                             : jsPageName);
                             pageManager.updatePage(page);
-
+                            clearLayoutAttributes(request);                            
                             List orderList = parent.getDocumentOrder();
                             if (orderList != null)
                             {
@@ -960,8 +965,8 @@ public class MultiColumnPortlet extends LayoutPortlet
                     Iterator fragmentsIter = requestPage.getRootFragment().getFragments().iterator();
                     while(fragmentsIter.hasNext())
                     {
-                    	Fragment fragment = (Fragment) fragmentsIter.next();
-                    	if ( fragment == null )
+                        Fragment fragment = (Fragment) fragmentsIter.next();
+                        if ( fragment == null )
                         {
                             // ignore no longer consistent page definition
                             return;
@@ -1011,6 +1016,14 @@ public class MultiColumnPortlet extends LayoutPortlet
         }
     }
         
+    protected void clearLayoutAttributes(ActionRequest request)
+    {
+        request.getPortletSession().removeAttribute(PortalReservedParameters.PAGE_LAYOUT_VIEW);
+        request.getPortletSession().removeAttribute(PortalReservedParameters.PAGE_LAYOUT_SOLO);
+        request.getPortletSession().removeAttribute(PortalReservedParameters.PAGE_LAYOUT_MAX);        
+        request.getPortletSession().removeAttribute(PortalReservedParameters.PAGE_LAYOUT_HELP);
+    }
+
     protected int getFragmentNestingLevel(Page page, String fragmentId)
     {
         Fragment root = page.getRootFragment();
