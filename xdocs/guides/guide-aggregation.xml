@@ -130,6 +130,107 @@
             </p>
             
         </section>
-        
+        <section name="Multithreaded Aggregation with Websphere">
+            <p>Running mulithreaded aggregation with Jetspeed requires the following configuration steps.
+            Note that steps 1 and 2 are required for all Websphere installations and are not specific to multithreaded aggregation.           
+            </p>
+            <subsection name='1. Login Filter'>
+            <p>Configure the WEB-INF/web.xml to use the PortalFilter for logging in by uncommented  the PortalFilter and its mapping:</p>
+                <![CDATA[
+  <filter>
+    <filter-name>PortalFilter</filter-name>
+    <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
+  </filter>
+...
+  <filter-mapping>
+    <filter-name>PortalFilter</filter-name>
+    <url-pattern>/*</url-pattern>    
+  </filter-mapping>               
+]]>            
+            </subsection>
+            <subsection name='2.Portal Login Portlet'>
+            <p>Edit the default-page.psml, changing the login portlet to the filter-based login portlet as shown below.
+            Make sure to also change the fragment id. Change:</p>
+                <![CDATA[
+    <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
+    ...
+]]>            
+			<p>to ..</p>
+                <![CDATA[
+    <fragment id="dp-12a" type="portlet" name="j2-admin::PortalLoginPortlet">
+    ...
+]]>            			            
+            </subsection>
+            <subsection name='3. Use the Jetspeed Portal Request Factory'>            
+            <p>
+Some webcontainers like WebSphere 5.x derive critical information of the HttpServletRequest dynamically from the current application context.
+This means that in an invoked portlet application, the original Portal request, as stored in the RequestContext, for example doesn't returns the Portal contextPath, servletPath and HttpSession of the Portal application. You'll get the same object references as in the current application HttpServletRequest.
+Because of this, simple things as portal level login through a custom portlet isn't possible in these web containers.
+			</p>
+			<p>
+To solve this, an additional PortalRequest wrapper will be used which registers the initial (portal) object references from a supplied request and always returns those,
+instead of delagating to the wrapped request.
+Which wrapper is used is handled by a new PortalRequestFactory which can be specified in the springframework configuration.
+For other web containers like Tomcat which doesn't have this "problem", nothing has to be specified (none is by default), in which case the request will be wrapped in an HttpServletRequestWrapper to maintain the same level of wrapping (needed for easy access to the original request in ServletPortletInvoker.            
+            </p>
+            <p>Edit WEB-INF/assembly/wps.xml, and uncomment the one bean found there</p>
+<![CDATA[            
+<beans>   
+    <!-- required for websphere, uncomment if running under websphere
+         see:  http://issues.apache.org/jira/browse/JS2-355 -->
+    <bean id="org.apache.jetspeed.request.PortalRequestFactory" class="org.apache.jetspeed.request.PortalRequestFactoryImpl"/>   
+</beans>
+]]>            			                        
+            </subsection>
+            <subsection name='4. Turn on the Multithreaded Aggregation Engine'>
+            <p>Swap out the (org.apache.jetspeed.aggregator.PageAggregator) with the multithreaded aggregation engine in WEB-INF/assembly/pipelines.xml:
+            </p>
+<![CDATA[            
+  <bean id="aggregatorValve"
+        class="org.apache.jetspeed.aggregator.AggregatorValve"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="org.apache.jetspeed.aggregator.AsyncPageAggregator"/>
+   </constructor-arg>
+  </bean> 
+]]>            			                        
+		</subsection>
+		<subsection name='5. Pluto Factories'>
+		<p>Turn on the Websphere parallel rendering mode in the WEB-INF/assembly/pluto-factories.xml by setting the first constructor argument to true:</p>
+<![CDATA[            	
+   <bean id="ServletPortletInvokerFactory"
+        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory" 
+  /> 	
+        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory">
+    <!-- Set the following argument to true when you are running the system with parallel rendering mode under WebSphere. -->
+    <constructor-arg index="0">
+        <value>true</value>
+    </constructor-arg>
+  </bean>
+]]>            			                        		
+		</subsection>            
+		<subsection name='Optional CommonJ Work Manager'>
+		<p> If you want to use Commonj Work Manager provided by the container, uncomment the followings in WEB-INF/assembly/aggregation.xml:</p>
+<![CDATA[            			
+    <bean id="JetspeedWorkManager" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef"><value>false</value></property> 
+        <property name="jndiName">
+            <value>java:comp/env/wm/jetspeed</value>
+        </property>
+    </bean>
+    <bean id="org.apache.jetspeed.aggregator.CommonjWorkerMonitor"
+          class="org.apache.jetspeed.aggregator.impl.CommonjWorkerMonitorImpl"
+          init-method="start"  destroy-method="stop" >
+        <constructor-arg index="0">
+            <ref bean="JetspeedWorkManager" />           
+        </constructor-arg>
+    </bean>
+]]>            			
+<p>                        				
+   Also replace all references to org.apache.jetspeed.aggregator.WorkerMonitor with org.apache.jetspeed.aggregator.CommonjWorkerMonitor in WEB-INF/assembly/aggregation.xml:
+</p>
+		</subsection>
+        </section>
     </body>
 </document>
