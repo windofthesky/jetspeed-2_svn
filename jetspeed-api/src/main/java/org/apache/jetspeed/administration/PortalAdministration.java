@@ -22,6 +22,8 @@ import java.util.Map;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+
+import org.apache.jetspeed.administration.AdministrationEmailException;
 import org.apache.jetspeed.security.User;
 
 /**
@@ -104,6 +106,17 @@ public interface PortalAdministration
                           String templatePath,
                           Map userAttributes)
         throws AdministrationEmailException;
+    
+    /**
+     * Helper to send an email to a recipient without the portal default sender, and without mail merge
+     * 
+     * @param from the email address of the sender
+     * @param subject the subject of the email
+     * @param to the recipient email address
+     * @param text the message text
+     * @throws AdministrationEmailException
+     */
+    public void sendEmail(String from, String subject, String to, String text) throws AdministrationEmailException;    
     
     /**
      * Lookup a user given an email address
