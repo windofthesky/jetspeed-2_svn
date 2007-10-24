@@ -125,6 +125,7 @@ limitations under the License.
             </fileset>
             <filterset begintoken="@" endtoken="@">
                 <filter token="CONTEXT" value="jetspeed"/>
+                <filter token="CONTEXTPATH" value="jetspeed"/>
                 <filter token="USERNAME" value="${org.apache.jetspeed.production.database.user}"/>
                 <filter token="PASSWORD" value="${org.apache.jetspeed.production.database.password}"/>
                 <filter token="DRIVER" value="${org.apache.jetspeed.production.database.driver}"/>

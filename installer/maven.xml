@@ -117,7 +117,8 @@
     </copy>
     
     <filter token="CONTEXT" value="jetspeed" />
-    <copy file="${basedir}/../etc/conf/tomcat/jetspeed-tomcat-5.5.xml" tofile="${maven.build.dir}/database/jetspeed.xml"
+    <filter token="CONTEXTPATH" value="jetspeed" />
+     <copy file="${basedir}/../etc/conf/tomcat/jetspeed-tomcat-5.5.xml" tofile="${maven.build.dir}/database/jetspeed.xml"
       filtering="true" />
 
     <attainGoal name="j2:copy.shared.deps" />
