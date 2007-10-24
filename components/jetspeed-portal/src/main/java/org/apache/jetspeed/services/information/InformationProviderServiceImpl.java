@@ -25,6 +25,8 @@ import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.InformationProviderService;
 import org.apache.pluto.services.information.StaticInformationProvider;
 
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
+
 /**
  * Factory class for getting Information Provider access
  *
@@ -60,7 +62,18 @@ public class InformationProviderServiceImpl implements Factory, InformationProvi
         if (provider == null)
         {
             provider = new DynamicInformationProviderImpl(request, servletConfig);
-            request.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
+            
+            if (CurrentWorkerContext.getParallelRenderingMode())
+            {
+                synchronized (request)
+                {
+                    request.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
+                }
+            }
+            else
+            {
+                request.setAttribute("org.apache.jetspeed.engine.core.DynamicInformationProvider", provider);
+            }
         }
 
         return provider;
