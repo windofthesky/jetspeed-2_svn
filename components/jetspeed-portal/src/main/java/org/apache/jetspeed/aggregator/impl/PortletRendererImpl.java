@@ -333,7 +333,7 @@ public class PortletRendererImpl implements PortletRenderer
                     return null;
                 }
             }
-            job = buildRenderingJob( portletWindow, fragment, requestContext, false, 
+            job = buildRenderingJob( portletWindow, fragment, requestContext, true, 
                                      portletDefinition, null, contentIsCached, timeoutMetadata );
         }
         catch (Exception e)
