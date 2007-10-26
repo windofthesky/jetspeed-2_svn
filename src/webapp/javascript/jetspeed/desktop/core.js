@@ -778,7 +778,6 @@ this.iframeCoverByWinId={};
 this.portlet_tiled_high_z=10;
 this.portlet_untiled_high_z=-1;
 this.menus=[];
-this.loadedScriptUris={};
 if(_a8!=null){
 this.tooltipMgr=_a8;
 }else{
