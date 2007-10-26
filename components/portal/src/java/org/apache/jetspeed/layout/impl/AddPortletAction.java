@@ -141,16 +141,18 @@ public class AddPortletAction
             }
 
             success = placeFragment( requestContext,
-                                     pageManager,
                                      batch,
                                      resultMap,
                                      fragment,
                                      placeInLayoutFragment ) ;
-
-            resultMap.put(STATUS, status);
-            resultMap.put(PORTLETENTITY, fragment.getId());            
+            
+            resultMap.put( PORTLETENTITY, fragment.getId() );
+            if ( success )
+            {
+            	resultMap.put( STATUS, status );
+            }
         } 
-        catch (Exception e)
+        catch ( Exception e )
         {
             // Log the exception
             log.error("exception while adding a portlet", e);

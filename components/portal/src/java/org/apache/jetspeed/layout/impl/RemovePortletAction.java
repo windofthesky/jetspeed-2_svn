@@ -123,9 +123,16 @@ public class RemovePortletAction
             }
             
             // Use the Portlet Placement Manager to accomplish the removal
-            PortletPlacementContext placement = new PortletPlacementContextImpl(requestContext);
-            Fragment fragment = placement.getFragmentById(portletId);
-            if (fragment == null)
+            Fragment root = requestContext.getPage().getRootFragment();
+            Fragment layoutContainerFragment = getParentFragmentById( portletId, root );
+            PortletPlacementContext placement = null;
+            Fragment fragment = null;
+            if ( layoutContainerFragment != null )
+            {
+            	placement = new PortletPlacementContextImpl(requestContext, layoutContainerFragment);
+            	fragment = placement.getFragmentById(portletId);
+            }
+            if ( fragment == null )
             {
                 success = false;
                 resultMap.put(REASON, "Fragment not found");

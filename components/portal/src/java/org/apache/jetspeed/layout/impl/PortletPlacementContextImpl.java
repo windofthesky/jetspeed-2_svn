@@ -42,6 +42,10 @@ import org.apache.jetspeed.request.RequestContext;
  * information about portlets that are on the page and
  * portlets that are available to be added to the page.
  * 
+ * This object represents the fragment contents of a
+ * single layout fragment (i.e. nested depth cannot 
+ * be captured by this object).
+ * 
  * An important note about this object:
  * This object is really only intended to be used to do
  * a single operation such as "moveabs" or "add".  After
@@ -59,8 +63,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PortletPlacementContextImpl implements PortletPlacementContext 
 {
-    private static final int NO_DEPTH_LIMIT = -1;
-
     /** Logger */
     private Log log = LogFactory.getLog(PortletPlacementContextImpl.class);
 
@@ -90,34 +92,33 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	protected int numberOfColumns = -1;
 	
     protected Page page;
-    protected Fragment containerFragment;
+    protected Fragment layoutContainerFragment;
         
-	public PortletPlacementContextImpl(RequestContext requestContext) 
-    throws PortletPlacementException 
+	public PortletPlacementContextImpl( RequestContext requestContext ) 
+        throws PortletPlacementException 
     {
-		init(requestContext, null, NO_DEPTH_LIMIT);
+		init( requestContext, null );
 	}
     
-    public PortletPlacementContextImpl(RequestContext requestContext, Fragment container, int maxdepth) 
-    throws PortletPlacementException 
+    public PortletPlacementContextImpl( RequestContext requestContext, Fragment container ) 
+        throws PortletPlacementException 
     {
-        init(requestContext, container, maxdepth);
+        init( requestContext, container );
     }
 	
 	// Initialize the data structures by getting the fragments
 	// from the page manager
-	protected void init(RequestContext requestContext, Fragment container, int maxdepth) 
-    throws PortletPlacementException 
+	protected void init( RequestContext requestContext, Fragment container )
+        throws PortletPlacementException 
     {
         this.page = requestContext.getPage();
         if ( container == null )
         {
             container = page.getRootFragment();
         }
-        this.containerFragment = container;
+        this.layoutContainerFragment = container;
         
-        // Recursively process each fragment
-        processFragment( container, maxdepth, 0 );
+        processLayoutContainerFragment();
 
         // The final step is to populate the array with the fragments
 		populateArray();
@@ -126,54 +127,60 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	}
 	
 	/**
-	 * Evaluate each portlet fragment and populate the internal data
-	 * structures
+	 * For the layout container fragment, evaluate each child fragment and 
+	 * populate the internal data structures
 	 */
-	protected int processFragment( Fragment fragment, int remainingDepth, int rowCount ) 
-    throws PortletPlacementException 
+	protected void processLayoutContainerFragment() 
+        throws PortletPlacementException 
     {
         // Process this fragment, then its children
-		if(fragment != null) 
+		if ( this.layoutContainerFragment != null )
         {
-			// Only process portlet fragments
-			//if(fragment.getType().equalsIgnoreCase("portlet")) 
+            // Process the child fragments
+            List childFragments = this.layoutContainerFragment.getFragments();
+            int highRow = 0;
+            for( int ix = 0; ix < childFragments.size(); ix++ ) 
             {
-				// Get the column and row of this fragment
-				int col = getFragmentCol(fragment);
-				int row = getFragmentRow(fragment);
-		        
-		        if(row < 0) 
-                {
-                    row = rowCount;
-                }
-	        	// Add this fragment to the data structures
-	        	addFragmentInternal(fragment, col, row);
-                rowCount++;
-			}
+                Fragment fragment = (Fragment)childFragments.get( ix );
 			
-            if ( remainingDepth == NO_DEPTH_LIMIT || remainingDepth > 0 )
-            {
-                // Process the children
-                List children = fragment.getFragments();
-                int childRowCount = 0;
-                for(int ix = 0; ix < children.size(); ix++) 
+                if ( fragment != null ) 
                 {
-                    Fragment childFrag = (Fragment)children.get(ix);
-				
-                    if(childFrag != null) 
-                    {
-                        childRowCount = processFragment(childFrag, ((remainingDepth == NO_DEPTH_LIMIT) ? NO_DEPTH_LIMIT : remainingDepth-1), childRowCount );
-                    }
+                	int col = getFragmentCol( fragment );
+    				int row = getFragmentRow( fragment );
+    		        
+    		        if ( row < 0 ) 
+                        row = highRow;
+    		        else if ( row > highRow )
+    		        	highRow = row;
+    		        
+    	        	// Add this fragment to the data structures
+    	        	addFragmentInternal( fragment, col, row );
                 }
-			}
+            }
 		}
-        return rowCount;
+	}
+	
+	// Adds the fragment to the internal data structures
+	protected void addFragmentInternal( Fragment fragment, int col, int row ) 
+    {
+		// Create a Coordinate object to hold the row and column
+		CoordinateImpl coordinate = new CoordinateImpl( col, row );
+		
+		// Save the fragment in the lookup hash
+		this.fragmentCoordinateMap.put( fragment, coordinate );
+		this.fragmentMap.put( fragment.getId(), fragment );
+		
+		// Establish the maximum column number
+		if ( col > this.numberOfColumns ) 
+        {
+			this.numberOfColumns = col + 1;
+		}
 	}
     
     public Fragment debugFragments(String debug)
     {       
         StringBuffer out = new StringBuffer();
-        out.append( "PortletPlacementContext - " ).append( debug ).append( " - container: " ).append( containerFragment == null ? "<null>" : ( containerFragment.getId() + " / " + containerFragment.getType() ) ).append( "\n" );
+        out.append( "PortletPlacementContext - " ).append( debug ).append( " - container: " ).append( layoutContainerFragment == null ? "<null>" : ( layoutContainerFragment.getId() + " / " + layoutContainerFragment.getType() ) ).append( "\n" );
         for (int ix = 0; ix < this.columnsList.length; ix++)
         {
             Vector column = this.columnsList[ix];
@@ -188,8 +195,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
                 out.append( "\n" );
             }
         }
-        log.debug( out.toString() );
-        return containerFragment;
+        log.info( out.toString() );
+        return layoutContainerFragment;
     }
 
     /**
@@ -200,18 +207,18 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
      */
     public Page syncPageFragments()
     {        
-        for (int col = 0; col < this.columnsList.length; col++)
+        for ( int col = 0; col < this.columnsList.length; col++ )
         {
             Vector column = this.columnsList[col];
             Iterator frags = column.iterator();
             int row = 0;
-            while (frags.hasNext())
+            while ( frags.hasNext() )
             {
                 Fragment f = (Fragment)frags.next();
-                if (f == null)
+                if ( f == null )
                     continue;
-                f.setLayoutColumn(col);
-                f.setLayoutRow(row);
+                f.setLayoutColumn( col );
+                f.setLayoutRow( row );
                 row++;
             }
         }
@@ -236,31 +243,14 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
             col = 0;
         return col;
 	}
-	
-	// Adds the fragment to the internal data structures
-	protected void addFragmentInternal(Fragment fragment, int col, int row) 
-    {
-		// Create a Coordinate object to hold the row and column
-		CoordinateImpl coordinate = new CoordinateImpl(col, row);
 		
-		// Save the fragment in the lookup hash
-		this.fragmentCoordinateMap.put(fragment, coordinate);
-		this.fragmentMap.put(fragment.getId(), fragment);
-		
-		// Establish the maximum column number
-		if(col > this.numberOfColumns) 
-        {
-			this.numberOfColumns = col + 1;
-		}
-	}
-	
 	/**
 	 * Now that we know the number of columns, the array can be
 	 * constructed and populated
 	 */
 	protected void populateArray() throws PortletPlacementException 
     {
-		if(this.numberOfColumns == -1) 
+		if ( this.numberOfColumns == -1 )
         {
 			//throw new PortletPlacementException("no columns found");
             this.numberOfColumns = 1; // create a new column
@@ -271,7 +261,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		this.columnsList = new Vector[this.numberOfColumns + 1];
 		
 		// Put an array list into each index
-		for(int i = 0; i < this.numberOfColumns + 1; i++) 
+		for ( int i = 0; i < this.numberOfColumns + 1; i++ )
         {
 			this.columnsList[i] = new Vector();
 		}
@@ -279,16 +269,16 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		// Get all of the fragments from the hashmap
 		Set keys = this.fragmentCoordinateMap.keySet();
 		Iterator keyIterator = keys.iterator();
-		while(keyIterator.hasNext()) 
+		while ( keyIterator.hasNext() ) 
         {
 			// The key is a Fragment
 			Fragment fragment = (Fragment) keyIterator.next();
 			
 			// Get the Coordinate associated with this fragment
-			Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
+			Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment );
 			
 			// Make sure we have both
-			if(fragment != null && coordinate != null) 
+			if ( fragment != null && coordinate != null )
             {
 				// Get the array list for the column
 				Vector columnArray = this.columnsList[coordinate.getOldCol()];
@@ -298,10 +288,10 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 				// Before setting the fragment in the array it might
 				// be necessary to add blank rows before this row
 				// An ArrayList can only set an element that already exists
-				prepareList(columnArray, row);
+				prepareList( columnArray, row );
 				
 				// Place the fragment in the array list using the row
-				columnArray.set(row, fragment);
+				columnArray.set( row, fragment );
 			}
 		}
 	}
@@ -322,27 +312,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 			}
 		}
 	}
-	
-	// Ensures that there is room for the fragment at the given row
-	// This method will insert null rows as necessary
-	protected List makeSpace(Coordinate newCoordinate) 
-    {
-		int newCol = newCoordinate.getNewCol();
-		int newRow = newCoordinate.getNewRow();
 		
-		// Find the column. Note that a new column will never be created
-		List column = this.columnsList[newCol];
-		if(newRow + 1 > column.size()) 
-        {
-			// Need to add rows
-			for(int i = column.size(); i < newRow + 1; i++) 
-            {
-				column.add(null);
-			}
-		}
-		return column;
-	}
-	
     public int addColumns( int col )
         throws PortletPlacementException 
     {
@@ -368,80 +338,6 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
         }
         return col;
     }
-
-	public Coordinate add(Fragment fragment, Coordinate coordinate) throws PortletPlacementException 
-    {
-        int col = coordinate.getNewCol();
-        int row = coordinate.getNewRow();
-        
-        if (this.numberOfColumns == -1)
-        {
-            this.numberOfColumns = 1;
-            this.columnsList = new Vector[this.numberOfColumns];
-            col = 0;
-        }        
-        if (col > this.numberOfColumns)
-        {    
-            col = addColumns( col );
-        }
-        
-        Vector column = this.columnsList[col];
-        if (column != null)
-        {
-            for (int ix = 0; ix < column.size(); ix++)
-            {                
-                Fragment frag = (Fragment)column.get(ix);
-                if (frag == null)
-                    continue;
-                Coordinate c = (Coordinate)this.fragmentCoordinateMap.get(frag);
-                if (c == null)
-                    continue;
-                if (c.getNewCol() == row)
-                {
-                    row++;
-                }
-                
-            }
-            // Make sure that the column has room to add the row
-            if(row < 0 || row > column.size()) {
-            	// Add to the end
-            	column.addElement(fragment);
-            	row = column.size()-1;
-            } else {
-            	column.add(row, fragment);
-            }
-            Coordinate newCoord = new CoordinateImpl(col, row, col, row);
-            this.fragmentCoordinateMap.put(fragment, newCoord);
-            return newCoord;
-        }
-        return coordinate;
-	}
-	
-	// Adds an existing fragment to the coordinate position
-	protected Coordinate addInternal(Fragment fragment, Coordinate coordinate) 
-    throws PortletPlacementException 
-    {
-		int newCol = coordinate.getNewCol();
-		int newRow = coordinate.getNewRow();
-		
-		// Check to see if the column exists
-		if(newCol < 0 || newCol > this.columnsList.length) 
-        {
-			throw new PortletPlacementException("column out of bounds" + fragment.getName());
-		}
-		
-		Vector columnArray = this.columnsList[newCol];
-
-		// Make sure the list has enough room for the set
-		prepareList(columnArray, newRow);
-		
-		columnArray.setElementAt(fragment, newRow);
-		
-		// Add the fragment to the hash map
-		this.fragmentCoordinateMap.put(fragment, coordinate);
-		
-		return coordinate;
-	}
 
 	public Fragment getFragment(String fragmentId) throws PortletPlacementException 
     {
@@ -473,24 +369,24 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		}
 		
 		// Do some sanity checking about the request
-		if(col < 0 || col > this.columnsList.length) 
+		if ( col < 0 || col > this.columnsList.length )
         {
 			throw new PortletPlacementException("requested column is out of bounds");
 		}
 		
 		// Get the array list associated with the column
 		Vector columnArray = this.columnsList[col];
-		if(row < 0 || row > columnArray.size()) 
+		if ( row < 0 || row > columnArray.size() )
         {
 			throw new PortletPlacementException("requested row is out of bounds");
 		}
 		
-		return (Fragment)columnArray.get(row);
+		return (Fragment)columnArray.get( row );
 	}
 	
 	public Fragment getFragmentById(String fragmentId) throws PortletPlacementException 
     {
-		return (Fragment)this.fragmentMap.get(fragmentId);
+		return (Fragment)this.fragmentMap.get( fragmentId );
 	}
 
 	public int getNumberColumns() throws PortletPlacementException 
@@ -502,44 +398,101 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	public int getNumberRows(int col) throws PortletPlacementException 
     {
 		// Sanity check the column
-		if(col < 0 || col > this.columnsList.length) 
+		if ( col < 0 || col > this.columnsList.length ) 
         {
-			throw new PortletPlacementException("column out of bounds");
+			throw new PortletPlacementException( "column out of bounds" );
 		}
 		
 		return this.columnsList[col].size();
 	}
-
-	public Coordinate moveAbsolute(Fragment fragment, Coordinate newCoordinate) 
-    throws PortletPlacementException 
+	
+	public Coordinate add( Fragment fragment, Coordinate coordinate ) throws PortletPlacementException 
     {
-		// Find the fragment
-		Coordinate oldCoordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
-		if(oldCoordinate == null) 
+        int col = coordinate.getNewCol();
+        int row = coordinate.getNewRow();
+        
+        if ( this.numberOfColumns == -1 )
         {
-			throw new PortletPlacementException("could not find fragment");
-		}
-		
-		// Save the old coordinates
-		int oldCol = oldCoordinate.getOldCol();
-		int oldRow = oldCoordinate.getOldRow();
+            this.numberOfColumns = 1;
+            this.columnsList = new Vector[this.numberOfColumns];
+            col = 0;
+        }        
+        if ( col > this.numberOfColumns )
+        {    
+            col = addColumns( col );
+        }
+        
+        Vector column = this.columnsList[col];
+        if ( column != null )
+        {
+            for ( int ix = 0; ix < column.size(); ix++ )
+            {                
+                Fragment frag = (Fragment)column.get( ix );
+                if (frag == null)
+                    continue;
+                Coordinate c = (Coordinate)this.fragmentCoordinateMap.get( frag );
+                if (c == null)
+                    continue;
+                if ( c.getNewCol() == row )
+                {
+                    row++;
+                }
+            }
+            // Make sure that the column has room to add the row
+            if ( row < 0 || row > column.size() )
+            {
+            	// Add to the end
+            	column.addElement(fragment);
+            	row = column.size()-1;
+            }
+            else
+            {
+            	column.add(row, fragment);
+            }
+            Coordinate newCoord = new CoordinateImpl( col, row, col, row );
+            this.fragmentCoordinateMap.put( fragment, newCoord );
+            return newCoord;
+        }
+        return coordinate;
+	}
 
-		// Create a new coordinate object with both the old and new positions
+	public Coordinate moveAbsolute( Fragment fragment, Coordinate newCoordinate )
+        throws PortletPlacementException 
+    {
+		return moveAbsolute( fragment, newCoordinate, false );
+    }
+	public Coordinate moveAbsolute( Fragment fragment, Coordinate newCoordinate, boolean addFragment )
+        throws PortletPlacementException 
+    {
 		int newCol = newCoordinate.getNewCol();
 		int newRow = newCoordinate.getNewRow();
 		
-		// Make sure there is a place for the move
-		//List oldRowList = makeSpace(newCoordinate);
+		int oldCol = newCol, oldRow = newRow;
+		if ( ! addFragment )
+		{
+			// Find the fragment
+			Coordinate oldCoordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
+			if ( oldCoordinate == null ) 
+	        {
+				throw new PortletPlacementException("could not find fragment");
+			}
+			
+			// Save the old coordinates
+			oldCol = oldCoordinate.getOldCol();
+			oldRow = oldCoordinate.getOldRow();
 
-		List oldRowList = this.columnsList[oldCol];
+			List oldRowList = this.columnsList[oldCol];
+			
+			// Remove the fragment from it's old position
+			oldRowList.remove( oldRow );
+		}
 		
-		// Remove the fragment from it's old position
-		oldRowList.remove(oldRow);
-
+		// Create a new coordinate object with both the old and new positions
+		
 		// The next two lines must occur after the remove above.  This is
 		// because the new and old columns might be the same and the remove
 		// will change the number of rows
-        if (newCol > this.numberOfColumns)
+        if ( newCol > this.numberOfColumns )
         {    
             newCol = addColumns( newCol );
         }
@@ -548,7 +501,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		int numRowsNewColumn = newRowList.size();
 		
 		// Decide whether an insert or an add is appropriate
-		if(newRow > (numRowsNewColumn - 1)) 
+		if ( newRow > (numRowsNewColumn - 1) ) 
         {
 			newRow = numRowsNewColumn;
 			// Add a new row
@@ -557,13 +510,19 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
         else 
         {
 			// Insert the fragment at the new position
-			((Vector)newRowList).insertElementAt(fragment, newRow);		
+			((Vector)newRowList).insertElementAt( fragment, newRow );		
 		}
 
-        //debugFragments("move absolute ");
+        //debugFragments( "move absolute [" + fragment.getId() + "] " + ( addFragment ? "(add-fragment) " : "" ) );
         
 		// New coordinates after moving
-		return new CoordinateImpl(oldCol, oldRow, newCol, newRow);
+        newCoordinate = new CoordinateImpl( oldCol, oldRow, newCol, newRow );
+		this.fragmentCoordinateMap.put( fragment, newCoordinate );
+		if ( addFragment )
+		{
+			this.fragmentMap.put( fragment.getId(), fragment );
+		}
+		return newCoordinate;
 	}
 
 	protected Coordinate moveDirection(Fragment fragment, int deltaCol, int deltaRow) 
