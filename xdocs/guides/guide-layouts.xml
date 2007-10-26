@@ -99,16 +99,6 @@ the layout component is selected. One layout may be assigned per PSML page.
     <td>2</td>
     <td>50%,50%</td>
     <td>view,edit,help</td>
-    <td>A two column display of one or more fragments where each column is allocated to 50% respectively of the portlet display area.
-        Fragments may be placed in either column using <a href='psml.html'>PSML</a> fragment definitions.
-     </td>
-  </tr>
-  <tr>
-    <td><b>VelocityTwoColumns</b></td>
-    <td>TwoColumns</td>
-    <td>2</td>
-    <td>50%,50%</td>
-    <td>view,edit,help</td>
     <td>A two column display of one or more fragments where each column is allocated to 50% of the portlet display area respectively.
         Fragments may be placed in either column using <a href='psml.html'>PSML</a> fragment definitions.
      </td>
