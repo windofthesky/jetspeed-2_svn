@@ -38,8 +38,19 @@ public interface PortletPlacementContext
 	 * @return new coordinate location of the portlet
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate moveAbsolute(Fragment fragment, Coordinate coordinate) throws PortletPlacementException;
-    
+	public Coordinate moveAbsolute(Fragment fragment, Coordinate coordinate ) throws PortletPlacementException;
+
+	/**
+     * Move a portlet fragment to a new absolute position as specified in the Coordinate parameter.
+     * 
+	 * @param fragment The fragment to be moved.
+	 * @param coordinate The specification of the new absolute coordinate
+	 * @param addFragment When true, the fragment is being added (i.e. it is not being moved within the column)
+	 * @return new coordinate location of the portlet
+	 * @throws PortletPlacementException
+	 */
+	public Coordinate moveAbsolute(Fragment fragment, Coordinate coordinate, boolean addFragment) throws PortletPlacementException;
+	
 	/**
      * Move a portlet relative to its current position UP one row.
      * 
