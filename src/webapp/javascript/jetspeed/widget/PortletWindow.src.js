@@ -122,7 +122,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var djObj = dojo;
 
         var winIndex = jsObj.widget.PortletWindow.prototype.nextIndex;
-        this.portletIndex = winIndex;
+        this.windowIndex = winIndex;
         var ie6 = jsObj.UAie6;
         this.ie6 = ie6;
 
@@ -152,8 +152,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         // ... initWindowDecoration
         var decNm = iP[ jsId.PP_WINDOW_DECORATION ];
-        //if ( ! decNm )
-        //    decNm = jsPage.getPortletDecorator();
         this.decName = decNm ;
         var wDC = jsObj.loadPortletDecorationStyles( decNm, jsPrefs );
         if ( wDC == null ) { djObj.raise( "No portlet decoration is available: " + this.widgetId ); }    // this should not occur
@@ -289,7 +287,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 var wI = iP[ jsId.PP_WINDOW_ICON ];
                 if ( ! wI )
                     wI = "document.gif";
-                tbIconSrc = new djObj.uri.Uri( jsObj.url.basePortalDesktopUrl() + wDC.windowIconPath + wI ) ;
+                tbIconSrc = new djObj.uri.Uri( jsObj.url.basePortalDesktopUrl() + wDC.windowIconPath + "/" + wI ) ;
                 tbIconSrc = tbIconSrc.toString();
                 if ( tbIconSrc.length == 0 )
                     tbIconSrc = null;
@@ -938,8 +936,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                         this.restoreOnNextRender = true;
                         this.needsRenderOnRestore = false;
                     }
-                    if ( this.iframesInfo )
-                        this.iframesInfo.iframesSize = [];
                     this.portlet.renderAction( aNm );
                 }
                 else
@@ -958,11 +954,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         else if ( aNm == jsId.ACT_MAXIMIZE )
         {
-            if ( this.portlet && this.iframesInfo )
-            {
-                this.iframesInfo.iframesSize = [];
-            }
-
             this.maximizeWindow();
 
             if ( this.portlet )
@@ -1588,8 +1579,12 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         this._alterCss( true, true );
         
+        var prevParentNode = this.domNode.parentNode;
+
         var addToElmt = document.getElementById( jetspeed.id.DESKTOP );
         addToElmt.appendChild( this.domNode );
+
+        jsObj.page.columnEmptyCheck( prevParentNode );
 
         if ( this.windowState == jsObj.id.ACT_MINIMIZE )
             this.minimizeWindow();
@@ -1609,8 +1604,9 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         
         this._alterCss( true, true );
 
-        //this.restoreWindow();
         this._tileWindow( jsObj );
+
+        jsObj.page.columnEmptyCheck( this.domNode.parentNode );
 
         if ( this.portlet )
             this.portlet.submitWinState();
@@ -1678,7 +1674,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.portlet.submitWinState();
     },  // makeHeightVariable
 
-    editPageInitiate: function( jsCss, suppressAlterCss )
+    editPageInitiate: function( jsObj, jsCss, suppressAlterCss )
     {
         this.editPageEnabled = true;
         var wDC = this.decConfig;
@@ -1694,7 +1690,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             if ( ! wDC.windowResizebar )
             {
                 this.resizebarEnabled = true;
-                if ( this.rbNodeCss )
+                if ( this.rbNodeCss && this.windowState != jsObj.id.ACT_MINIMIZE )
                     this.rbNodeCss[ disIdx ] = "block";
             }
             this._setTitleBarDragging( true, jsCss );
@@ -1776,12 +1772,12 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( this.tbNodeCss )
             this.tbNodeCss[ disIdx ] = "block";
         this.resizebarEnabled = true;
-        if ( this.rbNodeCss )
+        if ( this.rbNodeCss && this.windowState != jsId.ACT_MINIMIZE )
             this.rbNodeCss[ disIdx ] = "block";
         
         if ( this.editPageEnabled )
         {
-            this.editPageInitiate( jsCss, true );
+            this.editPageInitiate( jsObj, jsCss, true );
         }
         else
         {
@@ -1897,8 +1893,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {
             if ( iframeLayout )
             {
-                var ifrmInfo = this.getIFrames( false );
-                if ( ifrmInfo && ifrmInfo.iframes.length == 1 && iframesInfoCur.iframesSize != null && iframesInfoCur.iframesSize.length == 1 )
+                var ifrmInfo = this.getIFramesAndObjects( false, true );
+                if ( ifrmInfo && ifrmInfo.iframes && ifrmInfo.iframes.length == 1 && iframesInfoCur.iframesSize && iframesInfoCur.iframesSize.length == 1 )
                 {
                     var ifrmH = iframesInfoCur.iframesSize[0].h;
                     if ( ifrmH != null )
@@ -2066,7 +2062,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         if ( setIFrame && setIFrameH )
             this._deferSetIFrameH( setIFrame, setIFrameH, false, 50 );
-            //window.setTimeout( function() { setIFrame.height = setIFrameH; }, 50 ) ;
     },  // _alterCss
 
     _deferSetIFrameH: function( setIFrame, setIFrameH, forceRefresh, waitFor, forceRefreshWaitFor )
@@ -2111,12 +2106,26 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         this.domNode.style.zIndex = String( zTop );
     },
 
-    getIFrames: function( includeSize )
+    getIFramesAndObjects: function( includeSize, excludeObjects )
     {
-        var ifrms = this.containerNode.getElementsByTagName( "iframe" );
+        var cNode = this.containerNode;
+        var result = {};
+        var notNull = false;
+        if ( ! excludeObjects )
+        {
+            var objElmts = cNode.getElementsByTagName( "object" );
+            if ( objElmts && objElmts.length > 0 )
+            {
+                result.objects = objElmts;
+                notNull = true;
+            }
+        }
+        var ifrms = cNode.getElementsByTagName( "iframe" );
         if ( ifrms && ifrms.length > 0 )
         {
-            if ( ! includeSize ) return { iframes: ifrms };
+            result.iframes = ifrms;
+            if ( ! includeSize ) return result;
+            notNull = true;
             var ifrmsSize = [];
             for ( var i = 0 ; i < ifrms.length ; i++ )
             {
@@ -2130,9 +2139,11 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
                 ifrmsSize.push( { w: w, h: h } );
             }
-            return { iframes: ifrms, iframesSize: ifrmsSize };
+            result.iframesSize = ifrmsSize;
         }
-        return null;
+        if ( ! notNull )
+            return null;
+        return result;
     },
 
     contentChanged: function( evt )
@@ -2307,6 +2318,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var columnRowResult = jetspeed.page.getPortletCurColRow( dNode );
             if ( columnRowResult != null )
             {
+                //dojo.hostenv.println( "move-window[" + this.widgetId + "] col=" + columnRowResult.column + " row=" + columnRowResult.row + " layout=" + columnRowResult.layout );
                 cWinState.column = columnRowResult.column;
                 cWinState.row = columnRowResult.row;
                 cWinState.layout = columnRowResult.layout;
@@ -2390,6 +2402,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var djObj = dojo;
         var ie6 = this.ie6;
         var iNodeCss = null;
+        var cNode = this.containerNode;
         if ( ie6 )
         {
             iNodeCss = this.iNodeCss;
@@ -2407,10 +2420,14 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             initialHtmlStr = '<div class="PContent" >' + initialHtmlStr + '</div>';
         }
 
-        var setContentObj = this._splitAndFixPaths_scriptsonly( initialHtmlStr, url );
+        var setContentObj = this._splitAndFixPaths_scriptsonly( initialHtmlStr, url, jsObj );
+        var doc = cNode.ownerDocument;
 
-        var childWidgets = this.setContent( setContentObj, djObj );
+
+        var childWidgets = this.setContent( setContentObj, doc, djObj );
         this.childWidgets = ( ( childWidgets && childWidgets.length > 0 ) ? childWidgets : null );
+
+        
 
         if ( setContentObj.scripts != null && setContentObj.scripts.length != null && setContentObj.scripts.length > 0 )
         {
@@ -2421,19 +2438,19 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( jsObj.debug.setPortletContent )
             djObj.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" );
 
-        var cNode = this.containerNode;
+        
         if ( this.portlet )
             this.portlet.postParseAnnotateHtml( cNode );
 
         var iframesInfoCur = this.iframesInfo;
-        var iframesInfoNew = this.getIFrames( true );
+        var iframesInfoNew = this.getIFramesAndObjects( true, false );
         var setIFrame100P = null, iframeLayoutChg = false;
         if ( iframesInfoNew != null )
         {
             if ( iframesInfoCur == null )
             {
-                this.iframesInfo = iframesInfoCur = {};
-                var iframeCoverDiv = cNode.ownerDocument.createElement( "div" );
+                this.iframesInfo = iframesInfoCur = { layout: false };
+                var iframeCoverDiv = doc.createElement( "div" );
                 var coverCl = "portletWindowIFrameCover";
                 iframeCoverDiv.className = coverCl;
                 cNode.appendChild( iframeCoverDiv );
@@ -2449,7 +2466,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var iframesSize = iframesInfoCur.iframesSize = iframesInfoNew.iframesSize;
             var iframes = iframesInfoNew.iframes;
             var iframesCurLayout = iframesInfoCur.layout;
-            var iframesLayout = iframesInfoCur.layout = ( iframes.length == 1 && iframesSize[0].h != null );
+            var iframesLayout = iframesInfoCur.layout = ( iframes && iframes.length == 1 && iframesSize[0].h != null );
             if ( iframesCurLayout != iframesLayout )
                 iframeLayoutChg = true;
             if ( iframesLayout )
@@ -2466,6 +2483,34 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                     this._createLayoutInfo( wDC, true, this.domNode, cNode, this.tbNode, this.rbNode, djObj, jsObj, jsObj.ui );
                 }
             }
+            
+            var swfInfo = null;
+            var objNodes = iframesInfoNew.objects;
+            if ( objNodes )
+            {
+                var allSwfInfo = jsObj.page.swfInfo;
+                if ( allSwfInfo )
+                {
+                    for ( var i = 0; i < objNodes.length ; i++ )
+                    {
+                        var objNode = objNodes[i];
+                        var objNodeId = objNode.id;
+                        if ( objNodeId )
+                        {
+                            var swfI = allSwfInfo[ objNodeId ];
+                            if ( swfI )
+                            {
+                                if ( swfInfo == null ) swfInfo = {};
+                                swfInfo[ objNodeId ] = swfI;
+                            }
+                        }
+                    }
+                }
+            }
+            if ( swfInfo )
+                iframesInfoCur.swfInfo = swfInfo;
+            else
+                delete iframesInfoCur.swfInfo;
         }
         else if ( iframesInfoCur != null )
         {
@@ -2512,10 +2557,15 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         if ( setIFrame100P )
         {
             this._deferSetIFrameH( setIFrame100P, ( ! jsObj.UAie ? "100%" : "99%" ), true );
-        }        
+        }
     },  // setPortletContent
 
-    setContent: function(data, djObj)
+    _setContentObjects: function()
+    {
+        delete this._objectsInfo;
+    },
+
+    setContent: function(data, doc, djObj)
     {   // summary:
         //      Replaces old content with data content, include style classes from old content
         //  data String||DomNode:   new content, be it Document fragment or a DomNode chain
@@ -2567,6 +2617,78 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
+    _splitAndFixPaths_scriptsonly: function( /* String */ s, /* String */ url, jsObj )
+    {
+        var forcingExecuteScripts = true;
+        var match, attr;
+        var scripts = [] ;
+        // deal with embedded script tags 
+        // /=/=/=/=/=  begin  ContentPane.splitAndFixPaths   code  =/=/=/=/=/
+        //   - only modification is: replacement of "this.executeScripts" with "forcingExecuteScripts"
+        //
+				var regex = /<script([^>]*)>([\s\S]*?)<\/script>/i;
+				var regexSrc = /src=(['"]?)([^"']*)\1/i;
+				//var regexDojoJs = /.*(\bdojo\b\.js(?:\.uncompressed\.js)?)$/;
+				//var regexInvalid = /(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo\.hostenv\.writeIncludes\(\s*\);?/g;
+                //var regexDojoLoadUnload = /dojo\.(addOn(?:Un)?[lL]oad)/g;
+				//var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix|registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
+
+                // " - trick emacs here after regex
+				while(match = regex.exec(s)){
+					if(forcingExecuteScripts && match[1]){
+						if(attr = regexSrc.exec(match[1])){
+							// remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
+							// we declare all files named dojo.js as bad, regardless of path
+							//if(regexDojoJs.exec(attr[2])){
+							//	dojo.debug("Security note! inhibit:"+attr[2]+" from  being loaded again.");
+							//}else{
+								scripts.push({path: attr[2]});
+							//}
+						}
+					}
+					if(match[2]){
+						// remove all invalid variables etc like djConfig and dojo.hostenv.writeIncludes()
+						var sc = match[2];//.replace(regexInvalid, "");
+    						if(!sc){ continue; }
+		
+						// cut out all dojo.require (...) calls, if we have execute 
+						// scripts false widgets dont get there require calls
+						// takes out possible widgetpackage registration as well
+						
+                        //while(tmp = regexRequires.exec(sc)){
+						//	requires.push(tmp[0]);
+						//	sc = sc.substring(0, tmp.index) + sc.substr(tmp.index + tmp[0].length);
+						//}
+                        
+                        //sc = sc.replace( regexDojoLoadUnload, "dojo.widget.byId('" + this.widgetId + "').$1" );
+
+						if(forcingExecuteScripts){
+							scripts.push(sc);
+						}
+					}
+					s = s.substr(0, match.index) + s.substr(match.index + match[0].length);
+				}
+
+
+        // /=/=/=/=/=  end  ContentPane.splitAndFixPaths   code  =/=/=/=/=/
+
+        //dojo.debug( "= = = = = =  annotated content for: " + ( url ? url : "unknown url" ) );
+        //dojo.debug( initialHtmlStr );
+        //if ( scripts.length > 0 )
+        //{
+        //    dojo.debug( "      = = =  script content for: " + ( url ? url : "unknown url" ) );
+        //    for ( var i = 0 ; i < scripts.length; i++ )
+        //        dojo.debug( "      =[" + (i+1) + "]:" + scripts[i] );
+        //}
+        //dojo.debug( "preParse  scripts: " + ( scripts ? scripts.length : "0" ) + " remoteScripts: " + ( remoteScripts ? remoteScripts.length : "0" ) );
+        return {"xml": 		    s, // Object
+				"styles":		[],
+				"titles": 		[],
+				"requires": 	[],
+				"scripts": 		scripts,
+				"url": 			url };
+    },
+
     onLoad: function(e){
         // summary:
         //      Event hook, is called after everything is loaded and widgetified 
@@ -2599,51 +2721,111 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
-    _executeScripts: function(scripts, djObj) {
-        // loop through the scripts in the order they came in
-        var self = this;
-        var cacheScripts = true;
-        var tmp = "", code = "";
-        for(var i = 0; i < scripts.length; i++){
-            if(scripts[i].path){ // remotescript
-                djObj.io.bind(this._cacheSetting({
-                    "url":      scripts[i].path,
-                    "load":     function(type, scriptStr){
-                            dojo.lang.hitch(self, tmp = ";"+scriptStr);
-                    },
-                    "error":    function(type, error){
-                            error.text = type + " downloading remote script";
-                            self._handleDefaults.call(self, error, "onExecError", "debug");
-                    },
-                    "mimetype": "text/plain",
-                    "sync":     true
-                }, cacheScripts));
-                code += tmp;
-            }else{
-                code += scripts[i];
+    _executeScripts: function( scripts, djObj )
+    {
+        var jsObj = jetspeed;
+        var djHostEnv = djObj.hostenv;
+        var jsPage = jsObj.page;
+        var headNode = document.getElementsByTagName("head")[0];
+        var tmp, uri, code = "";
+        for( var i = 0; i < scripts.length; i++ )
+        {
+            if ( ! scripts[i].path )
+            {
+                tmp = this._fixScripts( scripts[i], true );
+                if ( tmp )
+                    code += ( (code.length > 0) ? ";" : "" ) + tmp;
+
+                continue;
             }
-        }
 
+            var uri = scripts[i].path;
+            //if ( ! uri || djHostEnv.loadedUris[uri] ) continue;
 
-        try{
-            if(this.scriptSeparation){
-                // not supported
-            }else{
-                // exec in global, lose the _container_ feature
-                var djg = djObj.global();
-                if(djg.execScript){
-                    djg.execScript(code);
-                }else{
-                    var djd = djObj.doc();
-                    var sc = djd.createElement("script");
-                    sc.appendChild(djd.createTextNode(code));
-                    (this.containerNode||this.domNode).appendChild(sc);
+            var contents = null;
+            try
+            {
+                contents = djHostEnv.getText( uri, null, false );
+    	        if ( contents )
+                {
+                    //djHostEnv.loadedUris[uri] = true;
+                    contents = this._fixScripts( contents, false );
+                    code += ( (code.length > 0) ? ";" : "" ) + contents;
                 }
             }
-        }catch(e){
-            e.text = "Error running scripts from content:\n"+e.description;
-            this._handleDefaults(e, "onExecError", "debug");
+            catch ( ex )
+            {
+                djObj.debug( "Error loading script for portlet [" + this.widgetId + "] url=" + uri + " - " + jsObj.formatError( ex ) );
+            }
+
+            try
+            {
+                if ( contents && ! jsObj.containsElement( "script", "src", uri, headNode ) )
+                    jsObj.addDummyScriptToHead( uri );
+            }
+            catch ( ex )
+            {
+                djObj.debug( "Error added fake script element to head for portlet [" + this.widgetId + "] url=" + uri + " - " + jsObj.formatError( ex ) );
+            }
         }
+        
+        try
+        {
+            // exec in global, lose the _container_ feature
+            var djg = djObj.global();
+            if ( djg.execScript )
+            {
+                djg.execScript(code);
+            }
+            else
+            {
+                //djObj.debug( "a d d i n g   p o r t l e t   s c r i p t :" );
+                //djObj.hostenv.println( code );
+                var djd = djObj.doc();
+                var sc = djd.createElement("script");
+                sc.appendChild(djd.createTextNode(code));
+                (this.containerNode||this.domNode).appendChild(sc);
+            }
+        }
+        catch (e)
+        {
+            var errorMsg = "Error running scripts for portlet [" + this.widgetId + "] - " + jsObj.formatError( e );
+            e.text = errorMsg;
+            djObj.hostenv.println( errorMsg );
+            djObj.hostenv.println( code );
+            //this._handleDefaults(e, "onExecError", "debug");
+        }
+    },
+
+    _fixScripts: function( /* String */ script, inline )
+    {
+        var addEventRegex = /\b([a-z_A-Z$]\w*)\s*\.\s*(addEventListener|attachEvent)\s*\(/
+        var match, nodeRef, methodNm;
+        while ( match = addEventRegex.exec( script ) )
+        {
+            nodeRef = match[1];
+            methodNm = match[2];
+            script = script.substr(0, match.index) + "jetspeed.postload_" + methodNm + "(" + nodeRef + "," + script.substr(match.index + match[0].length);
+        }
+        var docWriteRegex = /\b(document\s*.\s*write(ln)?)\s*\(/
+        while ( match = docWriteRegex.exec( script ) )
+        {
+            script = script.substr(0, match.index) + "jetspeed.postload_docwrite(" + script.substr(match.index + match[0].length);
+        }
+        var locationRegex = /(;\s|\s+)([a-z_A-Z$][\w.]*)\s*\.\s*(URL\s*|(location\s*(\.\s*href\s*){0,1}))=\s*(("[^"]*"|'[^']*'|[^;])[^;]*)/
+        // " - trick emacs here after regex    
+        while ( match = locationRegex.exec( script ) )
+        {
+            var memberExpr = match[3];
+            memberExpr = memberExpr.replace(/^\s+|\s+$/g, "");
+            script = script.substr(0, match.index) + match[1] + "jetspeed.setdoclocation(" + match[2] + ', "' + memberExpr + '", (' + match[6] + '))' + script.substr(match.index + match[0].length);
+        }
+
+        if ( inline )
+        {
+            script = script.replace(/<!--|-->/g, "");
+        }
+        return script;
     },
 
     _cacheSetting: function(bindObj, useCache){
@@ -2725,76 +2907,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     getPortletTitle: function()
     {
         return this.title;
-    },
-
-    _splitAndFixPaths_scriptsonly: function( /* String */ s, /* String */ url )
-    {
-        var forcingExecuteScripts = true;
-        var scripts = [] ;
-        // deal with embedded script tags 
-        // /=/=/=/=/=  begin  ContentPane.splitAndFixPaths   code  =/=/=/=/=/
-        //   - only modification is: replacement of "this.executeScripts" with "forcingExecuteScripts"
-        //
-				var regex = /<script([^>]*)>([\s\S]*?)<\/script>/i;
-				var regexSrc = /src=(['"]?)([^"']*)\1/i;
-				//var regexDojoJs = /.*(\bdojo\b\.js(?:\.uncompressed\.js)?)$/;
-				//var regexInvalid = /(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo\.hostenv\.writeIncludes\(\s*\);?/g;
-                //var regexDojoLoadUnload = /dojo\.(addOn(?:Un)?[lL]oad)/g;
-				//var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix|registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
-
-
-                // " - trick emacs here after regex
-				while(match = regex.exec(s)){
-					if(forcingExecuteScripts && match[1]){
-						if(attr = regexSrc.exec(match[1])){
-							// remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
-							// we declare all files named dojo.js as bad, regardless of path
-							//if(regexDojoJs.exec(attr[2])){
-							//	dojo.debug("Security note! inhibit:"+attr[2]+" from  being loaded again.");
-							//}else{
-								scripts.push({path: attr[2]});
-							//}
-						}
-					}
-					if(match[2]){
-						// remove all invalid variables etc like djConfig and dojo.hostenv.writeIncludes()
-						var sc = match[2];//.replace(regexInvalid, "");
-    						if(!sc){ continue; }
-		
-						// cut out all dojo.require (...) calls, if we have execute 
-						// scripts false widgets dont get there require calls
-						// takes out possible widgetpackage registration as well
-						
-                        //while(tmp = regexRequires.exec(sc)){
-						//	requires.push(tmp[0]);
-						//	sc = sc.substring(0, tmp.index) + sc.substr(tmp.index + tmp[0].length);
-						//}
-                        
-                        //sc = sc.replace( regexDojoLoadUnload, "dojo.widget.byId('" + this.widgetId + "').$1" );
-
-						if(forcingExecuteScripts){
-							scripts.push(sc);
-						}
-					}
-					s = s.substr(0, match.index) + s.substr(match.index + match[0].length);
-				}
-        // /=/=/=/=/=  end  ContentPane.splitAndFixPaths   code  =/=/=/=/=/
-
-        //dojo.debug( "= = = = = =  annotated content for: " + ( url ? url : "unknown url" ) );
-        //dojo.debug( initialHtmlStr );
-        //if ( scripts.length > 0 )
-        //{
-        //    dojo.debug( "      = = =  script content for: " + ( url ? url : "unknown url" ) );
-        //    for ( var i = 0 ; i < scripts.length; i++ )
-        //        dojo.debug( "      =[" + (i+1) + "]:" + scripts[i] );
-        //}
-        //dojo.debug( "preParse  scripts: " + ( scripts ? scripts.length : "0" ) + " remoteScripts: " + ( remoteScripts ? remoteScripts.length : "0" ) );
-        return {"xml": 		    s, // Object
-				"styles":		[],
-				"titles": 		[],
-				"requires": 	[],
-				"scripts": 		scripts,
-				"url": 			url};
     },
 
     _IEPostDrag: function()
@@ -3152,7 +3264,10 @@ dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, dragLayoutColumn, move
     moverEvts.push( jsUI.evtConnect( "after", doc, "ondragstart", jsObj, "_stopEvent", djEvtObj ) );
     moverEvts.push( jsUI.evtConnect( "after", doc, "onselectstart", jsObj, "_stopEvent", djEvtObj ) );
     if ( jsObj.UAie6 )
-        moverEvts.push( jsUI.evtConnect( "after", doc, "onmousedown", jsObj, "mouseUpDestroy", djEvtObj ) );
+    {
+        moverEvts.push( jsUI.evtConnect( "before", doc, "onmousedown", this, "mouseDownDestroy", djEvtObj ) );
+        moverEvts.push( jsUI.evtConnect( "before", moveableObj.handle, "onmouseup", moveableObj, "onMouseUp", djEvtObj ) );
+    }
 
     jsObj.page.displayAllPWinIFrameCovers( false );
 
@@ -3674,21 +3789,18 @@ dojo.extend(dojo.dnd.Mover, {
         if ( this.posStatic || changeToTiled )
         {
             this.heightHalf = mP.h / 2;
-            if ( ! changeToUntiled )
+            var columnObjArray = jsObj.page.columns || [];
+            var noOfCols = columnObjArray.length;
+            var columnInfoArray = new Array( noOfCols );
+            var columnContainerNode = djObj.byId( jsObj.id.COLUMNS );
+            if ( columnContainerNode )
             {
-                var columnObjArray = jsObj.page.columns || [];
-                var noOfCols = columnObjArray.length;
-                var columnInfoArray = new Array( noOfCols );
-                var columnContainerNode = djObj.byId( jsObj.id.COLUMNS );
-                if ( columnContainerNode )
-                {
-                    var pageLayoutInfo = jsObj.page.layoutInfo;
-                    this._getChildColInfo( columnContainerNode, columnInfoArray, jsObj.page.columns, dqCols, pageLayoutInfo, pageLayoutInfo.columns, pageLayoutInfo.desktop, node, ( debugEnabled ? 1 : null ), indentT, djObj, jsObj );
-                    if ( debugEnabled )
-                        djObj.hostenv.println( indentT + "--------------------" );
-                }
-                this.columnInfoArray = columnInfoArray;
+                var pageLayoutInfo = jsObj.page.layoutInfo;
+                this._getChildColInfo( columnContainerNode, columnInfoArray, jsObj.page.columns, dqCols, pageLayoutInfo, pageLayoutInfo.columns, pageLayoutInfo.desktop, node, ( debugEnabled ? 1 : null ), indentT, djObj, jsObj );
+                if ( debugEnabled )
+                    djObj.hostenv.println( indentT + "--------------------" );
             }
+            this.columnInfoArray = columnInfoArray;
         }
 
         if ( this.posStatic )
@@ -3759,6 +3871,10 @@ dojo.extend(dojo.dnd.Mover, {
                         colInfo.yhalf = colInfo.top + ( colInfo.height / 2 );
                         columnInfoArray[ pageColIndex ] = colInfo;
                         colGetChildren = ( colInfo.childCount > 0 );
+                        if ( colGetChildren )
+                            child.style.height = "";
+                        else
+                            child.style.height = "1px";
                         if ( debugDepth != null )
                             debugMsg = ( jsObj.debugDims( colInfo, true ) + " yhalf=" + colInfo.yhalf + ( mbCol.h != heightCol ? ( " hreal=" + mbCol.h ) : "" ) + " childC=" + colInfo.childCount + "}" );
                     }
@@ -3777,11 +3893,18 @@ dojo.extend(dojo.dnd.Mover, {
         }
     },  // _getChildColInfo
 
+    mouseDownDestroy: function( e )
+    {
+        var jsObj = this.jsObj;
+        //jsObj.debugCache( "mover mouseDownDestroy [" + this.windowOrLayoutWidget.widgetId + "]" );
+        jsObj.stopEvent( e );
+        this.mouseUpDestroy();
+    },
     mouseUpDestroy: function()
     {
-        //dojo.debug( "mover mouseUpDestroy [" + this.windowOrLayoutWidget.widgetId + "]" );
         var djObj = this.djObj;
         var jsObj = this.jsObj;
+        //jsObj.debugCache( "mover mouseUpDestroy [" + this.windowOrLayoutWidget.widgetId + "]" );
         this.destroy( djObj, djObj.event, jsObj, jsObj.ui );
     },
 	destroy: function( djObj, djEvtObj, jsObj, jsUI ){
@@ -3893,7 +4016,7 @@ dojo.extend(dojo.dnd.Moveable, {
         var djEvtObj = djObj.event;
         var jsObj = jetspeed;
         var jsUI = jetspeed.ui;
-        //dojo.debug( "moveable onmousedown [" + this.windowOrLayoutWidget.widgetId + "] - mover=" + this.mover + " tempEvents=" + this.tempEvents );
+        //jsObj.debugCache( "moveable onmousedown [" + this.windowOrLayoutWidget.widgetId + "] - mover=" + this.mover + " tempEvents=" + this.tempEvents );
         if ( this.mover != null || this.tempEvents != null )
         {
             this._cleanUpLastEvt( djObj, djEvtObj, jsObj, jsUI );
@@ -3911,7 +4034,6 @@ dojo.extend(dojo.dnd.Moveable, {
                 var moveableTempEvts = [];
                 var doc = this.handle.ownerDocument;
                 moveableTempEvts.push( jsUI.evtConnect( "after", doc, "onmousemove", this, "onMouseMove", djEvtObj ) );
-                //moveableTempEvts.push( jsUI.evtConnect( "after", doc, "onmouseup", this, "onMouseUp", djEvtObj ) );
                 this.tempEvents = moveableTempEvts;
             }
             if ( ! this.windowOrLayoutWidget.posStatic )
@@ -3935,6 +4057,7 @@ dojo.extend(dojo.dnd.Moveable, {
             var wndORlayout = this.windowOrLayoutWidget;
             var dragLayoutColumn = null;
             this.beforeDragColRowInfo = null;
+
             if ( ! wndORlayout.isLayoutPane )
             {
                 var dragNode = wndORlayout.domNode;
@@ -3951,19 +4074,19 @@ dojo.extend(dojo.dnd.Moveable, {
         }
         jsObj.stopEvent( e );
     },
-    onMouseUp: function( e )
+    onMouseUp: function( e, suppressErrors )
     {
-        //dojo.debug( "moveable onmouseup [" + this.windowOrLayoutWidget.widgetId + "]" );
         var djObj = dojo;
         var jsObj = jetspeed;
-        this._cleanUpLastEvt( djObj, djObj.event, jsObj, jsObj.ui );
+        //jsObj.debugCache( "moveable onmouseup [" + this.windowOrLayoutWidget.widgetId + "]" );
+        this._cleanUpLastEvt( djObj, djObj.event, jsObj, jsObj.ui, suppressErrors );
     },
-    _cleanUpLastEvt: function( djObj, djEvtObj, jsObj, jsUI )
+    _cleanUpLastEvt: function( djObj, djEvtObj, jsObj, jsUI, suppressErrors )
     {
-        //dojo.debug( "moveable _cleanUpLastEvt [" + this.windowOrLayoutWidget.widgetId + "]" );
+        //jsObj.debugCache( "moveable _cleanUpLastEvt [" + this.windowOrLayoutWidget.widgetId + "]" );
         if ( this._mDownEvt != null )
         {
-            jsObj.stopEvent( this._mDownEvt );
+            jsObj.stopEvent( this._mDownEvt, suppressErrors );
             this._mDownEvt = null;
         }
         if ( this.mover != null )
