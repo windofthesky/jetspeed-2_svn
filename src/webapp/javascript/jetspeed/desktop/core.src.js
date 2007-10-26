@@ -167,7 +167,7 @@ jetspeed.prefs =
     //windowActionButtonOrder, windowActionNotPortlet, windowActionMenuOrder - see jetspeed.initializeDesktop
     
     windowIconEnabled: true,
-    windowIconPath: "/images/portlets/small/",
+    windowIconPath: "/images/portlets/small",
 
     windowTitlebar: true,
     windowResizebar: true,
@@ -365,10 +365,6 @@ jetspeed.initializeDesktop = function()
     if ( jsObj.UAie6 )
     {
         jsObj.ui.windowResizeMgr.init( window, jsObj.docBody );
-    }
-    else
-    {
-        
     }
 };
 
@@ -971,7 +967,7 @@ jetspeed.editPageInitiate = function( jsObj )
         {
             try
             {
-                jsObj.url.loadingIndicatorShow( "loadpageeditor" );
+                jsObj.url.loadingIndicatorShow( "loadpageeditor", true );
                 pageEditorWidget = dojo.widget.createWidget( "jetspeed:PageEditor", { widgetId: jsObj.id.PG_ED_WID, editorInitiatedFromDesktop: fromDesktop } );
                 var allColumnsContainer = document.getElementById( jsObj.id.COLUMNS );
                 allColumnsContainer.insertBefore( pageEditorWidget.domNode, allColumnsContainer.firstChild );
@@ -994,7 +990,7 @@ jetspeed.editPageInitiate = function( jsObj )
             {
                 var pWin = pWins[ windowId ];
                 if ( pWin )
-                    pWin.editPageInitiate( jsCss );
+                    pWin.editPageInitiate( jsObj, jsCss );
             }
         }
         jsPage.syncPageControls( jsObj );
@@ -1351,6 +1347,8 @@ dojo.lang.extend( jetspeed.om.Page,
                 dojo.lang.setTimeout( pWinToMax, pWinToMax._postCreateMaximizeWindow, 500 );
             this.maximizedOnInit = null;
         }
+
+        dojo.lang.setTimeout( jsObj.url, jsObj.url.loadingIndicatorStepPreload, 1800 );
     },
     
     _parsePSML: function( psml )
@@ -1892,6 +1890,22 @@ dojo.lang.extend( jetspeed.om.Page,
             return this.columns[ this.colFirstNormI ];
         return null;
     },
+    columnEmptyCheck: function( /* DOM node */ colDomNode )
+    {
+        if ( ! colDomNode || ! colDomNode.getAttribute ) return;
+        var pageColIndexStr = colDomNode.getAttribute( "columnindex" );
+        if ( ! pageColIndexStr || pageColIndexStr.length == 0 ) return;
+        var layoutId = colDomNode.getAttribute( "layoutid" );
+        if ( layoutId == null || layoutId.length == 0 )
+        {   // colDomNode has been verified to be a column
+            //   verification is done to allow this method to be a no-op if node arg is not a true column
+            var colChildren = colDomNode.childNodes;
+            if ( ! colChildren || colChildren.length == 0 )
+                colDomNode.style.height = "1px";
+            else
+                colDomNode.style.height = "";
+        }
+    },
     getPortletCurColRow: function( /* DOM node */ justForPortletWindowNode, /* boolean */ includeGhosts, /* map */ currentColumnRowAllPortlets )
     {
         if ( ! this.columns || this.columns.length == 0 ) return null;
@@ -1923,7 +1937,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 currentLayoutIsRegular = false;
                 if ( currentLayout.clonedFromRootId == null )
                 {
-                    currentLayoutIsRegular = true ;
+                    currentLayoutIsRegular = true;
                     //clonedLayoutCompletedRowCount = clonedLayoutCompletedRowCount + 1;
                     // BOZO: should it ^^ be 0 if no portlets are contained in layout
                 }
@@ -3219,13 +3233,14 @@ dojo.lang.extend( jetspeed.om.Portlet,
         var ajaxApiContext = new jsObj.om.Id( action, this.entityId );
         ajaxApiContext.portlet = this;
 
-        jsObj.url.retrieveContent( { url: psmlMoveActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, null );
+        jsObj.url.retrieveContent( { url: psmlMoveActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
     },
 
     submitWinState: function( /* boolean */ volatileOnly, /* boolean */ reset )
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
+        if ( ! jsObj.page.getPageAction( jsId.ACT_EDIT ) ) return;
         var changedStateResult = null;
         if ( reset )
             changedStateResult = { state: this._initWinState( null, true ) };
@@ -3614,7 +3629,10 @@ jetspeed.om.PortletCL.prototype =
         var portletTitle = null;
         if ( http != null )
         {
-            portletTitle = http.getResponseHeader("JS_PORTLET_TITLE");
+            try {
+                portletTitle = http.getResponseHeader("JS_PORTLET_TITLE");
+            } catch (ignore) { // might happen in older mozilla
+            }
             if ( portletTitle != null )
                 portletTitle = unescape( portletTitle );
         }
@@ -3695,7 +3713,7 @@ jetspeed.om.PortletActionCL.prototype =
                 }
             }
         }
-        if ( renderUrl != null )
+        if ( renderUrl != null && ! jsObj.noActionRender )
         {
             if ( jsObj.debug.doRenderDoAction )
                 dojo.debug( "PortletActionCL starting portlet-renderer with renderUrl=" + renderUrl );
@@ -4227,6 +4245,120 @@ jetspeed.om.MoveApiCL.prototype =
     }
 };
 
+// ... script content annotation methods
+
+jetspeed.postload_addEventListener = function( node, eventType, fnc, useCapture )
+{
+    if ( ( eventType == "load" || eventType == "DOMContentLoaded" || eventType == "domready" ) && ( node == window || node == document || node == document.body ) )
+        fnc();
+    else
+        node.addEventListener( eventType, fnc, useCapture );
+};
+
+jetspeed.postload_attachEvent = function( node, eventType, fnc )
+{
+    if ( eventType == "onload" && ( node == window || node == document || node == document.body ) )
+        fnc();
+    else
+        node.attachEvent( eventType, fnc );
+};
+
+jetspeed.postload_docwrite = function( content )
+{
+    if ( ! content ) return;
+    content = content.replace(/^\s+|\s+$/g, "");
+    
+    var scriptTagRegex = /^<script\b([^>]*)>.*?<\/script>/i
+    var scriptMatch = scriptTagRegex.exec( content );
+    if ( scriptMatch )
+    {   // only know purpose of script in document.write is for IE DOMContentLoaded detection
+        content = null;
+        var scriptAttrs = scriptMatch[1];
+        if ( scriptAttrs )
+        {
+            var idRegex = /\bid\s*=\s*([^\s]+)/i
+            var idMatch = idRegex.exec( scriptAttrs );
+            if ( idMatch )
+            {   // if used for DOMContentLoaded detection, it must have id for event listener attachment
+                var idVal = idMatch[1];
+                content = '<img id=' + idVal + ' src="' + jetspeed.url.basePortalDesktopUrl() + '/javascript/jetspeed/desktop/pixel.gif' + '"/>';
+                // " - trick emacs here after regex
+            }
+        }
+    }
+    var tn = null;
+    if ( content )
+    {
+        var djObj = dojo;
+        tn = djObj.doc().createElement("div");
+        tn.style.visibility = "hidden";
+        djObj.body().appendChild(tn);
+        tn.innerHTML = content;
+        tn.style.display = "none";
+    }
+    return tn;
+};
+
+jetspeed.setdoclocation = function( target, memberExpr, value )
+{
+    if ( target == document || target == window )
+    {
+        if ( value && value.length > 0 )
+        {   // suppress navigation if url is action/render (which should never be used to navigate the window)
+            //    wicket toolkit uses render/action for ajax requests - when this is combined with setTimeout and ajaxPageNavigation,
+            //    the wicket toolkit can initiate a redirect (by setting document.location)
+            var jsPUrl = jetspeed.portleturl;
+            if ( value.indexOf( jsPUrl.DESKTOP_ACTION_PREFIX_URL ) != 0 && value.indexOf( jsPUrl.DESKTOP_RENDER_PREFIX_URL ) != 0 )
+                target.location = value;
+        }
+    }
+    else if ( target != null )
+    {
+        var dotPos = memberExpr.indexOf( "." );
+        if ( dotPos == -1 )
+            target[ memberExpr ] = value;
+        else
+        {
+            var scope1NM = memberExpr.substring( 0, dotPos );
+            var scope1 = target[ scope1NM ];
+            if ( scope1 )
+            {
+                var scope2NM = memberExpr.substring( dotPos+1 );
+                if ( scope2NM )
+                    scope1[ scope2NM ] = value;
+            }
+        }
+    }
+};
+
+jetspeed.addDummyScriptToHead = function( src )
+{   // add script tag with src to head element for benefit of ajax toolkits which search
+    //    script elements in head to determine if a library has been loaded (e.g. wicket)
+    var script = document.createElement( "script" );
+    script.setAttribute( "type", "text/plain" );
+    script.setAttribute( "language", "ignore" );
+    script.setAttribute( "src", src );
+    document.getElementsByTagName( "head" )[0].appendChild( script );
+    return script;
+};
+
+jetspeed.containsElement = function( nodeName, attrName, attrValue, container )
+{
+    if ( ! nodeName || ! attrName || ! attrValue ) return false;
+    if ( ! container ) container = document;
+	var nodes = container.getElementsByTagName( nodeName );
+    if ( ! nodes ) return false;
+	for ( var i = 0; i < nodes.length; ++i )
+    {
+		var nodeAttr = nodes[i].getAttribute( attrName );
+        if ( nodeAttr == attrValue )
+        {
+            return true;
+        }
+	}
+	return false;
+};
+
 // ... jetspeed.ui methods
 
 jetspeed.ui = {
@@ -4608,5 +4740,273 @@ if ( jetspeed.UAie6 )
     };
 }
 
+/*  jetspeed.ui.swfobject is based on a condensed and modified copy of the SWFObject library */
+/*     this library appears here due to problems with loading the library for each portlet needing it */
 
+/*	SWFObject v2.0 beta5 <http://code.google.com/p/swfobject/>
+	Copyright (c) 2007 Geoff Stearns, Michael Williams, and Bobby van der Sluis
+	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+*/
+jetspeed.ui.swfobject = function() {
+    
+    var jsObj = jetspeed;
+    var storedAltContent = null;
+    var isExpressInstallActive = false;
+    
+    var ua = function() {
+        var playerVersion = [0,0,0];
+		var d = null;
+		if (typeof navigator.plugins != "undefined" && typeof navigator.plugins["Shockwave Flash"] == "object") {
+			d = navigator.plugins["Shockwave Flash"].description;
+			if (d) {
+				d = d.replace(/^.*\s+(\S+\s+\S+$)/, "$1");
+				playerVersion[0] = parseInt(d.replace(/^(.*)\..*$/, "$1"), 10);
+				playerVersion[1] = parseInt(d.replace(/^.*\.(.*)\s.*$/, "$1"), 10);
+				playerVersion[2] = /r/.test(d) ? parseInt(d.replace(/^.*r(.*)$/, "$1"), 10) : 0;
+			}
+		}
+		else if (typeof window.ActiveXObject != "undefined") {
+			var a = null;
+			var fp6Crash = false;
+			try {
+				a = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
+			}
+			catch(e) {
+				try { 
+					a = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");
+					playerVersion = [6,0,21];
+					a.AllowScriptAccess = "always";  // Introduced in fp6.0.47
+				}
+				catch(e) {
+					if (playerVersion[0] == 6) {
+						fp6Crash = true;
+					}
+				}
+				if (!fp6Crash) {
+					try {
+						a = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+					}
+					catch(e) {}
+				}
+			}
+			if (!fp6Crash && typeof a == "object") { // When ActiveX is disbled in IE, then "typeof a" returns "object", however it is "null" in reality, so something like "typeof a.GetVariable" will crash the script
+				try {
+					d = a.GetVariable("$version");  // Will crash fp6.0.21/23/29
+					if (d) {
+						d = d.split(" ")[1].split(",");
+						playerVersion = [parseInt(d[0], 10), parseInt(d[1], 10), parseInt(d[2], 10)];
+					}
+				}
+				catch(e) {}
+			}
+		}
+        var djR = dojo.render;
+        var djRH = djR.html;
+
+        return { w3cdom: true, playerVersion: playerVersion, ie: djRH.ie, win: djR.os.win, mac: djR.os.mac };
+    }();
+
+    /* Fix hanging audio/video threads
+		- Occurs when unloading a web page in IE using fp8+ and innerHTML/outerHTML
+		- Dynamic publishing only
+	*/
+	function fixObjectLeaks() {
+		if (ua.ie && ua.win && hasPlayerVersion([8,0,0])) {
+			window.attachEvent("onunload", function () {
+				var o = document.getElementsByTagName("object");
+				if (o) {
+					var ol = o.length;
+					for (var i = 0; i < ol; i++) {
+						o[i].style.display = "none";
+						for (var x in o[i]) {
+							if (typeof o[i][x] == "function") {
+								o[i][x] = function() {};
+							}
+						}
+					}
+				}
+			});
+		}
+	}
+
+    /* Show the Adobe Express Install dialog
+		- Reference: http://www.adobe.com/cfusion/knowledgebase/index.cfm?id=6a253b75
+	*/
+	function showExpressInstall(regObj) {
+		isExpressInstallActive = true;
+		var obj = document.getElementById(regObj.id);
+		if (obj) {
+		    var ac = document.getElementById(regObj.altContentId);
+		 	if (ac) {
+	    		storedAltContent = ac;
+	   		}
+			var w = regObj.width ? regObj.width : (obj.getAttribute("width") ? obj.getAttribute("width") : 0);
+			if (parseInt(w, 10) < 310) {
+				w = "310";
+			}
+			var h = regObj.height ? regObj.height : (obj.getAttribute("height") ? obj.getAttribute("height") : 0);
+			if (parseInt(h, 10) < 137) {
+				h = "137";
+			}
+			var pt = ua.ie && ua.win ? "ActiveX" : "PlugIn";
+			//document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+			var dt = document.title;
+			var fv = "MMredirectURL=" + window.location + "&MMplayerType=" + pt + "&MMdoctitle=" + dt;
+			var el = obj;
+			createSWF({ data:regObj.expressInstall, id:"SWFObjectExprInst", width:w, height:h }, { flashvars:fv }, el);
+		}
+	}
+
+	/* Cross-browser dynamic SWF creation
+	*/
+	function createSWF(attObj, parObj, el) {
+        parObj.wmode = "transparent";   // allows other content (e.g. another portlet window) to be in front of flash content
+		if (ua.ie && ua.win) { // IE, the object element and W3C DOM methods do not combine: fall back to outerHTML
+			var att = "";
+			for (var i in attObj) {
+				if (typeof attObj[i] == "string") { // Filter out prototype additions from other potential libraries, like Object.prototype.toJSONString = function() {}
+					if (i == "data") {
+						parObj.movie = attObj[i];
+					}
+					else if (i.toLowerCase() == "styleclass") { // 'class' is an ECMA4 reserved keyword
+						att += ' class="' + attObj[i] + '"';
+					}
+					else if (i != "classid") {
+						att += ' ' + i + '="' + attObj[i] + '"';
+					}
+				}
+			}
+			var par = "";
+			for (var j in parObj) {
+				if (typeof parObj[j] == "string") { // Filter out prototype additions from other potential libraries
+					par += '<param name="' + j + '" value="' + parObj[j] + '" />';
+				}
+			}
+			el.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' + att + '>' + par + '</object>';
+			fixObjectLeaks(); // This bug affects dynamic publishing only	
+		}
+		else { // Well-behaving browsers
+			var o = document.createElement("object");
+			o.setAttribute("type", "application/x-shockwave-flash");
+			for (var m in attObj) {
+				if (typeof attObj[m] == "string") {  // Filter out prototype additions from other potential libraries
+					if (m.toLowerCase() == "styleclass") { // 'class' is an ECMA4 reserved keyword
+						o.setAttribute("class", attObj[m]);
+					}
+					else if (m != "classid") { // Filter out IE specific attribute
+						o.setAttribute(m, attObj[m]);
+					}
+				}
+			}
+			for (var n in parObj) {
+				if (typeof parObj[n] == "string" && n != "movie") { // Filter out prototype additions from other potential libraries and IE specific param element
+					createObjParam(o, n, parObj[n]);
+				}
+			}
+			el.parentNode.replaceChild(o, el);
+		}
+	}
+
+	function createObjParam(el, pName, pValue) {
+		var p = document.createElement("param");
+		p.setAttribute("name", pName);	
+		p.setAttribute("value", pValue);
+		el.appendChild(p);
+	}
+
+	function hasPlayerVersion(rv) {
+		return (ua.playerVersion[0] > rv[0] || (ua.playerVersion[0] == rv[0] && ua.playerVersion[1] > rv[1]) || (ua.playerVersion[0] == rv[0] && ua.playerVersion[1] == rv[1] && ua.playerVersion[2] >= rv[2])) ? true : false;
+	}
+	
+	/* Cross-browser dynamic CSS creation
+		- Based on Bobby van der Sluis' solution: http://www.bobbyvandersluis.com/articles/dynamicCSS.php
+	*/	
+	function createCSS(sel, decl) {
+		if (ua.ie && ua.mac) {
+			return;
+		}
+		var h = document.getElementsByTagName("head")[0]; 
+		var s = document.createElement("style");
+		s.setAttribute("type", "text/css");
+		s.setAttribute("media", "screen");
+		if (!(ua.ie && ua.win) && typeof document.createTextNode != "undefined") {
+			s.appendChild(document.createTextNode(sel + " {" + decl + "}"));
+		}
+		h.appendChild(s);
+		if (ua.ie && ua.win && typeof document.styleSheets != "undefined" && document.styleSheets.length > 0) {
+			var ls = document.styleSheets[document.styleSheets.length - 1];
+			if (typeof ls.addRule == "object") {
+				ls.addRule(sel, decl);
+			}
+		}
+	}
+
+	return {
+		/* Public API
+			- Reference: http://code.google.com/p/swfobject/wiki/SWFObject_2_0_documentation
+		*/
+
+		embedSWF: function(swfUrlStr, replaceElemIdStr, widthStr, heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, sizeInfo ) {
+			if (!ua.w3cdom || !swfUrlStr || !replaceElemIdStr || !widthStr || !heightStr || !swfVersionStr) {
+				return;
+			}
+			if (hasPlayerVersion(swfVersionStr.split("."))) {
+                var objNodeId = ( attObj ? attObj.id : null );
+				createCSS("#" + replaceElemIdStr, "visibility:hidden");
+				var att = (typeof attObj == "object") ? attObj : {};
+				att.data = swfUrlStr;
+				att.width = widthStr;
+				att.height = heightStr;
+				var par = (typeof parObj == "object") ? parObj : {};
+				if (typeof flashvarsObj == "object") {
+					for (var i in flashvarsObj) {
+						if (typeof flashvarsObj[i] == "string") { // Filter out prototype additions from other potential libraries
+							if (typeof par.flashvars != "undefined") {
+								par.flashvars += "&" + i + "=" + flashvarsObj[i];
+							}
+							else {
+								par.flashvars = i + "=" + flashvarsObj[i];
+							}
+						}
+					}
+				}
+                createSWF(att, par, document.getElementById(replaceElemIdStr));
+                createCSS("#" + replaceElemIdStr, "visibility:visible");
+                if ( objNodeId )
+                {
+                    var swfInfo = jsObj.page.swfInfo;
+                    if ( swfInfo == null )
+                    {
+                        swfInfo = jsObj.page.swfInfo = {};
+                    }
+                    swfInfo[ objNodeId ] = sizeInfo;
+                }
+			}
+			else if (xiSwfUrlStr && !isExpressInstallActive && hasPlayerVersion([6,0,65]) && (ua.win || ua.mac)) {
+				createCSS("#" + replaceElemIdStr, "visibility:hidden");
+                var regObj = {};
+			 	regObj.id = regObj.altContentId = replaceElemIdStr;
+			   	regObj.width = widthStr;
+			   	regObj.height = heightStr;
+			   	regObj.expressInstall = xiSwfUrlStr;
+			   	showExpressInstall(regObj);
+			   	createCSS("#" + replaceElemIdStr, "visibility:visible");
+			}
+		}
+
+		// For internal usage only
+        /*  BOZO: callback from expressInstall.swf - broken cause it refers to SWFFix.expressInstallCallback
+		expressInstallCallback: function() {
+			if (isExpressInstallActive && storedAltContent) {
+				var obj = document.getElementById("SWFObjectExprInst");
+				if (obj) {
+					obj.parentNode.replaceChild(storedAltContent, obj);
+					storedAltContent = null;
+					isExpressInstallActive = false;
+				}
+			} 
+		}
+        */
+    };
+}();
 
