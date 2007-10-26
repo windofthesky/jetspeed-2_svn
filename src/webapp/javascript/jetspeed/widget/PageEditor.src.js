@@ -63,6 +63,8 @@ dojo.widget.defineWidget(
 		isContainer: true,
         widgetsInTemplate: true,
 
+        loadTimeDistribute: jetspeed.UAie,
+
         dbOn: djConfig.isDebug,
 
         // style classes
@@ -88,6 +90,7 @@ dojo.widget.defineWidget(
 
         fillInTemplate: function( args, fragment )
         {
+            var jsObj = jetspeed;
             var djObj = dojo;
             var self = this;
 
@@ -125,7 +128,7 @@ dojo.widget.defineWidget(
             this.columnSizeDialog = djObj.widget.createWidget( "dialog", columnSizeParams, this.columnSizeDialog );
             this.columnSizeDialog.setCloseControl( this.columnSizeDialog.columnSizeCancel.domNode );
 
-            jetspeed.widget.PageEditor.superclass.fillInTemplate.call( this );
+            jsObj.widget.PageEditor.superclass.fillInTemplate.call( this );
 		},
 
         postCreate: function( args, fragment, parent )
@@ -148,59 +151,126 @@ dojo.widget.defineWidget(
             var jsObj = jetspeed;
             var jsPage = jsObj.page;
             var djObj = dojo;
-            //jsObj.url.loadingIndicatorHide();
             
-            var layoutImagesRoot = this.layoutImagesRoot;
-            var labels =  this.labels;
-            var dialogLabels =  this.dialogLabels;
-
-            var pageEditorWidgets = new Array();
-            var layoutEditPaneWidgets = new Array();
-            var pageEditPaneWidget = djObj.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jsPage.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jsPage.themeDefinitions.portletDecorations, layoutImagesRoot: layoutImagesRoot, labels: labels, dialogLabels: dialogLabels } );
+            this.pageEditorWidgets = new Array();
+            this.layoutEditPaneWidgets = new Array();
+            var pageEditPaneWidget = djObj.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jsPage.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jsPage.themeDefinitions.portletDecorations, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
             pageEditPaneWidget.pageEditorWidget = this;
+            pageEditPaneWidget.domNode.style.display = "none";
             djObj.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
-            pageEditorWidgets.push( pageEditPaneWidget );
-
-            var rootLayoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsPage.rootFragmentId, isRootLayout: true, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: layoutImagesRoot, labels: labels, dialogLabels: dialogLabels } );
-            rootLayoutEditPaneWidget.pageEditorWidget = this;
-            djObj.dom.insertAfter( rootLayoutEditPaneWidget.domNode, pageEditPaneWidget.domNode );
-            pageEditorWidgets.push( rootLayoutEditPaneWidget );
-            layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
+            this.pageEditorWidgets.push( pageEditPaneWidget );
+            this.pageEditPaneWidget = pageEditPaneWidget;
             
-            if ( jsObj.prefs.windowTiling )
+            if ( ! this.loadTimeDistribute )
             {
-                var doc = document;
-                var layoutHeaderLayoutInfo = jsPage.layoutInfo.columnLayoutHeader;
-                var col, layoutEditPaneWidget;
-                for ( var i = 0 ; i < jsPage.columns.length; i++ )
+                jsObj.url.loadingIndicatorStep( jsObj );
+                this._buildRootPane();
+            }
+            else
+            {
+                djObj.lang.setTimeout( this, this._buildRootPane, 10 );
+                jsObj.url.loadingIndicatorStep( jsObj );
+            }
+        },
+        
+        _buildRootPane: function()
+        {
+            var jsObj = jetspeed;
+            var jsPage = jsObj.page;
+            var djObj = dojo;
+
+            var rootLayoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsPage.rootFragmentId, isRootLayout: true, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
+            rootLayoutEditPaneWidget.pageEditorWidget = this;
+            rootLayoutEditPaneWidget.domNode.style.display = "none";
+            djObj.dom.insertAfter( rootLayoutEditPaneWidget.domNode, this.pageEditPaneWidget.domNode );
+            this.pageEditorWidgets.push( rootLayoutEditPaneWidget );
+            this.layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
+
+            this._buildNextColI = 0;
+            this._buildColLen = ( jsObj.prefs.windowTiling ? jsPage.columns.length : 0 );
+            
+            if ( ! this.loadTimeDistribute )
+            {
+                jsObj.url.loadingIndicatorStep( jsObj );
+                this._buildNextPane();
+            }
+            else
+            {
+                djObj.lang.setTimeout( this, this._buildNextPane, 10 );
+                jsObj.url.loadingIndicatorStep( jsObj );
+            }
+        },
+
+        _buildNextPane: function()
+        {
+            var jsObj = jetspeed;
+            var jsPage = jsObj.page;
+            var djObj = dojo;
+
+            var i = this._buildNextColI;
+            var colLen = this._buildColLen;
+            if ( i < colLen )
+            {
+                var col, layoutEditPaneWidget = null;
+                while ( i < colLen && layoutEditPaneWidget == null )
                 {
                     col = jsPage.columns[i];
                     if ( col.layoutHeader )
                     {
-                        layoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutColumn: col, layoutId: col.layoutId, layoutInfo: layoutHeaderLayoutInfo, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: layoutImagesRoot, labels: labels, dialogLabels: dialogLabels } );
+                        layoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutColumn: col, layoutId: col.layoutId, layoutInfo: jsPage.layoutInfo.columnLayoutHeader, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
                         layoutEditPaneWidget.pageEditorWidget = this;
+                        layoutEditPaneWidget.domNode.style.display = "none";
                         if ( col.domNode.firstChild != null )
                             col.domNode.insertBefore( layoutEditPaneWidget.domNode, col.domNode.firstChild );
                         else
                             col.domNode.appendChild( layoutEditPaneWidget.domNode );
                         layoutEditPaneWidget.initializeDrag();
-                        pageEditorWidgets.push( layoutEditPaneWidget );
-                        layoutEditPaneWidgets.push( layoutEditPaneWidget );
+                        this.pageEditorWidgets.push( layoutEditPaneWidget );
+                        this.layoutEditPaneWidgets.push( layoutEditPaneWidget );
                     }
+                    i++;
                 }
+            }
+
+            if ( i < colLen )
+            {
+                this._buildNextColI = i;
+                if ( ! this.loadTimeDistribute )
+                {
+                    jsObj.url.loadingIndicatorStep( jsObj );
+                    this._buildNextPane();
+                }
+                else
+                {
+                    djObj.lang.setTimeout( this, this._buildNextPane, 10 );
+                    jsObj.url.loadingIndicatorStep( jsObj );
+                }
+            }
+            else
+            {
                 if ( jsObj.UAie )   // provide background when prevent IE bleed-through problem
                 {
                     this.bgIframe = new jsObj.widget.BackgroundIframe( this.domNode, "ieLayoutBackgroundIFrame", djObj );
                 }
+
+                var pageEditorWidgets = this.pageEditorWidgets;
+                if ( pageEditorWidgets != null )
+                {
+                    for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
+                    {
+                        pageEditorWidgets[i].domNode.style.display = "block";
+                    }
+                }
+
+                this.editPageSyncPortletActions();
+
+                jsObj.url.loadingIndicatorHide();
+                if ( jsObj.UAie6 )
+                {
+                    //jsObj.url.loadingIndicatorHide();
+                    jsPage.displayAllPWins();
+                }
             }
-            this.pageEditorWidgets = pageEditorWidgets;
-            this.layoutEditPaneWidgets = layoutEditPaneWidgets;
-            this.editPageSyncPortletActions();
-
-            jsObj.url.loadingIndicatorHide();
-
-            if ( jsObj.UAie6 )
-                jsPage.displayAllPWins();
         },
 
         editPageSyncPortletActions: function()
@@ -255,12 +325,18 @@ dojo.widget.defineWidget(
                     pageEditorWidgets[i] = null;
                 }
             }
+
+            this.pageEditorWidgets = null;
+            this.layoutEditPaneWidgets = null;
+            this.pageEditPaneWidget = null;
+
             if ( this.deletePortletDialog != null )
                 this.deletePortletDialog.destroy();
             if ( this.deleteLayoutDialog != null )
                 this.deleteLayoutDialog.destroy();
             if ( this.columnSizeDialog != null )
                 this.columnSizeDialog.destroy();
+
             this.destroy();
         },
 
