@@ -209,6 +209,35 @@ jetspeed.debugShallow = function( obj, string )
         jetspeed.println( props[i] );
     }
 };
+jetspeed.debugCache = function( msg )
+{
+    var jsObj = jetspeed;
+    var dbgCache = jsObj._debugCache;
+    if ( ! dbgCache )
+    {
+        dbgCache = jsObj._debugCache = new Array(100);
+        jsObj._debugCacheI = 0;
+    }
+    var dt = new Date();
+    var dtH = dt.getHours(), dtM = dt.getMinutes(), dtS = dt.getSeconds(), dtMS = dt.getMilliseconds();
+    dbgCache[ jsObj._debugCacheI ] = ( dtH < 10 ? ( "0" + dtH ) : dtH ) + ":" + ( dtM < 10 ? ( "0" + dtM ) : dtM ) + ":" + ( dtS < 10 ? ( "0" + dtS ) : dtS ) + ":" + ( dtMS >= 100 ? dtMS : ( dtMS >= 10 ? ( "0" + dtMS ) : ( "00" + dtMS ) ) ) + " - " + msg;
+    jsObj._debugCacheI++;
+};
+jetspeed.debugCacheDump = function()
+{
+    var jsObj = jetspeed;
+    var djObj = dojo;
+    var dbgCache = jsObj._debugCache;
+    if ( dbgCache )
+    {
+        var dbgCacheI = jsObj._debugCacheI;
+        for ( var i = 0 ; i < dbgCacheI ; i++ )
+        {
+            djObj.hostenv.println( dbgCache[i] );
+        }
+        jsObj._debugCache = null;
+    }
+};
 jetspeed.getDebugElement = function( clear )
 {
     var docBody = null;

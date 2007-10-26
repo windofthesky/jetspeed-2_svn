@@ -160,39 +160,63 @@ for(var i=0;i<_24.length;i++){
 jetspeed.println(_24[i]);
 }
 };
-jetspeed.getDebugElement=function(_27){
-var _28=null;
-var _29=null;
+jetspeed.debugCache=function(msg){
+var _28=jetspeed;
+var _29=_28._debugCache;
+if(!_29){
+_29=_28._debugCache=new Array(100);
+_28._debugCacheI=0;
+}
+var dt=new Date();
+var dtH=dt.getHours(),dtM=dt.getMinutes(),dtS=dt.getSeconds(),_2e=dt.getMilliseconds();
+_29[_28._debugCacheI]=(dtH<10?("0"+dtH):dtH)+":"+(dtM<10?("0"+dtM):dtM)+":"+(dtS<10?("0"+dtS):dtS)+":"+(_2e>=100?_2e:(_2e>=10?("0"+_2e):("00"+_2e)))+" - "+msg;
+_28._debugCacheI++;
+};
+jetspeed.debugCacheDump=function(){
+var _2f=jetspeed;
+var _30=dojo;
+var _31=_2f._debugCache;
+if(_31){
+var _32=_2f._debugCacheI;
+for(var i=0;i<_32;i++){
+_30.hostenv.println(_31[i]);
+}
+_2f._debugCache=null;
+}
+};
+jetspeed.getDebugElement=function(_34){
+var _35=null;
+var _36=null;
 try{
-var _2a=jetspeed.debug.debugContainerId;
-_29=document.getElementById(_2a);
-if(!_29){
-_2a="debug_container";
-_29=document.getElementById(_2a);
-if(!_29){
-_28=jetspeed.docBody;
-if(_28==null){
-_28=jetspeed.getBody();
+var _37=jetspeed.debug.debugContainerId;
+_36=document.getElementById(_37);
+if(!_36){
+_37="debug_container";
+_36=document.getElementById(_37);
+if(!_36){
+_35=jetspeed.docBody;
+if(_35==null){
+_35=jetspeed.getBody();
 }
-_29=document.createElement("div");
-_29.setAttribute("id","debug_container");
-_28.appendChild(_29);
+_36=document.createElement("div");
+_36.setAttribute("id","debug_container");
+_35.appendChild(_36);
 }
 }
-if(_29&&_27){
-_29.innerHTML="";
+if(_36&&_34){
+_36.innerHTML="";
 }
 }
 catch(e){
 try{
-if(_29==null){
-_29=jetspeed.getBody();
+if(_36==null){
+_36=jetspeed.getBody();
 }
 }
 catch(e2){
 }
 }
-return _29;
+return _36;
 };
 if(window.djConfig!=null&&window.djConfig.isDebug){
 var ch=String.fromCharCode(160);
