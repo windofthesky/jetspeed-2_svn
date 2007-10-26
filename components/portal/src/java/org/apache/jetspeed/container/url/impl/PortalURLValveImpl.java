@@ -50,6 +50,7 @@ public class PortalURLValveImpl extends AbstractValve
                 if (encoding != null && encoding.equals(JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE))
                 {
                     request.setPortalURL(navComponent.createDesktopURL(request.getRequest(), request.getCharacterEncoding()));
+                    request.setAttribute( JetspeedDesktop.DESKTOP_ENABLED_REQUEST_ATTRIBUTE, Boolean.TRUE );
                 }
                 else
                 {
