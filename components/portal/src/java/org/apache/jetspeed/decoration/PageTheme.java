@@ -89,33 +89,35 @@ public class PageTheme implements Theme, Serializable
     {
         // setup fragment decorations
         Decoration decoration = decorationFactory.getDecoration( page, fragment, requestContext );
-        
-        String commonStyleSheet = decoration.getStyleSheet();
-        if ( commonStyleSheet != null )
+        if ( decoration != null )
         {
-            styleSheets.add( commonStyleSheet );
-        }
-        if ( isDesktopEnabled )
-        {
-            String desktopStyleSheet = decoration.getStyleSheetDesktop();
-            if ( desktopStyleSheet != null )
-            {
-                styleSheets.add( desktopStyleSheet );
-            }
-        }
-        else
-        {
-            String portalStyleSheet = decoration.getStyleSheetPortal();
-            if ( portalStyleSheet != null )
-            {
-                styleSheets.add( portalStyleSheet );
-            }
-        }
-        
-        fragmentDecorations.put( fragment.getId(), decoration );
-        if ( fragment.getType().equals( Fragment.PORTLET ) )
-        {
-            portletDecorationNames.put( decoration.getName(), decoration.getName() );
+	        String commonStyleSheet = decoration.getStyleSheet();
+	        if ( commonStyleSheet != null )
+	        {
+	            styleSheets.add( commonStyleSheet );
+	        }
+	        if ( isDesktopEnabled )
+	        {
+	            String desktopStyleSheet = decoration.getStyleSheetDesktop();
+	            if ( desktopStyleSheet != null )
+	            {
+	                styleSheets.add( desktopStyleSheet );
+	            }
+	        }
+	        else
+	        {
+	            String portalStyleSheet = decoration.getStyleSheetPortal();
+	            if ( portalStyleSheet != null )
+	            {
+	                styleSheets.add( portalStyleSheet );
+	            }
+	        }
+	        
+	        fragmentDecorations.put( fragment.getId(), decoration );
+	        if ( fragment.getType().equals( Fragment.PORTLET ) )
+	        {
+	            portletDecorationNames.put( decoration.getName(), decoration.getName() );
+	        }
         }
         
         // setup nested fragment decorations
