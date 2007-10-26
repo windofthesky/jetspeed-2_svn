@@ -18,6 +18,7 @@ package org.apache.jetspeed.headerresource;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -296,6 +297,70 @@ public class HeaderResourceLib
         return relativePath;
     }
     
+    public static StringBuffer makeJSONObject( Map objectMap, boolean whenEmptyReturnNewObject )
+    {
+    	return makeJSONObject( null, new Map[] { objectMap }, whenEmptyReturnNewObject );
+    }
+    public static StringBuffer makeJSONObject( Map[] objectMaps, boolean whenEmptyReturnNewObject )
+    {
+    	return makeJSONObject( null, objectMaps, whenEmptyReturnNewObject );
+    }
+    public static StringBuffer makeJSONObject( StringBuffer jsonBuffer, Map objectMap, boolean whenEmptyReturnNewObject )
+    {
+    	return makeJSONObject( jsonBuffer, new Map[] { objectMap }, whenEmptyReturnNewObject );
+    }
+    public static StringBuffer makeJSONObject( StringBuffer jsonBuffer, Map[] objectMaps, boolean whenEmptyReturnNewObject )
+    {
+    	if ( jsonBuffer == null )
+    		jsonBuffer = new StringBuffer();
+    	
+    	int added = 0;
+    	int objMapsLen = ( objectMaps == null ? 0 : objectMaps.length );
+    	if ( objMapsLen > 0 )
+    	{
+    		for ( int i = 0 ; i < objMapsLen ; i++ )
+    		{
+    			Map objectMap = objectMaps[i];
+    			if ( objectMap != null && objectMap.size() > 0 )
+    	        {
+    				if ( added == 0 )
+    					jsonBuffer.append( "{" );
+    	        	Map.Entry objEntry;
+    	        	Object objKey, objVal;
+    	        	Iterator objMapIter = objectMap.entrySet().iterator();
+    	        	while ( objMapIter.hasNext() )
+    	        	{
+    	        		objEntry = (Map.Entry)objMapIter.next();
+    	        		objKey = objEntry.getKey();
+    	        		if ( objKey != null )
+    	        		{
+    	        			if ( added > 0 )
+    	        				jsonBuffer.append( ", " );
+    	        			jsonBuffer.append( "\"" ).append( objKey.toString() ).append( "\":" );
+    	            		objVal = objEntry.getValue();
+    	            		if ( objVal == null )
+    	            			objVal = "";
+    	            		jsonBuffer.append( "\"" ).append( objVal.toString() ).append( "\"" );
+    	            		added++;
+    	        		}
+    	        	}
+    	        }
+    		}
+    	}
+    	if ( added > 0 )
+    	{
+			jsonBuffer.append( "}" );
+    	}
+		else if ( whenEmptyReturnNewObject )
+        {
+        	jsonBuffer.append( "{}" );
+        }
+        else
+        {
+        	return null;
+        }
+    	return jsonBuffer;
+    }
     
     public static String makeJavascriptStatement( String statement, String indent, boolean addEOL )
     {
