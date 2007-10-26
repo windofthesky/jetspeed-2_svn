@@ -151,6 +151,9 @@ this.buttonGroupRight.style.display="block";
 }
 if(_27.UAie){
 this.pageEditorWidget.bgIframe.iframe.style.display="none";
+if(_27.UAie6){
+_27.page.onBrowserWindowResize();
+}
 }
 var _2b=this.drag.beforeDragColRowInfo;
 var _2c=_27.page.getPortletCurColRow(_2a);

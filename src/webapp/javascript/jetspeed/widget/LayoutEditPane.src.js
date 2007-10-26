@@ -275,7 +275,11 @@ dojo.widget.defineWidget(
                 this.buttonGroupRight.style.display = "block";
 
             if ( jsObj.UAie )
+            {
                 this.pageEditorWidget.bgIframe.iframe.style.display = "none";
+                if ( jsObj.UAie6 )
+                    jsObj.page.onBrowserWindowResize();   // force resize of descendent portlet windows
+            }
 
             var beforeDragColRowInfo = this.drag.beforeDragColRowInfo;
             var afterDragColRowInfo = jsObj.page.getPortletCurColRow( dNode );
