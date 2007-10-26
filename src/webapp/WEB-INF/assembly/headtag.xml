@@ -43,7 +43,7 @@
                         <value>header.dojo.writeincludes</value>         <!-- generated dojo.hostenv.writeIncludes() statement -->
                         <value>header.dojo.modules.namespace</value>     <!-- dojo.registerNamespace statements -->
                         <value>header.dojo.style.bodyexpand</value>      <!-- css for body 100% height/width (for some dojo widgets) -->
-                        <value>header.basetag</value>                    <!-- generated <base href=".../jetspeed/"> -->
+                        <!-- <value>header.basetag</value> -->                    <!-- generated <base href=".../jetspeed/"> -->
                         <value>header.desktop.style.layout</value>       <!-- generated <link href=".../styles.css"> for layout decoration -->
                         <value>header.desktop.init</value>               <!-- generated desktop startup javascript -->
                     </list>
@@ -153,7 +153,7 @@
                 </entry>
                 <entry key="window.icon.path">
                     <!-- path to window icons -->
-                    <value>/images/portlets/small/</value> <!-- /javascript/jetspeed/windowicons/ -->
+                    <value>/images/portlets/small</value>
                 </entry>
 
                 <!-- page actions -->
