@@ -87,7 +87,7 @@ jetspeed.initcommon = function()
             if ( djRH.ie60 || djRH.ie50 || djRH.ie55 )
                 jsObj.UAie6 = true;
     
-            jsObj.stopEvent = function(/*Event*/evt)
+            jsObj.stopEvent = function(/*Event*/evt, suppressErrors)
             {   // do no use in event connect
                 try
                 {
@@ -95,7 +95,11 @@ jetspeed.initcommon = function()
                     evt.cancelBubble = true;
                     evt.returnValue = false;
                 }
-                catch(ex) { }
+                catch(ex)
+                {
+                    if ( ! suppressErrors && djConfig.isDebug )
+                        dojo.debug( "stopEvent failure: " + jetspeed.formatError( ex ) );
+                }
     	    };
     	    jsObj._stopEvent = function(/*Event*/evt)
             {   // use in event connect
@@ -123,6 +127,8 @@ jetspeed.initcommon = function()
         }
     }
 }
+
+
 
 
 // Call styles:
@@ -213,6 +219,7 @@ jetspeed.formatError = function( ex )
 // jetspeed.url
 
 jetspeed.url.LOADING_INDICATOR_ID = "js-showloading";
+jetspeed.url.LOADING_INDICATOR_IMG_ID = "js-showloading-img";
 jetspeed.url.path =
 {
     SERVER: null,     //   http://localhost:8080
@@ -646,19 +653,25 @@ if ( window.dojo )
                 if ( this.debugContentDumpIds )
                 {
                     dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : ( ( this.domainModelObject && this.domainModelObject.id ) ? String( this.domainModelObject.id ) : "" ) );
+                    var outputResponse = false;
                     for ( var debugContentIndex = 0 ; debugContentIndex < this.debugContentDumpIds.length; debugContentIndex++ )
                     {
                         if ( dmId.match( new RegExp( this.debugContentDumpIds[ debugContentIndex ] ) ) )
                         {
-                            if ( dojo.lang.isString( data ) )
-                                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
-                            else
-                            {
-                                var textContent = dojo.dom.innerXML( data );
-                                if ( ! textContent )
-                                    textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
-                                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
-                            }
+                            outputResponse = true;
+                            break;
+                        }
+                    }
+                    if ( outputResponse )
+                    {
+                        if ( dojo.lang.isString( data ) )
+                            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
+                        else
+                        {
+                            var textContent = dojo.dom.innerXML( data );
+                            if ( ! textContent )
+                                textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
+                            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
                         }
                     }
                 }
@@ -751,26 +764,108 @@ if ( window.dojo )
         return success;
     };
     
-    jetspeed.url.loadingIndicatorShow = function( actionName )
+    jetspeed.url._loadingImgUpdate = function( useStepImgs, resetNextStep, stepPreloadOnly, doc, jsPrefs, jsUrl )
     {
+        var loadingProps = jsPrefs.loadingImgProps;
+        if ( loadingProps )
+        {
+            var imgAnimated = loadingProps.imganimated;
+            var loadingImgElmt = doc.getElementById( jsUrl.LOADING_INDICATOR_IMG_ID );
+            if ( imgAnimated && loadingImgElmt )
+            {
+                var imgBaseUrl = loadingProps._imgBaseUrl;
+                if ( imgBaseUrl == null )
+                {
+                    var imgDir = loadingProps.imgdir;
+                    if ( imgDir == null || imgDir.length == 0 )
+                        imgBaseUrl = false;
+                    else
+                        imgBaseUrl = jsPrefs.getLayoutRootUrl() + imgDir;
+                    loadingProps._imgBaseUrl = imgBaseUrl;
+                }
+                if ( imgBaseUrl )
+                {
+                    var srcSet = false;
+                    if ( ( useStepImgs || stepPreloadOnly ) && ! loadingProps._stepDisabled )
+                    {
+                        var stepPrefix = loadingProps.imgstepprefix;
+                        var stepExtn = loadingProps.imgstepextension;
+                        var steps = loadingProps.imgsteps;
+                        if ( stepPrefix && stepExtn && steps )
+                        {
+                            var nextStep = loadingProps._stepNext;
+                            if ( resetNextStep || nextStep == null || nextStep >= steps.length )
+                                nextStep = 0;
+                            var imgStepBaseUrl = imgBaseUrl + "/" + stepPrefix;
+                            if ( ! stepPreloadOnly )
+                            {
+                                loadingImgElmt.src = imgStepBaseUrl + steps[nextStep] + stepExtn;
+                                srcSet = true;
+                                loadingProps._stepNext = nextStep + 1;
+                            }
+                            else
+                            {
+                                var preloadImg, limit = Math.ceil( steps.length / 1.8 );
+                                for ( var i = 0 ; i <= limit ; i++ )
+                                {
+                                    preloadImg = new Image();
+                                    preloadImg.src = imgStepBaseUrl + steps[i] + stepExtn;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            loadingProps._stepDisabled = true;
+                        }
+                    }
+                    if ( ! srcSet && ! stepPreloadOnly )
+                    {
+                        loadingImgElmt.src = imgBaseUrl + "/" + imgAnimated;
+                    }
+                }
+            }
+        }
+    };
+
+    jetspeed.url.loadingIndicatorStep = function( jsObj )
+    {
+        var jsUrl = jsObj.url;
+        jsUrl._loadingImgUpdate( true, false, false, document, jsObj.prefs, jsUrl );
+    };
+
+    jetspeed.url.loadingIndicatorStepPreload = function()
+    {
+        var jsObj = jetspeed;
+        var jsUrl = jsObj.url;
+        jsUrl._loadingImgUpdate( true, false, true, document, jsObj.prefs, jsUrl );
+    };
+
+    jetspeed.url.loadingIndicatorShow = function( actionName, useStepImgs )
+    {
+        var jsObj = jetspeed;
+        var jsPrefs = jsObj.prefs;
+        var jsUrl = jsObj.url;
+        var doc = document;
         if ( typeof actionName == "undefined" )
             actionName = "loadpage";
-        var loading = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID );
+        var loading = doc.getElementById( jsUrl.LOADING_INDICATOR_ID );
         if ( loading != null && loading.style )
         {
             var actionlabel = null;
-            if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
-                actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
+            if ( jsPrefs != null && jsPrefs.desktopActionLabels != null )
+                actionlabel = jsPrefs.desktopActionLabels[ actionName ];
 
             if ( actionlabel != null && actionlabel.length > 0 && loading.style[ "display" ] == "none" )
             {
+                jsUrl._loadingImgUpdate( useStepImgs, true, false, doc, jsPrefs, jsUrl );
+
                 loading.style[ "display" ] = "";
 
                 if ( actionName != null )
                 {
                     if ( actionlabel != null && actionlabel.length > 0 )
                     {
-                        var loadingContent = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID + "-content" );
+                        var loadingContent = doc.getElementById( jsUrl.LOADING_INDICATOR_ID + "-content" );
                         if ( loadingContent != null )
                         {
                             loadingContent.innerHTML = actionlabel;
