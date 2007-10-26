@@ -60,7 +60,7 @@ public class PageTheme implements Theme, Serializable
         
         boolean isDesktopEnabled = decorationFactory.isDesktopEnabled( requestContext );
         HashMap portletDecorationNames = new HashMap();
-        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations( page.getRootFragment(), portletDecorationNames, isDesktopEnabled );
+        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations( page.getRootFragment(), true, portletDecorationNames, isDesktopEnabled );
         
         if ( isDesktopEnabled )
         {
@@ -85,39 +85,42 @@ public class PageTheme implements Theme, Serializable
      * @param fragment page fragment
      * @return fragment decoration
      */
-    private Decoration setupFragmentDecorations( Fragment fragment, HashMap portletDecorationNames, boolean isDesktopEnabled )
+    private Decoration setupFragmentDecorations( Fragment fragment, boolean isRootLayout, HashMap portletDecorationNames, boolean isDesktopEnabled )
     {
         // setup fragment decorations
         Decoration decoration = decorationFactory.getDecoration( page, fragment, requestContext );
-        if ( decoration != null )
+        
+        fragmentDecorations.put( fragment.getId(), decoration );
+        boolean isPortlet = ( ! isRootLayout && fragment.getType().equals( Fragment.PORTLET ) );
+        
+        if ( isPortlet || isRootLayout )
         {
-	        String commonStyleSheet = decoration.getStyleSheet();
-	        if ( commonStyleSheet != null )
-	        {
-	            styleSheets.add( commonStyleSheet );
-	        }
-	        if ( isDesktopEnabled )
-	        {
-	            String desktopStyleSheet = decoration.getStyleSheetDesktop();
-	            if ( desktopStyleSheet != null )
-	            {
-	                styleSheets.add( desktopStyleSheet );
-	            }
-	        }
-	        else
-	        {
-	            String portalStyleSheet = decoration.getStyleSheetPortal();
-	            if ( portalStyleSheet != null )
-	            {
-	                styleSheets.add( portalStyleSheet );
-	            }
-	        }
-	        
-	        fragmentDecorations.put( fragment.getId(), decoration );
-	        if ( fragment.getType().equals( Fragment.PORTLET ) )
-	        {
-	            portletDecorationNames.put( decoration.getName(), decoration.getName() );
-	        }
+        	String commonStyleSheet = decoration.getStyleSheet();
+            if ( commonStyleSheet != null )
+            {
+                styleSheets.add( commonStyleSheet );
+            }
+            if ( isDesktopEnabled )
+            {
+                String desktopStyleSheet = decoration.getStyleSheetDesktop();
+                if ( desktopStyleSheet != null )
+                {
+                    styleSheets.add( desktopStyleSheet );
+                }
+            }
+            else
+            {
+                String portalStyleSheet = decoration.getStyleSheetPortal();
+                if ( portalStyleSheet != null )
+                {
+                    styleSheets.add( portalStyleSheet );
+                }
+            }
+            
+        	if ( isPortlet )
+        	{
+        		portletDecorationNames.put( decoration.getName(), decoration.getName() );
+        	}
         }
         
         // setup nested fragment decorations
@@ -127,7 +130,7 @@ public class PageTheme implements Theme, Serializable
             Iterator fragmentsIter = fragments.iterator();
             while ( fragmentsIter.hasNext() )
             {
-                setupFragmentDecorations( (Fragment)fragmentsIter.next(), portletDecorationNames, isDesktopEnabled );
+                setupFragmentDecorations( (Fragment)fragmentsIter.next(), false, portletDecorationNames, isDesktopEnabled );
             }
         }
 
