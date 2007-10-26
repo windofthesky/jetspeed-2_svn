@@ -62,7 +62,7 @@ jetspeed.debug =
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "js-cp-selector.2" ];          // dump portlet selector content
-//jetspeed.debugContentDumpIds = [ "moveabs-layout" ];            // dump move layout response
+//jetspeed.debugContentDumpIds = [ "moveabs-layout", "moveabs", "move", "addportlet" ];   // dump move and addportlet responses
 //jetspeed.debugContentDumpIds = [ "js-cp-selector.*" ];          // dump portlet selector
 
 
@@ -223,7 +223,7 @@ jetspeed.debugWindowClear = function()
     var dbWindow = jsObj.debugWindow();
     document.getElementById(dbNodeId).innerHTML='';
     if ( dbWindow && dbWindow.drag )
-        dbWindow.drag.onMouseUp();
+        dbWindow.drag.onMouseUp( null, true );
 };
 
 // debug info functions
@@ -329,7 +329,7 @@ jetspeed.debugColumn = function( col, suppressDims )
     if ( ! col ) return null;
     var dNodeCol = col.domNode;
     var out = "column[" + dojo.string.padLeft( String(col.pageColumnIndex), 2, " " ) + "]";
-    out += " colContainer=" + ( col.columnContainer ? "T" : "F" ) + " layoutHeader=" + ( col.layoutHeader ? "T" : "F" ) + " id=" + ( dNodeCol != null ? dNodeCol.id : "null" ) + " layoutCol=" + col.layoutColumnIndex + " layoutId=" + col.layoutId + " size=" + col.size;
+    out += " layoutHeader=" + ( col.layoutHeader ? "T" : "F" ) + " id=" + ( dNodeCol != null ? dNodeCol.id : "null" ) + " layoutCol=" + col.layoutColumnIndex + " layoutId=" + col.layoutId + " size=" + col.size;
     if ( dNodeCol != null && ! suppressDims )
     {
         //var colCompStyle = dojo.gcs( dNodeCol );
