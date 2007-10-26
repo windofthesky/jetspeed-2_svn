@@ -112,42 +112,48 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     
     public Decoration getDecoration( Page page, Fragment fragment, RequestContext requestContext )
     {
-        String decorationName = getDefaultDecorationName( fragment, page );
-        Decoration decoration;
+        Decoration decoration = null;
 
         // use layout decoration for top level layout root fragments
         //    and use portlet decoration for all other fragments
-        if ( fragment.getType().equals( Fragment.LAYOUT ) )
+        boolean isLayoutFrag = fragment.getType().equals( Fragment.LAYOUT );
+        boolean isLayoutRootFrag = ( isLayoutFrag && fragment.equals( page.getRootFragment() ) );
+        if ( ! isLayoutFrag || isLayoutRootFrag )
         {
-            decoration = getLayoutDecoration( decorationName, requestContext );
-        }
-        else
-        {
-            decoration = getPortletDecoration( decorationName, requestContext );
-        }
+        	String decorationName = getDefaultDecorationName( fragment, page );
+        	if ( isLayoutFrag )
+        	{
+        		decoration = getLayoutDecoration( decorationName, requestContext );
+        	}
+        	else
+        	{
+        		decoration = getPortletDecoration( decorationName, requestContext );
+        	}
 
-        if ( isDesktopEnabled( requestContext ) )
-        {   // assure that selected decoration supports /desktop
-            //    otherwise get default desktop decoration for fragment type
-            if ( decoration == null || ! decoration.supportsDesktop() )
-            {
-                String defaultDecoration = null;
-                if (fragment.getType().equals( Fragment.LAYOUT ) )
-                {
-                    defaultDecoration = getDefaultDesktopLayoutDecoration();
-                    decoration = getLayoutDecoration( defaultDecoration, requestContext );
-                }
-                else
-                {
-                    defaultDecoration = getDefaultDesktopPortletDecoration();
-                    decoration = getPortletDecoration( defaultDecoration, requestContext );
-                }
-                if ( decoration == null )
-                {
-                    String errMsg = "Cannot locate default desktop " + fragment.getType() + " decoration " + ( defaultDecoration == null ? "null" : ("\"" + defaultDecoration + "\"") ) + " (decoration " + ( defaultDecoration == null ? "null" : ("\"" + decorationName + "\"") ) + " specified for page could either not be located or does not support desktop). No desktop compatible " + fragment.getType() + " decoration is available.";
-                    log.warn( errMsg );
-                }
-            }
+	        if ( isDesktopEnabled( requestContext ) )
+	        {   // assure that selected decoration supports /desktop
+	            //    otherwise get default desktop decoration for fragment type
+	            if ( decoration == null || ! decoration.supportsDesktop() )
+	            {
+	                String defaultDecoration = null;
+	                if ( isLayoutFrag )
+	                {
+	                	defaultDecoration = getDefaultDesktopLayoutDecoration();
+	                    decoration = getLayoutDecoration( defaultDecoration, requestContext );
+	                	
+	                }
+	                else
+	                {
+	                	defaultDecoration = getDefaultDesktopPortletDecoration();
+	                    decoration = getPortletDecoration( defaultDecoration, requestContext );
+	                }
+	                if ( decoration == null )
+	                {
+	                    String errMsg = "Cannot locate default desktop " + fragment.getType() + " decoration " + ( defaultDecoration == null ? "null" : ("\"" + defaultDecoration + "\"") ) + " (decoration " + ( defaultDecoration == null ? "null" : ("\"" + decorationName + "\"") ) + " specified for page could either not be located or does not support desktop). No desktop compatible " + fragment.getType() + " decoration is available.";
+	                    log.warn( errMsg );
+	                }
+	            }
+	        }
         }
         return decoration;
     }
@@ -374,16 +380,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         {
             if (fragment.getType().equals(Fragment.LAYOUT))
             {
-                if (fragment.equals(page.getRootFragment()))
-                {
-                    // use page specified layout decorator name
-                    decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
-                }
-                else
-                {
-                    // use default nested layout portlet decorator name
-                    decoration = DEFAULT_NESTED_LAYOUT_PORTLET_DECORATOR;
-                }
+                // use page specified layout decorator name
+                decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
             }
             else
             {
