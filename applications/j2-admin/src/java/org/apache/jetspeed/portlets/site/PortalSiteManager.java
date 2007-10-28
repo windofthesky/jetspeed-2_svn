@@ -130,6 +130,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         }
         catch (Exception e)
         {
+            log.error("Failed to retrieve folders ", e);
             throw new PortletException("Failed to get root folder");
         }
         
