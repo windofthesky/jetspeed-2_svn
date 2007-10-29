@@ -43,7 +43,6 @@ This original design comes from Open Source Web Design.
 	
     <title>#PageTitle()</title>
 
-    <meta name="version" content="#SiteVersionTag()">
     <meta name="keywords" content="" />
     <meta name="description" content="#PageDescription()" />
   </head>
