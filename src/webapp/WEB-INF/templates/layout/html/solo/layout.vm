@@ -39,7 +39,6 @@ limitations under the License.
 
     <title>$!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)</title>
 
-    <meta name="version" content="#SiteVersionTag()"/>
     <meta name="keywords" content="" />
     <meta name="description" content="#PageDescription()" />
   </head>

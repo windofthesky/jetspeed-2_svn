@@ -63,12 +63,6 @@
  * <meta name="description" /> meta tag
  *#
 #macro (PageDescription)$jetspeed.page.getTitle($preferedLocale)#end
-
-#*
- * Returns the site version string for use within the
- * <meta name="version" /> meta tag
- *#
-#macro (SiteVersionTag)$$Id$$ #end    
     
 #**
 * Includes all of the stylesheets for this Page's theme.

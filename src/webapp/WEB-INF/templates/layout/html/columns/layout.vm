@@ -83,7 +83,11 @@ limitations under the License.
     #end
 
     #getIntProperty($maxLayoutNesting $rootDecorator "max.layout.nesting" 2)
-    #if($request.getAttribute("fragmentNestingLevel") < $maxLayoutNesting)
+    #set ($fnl = $request.getAttribute("fragmentNestingLevel"))
+    #if (! $fnl)
+        #set ($fnl = 0)
+    #end
+    #if($fnl < $maxLayoutNesting)
       #set($allowAddLayout=true)
     #else
       #set($allowAddLayout=false)
@@ -168,14 +172,18 @@ limitations under the License.
          ####### Take all fragments and apply style	  
         #if($allowChangePortletDecorator)          
         <div>
-          <input type="hidden" name="fragment" value="$f.id">
+          <input type="hidden" name="fragment" value="">
           <input type="hidden" name="move" value="">
           <input type="hidden" name="remove" value="">
           <label for="decorators">$messages.getString("portal.page.editing.portlet.decorator")</label>
           <select id="decorators" name="decorators">
             <option value=''>
         	    #foreach($pd in $decorationFactory.getPortletDecorations($rc))
-            <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
+                #set ($fd = "")
+                #if (!$f.Decorator)
+                    #set ($fd = $f.Decorator)
+                #end
+            <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
         	    #end
           </select>
           <input type="submit" name="jsSubmitTheme" value="$messages.getString("portal.page.editing.changethemeall")"/>
@@ -323,8 +331,12 @@ limitations under the License.
                 #if($allowChangePortletDecorator)
                   <select id='decorator' name='decorator' onChange="$form$dcnt$submit">
                     <option value=''>
+	                #set ($fd = "")
+	                #if (!$f.Decorator)
+	                    #set ($fd = $f.Decorator)
+	                #end
                     #foreach($pd in $decorationFactory.getPortletDecorations($rc))
-                      <option value='$pd' #if ($pd == $f.Decorator) SELECTED #end>$pd
+                      <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
                     #end
                   </select>
                 #end
@@ -387,4 +399,3 @@ limitations under the License.
   </form>
   #parse($myFragment.decoration.footer)
 #end
-  

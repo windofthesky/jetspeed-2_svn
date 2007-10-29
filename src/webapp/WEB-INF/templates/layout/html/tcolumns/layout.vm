@@ -72,7 +72,11 @@ limitations under the License.
     #end
 
     #getIntProperty($maxLayoutNesting $rootDecorator "max.layout.nesting" 2)
-    #if($request.getAttribute("fragmentNestingLevel") < $maxLayoutNesting)
+    #set ($fnl = $request.getAttribute("fragmentNestingLevel"))
+    #if (! $fnl)
+        #set ($fnl = 0)
+    #end
+    #if($fnl < $maxLayoutNesting)
       #set($allowAddLayout=true)
     #else
       #set($allowAddLayout=false)
@@ -228,8 +232,12 @@ limitations under the License.
                 #if($allowChangePortletDecorator)
                   <select id='decorator' name='decorator' onChange="$form$dcnt$submit">
                     <option value=''>
+                #set ($fd = "")
+                #if (!$f.Decorator)
+                    #set ($fd = $f.Decorator)
+                #end                    
                     #foreach($pd in $decorationFactory.getPortletDecorations($rc))
-                      <option value='$pd' #if ($f.Decorator == $pd) SELECTED #end>$pd
+                      <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
                     #end
                   </select>
                 #end
