@@ -49,6 +49,7 @@ import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.services.title.DynamicTitleService;
@@ -438,6 +439,8 @@ public class PortletRendererImpl implements PortletRenderer
 
         PortletEntity portletEntity = portletWindow.getPortletEntity();
         ((MutablePortletEntity)portletEntity).setFragment(fragment);
+        
+        ((PortletWindowImpl) portletWindow).setInstantlyRendered(fragment.isInstantlyRendered());
 
         return portletWindow;
     }

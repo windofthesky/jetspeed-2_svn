@@ -866,8 +866,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
                 entityId);
         fragment.setType(Fragment.PORTLET);
         fragment.setName(portletId);
-        ContentFragment contentFragment = new ContentFragmentImpl(fragment,
-                new HashMap());
+        ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap(), true);
         renderer.renderNow(contentFragment, context);
         return contentFragment.getRenderedContent();
     }

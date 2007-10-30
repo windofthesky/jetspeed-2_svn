@@ -42,6 +42,7 @@ import org.apache.jetspeed.om.page.Fragment;
 class ContentFragmentTestImpl implements Fragment, ContentFragment
 {
     private Fragment f;
+    private boolean instantlyRendered;
 
     /**
      * @param f
@@ -49,8 +50,13 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
      */
     public ContentFragmentTestImpl(Fragment f, HashMap list)
     {
-        super();
+        this(f, list, false);
+    }
+    
+    public ContentFragmentTestImpl(Fragment f, HashMap list, boolean instantlyRendered)
+    {
         this.f = f;
+        this.instantlyRendered = instantlyRendered;
     }
 
     /**
@@ -515,4 +521,12 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
         // TODO Auto-generated method stub
             
     }        
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#isInstantlyRendered()
+     */
+    public boolean isInstantlyRendered()
+    {
+        return this.instantlyRendered;
+    }
 }

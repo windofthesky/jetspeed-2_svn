@@ -39,6 +39,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
 {
     private ObjectID objectId = null;
     private transient PortletEntity portletEntity = null;
+    private boolean instantlyRendered;
 
     public PortletWindowImpl(String id)
     {
@@ -94,6 +95,22 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
     {
         this.portletEntity = portletEntity;
         ((PortletWindowListCtrl)portletEntity.getPortletWindowList()).add(this);
+    }
+    
+    /**
+     * Sets flag that the content is instantly rendered from JPT.
+     */
+    public void setInstantlyRendered(boolean instantlyRendered)
+    {
+        this.instantlyRendered = instantlyRendered;
+    }
+    
+    /**
+     * Checks if the content is instantly rendered from JPT.
+     */
+    public boolean isInstantlyRendered()
+    {
+        return this.instantlyRendered;
     }
 
 }

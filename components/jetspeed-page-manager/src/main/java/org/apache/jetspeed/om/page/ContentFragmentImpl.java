@@ -42,12 +42,19 @@ public class ContentFragmentImpl implements ContentFragment
     private static final Log log = LogFactory.getLog(ContentFragmentImpl.class);
     private final Map cachedFragments;
     private Decoration decoration;
+    private boolean instantlyRendered;
     
 
     public ContentFragmentImpl(Fragment fragment, Map cachedFagments)
     {
+        this(fragment, cachedFagments, false);
+    }
+
+    public ContentFragmentImpl(Fragment fragment, Map cachedFagments, boolean instantlyRendered)
+    {
         this.fragment = fragment;
         this.cachedFragments = cachedFagments;
+        this.instantlyRendered = instantlyRendered;
     }
 
     /* (non-Javadoc)
@@ -854,6 +861,14 @@ public class ContentFragmentImpl implements ContentFragment
     {
         this.decoration = decoration;
         
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#isInstantlyRendered()
+     */
+    public boolean isInstantlyRendered()
+    {
+        return this.instantlyRendered;
     }
     
 }
