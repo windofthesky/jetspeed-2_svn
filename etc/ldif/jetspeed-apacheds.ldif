@@ -1,99 +1,123 @@
-dn: o=sevenSeas
-objectClass: domain
-objectClass: extensibleObject
-objectClass: top
-o: sevenSeas
-
-dn: ou=OrgUnit2,o=sevenSeas
+dn: ou=rootOrg,o=sevenSeas
 objectClass: organizationalUnit
 objectClass: top
-ou: OrgUnit2
+ou: rootOrg
 
-dn: ou=OrgUnit3,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: OrgUnit3
-
-dn: ou=People,ou=OrgUnit2,o=sevenSeas
+dn: ou=People,ou=rootOrg,o=sevenSeas
 objectClass: organizationalUnit
 objectClass: top
 ou: People
 
-dn: ou=Groups,ou=OrgUnit2,o=sevenSeas
+dn: ou=Groups,ou=rootOrg,o=sevenSeas
 objectClass: organizationalUnit
 objectClass: top
 ou: Groups
 
-dn: ou=Roles,ou=OrgUnit2,o=sevenSeas
+dn: ou=Roles,ou=rootOrg,o=sevenSeas
 objectClass: organizationalUnit
 objectClass: top
 ou: Roles
 
-dn: ou=People,ou=OrgUnit3,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: People
-
-dn: ou=Groups,ou=OrgUnit3,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: Groups
-
-dn: ou=Roles,ou=OrgUnit3,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: Roles
-
-dn: ou=OrgUnit1,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: OrgUnit1
-
-dn: ou=People,ou=OrgUnit1,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: People
-
-dn: ou=Groups,ou=OrgUnit1,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: Groups
-
-dn: ou=Roles,ou=OrgUnit1,o=sevenSeas
-objectClass: organizationalUnit
-objectClass: top
-ou: Roles
-
-dn: cn=admin,ou=Groups,ou=OrgUnit1,o=sevenSeas
+dn: cn=accounting,ou=Groups,ou=rootOrg,o=sevenSeas
 objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: accounting
+j2-classname: accounting
+uid: accounting
+uniquemember: user,local,sublocal
+
+dn: cn=engineering,ou=Groups,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: engineering
+j2-classname: engineering
+uid: engineering
+uniquemember: user
+
+dn: cn=marketing,ou=Groups,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: marketing
+j2-classname: marketing
+uid: marketing
+uniquemember: user
+
+dn: cn=admin,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
 objectClass: groupOfUniqueNames
 objectClass: top
 cn: admin
 j2-classname: admin
 uid: admin
 uniquemember: admin
-uniquemember: joe
 
-dn: cn=user,ou=Groups,ou=OrgUnit1,o=sevenSeas
-objectClass: jetspeed-2-group
+dn: cn=manager,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
 objectClass: groupOfUniqueNames
 objectClass: top
-cn: user
-j2-classname: user
-uid: user
-uniquemember: user
-uniquemember: joe
+cn: manager
+j2-classname: manager
+uid: manager
+uniquemember: admin,jetspeed,manager
 
-dn: cn=user,ou=Roles,ou=OrgUnit1,o=sevenSeas
+dn: cn=user,ou=Roles,ou=rootOrg,o=sevenSeas
 objectClass: jetspeed-2-role
 objectClass: groupOfUniqueNames
 objectClass: top
 cn: user
 j2-classname: user
 uid: user
-uniquemember: user
+uniquemember: user,admin,manager,local
 
-dn: cn=admin,ou=People,ou=OrgUnit1,o=sevenSeas
+dn: cn=guest,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: guest
+j2-classname: guest
+uid: guest
+uniquemember: guest
+
+dn: cn=subsite,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: subsite
+j2-classname: subsite
+uid: subsite
+uniquemember: subsite
+
+dn: cn=subsite2,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: subsite2
+j2-classname: subsite2
+uid: subsite2
+uniquemember: subsite
+
+dn: cn=dev,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: dev
+j2-classname: dev
+uid: dev
+uniquemember: dev
+
+dn: cn=devmgr,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: devmgr
+j2-classname: devmgr
+uid: devmgr
+uniquemember: devmgr
+
+dn: cn=admin,ou=People,ou=rootOrg,o=sevenSeas
 objectClass: organizationalPerson
 objectClass: person
 objectClass: jetspeed-2-user
@@ -108,41 +132,137 @@ sn: admin
 uid: admin
 userpassword:: c2VjcmV0
 
-dn: cn=joe,ou=People,ou=OrgUnit1,o=sevenSeas
+dn: cn=manager,ou=People,ou=rootOrg,o=sevenSeas
 objectClass: organizationalPerson
 objectClass: person
 objectClass: jetspeed-2-user
 objectClass: inetOrgPerson
 objectClass: top
-cn: joe
-j2-role: cn=admin,ou=Roles,o=sevenSeas
-sn: joe
-uid: joe
-userpassword:: am9l
-
-dn: cn=admin,ou=Roles,ou=OrgUnit1,o=sevenSeas
-objectClass: jetspeed-2-role
-objectClass: groupOfUniqueNames
-objectClass: top
-cn: admin
-j2-classname: admin
-uid: admin
-uniquemember: admin
-
-dn: cn=manager,ou=Groups,ou=OrgUnit1,o=sevenSeas
-objectClass: jetspeed-2-group
-objectClass: groupOfUniqueNames
-objectClass: top
 cn: manager
-j2-classname: manager
+givenname: Manager
+j2-role: manager
+j2-role: user
+sn: manager
 uid: manager
-uniquemember: admin
+userpassword:: c2VjcmV0
 
-dn: cn=manager,ou=Roles,ou=OrgUnit1,o=sevenSeas
-objectClass: jetspeed-2-role
-objectClass: groupOfUniqueNames
+dn: cn=user,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
 objectClass: top
-cn: manager
-j2-classname: manager
-uid: manager
-uniquemember: admin
+cn: user
+givenname: User
+j2-role: user
+sn: user
+uid: user
+userpassword:: c2VjcmV0
+
+dn: cn=local,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: local
+givenname: Local
+j2-role: user
+sn: local
+uid: local
+userpassword:: c2VjcmV0
+
+dn: cn=sublocal,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: sublocal
+givenname: sublocal
+j2-role: user
+sn: sublocal
+uid: sublocal
+userpassword:: c2VjcmV0
+
+dn: cn=tomcat,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: tomcat
+givenname: tomcat
+sn: tomcat
+uid: tomcat
+userpassword:: c2VjcmV0
+
+dn: cn=jetspeed,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: jetspeed
+givenname: jetspeed
+j2-role: manager
+sn: jetspeed
+uid: jetspeed
+userpassword:: c2VjcmV0
+
+dn: cn=guest,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: guest
+givenname: guest
+sn: guest
+uid: guest
+userpassword:: c2VjcmV0
+
+dn: cn=subsite,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: subsite
+givenname: subsite
+j2-role: subsite
+j2-role: subsite2
+j2-role: user
+sn: subsite
+uid: subsite
+userpassword:: c2VjcmV0
+
+dn: cn=subsite2,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: subsite2
+givenname: subsite2
+j2-role: subsite
+j2-role: subsite2
+j2-role: user
+sn: subsite2
+uid: subsite2
+userpassword:: c2VjcmV0
+
+dn: cn=devmgr,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: devmgr
+givenname: devmgr
+j2-role: devmgr
+j2-role: dev
+j2-role: user
+sn: devmgr
+uid: devmgr
+userpassword:: c2VjcmV0
