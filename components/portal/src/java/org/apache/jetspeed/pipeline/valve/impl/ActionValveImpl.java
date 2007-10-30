@@ -31,6 +31,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -105,12 +106,34 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                     try 
                     {
                         Fragment fragment = request.getPage().getFragmentById(actionWindow.getId().toString());
-                        ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
-                        actionWindow = this.windowAccessor.getPortletWindow(contentFragment);
+                        
+                        if (fragment != null)
+                        {
+                            ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
+                            actionWindow = this.windowAccessor.getPortletWindow(contentFragment);
+                        }
                     } 
                     catch (Exception e)
                     {
                         log.error("Failed to refresh action window.", e);
+                    }
+                }
+                
+                if (actionWindow.getPortletEntity() == null)
+                {
+                    // a session is expired and the target actionWindow doesn't have portlet entity.
+                    // Redirect the user back to the target page (with possibly retaining the other windows navigational state).
+                    log.warn("Portlet action was canceled because the session was expired. The actionWindow's id is " + actionWindow.getId());
+                    
+                    request.setActionWindow(null);
+                    MutableNavigationalState state = (MutableNavigationalState) request.getPortalURL().getNavigationalState();
+                    
+                    if (state != null)
+                    {
+                        state.removeState(actionWindow);
+                        state.sync(request);
+                        request.getResponse().sendRedirect(request.getPortalURL().getPortalURL());
+                        return;
                     }
                 }
 
@@ -203,11 +226,27 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         if (!isNonStandardAction(actionWindow))
         {
             notifyFragments(root, request, page);
+            
+            // if the fragment is rendered from a decorator template, the target cache would not be cleared by the above notification.
+            // so, let's clear target cache of action window directly again.
+            String fragmentId = actionWindow.getId().toString();
+            if (page.getFragmentById(fragmentId) == null)
+            {
+                clearTargetCache(fragmentId, request);
+            }
         }
         else
         {
             ContentFragment fragment = page.getContentFragmentById(actionWindow.getId().toString());
-            clearTargetCache(fragment, request);
+            
+            if (fragment != null)
+            {
+                clearTargetCache(fragment, request);
+            }
+            else
+            {
+                clearTargetCache(actionWindow.getId().toString(), request);
+            }
         }
     }
     
@@ -268,11 +307,17 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
 
     protected void clearTargetCache(ContentFragment f, RequestContext context)
     {
-        ContentCacheKey cacheKey = portletContentCache.createCacheKey(context, f.getId());        
+        clearTargetCache(f.getId(), context);
+    }
+    
+    protected void clearTargetCache(String fragmentId, RequestContext context)
+    {
+        ContentCacheKey cacheKey = portletContentCache.createCacheKey(context, fragmentId);
+        
         if (portletContentCache.isKeyInCache(cacheKey))
         {
             portletContentCache.remove(cacheKey);
-            portletContentCache.invalidate(context);            
+            portletContentCache.invalidate(context);
         }
     }
     
@@ -295,7 +340,11 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     {
         Page page = request.getPage();
         Fragment fragment = page.getFragmentById(window.getId().toString());
-        ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
+        
+        if (fragment != null)
+        {
+            ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
+        }
     }
 
 }

@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -60,11 +62,14 @@ public class ContainerValve extends AbstractValve
                 window = state.getPortletWindowOfAction();
                 if (window != null && page.getFragmentById(window.getId().toString()) == null)
                 {
-                    // target window doesn't exists anymore or the target page is not accessible (anymore)
-                    // remove any navigational state for the window
-                    state.removeState(window);
-                    // as this is an action request which cannot be handled, perform a direct redirect after sync state (for the other windows)
-                    redirect = true;
+                    if (!((PortletWindowImpl) window).isInstantlyRendered())
+                    {
+                        // target window doesn't exists anymore or the target page is not accessible (anymore)
+                        // remove any navigational state for the window
+                        state.removeState(window);
+                        // as this is an action request which cannot be handled, perform a direct redirect after sync state (for the other windows)
+                        redirect = true;
+                    }
                 }
                 window = state.getMaximizedWindow();
                 if (window != null && page.getFragmentById(window.getId().toString()) == null)

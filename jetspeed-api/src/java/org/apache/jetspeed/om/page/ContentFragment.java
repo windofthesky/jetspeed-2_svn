@@ -110,4 +110,10 @@ public interface ContentFragment extends Fragment
      * @param decoration
      */
     void setDecoration(Decoration decoration);
+    
+    /**
+     * Checks if the content is instantly rendered from JPT.
+     */
+    public boolean isInstantlyRendered();
+
 }
