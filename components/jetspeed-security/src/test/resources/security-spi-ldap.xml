@@ -56,11 +56,11 @@ limitations under the License.
       <!-- The defaultSearchBase. -->
       <constructor-arg index="15"><value>o=sevenSeas</value></constructor-arg>
       <!-- The roleFilterBase. -->
-      <constructor-arg index="16"><value>ou=Roles,ou=OrgUnit1</value></constructor-arg>
+      <constructor-arg index="16"><value>ou=Roles,ou=rootOrg</value></constructor-arg>
       <!-- The groupFilterBase. -->
-      <constructor-arg index="17"><value>ou=Groups,ou=OrgUnit1</value></constructor-arg>
+      <constructor-arg index="17"><value>ou=Groups,ou=rootOrg</value></constructor-arg>
       <!-- The userFilterBase. -->
-      <constructor-arg index="18"><value>ou=People,ou=OrgUnit1</value></constructor-arg>
+      <constructor-arg index="18"><value>ou=People,ou=rootOrg</value></constructor-arg>
       <!-- The roleObjectClasses. -->
       <constructor-arg index="19"><value>top,groupOfUniqueNames,jetspeed-2-role</value></constructor-arg>
       <!-- The groupObjectClasses. -->
