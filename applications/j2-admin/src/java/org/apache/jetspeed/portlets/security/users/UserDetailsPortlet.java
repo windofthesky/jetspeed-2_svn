@@ -1164,7 +1164,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 
                 String requiredRole = actionRequest.getPreferences().getValue("requiredRole", "");
-                if (!requiredRole.equals("") && user != null)
+                if (!SecurityUtil.isEmpty(requiredRole)  && user != null)
                 {
                     roleManager.addRoleToUser(userName, requiredRole);
                 }
