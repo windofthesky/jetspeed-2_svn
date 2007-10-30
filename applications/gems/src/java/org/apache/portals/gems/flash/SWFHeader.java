@@ -324,7 +324,12 @@ public class SWFHeader
             s = ( s << 8 ) + bytes[i + 4];
         }
 
-        s = Integer.reverseBytes( s ) - 1;
+        // We can use Integer.reverseBytes(int) in Java 1.5+.
+        //s = Integer.reverseBytes( s ) - 1;
+        s = (((s >>> 24)           ) |
+            ((s >>   8) &   0xFF00) |
+            ((s <<   8) & 0xFF0000) |
+            ((s << 24))) - 1;
 
         return s;
     }
