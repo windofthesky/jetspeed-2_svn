@@ -482,8 +482,9 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		return getUserAttributes();
 	}
 
-	protected String getEntryPrefix() {
-		return "uid";
+	protected String getEntryPrefix() 
+    {
+        return this.getUidAttribute();
 	}
 
 	protected String getSearchSuffix() {
