@@ -182,7 +182,7 @@ public class RenderingJobImpl implements RenderingJob
         {
             synchronized (portletContent)
             {
-               log.debug("Notifying completion of rendering job for fragment " + fragment.getId());                
+               if (log.isDebugEnabled()) log.debug("Notifying completion of rendering job for fragment " + fragment.getId());                
                portletContent.notifyAll();
             }
         }
@@ -202,7 +202,7 @@ public class RenderingJobImpl implements RenderingJob
         PortletWindow curWindow = this.window;
         try
         {
-            log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
+            if (log.isDebugEnabled()) log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
 
             // if the current thread is worker, then store attribues in that.
             if (this.workerAttributes != null)
@@ -311,13 +311,16 @@ public class RenderingJobImpl implements RenderingJob
             }
             finally
             {
-                if (fragment.getOverriddenContent() != null)
+                synchronized (portletContent)
                 {
-                    portletContent.completeWithError();
-                }
-                else
-                {
-                    portletContent.complete();
+                    if (fragment.getOverriddenContent() != null)
+                    {
+                        portletContent.completeWithError();
+                    }
+                    else
+                    {
+                        portletContent.complete();
+                    }
                 }
             }
         }

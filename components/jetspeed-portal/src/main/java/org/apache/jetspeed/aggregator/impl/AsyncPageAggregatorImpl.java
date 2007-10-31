@@ -224,9 +224,9 @@ public class AsyncPageAggregatorImpl implements PageAggregator
                 RenderingJob job = (RenderingJob) iter.next();
                 PortletContent portletContent = job.getPortletContent();
                 
-                if (!portletContent.isComplete()) 
+                synchronized (portletContent) 
                 {
-                    synchronized (portletContent) 
+                    if (!portletContent.isComplete()) 
                     {
                         portletContent.wait();
                     }
