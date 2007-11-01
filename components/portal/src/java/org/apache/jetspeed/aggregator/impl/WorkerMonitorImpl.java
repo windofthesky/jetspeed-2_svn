@@ -365,20 +365,16 @@ public class WorkerMonitorImpl implements WorkerMonitor
                     log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms): " + windowId);
                 }
 
-                int waitCount = 0;
                 PortletContent content = job.getPortletContent();
-
-                while (!content.isComplete()) {
-                    if (++waitCount > 10) {
-                        break;
-                    }
-
-                    worker.interrupt();
-
-                    synchronized (content) {
+                
+                synchronized (content)
+                {
+                    if (!content.isComplete()) {
+                        worker.interrupt();
                         content.wait();
                     }
                 }
+                
             } catch (Exception e) {
                 log.error("Exceptiong during job killing.", e);
             }
