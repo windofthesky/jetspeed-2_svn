@@ -41,7 +41,7 @@ public class TestPortletPlacement extends TestCase
         {
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
             int a_iNumCols = ppc.getNumberColumns();
-            assertEquals(a_iNumCols, 3);
+            assertEquals(a_iNumCols, 2);
 
             int a_iNumRows = ppc.getNumberRows(1);
             assertEquals(a_iNumRows, 2);

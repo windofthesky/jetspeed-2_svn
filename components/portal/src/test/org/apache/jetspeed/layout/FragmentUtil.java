@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.layout;
 
+import javax.security.auth.Subject;
+
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -104,7 +106,9 @@ public class FragmentUtil
 
         RequestContext a_oRC = new JetspeedRequestContext(request, response,
                 config, null);
-
+        
+        a_oRC.setSubject(new Subject());
+        
         Page a_oPage = setupPage();
         ContentPage a_oContentPage = new ContentPageImpl(a_oPage);
 
