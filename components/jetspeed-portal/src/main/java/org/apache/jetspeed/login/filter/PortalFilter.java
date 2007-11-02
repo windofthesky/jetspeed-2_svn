@@ -37,14 +37,12 @@ import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.login.LoginConstants;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.impl.UserSubjectPrincipalImpl;
 
 public class PortalFilter implements Filter
@@ -93,14 +91,14 @@ public class PortalFilter implements Filter
                     }
                     catch (SecurityException sex)
                     {
-                        subject = null;
                     }       
                     if (subject == null)
                     {
                         Set principals = new PrincipalsSet();
-                        subject = new Subject(true, principals, new HashSet(), new HashSet());
-                        UserPrincipal userPrincipal = new UserSubjectPrincipalImpl(username, subject);
+                        UserSubjectPrincipalImpl userPrincipal = new UserSubjectPrincipalImpl(username);
                         principals.add(userPrincipal);
+                        subject = new Subject(true, principals, new HashSet(), new HashSet());
+                        userPrincipal.setSubject(subject);
                     }
                     Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
                     sRequest = wrapperRequest(request, subject, principal);

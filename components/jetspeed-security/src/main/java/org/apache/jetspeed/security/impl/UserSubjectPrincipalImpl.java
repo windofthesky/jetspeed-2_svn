@@ -37,12 +37,15 @@ public class UserSubjectPrincipalImpl extends UserPrincipalImpl implements UserS
      * <p>The user principal constructor.</p>
      * @param userName The user principal name.
      */
-    public UserSubjectPrincipalImpl(String userName, Subject subject)
+    public UserSubjectPrincipalImpl(String userName)
     {
         super(userName);   
-        this.subject = subject;
     }
 
+    public void setSubject(Subject subject)
+    {
+        this.subject = subject;
+    }
     
     public Subject getSubject()
     {
