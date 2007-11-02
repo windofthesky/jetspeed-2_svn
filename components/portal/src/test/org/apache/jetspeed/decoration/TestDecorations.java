@@ -83,8 +83,6 @@ public class TestDecorations extends MockObjectTestCase
         ArrayList list = new ArrayList(1);
         list.add(childFragment);
         
-        expectAndReturn(fragmentMock, "getType", "layout");
-        
         expectAndReturn(fragmentMock, "getFragments", list);
           
         expectAndReturn(atLeastOnce(), fragmentMock, "getId", "001");
