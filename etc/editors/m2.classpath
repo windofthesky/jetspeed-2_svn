@@ -1,110 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-capability/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-cm/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-deploy-tools/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-file-cache/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-header-resource/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-id-generator/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-locator/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-page-manager/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-portal-site/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-portal/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-portlet-factory/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-prefs/src/main/java"/>
-	<classpathentry excluding="**/.svn/*|META-INF/test-spring.xml" kind="src" path="components/jetspeed-profiler/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-rdbms/src/main/java"/>
-	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/jetspeed-registry/src/main/java"/>
-	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/jetspeed-rewriter/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-search/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-security/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-serializer/src/main/java"/>
-	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/jetspeed-sso/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-statistics/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-web-content/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-webapp-logging/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="etc/log4j"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-api/src/main/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-commons/src/main/java"/>
+	<classpathentry kind="src" path="ant-tasks/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/webapp-logging/src/java"/>
+	<classpathentry kind="src" path="components/serializer/src/java"/>
+	<classpathentry kind="src" path="etc/log4j"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-api/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="commons/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/capability/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/cm/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/cm/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/deploy-tool/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/file-cache/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/file-cache/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/header-resource/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/id-generator/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/id-generator/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/locator/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/locator/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/page-manager/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/page-manager/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/portal/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/portal/src/test"/>
+	<classpathentry kind="src" path="components/portal-site/src/java"/>
+	<classpathentry kind="src" path="components/portal-site/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/portlet-factory/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/prefs/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/prefs/src/test"/>
+	<classpathentry excluding="**/.svn/*|META-INF/test-spring.xml" kind="src" path="components/profiler/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/profiler/src/test"/>
+	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/registry/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/registry/src/test"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/rewriter/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/rewriter/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/rdbms/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/rdbms/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/search/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/search/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/security/src/java"/>
+	<classpathentry excluding="**/.svn/*|Log4j.properties" kind="src" path="components/security/src/test"/>
+	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/sso/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/sso/src/test"/>
+	<classpathentry kind="src" path="components/statistics/src/java"/>
+	<classpathentry kind="src" path="components/statistics/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="components/web-content/src/java"/>
+	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/web-content/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="maven-plugin/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-capability/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-cm/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-file-cache/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-id-generator/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-locator/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-page-manager/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-portal-site/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-portal/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-prefs/src/test/java"/>
-	<classpathentry excluding="**/.svn/*|META-INF/test-spring.xml" kind="src" path="components/jetspeed-profiler/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-rdbms/src/test/java"/>
-	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/jetspeed-registry/src/test/java"/>
-	<classpathentry excluding="**/.svn/*|log4j.properties" kind="src" path="components/jetspeed-rewriter/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-search/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-security/src/test/java"/>
-	<classpathentry excluding="**/.svn/*|META-INF/transaction.xml" kind="src" path="components/jetspeed-sso/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-statistics/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="components/jetspeed-web-content/src/test/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="jetspeed-commons/src/test"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="layout-portlets/src/test"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="taglibs/treecontrol/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="app-servers/security/jboss/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/demo/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/gems/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/j2-admin/src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="applications/rss/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="M2_REPO/ant/ant/1.6.5/ant-1.6.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/castor/castor/1.1.1-xml/castor-1.1.1-xml.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils-bean-collections/1.7.0/commons-beanutils-bean-collections-1.7.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-betwixt/commons-betwixt/20061115/commons-betwixt-20061115.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.3/commons-codec-1.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2/commons-collections-3.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-configuration/commons-configuration/1.1/commons-configuration-1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-digester/commons-digester/1.8/commons-digester-1.8.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.2/commons-fileupload-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-httpclient/commons-httpclient/3.0.1/commons-httpclient-3.0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/0.1/commons-io-0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.1/commons-lang-2.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1/commons-logging-1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.3/commons-pool-1.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/ddlutils/ddlutils/1.0-RC1-PATCHED/ddlutils-1.0-RC1-PATCHED.jar"/>
-	<classpathentry kind="var" path="M2_REPO/ehcache/ehcache/1.2.4/ehcache-1.2.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.3.3/mail-1.3.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/servlet/jstl/1.1.2/jstl-1.1.2.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javolution/javolution/4.0.2/javolution-4.0.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.0-FCS/jaxen-1.0-FCS.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar"/>
-	<classpathentry kind="var" path="M2_REPO/lucene/lucene-core/2.0.0/lucene-core-2.0.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/mockrunner/mockrunner/0.3.8/mockrunner-0.3.8.jar"/>
-	<classpathentry kind="var" path="M2_REPO/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/ojb/db-ojb/1.0.3/db-ojb-1.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/pluto/pluto/1.0.1/pluto-1.0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-common/1.0.3/portals-bridges-common-1.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-frameworks/1.0.3/portals-bridges-frameworks-1.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-jsf/1.0.3/portals-bridges-jsf-1.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-portletfilter/1.0.3/portals-bridges-portletfilter-1.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-velocity/1.0.3/portals-bridges-velocity-1.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-mock/2.0.5/spring-mock-2.0.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-ojb/2.0-rc2/spring-ojb-2.0-rc2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-portlet/2.0.5/spring-portlet-2.0.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-webmvc/2.0.5/spring-webmvc-2.0.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.0.5/spring-2.0.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar"/>
-	<classpathentry kind="var" path="M2_REPO/portlet-api/portlet-api/1.0/portlet-api-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/rome/rome/0.8/rome-0.8.jar"/>
-	<classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
-	<classpathentry kind="var" path="M2_REPO/taglibs/random/1.0.2/random-1.0.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/taglibs/standard/1.1.2/standard-1.1.2.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/tyrex/tyrex/1.0.1/tyrex-1.0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/velocity-tools/velocity-tools/1.3/velocity-tools-1.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/velocity/velocity/1.5/velocity-1.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.3.0/xercesImpl-2.3.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-digester/commons-digester/1.8/commons-digester-1.8.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-io/commons-io/0.1/commons-io-0.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.1/commons-lang-2.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1/commons-logging-1.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/hsqldb/hsqldb/1.8.0.2/hsqldb-1.8.0.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar"/>
+    <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar"/>
+    <classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar" exported="true"/>
+    <classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.3/commons-pool-1.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2/commons-collections-3.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.3.0/xercesImpl-2.3.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/xml-apis/xml-apis/2.0.2/xml-apis-2.0.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/velocity/velocity/1.5/velocity-1.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/tyrex/tyrex/1.0.1/tyrex-1.0.1.jar" exported="true"/>
+    <classpathentry kind="var" path="M2_REPO/ojb/db-ojb/1.0.3/db-ojb-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-httpclient/commons-httpclient/3.0.1/commons-httpclient-3.0.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/velocity-tools/velocity-tools/1.3/velocity-tools-1.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-configuration/commons-configuration/1.1/commons-configuration-1.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/mockrunner/mockrunner/0.3.8/mockrunner-0.3.8.jar"/>
+    <classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
+    <classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.0-FCS/jaxen-1.0-FCS.jar"/>
+    <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/javax/servlet/jstl/1.1.2/jstl-1.1.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/pluto/pluto/1.0.1/pluto-1.0.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/lucene/lucene-core/2.0.0/lucene-core-2.0.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.3/commons-codec-1.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/rome/rome/0.8/rome-0.8.jar"/>
+    <classpathentry kind="var" path="M2_REPO/taglibs/standard/1.1.2/standard-1.1.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/cglib/cglib/2.1_3/cglib-2.1_3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.0.5/spring-2.0.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/springframework/spring-mock/2.0.5/spring-mock-2.0.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/springframework/spring-portlet/2.0.5/spring-portlet-2.0.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/springframework/spring-webmvc/2.0.5/spring-webmvc-2.0.5.jar"/>  
+    <classpathentry kind="var" path="M2_REPO/org/springframework/spring-ojb/2.0-rc2/spring-ojb-2.0-rc2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.2/commons-fileupload-1.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-common/1.0.3/portals-bridges-common-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-velocity/1.0.3/portals-bridges-velocity-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-frameworks/1.0.3/portals-bridges-frameworks-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-jsf/1.0.3/portals-bridges-jsf-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/org/apache/portals/bridges/portals-bridges-portletfilter/1.0.3/portals-bridges-portletfilter-1.0.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.3.3/mail-1.3.3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/taglibs/random/1.0.2/random-1.0.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/javolution/javolution/4.0.2/javolution-4.0.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/ddlutils/ddlutils/1.0-RC1-PATCHED/ddlutils-1.0-RC1-PATCHED.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils-bean-collections/1.7.0/commons-beanutils-bean-collections-1.7.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commons-betwixt/commons-betwixt/20061115/commons-betwixt-20061115.jar"/>
+    <classpathentry kind="var" path="M2_REPO/ant/ant/1.6.5/ant-1.6.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/ehcache/ehcache/1.2.4/ehcache-1.2.4.jar"/>
+    <classpathentry kind="var" path="M2_REPO/portlet-api/portlet-api/1.0/portlet-api-1.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/myfaces/myfaces-api/1.1.5/myfaces-api-1.1.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/myfaces/myfaces-impl/1.1.5/myfaces-impl-1.1.5.jar"/>
+    <classpathentry kind="var" path="M2_REPO/myfaces/tomahawk/1.1.5/tomahawk-1.1.5.jar"/>
     <classpathentry kind="var" path="M2_REPO/asm/asm/2.2/asm-2.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/asm/asm-attr/2.2/asm-attr-2.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/commonj/commonj-twm/1.1/asm-1.1.jar"/>	
+    <classpathentry kind="var" path="M2_REPO/asm/asm-attrs/2.2/asm-attrs-2.2.jar"/>
+    <classpathentry kind="var" path="M2_REPO/commonj/commonj-twm/1.1/commonj-twm-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
