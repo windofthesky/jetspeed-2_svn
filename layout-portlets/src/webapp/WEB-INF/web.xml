@@ -36,9 +36,7 @@ limitations under the License.
      <servlet-name>
         JetspeedContainer
      </servlet-name>
-     <url-pattern>
-       /container/*
-     </url-pattern>
+     <url-pattern>/container/*</url-pattern>
   </servlet-mapping>
   
   <!-- Portlet tag library TLD -->
