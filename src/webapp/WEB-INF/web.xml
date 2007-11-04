@@ -153,89 +153,67 @@ limitations under the License.
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /portal/*
-       </url-pattern>
+       <url-pattern>/portal/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /portlet/*
-       </url-pattern>
+       <url-pattern>/portlet/*</url-pattern>
     </servlet-mapping>            
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /jetspeed/*
-       </url-pattern>
+       <url-pattern>/jetspeed/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /fileserver/*
-       </url-pattern>
+       <url-pattern>/fileserver/*</url-pattern>
     </servlet-mapping>            
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /ajaxapi/*
-       </url-pattern>
+       <url-pattern>/ajaxapi/*</url-pattern>
     </servlet-mapping>            
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /ajax/*
-       </url-pattern>
+       <url-pattern>/ajax/*</url-pattern>
     </servlet-mapping>            
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /desktop/*
-       </url-pattern>
+       <url-pattern>/desktop/*</url-pattern>
     </servlet-mapping>            
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /action/*
-       </url-pattern>
+       <url-pattern>/action/*</url-pattern>
     </servlet-mapping>            
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /render/*
-       </url-pattern>
+       <url-pattern>/render/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /configure/*
-       </url-pattern>
+       <url-pattern>/configure/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
        <servlet-name>
           jetspeed
        </servlet-name>
-       <url-pattern>
-         /dtconfigure/*
-       </url-pattern>
+       <url-pattern>/dtconfigure/*</url-pattern>
     </servlet-mapping>
     
     <!-- Map *.vm files to Velocity  -->
