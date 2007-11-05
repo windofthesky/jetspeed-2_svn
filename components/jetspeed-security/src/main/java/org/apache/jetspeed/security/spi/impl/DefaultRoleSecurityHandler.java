@@ -61,7 +61,8 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
         if (null != internalRole)
         {
             rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl
-                    .getPrincipalNameFromFullPath(internalRole.getFullPath()));
+                    .getPrincipalNameFromFullPath(internalRole.getFullPath()), 
+                    internalRole.isEnabled(), internalRole.isMappingOnly());
         }
         return rolePrincipal;
     }

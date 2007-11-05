@@ -61,7 +61,7 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
         if (null != internalGroup)
         {
             groupPrincipal = new GroupPrincipalImpl(GroupPrincipalImpl
-                    .getPrincipalNameFromFullPath(internalGroup.getFullPath()));
+                    .getPrincipalNameFromFullPath(internalGroup.getFullPath()), internalGroup.isEnabled(), internalGroup.isMappingOnly());
         }
         return groupPrincipal;
     }
@@ -125,9 +125,9 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
                 continue;
             }
             groupPrincipals
-                    .add(new GroupPrincipalImpl(GroupPrincipalImpl
-                            .getPrincipalNameFromFullPath(internalGroup
-                                    .getFullPath())));
+                    .add(new GroupPrincipalImpl(GroupPrincipalImpl.getPrincipalNameFromFullPath(internalGroup.getFullPath()),
+                                internalGroup.isEnabled(), internalGroup.isMappingOnly()) 
+                            );
         }
         return groupPrincipals;
     }

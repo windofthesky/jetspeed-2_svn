@@ -51,5 +51,12 @@ public interface BasePrincipal extends Principal, Serializable
      * Setter for the enabled state</p>
      * @param enabled The enabled state
      */
-    void setEnabled(boolean enabled);    
+    void setEnabled(boolean enabled);
+    
+    /**
+     * <p>is this principal a security principal mapping or a real principal</p>
+     * @return true if is a mapping
+     */
+    boolean isMapping();
+    
 }
