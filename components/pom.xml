@@ -210,12 +210,18 @@ limitations under the License.
                             This setting also has ramifactions for embedded databases
                             that lock access to a single JVM instance, (e.g. derby).
                         -->
-                        <forkMode>once</forkMode>
+                        <forkMode>always</forkMode>
                         <!--
                             Note: some component tests depend on current working directory
                             being set to the project base directory to locate test data.
                         -->
                         <workingDirectory>${basedir}</workingDirectory>
+                        <!-- MK: -->
+                        <excludes combine.children="append">
+                            <exclude>**/*$*</exclude>
+                            <exclude>**/*Mock*</exclude>
+                        </excludes>
+                        <!-- MK:  -->                        
                     </configuration>
                 </plugin>
 

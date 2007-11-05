@@ -87,6 +87,11 @@ limitations under the License.
             <artifactId>jetspeed-id-generator</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

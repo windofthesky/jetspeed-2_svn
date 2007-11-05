@@ -141,7 +141,7 @@ limitations under the License.
             to ensure test isolation for spring test cases;
             specifically connection datasource management.
         -->
-        <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.3</org.apache.maven.plugins.maven-surefire-plugin.version>
+        <org.apache.maven.plugins.maven-surefire-plugin.version>2.3</org.apache.maven.plugins.maven-surefire-plugin.version>
         <torque.version>3.2-rc3</torque.version>
         <tyrex.version>1.0.1</tyrex.version>
 
@@ -276,7 +276,7 @@ limitations under the License.
         <repository>
             <id>org.apache</id>
             <name>Maven1 Apache</name>
-            <url>http://www.ibiblio.org/maven2</url>
+            <url>http://repo1.maven.org/maven</url>
             <layout>legacy</layout>
         </repository>
     </repositories>
