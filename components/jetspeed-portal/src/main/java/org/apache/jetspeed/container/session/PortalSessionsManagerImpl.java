@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.container.session;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,9 +70,15 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#portalSessionCreated(javax.servlet.http.HttpSession)
      */
-    public synchronized void portalSessionCreated(HttpSession portalSession)
+    public void portalSessionCreated(HttpSession portalSession)
     {
-        PortalSessionMonitor psm = new PortalSessionMonitorImpl(++portalSessionKeySequence, forceInvalidate);
+        PortalSessionMonitor psm = null;
+        
+        synchronized (this) 
+        {
+            psm = new PortalSessionMonitorImpl(++portalSessionKeySequence, forceInvalidate);
+        }
+        
         portalSession.setAttribute(PortalSessionMonitor.SESSION_KEY, psm);
         // register it as if activated
         portalSessionDidActivate(psm);
@@ -79,7 +87,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#portalSessionWillPassivate(org.apache.jetspeed.container.session.PortalSessionMonitor)
      */
-    public synchronized void portalSessionWillPassivate(PortalSessionMonitor psm)
+    public void portalSessionWillPassivate(PortalSessionMonitor psm)
     {
         portalSessionsRegistry.remove(psm.getSessionId());
     }
@@ -87,7 +95,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#portalSessionDidActivate(org.apache.jetspeed.container.session.PortalSessionMonitor)
      */
-    public synchronized void portalSessionDidActivate(PortalSessionMonitor restoredPsm)
+    public void portalSessionDidActivate(PortalSessionMonitor restoredPsm)
     {
         PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(restoredPsm.getSessionId());
         if ( psr != null && psr.portalSessionKey != -1 && psr.portalSessionKey != restoredPsm.getSessionKey() )
@@ -106,7 +114,8 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
         psr.psm = restoredPsm;
         psr.portalSessionKey = restoredPsm.getSessionKey();
         // validate registered paSessions are in sync
-        Iterator iter = psr.sessionMonitors.values().iterator();
+        // we iterate with shallow copy of paSessions to avoid conflicts with concurrent updates of paSessions
+        Iterator iter = valuesShallowCopy(psr.sessionMonitors.values()).iterator();
         PortletApplicationSessionMonitor pasm;
         while (iter.hasNext())
         {
@@ -114,7 +123,8 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             if ( pasm.getPortalSessionKey() != psr.portalSessionKey )
             {
                 pasm.invalidateSession();
-                iter.remove();
+                // remove from original map !
+                psr.sessionMonitors.remove(pasm.getContextPath());
             }
         }
     }
@@ -122,26 +132,35 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#portalSessionDestroyed(org.apache.jetspeed.container.session.PortalSessionMonitor)
      */
-    public synchronized void portalSessionDestroyed(PortalSessionMonitor psm)
+    public void portalSessionDestroyed(PortalSessionMonitor psm)
     {
         PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.remove(psm.getSessionId());
         if ( psr != null )
         {
-            Iterator iter = psr.sessionMonitors.values().iterator();
+            // we iterate with shallow copy of paSessions to avoid conflicts with concurrent updates of paSessions
+            Iterator iter = valuesShallowCopy(psr.sessionMonitors.values()).iterator();
             while (iter.hasNext())
             {
-                ((PortletApplicationSessionMonitor)iter.next()).invalidateSession();
+                ((PortletApplicationSessionMonitor) iter.next()).invalidateSession();
             }
-            // To make sure its gone.
-            // You better not remove the psm from the portal session yourself ;)
-            psm.invalidateSession();
+            
+            try
+            {
+                // To make sure its gone.
+                // You better not remove the psm from the portal session yourself ;)
+                psm.invalidateSession();
+            }
+            catch (IllegalStateException ise)
+            {
+                // pSession already invalid, ignore
+            }
         }
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#checkMonitorSession(java.lang.String, javax.servlet.http.HttpSession, javax.servlet.http.HttpSession)
      */
-    public synchronized void checkMonitorSession(String contextPath, HttpSession portalSession, HttpSession paSession)
+    public void checkMonitorSession(String contextPath, HttpSession portalSession, HttpSession paSession)
     {
         if ( portalSession != null && paSession != null )
         {
@@ -225,7 +244,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#sessionDidActivate(org.apache.jetspeed.container.session.PortletApplicationSessionMonitor)
      */
-    public synchronized void sessionDidActivate(PortletApplicationSessionMonitor restoredPasm)
+    public void sessionDidActivate(PortletApplicationSessionMonitor restoredPasm)
     {
         PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(restoredPasm.getPortalSessionId());
         if ( psr == null )
@@ -247,15 +266,23 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.container.session.PortalSessionsManager#sessionDestroyed(org.apache.jetspeed.container.session.PortletApplicationSessionMonitor)
      */
-    public synchronized void sessionDestroyed(PortletApplicationSessionMonitor pasm)
+    public void sessionDestroyed(PortletApplicationSessionMonitor pasm)
     {
         PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(pasm.getPortalSessionId());
         if ( psr != null )
         {
             psr.sessionMonitors.remove(pasm.getContextPath());
-            // To make sure its gone.
-            // You better not remove the pasm from the session yourself ;)
-            pasm.invalidateSession();
+
+            try
+            {
+                // To make sure its gone.
+                // You better not remove the pasm from the session yourself ;)
+                pasm.invalidateSession();
+            }
+            catch (IllegalStateException ise)
+            {
+                // paSession already invalid, ignore
+            }
         }
     }
 
@@ -266,4 +293,13 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
 		
 		return portalSessionsRegistry.size();
 	}
+
+    /**
+     * Returns a shallow copy of the given Collection.
+     * @param inValues
+     * @return shallow copy
+     */
+    private Collection valuesShallowCopy(Collection inValues) {
+        return Arrays.asList(inValues.toArray());
+    }
 }
