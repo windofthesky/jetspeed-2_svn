@@ -32,6 +32,7 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl;
 import org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl;
 import org.apache.jetspeed.security.spi.SecurityAccess;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
@@ -262,16 +263,19 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     {
         InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl
                 .getFullPathFromPrincipalName(groupFullPathName));
+        boolean isMappingOnly = false;
         if (null == internalGroup)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
-        }
+            // This is a record for mapping only.
+            isMappingOnly = true;
+            internalGroup = new InternalGroupPrincipalImpl(groupFullPathName);
+        }        
         Collection internalRoles = internalGroup.getRolePrincipals();
         InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
                 .getFullPathFromPrincipalName(roleFullPathName));
         internalRoles.add(internalRole);
         internalGroup.setRolePrincipals(internalRoles);
-        commonQueries.setInternalGroupPrincipal(internalGroup, false);
+        commonQueries.setInternalGroupPrincipal(internalGroup, isMappingOnly);
     }
 
     /**
@@ -282,6 +286,13 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     {
         InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl
                 .getFullPathFromPrincipalName(groupFullPathName));
+        boolean isMappingOnly = false;
+        if (null == internalGroup)
+        {
+            // This is a record for mapping only.
+            isMappingOnly = true;
+            internalGroup = new InternalGroupPrincipalImpl(groupFullPathName);
+        }                
         if (null == internalGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(internalGroup));
@@ -291,7 +302,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
                 .getFullPathFromPrincipalName(roleFullPathName));
         internalRoles.remove(internalRole);
         internalGroup.setRolePrincipals(internalRoles);
-        commonQueries.setInternalGroupPrincipal(internalGroup, false);
+        commonQueries.setInternalGroupPrincipal(internalGroup, isMappingOnly);
     }
 
     /**

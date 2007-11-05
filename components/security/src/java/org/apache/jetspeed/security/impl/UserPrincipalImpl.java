@@ -44,9 +44,19 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
      */
     public UserPrincipalImpl(String userName)
     {
-        super(userName, PREFS_USER_ROOT, hiearchicalNames);   
+        this(userName, true, false);   
     }
 
+    public UserPrincipalImpl(String userName, boolean isMapping)
+    {
+        this(userName, true, isMapping);   
+    }
+    
+    public UserPrincipalImpl(String userName, boolean isEnabled, boolean isMapping)
+    {
+        super(userName, PREFS_USER_ROOT, hiearchicalNames, isEnabled, isMapping);
+    }
+    
     /**
      * <p>Compares this principal to the specified object.  Returns true
      * if the object passed in matches the principal represented by

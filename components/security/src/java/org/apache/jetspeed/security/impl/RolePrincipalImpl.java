@@ -43,8 +43,14 @@ public class RolePrincipalImpl extends BasePrincipalImpl implements RolePrincipa
      */
     public RolePrincipalImpl(String roleName)
     {
-        super(roleName, PREFS_ROLE_ROOT, hiearchicalNames);
+        this(roleName, true, false);
     }
+    
+    public RolePrincipalImpl(String roleName, boolean isEnabled, boolean isMapping)
+    {
+        super(roleName, PREFS_ROLE_ROOT, hiearchicalNames, isEnabled, isMapping);
+    }
+    
 
     /**
      * <p>Compares this principal to the specified object.  Returns true

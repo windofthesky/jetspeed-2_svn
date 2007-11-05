@@ -46,6 +46,11 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
         super(groupName, PREFS_GROUP_ROOT, hiearchicalNames);
     }
 
+    public GroupPrincipalImpl(String groupName, boolean isEnabled, boolean isMapping)
+    {
+        super(groupName, PREFS_GROUP_ROOT, hiearchicalNames, isEnabled, isMapping);
+    }
+    
     /**
      * <p>Compares this principal to the specified object.  Returns true
      * if the object passed in matches the principal represented by

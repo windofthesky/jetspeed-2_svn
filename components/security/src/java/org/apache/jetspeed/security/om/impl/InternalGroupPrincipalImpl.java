@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.om.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
@@ -47,7 +48,8 @@ public class InternalGroupPrincipalImpl extends InternalPrincipalImpl implements
      */
     public InternalGroupPrincipalImpl(String fullPath)
     {
-        super(GROUP_PRINCIPAL_CLASSNAME, fullPath);  
+        super(GROUP_PRINCIPAL_CLASSNAME, fullPath); 
+        this.rolePrincipals = new ArrayList();       
     }
 
     private Collection userPrincipals;

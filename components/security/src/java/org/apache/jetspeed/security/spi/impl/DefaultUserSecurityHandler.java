@@ -63,7 +63,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(username, false);
         if (null != internalUser)
         {
-            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()));
+            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()), true, internalUser.isMappingOnly());
             userPrincipal.setEnabled(internalUser.isEnabled());
         }
         return userPrincipal;

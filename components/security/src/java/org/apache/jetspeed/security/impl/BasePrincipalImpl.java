@@ -37,6 +37,12 @@ public abstract class BasePrincipalImpl implements BasePrincipal
     /** The full path. */
     private final String fullPath;
 
+    /** is this principal enabled **/
+    private boolean enabled = true;
+    
+    /** is this principal a mapping **/
+    private boolean isMapping = false;
+    
     /**
      * <p>
      * Principal constructor given a name and preferences root.
@@ -47,8 +53,15 @@ public abstract class BasePrincipalImpl implements BasePrincipal
      */
     public BasePrincipalImpl(String name, String prefsRoot, boolean hiearchicalNames)
     {
+        this(name, prefsRoot, hiearchicalNames, true, false);
+    }
+    
+    public BasePrincipalImpl(String name, String prefsRoot, boolean hiearchicalNames, boolean isEnabled, boolean isMapping)
+    {
         this.name = name;
         this.fullPath = getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
+        this.enabled = isEnabled;
+        this.isMapping = isMapping;
     }
 
     /**
@@ -184,8 +197,6 @@ public abstract class BasePrincipalImpl implements BasePrincipal
 //        return getPrincipalNameFromFullPath(fullPath, prefsRoot, true);
 //    }
 
-    private boolean enabled = true;
-
     /**
      * @see org.apache.jetspeed.security.BasePrincipal#isEnabled()
      */
@@ -201,4 +212,10 @@ public abstract class BasePrincipalImpl implements BasePrincipal
     {
         this.enabled = enabled;
     }
+   
+    public boolean isMapping()
+    {
+        return isMapping;
+    }
+    
 }
