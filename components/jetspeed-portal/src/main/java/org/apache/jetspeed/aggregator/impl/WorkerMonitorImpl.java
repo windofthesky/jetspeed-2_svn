@@ -204,6 +204,34 @@ public class WorkerMonitorImpl implements WorkerMonitor
             }
         }
     }
+    
+    /**
+     * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
+     * @param renderingJobs the Collection of rendering job objects to wait for.
+     */
+    public void waitForRenderingJobs(List renderingJobs)
+    {
+        try 
+        {
+            for (Iterator iter = renderingJobs.iterator(); iter.hasNext(); )
+            {
+                RenderingJob job = (RenderingJob) iter.next();
+                PortletContent portletContent = job.getPortletContent();
+                
+                synchronized (portletContent) 
+                {
+                    if (!portletContent.isComplete()) 
+                    {
+                        portletContent.wait();
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("Exception during synchronizing all portlet rendering jobs.", e);
+        }
+    }
 
     /**
      * Put back the worker in the idle queue unless there are pending jobs and

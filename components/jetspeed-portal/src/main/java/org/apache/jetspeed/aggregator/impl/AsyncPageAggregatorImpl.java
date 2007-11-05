@@ -216,27 +216,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
         }
 
         // synchronize on completion of all jobs
-        iter = parallelJobs.iterator();
-        try 
-        {
-            while (iter.hasNext()) 
-            {
-                RenderingJob job = (RenderingJob) iter.next();
-                PortletContent portletContent = job.getPortletContent();
-                
-                synchronized (portletContent) 
-                {
-                    if (!portletContent.isComplete()) 
-                    {
-                        portletContent.wait();
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("Exception during synchronizing all portlet rendering jobs.", e);
-        }
+        renderer.waitForRenderingJobs(parallelJobs);
         
         // Now, restore it to non parallel mode for rendering layout portlets.
         CurrentWorkerContext.setParallelRenderingMode(false);
