@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -380,6 +381,15 @@ public class PortletRendererImpl implements PortletRenderer
             log.error("render() failed: " + e1.toString(), e1);
             fragment.overrideRenderedContent(e1.getLocalizedMessage());            
         }
+    }
+    
+    /**
+     * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
+     * @param renderingJobs the Collection of rendering job objects to wait for.
+     */
+    public void waitForRenderingJobs(List renderingJobs)
+    {
+        this.workMonitor.waitForRenderingJobs(renderingJobs);
     }
 
     /**

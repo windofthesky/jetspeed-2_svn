@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.util.List;
+
 import org.apache.jetspeed.util.Queue;
 
 /**
@@ -67,4 +69,9 @@ public interface WorkerMonitor
      */
     void process(RenderingJob job);
     
+    /**
+     * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
+     * @param renderingJobs the Collection of rendering job objects to wait for.
+     */
+    public void waitForRenderingJobs(List renderingJobs);
 }

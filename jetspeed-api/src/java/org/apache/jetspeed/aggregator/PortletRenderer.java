@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -87,6 +89,12 @@ public interface PortletRenderer
      */
     public void processRenderingJob(RenderingJob job);
         
+    /**
+     * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
+     * @param renderingJobs the Collection of rendering job objects to wait for.
+     */
+    public void waitForRenderingJobs(List renderingJobs);
+    
     /**
      * Retrieve the ContentDispatcher for the specified request
      */
