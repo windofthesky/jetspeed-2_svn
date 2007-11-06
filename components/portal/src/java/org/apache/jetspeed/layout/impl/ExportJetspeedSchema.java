@@ -56,6 +56,7 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
     private static final String PERMISSIONS = "permissions";
     private static final String PROFILES = "profiles";
     private static final String CAPABILITIES = "capabilities";
+    private static final String PREFS = "prefs";
 
     String pathSeprator = System.getProperty("file.separator");
 
@@ -87,14 +88,22 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
                 resultMap.put(REASON, "Insufficient access to get portlets");
                 return success;
             }
-            settings.put(JetspeedSerializer.KEY_PROCESS_USERS, 
-                    getNonNullActionParameter(requestContext, USERS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
-            settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, 
-                    getNonNullActionParameter(requestContext, PERMISSIONS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
-            settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, 
-                    getNonNullActionParameter(requestContext, PROFILES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
-            settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, 
-                    getNonNullActionParameter(requestContext, CAPABILITIES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+            boolean processPrefs = getNonNullActionParameter(requestContext, PREFS).equalsIgnoreCase("y") ? true : false;
+            if (!processPrefs)
+            {
+                settings.put(JetspeedSerializer.KEY_PROCESS_USERS, 
+                        getNonNullActionParameter(requestContext, USERS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+                settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, 
+                        getNonNullActionParameter(requestContext, PERMISSIONS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+                settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, 
+                        getNonNullActionParameter(requestContext, PROFILES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+                settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, 
+                        getNonNullActionParameter(requestContext, CAPABILITIES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+            }
+            else
+            {
+                settings.put(JetspeedSerializer.KEY_PROCESS_PREFERENCES, Boolean.TRUE);
+            }
             if (!cleanUserFolder(userName)) 
             {
                 resultMap.put(STATUS, "failure");
@@ -106,7 +115,11 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
                     Boolean.TRUE);
             settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS,
                     Boolean.FALSE);
-            JetspeedSerializer serializer = serializerFactory.create(JetspeedSerializerFactory.PRIMARY);                
+            JetspeedSerializer serializer = null;
+            if (processPrefs)
+                serializer = serializerFactory.create(JetspeedSerializerFactory.SECONDARY);
+            else
+                serializer = serializerFactory.create(JetspeedSerializerFactory.PRIMARY);
             serializer.exportData("jetspeedadmin_export_process", exportFileName, settings);
             requestContext.getRequest().getSession().setAttribute("file", userName + "_ldapExport.xml");
             resultMap.put("link", getDownloadLink(requestContext, "tmpExport.xml", userName));

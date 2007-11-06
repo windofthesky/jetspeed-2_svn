@@ -153,6 +153,7 @@ public class JetspeedDataImporter extends AbstractDojoVelocityPortlet
     {
         super.doView(request, response);
         request.getPortletSession().removeAttribute("status");
+        request.getPortletSession().removeAttribute("msg");
     }
 
     public void processAction(ActionRequest request,
@@ -201,24 +202,19 @@ public class JetspeedDataImporter extends AbstractDojoVelocityPortlet
             if (success)
             {
                 request.getPortletSession().setAttribute("status", fileName);
-            } else
+                request.getPortletSession().setAttribute("msg", "File imported succesfully");
+            } 
+            else
             {
                 request.getPortletSession().setAttribute("status", "false");
+                request.getPortletSession().setAttribute("msg", "Failed to import file. Please check XML file for correctness.");                
             }
         } catch (Exception e)
         {
             request.getPortletSession().setAttribute("status", "false");
+            request.getPortletSession().setAttribute("msg", e.getMessage());                            
             // throw new PortletException("Error occured in file uplodad");
         }
-
-        try
-        {
-
-        } catch (Exception e)
-        {
-            // TODO: handle exception
-        }
-        // serializer.exportData(name, exportFileName, settings)
     }
 
     private boolean importJetspeedData(String filePath)
@@ -237,10 +233,18 @@ public class JetspeedDataImporter extends AbstractDojoVelocityPortlet
             settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS,
                     Boolean.FALSE);
             JetspeedSerializer serializer = serializerFactory.create(JetspeedSerializerFactory.PRIMARY);
-            serializer.importData(filePath, settings);
-            // TODO: secondarySerializer            
+            try
+            {
+                serializer.importData(filePath, settings);
+            }
+            catch (Exception e)
+            {
+                serializer = serializerFactory.create(JetspeedSerializerFactory.SECONDARY);
+                serializer.importData(filePath, settings);                
+            }
             return true;
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             return false;
         }

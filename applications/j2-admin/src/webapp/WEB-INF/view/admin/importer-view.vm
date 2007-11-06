@@ -22,6 +22,7 @@
 #set($renderURL = $renderResponse.createRenderURL())
 #set($actionURL = $renderResponse.createActionURL())
 #set($status = $renderRequest.getPortletSession().getAttribute("status"))
+#set($msg = $renderRequest.getPortletSession().getAttribute("msg"))
 <script>
 	function buildExportquery(){
 		var users = document.getElementById('users');     
@@ -175,6 +176,19 @@
 		  <td id='exportAns'></td>
       </tr>
     </table>
+	<table width="97%" border="1">
+      <tr>
+        <td colspan="2"><div align="left"><b>Export Preferences</b></div></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="prefs" id="prefs" value="n">
+          Preferences</td>
+      </tr>
+	  <tr>
+		  <td><input type="button" value="Export Prefs" onClick="javascript:buildPrefsquery();"></td>
+		  <td id='exportPrefsAns'></td>
+      </tr>
+    </table>    
 	</td>
     </form>
     <td width="60%">
@@ -183,12 +197,14 @@
       <tr>
         <td><div><b>Import</b></div></td>
       </tr>
-#if($status != '')
-	#if($status == 'true')
-      <tr>
-        <td>File imported succesfully</td>
-      </tr>	  
-	 #end 
+#if("$!status" != "")
+<tr>
+#if($status == 'false')
+  <td class="portlet-msg-error">$!msg</td>
+#else
+  <td class="portlet-msg-info">$!msg</td>
+#end
+</tr>	       
 #end
       <tr>
         <td>Choose file to import 
