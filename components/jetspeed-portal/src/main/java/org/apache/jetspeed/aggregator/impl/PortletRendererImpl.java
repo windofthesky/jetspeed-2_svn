@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -499,7 +500,7 @@ public class PortletRendererImpl implements PortletRenderer
         // In case of parallel mode, store attributes in a map to be refered by worker.
         if (isParallel)
         {
-            Map workerAttrs = new HashMap();
+            Map workerAttrs = Collections.synchronizedMap(new HashMap());
             workerAttrs.put(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
             workerAttrs.put(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
             workerAttrs.put(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE, dispatcher);

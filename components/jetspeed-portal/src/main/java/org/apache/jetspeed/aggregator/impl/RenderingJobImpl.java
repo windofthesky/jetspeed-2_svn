@@ -20,6 +20,9 @@ package org.apache.jetspeed.aggregator.impl;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Arrays;
 
 import javax.portlet.UnavailableException;
 import javax.servlet.ServletRequest;
@@ -210,7 +213,9 @@ public class RenderingJobImpl implements RenderingJob
                 isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
                 if (isParallelMode)
                 {
-                    Iterator itAttrNames = this.workerAttributes.keySet().iterator();
+                    Collection attrNames = Arrays.asList(this.workerAttributes.keySet().toArray());
+                    
+                    Iterator itAttrNames = attrNames.iterator();
                     while (itAttrNames.hasNext()) 
                     {
                         String name = (String) itAttrNames.next();
@@ -396,7 +401,7 @@ public class RenderingJobImpl implements RenderingJob
     {
         if (this.workerAttributes == null)
         {
-            this.workerAttributes = new HashMap();
+            this.workerAttributes = Collections.synchronizedMap(new HashMap());
         }
         
         if (value != null)
