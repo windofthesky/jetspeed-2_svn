@@ -164,6 +164,14 @@ public abstract class BasePortletAction
         return parameter;
     }
     
+    public String getNonNullActionParameter(RequestContext requestContext, String name)
+    {
+        String result = getActionParameter(requestContext, name);
+        if (result == null)
+            return "";
+        return result;
+    }
+    
     public Fragment getParentFragmentById(String id, Fragment root)
     {
         if ( id == null )

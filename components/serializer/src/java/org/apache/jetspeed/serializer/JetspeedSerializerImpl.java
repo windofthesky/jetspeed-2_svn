@@ -182,14 +182,7 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     	super(appRoot,bootConfig,appConfig);
     }
 
- 
- 
-
- 
-  
-
-
-    /**
+     /**
      * reset instruction flags to default settings (all true)
      * 
      */
@@ -198,6 +191,7 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         setSetting(JetspeedSerializer.KEY_PROCESS_USERS, true);
         setSetting(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, true);
         setSetting(JetspeedSerializer.KEY_PROCESS_PROFILER, true);
+        setSetting(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, true);
         setSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING, true);
         setSetting(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, true);
     }
@@ -529,10 +523,11 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         
         JSGroups groups = null;
         JSRoles roles = null;
-
+        Iterator _it = null;
         groups = ((JSSeedData)getSnapshot()).getGroups();
-        
-        Iterator _it = groups.iterator();
+        if (groups != null)
+        {
+         _it = groups.iterator();
         while (_it.hasNext())
         {
         	String name = ((JSGroup)_it.next()).getName();
@@ -551,12 +546,15 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
 	                            { "Group", e.getMessage()}));
 	        }
         }
+        }
     	logMe("recreateGroups - done");
     	logMe("processing roles");
 
         roles = ((JSSeedData)getSnapshot()).getRoles();
-        
+        if (roles!= null)
+        {      
         _it = roles.iterator();
+        
         while (_it.hasNext())
         {
         	String name = ((JSRole)_it.next()).getName();
@@ -575,15 +573,16 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
 	                            { "Role", e.getMessage()}));
 	        }
         }
-    	logMe("recreateRoles - done");
+        }
+        logMe("recreateRoles - done");
     	logMe("processing users");
 
     	/** determine whether passwords can be reconstructed or not */
     	int passwordEncoding = compareCurrentSecurityProvider((JSSeedData)getSnapshot());
         JSUsers users = null;
         users = ((JSSeedData)getSnapshot()).getUsers();
-        
-        _it = users.iterator();
+        if(users!=null)
+        {_it = users.iterator();
         while (_it.hasNext())
         {
         	
@@ -711,8 +710,8 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
 	                            { "User", e.getMessage()}));
 	        }
         }
+        }
     	logMe("recreateUsers - done");
-    	recreatePermissions();
     	return;
     }
     
@@ -796,17 +795,11 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
                             .create("org.apache.jetspeed.security.PermissionManager"));
 
         Iterator list = null;
-        try
+        JSPermissions permissions = ((JSSeedData)getSnapshot()).getPermissions();
+ 
+        if (permissions != null)
         {
-        	list = ((JSSeedData)getSnapshot()).getPermissions().iterator();
-        } catch (Exception e)
-        {
-            throw new SerializerException(
-                    SerializerException.GET_EXISTING_OBJECTS
-                            .create(new String[]
-                            { "Permissions", e.getMessage()}));
-        }
-
+           list =  permissions.iterator();
         while (list.hasNext())
         {
             JSPermission _js = (JSPermission)list.next();
@@ -872,7 +865,10 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
 	                                { "Permissions", e.getMessage()}));
 	            }
             }
-        }
+        }}else{ throw new SerializerException(
+                SerializerException.GET_EXISTING_OBJECTS
+                .create(new String[]
+                { "Permissions"}));}
     	logMe("recreatePermissions - done");
     }
 
@@ -903,20 +899,35 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         catch (Exception e)
         {
         	e.printStackTrace();
-        }
-  
+        }  
+    }
+
+    private void importUserGroupRoles()
+    {
+        System.out.println("importUserGroupRoles - processing");
         try
         {
-            this.recreateRolesGroupsUsers();
-            recreateUserPrincipalRules();
-        	
+            recreateRolesGroupsUsers();
         }
         catch (Exception e)
         {
-        	e.printStackTrace();
-        }
+            e.printStackTrace();
+        }  
     }
 
+    private void importUserPrincipals()
+    {
+        System.out.println("importUserPrincipals - processing");
+        try
+        {
+            recreateUserPrincipalRules();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }  
+    }
+    
 
     /**
      * The workhorse for importing data
@@ -936,32 +947,32 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         {
             logMe("creating clients, mediatypes and mimetypes");
             importCapabilitiesInfrastructure();
-        }
-        
+        }        
         /**
          * the order is important, since profiling rules are referenced by the user 
          * 
-         */
-        
+         */        
         if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PROFILER))
         {
             logMe("collecting permissions, profiling rules and users/proups etc. etc.");
             importProfiler();
-        } else
+        } 
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_USERS))
+        {
+            logMe("creating users/roles/groups");
+            this.importUserGroupRoles();
+        }
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PROFILER) || this.getSetting(JetspeedSerializer.KEY_PROCESS_USERS))
+        {
+            logMe("collecting user principals");
+            this.importUserPrincipals();
+        } 
+        
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PERMISSIONS))        
         {
             logMe("permissions, rules etc. skipped ");
-	       
-	        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_USERS))
-	        {
-	            logMe("creating users/roles/groups");
-	            this.recreateRolesGroupsUsers();
-	        }
-	        else
-	        {
-	            logMe("users skipped - ensure we have valid users to work with");
-	            exportUsers();
-	        }
-        } 
+            recreatePermissions();            
+        }        
     }
 
     /**
@@ -993,18 +1004,23 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         {
             logMe("collecting users");
             exportUsers();
-
-            /** permissions require users - hence inside this scope */
-            if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PROFILER))
-            {
-                logMe("collecting permissions, profiling rules etc.");
-                this.getProfilingRules();
-            } else
-                logMe(" profiling rules etc. skipped");
-
         } else
             logMe("users skipped");
 
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PROFILER))
+        {
+            logMe("collecting profiling rules");
+            this.getProfilingRules();
+        } else
+            logMe(" profiling rules skipped");
+
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
+        {
+            logMe("collecting permissions");
+            this.getPermissions();
+        } else
+            logMe(" permissions skipped");
+        
     }
 
     /**
@@ -1718,7 +1734,6 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
      */
     private void getProfilingRules() throws SerializerException
     {
-        getPermissions();
         Profiler pm = (Profiler) getCM()
                 .getComponent("org.apache.jetspeed.profiler.Profiler");
         if (pm == null)

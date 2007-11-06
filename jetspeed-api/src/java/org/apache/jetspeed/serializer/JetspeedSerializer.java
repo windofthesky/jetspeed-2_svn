@@ -73,6 +73,9 @@ public interface JetspeedSerializer
     public final static String KEY_PROCESS_PROFILER = "process_profiler"
             .intern();
 
+    public final static String KEY_PROCESS_PERMISSIONS = "process_permissions"
+        .intern();
+    
     public final static String KEY_PROCESS_USER_PREFERENCES = "process_user_preferences"
             .intern();
     public final static String KEY_PROCESS_PORTAL_PREFERENCES = "process_portal_preferences"
@@ -185,7 +188,7 @@ public interface JetspeedSerializer
     public String getDefaultIndent();
 
     /**
-     * reelase the resources etc.
+     * release the resources etc.
      * 
      */
     public void closeUp();

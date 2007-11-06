@@ -135,6 +135,7 @@ limitations under the License.
         <js:service name='PortalConfiguration'/>
         <js:service name='ImporterManager'/>
         <js:service name='AuditActivity'/>
+        <js:service name='JetspeedSerializerFactory'/>
 	</js:services>
 
 </portlet-app>

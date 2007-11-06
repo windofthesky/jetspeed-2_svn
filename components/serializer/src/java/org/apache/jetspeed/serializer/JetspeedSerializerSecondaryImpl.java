@@ -129,7 +129,8 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 		setSetting(JetspeedSerializer.KEY_PROCESS_USERS, false);
 		setSetting(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, false);
 		setSetting(JetspeedSerializer.KEY_PROCESS_PROFILER, false);
-		setSetting(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, true);
+        setSetting(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, false);
+        setSetting(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, false);
 		setSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING, true);
 		setSetting(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, true);
 	}

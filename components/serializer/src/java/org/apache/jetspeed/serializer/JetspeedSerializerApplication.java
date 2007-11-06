@@ -40,12 +40,13 @@ import org.apache.log4j.Logger;
  * <p>-b bootPath : directory to Spring boot files,   overwrite the default assembly/boot/ or bootPath  property in properties file)</p>  
  * <p>-c configPath : directory to Spring config files,   overwrite the default assembly/ or configPath property in properties file)</p>
  * 
- * <p>-O optionstring : overwrite defrault "ALL,REPLACE"</p>
+ * <p>-O optionstring : overwrite default "ALL,REPLACE"</p>
  * <p>optionstring: 
  *      ALL - extract/import all (with exception of PREFERENCES)
- *      USER - extract/import users
+ *      USER - extract/import users, groups, roles
  *      CAPABILITIES - extract/import capabilities
- *      PROFILE = extract/import profile settings (for export requires USER) 
+ *      PROFILE = extract/import profile settings (for export requires USER)
+ *      PERMISSIONS = extract/import permissions 
  *      PREFS = extract/import  portlet preferences (ignored if any of the above is set)
  *      
  *      NOOVERWRITE = don't overwrite existing file (for export)
@@ -72,9 +73,21 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
  * @version $Id: $
  */
-public class JetspeedSerializerApplication
+public class JetspeedSerializerApplication implements JetspeedSerializerFactory
 {
     public static final String JNDI_DS_NAME = "jetspeed";    
+    
+    public JetspeedSerializerApplication()
+    {        
+    }
+    
+    public JetspeedSerializer create(String serializerType)
+    {
+        if (serializerType.equals(JetspeedSerializerFactory.SECONDARY))
+            return new JetspeedSerializerSecondaryImpl();
+        else
+            return new JetspeedSerializerImpl();           
+    }
     
     public static void main(String[] args)
     {
@@ -265,39 +278,42 @@ public class JetspeedSerializerApplication
                     settings.put(JetspeedSerializer.KEY_PROCESS_USERS, Boolean.TRUE);
                     settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, Boolean.TRUE);
                     settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.TRUE);
+                    settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, Boolean.TRUE);                    
                     settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.FALSE);
                     processHelper = 1;
                 }
-                else
-                if (o.equalsIgnoreCase("user"))
+                else if (o.equalsIgnoreCase("user"))
                 {
-                    settings.put(JetspeedSerializer.KEY_PROCESS_USERS, Boolean.TRUE);
+                    settings.put(JetspeedSerializer.KEY_PROCESS_USERS,
+                            Boolean.TRUE);
                     processHelper = 1;
-                }
-                else 
-                    if (o.equalsIgnoreCase("PREFS"))
-                    {
-                        settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.TRUE);
-                		processHelper = 2;
-                    }
-                    else 
-                        if (o.equalsIgnoreCase("CAPABILITIES"))
-                        {
-                            settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, Boolean.TRUE);
-                            processHelper = 1;
-                        }
-                        else 
-                            if (o.equalsIgnoreCase("PROFILE"))
-                            {
-                                settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.TRUE);
-                                processHelper = 1;
-                            }
-                            else 
-                                if (o.equalsIgnoreCase("NOOVERWRITE"))
-                                    settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING, Boolean.FALSE);
-                                else 
-                                    if (o.equalsIgnoreCase("BACKUP"))
-                                        settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, Boolean.TRUE);
+                } else if (o.equalsIgnoreCase("PREFS"))
+                {
+                    settings.put(
+                            JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES,
+                            Boolean.TRUE);
+                    processHelper = 2;
+                } else if (o.equalsIgnoreCase("CAPABILITIES"))
+                {
+                    settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES,
+                            Boolean.TRUE);
+                    processHelper = 1;
+                } else if (o.equalsIgnoreCase("PROFILE"))
+                {
+                    settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER,
+                            Boolean.TRUE);
+                    processHelper = 1;
+                } else if (o.equalsIgnoreCase("PERMISSIONS"))
+                {
+                    settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS,
+                            Boolean.TRUE);
+                    processHelper = 1;                    
+                } else if (o.equalsIgnoreCase("NOOVERWRITE"))
+                    settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING,
+                            Boolean.FALSE);
+                else if (o.equalsIgnoreCase("BACKUP"))
+                    settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS,
+                            Boolean.TRUE);
                 
             }
             

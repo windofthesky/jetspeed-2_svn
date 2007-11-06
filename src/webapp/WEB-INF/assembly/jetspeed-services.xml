@@ -126,6 +126,9 @@ limitations under the License.
           <entry key="AuditActivity">
           	<ref bean="org.apache.jetspeed.audit.AuditActivity"/>
           </entry>          
+          <entry key="JetspeedSerializerFactory">
+          	<ref bean="org.apache.jetspeed.serializer.JetspeedSerializerFactory"/>
+          </entry>
 <!-- first uncomment the below service bean in security-spi-atn.xml
          <entry key="PasswordEncodingService">
            <ref bean="org.apache.jetspeed.security.PasswordEncodingService" />

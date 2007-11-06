@@ -34,6 +34,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
@@ -46,7 +47,7 @@ public abstract class JetspeedSerializerBase
     protected static final Log log = LogFactory.getLog(JetspeedSerializer.class);
 
     private ComponentManager cm = null;
-
+    private Object sem = new Object();
 
     int refCouter = 0;
 
@@ -66,9 +67,12 @@ public abstract class JetspeedSerializerBase
     private static String ENCODING_STRING = "JETSPEED 2.1 - 2006";
     private static String JETSPEED = "JETSPEED";
     
-    
     protected final ComponentManager getCM()
     {
+        if (cm == null)
+        {
+            cm = Jetspeed.getComponentManager();
+        }
     	return cm;
     }
     
@@ -186,14 +190,15 @@ public abstract class JetspeedSerializerBase
     public final  void importData(String importFileName, Map settings)
             throws SerializerException
     {
+        if (cm == null)
+        {
+            cm = Jetspeed.getComponentManager();
+        }        
         /** pre-processing homework... */
         XMLBinding binding = new XMLBinding();
         setupAliases(binding);
         checkSettings(settings);
-
-        
         setSnapshot(readFile(importFileName, binding));
-
         if (getSnapshot() == null)
             throw new SerializerException(
                     SerializerException.FILE_PROCESSING_ERROR
@@ -214,7 +219,7 @@ public abstract class JetspeedSerializerBase
         /** ok, now we have a valid snapshot and can start processing it */
 
         /** ensure we can work undisturbed */
-        synchronized (cm)
+        synchronized (sem)
         {
             logMe("*********Reading data*********");
             this.processImport();
@@ -235,9 +240,12 @@ public abstract class JetspeedSerializerBase
         XMLBinding binding = new XMLBinding();
         setupAliases(binding);
         checkSettings(settings);
-
+        if (cm == null)
+        {
+            cm = Jetspeed.getComponentManager();
+        }
         /** ensure we can work undisturbed */
-        synchronized (cm)
+        synchronized (sem)
         {
             /** get the snapshot construct */
             this.processExport(name, binding);

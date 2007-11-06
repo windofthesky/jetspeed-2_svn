@@ -34,9 +34,11 @@
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/security-spi-atn.xml'/>
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/security-spi-atz.xml'/>
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/transaction.xml'/>        
-        <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/registry.xml'/>        
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/prefs.xml'/>                
-        <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/alternate/request-context.xml'/>                
+        <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/cache.xml'/>                        	        	
+        <copy todir='${maven.build.dir}/assembly/' file='../../etc/registration/assembly/registry.xml'/>        
+
+  <!--        <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/alternate/request-context.xml'/>                -->
     </goal>
     
 	
@@ -54,7 +56,7 @@
 	            <pathelement path="${maven.build.dest}"/>
 	            <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
 	          </classpath>
-	        	<arg line="-E c:/temp/exportprefs.xml -b target/assembly/boot/ -c target/assembly/ -O PREFS "/>  
+	        	<arg line="-E ./target/exportprefs.xml -b target/assembly/boot/ -c target/assembly/ -O PREFS "/>  
 	            <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
 	            <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
 	            <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
@@ -85,7 +87,7 @@
             <pathelement path="${maven.build.dest}"/>
             <pathelement path="${org.apache.jetspeed.production.jdbc.drivers.path}"/>                          
           </classpath>
-            <arg line="-E c:/temp/export100.xml -b target/assembly/boot/ -c target/assembly/"/>  
+            <arg line="-E ./target/export100.xml -b target/assembly/boot/ -c target/assembly/"/>  
             <sysproperty key="org.apache.jetspeed.database.url" value="${org.apache.jetspeed.production.database.url}"/>
             <sysproperty key="org.apache.jetspeed.database.driver" value="${org.apache.jetspeed.production.database.driver}"/>
             <sysproperty key="org.apache.jetspeed.database.user" value="${org.apache.jetspeed.production.database.user}"/>
