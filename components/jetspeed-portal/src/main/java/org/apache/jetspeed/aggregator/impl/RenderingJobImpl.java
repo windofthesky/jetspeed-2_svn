@@ -131,11 +131,15 @@ public class RenderingJobImpl implements RenderingJob
                             PortalStatistics statistics,
                             int expirationCache,
                             boolean contentIsCached,
-                            Map workerAttributes)
+                            Map workerAttrs)
     {
         this(container, renderer, portletDefinition, portletContent, fragment, dispatcher,
                         request, response, requestContext, window, statistics, expirationCache, contentIsCached);
-        this.workerAttributes = workerAttributes;
+        
+        if (workerAttrs != null)
+        {
+            this.workerAttributes = Collections.synchronizedMap(workerAttrs);
+        }
     }
 
     /**
