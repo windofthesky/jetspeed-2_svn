@@ -354,6 +354,11 @@ limitations under the License.
                 <artifactId>jetspeed-webapp-logging</artifactId>
                 <version>${org.apache.portals.jetspeed-2.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.portals.jetspeed-2</groupId>
+                <artifactId>jetspeed-serializer</artifactId>
+                <version>${org.apache.portals.jetspeed-2.version}</version>
+            </dependency>
     
             <!-- Portals Applications JARs -->
             <dependency>
