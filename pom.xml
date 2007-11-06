@@ -443,7 +443,11 @@ limitations under the License.
                 <artifactId>jetspeed-webapp-logging</artifactId>
                 <version>${pom.version}</version>
             </dependency>
-    
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-serializer</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
             <!-- Portals Applications JARs -->
             <dependency>
                 <groupId>${pom.groupId}</groupId>
