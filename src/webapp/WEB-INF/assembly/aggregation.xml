@@ -163,6 +163,14 @@
     
     If you want to use Commonj Work Manager provided by the container, uncomment the followings
     and replace 'org.apache.jetspeed.aggregator.WorkerMonitor' with 'org.apache.jetspeed.aggregator.CommonjWorkerMonitor' in this file.
+    
+    For the bean named 'org.apache.jetspeed.aggregator.CommonjWorkerMonitor', two flags can be added as constructor-args.
+    The second constructor-arg is a flag whether a separate timeout-monitor thread is used or not as the old WorkerMonitorImpl does.
+    By default, this flag is set to true. If it is set to false, then a new commonj work will be created for timeout-monitoring per page request.
+    The third constructor-arg is a flag whether the commonj timeout-monitor work should try to interrupt a timeout worker thread.
+    This flag is meaningful only when the second constructor-arg is set to false, and by default this flag is set to true. 
+    If it is set to false, then it does not wait for the timeout rendering works without interruption.
+    On most platforms such as WebSphere or WebLogic, the default flag options (true, true) will be fine.
     -->
     
     <!--

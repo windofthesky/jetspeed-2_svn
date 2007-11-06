@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -416,7 +417,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                 try 
                 {
                     List timeoutJobWorks = new ArrayList();
-                    Collection jobWorks = jobWorksMonitored.values();
+                    Collection jobWorks = Arrays.asList(jobWorksMonitored.values().toArray());
                     
                     for (Iterator it = jobWorks.iterator(); it.hasNext(); )
                     {
