@@ -89,6 +89,11 @@ public class DecorationValve extends AbstractValve implements Valve
     
     private boolean maxOnEdit = false;
     
+    private boolean maxOnEditDefaults = false;
+
+    /**
+     * When edit_defaults mode is not supported by a portlet, support the mode automatically.
+     */
     private boolean autoSwitchingToEditDefaultsModes = true;
          
      /**
@@ -293,6 +298,7 @@ public class DecorationValve extends AbstractValve implements Valve
                 {
                     adapter = (DecoratorActionsFactory)Class.forName(decoratorActionsAdapterClassName).newInstance();
                     adapter.setMaximizeOnEdit(this.maxOnEdit);
+                    adapter.setMaximizeOnEditDefaults(this.maxOnEditDefaults);
                 }
                 catch (Exception e)
                 {
@@ -635,6 +641,17 @@ public class DecorationValve extends AbstractValve implements Valve
     public boolean getMaximizeOnEdit()
     {
         return this.maxOnEdit;
+    }
+    
+    public void setMaximizeOnEditDefaults(boolean maxOnEditDefaults)
+    {
+        this.maxOnEditDefaults = maxOnEditDefaults;
+        this.defaultDecoratorActionsFactory.setMaximizeOnEditDefaults(maxOnEditDefaults);
+    }
+    
+    public boolean getMaximizeOnEditDefaults()
+    {
+        return this.maxOnEditDefaults;
     }
     
     public void setAutoSwitchingToEditDefaultsModes(boolean autoSwitchingToEditDefaultsModes)

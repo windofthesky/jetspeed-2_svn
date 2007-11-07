@@ -40,6 +40,7 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
 {
     private static ThreadLocal actionResourcesMap = new ThreadLocal();
     private boolean editMaximizesOption = false;
+    private boolean editDefaultsMaximizesOption = false;
     
     /**
      * When Edit is clicked, also maximize the window state
@@ -114,9 +115,14 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
 
         WindowState ws;
         PortletMode pm;
-        if (editMaximizesOption)
+        if (editMaximizesOption || editDefaultsMaximizesOption)
         {
-            if (template.getAction().equals(JetspeedActions.EDIT))
+            if (editMaximizesOption && template.getAction().equals(JetspeedActions.EDIT))
+            {
+                ws = WindowState.MAXIMIZED;
+                pm = template.getCustomMode();
+            }
+            else if (editDefaultsMaximizesOption && template.getAction().equals(JetspeedActions.EDIT_DEFAULTS))
             {
                 ws = WindowState.MAXIMIZED;
                 pm = template.getCustomMode();
@@ -207,4 +213,13 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
         return this.editMaximizesOption;
     }
     
+    public void setMaximizeOnEditDefaults(boolean maxOnEditDefaults)
+    {
+        this.editDefaultsMaximizesOption = maxOnEditDefaults;
+    }
+    
+    public boolean getMaximizeOnEditDefaults()
+    {
+        return this.editDefaultsMaximizesOption;
+    }
 }
