@@ -192,6 +192,7 @@ dojo.lang.shallowCopy(this.portlets) ;
         </div>
 
     </div>
+</div>
 
 <script language="JavaScript" type="text/javascript">
     rolePrincipals = new Array();
