@@ -109,8 +109,8 @@ limitations under the License.
 
 <!-- search area -->
   	<table><tr>
+        <td>
 		<form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>
-		<td>
 		<input type="text" name="searchString" size="40" value="$!searchString" class="portlet-form-field-label">    
 		<table>
 			<tr>
@@ -127,8 +127,8 @@ limitations under the License.
 				</td>
 			</tr>
 		</table>
-	</form>
-    </td>
+	    </form>
+        </td>
 		<td>		
 	  	
           <form action="$renderResponse.createActionURL()" method="post" onSubmit='collectChecks(this);return true;'>

@@ -26,7 +26,7 @@
 
 <p style="margin-top: 25px"></p>
 </div><!-- Contents Main Container -->
-<div id="contentsMainContainer">
+<div id="contentsMainContainer"> <!-- B: div id contentsMainContainer -->
 
 #set($myVar =2)
 #set($childVar =1)
@@ -48,3 +48,5 @@
         #set($myVar = $myVar+1)
     #end
 #end
+
+</div> <!-- E: div id contentsMainContainer -->

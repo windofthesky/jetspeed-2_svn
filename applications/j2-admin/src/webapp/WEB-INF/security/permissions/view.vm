@@ -192,7 +192,7 @@ dojo.lang.shallowCopy(this.portlets) ;
     </table>
     </form>
   </div>
-
+ </div>
 </div>
 
 <script language="JavaScript" type="text/javascript">
