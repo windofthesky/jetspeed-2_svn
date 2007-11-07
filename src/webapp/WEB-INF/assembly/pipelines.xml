@@ -323,6 +323,8 @@ limitations under the License.
          -->
          <!-- When clicking on Edit Mode, also switch to Maximize -->
         <property name="maximizeOnEdit"><value>false</value></property>         
+         <!-- When clicking on Edit_defaults Mode, also switch to Maximize -->
+        <property name="maximizeOnEditDefaults"><value>false</value></property>         
         <property name="autoSwitchingToEditDefaultsModes"><value>false</value></property>
   </bean>
 
