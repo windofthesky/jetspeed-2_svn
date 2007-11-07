@@ -87,6 +87,11 @@
 		}     
 		this.failure = function(data)
 		{
+			var stsElmnt = xml.getElementsByTagName("status");
+			if(stsElmnt == 'failure')
+			{
+				alert('Error occurred during export');
+			}
 		}
 	}	
 	function downloadObject()
@@ -104,7 +109,6 @@
 				requestUrl = requestUrl + "&" + names[ix] + "=" + encodeURIComponent(values[ix]);
 			}    
 		}
-		//alert(' url ' + requestUrl);
 		var mimeType = "text/xml";
 		dojo.io.bind({
 		url: requestUrl,

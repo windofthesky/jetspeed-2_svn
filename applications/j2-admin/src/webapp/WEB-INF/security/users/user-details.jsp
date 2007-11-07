@@ -569,7 +569,7 @@ limitations under the License.
     <jsp:include page="/WEB-INF/view/errors-include.jsp"/>
   </c:if>
 
-<div class="portlet-section-text">
+<div class="portlet-section-text"> <!-- B: div class portlet-section-test -->
 <portlet:actionURL var="addUser" />
 <form action="<c:out value="${addUser}"/>" method="post">
 <input type='hidden' name='portlet_action' value='add.user'/>
@@ -685,6 +685,8 @@ limitations under the License.
 <br/>
 <input type="submit" value="<fmt:message key="security.add.user.submit"/>" class="portlet-form-button"/>
 </form>
+</div> <!-- E: div class portlet-section-test -->
+
 <c:if test="${errorMessage != null}">
   <li style="color:red"><c:out value="${errorMessage}"/></li>
 </c:if>
