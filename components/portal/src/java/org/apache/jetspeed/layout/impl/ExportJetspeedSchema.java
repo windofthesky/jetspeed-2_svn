@@ -120,6 +120,7 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
                 serializer = serializerFactory.create(JetspeedSerializerFactory.SECONDARY);
             else
                 serializer = serializerFactory.create(JetspeedSerializerFactory.PRIMARY);
+            serializer.setDefaultIndent("\t");
             serializer.exportData("jetspeedadmin_export_process", exportFileName, settings);
             requestContext.getRequest().getSession().setAttribute("file", userName + "_ldapExport.xml");
             resultMap.put("link", getDownloadLink(requestContext, "tmpExport.xml", userName));
