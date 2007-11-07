@@ -53,6 +53,7 @@ limitations under the License.
          auto-retrieve = "true"
        >
        <inverse-foreignkey field-ref="ruleId"/>
+       <orderby name="fallbackOrder" sort="ASC"/>
       </collection-descriptor>
 
 
@@ -176,9 +177,5 @@ limitations under the License.
 
 </class-descriptor>
 
-</descriptor-repository>
-
-   
-      
-      
+</descriptor-repository>      
   
