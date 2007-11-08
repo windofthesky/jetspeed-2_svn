@@ -162,7 +162,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        startPA(contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
+        startPA(contextName, "/"+contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
 	}
 
     public void startInternalApplication(String contextName) throws RegistryException
@@ -178,7 +178,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             app.setApplicationType(MutablePortletApplication.INTERNAL);
             registry.updatePortletApplication(app);
         }
-        startPA(contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
+        startPA(contextName, "/"+contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
         // startInternal(contextName, warStruct, paClassLoader, true);        
     }
     
@@ -186,18 +186,25 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		ClassLoader paClassLoader)
 		throws RegistryException
 	{
+         startPortletApplication(contextName, "/"+contextName, warStruct, paClassLoader);
+	}
+	
+    public void startPortletApplication(String contextName, String contextPath, FileSystemHelper warStruct,
+            ClassLoader paClassLoader) throws RegistryException
+    {
         checkStarted();
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            startPA(contextName, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
+            startPA(contextName, contextPath, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
         }
         finally
         {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
-	}
+        
+    }    
 
 	public void stopLocalPortletApplication(String contextName)
 		throws RegistryException
@@ -412,14 +419,14 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
-	protected void startPA(String contextName, FileSystemHelper warStruct,
+	protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
 	        ClassLoader paClassLoader, int paType)
 	throws RegistryException
 	{
-	    startPA(contextName, warStruct, paClassLoader, paType, 0);
+	    startPA(contextName, contextPath, warStruct, paClassLoader, paType, 0);
 	}
 	
-	protected void startPA(String contextName, FileSystemHelper warStruct,
+	protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
 	        ClassLoader paClassLoader, int paType, long checksum)
 	throws RegistryException
 	{
@@ -428,7 +435,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		{
             boolean register = true;
             boolean monitored = checksum != 0;
-            paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName, checksum);
+            // paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName, checksum);
+            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum);
             try
             {
                 if (paClassLoader == null)
@@ -553,7 +561,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             DescriptorChangeMonitor changeMonitor = this.monitor;
             if (!monitored && changeMonitor != null)
             {
-                changeMonitor.monitor(contextName,paClassLoader, paType, warStruct.getRootDirectory(), checksum);
+                changeMonitor.monitor(contextName, contextPath, paClassLoader, paType, warStruct.getRootDirectory(), checksum);
             }
 		}
 		finally
@@ -732,6 +740,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         private static class DescriptorChangeMonitorInfo
         {
             private String contextName;
+            private String contextPath;
             private ClassLoader paClassLoader;
             private int  paType;
             private File paDir;
@@ -749,9 +758,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 this.contextName = contextName;
             }
             
-            public DescriptorChangeMonitorInfo(String contextName, ClassLoader paClassLoader, int paType, File paDir, long checksum)
+            public DescriptorChangeMonitorInfo(String contextName, String contextPath, ClassLoader paClassLoader, int paType, File paDir, long checksum)
             {
                 this.contextName = contextName;
+                this.contextPath = contextPath;
                 this.paClassLoader = paClassLoader;
                 this.paType = paType;
                 this.paDir = paDir.isAbsolute() ? paDir : paDir.getAbsoluteFile();
@@ -822,6 +832,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
             {
                 return obsolete;
             }
+
+            public String getContextPath()
+            {
+                return contextPath;
+            }
         }        
 
         private PortletApplicationManager pam;
@@ -872,9 +887,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
             monitorInfos.clear();
         }
         
-        public synchronized void monitor(String contextName, ClassLoader paClassLoader, int paType, File paDir, long checksum)
+        public synchronized void monitor(String contextName, String contextPath, ClassLoader paClassLoader, int paType, File paDir, long checksum)
         {
-            monitorInfos.add(new DescriptorChangeMonitorInfo(contextName, paClassLoader, paType, paDir, checksum));
+            monitorInfos.add(new DescriptorChangeMonitorInfo(contextName, contextPath, paClassLoader, paType, paDir, checksum));
         }
         
         public synchronized void remove(String contextName)
@@ -919,7 +934,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                                 {
                                     try
                                     {
-                                        pam.startPA(monitorInfo.getContextName(), new DirectoryHelper(monitorInfo.getPADir()),
+                                        pam.startPA(monitorInfo.getContextName(), monitorInfo.getContextPath(), new DirectoryHelper(monitorInfo.getPADir()),
                                                 monitorInfo.getPAClassLoader(), monitorInfo.getPortletApplicationType(), monitorInfo.getChecksum());
                                     }
                                     catch (Exception e)
@@ -938,5 +953,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
             }
         }        
-    }    
+    }
+
+
 }
