@@ -90,7 +90,8 @@ limitations under the License.
  	         </properties>            
         </dependency>            
 	    <dependency>
-	      <id>cglib</id>
+	      <id>cglib-nodep</id>
+	      <groupId>cglib</groupId>
 	      <version>2.1_3</version>
 	      <properties>
 	        <war.bundle>true</war.bundle>
@@ -223,7 +224,15 @@ limitations under the License.
 		<!-- Unit testing -->
 	    <dependency>
 		  <id>jmock</id>
-		   <version>1.0.1</version>
+		   <version>1.2.0</version>
+		   <properties>
+		     <war.bundle>false</war.bundle>
+		   </properties>
+		</dependency>
+		 <dependency>
+		  <id>jmock-cglib</id>
+		   <groupId>jmock</groupId>
+		   <version>1.1.0</version>
 		   <properties>
 		     <war.bundle>false</war.bundle>
 		   </properties>
