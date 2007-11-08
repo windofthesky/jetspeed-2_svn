@@ -22,20 +22,26 @@ import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.pluto.PortletContainer;
 
 /**
- * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
- *
+ * @author <a href="mailto:scott.t.weaver@gmail.com">Scott T. Weaver</a>
+ * 
  */
 public class AbstractPortalContainerTestCase extends AbstractRequestContextTestCase
 {
     protected PortletWindowAccessor windowAccessor;
+
     protected PortletContainer portletContainer;
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
         super.setUp();
-        windowAccessor = new PortletWindowAccessorImpl(entityAccess,PortletFactoryMock.instance,true);
+        windowAccessor = new PortletWindowAccessorImpl(entityAccess,
+            PortletFactoryMock.instance,
+            new HashMapWindowCache(),
+            true);
     }
 }

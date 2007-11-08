@@ -25,6 +25,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.HashMapWindowCache;
 import org.apache.jetspeed.PortletFactoryMock;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
@@ -33,6 +34,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
+import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.pluto.om.window.PortletWindow;
 import org.apache.pluto.om.window.PortletWindowList;
 import org.apache.pluto.om.window.PortletWindowListCtrl;
@@ -77,7 +79,7 @@ public class TestWindows extends TestCase
         fragMock = new Mock(Fragment.class);
         entityMock = new Mock(MutablePortletEntity.class);
         windowListMock = new Mock(CompositeWindowList.class);
-        windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy(), PortletFactoryMock.instance,true);
+        windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy(), PortletFactoryMock.instance, new HashMapWindowCache(),true);
     }
 
     public void testWindowAccess() throws Exception
@@ -92,6 +94,8 @@ public class TestWindows extends TestCase
                 .will(new ReturnStub("frag1"));
         entityMock.expects(new InvokeAtLeastOnceMatcher()).method("getPortletWindowList").withNoArguments().will(
                 new ReturnStub(windowList));
+        entityMock.expects(new InvokeAtLeastOnceMatcher()).method("getId").withNoArguments().will(
+            new ReturnStub(new JetspeedObjectID("entity1")));
 
         windowListMock.expects(new InvokeCountMatcher(4)).method("add").withAnyArguments().will(
                 new ListAppendStub(windows));

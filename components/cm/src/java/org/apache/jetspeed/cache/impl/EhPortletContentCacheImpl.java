@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import net.sf.ehcache.Cache;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
@@ -48,7 +48,7 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCo
 	JetspeedCache preferenceCache = null;
     ContentCacheKeyGenerator keyGenerator = null;    
 
-    public EhPortletContentCacheImpl(Cache ehcache, JetspeedCache preferenceCache, ContentCacheKeyGenerator keyGenerator)
+    public EhPortletContentCacheImpl(Ehcache ehcache, JetspeedCache preferenceCache, ContentCacheKeyGenerator keyGenerator)
     {
         this(ehcache);
         this.preferenceCache = preferenceCache;
@@ -56,19 +56,19 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCo
         preferenceCache.addEventListener(this,false); //only listen to remote events
     }
     
-    public EhPortletContentCacheImpl(Cache ehcache, JetspeedCache preferenceCache)
+    public EhPortletContentCacheImpl(Ehcache ehcache, JetspeedCache preferenceCache)
     {
         this(ehcache);
         this.preferenceCache = preferenceCache;
         preferenceCache.addEventListener(this,false); //only listen to remote events
     }
         
-    public EhPortletContentCacheImpl(Cache ehcache)
+    public EhPortletContentCacheImpl(Ehcache ehcache)
     {
         super(ehcache);
     }
 
-    public EhPortletContentCacheImpl(Cache ehcache, ContentCacheKeyGenerator keyGenerator)
+    public EhPortletContentCacheImpl(Ehcache ehcache, ContentCacheKeyGenerator keyGenerator)
     {
         this(ehcache);
         this.keyGenerator = keyGenerator;

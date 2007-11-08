@@ -490,5 +490,14 @@
            timeToLiveSeconds="30"
            memoryStoreEvictionPolicy="LFU"
             />
+   
+     <cache name="portletWindowCache"
+           maxElementsInMemory="200"
+           maxElementsOnDisk="1000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="28800"
+           timeToLiveSeconds="28800"
+           memoryStoreEvictionPolicy="LFU"/>
 
 </ehcache>

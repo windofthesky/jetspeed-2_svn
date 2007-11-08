@@ -197,5 +197,20 @@
 			<ref bean="ehActiveAuthenticationCache" />
 		</constructor-arg>
 	</bean>
+	
+	<bean id="ehPortletWindowCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="portletWindowCache" />
+	</bean>
+	
+    <bean id="portletWindowCache"
+		class="org.apache.jetspeed.cache.impl.EhPortletWindowCache">
+		<constructor-arg index="0">
+			<ref bean="ehPortletWindowCache" />
+		</constructor-arg>
+	</bean>
 
 </beans>

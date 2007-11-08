@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.ehcache.Cache;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
@@ -31,11 +31,11 @@ import org.apache.jetspeed.request.RequestContext;
 
 public class EhCacheImpl implements JetspeedCache
 {
-    protected Cache ehcache;
+    protected Ehcache ehcache;
     protected List localListeners = new ArrayList();
     protected List remoteListeners = new ArrayList();
     
-    public EhCacheImpl(Cache ehcache)
+    public EhCacheImpl(Ehcache ehcache)
     {
         this.ehcache = ehcache;
      }
@@ -73,8 +73,8 @@ public class EhCacheImpl implements JetspeedCache
     
     public CacheElement createElement(Object key, Object content)
     {
-    	if (!((key instanceof Serializable) &&   (content instanceof Serializable)))
-    		return null;
+    	if (!((key instanceof Serializable) ||  !(content instanceof Serializable)))
+    		throw new IllegalArgumentException("The cache key and the object to cache must be serializable."); //return null;
    	    return new EhCacheElementImpl((Serializable)key, (Serializable)content);
     }
 

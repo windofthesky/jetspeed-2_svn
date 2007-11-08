@@ -41,7 +41,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 	private Map refList = Collections.synchronizedMap(new HashMap());
 
 
-	public EhCacheDistributedImpl(Cache ehcache)
+	public EhCacheDistributedImpl(Ehcache ehcache)
 	{
 		super(ehcache);
 		RegisteredEventListeners listeners = ehcache

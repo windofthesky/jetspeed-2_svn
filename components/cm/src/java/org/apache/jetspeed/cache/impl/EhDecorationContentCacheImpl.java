@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.CacheElement;
@@ -33,10 +34,9 @@ import org.apache.jetspeed.cache.ContentCacheKeyGenerator;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.jetspeed.cache.impl.JetspeedContentCacheKey;
 import org.apache.jetspeed.decoration.Theme;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Wrapper around actual cache implementation
@@ -50,7 +50,7 @@ public class EhDecorationContentCacheImpl extends EhCacheImpl implements Jetspee
 	JetspeedCache preferenceCache = null;
     ContentCacheKeyGenerator keyGenerator = null;    
 
-    public EhDecorationContentCacheImpl(Cache ehcache, JetspeedCache preferenceCache, ContentCacheKeyGenerator keyGenerator)
+    public EhDecorationContentCacheImpl(Ehcache ehcache, JetspeedCache preferenceCache, ContentCacheKeyGenerator keyGenerator)
     {
         this(ehcache);
         this.preferenceCache = preferenceCache;
@@ -58,14 +58,14 @@ public class EhDecorationContentCacheImpl extends EhCacheImpl implements Jetspee
         preferenceCache.addEventListener(this,false); //only listen to remote events
     }
     
-    public EhDecorationContentCacheImpl(Cache ehcache, JetspeedCache preferenceCache)
+    public EhDecorationContentCacheImpl(Ehcache ehcache, JetspeedCache preferenceCache)
     {
         this(ehcache);
         this.preferenceCache = preferenceCache;
         preferenceCache.addEventListener(this,false); //only listen to remote events
     }
         
-    public EhDecorationContentCacheImpl(Cache ehcache)
+    public EhDecorationContentCacheImpl(Ehcache ehcache)
     {
         super(ehcache);
     }
