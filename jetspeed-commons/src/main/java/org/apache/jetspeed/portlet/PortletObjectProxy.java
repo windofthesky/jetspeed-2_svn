@@ -43,6 +43,17 @@ import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.jetspeed.util.BaseObjectProxy;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.portlet.UnavailableException;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.pluto.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.factory.PortletInstance;
+
 /**
  * PortletObjectProxy
  * 
@@ -51,14 +62,33 @@ import org.apache.jetspeed.container.JetspeedPortletConfig;
  */
 public class PortletObjectProxy extends BaseObjectProxy
 {
-
+    
+    private static ThreadLocal tlPortletObjectProxied =
+        new ThreadLocal() {
+            protected synchronized Object initialValue() {
+                return new boolean [] { false };
+            }
+        };
+    
+    public static void setPortletObjectProxied(boolean portletObjectProxied)
+    {
+        ((boolean []) tlPortletObjectProxied.get())[0] = portletObjectProxied;
+    }
+        
+    public static boolean isPortletObjectProxied()
+    {
+        return ((boolean []) tlPortletObjectProxied.get())[0];
+    }
+    
     private static Method renderMethod;
+    private static Method processActionMethod;
     
     static 
     {
     	try 
         {
             renderMethod = Portlet.class.getMethod("render", new Class [] { RenderRequest.class, RenderResponse.class });
+            processActionMethod = Portlet.class.getMethod("processAction", new Class [] { ActionRequest.class, ActionResponse.class });
         } 
         catch (NoSuchMethodException e) 
         {
@@ -67,11 +97,15 @@ public class PortletObjectProxy extends BaseObjectProxy
     }
     
     private Object portletObject;
+    private PortletInstance customConfigModePortletInstance;
     private boolean genericPortletInvocable;
     private Method portletDoEditMethod;
     private ContentTypeSet portletContentTypeSet;
+    private boolean autoSwitchEditDefaultsModeToEditMode;
+    private boolean autoSwitchConfigMode;
+    private String customConfigModePortletUniqueName;
     
-    public static Object createProxy(Object proxiedObject)
+    public static Object createProxy(Object proxiedObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
     {
         Class proxiedClass = proxiedObject.getClass();
         ClassLoader classLoader = proxiedClass.getClassLoader();
@@ -86,13 +120,16 @@ public class PortletObjectProxy extends BaseObjectProxy
             proxyInterfaces = new Class [] { Portlet.class };
         }
         
-        InvocationHandler handler = new PortletObjectProxy(proxiedObject);
+        InvocationHandler handler = new PortletObjectProxy(proxiedObject, autoSwitchEditDefaultsModeToEditMode, autoSwitchConfigMode, customConfigModePortletUniqueName);
         return Proxy.newProxyInstance(classLoader, proxyInterfaces, handler);
     }
 
-    private PortletObjectProxy(Object portletObject)
+    private PortletObjectProxy(Object portletObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
     {
         this.portletObject = portletObject;
+        this.autoSwitchEditDefaultsModeToEditMode = autoSwitchEditDefaultsModeToEditMode;
+        this.autoSwitchConfigMode = autoSwitchConfigMode;
+        this.customConfigModePortletUniqueName = customConfigModePortletUniqueName;
         
         if (portletObject instanceof GenericPortlet)
         {
@@ -124,6 +161,10 @@ public class PortletObjectProxy extends BaseObjectProxy
                 proxyRender((RenderRequest) args[0], (RenderResponse) args[1]);
                 return null;
             }
+            else if (processActionMethod.equals(method))
+            {
+                proxyProcessAction((ActionRequest) args[0], (ActionResponse) args[1]);
+            }
             else
             {
                 result = method.invoke(this.portletObject, args);
@@ -143,12 +184,18 @@ public class PortletObjectProxy extends BaseObjectProxy
 
     protected void proxyRender(RenderRequest request, RenderResponse response) throws PortletException, IOException, Exception
     {
+        PortletMode mode = request.getPortletMode();
+        
+        boolean autoSwitchConfigMode = false;
         boolean autoSwitchToEditMode = false;
         
-        if (this.genericPortletInvocable)
+        if (this.autoSwitchConfigMode && JetspeedActions.CONFIG_MODE.equals(mode))
         {
-            PortletMode mode = request.getPortletMode();
-            
+            autoSwitchConfigMode = true;
+        }
+        
+        if (this.autoSwitchEditDefaultsModeToEditMode && this.genericPortletInvocable)
+        {
             if (JetspeedActions.EDIT_DEFAULTS_MODE.equals(mode))
             {
                 if (!isSupportingEditDefaultsMode((GenericPortlet) this.portletObject))
@@ -158,7 +205,24 @@ public class PortletObjectProxy extends BaseObjectProxy
             }
         }
         
-        if (autoSwitchToEditMode)
+        if (autoSwitchConfigMode)
+        {
+            try
+            {
+                if (this.customConfigModePortletInstance == null)
+                {
+                    refreshCustomConfigModePortletInstance();
+                }
+                
+                this.customConfigModePortletInstance.render(request, response);
+            }
+            catch (UnavailableException e)
+            {
+                refreshCustomConfigModePortletInstance();
+                this.customConfigModePortletInstance.render(request, response);
+            }
+        }
+        else if (autoSwitchToEditMode)
         {
             GenericPortlet genericPortlet = (GenericPortlet) this.portletObject;
             
@@ -176,6 +240,40 @@ public class PortletObjectProxy extends BaseObjectProxy
         else
         {
             ((Portlet) this.portletObject).render(request, response);
+        }
+    }
+
+    protected void proxyProcessAction(ActionRequest request, ActionResponse response) throws PortletException, IOException, Exception
+    {
+        PortletMode mode = request.getPortletMode();
+        
+        boolean autoSwitchConfigMode = false;
+        
+        if (this.autoSwitchConfigMode && JetspeedActions.CONFIG_MODE.equals(mode))
+        {
+            autoSwitchConfigMode = true;
+        }
+        
+        if (autoSwitchConfigMode)
+        {
+            try
+            {
+                if (this.customConfigModePortletInstance == null)
+                {
+                    refreshCustomConfigModePortletInstance();
+                }
+                
+                this.customConfigModePortletInstance.processAction(request, response);
+            }
+            catch (UnavailableException e)
+            {
+                refreshCustomConfigModePortletInstance();
+                this.customConfigModePortletInstance.processAction(request, response);
+            }
+        }
+        else
+        {
+            ((Portlet) this.portletObject).processAction(request, response);
         }
     }
     
@@ -201,4 +299,31 @@ public class PortletObjectProxy extends BaseObjectProxy
         
         return false;
     }
+       
+    private void refreshCustomConfigModePortletInstance()
+    {
+        try
+        {
+            PortletRegistry registry = (PortletRegistry) Jetspeed.getComponentManager().getComponent("portletRegistry");
+            PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
+            ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
+            
+            PortletDefinitionComposite portletDef = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
+            MutablePortletApplication portletApp = (MutablePortletApplication) portletDef.getPortletApplicationDefinition();
+            WebApplicationDefinition webAppDef = portletApp.getWebApplicationDefinition();
+            String portletAppName = webAppDef.getContextRoot();
+            ServletContext portletAppContext = portalAppContext.getContext(portletAppName);
+            
+            setPortletObjectProxied(true);
+            this.customConfigModePortletInstance = portletFactory.getPortletInstance(portletAppContext, portletDef);
+        }
+        catch (Exception e)
+        {
+        }
+        finally
+        {
+            setPortletObjectProxied(false);
+        }
+    }
+    
 }

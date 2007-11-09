@@ -37,6 +37,7 @@ import javax.portlet.WindowState;
 public class JetspeedActions
 {
     public static final PortletMode ABOUT_MODE = new PortletMode("about");
+    public static final PortletMode CONFIG_MODE = new PortletMode("config");
     public static final PortletMode EDIT_DEFAULTS_MODE = new PortletMode("edit_defaults");
     //public static final PortletMode PREVIEW_MODE = new PortletMode("preview");
     public static final PortletMode PRINT_MODE = new PortletMode("print");
@@ -53,6 +54,7 @@ public class JetspeedActions
     public static final String EDIT = PortletMode.EDIT.toString();
     public static final String HELP = PortletMode.HELP.toString();
     public static final String ABOUT = ABOUT_MODE.toString();
+    public static final String CONFIG = CONFIG_MODE.toString();
     public static final String EDIT_DEFAULTS = EDIT_DEFAULTS_MODE.toString();
     //public static final String PREVIEW = PREVIEW_MODE.toString();
     public static final String PRINT = PRINT_MODE.toString();

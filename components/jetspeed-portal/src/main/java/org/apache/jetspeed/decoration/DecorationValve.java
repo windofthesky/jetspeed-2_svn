@@ -89,7 +89,14 @@ public class DecorationValve extends AbstractValve implements Valve
     
     private boolean maxOnEdit = false;
     
+    private boolean maxOnConfig = false;
+    
     private boolean maxOnEditDefaults = false;
+    
+    /**
+     * When edit_defaults mode is not supported by a portlet, support the mode automatically.
+     */
+    private boolean autoSwitchingForConfigMode = false;
 
     /**
      * When edit_defaults mode is not supported by a portlet, support the mode automatically.
@@ -298,6 +305,7 @@ public class DecorationValve extends AbstractValve implements Valve
                 {
                     adapter = (DecoratorActionsFactory)Class.forName(decoratorActionsAdapterClassName).newInstance();
                     adapter.setMaximizeOnEdit(this.maxOnEdit);
+                    adapter.setMaximizeOnConfig(this.maxOnConfig);
                     adapter.setMaximizeOnEditDefaults(this.maxOnEditDefaults);
                 }
                 catch (Exception e)
@@ -643,6 +651,17 @@ public class DecorationValve extends AbstractValve implements Valve
         return this.maxOnEdit;
     }
     
+    public void setMaximizeOnConfig(boolean maxOnConfig)
+    {
+        this.maxOnConfig = maxOnConfig;
+        this.defaultDecoratorActionsFactory.setMaximizeOnConfig(maxOnConfig);
+    }
+    
+    public boolean getMaximizeOnConfig()
+    {
+        return this.maxOnConfig;
+    }
+    
     public void setMaximizeOnEditDefaults(boolean maxOnEditDefaults)
     {
         this.maxOnEditDefaults = maxOnEditDefaults;
@@ -664,8 +683,23 @@ public class DecorationValve extends AbstractValve implements Valve
         return this.autoSwitchingToEditDefaultsModes;
     }
     
+    public void setAutoSwitchingForConfigMode(boolean autoSwitchingForConfigMode)
+    {
+        this.autoSwitchingForConfigMode = autoSwitchingForConfigMode;
+    }
+    
+    public boolean getAutoSwitchingForConfigMode()
+    {
+        return this.autoSwitchingForConfigMode;
+    }
+    
     private boolean isAutoSwitchableCustomMode(ContentTypeSet content, PortletMode customMode)
     {
+        if (this.autoSwitchingForConfigMode && JetspeedActions.CONFIG_MODE.equals(customMode))
+        {
+            return true;
+        }
+        
         if (this.autoSwitchingToEditDefaultsModes)
         {
             if (content.supportsPortletMode(PortletMode.EDIT) && JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))

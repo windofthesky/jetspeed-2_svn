@@ -1828,7 +1828,30 @@ limitations under the License.
         </preference>                        
     </portlet-preferences>
 </portlet>
-
-
+  
+  <portlet id="CustomConfigModePortlet">    
+    <portlet-name>CustomConfigModePortlet</portlet-name>
+    <display-name>Custom Config Mode Portlet</display-name>
+    <description>Provides common custom config mode edit portlet.</description>
+    <portlet-class>org.apache.jetspeed.portlets.custom.CustomConfigModePortlet</portlet-class>
+    <init-param>
+       <description>This parameter sets the template used in config mode.</description>
+       <name>ConfigPage</name>
+       <value>/WEB-INF/view/custom/config-mode.vm</value>
+    </init-param>
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>config</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.custom.resources.CustomConfigModeResources</resource-bundle>
+    <portlet-info>
+      <title>Custom Config Mode</title>
+      <short-title>Config</short-title>
+      <keywords>admin,config,custom</keywords>
+    </portlet-info>
+  </portlet>
+  
 </portlet-app>
 

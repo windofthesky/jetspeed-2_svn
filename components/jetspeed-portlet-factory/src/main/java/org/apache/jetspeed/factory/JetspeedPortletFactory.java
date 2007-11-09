@@ -35,6 +35,7 @@ import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.PortalAccessor;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.portlet.PortletObjectProxy;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -57,23 +58,58 @@ public class JetspeedPortletFactory implements PortletFactory
     private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
     private final Map classLoaderMap;
     
-    private boolean portletProxyUsed = false;
-
     /**
-     * 
+     * Flag whether this factory will create proxy instances for actual portlet instances or not.
      */
+    private boolean portletProxyUsed;
+    
+    /**
+     * Flag whether the instantiated proxy will switch edit_defaults mode to edit mode automatically or not.
+     */
+    private boolean autoSwitchEditDefaultsModeToEditMode;
+    
+    /**
+     * Flag whether the instantiated proxy will switch config mode to built-in config edit page or not.
+     */
+    private boolean autoSwitchConfigMode;
+    
+    private String customConfigModePortletUniqueName;
+    
     public JetspeedPortletFactory()
     {
-        this(false);
+        this(false, false);
     }
     
-    public JetspeedPortletFactory(boolean portletProxyUsed)
+    public JetspeedPortletFactory(boolean autoSwitchConfigMode, boolean autoSwitchEditDefaultsModeToEditMode)
     {
         this.portletCache =  Collections.synchronizedMap(new HashMap());
         this.validatorCache = Collections.synchronizedMap(new HashMap());
         classLoaderMap = Collections.synchronizedMap(new HashMap());
         
+        this.autoSwitchConfigMode = autoSwitchConfigMode;
+        this.autoSwitchEditDefaultsModeToEditMode = autoSwitchEditDefaultsModeToEditMode;
+        
+        this.portletProxyUsed = (this.autoSwitchConfigMode || this.autoSwitchEditDefaultsModeToEditMode);
+    }
+    
+    public void setPortletProxyUsed(boolean portletProxyUsed)
+    {
         this.portletProxyUsed = portletProxyUsed;
+    }
+    
+    public boolean getPortletProxyUsed()
+    {
+        return this.portletProxyUsed;
+    }
+    
+    public void setCustomConfigModePortletUniqueName(String customConfigModePortletUniqueName)
+    {
+        this.customConfigModePortletUniqueName = customConfigModePortletUniqueName;
+    }
+    
+    public String getCustomConfigModePortletUniqueName()
+    {
+        return this.customConfigModePortletUniqueName;
     }
 
     public void registerPortletApplication(PortletApplication pa, ClassLoader cl)
@@ -215,9 +251,9 @@ public class JetspeedPortletFactory implements PortletFactory
                 // method will wait for all its invocation threads to complete
                 // and thereby releasing all its ClassLoader locks as needed for local portlets.
                 
-                if (this.portletProxyUsed)
+                if (this.portletProxyUsed && !PortletObjectProxy.isPortletObjectProxied())
                 {
-                    portlet = new JetspeedPortletProxyInstance(pd.getName(), (Portlet)clazz.newInstance());
+                    portlet = new JetspeedPortletProxyInstance(pd.getName(), (Portlet)clazz.newInstance(), this.autoSwitchEditDefaultsModeToEditMode, this.autoSwitchConfigMode, this.customConfigModePortletUniqueName);
                 }
                 else
                 {

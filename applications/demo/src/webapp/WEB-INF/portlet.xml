@@ -1322,6 +1322,10 @@ limitations under the License.
         <portlet-mode>about</portlet-mode>
     </custom-portlet-mode>
     <custom-portlet-mode>
+        <description>a Custom Config Mode</description>            
+        <portlet-mode>config</portlet-mode>
+    </custom-portlet-mode>
+    <custom-portlet-mode>
         <description>a Custom Edit_defaults Mode</description>            
         <portlet-mode>edit_defaults</portlet-mode>
     </custom-portlet-mode>
