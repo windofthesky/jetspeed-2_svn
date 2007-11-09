@@ -476,7 +476,6 @@ limitations under the License.
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>        
-			<include name="registry.xml"/>   
             <include name="transaction.xml"/> 
           	<include name="cache.xml" />
           </fileset>
@@ -486,6 +485,7 @@ limitations under the License.
             <include name="request-context.xml"/>
 	        <include name="db-page-manager.xml" />
 	        <include name="interceptors.xml" />
+    		<include name="seed-registry.xml"/>                         	
           </fileset>
          </copy>
          <mkdir dir="${temp.assembly.dir}/boot/"/>             
