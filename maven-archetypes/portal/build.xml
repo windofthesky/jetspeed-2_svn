@@ -121,13 +121,15 @@ limitations under the License.
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>    
             <include name="cache.xml"/>  
-           <include name="registry.xml"/>       
             <include name="transaction.xml"/>           
           </fileset>
             </copy>
         <copy todir="${basedir}/target/classes/archetype-resources/etc/serializer/assembly">
            <fileset dir="${basedir}/../../src/webapp/WEB-INF/assembly/alternate">
              <include name="request-context.xml"/>
+	        <include name="db-page-manager.xml" />
+	        <include name="interceptors.xml" />
+    		<include name="seed-registry.xml"/>                         	           	
            </fileset>
           </copy>
       	<mkdir dir="${basedir}/target/classes/archetype-resources/etc/serializer/log4j"/>

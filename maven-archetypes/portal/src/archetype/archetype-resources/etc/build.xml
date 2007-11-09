@@ -477,7 +477,6 @@ limitations under the License.
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>           
-            <include name="registry.xml"/>       
             <include name="transaction.xml"/>           
           </fileset>
          </copy>
@@ -490,8 +489,10 @@ limitations under the License.
 -->        
         <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
              <fileset dir="\${basedir}/dbpsml/assembly/alternate">
-     	        <include name="db-page-manager.xml" />
-     	        <include name="interceptors.xml" />                          	
+                <include name="request-context.xml"/>
+    	        <include name="db-page-manager.xml" />
+    	        <include name="interceptors.xml" />
+        		<include name="seed-registry.xml"/>                         	
             </fileset>
            </copy>
 
