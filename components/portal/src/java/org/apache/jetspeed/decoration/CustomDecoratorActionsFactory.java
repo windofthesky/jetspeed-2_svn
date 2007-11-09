@@ -35,6 +35,7 @@ import org.apache.pluto.om.window.PortletWindow;
 public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFactory
 {
     private static final DecoratorActionTemplate ABOUT_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.ABOUT_MODE);
+    private static final DecoratorActionTemplate CONFIG_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.CONFIG_MODE);
     private static final DecoratorActionTemplate EDIT_DEFAULTS_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.EDIT_DEFAULTS_MODE);
     //private static final DecoratorActionTemplate PREVIEW_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.PREVIEW_MODE);
     private static final DecoratorActionTemplate PRINT_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.PRINT_MODE);
@@ -47,6 +48,7 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
     {
         ArrayList list = new ArrayList(JetspeedActions.getStandardPortletModes());
         list.add(JetspeedActions.ABOUT_MODE);
+        list.add(JetspeedActions.CONFIG_MODE);
         list.add(JetspeedActions.EDIT_DEFAULTS_MODE);
         //list.add(JetspeedActions.PREVIEW_MODE);
         list.add(JetspeedActions.PRINT_MODE);
@@ -88,6 +90,20 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
         }
         // else if (printModeIndex != -1)
         //   support switching to different modes once in "solo" state, even back to "print"
+        
+        int configModeIndex = actionTemplates.indexOf(CONFIG_MODE_TEMPLATE);
+        if (configModeIndex != -1)
+        {
+            try
+            {
+                ContentPage page = rc.getPage();
+                page.checkAccess(JetspeedActions.CONFIG);
+            }
+            catch (SecurityException e)
+            {
+                actionTemplates.remove(configModeIndex);
+            }
+        }
         
         int editDefaultsModeIndex = actionTemplates.indexOf(EDIT_DEFAULTS_MODE_TEMPLATE);
         if (editDefaultsModeIndex != -1)

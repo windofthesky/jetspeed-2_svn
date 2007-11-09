@@ -323,9 +323,14 @@ limitations under the License.
          -->
          <!-- When clicking on Edit Mode, also switch to Maximize -->
         <property name="maximizeOnEdit"><value>false</value></property>         
+         <!-- When clicking on Config Mode, also switch to Maximize -->
+        <property name="maximizeOnConfig"><value>false</value></property>         
          <!-- When clicking on Edit_defaults Mode, also switch to Maximize -->
         <property name="maximizeOnEditDefaults"><value>false</value></property>         
-        <property name="autoSwitchingToEditDefaultsModes"><value>false</value></property>
+        <!-- When config mode is not supported by a portlet, support the mode automatically. -->
+        <property name="autoSwitchingForConfigMode"><value>${supported.portletmode.autoswitch.config}</value></property>
+        <!-- When edit_defaults mode is not supported by a portlet, support the mode automatically. -->
+        <property name="autoSwitchingToEditDefaultsModes"><value>${supported.portletmode.autoswitch.edit_defaults}</value></property>
   </bean>
 
   <bean id="loginViewValve"

@@ -50,6 +50,19 @@ public interface DecoratorActionsFactory
     public boolean getMaximizeOnEdit();
     
     /**
+     * Maximize portlet window when going into config mode
+     * @param maxOnConfig
+     */
+    void setMaximizeOnConfig(boolean maxOnConfig);
+    
+    /**
+     * Maximize portlet window when going into edit_defaults mode
+     * 
+     * @return
+     */
+    public boolean getMaximizeOnConfig();
+    
+    /**
      * Maximize portlet window when going into edit_defaults mode
      * @param maxOnEditDefaults
      */

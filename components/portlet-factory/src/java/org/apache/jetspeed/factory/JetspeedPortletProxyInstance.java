@@ -29,8 +29,8 @@ import org.apache.jetspeed.portlet.PortletObjectProxy;
  */
 public class JetspeedPortletProxyInstance extends JetspeedPortletInstance
 {
-    public JetspeedPortletProxyInstance(String portletName, Portlet portlet)
+    public JetspeedPortletProxyInstance(String portletName, Portlet portlet, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
     {
-        super(portletName, (Portlet) PortletObjectProxy.createProxy(portlet));
+        super(portletName, (Portlet) PortletObjectProxy.createProxy(portlet, autoSwitchEditDefaultsModeToEditMode, autoSwitchConfigMode, customConfigModePortletUniqueName));
     }
 }

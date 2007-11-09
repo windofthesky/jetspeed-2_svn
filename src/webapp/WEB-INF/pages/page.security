@@ -23,7 +23,7 @@ limitations under the License.
   <security-constraints-def name="admin">
     <security-constraint>
       <roles>admin</roles>
-      <permissions>view, edit, edit_defaults</permissions>
+      <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>
   <global-security-constraints-ref>admin</global-security-constraints-ref>
@@ -52,7 +52,7 @@ limitations under the License.
     </security-constraint>
     <security-constraint>
       <roles>admin</roles>
-      <permissions>view, edit, edit_defaults</permissions>
+      <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>    
   </security-constraints-def>
   <security-constraints-def name="public-edit">
@@ -64,7 +64,7 @@ limitations under the License.
   <security-constraints-def name="AEUV">
     <security-constraint>
       <roles>admin</roles>
-      <permissions>view, edit, edit_defaults</permissions>
+      <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
     <security-constraint>
       <roles>user</roles>
@@ -79,7 +79,7 @@ limitations under the License.
     </security-constraint>
     <security-constraint>
       <roles>devmgr,admin</roles>
-      <permissions>view, edit, edit_defaults</permissions>
+      <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>
 
@@ -90,14 +90,14 @@ limitations under the License.
     </security-constraint>
     <security-constraint>
       <roles>admin</roles>
-      <permissions>view, edit, edit_defaults</permissions>
+      <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>
 
   <security-constraints-def name="delegated">
     <security-constraint>
       <roles>devmgr</roles>
-      <permissions>view, edit, edit_defaults</permissions>
+      <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>
  
