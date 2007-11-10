@@ -132,7 +132,8 @@ limitations under the License.
 
         <!-- Build Dependency Version Properties -->
         <ant.version>1.6.5</ant.version>
-        <jmock.version>1.0.1</jmock.version>
+        <jmock.version>1.2.0</jmock.version>
+        <jmock-cglib.version>1.1.0</jmock-cglib.version>
         <junit.version>3.8.1</junit.version>
         <mockrunner.version>0.3.8</mockrunner.version>
         <org.apache.maven.artifact.ant.version>2.0.4</org.apache.maven.artifact.ant.version>
@@ -148,7 +149,7 @@ limitations under the License.
         <!-- Project Dependency Version Properties -->
         <aopalliance.version>1.0</aopalliance.version>
          <castor.version>1.1.1-xml</castor.version> 
-        <cglib.version>2.1_3</cglib.version>
+        <cglib-nodep.version>2.1_3</cglib-nodep.version>
         <commons-beanutils.version>1.7.0</commons-beanutils.version>
         <commons-betwixt.version>20061115</commons-betwixt.version>        
         <commons-codec.version>1.3</commons-codec.version>
@@ -526,8 +527,8 @@ limitations under the License.
             <!-- Spring Framework -->
             <dependency>
                 <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>${cglib.version}</version>
+                <artifactId>cglib-nodep</artifactId>
+                <version>${cglib-nodep.version}</version>
             </dependency>
             <dependency>
                 <groupId>aopalliance</groupId>
@@ -690,6 +691,12 @@ limitations under the License.
                 <groupId>jmock</groupId>
                 <artifactId>jmock</artifactId>
                 <version>${jmock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>jmock</groupId>
+                <artifactId>jmock-cglib</artifactId>
+                <version>${jmock-cglib.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

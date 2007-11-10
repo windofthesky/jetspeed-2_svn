@@ -54,7 +54,7 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="app-servers/security/jboss/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/demo/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/gems/src/java"/>
-	<classpathentry excluding="**/.svn/*" kind="src" path="applications/j2-admin/src/java"/>
+	<classpathentry excluding="**/.svn/*|**/log4j.properties" kind="src" path="applications/j2-admin/src/java"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="applications/rss/src/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
@@ -80,7 +80,7 @@
     <classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar"/>
     <classpathentry kind="var" path="M2_REPO/commons-configuration/commons-configuration/1.1/commons-configuration-1.1.jar"/>
     <classpathentry kind="var" path="M2_REPO/mockrunner/mockrunner/0.3.8/mockrunner-0.3.8.jar"/>
-    <classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
+    <classpathentry kind="var" path="M2_REPO/jmock/jmock/1.2.0/jmock-1.2.0.jar"/>
     <classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
     <classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.0-FCS/jaxen-1.0-FCS.jar"/>
     <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
@@ -92,7 +92,7 @@
     <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.3/commons-codec-1.3.jar"/>
     <classpathentry kind="var" path="M2_REPO/rome/rome/0.8/rome-0.8.jar"/>
     <classpathentry kind="var" path="M2_REPO/taglibs/standard/1.1.2/standard-1.1.2.jar"/>
-    <classpathentry kind="var" path="M2_REPO/cglib/cglib/2.1_3/cglib-2.1_3.jar"/>
+    <classpathentry kind="var" path="M2_REPO/cglib/cglib-nodep/2.1_3/cglib-nodep-2.1_3.jar"/>
     <classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.0.5/spring-2.0.5.jar"/>
     <classpathentry kind="var" path="M2_REPO/org/springframework/spring-mock/2.0.5/spring-mock-2.0.5.jar"/>
     <classpathentry kind="var" path="M2_REPO/org/springframework/spring-portlet/2.0.5/spring-portlet-2.0.5.jar"/>
@@ -115,6 +115,7 @@
     <classpathentry kind="var" path="M2_REPO/ant/ant/1.6.5/ant-1.6.5.jar"/>
     <classpathentry kind="var" path="M2_REPO/ehcache/ehcache/1.2.4/ehcache-1.2.4.jar"/>
     <classpathentry kind="var" path="M2_REPO/portlet-api/portlet-api/1.0/portlet-api-1.0.jar"/>
+    <classpathentry kind="var" path="M2_REPO/jmock/jmock-cglib/1.2.0/jmock-cglib-1.2.0.jar"/>
     <classpathentry kind="var" path="M2_REPO/myfaces/myfaces-api/1.1.5/myfaces-api-1.1.5.jar"/>
     <classpathentry kind="var" path="M2_REPO/myfaces/myfaces-impl/1.1.5/myfaces-impl-1.1.5.jar"/>
     <classpathentry kind="var" path="M2_REPO/myfaces/tomahawk/1.1.5/tomahawk-1.1.5.jar"/>

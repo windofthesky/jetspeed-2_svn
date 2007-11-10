@@ -124,7 +124,7 @@ limitations under the License.
         <!-- Runtime Dependencies -->
         <dependency>
             <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
+            <artifactId>cglib-nodep</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
