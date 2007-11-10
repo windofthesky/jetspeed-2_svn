@@ -47,6 +47,76 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     {
         this.storeParameters = storeParameters;
     }
+    /*
+     * JS2-806 patch
+     * <p>
+     *   reset all portlets on page to mode VIEW and window state NORMAL in the case of page navigation.
+     * </p>
+     */
+    public void changeAllPortletsToViewModeAndNormalWindowState(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)
+    {
+        final PortletMode viewMode = PortletMode.VIEW;
+        final WindowState normalWindowState = WindowState.NORMAL;
+        
+        PageState pageState = (PageState)pageStates.get(page.getId());
+        if ( pageState == null )
+        {
+            pageState = new PageState();
+            pageStates.put(page.getId(), pageState);
+        }
+        
+        PortletWindowRequestNavigationalState requestState = null;
+        PortletWindowBaseNavigationalState sessionState = null;
+
+        //remove any maximized windows
+        if (null != pageState.maximizedWindowId)
+        {
+            pageState.windowStates.remove(pageState.maximizedWindowId);
+            pageState.maximizedWindowId = null;
+        }
+
+        Iterator iter = requestStates.getWindowIdIterator();
+        iter = pageState.windowStates.keySet().iterator();
+        String windowId;
+        while ( iter.hasNext() )
+        {
+            windowId = (String)iter.next();
+            requestState = requestStates.getPortletWindowNavigationalState(windowId);
+            if ( requestState == null )
+            {
+                requestState = new PortletWindowRequestNavigationalState(windowId);
+            }
+            //regardless, reset portlet mode and window state
+            requestState.setPortletMode(viewMode);
+            requestState.setWindowState(normalWindowState);
+            // get the session case just in case and create a new one
+            sessionState = (PortletWindowBaseNavigationalState)pageState.windowStates.get(requestState.getWindowId());
+            if ( sessionState == null )
+            {
+                if ( storeParameters )
+                {
+                    sessionState = new PortletWindowExtendedNavigationalState();
+                }
+                else
+                {
+                    sessionState = new PortletWindowBaseNavigationalState();
+                }
+                pageState.windowStates.put(requestState.getWindowId(),sessionState);
+            }
+            //Now, sync up. NOTE we should not be in this method if there is an portlet action request.
+            boolean changed = syncStates(false, requestState,(PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
+            if (changed)
+            {
+                removeFromCache(context, requestState.getWindowId(), cache);
+                removeFromCache(context, page.getId(), decorationCache);                    
+                if (storeParameters)
+                {
+                    ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                }
+            }
+            
+        }        
+    }
     
     public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)    
     {

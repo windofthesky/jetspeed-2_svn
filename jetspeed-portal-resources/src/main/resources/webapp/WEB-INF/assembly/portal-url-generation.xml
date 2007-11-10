@@ -27,16 +27,26 @@ limitations under the License.
   
   <!-- Navigation state we are currently using -->
   <bean id="NavigationalState" 
-  	   class="org.apache.jetspeed.container.state.impl.SessionFullNavigationalState"
+  	   class="org.apache.jetspeed.container.state.impl.SessionFullExtendedNavigationalState"
 	   singleton="false"
   >  	 
-       <constructor-arg><ref bean="NavigationalStateCodec"/></constructor-arg>
-       <constructor-arg>
+       <constructor-arg index='0'><ref bean="NavigationalStateCodec"/></constructor-arg>
+       <constructor-arg index='1'>
         	<ref bean="portletContentCache"/>
        </constructor-arg>       
-       <constructor-arg>
+       <constructor-arg index='2'>
         	<ref bean="decorationContentCache"/>
-       </constructor-arg>       
+       </constructor-arg>
+       <!--
+        JS2-806 
+           - set this to true along with PageHistoryValve will enable clearing the mode and window state of
+            all portlets in the current page request.
+           - setting this to false effectively disables this, and reverts to the default 
+             SessionFullNavigationalState object behaviour
+        -->
+       <constructor-arg index='3'>
+            <value>false</value>
+       </constructor-arg>
   </bean>
   
   <!-- PortalURL we are currently using -->

@@ -35,6 +35,31 @@ limitations under the License.
    </constructor-arg>
   </bean> 
   
+  <!-- 
+      To customize capabilityMap and requestContext on capabilities,
+      add this valve after each capabilityValve entry in the pipeline configs 
+      below
+   -->  
+  <bean id="capabilityCustomizerValve"
+        class="org.apache.jetspeed.capabilities.impl.CapabilityCustomizerValveImpl"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="org.apache.jetspeed.capabilities.Capabilities" />
+   </constructor-arg>
+   <!-- client name to media type mapping
+   If a client has same preferred mime type (e.g. text/html) but 
+   it should be treated with other media type,
+   put additional mapping(s) below.
+   -->
+   <constructor-arg>
+       <map>
+           <!-- If a client is IE4 of Pocket PC, then the media type will be html-basic. -->
+           <entry key="ie4ppc" value="html-basic" />
+       </map>
+   </constructor-arg>
+  </bean> 
+  
   <bean id="portalURLValve"
         class="org.apache.jetspeed.container.url.impl.PortalURLValveImpl"
         init-method="initialize"
@@ -147,6 +172,20 @@ limitations under the License.
    </constructor-arg>
   </bean>
 
+  <!--
+    JS2-806 
+      - this valve effectively maintains a previous page id in the session giving the downstream valve
+        the ability to manipulate inter-page navigation characterstics.
+        
+        default : "true" (effectively disables the valve)
+                : "false" (enables it and sets the previous page id in session)
+   -->
+  <bean id="pageHistoryValve"
+        class="org.apache.jetspeed.container.PageHistoryValve"
+        init-method="initialize">
+        <property name="valveDisabled" value="true" />
+  </bean>
+  
   <bean id="containerValve"
         class="org.apache.jetspeed.container.ContainerValve"
         init-method="initialize"
@@ -352,6 +391,10 @@ limitations under the License.
       <ref bean="passwordCredentialValve"/>
       <ref bean="loginValidationValve"/>
       <ref bean="profilerValve"/>
+      <!--
+        JS2-806  
+       -->
+      <ref bean="pageHistoryValve"/>
       <ref bean="containerValve"/>
       <ref bean="actionValve"/>
       <ref bean="resourceValve"/>
