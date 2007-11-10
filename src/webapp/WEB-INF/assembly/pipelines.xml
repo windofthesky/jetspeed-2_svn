@@ -172,6 +172,20 @@ limitations under the License.
    </constructor-arg>
   </bean>
 
+  <!--
+    JS2-806 
+      - this valve effectively maintains a previous page id in the session giving the downstream valve
+        the ability to manipulate inter-page navigation characterstics.
+        
+        default : "true" (effectively disables the valve)
+                : "false" (enables it and sets the previous page id in session)
+   -->
+  <bean id="pageHistoryValve"
+        class="org.apache.jetspeed.container.PageHistoryValve"
+        init-method="initialize">
+        <property name="valveDisabled" value="true" />
+  </bean>
+  
   <bean id="containerValve"
         class="org.apache.jetspeed.container.ContainerValve"
         init-method="initialize"
@@ -377,6 +391,10 @@ limitations under the License.
       <ref bean="passwordCredentialValve"/>
       <ref bean="loginValidationValve"/>
       <ref bean="profilerValve"/>
+      <!--
+        JS2-806  
+       -->
+      <ref bean="pageHistoryValve"/>
       <ref bean="containerValve"/>
       <ref bean="actionValve"/>
       <ref bean="resourceValve"/>

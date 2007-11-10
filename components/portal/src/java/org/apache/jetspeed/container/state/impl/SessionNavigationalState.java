@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.NavigationalState;
@@ -31,12 +33,19 @@ import org.apache.jetspeed.request.RequestContext;
 /**
  * SessionNavigationalState, stores nav parameters in the session, not on URL
  *
+ * <p>
+ * Added the ability to reset portlet mode and window states to VIEW and NORMAL in the case
+ * of page navigation. JS2-806
+ * </p>
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public class SessionNavigationalState extends AbstractNavigationalState
 {   
+    protected final Log log = LogFactory.getLog(getClass());    
     private Map currentPageWindowStates;
+    private boolean clearPortletsModeAndWindowStateEnabled = false;
     
     public SessionNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
@@ -104,7 +113,15 @@ public class SessionNavigationalState extends AbstractNavigationalState
                     session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
                 }
                 Page page = context.getPage();
-                sessionStates.sync(context, (Page) context.getPage(), requestStates, cache, decorationCache);
+                // JS2-806
+                if (isClearPortletsModeAndWindowStateEnabled())
+                {
+                    sessionStates.changeAllPortletsToViewModeAndNormalWindowState(context, page, requestStates, cache, decorationCache);
+                }
+                else
+                {
+                    sessionStates.sync(context, (Page) context.getPage(), requestStates, cache, decorationCache);
+                }
                 if (isNavigationalParameterStateFull() && isRenderParameterStateFull())
                 {
                     currentPageWindowStates = sessionStates.getWindowStates(page);
@@ -126,5 +143,16 @@ public class SessionNavigationalState extends AbstractNavigationalState
     public boolean isRenderParameterStateFull()
     {
         return false;
+    }
+
+    protected void setClearPortletsModeAndWindowStateEnabled(
+            boolean clearPortletsModeAndWindowStateEnabled)
+    {
+        this.clearPortletsModeAndWindowStateEnabled = clearPortletsModeAndWindowStateEnabled;
+    }
+
+    protected boolean isClearPortletsModeAndWindowStateEnabled()
+    {
+        return clearPortletsModeAndWindowStateEnabled;
     }
 }
