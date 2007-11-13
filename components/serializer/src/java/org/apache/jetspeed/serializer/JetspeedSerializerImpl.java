@@ -800,75 +800,73 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         if (permissions != null)
         {
            list =  permissions.iterator();
-        while (list.hasNext())
-        {
-            JSPermission _js = (JSPermission)list.next();
-            PortalResourcePermission perm = _js.getPermissionForType();
-            if ((perm != null) && (perm instanceof PortalResourcePermission))
+            while (list.hasNext())
             {
-            	try
+                JSPermission _js = (JSPermission)list.next();
+                PortalResourcePermission perm = _js.getPermissionForType();
+                if ((perm != null) && (perm instanceof PortalResourcePermission))
                 {
-                    pm.addPermission(perm);
-                    ArrayList listTemp = null;
-					JSUserGroups jsUserGroups = _js.getGroupString();
-					if (jsUserGroups != null)
-						listTemp = this.getTokens(jsUserGroups.toString());
-					else
-						listTemp = null;
-					if ((listTemp != null) && (listTemp.size()>0))
-					{
-						Iterator _itTemp = listTemp.iterator();
-						while (_itTemp.hasNext())
-						{
-							Principal p = (Principal)this.groupMap.get((String)_itTemp.next());
-							if (p != null)
-								pm.grantPermission(p, perm);
-						}
-					}
-					JSUserRoles jsUserRoles = _js.getRoleString();
-					if (jsUserRoles != null)
-						listTemp = this.getTokens(jsUserRoles.toString());
-					else
-						listTemp = null;
-					if ((listTemp != null) && (listTemp.size()>0))
-					{
-						Iterator _itTemp = listTemp.iterator();
-						while (_itTemp.hasNext())
-						{
-   							Principal p = (Principal)this.roleMap.get((String)_itTemp.next());
-							if (p != null)
-								pm.grantPermission(p, perm);
-						}
-					}
-					JSUserUsers jsUserUsers = _js.getUserString();
-					if (jsUserUsers != null)
-						listTemp = this.getTokens(jsUserUsers.toString());
-					else
-						listTemp = null;
-					if ((listTemp != null) && (listTemp.size()>0))
-					{
-						Iterator _itTemp = listTemp.iterator();
-						while (_itTemp.hasNext())
-						{
-   							Principal p = (Principal)this.userMap.get((String)_itTemp.next());
-							if (p != null)
-								pm.grantPermission(p, perm);
-						}
-					}
-
-	            } 
-	           	catch (Exception e)
-	            {
-	                throw new SerializerException(
-	                        SerializerException.CREATE_SERIALIZED_OBJECT_FAILED
-	                                .create(new String[]
-	                                { "Permissions", e.getMessage()}));
-	            }
+                	try
+                    {
+                        pm.addPermission(perm);
+                        ArrayList listTemp = null;
+    					JSUserGroups jsUserGroups = _js.getGroupString();
+    					if (jsUserGroups != null)
+    						listTemp = this.getTokens(jsUserGroups.toString());
+    					else
+    						listTemp = null;
+    					if ((listTemp != null) && (listTemp.size()>0))
+    					{
+    						Iterator _itTemp = listTemp.iterator();
+    						while (_itTemp.hasNext())
+    						{
+    							Principal p = (Principal)this.groupMap.get((String)_itTemp.next());
+    							if (p != null)
+    								pm.grantPermission(p, perm);
+    						}
+    					}
+    					JSUserRoles jsUserRoles = _js.getRoleString();
+    					if (jsUserRoles != null)
+    						listTemp = this.getTokens(jsUserRoles.toString());
+    					else
+    						listTemp = null;
+    					if ((listTemp != null) && (listTemp.size()>0))
+    					{
+    						Iterator _itTemp = listTemp.iterator();
+    						while (_itTemp.hasNext())
+    						{
+       							Principal p = (Principal)this.roleMap.get((String)_itTemp.next());
+    							if (p != null)
+    								pm.grantPermission(p, perm);
+    						}
+    					}
+    					JSUserUsers jsUserUsers = _js.getUserString();
+    					if (jsUserUsers != null)
+    						listTemp = this.getTokens(jsUserUsers.toString());
+    					else
+    						listTemp = null;
+    					if ((listTemp != null) && (listTemp.size()>0))
+    					{
+    						Iterator _itTemp = listTemp.iterator();
+    						while (_itTemp.hasNext())
+    						{
+       							Principal p = (Principal)this.userMap.get((String)_itTemp.next());
+    							if (p != null)
+    								pm.grantPermission(p, perm);
+    						}
+    					}
+    
+    	            } 
+    	           	catch (Exception e)
+    	            {
+    	                throw new SerializerException(
+    	                        SerializerException.CREATE_SERIALIZED_OBJECT_FAILED
+    	                                .create(new String[]
+    	                                { "Permissions", e.getMessage()}));
+    	            }
+                }
             }
-        }}else{ throw new SerializerException(
-                SerializerException.GET_EXISTING_OBJECTS
-                .create(new String[]
-                { "Permissions"}));}
+        }
     	logMe("recreatePermissions - done");
     }
 
