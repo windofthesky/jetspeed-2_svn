@@ -18,17 +18,27 @@ package org.apache.jetspeed.layout.impl;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
+
+import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 
 /**
  * Retrieve user information of the current user
@@ -51,9 +61,9 @@ public class GetUserInformationAction
     public GetUserInformationAction(String template, 
                             String errorTemplate, 
                             UserManager um,
-                            RolesSecurityBehavior securityBehavior)                            
+                            RolesSecurityBehavior rolesSecurityBehavior)                            
     {
-        super(template, errorTemplate, um, securityBehavior); 
+        super(template, errorTemplate, um, rolesSecurityBehavior);
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -84,8 +94,19 @@ public class GetUserInformationAction
                 	}
                 	resultMap.put(USERINFO, prefsSet);
 
+                	List roles = new ArrayList();
+                	Subject userSubject = user.getSubject();
+                	if ( userSubject != null )
+                	{
+                		Iterator rolesIter = userSubject.getPrincipals( RolePrincipalImpl.class ).iterator();
+                		while ( rolesIter.hasNext() )
+                        {
+                			RolePrincipal role = (RolePrincipal)rolesIter.next();
+                            roles.add( role.getName() );
+                        }
+                	}
+                	resultMap.put( ROLES, roles);
                 }
-                	
         	}
         	else
         	{

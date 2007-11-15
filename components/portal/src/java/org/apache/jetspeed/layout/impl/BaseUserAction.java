@@ -123,6 +123,9 @@ public abstract class BaseUserAction
 
     public boolean createNewPageOnEdit(RequestContext context)
     {
+    	if (securityBehavior == null)
+            return false;
+    	
         return securityBehavior.createNewPageOnEdit(context);        
     }
         

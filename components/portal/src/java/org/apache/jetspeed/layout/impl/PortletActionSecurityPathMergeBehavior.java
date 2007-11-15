@@ -44,12 +44,15 @@ public class PortletActionSecurityPathMergeBehavior
     extends PortletActionSecurityPathBehavior
     implements PortletActionSecurityBehavior
 {
-    protected Log log = LogFactory.getLog(PortletActionSecurityPathMergeBehavior.class);    
-    protected PageManager pageManager;
+    protected Log log = LogFactory.getLog(PortletActionSecurityPathMergeBehavior.class);
     
-    public PortletActionSecurityPathMergeBehavior(PageManager pageManager)
+    public PortletActionSecurityPathMergeBehavior( PageManager pageManager )
     {
-        super(pageManager);
+    	this( pageManager, Boolean.FALSE );
+    }
+    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, Boolean enableCreateUserPagesFromRolesOnEdit )
+    {
+        super( pageManager, enableCreateUserPagesFromRolesOnEdit );
     }
 
     public Subject getSubject(RequestContext context)

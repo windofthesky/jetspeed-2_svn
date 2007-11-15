@@ -26,4 +26,11 @@
 		#end
 		</userinfo>
 	#end
+	#if($roles.size() > 0)
+	    <roles>
+		#foreach( $roleName in $roles )
+    		<role>$roleName</role>
+		#end
+		</roles>
+	#end
 </js>

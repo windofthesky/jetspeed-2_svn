@@ -26,11 +26,13 @@ import javax.portlet.WindowState;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -127,86 +129,153 @@ public class ChangePortletAction
         {
             resultMap.put(ACTION, action);
             // Get the necessary parameters off of the request
-            String portletId = getActionParameter(requestContext, PORTLETID);
-            if (portletId == null) 
+            String fragmentId = getActionParameter(requestContext, FRAGMENTID);
+            if (fragmentId == null) 
             { 
-                throw new Exception("portlet id not provided"); 
-            }            
-            resultMap.put(PORTLETID, portletId);
+                throw new Exception("fragment id not provided"); 
+            }
+            resultMap.put(FRAGMENTID, fragmentId);
             
-            String windowState = getActionParameter(requestContext, WINDOW_STATE);
-            String portletMode = getActionParameter(requestContext, PORTLET_MODE);
-            if (windowState == null && portletMode == null) 
-            { 
-                throw new Exception("portlet window state or mode not provided"); 
-            }           
-            if (windowState != null && !isValidWindowState(windowState))
-            {
-                throw new Exception("portlet window state " + windowState + " is not supported");
-            }
-            if (portletMode != null && !isValidPortletMode(portletMode))
-            {
-                throw new Exception("portlet mode " + portletMode + " is not supported");
-            }
-
             ContentPage page = requestContext.getPage();            
-            ContentFragment fragment = page.getContentFragmentById(portletId);
+            ContentFragment fragment = page.getContentFragmentById(fragmentId);
             
-            String oldState = fragment.getState();
-            String oldMode = fragment.getMode();
-            
-            // Now Change the transient navigational state
-            MutableNavigationalState navState = (MutableNavigationalState)requestContext.getPortalURL().getNavigationalState();
-            PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
-            if (portletWindow != null)
+            if ( fragment == null )
             {
-                oldState = navState.getState(portletWindow).toString();
-                oldMode =  navState.getMode(portletWindow).toString();
-                if (windowState != null)
-                {
-                    navState.setState(portletWindow, new WindowState(windowState));
-                }
-                if (portletMode != null)
-                {
-                    navState.setMode(portletWindow, new PortletMode(portletMode));
-                }
-                navState.sync(requestContext);                                
+            	throw new Exception( "fragment specified by id cannot be found" );
             }
-            
-
-            if (checkAccess(requestContext, JetspeedActions.EDIT))
+            String requestedState = getActionParameter(requestContext, WINDOW_STATE);
+            String requestedMode = getActionParameter(requestContext, PORTLET_MODE);    
+            if ( "layout".equals( fragment.getType() ) )
             {
-                if (windowState != null)
-                    fragment.setState(windowState);
-                if (portletMode != null)
-                    fragment.setMode(portletMode);
-                
-                if (pageManager != null && !batch)
-                {
-                    pageManager.updatePage(page);
-                }
+            	if ( ! fragment.getId().equals( page.getRootFragment().getId() ) )
+            	{
+            		throw new Exception( "for layout fragments, change action applies to only to the root layout fragment (i.e. it does not apply to nested layout fragments)" );
+            	}
+            	PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute( PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE );
+            	if ( pageActionAccess == null )
+            	{
+            		throw new Exception( "cannot change action for root layout fragment due to null PageActionAccess object" );
+            	}
+            	//pageActionAccess.
+            	PortletWindow window = windowAccessor.getPortletWindow(fragment);
+            	PortletMode currentMode = requestContext.getPortalURL().getNavigationalState().getMode( window );
+            	WindowState currentState = requestContext.getPortalURL().getNavigationalState().getState( window );
+            	
+            	boolean requestedModeAlreadySet = false;
+            	if ( requestedMode == null )
+            		requestedModeAlreadySet = true;
+            	else
+            	{
+            		if ( requestedMode.equals( PortletMode.EDIT.toString() ) )
+            		{
+            			if( pageActionAccess.isEditing() )
+            				requestedModeAlreadySet = true;
+            			else
+            			{
+            				if ( pageActionAccess.isEditAllowed())
+            				{
+            					pageActionAccess.setEditing( true );
+            					resultMap.put(STATUS, status);
+            					resultMap.put(OLD_PORTLET_MODE, currentMode.toString());
+            					resultMap.put(PORTLET_MODE, requestedMode);
+            				}
+            				else
+            				{
+            					throw new Exception( "permissions do no allow page edit" );
+            				}
+            			}
+            		}
+            		else if ( requestedMode.equals( PortletMode.VIEW.toString() ) )
+            		{
+            			pageActionAccess.setEditing( false );
+            			//if ( currentMode.equals( PortletMode.HELP ) )
+            			resultMap.put(STATUS, status);
+            			resultMap.put(OLD_PORTLET_MODE, currentMode.toString());
+            			resultMap.put(PORTLET_MODE, requestedMode);
+            		}
+            		else
+            		{
+            			requestedModeAlreadySet = true;
+            		}
+            	}
+            	if ( requestedModeAlreadySet )
+            	{
+           			resultMap.put(STATUS, status);
+           			resultMap.put(OLD_PORTLET_MODE, currentMode.toString());
+           			resultMap.put(PORTLET_MODE, currentMode.toString());
+           		}
             }
-            
-            //requestContext.getPortalURL().getNavigationalState().
-            resultMap.put(STATUS, status);
-            
-            if (windowState != null)
+            else
             {
-                resultMap.put(OLD_WINDOW_STATE, oldState);
-                resultMap.put(WINDOW_STATE, windowState);
+	            if (requestedState == null && requestedMode == null) 
+	            { 
+	                throw new Exception("portlet window state or mode not provided"); 
+	            }           
+	            if (requestedState != null && !isValidWindowState(requestedState))
+	            {
+	                throw new Exception("portlet window state " + requestedState + " is not supported");
+	            }
+	            if (requestedMode != null && !isValidPortletMode(requestedMode))
+	            {
+	                throw new Exception("portlet mode " + requestedMode + " is not supported");
+	            }
+	
+	            
+	            String oldState = fragment.getState();
+	            String oldMode = fragment.getMode();
+	            
+	            // Now Change the transient navigational state
+	            MutableNavigationalState navState = (MutableNavigationalState)requestContext.getPortalURL().getNavigationalState();
+	            PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
+	            if (portletWindow != null)
+	            {
+	                oldState = navState.getState(portletWindow).toString();
+	                oldMode =  navState.getMode(portletWindow).toString();
+	                if (requestedState != null)
+	                {
+	                    navState.setState(portletWindow, new WindowState(requestedState));
+	                }
+	                if (requestedMode != null)
+	                {
+	                    navState.setMode(portletWindow, new PortletMode(requestedMode));
+	                }
+	                navState.sync(requestContext);                                
+	            }
+	            
+	
+	            if (checkAccess(requestContext, JetspeedActions.EDIT))
+	            {
+	                if (requestedState != null)
+	                    fragment.setState(requestedState);
+	                if (requestedMode != null)
+	                    fragment.setMode(requestedMode);
+	                
+	                if (pageManager != null && !batch)
+	                {
+	                    pageManager.updatePage(page);
+	                }
+	            }
+	            
+	            //requestContext.getPortalURL().getNavigationalState().
+	            resultMap.put(STATUS, status);
+	            
+	            if (requestedState != null)
+	            {
+	                resultMap.put(OLD_WINDOW_STATE, oldState);
+	                resultMap.put(WINDOW_STATE, requestedState);
+	            }
+	
+	            if (requestedMode != null)
+	            {
+	                resultMap.put(OLD_PORTLET_MODE, oldMode);
+	                resultMap.put(PORTLET_MODE, requestedMode);
+	            }
             }
-
-            if (portletMode != null)
-            {
-                resultMap.put(OLD_PORTLET_MODE, oldMode);
-                resultMap.put(PORTLET_MODE, portletMode);
-            }
-            
         } 
         catch (Exception e)
         {
             // Log the exception
-            log.error("exception while moving a portlet", e);
+            log.error("exception while changing portlet/page action", e);
             resultMap.put(REASON, e.toString());
             // Return a failure indicator
             success = false;

@@ -29,6 +29,7 @@ import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.layout.PortletPlacementException;
@@ -37,6 +38,8 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
+import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
@@ -63,35 +66,42 @@ public class MovePortletAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected static final Log log = LogFactory.getLog(MovePortletAction.class);
+    protected static final String eol = System.getProperty( "line.separator" );
+    
+    private PortletRegistry registry;
     private int iMoveType = -1;
     private String sMoveType = null;
 
-    public MovePortletAction(String template, 
-            String errorTemplate, 
-            String sMoveType)
-    throws AJAXException    
+    public MovePortletAction( String template, 
+            				  String errorTemplate,
+                              PortletRegistry registry,
+                              String sMoveType )
+        throws AJAXException
     {
-        this(template, errorTemplate, sMoveType, null, null);
+        this( template, errorTemplate, registry, sMoveType, null, null );
     }
     
-    public MovePortletAction(String template, 
-                             String errorTemplate, 
-                             PageManager pageManager,
-                             PortletActionSecurityBehavior securityBehavior)
-    throws AJAXException
+    public MovePortletAction( String template, 
+                              String errorTemplate,
+                              PortletRegistry registry,
+                              PageManager pageManager,
+                              PortletActionSecurityBehavior securityBehavior )
+        throws AJAXException
     {
-        this( template, errorTemplate, "moveabs", pageManager, securityBehavior );
+        this( template, errorTemplate, registry, "moveabs", pageManager, securityBehavior );
     }
 
-    public MovePortletAction(String template, 
-                             String errorTemplate, 
-                             String sMoveType,
-                             PageManager pageManager,
-                             PortletActionSecurityBehavior securityBehavior)
-    throws AJAXException
+    public MovePortletAction( String template,
+                              String errorTemplate,
+                              PortletRegistry registry,
+                              String sMoveType,
+                              PageManager pageManager,
+                              PortletActionSecurityBehavior securityBehavior )
+        throws AJAXException
     {
-        super(template, errorTemplate, pageManager, securityBehavior);
-        setMoveType(sMoveType);
+        super( template, errorTemplate, pageManager, securityBehavior );
+        setMoveType( sMoveType );
+        this.registry = registry;
     }
 
     // Convert the move type into an integer
@@ -139,39 +149,7 @@ public class MovePortletAction
     {
         return runAction(requestContext, resultMap, false);
     }
-    
-    protected void getRoles( RequestContext requestContext )
-    {
-    	Subject currentSubject = requestContext.getSubject();
-    	Principal principal = requestContext.getRequest().getUserPrincipal();
-        String userName = null; // this.guest;
-        if ( principal != null )
-            userName = principal.getName();
-        else
-        {
-        	PortalConfiguration config = Jetspeed.getConfiguration();
-            if ( config != null )
-            {
-            	userName = config.getString("default.user.principal");
-            }
-        }
         
-        Iterator roles = currentSubject.getPrincipals(RolePrincipalImpl.class).iterator();
-        StringBuffer rolesBuff = new StringBuffer();
-        int count = 0;
-        while (roles.hasNext())
-        {
-            RolePrincipal role = (RolePrincipal)roles.next();
-            if (count > 0)
-            {
-                rolesBuff.append(";");
-            }
-            rolesBuff.append(role.getName());
-            count++;                        
-        }
-        log.info( "roles for '" + userName + "': " + rolesBuff.toString() );
-    }
-    
     protected boolean runAction( RequestContext requestContext, Map resultMap, boolean batch )  throws AJAXException
     {
         boolean success = true;
@@ -187,9 +165,7 @@ public class MovePortletAction
                 throw new Exception( FRAGMENTID + " not provided; must specify portlet or layout id" ); 
             }
             resultMap.put(FRAGMENTID, moveFragmentId);
-            
-            getRoles( requestContext );
-            
+                        
             Fragment currentLayoutFragment = null;
             Fragment moveToLayoutFragment = null;
             // when layoutId is null we use old behavior, ignoring everything to do with multiple layout fragments
@@ -203,7 +179,7 @@ public class MovePortletAction
                 }
                 else
                 {
-                    // determine if layoutId parameter refers to the current or the move target layout fragment
+                    // determine if layoutId parameter refers to the current layout fragment or to some other layout fragment
                     moveToLayoutFragment = currentLayoutFragment;
                     Iterator layoutChildIter = moveToLayoutFragment.getFragments().iterator();
                     while ( layoutChildIter.hasNext() )
@@ -223,7 +199,7 @@ public class MovePortletAction
                         // figure out the current layout fragment - must know to be able to find the portlet
                         //    fragment by row/col when a new page is created
                         Fragment root = requestContext.getPage().getRootFragment();
-                        currentLayoutFragment = getParentFragmentById(moveFragmentId, root);
+                        currentLayoutFragment = getParentFragmentById( moveFragmentId, root );
                     }
                 }
                 if ( currentLayoutFragment == null )
@@ -233,36 +209,45 @@ public class MovePortletAction
                 }
             }
             
-            if (false == checkAccess(requestContext, JetspeedActions.EDIT))
+            if ( false == checkAccess( requestContext, JetspeedActions.EDIT ) )
             {
+            	if ( ! isPageQualifiedForCreateNewPageOnEdit( requestContext ) )
+            	{
+            		success = false;
+                    resultMap.put(REASON, "Page is not qualified for create-new-page-on-edit");
+                    return success;
+            	}
+            	
                 Page page = requestContext.getPage();
-                Fragment fragment = page.getFragmentById(moveFragmentId);
-                if (fragment == null)
+                Fragment fragment = page.getFragmentById( moveFragmentId );
+                if ( fragment == null )
                 {
                     success = false;
                     resultMap.put(REASON, "Fragment not found");
                     return success;
                 }
-                
-                // remember current row/column of porlet fragment
-                int column = fragment.getLayoutColumn();
-                int row = fragment.getLayoutRow();
-                
-                // rememeber current row/column of parent layout fragment and move-to layout fragment
-                int layoutColumn = -1, layoutRow = -1;
-                int moveToLayoutColumn = -1, moveToLayoutRow = -1;
-                if ( currentLayoutFragment != null )
+                NestedFragmentContext moveFragmentContext = null;
+                NestedFragmentContext moveToFragmentContext = null;
+                try
                 {
-                    layoutColumn = currentLayoutFragment.getLayoutColumn();
-                    layoutRow = currentLayoutFragment.getLayoutRow();
-                    if ( moveToLayoutFragment != null )
-                    {
-                        moveToLayoutColumn = moveToLayoutFragment.getLayoutColumn();
-                        moveToLayoutRow = moveToLayoutFragment.getLayoutRow();
-                    }
+                	moveFragmentContext = new NestedFragmentContext( fragment, page, registry );
+                	//log.info( "moveFragmentContext original : " + eol + moveFragmentContext.toString() );
+                	if ( moveToLayoutFragment != null )
+                	{
+                		moveToFragmentContext = new NestedFragmentContext( moveToLayoutFragment, page, registry );
+                		//log.info( "moveToFragmentContext original : " + eol + moveToFragmentContext.toString() );
+                	}
                 }
-                
-                if (!createNewPageOnEdit(requestContext))
+                catch ( Exception ex )
+                {
+                	log.error( "Failure to construct nested context for fragment " + moveFragmentId, ex );
+                	success = false;
+                    resultMap.put( REASON, "Cannot construct nested context for fragment" );
+                    return success;
+                }
+                                
+                //log.info("before createNewPageOnEdit page-name=" + page.getName() + " page-path=" + page.getPath() + " page-url=" + page.getUrl() );
+                if ( ! createNewPageOnEdit( requestContext ) )
                 {
                     success = false;
                     resultMap.put(REASON, "Insufficient access to edit page");
@@ -270,37 +255,50 @@ public class MovePortletAction
                 }
                 status = "refresh";
                 
-                // translate old portlet id to new portlet id
-                Fragment newFragment = getFragmentIdFromLocation(row, column, requestContext.getPage());
-                if (newFragment == null)
-                {
-                    success = false;
-                    resultMap.put( REASON, "Failed to find new fragment for portlet id: " + moveFragmentId );
-                    return success;                    
-                }
-                moveFragmentId = newFragment.getId();
+                Page newPage = requestContext.getPage();                
+                //log.info("after createNewPageOnEdit page-name=" + newPage.getName() + " page-path=" + newPage.getPath() + " page-url=" + newPage.getUrl() );
+                Fragment newPageRootFragment = newPage.getRootFragment();
                 
-                if ( currentLayoutFragment != null )
+                // using NestedFragmentContext, find portlet id for copy of target portlet in the new page 
+                Fragment newFragment = null;
+                try
                 {
-                    newFragment = getFragmentIdFromLocation(layoutRow, layoutColumn, requestContext.getPage());
-                    if (newFragment == null)
+                	newFragment = moveFragmentContext.getFragmentOnNewPage( newPage, registry );
+                	//log.info( "npe newFragment: " + newFragment.getType() + " " + newFragment.getId() );
+                }
+                catch ( Exception ex )
+                {
+                	log.error( "Failure to locate copy of fragment " + moveFragmentId, ex );
+                	success = false;
+                    resultMap.put( REASON, "Failed to find new fragment for portlet id: " + moveFragmentId );
+                    return success;
+                }
+                
+                moveFragmentId = newFragment.getId();
+                currentLayoutFragment = getParentFragmentById( moveFragmentId, newPageRootFragment );
+                if ( currentLayoutFragment == null )
+                {
+                	success = false;
+                    resultMap.put( REASON, "Failed to find parent layout for copied fragment " + moveFragmentId );
+                    return success;
+                }
+                //log.info( "npe newParentFragment: " + currentLayoutFragment.getType() + " " + currentLayoutFragment.getId() );
+                if ( moveToLayoutFragment != null )
+                {
+                	Fragment newMoveToFragment = null;
+                    try
                     {
-                        success = false;
-                        resultMap.put( REASON, "Failed to find new parent layout fragment id: " + currentLayoutFragment.getId() + " for portlet id: " + moveFragmentId );
+                    	newMoveToFragment = moveToFragmentContext.getFragmentOnNewPage( newPage, registry );
+                    	//log.info( "npe newMoveToFragment: " + newMoveToFragment.getType() + " " + newMoveToFragment.getId() );
+                    }
+                    catch ( Exception ex )
+                    {
+                    	log.error( "Failure to locate copy of destination fragment " + moveToLayoutFragment.getId(), ex );
+                    	success = false;
+                        resultMap.put( REASON, "Failed to find copy of destination fragment" );
                         return success;
                     }
-                    currentLayoutFragment = newFragment;
-                    if ( moveToLayoutFragment != null )
-                    {
-                        newFragment = getFragmentIdFromLocation(moveToLayoutRow, moveToLayoutColumn, requestContext.getPage());
-                        if (newFragment == null)
-                        {
-                            success = false;
-                            resultMap.put( REASON, "Failed to find new move-to layout fragment id: " + moveToLayoutFragment.getId() + " for portlet id: " + moveFragmentId );
-                            return success;
-                        }
-                        moveToLayoutFragment = newFragment;
-                    }
+                    moveToLayoutFragment = newMoveToFragment;
                 }
             }
             
@@ -316,14 +314,15 @@ public class MovePortletAction
             else
             {
             	PortletPlacementContext placement = null;
+            	Page page = requestContext.getPage();
             	
             	if ( currentLayoutFragment == null )
-            		currentLayoutFragment = getParentFragmentById( moveFragmentId, requestContext.getPage().getRootFragment() );
+            		currentLayoutFragment = getParentFragmentById( moveFragmentId, page.getRootFragment() );
             	
                 if ( currentLayoutFragment != null )
-                    placement = new PortletPlacementContextImpl( requestContext, currentLayoutFragment );
+                    placement = new PortletPlacementContextImpl( page, registry, currentLayoutFragment );
                 else
-                    placement = new PortletPlacementContextImpl( requestContext );
+                    placement = new PortletPlacementContextImpl( page, registry );
                 
                 Fragment fragment = placement.getFragmentById(moveFragmentId);
                 if ( fragment == null )
@@ -501,7 +500,8 @@ public class MovePortletAction
         Fragment placeFragment = null;
         if ( removeFromLayoutFragment != null )
         {
-            PortletPlacementContext placement = new PortletPlacementContextImpl( requestContext, removeFromLayoutFragment );
+        	Page page = requestContext.getPage();
+            PortletPlacementContext placement = new PortletPlacementContextImpl( page, registry, removeFromLayoutFragment );
         
             placeFragment = placement.getFragmentById( moveFragmentId );
             if ( placeFragment == null )
@@ -511,7 +511,7 @@ public class MovePortletAction
                 return success;
             }
             placement.remove( placeFragment );
-            Page page = placement.syncPageFragments();
+            page = placement.syncPageFragments();
             page.removeFragmentById( moveFragmentId );
         }
         if ( placeFragment != null )
@@ -540,7 +540,8 @@ public class MovePortletAction
         }
         
         // add fragment
-        PortletPlacementContext placement = new PortletPlacementContextImpl( requestContext, placeInLayoutFragment );
+        Page page = requestContext.getPage();
+        PortletPlacementContext placement = new PortletPlacementContextImpl( page, registry, placeInLayoutFragment );
         //placement.add( placeFragment, getCoordinateFromParams( requestContext ) );
         
         success = moveInFragment( requestContext, placement, placeFragment, placeInLayoutFragment, resultMap, batch );
@@ -577,5 +578,10 @@ public class MovePortletAction
             resultMap.put(oldName, new Float(oldValue));
             resultMap.put(name, new Float(value));
         }
+    }
+    
+    protected PortletRegistry getPortletRegistry()
+    {
+    	return this.registry;
     }
 }

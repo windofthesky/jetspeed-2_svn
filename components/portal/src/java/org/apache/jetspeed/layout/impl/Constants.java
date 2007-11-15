@@ -61,6 +61,7 @@ public interface Constants
     public static final String PAGES = "pages";
     public static final String PAGE = "page";
     public static final String PROFILED_PATH = "profiledPath";
+    public static final String PAGE_QUALIFIED_CREATE_ON_EDIT = "pageQualifiedForCreateNewPageOnEdit";
     public static final String FOLDER = "folder";
     public static final String FOLDERS = "folders";
     public static final String SIZES = "sizes";
@@ -69,6 +70,8 @@ public interface Constants
     public static final String GUESTUSERS = "guestusers";
     public static final String USERNAME = "username";
     public static final String USERINFO = "userinfo";
+    public static final String USER_IS_ANONYMOUS = "userIsAnonymous";
+    public static final String ROLES = "roles";
     public static final String SESSIONS = "sessions";
     public static final String IPADDRESS = "ipaddress";
     

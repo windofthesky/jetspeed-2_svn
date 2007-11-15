@@ -33,6 +33,8 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -63,6 +65,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     private final ResourceValidator validator;
     private final PortletRegistry registry;
     
+    /** cache to hold decoration Properties objects **/
+    private JetspeedCache decorationConfigurationCache;
+    
     private ServletContext servletContext;
 
     private String defaultDesktopLayoutDecoration = null;
@@ -84,12 +89,20 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public DecorationFactoryImpl( String decorationsPath, 
                                   ResourceValidator validator )
     {
-        this( null, decorationsPath, validator );
+        this( null, decorationsPath, validator, null );
+    }
+    
+    public DecorationFactoryImpl( String decorationsPath, 
+                                  ResourceValidator validator,
+                                  JetspeedCache decorationConfigurationCache )
+    {
+        this( null, decorationsPath, validator, decorationConfigurationCache );
     }
 
     public DecorationFactoryImpl( PortletRegistry registry,
-            String decorationsPath, 
-            ResourceValidator validator )
+                                  String decorationsPath, 
+                                  ResourceValidator validator,
+                                  JetspeedCache decorationConfigurationCache )
     {
         this.registry =  registry;
         this.decorationsPath = new Path( decorationsPath );
@@ -98,12 +111,18 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         this.portletDecorationsPath = getBasePath( Fragment.PORTLET );
         this.portletDecorationsPathStr = this.portletDecorationsPath.toString();
         this.validator = validator;
+        this.decorationConfigurationCache = decorationConfigurationCache;
     }
         
     public ResourceValidator getResourceValidator()
     {
         return validator;
-    }    
+    }
+    
+    protected JetspeedCache getDecorationConfigurationCache()
+    {
+    	return decorationConfigurationCache;
+    }
 
     public Theme getTheme( Page page, RequestContext requestContext )
     {
@@ -186,6 +205,50 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
 
     }
 
+    protected Properties getCachedConfiguration( String name, String type )
+    {
+    	if ( decorationConfigurationCache == null )
+    	{
+    		if ( type.equals( Fragment.PORTLET ) )
+    		{
+    			return (Properties)this.portletDecoratorProperties.get( name );
+    		}
+    		else
+    		{
+    			return (Properties)this.layoutDecoratorProperties.get( name );
+    		}
+    	}
+    	CacheElement cachedElement = decorationConfigurationCache.get( getCachedConfigurationKey( type, name ) );
+        if (cachedElement != null)
+        	return (Properties)cachedElement.getContent();  
+        return null;
+    }
+    protected void setCachedConfiguration( String name, String type, Properties props )
+    {
+    	if ( decorationConfigurationCache == null )
+    	{
+    		if ( type.equals( Fragment.PORTLET ) )
+    		{
+    			this.portletDecoratorProperties.put( name, props );
+    		}
+    		else
+    		{
+    			this.layoutDecoratorProperties.put( name, props );
+    		}
+    	}
+    	else
+    	{
+    		CacheElement cachedElement = decorationConfigurationCache.createElement( getCachedConfigurationKey( type, name ), props );
+    		cachedElement.setTimeToIdleSeconds(decorationConfigurationCache.getTimeToIdleSeconds());
+    		cachedElement.setTimeToLiveSeconds(decorationConfigurationCache.getTimeToLiveSeconds());
+    		decorationConfigurationCache.put( cachedElement );
+    	}
+    }
+    protected String getCachedConfigurationKey( String type, String name )
+    {
+    	return type + "."  + name;
+    }
+    
     /**
      * Gets the configuration (decorator.properties) object for the decoration.
      * @param name Name of the Decoration.
@@ -194,15 +257,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      */
     public Properties getConfiguration( String name, String type )
     {
-        Properties props = null;
-        if ( type.equals( Fragment.PORTLET ) )
-        {
-            props = (Properties)this.portletDecoratorProperties.get( name );
-        }
-        else
-        {
-            props = (Properties)this.layoutDecoratorProperties.get( name );
-        }        
+        Properties props = getCachedConfiguration( name, type );
         if ( props != null )
         {
             return props;
@@ -305,15 +360,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 props.setProperty( Decoration.DESKTOP_SUPPORTED_PROPERTY, "false" );
             }
         }
-
-        if ( type.equals( Fragment.PORTLET ) )
-        {
-            this.portletDecoratorProperties.put( name, props );
-        }
-        else
-        {
-            this.layoutDecoratorProperties.put( name, props );
-        }
+        
+        setCachedConfiguration( name, type, props );
+        
         return props;
     }
     

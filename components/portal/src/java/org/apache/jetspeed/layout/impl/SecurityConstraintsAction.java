@@ -74,6 +74,7 @@ public class SecurityConstraintsAction
     public boolean run(RequestContext requestContext, Map resultMap)
             throws AJAXException
     {
+    	System.out.println( "SecurityConstraintsAction run" );
         boolean success = true;
         String status = "success";
         try
@@ -120,10 +121,13 @@ public class SecurityConstraintsAction
         } 
         catch (Exception e)
         {
+        	System.out.println( "SecurityConstraintsAction run failure caused by " + e.getClass().getName() + " " + e.getMessage() );
+        	e.printStackTrace();
             log.error("exception administering portal permissions", e);
             resultMap.put(REASON, e.toString());
             success = false;
         }
+        System.out.println( "SecurityConstraintsAction complete " + resultMap.toString() );
         return success;
     }
     
@@ -157,6 +161,8 @@ public class SecurityConstraintsAction
     protected int updateConstraintDefinition(RequestContext requestContext, Map resultMap)
     throws AJAXException
     {
+    	System.out.println( "SecurityConstraintsAction updateConstraintDefinition started" );
+        	
         int count = 0;
         boolean added = false;
         String xml = getActionParameter(requestContext, "xml");
@@ -232,6 +238,9 @@ public class SecurityConstraintsAction
         }
         catch (Exception e)
         {
+        	System.out.println( "SecurityConstraintsAction updateConstraintDefinition failure caused by " + e.getClass().getName() + " " + e.getMessage() );
+        	e.printStackTrace();
+        	log.error( "SecurityConstraintsAction updateConstraintDefinition failure caused by " + e.getClass().getName() + " " + e.getMessage(), e );
             throw new AJAXException(e);
         }
         return count;

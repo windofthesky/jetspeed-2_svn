@@ -24,6 +24,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.page.Fragment;
@@ -49,20 +50,24 @@ public class RemovePortletAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected static final Log log = LogFactory.getLog(RemovePortletAction.class);
+    
+    private PortletRegistry registry;
 
-    public RemovePortletAction(String template, String errorTemplate)
-            throws PipelineException
+    public RemovePortletAction( String template, String errorTemplate, PortletRegistry registry )
+        throws PipelineException
     {
-        this(template, errorTemplate, null, null);
+        this( template, errorTemplate, registry, null, null );
     }
 
-    public RemovePortletAction(String template, 
-                               String errorTemplate, 
-                               PageManager pageManager, 
-                               PortletActionSecurityBehavior securityBehavior)
-    throws PipelineException
+    public RemovePortletAction( String template, 
+                                String errorTemplate,
+                                PortletRegistry registry,
+                                PageManager pageManager, 
+                                PortletActionSecurityBehavior securityBehavior )
+        throws PipelineException
     {
-        super(template, errorTemplate, pageManager, securityBehavior);
+        super( template, errorTemplate, pageManager, securityBehavior );
+        this.registry = registry;
     }
     
     public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
@@ -82,77 +87,98 @@ public class RemovePortletAction
         String status = "success";
         try
         {
-            resultMap.put(ACTION, "remove");
+            resultMap.put( ACTION, "remove" );
             // Get the necessary parameters off of the request
-            String portletId = getActionParameter(requestContext, PORTLETID);
+            String portletId = getActionParameter( requestContext, PORTLETID );
             if (portletId == null) 
             { 
                 success = false;
-                resultMap.put(REASON, "Portlet ID not provided");
+                resultMap.put( REASON, "Portlet ID not provided" );
                 return success;
             }
-            resultMap.put(PORTLETID, portletId);
-            if (false == checkAccess(requestContext, JetspeedActions.EDIT))
+            resultMap.put( PORTLETID, portletId );
+            if ( false == checkAccess( requestContext, JetspeedActions.EDIT ) )
             {
                 Page page = requestContext.getPage();
-                Fragment fragment = page.getFragmentById(portletId);
-                if (fragment == null)
+                Fragment fragment = page.getFragmentById( portletId );
+                if ( fragment == null )
                 {
                     success = false;
-                    resultMap.put(REASON, "Fragment not found");
+                    resultMap.put( REASON, "Fragment not found" );
                     return success;                    
                 }
-                int column = fragment.getLayoutColumn();
-                int row = fragment.getLayoutRow();
-                if (!createNewPageOnEdit(requestContext))
-                {                
-                    success = false;
-                    resultMap.put(REASON, "Insufficient access to edit page");
+                
+                NestedFragmentContext removeFragmentContext = null;
+                try
+                {
+                	removeFragmentContext = new NestedFragmentContext( fragment, page, registry );
+                }
+                catch ( Exception ex )
+                {
+                	log.error( "Failure to construct nested context for fragment " + portletId, ex );
+                	success = false;
+                    resultMap.put( REASON, "Cannot construct nested context for fragment" );
                     return success;
                 }
-                status = "refresh";                
-                // translate old portlet id to new portlet id
-                Fragment newFragment = getFragmentIdFromLocation(row, column, requestContext.getPage());
-                if (newFragment == null)
-                {
+                
+                if ( ! createNewPageOnEdit( requestContext ) )
+                {                
                     success = false;
-                    resultMap.put(REASON, "Failed to find new fragment");
-                    return success;                    
+                    resultMap.put( REASON, "Insufficient access to edit page" );
+                    return success;
+                }
+                status = "refresh";
+                
+                Page newPage = requestContext.getPage();
+
+                // using NestedFragmentContext, find portlet id for copy of target portlet in the new page 
+                Fragment newFragment = null;
+                try
+                {
+                	newFragment = removeFragmentContext.getFragmentOnNewPage( newPage, registry );
+                }
+                catch ( Exception ex )
+                {
+                	log.error( "Failure to locate copy of fragment " + portletId, ex );
+                	success = false;
+                    resultMap.put( REASON, "Failed to find new fragment for portlet id: " + portletId );
+                    return success;
                 }
                 portletId = newFragment.getId();
             }
             
             // Use the Portlet Placement Manager to accomplish the removal
-            Fragment root = requestContext.getPage().getRootFragment();
+            Page page = requestContext.getPage();
+            Fragment root = page.getRootFragment();
             Fragment layoutContainerFragment = getParentFragmentById( portletId, root );
             PortletPlacementContext placement = null;
             Fragment fragment = null;
             if ( layoutContainerFragment != null )
             {
-            	placement = new PortletPlacementContextImpl(requestContext, layoutContainerFragment);
-            	fragment = placement.getFragmentById(portletId);
+            	placement = new PortletPlacementContextImpl( page, registry, layoutContainerFragment );
+            	fragment = placement.getFragmentById( portletId );
             }
             if ( fragment == null )
             {
                 success = false;
-                resultMap.put(REASON, "Fragment not found");
+                resultMap.put( REASON, "Fragment not found" );
                 return success;                
             }
             placement.remove(fragment);
-            Page page = placement.syncPageFragments();
-            page.removeFragmentById(fragment.getId());
+            page = placement.syncPageFragments();
+            page.removeFragmentById( fragment.getId() );
             if (!batch)
             {
                 if (pageManager != null)
-                    pageManager.updatePage(page);
+                    pageManager.updatePage( page );
             }
             // Build the results for the response
-            resultMap.put(PORTLETID, portletId);            
-            resultMap.put(STATUS, status);
-            resultMap.put(OLDCOL, String.valueOf(fragment.getLayoutColumn()));
-            resultMap.put(OLDROW, String.valueOf(fragment.getLayoutRow()));
+            resultMap.put( PORTLETID, portletId );            
+            resultMap.put( STATUS, status );
+            resultMap.put( OLDCOL, String.valueOf( fragment.getLayoutColumn() ) );
+            resultMap.put( OLDROW, String.valueOf( fragment.getLayoutRow() ) );
         } 
-        catch (Exception e)
+        catch ( Exception e )
         {
             // Log the exception
             log.error("exception while adding a portlet", e);
@@ -162,5 +188,10 @@ public class RemovePortletAction
         }
 
         return success;
+    }
+    
+    protected PortletRegistry getPortletRegistry()
+    {
+    	return this.registry;
     }
 }

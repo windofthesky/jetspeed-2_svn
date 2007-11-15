@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Random;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -52,6 +53,8 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 {
+	private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
+	
     private final static String EOL = "\r\n";   // html eol
     private final static String DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".layoutDecorationPath";
     private final static String DOJO_CONFIG_LAYOUT_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".layoutName";
@@ -62,14 +65,19 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     private final static String DOJO_CONFIG_LOADING_IMGPROPS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".loadingImgProps";
     private final static String DOJO_CONFIG_PAGEEDITOR_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pageEditorLabels";
     private final static String DOJO_CONFIG_PAGEEDITOR_DIALOG_LABELS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pageEditorDialogLabels";
+    private final static String DOJO_CONFIG_PAGEEDITOR_SETTINGS_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".pec";
     
     private final static String[] DESKTOP_LOADING_PROPERTY_NAMES = new String[] 
+                                                                 { "dir", "animated", "stepprefix", "stepextension", "steps"
+                                                                 };
+    private final static String[] DESKTOP_LOADING_OUTPUT_PROPERTY_NAMES = new String[] 
                                                                  { "imgdir", "imganimated", "imgstepprefix", "imgstepextension", "imgsteps"
                                                                  };
     private final static String[] DESKTOP_ACTION_RESOURCE_NAMES = new String[] 
                                                                  { "menu", "tile", "untile", "heightexpand", "heightnormal",
     															   "restore", "removeportlet", "minimized", "maximized", "normal",
-    															   "help", "edit", "view", "print", "addportlet", "editpage", 
+    															   "help", "edit", "view", "print", "config", "edit_defaults", "about",
+    															   "addportlet", "editpage", 
     															   "movetiled", "moveuntiled", "loadpage", "loadpageeditor",
     															   "loadportletrender", "loadportletaction", "loadportletupdate"
     															 };
@@ -84,13 +92,64 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     	                                                           "newpage_title", "newpage_titleshort", "deletepage", "deletelayout",
     	                                                           "removeportlet", "ok", "cancel", "yes", "no"
                                                                  };
-    private final static String DESKTOP_LOADING_PROPERTY_NAME_PREFIX = "desktop.loading.";
-    private final static String DESKTOP_ACTION_RESOURCE_NAME_PREFIX = "desktop.action.";
-    private final static String DESKTOP_PAGEEDITOR_RESOURCE_NAME_PREFIX = "desktop.pageeditor.";
-    private final static String DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAME_PREFIX = "desktop.pageeditor.dialog.";
     
-    private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
+    private final static String DESKTOP_LOADING_NAME_PREFIX = "desktop.loading.";
+    private final static String DESKTOP_ACTION_NAME_PREFIX = "desktop.action.";
+    private final static String DESKTOP_PAGEEDITOR_NAME_PREFIX = "desktop.pageeditor.";
+    
+    private final static String DESKTOP_LOADING_IMG_NAME_PREFIX = DESKTOP_LOADING_NAME_PREFIX + "img.";
+    private final static String DESKTOP_ACTION_RESOURCE_NAME_PREFIX = DESKTOP_ACTION_NAME_PREFIX + "labels.";
+    private final static String DESKTOP_PAGEEDITOR_RESOURCE_NAME_PREFIX = DESKTOP_PAGEEDITOR_NAME_PREFIX + "labels.";
+    private final static String DESKTOP_PAGEEDITOR_DIALOG_RESOURCE_NAME_PREFIX = DESKTOP_PAGEEDITOR_NAME_PREFIX + "dialog.labels.";
+    
+    private final static String DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DECORATOR_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "page.layout.decorator.editable";
+    private final static String DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DECORATOR_EDITABLE_DEFAULT = "true";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NAME_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "layout.name.editable";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NAME_EDITABLE_DEFAULT = "true";
+    
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_COLUMNSIZE_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "layout.columnsize.editable";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_COLUMNSIZE_EDITABLE_DEFAULT = "true";
+    
+    private final static String DESKTOP_PAGEEDITOR_PAGE_ADD_ENABLED = DESKTOP_PAGEEDITOR_NAME_PREFIX + "page.add.enabled";
+    private final static String DESKTOP_PAGEEDITOR_PAGE_ADD_ENABLED_DEFAULT = "true";
+    private final static String DESKTOP_PAGEEDITOR_PORTLET_ADD_ENABLED = DESKTOP_PAGEEDITOR_NAME_PREFIX + "portlet.add.enabled";
+    private final static String DESKTOP_PAGEEDITOR_PORTLET_ADD_ENABLED_DEFAULT = "true";
+    private final static String DESKTOP_PAGEEDITOR_PAGE_PORTLET_DECORATOR_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "page.portlet.decorator.editable";
+    private final static String DESKTOP_PAGEEDITOR_PAGE_PORTLET_DECORATOR_EDITABLE_DEFAULT = "true";
+    private final static String DESKTOP_PAGEEDITOR_PORTLET_DECORATOR_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "portlet.decorator.editable";
+    private final static String DESKTOP_PAGEEDITOR_PORTLET_DECORATOR_EDITABLE_DEFAULT = "true";
+    
+    private final static String DESKTOP_PAGEEDITOR_MOVEMODE_ISDEFAULT = DESKTOP_PAGEEDITOR_NAME_PREFIX + "movemode.isdefault";
+    private final static String DESKTOP_PAGEEDITOR_MOVEMODE_ISDEFAULT_DEFAULT = "true";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "layout.noactions.editable";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITABLE_DEFAULT = "false";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_TOPLEVEL_MOVEABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "layout.noactions.toplevel.moveable";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_TOPLEVEL_MOVEABLE_DEFAULT = "false";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_COLUMNSIZE_EDITABLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "layout.noactions.columnsize.editable";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_COLUMNSIZE_EDITABLE_DEFAULT = "false";
+    
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITOR_ROLE = DESKTOP_PAGEEDITOR_NAME_PREFIX + "layout.noactions.editor.role";
+    private final static String DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITOR_ROLE_DEFAULT = null;
+    
+    private final static String DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX = DESKTOP_PAGEEDITOR_NAME_PREFIX + "page.layout.depth.max";
+    private final static int DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX_DEFAULT = 2;                     // allowed range is 0-15
 
+    private final static int DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX_RESERVED =              0x000F;  // max layout depth (0-15) is first 4 bits
+    private final static int DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DECORATOR_EDITABLE_TRUE =         0x0010;
+    private final static int DESKTOP_PAGEEDITOR_LAYOUT_NAME_EDITABLE_TRUE =                   0x0020;
+    private final static int DESKTOP_PAGEEDITOR_LAYOUT_COLUMNSIZE_EDITABLE_TRUE =             0x0040;
+    private final static int DESKTOP_PAGEEDITOR_PAGE_ADD_ENABLED_TRUE =                       0x0080;
+    private final static int DESKTOP_PAGEEDITOR_PORTLET_ADD_ENABLED_TRUE =                    0x0100;
+    private final static int DESKTOP_PAGEEDITOR_PAGE_PORTLET_DECORATOR_EDITABLE_TRUE =        0x0200;
+    private final static int DESKTOP_PAGEEDITOR_PORTLET_DECORATOR_EDITABLE_TRUE =             0x0400;
+    private final static int DESKTOP_PAGEEDITOR_MOVEMODE_ISDEFAULT_TRUE =                     0x0800;
+    private final static int DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITABLE_TRUE =              0x1000;
+    private final static int DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_TOPLEVEL_MOVEABLE_TRUE =     0x2000;
+    private final static int DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_COLUMNSIZE_EDITABLE_TRUE =   0x4000;
+    // algorithm used below and on client-size doesn't allow for further expansion (i.e. allows for expansion up to 0x4000)
+    //   (i.e. use of 0x8000 would break algorithm - because it would introduce the possibility of values close to 0xFFFF)
+    //   - if needed, add another variable for a fresh set of flags (and adjust the dependencies)
+            
     private DecorationFactory decorationFactory;
         
     /** desktop pipeline servlet path */
@@ -105,20 +164,38 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
     /** tool for directing output to html &lt;head&gt; */
     private HeaderResourceFactory headerResourceFactory;
     
+    /** cache to minimize production of generated desktop configuration content **/
     private JetspeedCache desktopContentCache;
-    
+        
     /** base portal URL to override default URL server info from servlet */
     private BasePortalURL baseUrlAccess = null;
     
-    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, JetspeedCache desktopContentCache, String desktopServletPath, String defaultLayoutTemplateExtension )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory,
+    						    HeaderResourceFactory headerResourceFactory,
+    						    JetspeedCache desktopContentCache,
+    						    String desktopServletPath,
+    						    String defaultLayoutTemplateExtension )
     {
         this( decorationFactory, headerResourceFactory, desktopContentCache, desktopServletPath, defaultLayoutTemplateExtension, null, null, null );
     }
-    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, JetspeedCache desktopContentCache, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory,
+                                HeaderResourceFactory headerResourceFactory,
+                                JetspeedCache desktopContentCache,
+                                String desktopServletPath,
+                                String defaultLayoutTemplateExtension,
+                                String defaultDesktopLayoutDecoration,
+                                String defaultDesktopPortletDecoration )
     {
-        this( decorationFactory, headerResourceFactory, desktopContentCache, desktopServletPath, defaultLayoutTemplateExtension, defaultDesktopLayoutDecoration, defaultDesktopPortletDecoration, null );
+    	this( decorationFactory, headerResourceFactory, desktopContentCache, desktopServletPath, defaultLayoutTemplateExtension, defaultDesktopLayoutDecoration, defaultDesktopPortletDecoration, null );
     }
-    public JetspeedDesktopImpl( DecorationFactory decorationFactory, HeaderResourceFactory headerResourceFactory, JetspeedCache desktopContentCache, String desktopServletPath, String defaultLayoutTemplateExtension, String defaultDesktopLayoutDecoration, String defaultDesktopPortletDecoration, BasePortalURL baseUrlAccess )
+    public JetspeedDesktopImpl( DecorationFactory decorationFactory,
+    		                    HeaderResourceFactory headerResourceFactory,
+    		                    JetspeedCache desktopContentCache,
+    		                    String desktopServletPath,
+    		                    String defaultLayoutTemplateExtension,
+    		                    String defaultDesktopLayoutDecoration,
+    		                    String defaultDesktopPortletDecoration,
+    		                    BasePortalURL baseUrlAccess )
     {
         this.decorationFactory = decorationFactory;
         this.headerResourceFactory = headerResourceFactory;
@@ -155,7 +232,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                 decorationFactory.setDefaultDesktopPortletDecoration( defaultDesktopPortletDecoration );
             }
         }
-        
+                
         this.baseUrlAccess = baseUrlAccess;
     }
 
@@ -203,7 +280,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 	            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME ).append( " = \"" ).append( desktopContext.getLayoutBasePath() ).append( "\";" ).append( EOL );
 	            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_LAYOUT_VAR_NAME ).append( " = \"" ).append( layoutDecorationName ).append( "\";" ).append( EOL );
 	            dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PORTLET_DECORATIONS_PATH_VAR_NAME ).append( " = \"" ).append( portletDecorationsBasePath ).append( "\";" ).append( EOL );
-	            
+
 	            LayoutDecoration desktopLayoutDecoration = decorationFactory.getLayoutDecoration( layoutDecorationName, request );
 	            if ( desktopLayoutDecoration != null )
 	            {
@@ -212,7 +289,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 	                loadingPropsBuffer.append( "    " ).append( DOJO_CONFIG_LOADING_IMGPROPS_NAME ).append( " = { " );
 	                for ( int i = 0 ; i < DESKTOP_LOADING_PROPERTY_NAMES.length ; i++ )
 	                {
-	                    String propValue = desktopLayoutDecoration.getProperty( DESKTOP_LOADING_PROPERTY_NAME_PREFIX + DESKTOP_LOADING_PROPERTY_NAMES[ i ] );
+	                    String propValue = desktopLayoutDecoration.getProperty( DESKTOP_LOADING_IMG_NAME_PREFIX + DESKTOP_LOADING_PROPERTY_NAMES[ i ] );
 	                    if ( propValue != null )
 	                    {
 	                        if ( atLeastOneFound )
@@ -223,12 +300,18 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 	                        {
 	                        	atLeastOneFound = true;
 	                        }
-	                        loadingPropsBuffer.append( DESKTOP_LOADING_PROPERTY_NAMES[ i ] ).append( ": " ).append( propValue );
+	                        String usePropertyName = DESKTOP_LOADING_PROPERTY_NAMES[ i ];
+	                        if ( DESKTOP_LOADING_OUTPUT_PROPERTY_NAMES != null && DESKTOP_LOADING_OUTPUT_PROPERTY_NAMES.length > i && DESKTOP_LOADING_OUTPUT_PROPERTY_NAMES[i] != null )
+	                        	usePropertyName = DESKTOP_LOADING_OUTPUT_PROPERTY_NAMES[i];
+	                        	
+	                        loadingPropsBuffer.append( usePropertyName ).append( ": " ).append( propValue );
 	                    }
 	                }
 	                loadingPropsBuffer.append( " };" );
 	                if ( atLeastOneFound )
 	                	dojoConfigAddOn.append( loadingPropsBuffer.toString() ).append( EOL );
+	                
+	                addPageEditorSettings( dojoConfigAddOn, desktopLayoutDecoration );
 	            }
 	            else
 	            {
@@ -441,6 +524,135 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
                 log.error( "Failed to write desktop layout decoration exception information to servlet output writer", ioe );
             }
         }
+    }
+    
+    private void addPageEditorSettings( StringBuffer dojoConfigAddOn, LayoutDecoration desktopLayoutDecoration )
+    {
+    	int[] pageEditorConfigFlags = new int[] { 0 };
+    	String propValue;
+
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DECORATOR_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DECORATOR_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DECORATOR_EDITABLE_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_LAYOUT_NAME_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_LAYOUT_NAME_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_LAYOUT_NAME_EDITABLE_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_LAYOUT_COLUMNSIZE_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_LAYOUT_COLUMNSIZE_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_LAYOUT_COLUMNSIZE_EDITABLE_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_PAGE_ADD_ENABLED );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_PAGE_ADD_ENABLED_DEFAULT, DESKTOP_PAGEEDITOR_PAGE_ADD_ENABLED_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_PORTLET_ADD_ENABLED );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_PORTLET_ADD_ENABLED_DEFAULT, DESKTOP_PAGEEDITOR_PORTLET_ADD_ENABLED_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_PAGE_PORTLET_DECORATOR_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_PAGE_PORTLET_DECORATOR_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_PAGE_PORTLET_DECORATOR_EDITABLE_TRUE );
+
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_PORTLET_DECORATOR_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_PORTLET_DECORATOR_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_PORTLET_DECORATOR_EDITABLE_TRUE );
+
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITABLE_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_TOPLEVEL_MOVEABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_TOPLEVEL_MOVEABLE_DEFAULT, DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_TOPLEVEL_MOVEABLE_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_COLUMNSIZE_EDITABLE );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_COLUMNSIZE_EDITABLE_DEFAULT, DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_COLUMNSIZE_EDITABLE_TRUE );
+
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_MOVEMODE_ISDEFAULT );
+    	processBooleanFlagProperty( pageEditorConfigFlags, propValue, DESKTOP_PAGEEDITOR_MOVEMODE_ISDEFAULT_DEFAULT, DESKTOP_PAGEEDITOR_MOVEMODE_ISDEFAULT_TRUE );
+    	
+    	propValue = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX );
+    	Integer maxLayoutNestingObj = null;
+    	try
+    	{
+    		maxLayoutNestingObj = new Integer( propValue );
+    	}
+    	catch ( NumberFormatException ex )
+    	{
+    		maxLayoutNestingObj = new Integer( DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX_DEFAULT );
+    	}
+    	int maxLayoutNesting = maxLayoutNestingObj.intValue();
+    	if ( maxLayoutNesting < 0 )
+    		maxLayoutNesting = 0;
+    	if ( maxLayoutNesting > DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX_RESERVED )
+    		maxLayoutNesting = DESKTOP_PAGEEDITOR_PAGE_LAYOUT_DEPTH_MAX_RESERVED;
+    	pageEditorConfigFlags[0] += maxLayoutNesting;
+    	    	
+    	String allowEditNoactionsRole = desktopLayoutDecoration.getProperty( DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITOR_ROLE );
+    	if ( allowEditNoactionsRole == null )
+    		allowEditNoactionsRole = DESKTOP_PAGEEDITOR_LAYOUT_NOACTIONS_EDITOR_ROLE_DEFAULT;
+    	if ( allowEditNoactionsRole == null )
+    		allowEditNoactionsRole = "";
+    	char[] allowEditNoactionsRoleChars = allowEditNoactionsRole.toCharArray();
+    	int allowEditNoactionsRoleCharsLen = ( ( allowEditNoactionsRoleChars == null ) ? 0 : allowEditNoactionsRoleChars.length );
+    	Random rnd = new Random();
+    	int extrasCount = ( allowEditNoactionsRoleCharsLen > 0 ? getRandom( rnd, 2, 5 ) : getRandom( rnd, 5, 8 ) );
+    	int hexLen = 1 + extrasCount + allowEditNoactionsRoleCharsLen;
+    	int addedExtras = 0;
+    	int nextRoleChar = 0;
+    	StringBuffer pageEditorSettings = new StringBuffer();
+    	for ( int i = 0 ; i < hexLen ; i++ )
+    	{   // here we "mix-up" (obfuscate) the way this information is provided to the client-side
+    		//    this is done to avoid obvious display of certain strings in content, like "manager" or "admin"
+    		int rndVal = getRandom( rnd, 0x1000, 0xFFFD );
+    		boolean isRndValEven = ( (rndVal % 2) == 0 );
+    		int rndValTens = (int)Math.floor( rndVal / 10 );
+    		int rndValTensEven = ( ( ( rndValTens % 2 ) == 1 ) ? Math.max( rndValTens - 1, 2 ) : rndValTens );
+    		int valToHex;
+    		if ( i == 0 )
+    		{
+    			valToHex = pageEditorConfigFlags[0];
+    		}
+    		else if ( addedExtras < extrasCount && ( ( ( i % 2 ) == 1 ) || nextRoleChar >= allowEditNoactionsRoleCharsLen ) )
+    		{
+    			if ( ! isRndValEven )
+    				rndVal++;
+    			valToHex = getRandom( rnd, 0x0A00, 0xDFFF );
+    			if ( (valToHex % 2) == 1 )
+    				valToHex = valToHex + 1;
+    			pageEditorSettings.append( ", " );
+    			addedExtras++;
+    		}
+    		else
+    		{
+    			//log.info( "char '" + allowEditNoactionsRoleChars[nextRoleChar] + "' numericval=" + (int)allowEditNoactionsRoleChars[nextRoleChar] + " hex=" + Integer.toHexString( (int)allowEditNoactionsRoleChars[nextRoleChar] ) + " hexLshift4=" + Integer.toHexString( (int)allowEditNoactionsRoleChars[nextRoleChar] << 4 ) + " hexLshift4+1=" + Integer.toHexString( ((int)allowEditNoactionsRoleChars[nextRoleChar] << 4 ) | 0x0001 ) );
+    			valToHex = ( ((int)allowEditNoactionsRoleChars[nextRoleChar] << 4 ) | 0x0001 );
+    			pageEditorSettings.append( ", " );
+    			nextRoleChar++;
+    		}
+    		String rndValHex = Integer.toHexString( 0x10000 | rndVal ).substring( 1 );
+    		
+    		String realValHex = Integer.toHexString( 0x10000 | ( valToHex + rndValTensEven ) ).substring( 1 );
+    		if ( isRndValEven && i > 0 )
+    			pageEditorSettings.append( "0x" ).append( realValHex ).append( rndValHex );
+    		else
+    			pageEditorSettings.append( "0x" ).append( rndValHex ).append( realValHex );
+    	}
+    	dojoConfigAddOn.append( "    " ).append( DOJO_CONFIG_PAGEEDITOR_SETTINGS_NAME ).append( " = [ " ).append( pageEditorSettings.toString() ).append( " ];" ).append( EOL );
+    }
+    private int getRandom( Random rnd, int minValueInclusive, int maxValueExclusive )
+    {
+    	if ( minValueInclusive > maxValueExclusive )
+    		throw new IllegalArgumentException( "minValueInclusive (" + minValueInclusive + ") cannot be greater than maxValueExclusive (" + maxValueExclusive + ")" );
+
+    	int diff = (int)( maxValueExclusive - minValueInclusive );
+    	if ( diff == 0 )
+    		return minValueInclusive;
+
+    	double sample = rnd.nextDouble();
+    	int result = (int)( sample * diff + minValueInclusive );
+    	result = ( ( result != maxValueExclusive ) ? result : ( result - 1 ) );
+    	return result;
+    }
+    
+    private void processBooleanFlagProperty( int[] flags, Object propVal, Object propValDefault, int propIsTrueBit )
+    {
+        String boolStr = ( ( propVal == null ) ? ( ( propValDefault == null ) ? (String)null : propValDefault.toString() ) : propVal.toString() );
+        if ( boolStr != null && boolStr.toLowerCase().equals( "true" ) )
+        	flags[0] |= propIsTrueBit;
     }
 
     private String getCachedContent( String cacheKey )
