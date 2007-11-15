@@ -1262,7 +1262,7 @@ limitations under the License.
         <name>portlet-icon</name>
         <value>lock.png</value>
     </init-param>                        
-    <expiration-cache>-1</expiration-cache>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
@@ -1298,7 +1298,8 @@ limitations under the License.
     <init-param>
         <name>portlet-icon</name>
         <value>lock.png</value>
-    </init-param>                                
+    </init-param>
+    <expiration-cache>0</expiration-cache>
     <supports>
         <mime-type>text/html</mime-type>
         <portlet-mode>view</portlet-mode>
@@ -1325,7 +1326,7 @@ limitations under the License.
      <init-param>
         <name>portlet-icon</name>
         <value>appointment-new.png</value>
-    </init-param>                                            
+    </init-param>
     <expiration-cache>0</expiration-cache>
     <supports>
       <mime-type>text/html</mime-type>
