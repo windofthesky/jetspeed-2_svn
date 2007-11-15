@@ -424,7 +424,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         }
 
         // get pageSecurity
-        PageSecurity pageSecurity = (PageSecurity) getAllNodes().subset(PageSecurity.DOCUMENT_TYPE).get(PageSecurity.DOCUMENT_TYPE);
+        PageSecurity pageSecurity = (PageSecurity) getAllNodes( false ).subset(PageSecurity.DOCUMENT_TYPE).get(PageSecurity.DOCUMENT_TYPE);
         if (pageSecurity == null)
         {
             throw new DocumentNotFoundException("Jetspeed PSML page security not found: " + PageSecurity.DOCUMENT_TYPE);
@@ -502,7 +502,12 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * @return all nodes immediatley under this
      * @throws DocumentException
      */
-    public synchronized NodeSet getAllNodes() throws DocumentException
+    public NodeSet getAllNodes() throws DocumentException
+    {
+    	return getAllNodes( true );
+    }
+    
+    protected synchronized NodeSet getAllNodes( boolean folderExistenceRequired ) throws DocumentException
     {
         if((allNodes == null) && (folderHandler != null))
         {            
@@ -574,7 +579,10 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             }
             catch (FolderNotFoundException fnfe)
             {
-                log.error("getAllNodes() unexpected missing folder", fnfe);
+            	if ( folderExistenceRequired )
+            	{
+            		log.error( "getAllNodes() unexpected missing folder: " + getPath(), fnfe );
+            	}
             }
         }
         
