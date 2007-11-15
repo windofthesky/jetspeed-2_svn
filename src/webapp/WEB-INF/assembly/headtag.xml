@@ -99,15 +99,22 @@
                 </entry>
 
                 <!-- window actions -->
-                <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
+                <!-- NOTE: each portlet decorator may override any of these properties in its decoratordesktop.properties file -->
                 <entry key="window.action.button.order">
                     <!-- order, left to right, that action buttons should be rendered -->
-                    <!-- all listed actions are expected to have associated images at derived path {windowtheme}/images/{action}.gif -->
+                    <!-- all listed actions are expected to have associated images at derived path -->
+                    <!--    decorations/portlet/{decorator-name}/images/desktop/{action}.gif -->
+
+                    <!-- if an action has no image, it can still be in this list as long as it also appears in -->
+                    <!--    the window.action.noimage entry (the goal here is that the decorator need only override window.action.noimage) -->
+
+                    <!-- of course, each portlet will only display those actions that it supports, etc. -->
                     <!-- no image mapping is offered because if it is to be supported, it should be from DecoratorAction -->
-                    <!-- any listed action not supported by portlet is omitted -->
                     <!-- some actions, such as "menu" and "restore" have special behaviors (e.g. restore replaces minimize when window is minimized) -->
                     <list>
                         <value>menu</value>
+                        <value>config</value>
+                        <value>edit_defaults</value>
                         <value>edit</value>
                         <value>view</value>
                         <value>print</value>
@@ -120,7 +127,7 @@
                 </entry>
                 <entry key="window.action.button.maximum">
                     <!-- maximum number of action buttons allowed - overflow items will be displayed at top of action menu -->
-                    <value>10</value>
+                    <value>11</value>
                 </entry>
                 <entry key="window.action.noimage">
                     <!-- list of actions that do no have images -->
@@ -132,12 +139,23 @@
                     </list>
                 </entry>
                 <entry key="window.action.menu.order">
-                    <!-- order, top to bottom, the actions should appear in action menu -->
+                    <!-- order that the actions should appear in action menu (for each action that is not displayed as a button) -->
                     <list>
+                        <value>view</value>
+                        <value>maximized</value>
+                        <value>normal</value>
+                        <value>minimized</value>
+                        <value>print</value>
+                        <value>edit</value>
+                        <value>edit_defaults</value>
+                        <value>config</value>
                         <value>tile</value>
                         <value>untile</value>
                         <value>heightexpand</value>
                         <value>heightnormal</value>
+                        <value>about</value>
+                        <value>help</value>
+                        <value>removeportlet</value>
                     </list>
                 </entry>
                 <entry key="window.action.button.tooltip">
@@ -146,7 +164,7 @@
                 </entry>
 
                 <!-- window icons -->
-                <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
+                <!-- NOTE: each portlet decorator may override any of these properties in its decoratordesktop.properties file -->
                 <entry key="window.icon.enabled">
                     <!-- display icon for each window -->
                     <value>true</value>
