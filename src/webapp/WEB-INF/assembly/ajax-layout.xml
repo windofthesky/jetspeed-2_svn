@@ -27,11 +27,21 @@
     index 3 = Page Manager
     index 4 = Registry (getPortlets)
     -->
+
+<bean id="EnableCreateUserPagesFromRolesOnEdit" class="java.lang.Boolean">
+    <constructor-arg index="0">
+        <value>true</value>
+    </constructor-arg>
+</bean>
+
 <bean id="PortletActionSecurityBehavior"
 	  class="org.apache.jetspeed.layout.impl.PortletActionSecurityConstraintsBehavior">
     <constructor-arg index='0'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
-    </constructor-arg>    	
+    </constructor-arg>
+    <constructor-arg index='1'>
+        <ref bean="EnableCreateUserPagesFromRolesOnEdit"/>
+    </constructor-arg>
 </bean>	
 
 <bean id="RolesSecurityBehavior"
@@ -54,13 +64,16 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-    <constructor-arg index="2">
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index="3">
         <value>move</value>
     </constructor-arg>
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    	
 </bean>
@@ -73,13 +86,16 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-    <constructor-arg index="2">
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index="3">
         <value>moveabs</value>
     </constructor-arg>
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    	
 </bean>
@@ -92,13 +108,16 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-    <constructor-arg index="2">
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index="3">
         <value>moveleft</value>
     </constructor-arg>
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		
 </bean>
@@ -111,13 +130,16 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-    <constructor-arg index="2">
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index="3">
         <value>moveright</value>
     </constructor-arg>
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>      
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		  
 </bean>
@@ -130,13 +152,16 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-    <constructor-arg index="2">
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index="3">
         <value>moveup</value>
     </constructor-arg>
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>      
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		  
 </bean>
@@ -149,13 +174,16 @@
     <constructor-arg index="1">
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
-    <constructor-arg index="2">
+    <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index="3">
         <value>movedown</value>
     </constructor-arg>
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>      
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		  
 </bean>
@@ -169,12 +197,15 @@
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
     <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>      
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		  
-    <constructor-arg index='4'>
+    <constructor-arg index='5'>
         <ref bean="AjaxGetPortlets"/>        
     </constructor-arg>     	    
 </bean>
@@ -188,9 +219,12 @@
         <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
     </constructor-arg>
     <constructor-arg index='2'>
+        <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
+    </constructor-arg>
+    <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>        
-    <constructor-arg index='3'>
+    <constructor-arg index='4'>
         <ref bean="PortletActionSecurityBehavior"/>        
     </constructor-arg>    		
 </bean>
@@ -208,7 +242,7 @@
     </constructor-arg>        
     <constructor-arg index='3'>
         <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>        
-    </constructor-arg>              
+    </constructor-arg>
     <constructor-arg index='4'>
         <ref bean="org.apache.jetspeed.search.SearchEngine"/>        
     </constructor-arg>              
@@ -519,7 +553,7 @@
     </constructor-arg>
 	<constructor-arg index='3'>
         <ref bean="RolesSecurityBehavior"/>
-    </constructor-arg>    
+    </constructor-arg>
 </bean>
 
 <!-- 
