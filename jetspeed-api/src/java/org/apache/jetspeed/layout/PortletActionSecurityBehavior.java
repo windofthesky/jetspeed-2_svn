@@ -27,5 +27,7 @@ import org.apache.jetspeed.request.RequestContext;
 public interface PortletActionSecurityBehavior 
 {
     public boolean checkAccess(RequestContext context, String action);
-    public boolean createNewPageOnEdit(RequestContext context);    
+    public boolean isCreateNewPageOnEditEnabled();
+    public boolean isPageQualifiedForCreateNewPageOnEdit(RequestContext context);
+    public boolean createNewPageOnEdit(RequestContext context);
 }
