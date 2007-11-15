@@ -419,13 +419,24 @@
   -->                           
    </cache>
 
+
+   <cache name="decorationConfigurationCache"
+          maxElementsInMemory="500"
+          maxElementsOnDisk="250"
+          eternal="false"
+          overflowToDisk="false"
+          timeToIdleSeconds="180"
+          timeToLiveSeconds="180"
+          memoryStoreEvictionPolicy="LFU">
+   </cache>
+
    <cache name="desktopContentCache"
           maxElementsInMemory="500"
           maxElementsOnDisk="250"
           eternal="false"
           overflowToDisk="false"
-          timeToIdleSeconds="600"
-          timeToLiveSeconds="600"
+          timeToIdleSeconds="180"
+          timeToLiveSeconds="180"
           memoryStoreEvictionPolicy="LFU">
    </cache>
    
