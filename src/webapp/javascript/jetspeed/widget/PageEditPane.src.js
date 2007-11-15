@@ -75,7 +75,7 @@ dojo.widget.defineWidget(
         {
             var self = this;
             this.deletePageDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePageConfirmed: function() { this.hide(); self.deletePageConfirmed(); } }, this.deletePageDialog );
-			this.deletePageDialog.setCloseControl( this.deletePageDialog.deletePageCancel.domNode );
+			    this.deletePageDialog.setCloseControl( this.deletePageDialog.deletePageCancel.domNode );
 
             var createPageParams = {};
             createPageParams.widgetsInTemplate = true;
@@ -88,7 +88,7 @@ dojo.widget.defineWidget(
                 self.createPageConfirmed( pageName, pageTitle, pageShortTitle );
             };
             this.createPageDialog = dojo.widget.createWidget( "dialog", createPageParams, this.createPageDialog );
-			this.createPageDialog.setCloseControl( this.createPageDialog.createPageCancel.domNode );
+			    this.createPageDialog.setCloseControl( this.createPageDialog.createPageCancel.domNode );
             
             jetspeed.widget.PageEditPane.superclass.fillInTemplate.call( this );
 		},
@@ -105,6 +105,7 @@ dojo.widget.defineWidget(
         {
             var jsObj = jetspeed;
             var djH = dojo.html;
+
             jsObj.widget.PageEditPane.superclass.postCreate.apply( this, arguments );
             
             var pageEditorProto = jsObj.widget.PageEditor.prototype;
@@ -116,49 +117,74 @@ dojo.widget.defineWidget(
                 djH.addClass( this.pageEditPDContainer, pageEditorProto.styleDetailAdd );
 
             if ( this.layoutDecoratorSelect != null )
-            {    
-                var currentLayoutDecorator = jsObj.page.layoutDecorator;
-    
-                var layoutDecoratorData = [];
-                if ( this.layoutDecoratorDefinitions )
+            {
+                if ( ! pageEditorProto.checkPerm( pageEditorProto.PM_PG_L_D, jsObj ) )
                 {
-                    for ( var i = 0 ; i < this.layoutDecoratorDefinitions.length ; i++ )
-                    {
-                        var layoutDecoratorDef = this.layoutDecoratorDefinitions[i];
-                        if ( layoutDecoratorDef && layoutDecoratorDef.length == 2 )
-                        {
-                            layoutDecoratorData.push( [layoutDecoratorDef[0], layoutDecoratorDef[1]] );
-                            if ( currentLayoutDecorator == layoutDecoratorDef[1] )
-                            {
-                                this.layoutDecoratorSelect.setAllValues( layoutDecoratorDef[0], layoutDecoratorDef[1] );
-                            }
-    					}
-    				}
+                    if ( this.pageEditLDContainer )
+                        this.pageEditLDContainer.style.display = "none";
+                    else
+                        this.layoutDecoratorSelect.domNode.style.display = "none";
                 }
-                this.layoutDecoratorSelect.dataProvider.setData( layoutDecoratorData );
+                else
+                {
+                    var currentLayoutDecorator = jsObj.page.layoutDecorator;
+                    var layoutDecoratorData = [];
+                    if ( this.layoutDecoratorDefinitions )
+                    {
+                        for ( var i = 0 ; i < this.layoutDecoratorDefinitions.length ; i++ )
+                        {
+                            var layoutDecoratorDef = this.layoutDecoratorDefinitions[i];
+                            if ( layoutDecoratorDef && layoutDecoratorDef.length == 2 )
+                            {
+                                layoutDecoratorData.push( [layoutDecoratorDef[0], layoutDecoratorDef[1]] );
+                                if ( currentLayoutDecorator == layoutDecoratorDef[1] )
+                                {
+                                    this.layoutDecoratorSelect.setAllValues( layoutDecoratorDef[0], layoutDecoratorDef[1] );
+                                }
+        					}
+        				}
+                    }
+                    this.layoutDecoratorSelect.dataProvider.setData( layoutDecoratorData );
+                }
             }
 
             if ( this.portletDecoratorSelect != null )
-            {    
-                var currentPortletDecorator = jsObj.page.portletDecorator;
-    
-                var portletDecoratorData = [];
-                if ( this.portletDecoratorDefinitions )
+            {
+                if ( ! pageEditorProto.checkPerm( pageEditorProto.PM_PG_P_D, jsObj ) )
                 {
-                    for ( var i = 0 ; i < this.portletDecoratorDefinitions.length ; i++ )
-                    {
-                        var portletDecoratorDef = this.portletDecoratorDefinitions[i];
-                        if ( portletDecoratorDef && portletDecoratorDef.length == 2 )
-                        {
-                            portletDecoratorData.push( [portletDecoratorDef[0], portletDecoratorDef[1]] );
-                            if ( currentPortletDecorator == portletDecoratorDef[1] )
-                            {
-                                this.portletDecoratorSelect.setAllValues( portletDecoratorDef[0], portletDecoratorDef[1] );
-                            }
-    					}
-    				}
+                    if ( this.pageEditPDContainer )
+                        this.pageEditPDContainer.style.display = "none";
+                    else
+                        this.portletDecoratorSelect.domNode.style.display = "none";
                 }
-                this.portletDecoratorSelect.dataProvider.setData( portletDecoratorData );
+                else
+                {
+                    var currentPortletDecorator = jsObj.page.portletDecorator;
+                    var portletDecoratorData = [];
+                    if ( this.portletDecoratorDefinitions )
+                    {
+                        for ( var i = 0 ; i < this.portletDecoratorDefinitions.length ; i++ )
+                        {
+                            var portletDecoratorDef = this.portletDecoratorDefinitions[i];
+                            if ( portletDecoratorDef && portletDecoratorDef.length == 2 )
+                            {
+                                portletDecoratorData.push( [portletDecoratorDef[0], portletDecoratorDef[1]] );
+                                if ( currentPortletDecorator == portletDecoratorDef[1] )
+                                {
+                                    this.portletDecoratorSelect.setAllValues( portletDecoratorDef[0], portletDecoratorDef[1] );
+                                }
+        					}
+        				}
+                    }
+                    this.portletDecoratorSelect.dataProvider.setData( portletDecoratorData );
+                }
+            }
+
+            var addPgPerm = pageEditorProto.checkPerm( pageEditorProto.PM_PG_AD, jsObj );
+            if ( ! addPgPerm )
+            {
+                this.createPageButton.domNode.style.display = "none";
+                //this.deletePageButton.domNode.style.display = "none";
             }
         },
 

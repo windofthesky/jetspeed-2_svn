@@ -92,29 +92,23 @@ jetspeed.selector.PortletAddAjaxApiCallbackCL.prototype =
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
-        jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "add-portlet" );
-    },
-    parseAddPortletResponse: function( /* XMLNode */ node )
-    {
-        var entityId = null;
-        var jsElements = node.getElementsByTagName( "js" );
-        if ( ! jsElements || jsElements.length > 1 )
-            dojo.raise( "unexpected zero or multiple <js> elements in portlet selector xml" );
-        var children = jsElements[0].childNodes;
-        
-        for ( var i = 0 ; i < children.length ; i++ )
+        var jsObj = jetspeed;
+        var successIndicator = jsObj.url.checkAjaxApiResponse( requestUrl, data, [ "refresh" ], true, "add-portlet" );
+        if ( successIndicator == "refresh" && jsObj.page != null )
         {
-            var child = children[i];
-            if ( child.nodeType != 1 ) // 1 == ELEMENT_NODE
-                continue;
-            var childLName = child.nodeName;
-            if ( childLName == "entity" )
+            var navUrl = jsObj.page.getPageUrl();
+            if ( navUrl != null )
             {
-                entityId = ( ( child && child.firstChild ) ? child.firstChild.nodeValue : null );
-                break;
+                if ( ! jsObj.prefs.ajaxPageNavigation )
+                {
+                    jsObj.pageNavigate( navUrl, null, true );
+                }
+                else
+                {
+                    jsObj.updatePage( navUrl, false, true );
+                }
             }
         }
-        return entityId;
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {

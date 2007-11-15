@@ -118,11 +118,13 @@ jetspeed.id =
 
     PG_ED_WID: "jetspeed-page-editor",
     PG_ED_PARAM: "editPage",
+    PG_ED_STATE_PARAM: "epst",
+    PG_ED_TITLES_PARAM: "wintitles",
     PORTAL_ORIGINATE_PARAMETER: "portal",
+    PM_P_AD: 256, PM_P_D: 1024, PM_MZ_P: 2048,
 
     DEBUG_WINDOW_TAG: "js-db"
 };
-
 
 // jetspeed desktop preferences - defaults
 
@@ -239,11 +241,13 @@ jetspeed.initializeDesktop = function()
         if ( jsPrefs.windowHeight == null || isNaN( jsPrefs.windowHeight ) )
             jsPrefs.windowHeight = "200";
         
+        var windowActionDesktopAll = [ jsId.ACT_DESKTOP_HEIGHT_EXPAND, jsId.ACT_DESKTOP_HEIGHT_NORMAL, jsId.ACT_DESKTOP_TILE, jsId.ACT_DESKTOP_UNTILE ];
         var windowActionDesktop = {};
-        windowActionDesktop[ jsId.ACT_DESKTOP_HEIGHT_EXPAND ] = true;
-        windowActionDesktop[ jsId.ACT_DESKTOP_HEIGHT_NORMAL ] = true;
-        windowActionDesktop[ jsId.ACT_DESKTOP_TILE ] = true;
-        windowActionDesktop[ jsId.ACT_DESKTOP_UNTILE ] = true;
+        for ( var i = 0 ; i < windowActionDesktopAll.length ; i++ )
+            windowActionDesktop[ windowActionDesktopAll[i] ] = true;
+        windowActionDesktopAll.push( jsId.ACT_DESKTOP_MOVE_TILED );
+        windowActionDesktopAll.push( jsId.ACT_DESKTOP_MOVE_UNTILED );
+        jsPrefs.windowActionDesktopAll = windowActionDesktopAll;
         jsPrefs.windowActionDesktop = windowActionDesktop;
     }
     var defaultPortletWindowCSSUrl = new djObj.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PortletWindow.css" );
@@ -320,26 +324,19 @@ jetspeed.initializeDesktop = function()
     var windowActionLabels = {};
     if ( jsPrefs.windowActionButtonOrder )
     {   
-        var actionName, actionLabel;
-        for ( var aI = 0 ; aI < jsPrefs.windowActionButtonOrder.length ; aI++ )
+        var actionName, actionLabel, actArray;
+        var actArrays = [ jsPrefs.windowActionButtonOrder, jsPrefs.windowActionMenuOrder, jsPrefs.windowActionDesktopAll ];
+        for ( var actAryI = 0 ; actAryI < actArrays.length ; actAryI++ )
         {
-            actionName = jsPrefs.windowActionButtonOrder[ aI ];
-            if ( actionName != null )
-                windowActionLabels[ actionName ] = jsPrefs.getActionLabel( actionName, false, jsPrefs, djObj );
+            var actArray = actArrays[actAryI];
+            if ( ! actArray ) continue;
+            for ( var aI = 0 ; aI < actArray.length ; aI++ )
+            {
+                actionName = actArray[ aI ];
+                if ( actionName != null && ! windowActionLabels[ actionName ] )
+                    windowActionLabels[ actionName ] = jsPrefs.getActionLabel( actionName, false, jsPrefs, djObj );
+            }
         }
-        for ( actionName in jsPrefs.windowActionDesktop )
-        {
-            if ( actionName != null )
-                windowActionLabels[ actionName ] = jsPrefs.getActionLabel( actionName, false, jsPrefs, djObj );
-        }
-        actionName = jsId.ACT_DESKTOP_MOVE_TILED;
-        actionLabel = jsPrefs.getActionLabel( actionName, true, jsPrefs, djObj );
-        if ( actionLabel != null )
-            windowActionLabels[ actionName ] = actionLabel;
-        actionName = jsId.ACT_DESKTOP_MOVE_UNTILED;
-        actionLabel = jsPrefs.getActionLabel( actionName, true, jsPrefs, djObj );
-        if ( actionLabel != null )
-            windowActionLabels[ actionName ] = actionLabel;
     }
     jsObj.widget.PortletWindow.prototype.actionLabels = windowActionLabels;
 
@@ -368,7 +365,7 @@ jetspeed.initializeDesktop = function()
     }
 };
 
-jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
+jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed, force, initEditModeConf )
 {
     var jsObj = jetspeed;
     
@@ -381,12 +378,26 @@ jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
 
     var currentPage = jsObj.page;
     if ( ! navToPageUrl || ! currentPage || jsObj.pageNavigateSuppress ) return;
-    if ( currentPage.equalsPageUrl( navToPageUrl ) )
+    if ( ! force && currentPage.equalsPageUrl( navToPageUrl ) )
         return ;
     navToPageUrl = currentPage.makePageUrl( navToPageUrl );
     if ( navToPageUrl != null )
     {
         jsObj.updatePageBegin();
+        
+        if ( initEditModeConf != null && initEditModeConf.editModeMove )
+        {
+            var windowTitles = {};
+            var pWins = currentPage.getPWins();
+            for ( var i = 0; i < pWins.length; i++ )
+            {
+                pWin = pWins[i];
+                if ( pWin && pWin.portlet )
+                    windowTitles[ pWin.portlet.entityId ] = pWin.getPortletTitle();
+            }
+            initEditModeConf.windowTitles = windowTitles;
+        }
+
         var currentLayoutDecorator = currentPage.layoutDecorator;
         var currentEditMode = currentPage.editMode;
         if ( dbProfile )
@@ -398,7 +409,7 @@ jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
         var retainedWindows = currentPage.portlet_windows;        
         var retainedWindowCount = currentPage.portlet_window_count;
 
-        var newJSPage = new jsObj.om.Page( currentLayoutDecorator, navToPageUrl, (! djConfig.preventBackButtonFix && ! backOrForwardPressed), currentEditMode, currentPage.tooltipMgr, currentPage.iframeCoverByWinId );
+        var newJSPage = new jsObj.om.Page( currentLayoutDecorator, navToPageUrl, (! djConfig.preventBackButtonFix && ! backOrForwardPressed), currentPage.tooltipMgr, currentPage.iframeCoverByWinId );
         jsObj.page = newJSPage;
 
         var pWin;
@@ -411,7 +422,7 @@ jetspeed.updatePage = function( navToPageUrl, backOrForwardPressed )
             }
         }
     
-        newJSPage.retrievePsml( new jsObj.om.PageCLCreateWidget( true ) );
+        newJSPage.retrievePsml( new jsObj.om.PageCLCreateWidget( true, initEditModeConf ) );
         
         if ( retainedWindowCount > 0 )
         {
@@ -506,15 +517,18 @@ jetspeed.doAction = function( bindArgs, portletEntityId )
 
 // jetspeed.PortletRenderer
 
-jetspeed.PortletRenderer = function( createWindows, isPageLoad, isPageUpdate, renderUrl, suppressGetActions )
+jetspeed.PortletRenderer = function( createWindows, isPageLoad, isPageUpdate, renderUrl, suppressGetActions, initEditModeConf )
 {
     var jsObj = jetspeed;
     var jsPage = jsObj.page;
     this._jsObj = jsObj;
 
-    this.createWindows = createWindows;
-    this.isPageLoad = isPageLoad;
-    this.isPageUpdate = isPageUpdate;
+    this.mkWins = createWindows;
+    this.initEdit = initEditModeConf;
+    this.minimizeTemp = ( initEditModeConf != null && initEditModeConf.editModeMove );
+    this.noRender = ( this.minimizeTemp && initEditModeConf.windowTitles != null );
+    this.isPgLd = isPageLoad;
+    this.isPgUp = isPageUpdate;
     this.pageLoadUrl = null;
     if ( isPageLoad )
         this.pageLoadUrl = jsObj.url.parse( jsPage.getPageUrl() );
@@ -524,13 +538,14 @@ jetspeed.PortletRenderer = function( createWindows, isPageLoad, isPageUpdate, re
     this._colLen = jsPage.columns.length;
     this._colIndex = 0;
     this._portletIndex = 0;
+    this._renderCount = 0;
 
     this.psByCol = jsPage.portletsByPageColumn;
 
-    this.debugPageLoad = jsObj.debug.pageLoad && isPageLoad;
-    this.debugMsg = null;
-    if ( jsObj.debug.doRenderDoAction || this.debugPageLoad )
-        this.debugMsg = "";
+    this.dbgPgLd = jsObj.debug.pageLoad && isPageLoad;
+    this.dbgMsg = null;
+    if ( jsObj.debug.doRenderDoAction || this.dbgPgLd )
+        this.dbgMsg = "";
 };
 dojo.lang.extend( jetspeed.PortletRenderer,
 {
@@ -559,18 +574,18 @@ dojo.lang.extend( jetspeed.PortletRenderer,
     {
         var jsObj = this._jsObj;
 
-        var debugMsg = this.debugMsg;
+        var debugMsg = this.dbgMsg;
         if ( debugMsg != null )
         {
-            if ( this.debugPageLoad )
+            if ( this.dbgPgLd )
                 dojo.debug( "portlet-renderer page-url: " + jsObj.page.getPsmlUrl() + " portlets: [" + renderMsg + "]" + ( url ? ( " url: " + url ) : "" ) );
             else
                 dojo.debug( "portlet-renderer [" + renderMsg + "] url: " + url );
         }
         
-        if ( this.isPageLoad )
+        if ( this.isPgLd )
         {
-            jsObj.page.loadPostRender( this.isPageUpdate );
+            jsObj.page.loadPostRender( this.isPgUp, this.initEdit );
         }
     },
     _renderCurrent: function()
@@ -598,10 +613,15 @@ dojo.lang.extend( jetspeed.PortletRenderer,
                 if ( pAryElmt )
                 {
                     var renderObj = pAryElmt.portlet;
-                    if ( this.createWindows )
-                        jsObj.ui.createPortletWindow( renderObj, colIndex, jsObj );
+                    var pWin = null;
+                    if ( this.mkWins )
+                    {
+                        pWin = jsObj.ui.createPortletWindow( renderObj, colIndex, jsObj );
+                        if ( this.minimizeTemp )
+                            pWin.minimizeWindowTemporarily( this.noRender );
+                    }
                     
-                    var debugMsg = this.debugMsg;
+                    var debugMsg = this.dbgMsg;
                     if ( debugMsg != null )
                     {
                         if ( debugMsg.length > 0 )
@@ -624,8 +644,17 @@ dojo.lang.extend( jetspeed.PortletRenderer,
                             debugMsg = debugMsg + widgetId;
                         }
                     }
-
-                    renderObj.retrieveContent( null, { url: this.renderUrl, jsPageUrl: this.pageLoadUrl }, this.suppressGetActions );
+                    if ( ! this.noRender )
+                        renderObj.retrieveContent( null, { url: this.renderUrl, jsPageUrl: this.pageLoadUrl }, this.suppressGetActions );
+                    else if ( pWin && pWin.portlet )
+                    {
+                        var pWinTitle = this.initEdit.windowTitles[ pWin.portlet.entityId ];
+                        if ( pWinTitle != null )
+                            pWin.setPortletTitle( pWinTitle );
+                    }
+                    if ( (this._renderCount % 3) == 0 )
+                        jsObj.url.loadingIndicatorStep( jsObj );
+                    this._renderCount++;
                 }
             }
         }
@@ -832,7 +861,7 @@ jetspeed.loadPortletDecorationConfig = function( portletDecorationName, jsPrefs,
     }
 };
 
-jetspeed.notifyRetrieveAllMenusFinished = function()
+jetspeed.notifyRetrieveAllMenusFinished = function( isPageUpdate, initEditModeConf )
 {   // dojo.event.connect to this or add to your page content, one of the functions that it invokes ( doMenuBuildAll() or doMenuBuild() )
     var jsObj = jetspeed;
     jsObj.pageNavigateSuppress = true;
@@ -852,8 +881,8 @@ jetspeed.notifyRetrieveAllMenusFinished = function()
             menuWidget.createJetspeedMenu( jsObj.page.getMenu( menuNm ) );
         }
     }
-    
-    jsObj.url.loadingIndicatorHide();
+    if ( ! initEditModeConf )
+        jsObj.url.loadingIndicatorHide();
     jsObj.pageNavigateSuppress = false;
 };
 
@@ -867,7 +896,7 @@ jetspeed.notifyRetrieveMenuFinished = function( /* jetspeed.om.Menu */ menuObj )
 
 jetspeed.menuNavClickWidget = function( /* Tab widget || Tab widgetId */ tabWidget, /* int || String */ selectedTab )
 {
-    dojo.debug( "jetspeed.menuNavClick" );
+    //dojo.debug( "jetspeed.menuNavClick" );
     if ( ! tabWidget ) return;
     if ( dojo.lang.isString( tabWidget ) )
     {
@@ -895,15 +924,16 @@ jetspeed.menuNavClickWidget = function( /* Tab widget || Tab widgetId */ tabWidg
 jetspeed.pageNavigateSuppress = false;
 jetspeed.pageNavigate = function( navUrl, navTarget, force )
 {
-    if ( ! navUrl || jetspeed.pageNavigateSuppress ) return;
+    var jsObj = jetspeed;
+    if ( ! navUrl || jsObj.pageNavigateSuppress ) return;
 
     if ( typeof force == "undefined" )
         force = false;
 
-    if ( ! force && jetspeed.page && jetspeed.page.equalsPageUrl( navUrl ) )
+    if ( ! force && jsObj.page && jsObj.page.equalsPageUrl( navUrl ) )
         return ;
 
-    navUrl = jetspeed.page.makePageUrl( navUrl );
+    navUrl = jsObj.page.makePageUrl( navUrl );
     
     if ( navTarget == "top" )
         top.location.href = navUrl;
@@ -920,36 +950,49 @@ jetspeed.getActionsForPortlet = function( /* String */ portletEntityId )
 };
 jetspeed.getActionsForPortlets = function( /* Array */ portletEntityIds )
 {
+    var jsObj = jetspeed;
     if ( portletEntityIds == null )
-        portletEntityIds = jetspeed.page.getPortletIds();
-    var contentListener = new jetspeed.om.PortletActionsCL( portletEntityIds );
+        portletEntityIds = jsObj.page.getPortletIds();
+    var contentListener = new jsObj.om.PortletActionsCL( portletEntityIds );
     var queryString = "?action=getactions";
     for ( var i = 0 ; i < portletEntityIds.length ; i++ )
     {
         queryString += "&id=" + portletEntityIds[i];
     }
-    var getActionsUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString;
+    var getActionsUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + jsObj.page.getPath() + queryString;
     var mimetype = "text/xml";
-    var ajaxApiContext = new jetspeed.om.Id( "getactions", { } );
-    jetspeed.url.retrieveContent( { url: getActionsUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
+    var ajaxApiContext = new jsObj.om.Id( "getactions", { } );
+    jsObj.url.retrieveContent( { url: getActionsUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
 };
 jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* String */ changeActionState, /* String */ changeActionMode, contentListener )
 {
+    var jsObj = jetspeed;
     if ( portletEntityId == null ) return;
     if ( contentListener == null )
-        contentListener = new jetspeed.om.PortletChangeActionCL( portletEntityId );
+        contentListener = new jsObj.om.PortletChangeActionCL( portletEntityId );
     var queryString = "?action=window&id=" + ( portletEntityId != null ? portletEntityId : "" );
     if ( changeActionState != null )
         queryString += "&state=" + changeActionState;
     if ( changeActionMode != null )
         queryString += "&mode=" + changeActionMode;
-    var changeActionUrl = jetspeed.url.basePortalUrl() + jetspeed.url.path.AJAX_API + jetspeed.page.getPath() + queryString ;
+    var changeActionUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + jsObj.page.getPath() + queryString ;
     var mimetype = "text/xml";
-    var ajaxApiContext = new jetspeed.om.Id( "changeaction", { } );
-    jetspeed.url.retrieveContent( { url: changeActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jetspeed.debugContentDumpIds );
+    var ajaxApiContext = new jsObj.om.Id( "changeaction", { } );
+    jsObj.url.retrieveContent( { url: changeActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
 };
 
-jetspeed.editPageInitiate = function( jsObj )
+jetspeed.getUserInfo = function( sync )
+{
+    var jsObj = jetspeed;
+    var contentListener = new jsObj.om.UserInfoCL();
+    var queryString = "?action=getuserinfo";
+    var getActionsUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + jsObj.page.getPath() + queryString;
+    var mimetype = "text/xml";
+    var ajaxApiContext = new jsObj.om.Id( "getuserinfo", { } );
+    jsObj.url.retrieveContent( { url: getActionsUrl, mimetype: mimetype, sync: sync }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
+};
+
+jetspeed.editPageInitiate = function( jsObj, initEditModeConf )
 {
     var jsPage = jsObj.page;
     if ( ! jsPage.editMode )
@@ -963,12 +1006,21 @@ jetspeed.editPageInitiate = function( jsObj )
         var pageEditorWidget = dojo.widget.byId( jsObj.id.PG_ED_WID );
         if ( jsObj.UAie6 )
             jsPage.displayAllPWins( true );
+        var editModeMove = ( (initEditModeConf != null && initEditModeConf.editModeMove) ? true : false );
+        var pperms = jsPage._perms(jsObj.prefs,-1,String.fromCharCode);
+        if ( pperms && pperms[2] && pperms[2].length > 0 )
+        {
+            if ( ! jsObj.page._getU() )
+            {
+                jsObj.getUserInfo( true );
+            }
+        }
         if ( pageEditorWidget == null )
         {
             try
             {
                 jsObj.url.loadingIndicatorShow( "loadpageeditor", true );
-                pageEditorWidget = dojo.widget.createWidget( "jetspeed:PageEditor", { widgetId: jsObj.id.PG_ED_WID, editorInitiatedFromDesktop: fromDesktop } );
+                pageEditorWidget = dojo.widget.createWidget( "jetspeed:PageEditor", { widgetId: jsObj.id.PG_ED_WID, editorInitiatedFromDesktop: fromDesktop, editModeMove: editModeMove } );
                 var allColumnsContainer = document.getElementById( jsObj.id.COLUMNS );
                 allColumnsContainer.insertBefore( pageEditorWidget.domNode, allColumnsContainer.firstChild );
             }
@@ -983,16 +1035,6 @@ jetspeed.editPageInitiate = function( jsObj )
         {
             pageEditorWidget.editPageShow();
         }
-        if ( fromDesktop )
-        {
-            var pWins = jsPage.portlet_windows;
-            for ( var windowId in pWins )
-            {
-                var pWin = pWins[ windowId ];
-                if ( pWin )
-                    pWin.editPageInitiate( jsObj, jsCss );
-            }
-        }
         jsPage.syncPageControls( jsObj );
     }
 };
@@ -1003,7 +1045,7 @@ jetspeed.editPageTerminate = function( jsObj )
     {
         var jsCss = jsObj.css;
         var pageEditorWidget = dojo.widget.byId( jsObj.id.PG_ED_WID );
-        pageEditorWidget.editMoveModeExit();  // in case we're in move-mode
+        pageEditorWidget.editMoveModeExit( true );  // in case we're in move-mode
         jsPage.editMode = false;
         if ( ! pageEditorWidget.editorInitiatedFromDesktop )
         {
@@ -1024,17 +1066,8 @@ jetspeed.editPageTerminate = function( jsObj )
             else
             {
                 if ( pageEditorWidget != null )
-                {
                     pageEditorWidget.editPageHide();
-                }
                 jsPage.syncPageControls( jsObj );
-            }
-            var pWins = jsPage.portlet_windows;
-            for ( var windowId in pWins )
-            {
-                var pWin = pWins[ windowId ];
-                if ( pWin )
-                    pWin.editPageTerminate( jsCss );
             }
         }
         
@@ -1056,17 +1089,18 @@ jetspeed.om.PortletContentRetriever.prototype =
 };
 
 // ... jetspeed.om.PageCLCreateWidget
-jetspeed.om.PageCLCreateWidget = function( isPageUpdate )
+jetspeed.om.PageCLCreateWidget = function( isPageUpdate, initEditModeConf )
 {
     if ( typeof isPageUpdate == "undefined" )
         isPageUpdate = false ;
     this.isPageUpdate = isPageUpdate ;
+    this.initEditModeConf = initEditModeConf;
 };
 jetspeed.om.PageCLCreateWidget.prototype =
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Page */ page )
     {
-        page.loadFromPSML( data, this.isPageUpdate );
+        page.loadFromPSML( data, this.isPageUpdate, this.initEditModeConf );
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Page */ page )
     {
@@ -1075,7 +1109,7 @@ jetspeed.om.PageCLCreateWidget.prototype =
 };
 
 // ... jetspeed.om.Page
-jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory, editMode, tooltipMgr, iframeCoverByWinId )
+jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory, tooltipMgr, iframeCoverByWinId )
 {
     if ( requiredLayoutDecorator != null && navToPageUrl != null )
     {
@@ -1089,12 +1123,10 @@ jetspeed.om.Page = function( requiredLayoutDecorator, navToPageUrl, addToHistory
     }
     if ( typeof addToHistory != "undefined" )
         this.addToHistory = addToHistory;
-    if ( typeof editMode != "undefined" )
-        this.editMode = editMode;
     this.layouts = {};
     this.columns = [];
     this.colFirstNormI = -1;
-    this.portlets = [];
+    this.portlets = {};
     this.portlet_count = 0;
     this.portlet_windows = {};
     this.portlet_window_count = 0;
@@ -1126,6 +1158,7 @@ dojo.lang.extend( jetspeed.om.Page,
     shortTitle: null,
     layoutDecorator: null,
     portletDecorator: null,
+    uIA: true,   // userIsAnonymous
 
     requiredLayoutDecorator: null,
     pageUrlFallback: null,
@@ -1206,6 +1239,8 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         return psmlUrl;
     },
+    _setU: function( u ) { this._u = u; },
+    _getU: function() { return this._u; },
     
     retrievePsml: function( pageContentListener )
     {
@@ -1222,7 +1257,7 @@ dojo.lang.extend( jetspeed.om.Page,
         jsObj.url.retrieveContent( { url: psmlUrl, mimetype: mimetype }, pageContentListener, this, jsObj.debugContentDumpIds );
     },
 
-    loadFromPSML: function( psml, isPageUpdate )
+    loadFromPSML: function( psml, isPageUpdate, initEditModeConf )
     {
         var jsObj = jetspeed;
         var jsPrefs = jsObj.prefs;
@@ -1233,8 +1268,9 @@ dojo.lang.extend( jetspeed.om.Page,
             djObj.profile.start( "loadFromPSML" );
         }
 
-        // parse PSML
+        // parse psml
         var parsedRootLayoutFragment = this._parsePSML( psml );
+        jetspeed.rootfrag = parsedRootLayoutFragment;
         if ( parsedRootLayoutFragment == null ) return;
 
         // create layout model
@@ -1242,17 +1278,11 @@ dojo.lang.extend( jetspeed.om.Page,
         var portletDecorationsUsed = {};
         if ( this.portletDecorator )
             portletDecorationsUsed[ this.portletDecorator ] = true;
-        this.columnsStructure = this._layoutCreateModel( parsedRootLayoutFragment, null, this.portletsByPageColumn, true, portletDecorationsUsed, djObj, jsObj );
+        this.columnsStructure = this._layoutCreateModel( parsedRootLayoutFragment, 0, null, this.portletsByPageColumn, true, portletDecorationsUsed, djObj, jsObj );
 
         this.rootFragmentId = parsedRootLayoutFragment.id ;
 
-        var initiateEditMode = false;
-        if ( this.editMode )
-        {
-            this.editMode = false;
-            if ( printModeOnly == null )
-                initiateEditMode = true;
-        }
+        this.editMode = false;
 
         // load portlet decorator css
         for ( var pDecNm in portletDecorationsUsed )
@@ -1273,10 +1303,87 @@ dojo.lang.extend( jetspeed.om.Page,
             portletArray.sort( this._loadPortletZIndexCompare );
         }
 
-        var renderer = new jsObj.PortletRenderer( true, true, isPageUpdate, null, true );
+        if ( typeof initEditModeConf == "undefined" ) initEditModeConf = null;
+        //var pageEditorInititate = null;   // ( pageEditorInititate != null && pageEditorInititate == "true" )
+        if ( initEditModeConf != null || ( this.actions != null && this.actions[ jsObj.id.ACT_VIEW ] != null ) )
+        {
+            if ( ! this.isUA() && this.actions != null && ( this.actions[ jsObj.id.ACT_EDIT ] != null || this.actions[ jsObj.id.ACT_VIEW ] != null ) )
+            {
+                if ( initEditModeConf == null )
+                    initEditModeConf = {};
+
+                if ( (typeof initEditModeConf.editModeMove == "undefined") && this._perms(jsPrefs,jsObj.id.PM_MZ_P,String.fromCharCode) )
+                    initEditModeConf.editModeMove = true;
+
+                var winUrl = jsObj.url.parse( window.location.href );                
+                if ( ! initEditModeConf.editModeMove )
+                {
+                    var peState = jsObj.url.getQueryParameter( winUrl, jsObj.id.PG_ED_STATE_PARAM );
+                    if ( peState != null )
+                    {
+                        peState = "0x" + peState;
+                        if ( (peState & jsObj.id.PM_MZ_P) > 0 )
+                            initEditModeConf.editModeMove = true;
+                    }
+                }
+                if ( initEditModeConf.editModeMove && ! initEditModeConf.windowTitles )
+                {
+                    var winTitles = jsObj.url.getQueryParameter( winUrl, jsObj.id.PG_ED_TITLES_PARAM );
+                    if ( winTitles != null )
+                    {
+                        var winTitlesLen = winTitles.length;
+                        var winTitlesChars = new Array( winTitlesLen / 2 );
+                        var sfcc = String.fromCharCode;
+                        var wtChI = 0, chI = 0;
+                        while ( chI < (winTitlesLen-1) )
+                        {
+                            winTitlesChars[wtChI] = sfcc( Number("0x" + winTitles.substring( chI, (chI +2) ) ) );
+                            wtChI++;
+                            chI += 2;
+                        }
+                        var winTitlesObj = null;
+                        try
+                        {
+                            winTitlesObj = eval( "({" + winTitlesChars.join("") + "})" );
+                        }
+                        catch(e)
+                        {
+                            if ( djConfig.isDebug )
+                                dojo.debug( "cannot parse json: " + winTitlesChars.join("") );
+                        }
+                        if ( winTitlesObj != null )
+                        {
+                            var missingTitle = false;
+                            for ( var portletIndex in this.portlets )
+                            {
+                                var portlet = this.portlets[portletIndex];
+                                if ( portlet != null && ! winTitlesObj[ portlet.entityId ] )
+                                {
+                                    missingTitle = true;
+                                    break;
+                                }
+                            }
+                            if ( ! missingTitle )
+                                initEditModeConf.windowTitles = winTitlesObj;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                initEditModeConf = null;
+            }
+        }
+        if ( initEditModeConf != null )
+        {   // bring up early
+            jsObj.url.loadingIndicatorShow( "loadpageeditor", true );
+        }
+
+        var renderer = new jsObj.PortletRenderer( true, true, isPageUpdate, null, true, initEditModeConf );
         renderer.renderAllTimeDistribute();
     },
-    loadPostRender: function( isPageUpdate )
+
+    loadPostRender: function( isPageUpdate, initEditModeConf )
     {
         var jsObj = jetspeed;
         var printModeOnly = jsObj.prefs.printModeOnly ;
@@ -1284,25 +1391,8 @@ dojo.lang.extend( jetspeed.om.Page,
         {
             this._portletsInitWinState( this.portletsByPageColumn[ "z" ] );
     
-            var initiateEditMode = false;
-            if ( this.editMode )
-                initiateEditMode = true;
-            
-            // detect edit mode force - likely to be temporary
-            var pageEditorInititate = jsObj.url.getQueryParameter( window.location.href, jsObj.id.PG_ED_PARAM );
-            if ( initiateEditMode || ( pageEditorInititate != null && pageEditorInititate == "true" ) || this.actions[ jsObj.id.ACT_VIEW ] != null )
-            {
-                initiateEditMode = false;
-                if ( this.actions != null && ( this.actions[ jsObj.id.ACT_EDIT ] != null || this.actions[ jsObj.id.ACT_VIEW ] != null ) )
-                    initiateEditMode = true;
-            }
-    
             // load menus
-            this.retrieveMenuDeclarations( true, initiateEditMode, isPageUpdate );
-    
-            // render page buttons
-            this.renderPageControls( jsObj );
-            this.syncPageControls( jsObj );
+            this.retrieveMenuDeclarations( true, isPageUpdate, initEditModeConf );
         }
         else
         {
@@ -1350,6 +1440,20 @@ dojo.lang.extend( jetspeed.om.Page,
 
         dojo.lang.setTimeout( jsObj.url, jsObj.url.loadingIndicatorStepPreload, 1800 );
     },
+
+    loadPostRetrieveMenus: function( isPageUpdate, initEditModeConf )
+    {
+        var jsObj = jetspeed;
+        this.renderPageControls( jsObj );
+
+        if ( initEditModeConf )
+            jsObj.editPageInitiate( jsObj, initEditModeConf );
+
+        if ( isPageUpdate )
+            jsObj.updatePageEnd();
+
+        this.syncPageControls( jsObj );
+    },
     
     _parsePSML: function( psml )
     {
@@ -1360,7 +1464,7 @@ dojo.lang.extend( jetspeed.om.Page,
             djObj.raise( "Expected one <page> in PSML" );
         var pageElement = pageElements[0];
         var children = pageElement.childNodes;
-        var simpleValueLNames = new RegExp( "(name|path|profiledPath|title|short-title)" );
+        var simpleValueLNames = new RegExp( "(name|path|profiledPath|title|short-title|uIA|npe)" );
         var rootFragment = null;
         var rootFragmentActions = {};
         for ( var i = 0 ; i < children.length ; i++ )
@@ -1429,10 +1533,10 @@ dojo.lang.extend( jetspeed.om.Page,
             });
         }
 
-        var parsedRootLayoutFragment = this._parsePSMLFrag( rootFragment, 0 );    // rootFragment must be a layout fragment - /portal requires this as well
+        var parsedRootLayoutFragment = this._parsePSMLFrag( rootFragment, 0, false );    // rootFragment must be a layout fragment - /portal requires this as well
         return parsedRootLayoutFragment;
     },
-    _parsePSMLFrag: function( layoutNode, layoutNodeDocumentOrderIndex )
+    _parsePSMLFrag: function( layoutNode, layoutNodeDocumentOrderIndex, layoutActionsDisabled )
     {
         var jsObj = jetspeed;
         var fragChildren = new Array();
@@ -1442,14 +1546,17 @@ dojo.lang.extend( jetspeed.om.Page,
             dojo.raise( "Expected layout fragment: " + layoutNode );
             return null;
         }
-        var layoutActionsDisabled = false;
-        var layoutFragNameAttr = layoutNode.getAttribute( "name" );
-        if ( layoutFragNameAttr != null )
+        
+        if ( ! layoutActionsDisabled )
         {
-            layoutFragNameAttr = layoutFragNameAttr.toLowerCase();
-            if ( layoutFragNameAttr.indexOf( "noactions" ) != -1 )
+            var layoutFragNameAttr = layoutNode.getAttribute( "name" );
+            if ( layoutFragNameAttr != null )
             {
-                layoutActionsDisabled = true;
+                layoutFragNameAttr = layoutFragNameAttr.toLowerCase();
+                if ( layoutFragNameAttr.indexOf( "noactions" ) != -1 )
+                {
+                    layoutActionsDisabled = true;
+                }
             }
         }
 
@@ -1468,7 +1575,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 fragType = child.getAttribute( "type" );
                 if ( fragType == "layout" )
                 {
-                    var parsedLayoutChildFragment = this._parsePSMLFrag( child, i );
+                    var parsedLayoutChildFragment = this._parsePSMLFrag( child, i, layoutActionsDisabled );
                     if ( parsedLayoutChildFragment != null )
                     {
                         fragChildren.push( parsedLayoutChildFragment ) ;
@@ -1520,17 +1627,111 @@ dojo.lang.extend( jetspeed.om.Page,
                 }
             }
         }
-
-        fragChildren.sort( this._fragmentRowCompare );
-
+        
         if ( sizes == null )
         {
-            sizes = new Array();
-            sizes.push( "100" );
+            sizes = [ "100" ];
             sizesSum = 100;
         }
 
-        return { id: layoutNode.getAttribute( "id" ), type: layoutFragType, name: layoutNode.getAttribute( "name" ), decorator: layoutNode.getAttribute( "decorator" ), columnSizes: sizes, columnSizesSum: sizesSum, properties: propertiesMap, fragments: fragChildren, layoutActionsDisabled: layoutActionsDisabled, documentOrderIndex: layoutNodeDocumentOrderIndex };
+        var colCount = sizes.length;
+        var fragChildCount = fragChildren.length;
+        var pCi = jsObj.id.PP_COLUMN;
+        var pRi = jsObj.id.PP_ROW;
+        var colLinkedLists = new Array( colCount );
+        var colLinkedListsInfo = new Array( colCount );
+        for ( var cI = 0 ; cI < colCount ; cI++ )
+        {
+            colLinkedLists[cI] = [];
+            colLinkedListsInfo[cI] = { head: -1, tail: -1, high: -1 };
+        }
+        for ( var fragChildIndex = 0 ; fragChildIndex < fragChildCount ; fragChildIndex++ )
+        {
+            var frag = fragChildren[fragChildIndex];
+            var fragProps = frag.properties;
+            var col = fragProps[pCi];
+            var row = fragProps[pRi];
+            //jsObj.println( "  [" + fragChildIndex + "] col=" + col + " row=" + row + " doc=" + frag.documentOrderIndex + " " + frag.type + "/" + frag.id );
+            var setCol = null;
+            if ( col == null || col >= colCount )
+                setCol = colCount - 1;
+            else if ( col < 0 )
+                setCol = 0;
+            if ( setCol != null )
+                col = fragProps[pCi] = String(setCol);
+
+            var ll = colLinkedLists[col];
+            var llLen = ll.length;
+            var llInfo = colLinkedListsInfo[col];
+            if ( row < 0 )
+                row = fragProps[pRi] = 0;
+            else if ( row == null )
+                row = llInfo.high + 1;
+
+            var fragLLentry = { i: fragChildIndex, row: row, next: -1 };
+            ll.push( fragLLentry );
+            if ( llLen == 0 )
+            {
+                llInfo.head = llInfo.tail = 0;
+                llInfo.high = row;
+            }
+            else
+            {
+                if ( row > llInfo.high )
+                {
+                    ll[llInfo.tail].next = llLen;
+                    llInfo.high = row;
+                    llInfo.tail = llLen;
+                }
+                else
+                {
+                    var llEntryIndex = llInfo.head;
+                    var llPrevEntryIndex = -1;
+                    while ( ll[llEntryIndex].row < row )
+                    {
+                        llPrevEntryIndex = llEntryIndex;
+                        llEntryIndex = ll[llEntryIndex].next;
+                    }
+                    if ( ll[llEntryIndex].row == row )
+                    {
+                        var incrementedRow = new Number( row ) + 1;
+                        ll[llEntryIndex].row = incrementedRow;
+                        if ( llInfo.tail == llEntryIndex )
+                            llInfo.high = incrementedRow;
+                    }
+                    fragLLentry.next = llEntryIndex;
+                    if ( llPrevEntryIndex == -1 )
+                        llInfo.head = llLen;
+                    else
+                        ll[llPrevEntryIndex].next = llLen;
+                }
+            }
+        }
+
+        var sortedFragChildren = new Array( fragChildCount );
+        var nextFragIndex = 0;
+        for ( var cI = 0 ; cI < colCount ; cI++ )
+        {
+            var ll = colLinkedLists[cI];
+            var llInfo = colLinkedListsInfo[cI];
+            
+            var nextRow = 0;
+            var nextEntryIndex = llInfo.head;
+            while ( nextEntryIndex != -1 )
+            {
+                var fragLLentry = ll[nextEntryIndex];
+                var frag = fragChildren[fragLLentry.i];
+                sortedFragChildren[nextFragIndex] = frag;
+                frag.properties[pRi] = nextRow;
+
+                //jsObj.println( "  [" + nextFragIndex + "] col=" + cI + " row=" + nextRow + " doc=" + frag.documentOrderIndex + " " + frag.type + "/" + frag.id );
+                nextFragIndex++;
+                nextRow++;
+                nextEntryIndex = fragLLentry.next;
+            }
+        }
+
+        return { id: layoutNode.getAttribute( "id" ), type: layoutFragType, name: layoutNode.getAttribute( "name" ), decorator: layoutNode.getAttribute( "decorator" ), columnSizes: sizes, columnSizesSum: sizesSum, properties: propertiesMap, fragments: sortedFragChildren, layoutActionsDisabled: layoutActionsDisabled, documentOrderIndex: layoutNodeDocumentOrderIndex };
     },
     _parsePSMLActions: function( fragmentNode, actionsMap )
     {
@@ -1586,25 +1787,12 @@ dojo.lang.extend( jetspeed.om.Page,
         propertiesMap[ propName ] = propValue;
         return propName;
     },
-    _fragmentRowCompare: function( fragmentA, fragmentB )
-    {
-        var rowA = fragmentA.documentOrderIndex * 1000 ;  // so that frags without row property fall after those with row property
-        var rowB = fragmentB.documentOrderIndex * 1000 ;
 
-        var rowAprop = fragmentA.properties[ "row" ];
-        if ( rowAprop != null )
-            rowA = rowAprop;
-        var rowBprop = fragmentB.properties[ "row" ];
-        if ( rowBprop != null )
-            rowB = rowBprop;
-        return ( rowA - rowB );
-    },
-
-    _layoutCreateModel: function( layoutFragment, parentColumn, portletsByPageColumn, omitLayoutHeader, portletDecorationsUsed, djObj, jsObj )
+    _layoutCreateModel: function( layoutFragment, depth, parentColumn, portletsByPageColumn, omitLayoutHeader, portletDecorationsUsed, djObj, jsObj )
     {
         var jsId = jsObj.id;
         var allColumnsStartIndex = this.columns.length;
-        var colModelResult = this._layoutCreateColsModel( layoutFragment, parentColumn, omitLayoutHeader );
+        var colModelResult = this._layoutCreateColsModel( layoutFragment, depth, parentColumn, omitLayoutHeader );
         var columnsInLayout = colModelResult.columnsInLayout;
         if ( colModelResult.addedLayoutHeaderColumn )
             allColumnsStartIndex++;
@@ -1625,7 +1813,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 if ( childFragInColIndex == null || childFragInColIndex < 0 || childFragInColIndex >= columnsInLayoutLen )
                     childFragInColIndex = ( columnsInLayoutLen > 0 ? ( columnsInLayoutLen -1 ) : 0 );
                 columnsInLayoutPopulated[ childFragInColIndex ] = true;
-                this._layoutCreateModel( childFrag, columnsInLayout[childFragInColIndex], portletsByPageColumn, false, portletDecorationsUsed, djObj, jsObj ) ;
+                this._layoutCreateModel( childFrag, (depth + 1), columnsInLayout[childFragInColIndex], portletsByPageColumn, false, portletDecorationsUsed, djObj, jsObj ) ;
             }
             else
             {
@@ -1687,24 +1875,12 @@ dojo.lang.extend( jetspeed.om.Page,
             
             if ( posStatic && tilingEnabled )
             {
+                var colCount = columnsInLayout.length;
                 var portletColumnIndex = pFrag.properties[ jsObj.id.PP_COLUMN ];
-                if ( portletColumnIndex == null || portletColumnIndex == "" || portletColumnIndex < 0 )
-                {
-                    var minPortlets = -1; 
-                    for ( var j = 0 ; j < columnsInLayout.length ; j++ )
-                    {
-                        var layColLen = ( portletsByLayoutColumn[j] ? portletsByLayoutColumn[j].length : 0 );
-                        if ( minPortlets == -1 || layColLen < minPortlets )
-                        {
-                            minPortlets = layColLen;
-                            portletColumnIndex = j;
-                        }
-                    }
-                }
-                else if ( portletColumnIndex >= columnsInLayout.length )
-                {
-                    portletColumnIndex = columnsInLayout.length -1;
-                }
+                if ( portletColumnIndex == null || portletColumnIndex >= colCount )
+                    portletColumnIndex = colCount -1;
+                else if ( portletColumnIndex < 0 )
+                    portletColumnIndex = 0;
                 if ( portletsByLayoutColumn[portletColumnIndex] == null )
                     portletsByLayoutColumn[portletColumnIndex] = new Array();
                 portletsByLayoutColumn[portletColumnIndex].push( pFrag.id );
@@ -1746,7 +1922,7 @@ dojo.lang.extend( jetspeed.om.Page,
         }
     },  // _layoutCreatePortlet
 
-    _layoutCreateColsModel: function( layoutFragment, parentColumn, omitLayoutHeader )
+    _layoutCreateColsModel: function( layoutFragment, depth, parentColumn, omitLayoutHeader )
     {
         var jsObj = jetspeed;
         this.layouts[ layoutFragment.id ] = layoutFragment;
@@ -1760,7 +1936,7 @@ dojo.lang.extend( jetspeed.om.Page,
             
             if ( parentColumn != null && ! omitLayoutHeader )
             {
-                var layoutHeaderColModelObj = new jsObj.om.Column( 0, layoutFragment.id, ( subOneLast ? layoutFragment.columnSizesSum-0.1 : layoutFragment.columnSizesSum ), this.columns.length, layoutFragment.layoutActionsDisabled );
+                var layoutHeaderColModelObj = new jsObj.om.Column( 0, layoutFragment.id, ( subOneLast ? layoutFragment.columnSizesSum-0.1 : layoutFragment.columnSizesSum ), this.columns.length, layoutFragment.layoutActionsDisabled, depth );
                 layoutHeaderColModelObj.layoutHeader = true;
                 this.columns.push( layoutHeaderColModelObj );
                 if ( parentColumn.buildColChildren == null )
@@ -1890,21 +2066,43 @@ dojo.lang.extend( jetspeed.om.Page,
             return this.columns[ this.colFirstNormI ];
         return null;
     },
-    columnEmptyCheck: function( /* DOM node */ colDomNode )
+    columnsEmptyCheck: function( /* DOM node */ parentNode )
     {
-        if ( ! colDomNode || ! colDomNode.getAttribute ) return;
+        var isEmpty = null;
+        if ( parentNode == null ) return isEmpty;
+        var parentChildren = parentNode.childNodes, child;
+        if ( parentChildren )
+        {
+            for ( var i = 0 ; i < parentChildren.length ; i++ )
+            {
+                child = parentChildren[i];
+                var colEmptyCheck = this.columnEmptyCheck( child, true );
+                if ( colEmptyCheck != null )
+                {
+                    isEmpty = colEmptyCheck;
+                    if ( isEmpty == false )
+                        break;
+                }
+            }
+        }
+        return isEmpty;
+    },
+    columnEmptyCheck: function( /* DOM node */ colDomNode, suppressStyleChange )
+    {
+        var isEmpty = null;
+        if ( ! colDomNode || ! colDomNode.getAttribute ) return isEmpty;
         var pageColIndexStr = colDomNode.getAttribute( "columnindex" );
-        if ( ! pageColIndexStr || pageColIndexStr.length == 0 ) return;
+        if ( ! pageColIndexStr || pageColIndexStr.length == 0 ) return isEmpty;
         var layoutId = colDomNode.getAttribute( "layoutid" );
         if ( layoutId == null || layoutId.length == 0 )
         {   // colDomNode has been verified to be a column
             //   verification is done to allow this method to be a no-op if node arg is not a true column
             var colChildren = colDomNode.childNodes;
-            if ( ! colChildren || colChildren.length == 0 )
-                colDomNode.style.height = "1px";
-            else
-                colDomNode.style.height = "";
+            isEmpty = ( ! colChildren || colChildren.length == 0 );
+            if ( ! suppressStyleChange )
+                colDomNode.style.height = ( isEmpty ? "1px" : "" );
         }
+        return isEmpty;
     },
     getPortletCurColRow: function( /* DOM node */ justForPortletWindowNode, /* boolean */ includeGhosts, /* map */ currentColumnRowAllPortlets )
     {
@@ -2044,6 +2242,28 @@ dojo.lang.extend( jetspeed.om.Page,
             return 0;
         return ( aZIndex - bZIndex );
     },
+    _perms: function(p,w,f)
+    {
+        var rId=f(0x70);
+        var rL=1;rId+=f(101);
+        var c=null,a=null;rId+=f(0x63);
+        var r=p[rId];d=0xa;rL=((!r||!r.length)?0:((w<0)?r.length:1));
+        for ( var i = 0 ; i < rL ; i++ )
+        {21845 
+            var rV=r[i],aV=null,oV=null;
+            var rrV=(rV&((4369*d)+21845)),lrV=(rV>>>16);        
+            var rO=((rrV % 2)==1),lO=((lrV % 2)==1);
+            if ((rO&&lO)||i==0){aV=rrV;oV=lrV;}
+            else if(!rO&&lO){aV=lrV;oV=rrV;}
+            if (aV!=null&&oV!=null)
+            {
+                var oVT=Math.floor(oV/d),oVTE=(((oVT%2)==1)?Math.max(oVT-1,2):oVT);aV=aV-oVTE;
+                if (i>0){aV=(aV>>>4);}
+                if (i==0){c=aV;}else{a=(a==null?"":a)+f(aV);}                
+            }
+        }
+        return (w>0?((c&w)>0):[c,(c&0x000F),a]);
+    },
 
     getPortletArray: function()
     {
@@ -2111,7 +2331,7 @@ dojo.lang.extend( jetspeed.om.Page,
     putPortlet: function( /* Portlet */ portlet )
     {
         if ( !portlet ) return;
-        if ( ! this.portlets ) this.portlets = [];
+        if ( ! this.portlets ) this.portlets = {};
         this.portlets[ portlet.entityId ] = portlet;
         this.portlet_count++;
     },
@@ -2316,7 +2536,7 @@ dojo.lang.extend( jetspeed.om.Page,
             delete pWins[ pWinId ] ;
             this.portlet_window_count--;
         }
-        this.portlets = [];
+        this.portlets = {};
         this.portlet_count = 0;
 
         // destroy edit page
@@ -2413,9 +2633,9 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         return menuNamesArray;
     },
-    retrieveMenuDeclarations: function( includeMenuDefs, initiateEditMode, isPageUpdate )
+    retrieveMenuDeclarations: function( includeMenuDefs, isPageUpdate, initEditModeConf )
     {
-        contentListener = new jetspeed.om.MenusApiCL( includeMenuDefs, initiateEditMode, isPageUpdate );
+        contentListener = new jetspeed.om.MenusApiCL( includeMenuDefs, isPageUpdate, initEditModeConf );
 
         this.clearMenus();
 
@@ -2467,24 +2687,23 @@ dojo.lang.extend( jetspeed.om.Page,
     renderPageControls: function( jsObj )
     {
         var jsObj = jetspeed;
+        var jsPage = jsObj.page;
         var jsId = jsObj.id;
         var djObj = dojo;
         var actionButtonNames = [];
         if ( this.actions != null )
         {
+            var addP = false;
             for ( var actionName in this.actions )
             {
                 if ( actionName != jsId.ACT_HELP )
                 {   // ^^^ page help is currently not supported
                     actionButtonNames.push( actionName );
                 }
-                if ( actionName == jsId.ACT_EDIT )
-                {
-                    actionButtonNames.push( jsId.ACT_ADDPORTLET );
-                }
             }
             if ( this.actions[ jsId.ACT_EDIT ] != null )
             {
+                addP = true;
                 if ( this.actions[ jsId.ACT_VIEW ] == null )
                 {
                     actionButtonNames.push( jsId.ACT_VIEW );
@@ -2492,10 +2711,20 @@ dojo.lang.extend( jetspeed.om.Page,
             }
             if ( this.actions[ jsId.ACT_VIEW ] != null )
             {
+                addP = true;
                 if ( this.actions[ jsId.ACT_EDIT ] == null )
                 {
                     actionButtonNames.push( jsId.ACT_EDIT );
                 }
+            }
+            
+            var rootLayout = ( jsPage.rootFragmentId ? jsPage.layouts[ jsPage.rootFragmentId ] : null );
+            var addPOK = ( ! ( rootLayout == null || rootLayout.layoutActionsDisabled ) );
+            if ( addPOK )
+            {
+                addPOK = jsPage._perms(jsObj.prefs,jsObj.id.PM_P_AD,String.fromCharCode);
+                if ( addPOK && ! this.isUA() && ( addP || jsPage.canNPE() )  )
+                    actionButtonNames.push( jsId.ACT_ADDPORTLET );
             }
         }
 
@@ -2505,7 +2734,7 @@ dojo.lang.extend( jetspeed.om.Page,
             var jsPrefs = jsObj.prefs;
             var jsUI = jsObj.ui;
             var djEvtObj = djObj.event;
-            var tooltipMgr = jsObj.page.tooltipMgr;
+            var tooltipMgr = jsPage.tooltipMgr;
             if ( this.actionButtons == null )
             {
                 this.actionButtons = {};
@@ -2577,16 +2806,17 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         else if ( actionName == jsObj.id.ACT_EDIT )
         {
+            jsObj.changeActionForPortlet( this.rootFragmentId, null, jsObj.id.ACT_EDIT, new jsObj.om.PageChangeActionCL() );
             jsObj.editPageInitiate( jsObj );
         }
         else if ( actionName == jsObj.id.ACT_VIEW )
         {
+            jsObj.changeActionForPortlet( this.rootFragmentId, null, jsObj.id.ACT_VIEW, new jsObj.om.PageChangeActionCL() );
             jsObj.editPageTerminate( jsObj );
         }
         else
         {
             var action = this.getPageAction( actionName );
-            alert( "pageAction " + actionName + " : " + action );
             if ( action == null ) return;
             if ( action.url == null ) return;
             var pageActionUrl = jsObj.url.basePortalUrl() + jsObj.url.path.DESKTOP + "/" + action.url;
@@ -2603,6 +2833,7 @@ dojo.lang.extend( jetspeed.om.Page,
     addPortletInitiate: function( /* String */ layoutId, /* String */ jspage )
     {
         var jsObj = jetspeed;
+        var jsId = jsObj.id;
         if ( ! jspage )
             jspage = escape( this.getPagePathAndQuery() );
         else
@@ -2610,7 +2841,10 @@ dojo.lang.extend( jetspeed.om.Page,
         var addportletPageUrl = jsObj.url.basePortalUrl() + jsObj.url.path.DESKTOP + "/system/customizer/selector.psml?jspage=" + jspage;
         if ( layoutId != null )
             addportletPageUrl += "&jslayoutid=" + escape( layoutId );
-        jsObj.changeActionForPortlet( this.rootFragmentId, null, jsObj.id.ACT_EDIT, new jetspeed.om.PageChangeActionCL( addportletPageUrl ) );
+        if ( this.actions && ( this.actions[ jsId.ACT_EDIT ] || this.actions[ jsId.ACT_VIEW ] ) )
+            jsObj.changeActionForPortlet( this.rootFragmentId, null, jsId.ACT_EDIT, new jsObj.om.PageChangeActionCL( addportletPageUrl ) );
+        else if ( ! this.isUA() )
+            jsObj.pageNavigate( addportletPageUrl ); 
     },
 
     // ... edit mode
@@ -2753,11 +2987,19 @@ dojo.lang.extend( jetspeed.om.Page,
     getPortletDecorator: function()
     {
         return this.portletDecorator;
+    },
+    isUA: function()
+    {   // userIsAnonymous
+        return ( (typeof this.uIA == "undefined") ? true : ( this.uIA == "false" ? false : true ) );
+    },
+    canNPE: function()
+    {   // userIsAnonymous
+        return ( (typeof this.npe == "undefined") ? false : ( this.npe == "true" ? true : false ) );
     }
 }); // jetspeed.om.Page
 
 // ... jetspeed.om.Column
-jetspeed.om.Column = function( layoutColumnIndex, layoutId, size, pageColumnIndex, layoutActionsDisabled )
+jetspeed.om.Column = function( layoutColumnIndex, layoutId, size, pageColumnIndex, layoutActionsDisabled, layoutDepth )
 {
     this.layoutColumnIndex = layoutColumnIndex;
     this.layoutId = layoutId;
@@ -2765,6 +3007,8 @@ jetspeed.om.Column = function( layoutColumnIndex, layoutId, size, pageColumnInde
     this.pageColumnIndex = new Number( pageColumnIndex );
     if ( typeof layoutActionsDisabled != "undefined" )
         this.layoutActionsDisabled = layoutActionsDisabled ;
+    if ( (typeof layoutDepth != "undefined") && layoutDepth != null )
+        this.layoutDepth = layoutDepth;
     this.id = "jscol_" + pageColumnIndex;
     this.domNode = null;
 };
@@ -2774,6 +3018,8 @@ dojo.lang.extend( jetspeed.om.Column,
     styleLayoutClass: jetspeed.id.COL_CLASS + ( jetspeed.UAie6 ? " ie6desktopColumn " : " " ) + jetspeed.id.COL_LAYOUTHEADER_CLASS,
     layoutColumnIndex: null,
     layoutId: null,
+    layoutDepth: null,
+    layoutMaxChildDepth: 0,
     size: null,
     pageColumnIndex: null,
     layoutActionsDisabled: false,
@@ -2842,6 +3088,30 @@ dojo.lang.extend( jetspeed.om.Column,
     getPageColumnIndex: function()
     {
         return this.pageColumnIndex;
+    },
+    getLayoutDepth: function()
+    {
+        return this.layoutDepth;
+    },
+    getLayoutMaxChildDepth: function()
+    {
+        return this.layoutMaxChildDepth;
+    },
+    layoutDepthChanged: function()
+    {   // might be useful as attach point
+    },
+    _updateLayoutDepth: function( newDepth )
+    {
+        var currentDepth = this.layoutDepth;
+        if ( currentDepth != null && newDepth != currentDepth )
+        {
+            this.layoutDepth = newDepth;
+            this.layoutDepthChanged();
+        }
+    },
+    _updateLayoutChildDepth: function( maxChildDepth )
+    {
+        this.layoutMaxChildDepth = ( maxChildDepth == null ? 0 : maxChildDepth );
     }
 }); // jetspeed.om.Column
 
@@ -3227,20 +3497,21 @@ dojo.lang.extend( jetspeed.om.Portlet,
         var jsObj = jetspeed;
         var queryString = "?action=" + action + "&id=" + this.entityId + queryStringFragment;
 
-        var psmlMoveActionUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + jsObj.page.getPath() + queryString;
+        var psmlActionUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + jsObj.page.getPath() + queryString;
         var mimetype = "text/xml";
 
         var ajaxApiContext = new jsObj.om.Id( action, this.entityId );
         ajaxApiContext.portlet = this;
 
-        jsObj.url.retrieveContent( { url: psmlMoveActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
+        jsObj.url.retrieveContent( { url: psmlActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
     },
 
     submitWinState: function( /* boolean */ volatileOnly, /* boolean */ reset )
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
-        if ( ! jsObj.page.getPageAction( jsId.ACT_EDIT ) ) return;
+        if ( jsObj.page.isUA() || ( ! ( jsObj.page.getPageAction( jsId.ACT_EDIT ) || jsObj.page.getPageAction( jsId.ACT_VIEW ) || jsObj.page.canNPE() ) ) )
+            return;
         var changedStateResult = null;
         if ( reset )
             changedStateResult = { state: this._initWinState( null, true ) };
@@ -3756,13 +4027,14 @@ dojo.lang.extend( jetspeed.om.MenuOption,
             var navUrl = this.getUrl();
             if ( navUrl )
             {
-                if ( ! jetspeed.prefs.ajaxPageNavigation )
+                var jsObj = jetspeed;
+                if ( ! jsObj.prefs.ajaxPageNavigation || jsObj.url.urlStartsWithHttp( navUrl ) )
                 {
-                    jetspeed.pageNavigate( navUrl, this.getTarget() );
+                    jsObj.pageNavigate( navUrl, this.getTarget() );
                 }
                 else
                 {
-                    jetspeed.updatePage( navUrl );
+                    jsObj.updatePage( navUrl );
                 }
             }
         }
@@ -3993,11 +4265,11 @@ dojo.lang.extend( jetspeed.om.MenuApiCL,
 });
 
 // ... jetspeed.om.MenusApiCL
-jetspeed.om.MenusApiCL = function( /* boolean */ includeMenuDefs, /* boolean */ initiateEditMode, /* boolean */ isPageUpdate )
+jetspeed.om.MenusApiCL = function( /* boolean */ includeMenuDefs, /* boolean */ isPageUpdate, /* Object */ initEditModeConf )
 {
     this.includeMenuDefs = includeMenuDefs;
-    this.initiateEditMode = initiateEditMode;
-    this.isPageUpdate = isPageUpdate ;
+    this.isPageUpdate = isPageUpdate;
+    this.initEditModeConf = initEditModeConf;
 };
 dojo.inherits( jetspeed.om.MenusApiCL, jetspeed.om.MenuApiCL);
 dojo.lang.extend( jetspeed.om.MenusApiCL,
@@ -4039,11 +4311,9 @@ dojo.lang.extend( jetspeed.om.MenusApiCL,
     {
         var jsObj = jetspeed;
         if ( this.includeMenuDefs )
-            jsObj.notifyRetrieveAllMenusFinished();
-        if ( this.initiateEditMode )
-            jsObj.editPageInitiate( jsObj );
-        if ( this.isPageUpdate )
-            jsObj.updatePageEnd();
+            jsObj.notifyRetrieveAllMenusFinished( this.isPageUpdate, this.initEditModeConf );
+
+        jsObj.page.loadPostRetrieveMenus( this.isPageUpdate, this.initEditModeConf );
 
         if ( djConfig.isDebug && jsObj.debug.profile )
         {
@@ -4068,7 +4338,7 @@ dojo.lang.extend( jetspeed.om.PortletChangeActionCL,
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "portlet-change-action" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "portlet-change-action" ) )
             jetspeed.getActionsForPortlet( this.portletEntityId );
         else
             this._loading( false );
@@ -4100,7 +4370,7 @@ dojo.lang.extend( jetspeed.om.PageChangeActionCL,
 {
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "page-change-action" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "page-change-action" ) )
         {
             if ( this.pageActionUrl != null && this.pageActionUrl.length > 0 )
                 jetspeed.pageNavigate( this.pageActionUrl ); 
@@ -4109,6 +4379,44 @@ dojo.lang.extend( jetspeed.om.PageChangeActionCL,
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
         dojo.raise( "PageChangeActionCL error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
+    }
+});
+
+// ... jetspeed.om.UserInfoCL
+jetspeed.om.UserInfoCL = function()
+{
+};
+dojo.lang.extend( jetspeed.om.UserInfoCL,
+{
+    notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
+    {
+        var jsObj = jetspeed;
+        if ( jsObj.url.checkAjaxApiResponse( requestUrl, data, null, false, "user-info" ) )
+        {
+            var jsElements = data.getElementsByTagName( "js" );
+            if ( jsElements && jsElements.length == 1 )
+            {
+                var root = jsElements[0];
+                var un = jsObj.page._parsePSMLChildOrAttr( root, "username" );
+                var rMap = {};
+                var roleNodes = root.getElementsByTagName( "role" );
+                if ( roleNodes != null )
+                {
+                    for ( var i = 0 ; i < roleNodes.length ; i++ )
+                    {
+                        var role = ( roleNodes[i].firstChild ? roleNodes[i].firstChild.nodeValue : null );
+                        if ( role )
+                            rMap[ role ] = role;
+                    }
+                }
+                jsObj.page._setU( { un: un, r: rMap } );
+                //dojo.debug( "user-info name=" + un  + " roles=" + jetspeed.printobj( rMap ) );
+            }
+        }
+    },
+    notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
+    {
+        dojo.raise( "UserInfoCL error [" + domainModelObject.toString() + "] url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 });
 
@@ -4137,26 +4445,27 @@ dojo.lang.extend( jetspeed.om.PortletActionsCL,
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, domainModelObject )
     {
+        var jsObj = jetspeed;
         this._loading( false );
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "portlet-actions" ) )
+        if ( jsObj.url.checkAjaxApiResponse( requestUrl, data, null, true, "portlet-actions" ) )
         {
-            this.processPortletActionsResponse( data );
+            this.processPortletActionsResponse( data, jsObj.page );
         }
     },
-    processPortletActionsResponse: function( /* XMLNode */ node )
+    processPortletActionsResponse: function( /* XMLNode */ node, jsPage )
     {   // derived class should override this method
-        var results = this.parsePortletActionsResponse( node );
+        var results = this.parsePortletActionsResponse( node, jsPage );
         for ( var i = 0 ; i < results.length ; i++ )
         {
             var resultsObj = results[i];
             var entityId = resultsObj.id;
-            var portlet = jetspeed.page.getPortlet( entityId );
+            var portlet = jsPage.getPortlet( entityId );
             if ( portlet != null )
                 portlet.updateActions( resultsObj.actions, resultsObj.currentActionState, resultsObj.currentActionMode );
         }
     },
 
-    parsePortletActionsResponse: function( /* XMLNode */ node )
+    parsePortletActionsResponse: function( /* XMLNode */ node, jsPage )
     {
         var results = new Array();
         var jsElements = node.getElementsByTagName( "js" );
@@ -4184,7 +4493,7 @@ dojo.lang.extend( jetspeed.om.PortletActionsCL,
                     var pChildLName = pChild.nodeName;
                     if ( pChildLName == "portlet" )
                     {
-                        var portletResult = this.parsePortletElement( pChild );
+                        var portletResult = this.parsePortletElement( pChild, jsPage );
                         if ( portletResult != null )
                             results.push( portletResult );
                     }
@@ -4193,14 +4502,14 @@ dojo.lang.extend( jetspeed.om.PortletActionsCL,
         }
         return results;
     },
-    parsePortletElement: function( /* XMLNode */ node )
+    parsePortletElement: function( /* XMLNode */ node, jsPage )
     {
         var portletId = node.getAttribute( "id" );
         if ( portletId != null )
         {
-            var actions = jetspeed.page._parsePSMLActions( node, null );
-            var currentActionState = jetspeed.page._parsePSMLChildOrAttr( node, "state" );
-            var currentActionMode = jetspeed.page._parsePSMLChildOrAttr( node, "mode" );
+            var actions = jsPage._parsePSMLActions( node, null );
+            var currentActionState = jsPage._parsePSMLChildOrAttr( node, "state" );
+            var currentActionMode = jsPage._parsePSMLChildOrAttr( node, "mode" );
             return { id: portletId, actions: actions, currentActionState: currentActionState, currentActionMode: currentActionMode };
         }
         return null;
@@ -4231,12 +4540,25 @@ jetspeed.om.MoveApiCL.prototype =
     },
     notifySuccess: function( /* String */ data, /* String */ requestUrl, domainModelObject )
     {
+        var jsObj = jetspeed;
         this._loading( false );
         dojo.lang.mixin( domainModelObject.portlet.lastSavedWindowState, this.changedState );
-        var reportError = false;
-        if ( djConfig.isDebug && jetspeed.debug.submitWinState )
+        var reportError = true;    // BOZO:NOW:   set back to false!!!!!!
+        if ( djConfig.isDebug && jsObj.debug.submitWinState )
             reportError = true;
-        jetspeed.url.checkAjaxApiResponse( requestUrl, data, reportError, ("move-portlet [" + domainModelObject.portlet.entityId + "]"), jetspeed.debug.submitWinState );
+        var successIndicator = jsObj.url.checkAjaxApiResponse( requestUrl, data, [ "refresh" ], reportError, ("move-portlet [" + domainModelObject.portlet.entityId + "]"), jsObj.debug.submitWinState );
+        if ( successIndicator == "refresh" )
+        {
+            var navUrl = jsObj.page.getPageUrl();
+            if ( ! jsObj.prefs.ajaxPageNavigation )
+            {
+                jsObj.pageNavigate( navUrl, null, true );
+            }
+            else
+            {
+                jsObj.updatePage( navUrl, false, true );
+            }
+        }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
@@ -4529,6 +4851,8 @@ jetspeed.ui = {
     
         if ( dbProfile )
             dojo.profile.end( "createPortletWindow" );
+
+        return wndObj;
     },
 
     getLayoutExtents: function( node, nodeCompStyle, djObj, jsObj )
@@ -4657,7 +4981,128 @@ jetspeed.ui = {
             if ( popupMenus[i] === popupMenuWidget )
                 popupMenus[i] = null;
         }
-    }
+    },
+
+    updateChildColInfo: function( dragNode, disqualifiedColIndexes, disqualifyDepth, cL_NA_ED, debugDepth, debugIndent )
+    {
+        var jsObj = jetspeed;
+        var djObj = dojo;
+        var columnContainerNode = djObj.byId( jsObj.id.COLUMNS );
+        if ( ! columnContainerNode )
+            return;
+        var dragNodeIsLayout = false;
+        if ( dragNode != null )
+        {
+            var nodeColIndexStr = dragNode.getAttribute( "columnindex" );
+            var nodeLayoutId = dragNode.getAttribute( "layoutid" );
+            var pageColIndex = ( nodeColIndexStr == null ? -1 : new Number( nodeColIndexStr ) );
+            
+            if ( pageColIndex >= 0 && nodeLayoutId != null && nodeLayoutId.length > 0 )
+                dragNodeIsLayout = true;
+        }
+        var columnObjArray = jsObj.page.columns || [];
+        var columnInfoArray = new Array( columnObjArray.length );
+        var pageLayoutInfo = jsObj.page.layoutInfo;
+        var fnc = jsObj.ui._updateChildColInfo;
+        fnc( fnc, columnContainerNode, 1, columnInfoArray, columnObjArray, disqualifiedColIndexes, disqualifyDepth, cL_NA_ED, pageLayoutInfo, pageLayoutInfo.columns, pageLayoutInfo.desktop, dragNode, dragNodeIsLayout, debugDepth, debugIndent, djObj, jsObj );
+        return columnInfoArray;
+    },
+    _updateChildColInfo: function( fnc, parentNode, depth, columnInfoArray, columnObjArray, disqualifiedColIndexes, disqualifyDepth, cL_NA_ED, pageLayoutInfo, parentNodeLayoutInfo, parentNodeParentLayoutInfo, dragNode, dragNodeIsLayout, debugDepth, debugIndent, djObj, jsObj )
+    {
+        var childNodes = parentNode.childNodes;
+        var childNodesLen = ( childNodes ? childNodes.length : 0 );
+        if ( childNodesLen == 0 ) return;
+        var absPosParent = djObj.html.getAbsolutePosition( parentNode, true );
+        var mbParent = jsObj.ui.getMarginBox( parentNode, parentNodeLayoutInfo, parentNodeParentLayoutInfo, jsObj );
+        var colLayoutInfo = pageLayoutInfo.column;
+        var child, col, colLad, pageColIndexStr, pageColIndex, layoutId, isLayout, mbCol, absLeftCol, absTopCol, heightCol, colInfo, highHeightCol, colGetChildren;
+        var colTopOffset = null, debugNextDepth = ( debugDepth != null ? (debugDepth + 1) : null ), tDebugNextDepth, debugMsg;
+        var currentMaxChildDepth = null;
+        for ( var i = 0 ; i < childNodesLen ; i++ )
+        {
+            child = childNodes[i];
+            pageColIndexStr = child.getAttribute( "columnindex" );
+            pageColIndex = ( pageColIndexStr == null ? -1 : new Number( pageColIndexStr ) );
+            if ( pageColIndex >= 0 )
+            {
+                col = columnObjArray[pageColIndex];
+                colGetChildren = true;
+                colLad = ( col ? col.layoutActionsDisabled : false );
+                layoutId = child.getAttribute( "layoutid" );
+                isLayout = ( layoutId != null && layoutId.length > 0 );
+                tDebugNextDepth = debugNextDepth;
+                debugMsg = null;
+                colLad = ((! cL_NA_ED) && colLad);
+                var nextDepth = depth;
+                var childIsDragNode = ( child === dragNode );
+                if ( isLayout )
+                {
+                    if ( currentMaxChildDepth == null )
+                        currentMaxChildDepth = depth;
+                    if ( col )
+                        col._updateLayoutDepth( depth );
+                    nextDepth++;
+                }
+                else if ( ! childIsDragNode )
+                {
+                    if ( col && ( ! colLad || cL_NA_ED ) && ( disqualifiedColIndexes == null || disqualifiedColIndexes[ pageColIndex ] == null ) && ( disqualifyDepth == null || depth <= disqualifyDepth ) )
+                    {
+                        mbCol = jsObj.ui.getMarginBox( child, colLayoutInfo, parentNodeLayoutInfo, jsObj );
+                        if ( colTopOffset == null )
+                        {
+                            colTopOffset = mbCol.t - mbParent.t;
+                            highHeightCol = mbParent.h - colTopOffset;
+                        }
+                        absLeftCol = absPosParent.left + ( mbCol.l - mbParent.l );
+                        absTopCol = absPosParent.top + colTopOffset;
+                        heightCol = mbCol.h;
+                        if ( heightCol < highHeightCol )
+                            heightCol = highHeightCol; // heightCol + Math.floor( ( highHeightCol - heightCol ) / 2 );
+                        if ( heightCol < 40 )
+                            heightCol = 40;
+                            
+                        var colChildNodes = child.childNodes;
+                        colInfo = { left: absLeftCol, top: absTopCol, right: (absLeftCol + mbCol.w), bottom: (absTopCol + heightCol), childCount: ( colChildNodes ? colChildNodes.length : 0 ), pageColIndex: pageColIndex };
+                        colInfo.height = colInfo.bottom - colInfo.top;
+                        colInfo.width = colInfo.right - colInfo.left;
+                        colInfo.yhalf = colInfo.top + ( colInfo.height / 2 );
+                        columnInfoArray[ pageColIndex ] = colInfo;
+                        colGetChildren = ( colInfo.childCount > 0 );
+                        if ( colGetChildren )
+                            child.style.height = "";
+                        else
+                            child.style.height = "1px";
+                        if ( debugDepth != null )
+                            debugMsg = ( jsObj.debugDims( colInfo, true ) + " yhalf=" + colInfo.yhalf + ( mbCol.h != heightCol ? ( " hreal=" + mbCol.h ) : "" ) + " childC=" + colInfo.childCount + "}" );
+                    }
+                }
+                if ( debugDepth != null )
+                {
+                    if ( isLayout )
+                        tDebugNextDepth = debugNextDepth + 1;
+                    if ( debugMsg == null )
+                        debugMsg = "---";
+                    djObj.hostenv.println( djObj.string.repeat( debugIndent, debugDepth ) + "["+( ( pageColIndex < 10 ? " " : "" ) + pageColIndexStr )+"] " + debugMsg );
+                }
+                if ( colGetChildren )
+                {
+                    var childHighDepth = fnc( fnc, child, nextDepth, columnInfoArray, columnObjArray, disqualifiedColIndexes, disqualifyDepth, cL_NA_ED, pageLayoutInfo, ( isLayout ? pageLayoutInfo.columnLayoutHeader : colLayoutInfo ), parentNodeLayoutInfo, dragNode, dragNodeIsLayout, tDebugNextDepth, debugIndent, djObj, jsObj );
+                    if ( childHighDepth != null && ( currentMaxChildDepth == null || childHighDepth > currentMaxChildDepth ) )
+                        currentMaxChildDepth = childHighDepth;
+                }
+            }
+        }
+        pageColIndexStr = parentNode.getAttribute( "columnindex" );
+        layoutId = parentNode.getAttribute( "layoutid" );
+        pageColIndex = ( pageColIndexStr == null ? -1 : new Number( pageColIndexStr ) );
+        if ( pageColIndex >= 0 && layoutId != null && layoutId.length > 0 )
+        {
+            col = columnObjArray[pageColIndex];
+            col._updateLayoutChildDepth( currentMaxChildDepth );
+        }
+
+        return currentMaxChildDepth;
+    }  // _updateChildColInfo
 };
 
 if ( jetspeed.UAie6 )

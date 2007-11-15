@@ -737,7 +737,7 @@ if ( window.dojo )
         dojo.io.bind( jetspeedBindArgs.createIORequest() ) ;
     };
     
-    jetspeed.url.checkAjaxApiResponse = function( requestUrl, data, reportError, apiRequestDescription, dumpOutput )
+    jetspeed.url.checkAjaxApiResponse = function( requestUrl, data, otherSuccessValues, reportError, apiRequestDescription, dumpOutput )
     {
         var success = false;
         var statusElmt = data.getElementsByTagName( "status" );
@@ -746,7 +746,18 @@ if ( window.dojo )
             var successVal = statusElmt[0].firstChild.nodeValue;
             if ( successVal == "success" )
             {
-                success = true;
+                success = successVal;
+            }
+            else if ( otherSuccessValues && otherSuccessValues.length > 0 )
+            {
+                for ( var i = 0 ; i < otherSuccessValues.length ; i++ )
+                {
+                    if ( successVal == otherSuccessValues[i] )
+                    {
+                        success = successVal;
+                        break;
+                    }
+                }
             }
         }
         if ( ( ! success && reportError ) || dumpOutput )
@@ -769,6 +780,9 @@ if ( window.dojo )
         var loadingProps = jsPrefs.loadingImgProps;
         if ( loadingProps )
         {
+            var loading = doc.getElementById( jsUrl.LOADING_INDICATOR_ID );
+            if ( loading == null || ! loading.style || loading.style.display == "none" )
+                return;
             var imgAnimated = loadingProps.imganimated;
             var loadingImgElmt = doc.getElementById( jsUrl.LOADING_INDICATOR_IMG_ID );
             if ( imgAnimated && loadingImgElmt )

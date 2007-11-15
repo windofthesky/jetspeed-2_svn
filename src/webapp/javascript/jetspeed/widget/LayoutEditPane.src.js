@@ -61,6 +61,7 @@ dojo.widget.defineWidget(
 		isContainer: true,
         widgetsInTemplate: true,
         isLayoutPane: true,
+        depth: null,
 
         // drag variables
         drag: null,
@@ -96,16 +97,27 @@ dojo.widget.defineWidget(
             return currentLayout;
         },
 
+        destroy: function()
+        {
+            var jsObj = jetspeed;
+            if ( this.layoutColumn )
+            {
+                jsObj.ui.evtDisconnect( "after", this.layoutColumn, "layoutDepthChanged", this, "syncLayoutDepth" );
+            }
+            jsObj.widget.LayoutEditPane.superclass.destroy.call( this );
+        },
+
         postCreate: function( args, fragment, parent )
         {
+            var jsObj = jetspeed;
             var djObj = dojo;
             var djH = djObj.html;
 
-            var pageEditorProto = jetspeed.widget.PageEditor.prototype;
+            var peProto = jsObj.widget.PageEditor.prototype;
             if ( this.pageEditContainer != null )
-                djH.addClass( this.pageEditContainer, pageEditorProto.styleBaseAdd );
+                djH.addClass( this.pageEditContainer, peProto.styleBaseAdd );
             if ( this.pageEditLNContainer != null )
-                djH.addClass( this.pageEditLNContainer, pageEditorProto.styleDetailAdd );
+                djH.addClass( this.pageEditLNContainer, peProto.styleDetailAdd );
 
             if ( this.layoutNameSelect != null )
             {
@@ -133,7 +145,19 @@ dojo.widget.defineWidget(
                 }
                 this.layoutNameSelect.dataProvider.setData( layoutNameData );
             }
-            this.syncButtons();
+
+            var currentLayout = this.getCurrentLayout();
+            var isNA = ( currentLayout == null || currentLayout.layoutActionsDisabled );
+            var cL_NA_ED = false;
+            if ( isNA )
+            {
+                cL_NA_ED = peProto.canL_NA_ED(jsObj,peProto);
+                if ( cL_NA_ED ) isNA = false;
+                else this["_n"+"a"] = true;
+            }
+
+            this.syncButtons( this.startInEditModeMove );
+            delete this.startInEditModeMove;
             
             this.layoutMoveContainer = djObj.widget.createWidget( "jetspeed:LayoutEditPaneMoveHandle",
 				{
@@ -141,6 +165,28 @@ dojo.widget.defineWidget(
 				});
 			this.addChild( this.layoutMoveContainer );
 			this.domNode.appendChild( this.layoutMoveContainer.domNode );
+
+            var addPortletPerm = ( ! isNA && peProto.checkPerm(peProto.PM_P_AD,jsObj,peProto) );
+            if ( ! addPortletPerm && this.addPortletButton )
+            {
+                this.addPortletButton.domNode.style.display = "none";
+            }
+            var colSizePerm = peProto.checkPerm(peProto.PM_L_CS,jsObj,peProto);
+            if ( colSizePerm && isNA )
+            {
+                colSizePerm = peProto.checkPerm(peProto.PM_L_NA_CS,jsObj,peProto);
+            }
+            if ( ! colSizePerm && this.columnSizeButton )
+            {
+                this.columnSizeButton.domNode.style.display = "none";
+            }
+
+            this.syncLayoutDepth( peProto, jsObj );
+
+            if ( this.layoutColumn )
+            {
+                jsObj.ui.evtConnect( "after", this.layoutColumn, "layoutDepthChanged", this, "syncLayoutDepth", djObj.event );
+            }
         },
 
         // methods
@@ -156,16 +202,23 @@ dojo.widget.defineWidget(
         },
         addPortlet: function()
         {
-            var jspage = jetspeed.page.getPagePathAndQuery();
-            jspage = jetspeed.url.addQueryParameter( jspage, jetspeed.id.PG_ED_PARAM, "true", true );
-            jetspeed.page.addPortletInitiate( this.layoutId, jspage.toString() );
+            var jsObj = jetspeed;
+            var jspage = jsObj.page.getPagePathAndQuery();
+            jspage = jsObj.url.addQueryParameter( jspage, jsObj.id.PG_ED_PARAM, "true", true );
+            jsObj.page.addPortletInitiate( this.layoutId, jspage.toString() );
         },
         addLayout: function()
         {
             var currentLayout = this.getCurrentLayout();
             if ( currentLayout != null )
             {
-                var addLayoutContentManager = new jetspeed.widget.AddLayoutContentManager( this.layoutId, currentLayout.name, this.pageEditorWidget );
+                var lns = this.layoutNameSelect;
+                var layoutName = null;
+                if ( lns )
+                    layoutName = lns.getValue();
+                if ( layoutName == null )
+                    layoutName = currentLayout.name;
+                var addLayoutContentManager = new jetspeed.widget.AddLayoutContentManager( this.layoutId, layoutName, this.pageEditorWidget );
                 addLayoutContentManager.getContent();
             }
             else
@@ -196,17 +249,33 @@ dojo.widget.defineWidget(
 
         _enableMoveMode: function()
         {
-            if ( this.layoutMoveContainer && this.drag )
+            var lmc = this.layoutMoveContainer;
+            if ( ! lmc ) return;
+            mmOk = (this.drag != null);
+            if ( mmOk )
             {
-                this.layoutMoveContainer.domNode.style.display = "block";
+                mmOk = ( ! this._na );
+                if ( ! mmOk )
+                {
+                    var jsObj = jetspeed;
+                    var peProto = jsObj.widget.PageEditor.prototype;
+                    var mvNATL = peProto.checkPerm(peProto.PM_L_NA_TLMV,jsObj,peProto);
+                    var layoutColumnDomNode = ( this.layoutColumn ? this.layoutColumn.domNode : null  );
+                    if ( mvNATL && layoutColumnDomNode )
+                    {
+                        var parentCol = jsObj.page.getColFromColNode( layoutColumnDomNode.parentNode );
+                        if ( parentCol && parentCol.layoutActionsDisabled == false )
+                            mmOk = true;
+                    }
+                }
             }
+            lmc.domNode.style.display = ( mmOk ? "block" : "none" );
         },
         _disableMoveMode: function()
         {
-            if ( this.layoutMoveContainer && this.drag )
-            {
-                this.layoutMoveContainer.domNode.style.display = "none";
-            }
+            var lmc = this.layoutMoveContainer;
+            if ( ! lmc ) return;
+            lmc.domNode.style.display = "none";
         },
 
         initializeDrag: function()
@@ -230,9 +299,21 @@ dojo.widget.defineWidget(
                     if ( this.buttonGroupRight )
                         this.buttonGroupRight.style.display = "none";
                     var notifyOnAbsolute = true;
+
+                    var peProto = jsObj.widget.PageEditor.prototype;
+                    var cL_NA_ED = peProto.canL_NA_ED(jsObj,peProto);
+
+                    var layoutDepthMax = peProto.getLDepthPerm( jsObj );
+                    var childDepth = dragLayoutColumn.getLayoutMaxChildDepth();
+                    var layoutDepth = dragLayoutColumn.getLayoutDepth();
+                    var maxDragDepth = layoutDepthMax;
+                    if ( childDepth > layoutDepth )
+                        maxDragDepth = Math.max( (layoutDepthMax - (childDepth - layoutDepth)), layoutDepth );
+                    
                     moveableObj.beforeDragColRowInfo = jsObj.page.getPortletCurColRow( dragNode );
                     moveableObj.node = dragNode;
-		            moveableObj.mover = new djObj.dnd.Mover( this, dragNode, dragLayoutColumn, moveableObj, e, notifyOnAbsolute, djObj, jsObj );
+                    var dragLayoutColInfo = { col: dragLayoutColumn, maxdepth: maxDragDepth };
+		            moveableObj.mover = new djObj.dnd.Mover( this, dragNode, dragLayoutColInfo, cL_NA_ED, moveableObj, e, notifyOnAbsolute, djObj, jsObj );
                 }
             }
         },
@@ -298,6 +379,7 @@ dojo.widget.defineWidget(
                     moveLayoutContentManager.getContent();
                 }
             }
+            jsObj.ui.updateChildColInfo();
         },
 
         getLayoutColumn: function()
@@ -346,28 +428,87 @@ dojo.widget.defineWidget(
             return null;
         },
 
-        editModeRedisplay: function()
+        editModeRedisplay: function( moveModeIsEnabled )
         {
             this.show();
-            this.syncButtons();
+            this.syncButtons( moveModeIsEnabled );
         },
-        syncButtons: function()
+        syncButtons: function( moveModeIsEnabled )
         {
+            var isNA = this._na;
+            var mmB = this.editMoveModeButton;
+            var mmEB = this.editMoveModeExitButton;
+            var dLB = this.deleteLayoutButton;
+            this._delEnabled = false;
             if ( this.isRootLayout )
             {
-                if ( this.deleteLayoutButton != null )
-                    this.deleteLayoutButton.domNode.style.display = "none";
-                if ( this.editMoveModeButton != null )
-                    this.editMoveModeButton.domNode.style.display = "block";
-                if ( this.editMoveModeExitButton != null )
-                    this.editMoveModeExitButton.domNode.style.display = "none";
+                var mmStartBtn = "none", mmExitBtn = "none";
+                if ( ! isNA )
+                {
+                    mmStartBtn = moveModeIsEnabled ? "none" : "block";
+                    mmExitBtn = moveModeIsEnabled ? "block" : "none";
+                }
+                if ( mmB )
+                    mmB.domNode.style.display = mmStartBtn;
+                if ( mmEB )
+                    mmEB.domNode.style.display = mmExitBtn;
+                if ( dLB )
+                    dLB.domNode.style.display = "none";
             }
             else
             {
-                if ( this.editMoveModeButton != null )
-                    this.editMoveModeButton.domNode.style.display = "none";
-                if ( this.editMoveModeExitButton != null )
-                    this.editMoveModeExitButton.domNode.style.display = "none";
+                if ( mmB )
+                    mmB.domNode.style.display = "none";
+                if ( mmEB )
+                    mmEB.domNode.style.display = "none";
+                if ( dLB )
+                {
+                    if ( isNA )
+                    {
+                        var jsObj = jetspeed;
+                        var layoutColNode = null;
+                        var layoutCol = this.getLayoutColumn();
+                        if ( layoutCol )
+                            layoutColNode = layoutCol.domNode;
+                        else if ( this.isRootLayout )
+                            layoutColNode = dojo.byId( jsObj.id.COLUMNS );
+                        if ( layoutColNode )
+                        {
+                            if ( jsObj.page.columnsEmptyCheck( layoutColNode ) )
+                                isNA = false;   // allow delete if layout is empty
+                        }
+                    }
+                    this._delEnabled = ( ! isNA );
+                    dLB.domNode.style.display = ( isNA ? "none" : "block" );
+                }
+            }
+        },
+        syncLayoutDepth: function( peProto, jsObj )
+        {
+            if ( ! jsObj ) jsObj = jetspeed;
+            if ( ! peProto ) peProto = jsObj.widget.PageEditor.prototype;
+
+            var isNA = this._na;
+            var chgLayoutPerm = ( ( ! isNA || this._delEnabled ) && peProto.checkPerm( peProto.PM_L_N, jsObj, peProto ) );
+            if ( this.changeLayoutButton )
+                this.changeLayoutButton.domNode.style.display = ( chgLayoutPerm ? "block" : "none" );
+
+            if ( this.layoutColumn )
+                this.depth = this.layoutColumn.getLayoutDepth();
+            
+            var layoutDepthMax = peProto.getLDepthPerm( jsObj );
+            var atMaxDepth = ( this.depth == null || this.depth >= layoutDepthMax );
+            var addLayoutPerm = ( ! atMaxDepth && ! isNA );
+            
+            if ( this.addLayoutButton )
+                this.addLayoutButton.domNode.style.display = ( addLayoutPerm ? "block" : "none" );
+
+            if ( this.layoutNameSelect )
+            {
+                if ( ! addLayoutPerm && ! chgLayoutPerm )
+                    this.layoutNameSelect.disable();
+                else if ( this.layoutNameSelect.disabled )
+                    this.layoutNameSelect.enable();
             }
         },
 

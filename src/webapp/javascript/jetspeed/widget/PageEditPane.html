@@ -41,10 +41,10 @@
                    <table cellpadding="0" cellspacing="6" border="0">
                    <!-- height on images is currently needed to size the button properly, especially when button is inside a table -->
                    <tr align="right">
-                   <td><button dojoType="Button" dojoAttachEvent="onClick:createPage"><img height="16" src="${this.layoutImagesRoot}page_new.png">&nbsp;${this.labels.newpage}</button></td>
+                   <td><button dojoType="Button" dojoAttachEvent="onClick:createPage" dojoAttachPoint="createPageButton"><img height="16" src="${this.layoutImagesRoot}page_new.png">&nbsp;${this.labels.newpage}</button></td>
                    </tr>
                    <tr align="right">
-                   <td><button dojoType="Button" dojoAttachEvent="onClick:deletePage"><img height="16" src="${this.layoutImagesRoot}page_delete.png">&nbsp;${this.labels.deletepage}</button></td>
+                   <td><button dojoType="Button" dojoAttachEvent="onClick:deletePage" dojoAttachPoint="deletePageButton"><img height="16" src="${this.layoutImagesRoot}page_delete.png">&nbsp;${this.labels.deletepage}</button></td>
                    </tr>
                    </table>
                </div>

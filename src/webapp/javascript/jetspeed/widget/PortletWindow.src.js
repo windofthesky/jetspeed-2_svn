@@ -393,7 +393,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this._createLayoutInfo( wDC, false, dNode, cNode, tbNode, rbNode, djObj, jsObj, jsUI );
         }
         
-        if ( this.moveable && tbNode )
+        if ( tbNode )
         {
             this.drag = new djObj.dnd.Moveable( this, {handle: tbNode});
             this._setTitleBarDragging( true, jsCss );
@@ -460,45 +460,70 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var aNm, incl, noMenuImg = false;
         var tMenuActionNames = new Array();
         var tBtnActionNameMap = new Object();
-        if ( wDC.windowActionButtonOrder != null )
+        var wDCBtnOrder = wDC.windowActionButtonOrder;
+        var wDCMenuOrder = wDC.windowActionMenuOrder;
+        var tInitialMenuOrderMap = new Object();
+        var wDCNoImage = wDC.windowActionNoImage;
+        var btnMax = wDC.windowActionButtonMax
+        btnMax = ( btnMax == null ? -1 : btnMax );
+
+        if ( wDCMenuOrder )
+        {
+            for ( var aI = 0 ; aI < wDCMenuOrder.length ; aI++ )
+            {
+                aNm = wDCMenuOrder[ aI ];
+                if ( aNm )
+                    tInitialMenuOrderMap[ aNm ] = true;
+            }
+        }
+
+        if ( wDCBtnOrder != null )
         {   // all possible button actions must be added here (no support for adding action buttons after init)
             // this includes buttons for the current mode and state (which will be initially hidden)
-            if ( tPortlet )
+            for ( var aI = (wDCBtnOrder.length-1) ; aI >= 0 ; aI-- )
             {
-                for ( var aI = (wDC.windowActionButtonOrder.length-1) ; aI >= 0 ; aI-- )
+                aNm = wDCBtnOrder[ aI ];
+                incl = false;
+                if ( tPortlet )
+                    incl = true;
+                else
                 {
-                    aNm = wDC.windowActionButtonOrder[ aI ];
+                    if ( aNm == jsId.ACT_MINIMIZE || aNm == jsId.ACT_MAXIMIZE || aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || jsPrefs.windowActionDesktop[ aNm ] != null )
+                        incl = true;
+                }
+                if ( incl && wDCNoImage && wDCNoImage[ aNm ] )
+                {
+                    if ( ! tInitialMenuOrderMap[ aNm ] )
+                        tMenuActionNames.push( aNm );
+                    incl = false;
+                }
+                if ( incl )
+                {
                     btnActionNames.push( aNm );
                     tBtnActionNameMap[ aNm ] = true;
                 }
             }
-            else
-            {
-                for ( var aI = (wDC.windowActionButtonOrder.length-1) ; aI >= 0 ; aI-- )
-                {
-                    aNm = wDC.windowActionButtonOrder[ aI ];
-                    incl = false;
-                    if ( aNm == jsId.ACT_MINIMIZE || aNm == jsId.ACT_MAXIMIZE || aNm == jsId.ACT_RESTORE || aNm == jsId.ACT_MENU || jsPrefs.windowActionDesktop[ aNm ] != null )
-                    {
-                        incl = true;
-                    }
-                    if ( incl )
-                    {
-                        btnActionNames.push( aNm );
-                        tBtnActionNameMap[ aNm ] = true;
-                    }
-                }
-            }   // if ( tPortlet )
-            var btnMax = ( wDC.windowActionButtonMax == null ? -1 : wDC.windowActionButtonMax );
-            if ( btnMax != -1 && btnActionNames.length >= btnMax )
+            if ( ! tBtnActionNameMap[ jsId.ACT_MENU ] )
+                noMenuImg = true;
+   
+            var defBtnNames = btnActionNames.length;
+            if ( btnMax != -1 && defBtnNames > btnMax )
             {
                 var removedBtns = 0;
-                var mustRemoveBtns = btnActionNames.length - btnMax + 1;
-                for ( var i = 0 ; i < btnActionNames.length && removedBtns < mustRemoveBtns ; i++ )
+                var mustRemoveBtns = defBtnNames - btnMax;
+                for ( var j = 0 ; j < 2 && removedBtns < mustRemoveBtns ; j++ )
                 {
-                    aNm = btnActionNames[i];
-                    if ( aNm != jsId.ACT_MENU )
+                    for ( var i = (btnActionNames.length-1) ; i >= 0 && removedBtns < mustRemoveBtns ; i-- )
                     {
+                        aNm = btnActionNames[i];
+                        if ( aNm == null || aNm == jsId.ACT_MENU )
+                            continue;
+                        if ( j == 0 )
+                        {
+                            var aNmRE = new RegExp( "\b" + aNm + "\b" );
+                            if ( aNmRE.test(jsPrefs.windowActionNotPortlet) || aNm == jsId.ACT_VIEW )
+                                continue;
+                        }
                         tMenuActionNames.push( aNm );
                         btnActionNames[i] = null;
                         delete tBtnActionNameMap[ aNm ];
@@ -506,84 +531,53 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                     }
                 }
             }
-            if ( wDC.windowActionNoImage )
-            {
-                for ( var i = 0 ; i < btnActionNames.length ; i++ )
-                {
-                    aNm = btnActionNames[i];
-                    if ( wDC.windowActionNoImage[ aNm ] != null )
-                    {
-                        if ( aNm == jsId.ACT_MENU )
-                        {
-                            noMenuImg = true;
-                        }
-                        else
-                        {
-                            tMenuActionNames.push( aNm );
-                        }
-                        btnActionNames[i] = null;
-                        delete tBtnActionNameMap[ aNm ];
-                    }
-                }
-            }
-        }   // if ( wDC.windowActionButtonOrder != null )
+        }   // if ( wDCBtnOrder != null )
 
-        if ( wDC.windowActionMenuOrder )
-        {
-            if ( tPortlet )
-            {
-                for ( var aI = 0 ; aI < wDC.windowActionMenuOrder.length ; aI++ )
-                {
-                    aNm = wDC.windowActionMenuOrder[ aI ];
-                    tMenuActionNames.push( aNm );
-                }
-            }
-            else
-            {
-                for ( var aI = 0 ; aI < wDC.windowActionMenuOrder.length ; aI++ )
-                {
-                    aNm = wDC.windowActionMenuOrder[ aI ];
-                    if ( jsPrefs.windowActionDesktop[ aNm ] != null )
-                    {
-                        tMenuActionNames.push( aNm );
-                    }
-                }
-            }   // if ( tPortlet )
-        }   // if ( wDC.windowActionMenuOrder != null )
+        var menuActionNames = new Array();
+        var tMenuAddedMap = new Object();
 
         var aNmChgPortletTheme = jsId.ACT_CHANGEPORTLETTHEME;
         var portletDecorationsAllowed = jsPrefs.portletDecorationsAllowed;
         if ( jsPrefs.pageEditorLabels && portletDecorationsAllowed && portletDecorationsAllowed.length > 1 )
         {
-            var chgPortletThemeLabel = jsPrefs.pageEditorLabels[ aNmChgPortletTheme ];
+            aNm = aNmChgPortletTheme;
+            var chgPortletThemeLabel = jsPrefs.pageEditorLabels[ aNm ];
             if ( chgPortletThemeLabel )
             {
-                tMenuActionNames.push( aNmChgPortletTheme );
-                this.actionLabels[ aNmChgPortletTheme ] = chgPortletThemeLabel;
+                menuActionNames.push( aNm );
+                tMenuAddedMap[ aNm ]
+                this.actionLabels[ aNm ] = chgPortletThemeLabel;
             }
         }
 
-        var menuActionNames = new Array();
-        if ( tMenuActionNames.length > 0 || this.dbOn )
+        for ( var i = 0 ; i < tMenuActionNames.length ; i++ )
         {
-            var added = new Object();
-            for ( var i = 0 ; i < tMenuActionNames.length ; i++ )
+            aNm = tMenuActionNames[i];
+            if ( aNm != null && ! tMenuAddedMap[ aNm ] && ! tBtnActionNameMap[ aNm ] )
             {
-                aNm = tMenuActionNames[i];
-                if ( aNm != null && added[ aNm ] == null && tBtnActionNameMap[ aNm ] == null )
+                menuActionNames.push( aNm );
+                tMenuAddedMap[ aNm ] = true;
+            }
+        }
+        if ( wDCMenuOrder )
+        {
+            for ( var aI = 0 ; aI < wDCMenuOrder.length ; aI++ )
+            {
+                aNm = wDCMenuOrder[ aI ];
+                if ( aNm != null && ! tMenuAddedMap[ aNm ] && ! tBtnActionNameMap[ aNm ] && ( tPortlet || jsPrefs.windowActionDesktop[ aNm ] ) )
                 {
                     menuActionNames.push( aNm );
-                    added[ aNm ] = true;
+                    tMenuAddedMap[ aNm ] = true;
                 }
             }
-            // 
-            // jetspeed.prefs.pageEditorLabels.changeportlettheme
-            // desktop.pageeditor.changeportlettheme
-            
-            if ( this.dbOn )
-            {
-                menuActionNames.push( { aNm: this.dbMenuDims, dev: true } );
-            }
+        }
+
+        // 
+        // jetspeed.prefs.pageEditorLabels.changeportlettheme
+        // desktop.pageeditor.changeportlettheme            
+        if ( this.dbOn )
+        {
+            menuActionNames.push( { aNm: this.dbMenuDims, dev: true } );
         }
 
         var actionMenuWidget = null;
@@ -653,7 +647,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             wDC.windowActionMenuNames = menuActionNames;
             wDC.windowActionMenuWidget = actionMenuWidget;
             //dojo.debug( "set portlet button names (" + this.widgetId + ") [" + btnActionNames.join( ", " ) + "]" );
-            //dojo.debug( "portlet wDC.windowActionButtonOrder [" + wDC.windowActionButtonOrder.join( ", " ) + "]" );
+            //dojo.debug( "portlet wDC.windowActionButtonOrder [" + wDCBtnOrder.join( ", " ) + "]" );
         }
         else
         {
@@ -736,7 +730,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             if ( this.ie6 && ! wDC._ie6used )
             {
                 wDC._ie6used = true;
-                this.actionBtnSyncDefer();
+                this.actionBtnSyncDefer( false, jsObj, djObj );
             }
             else
             {
@@ -806,10 +800,13 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {
             var tbNodeCompStyle = djObj.gcs( tbNode );
             tbLayoutInfo = jsUI.getLayoutExtents( tbNode, tbNodeCompStyle, djObj, jsObj );
-            var dragCursor = tbNodeCompStyle.cursor;
-            if ( dragCursor == null || dragCursor.length == 0 )
-                dragCursor = "move";
-            decorationConfig.dragCursor = dragCursor;
+            if ( ! decorationConfig.dragCursor )
+            {   // we want to catch this the first time - otherwise, a recall with forIFrameStyles can occur with the tbNode styles already sync'd
+                var dragCursor = tbNodeCompStyle.cursor;
+                if ( dragCursor == null || dragCursor.length == 0 )
+                    dragCursor = "move";
+                decorationConfig.dragCursor = dragCursor;
+            }
             tbLayoutInfo.mBh = djObj.getMarginBox( tbNode, tbNodeCompStyle, jsObj ).h;
             var tbMarginBottom = Math.max( 0, tbLayoutInfo.mE.h - tbLayoutInfo.mE.t );
             cNode_mBh_adj_tb_mBh = ( tbLayoutInfo.mBh - tbMarginBottom ) + Math.max( 0, (tbMarginBottom - cMarginTop) );
@@ -920,7 +917,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             if ( ! this.portlet )
             {
-                this.actionBtnSyncDefer();
+                this.actionBtnSyncDefer( false, jsObj, dojo );
             }
         }
         else if ( aNm == jsId.ACT_RESTORE )
@@ -949,7 +946,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             }
             if ( ! this.portlet )
             {
-                this.actionBtnSyncDefer();
+                this.actionBtnSyncDefer( false, jsObj, dojo );
             }
         }
         else if ( aNm == jsId.ACT_MAXIMIZE )
@@ -989,22 +986,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var jsId = jsObj.id;
         var enabled = false;
         var winState = this.windowState;
-        if ( this.minimizeTempRestore != null )
-        {
-            if ( this.portlet )
-            {
-                var actionDef = this.portlet.getAction( aNm );
-                if ( actionDef != null )
-                {
-                    if ( actionDef.id == jsId.ACT_REMOVEPORTLET )
-                    {
-                        if ( jsObj.page.editMode && this.getLayoutActionsEnabled() )
-                            enabled = true;
-                    }
-                }
-            }
-        }
-        else if ( aNm == jsId.ACT_MENU )
+        
+        if ( aNm == jsId.ACT_MENU )
         {
             if ( ! this._actionMenuIsEmpty( jsObj, jsId ) )
                 enabled = true;
@@ -1038,7 +1021,27 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
         else if ( aNm == jsId.ACT_CHANGEPORTLETTHEME )
         {
-            enabled = this.editPageEnabled;
+            if ( this.cP_D && this.editPageEnabled && this.getLayoutActionsEnabled() )
+                enabled = true;
+        }
+        else if ( aNm == this.dbMenuDims )
+        {
+                enabled = true;
+        }
+        else if ( this.minimizeTempRestore != null )
+        {
+            if ( this.portlet )
+            {
+                var actionDef = this.portlet.getAction( aNm );
+                if ( actionDef != null )
+                {
+                    if ( actionDef.id == jsId.ACT_REMOVEPORTLET )
+                    {
+                        if ( jsObj.page.editMode && this.getLayoutActionsEnabled() )
+                            enabled = true;
+                    }
+                }
+            }
         }
         else if ( this.portlet )
         {
@@ -1064,10 +1067,6 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                         enabled = true;
                     }
                 }
-            }
-            else if ( aNm == this.dbMenuDims )
-            {
-                enabled = true;
             }
         }
         else
@@ -1127,11 +1126,40 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         return actionMenuIsEmpty ;
     },
 
-    actionBtnSyncDefer: function()
+    actionBtnSyncDefer: function( forceRepaint, jsObj, djObj )
     {   // delay helps mozilla update btn visibility on minimize and restore-from-minimized
-        dojo.lang.setTimeout( this, this.actionBtnSync, 10 );
+        if ( forceRepaint && jsObj.UAie )
+            forceRepaint = false;
+        if ( forceRepaint )
+        {
+            var currentOpacity = djObj.gcs( this.domNode ).opacity;
+            if ( typeof currentOpacity == "undefined" || currentOpacity == null )
+                forceRepaint = false;
+            else
+            {   // firefox has repaint issues with (at least) window resize, where images (e.g. resize handle) can
+                //         leave trails or not be displayed at the end of resize
+                //    here we attempt to coerce the browser into repainting the PortletWindow by adjusting the opacity style setting
+                currentOpacity = Number(currentOpacity);
+                this._savedOpacity = currentOpacity;
+                var adjOpacity = currentOpacity - 0.005;
+                adjOpacity = ( (adjOpacity <= 0.1) ? (currentOpacity + 0.005) : adjOpacity );
+                this.domNode.style.opacity = adjOpacity;
+                djObj.lang.setTimeout( this, this._actionBtnSyncRepaint, 20 );
+            }
+        }
+        if ( ! forceRepaint )
+            djObj.lang.setTimeout( this, this.actionBtnSync, 10 );
     },
 
+    _actionBtnSyncRepaint: function( jsObj, jsId )
+    {
+        this.actionBtnSync( jsObj, jsId );
+        if ( this._savedOpacity != null )
+        {
+            this.domNode.style.opacity = this._savedOpacity;
+            delete this._savedOpacity;
+        }
+    },
     actionBtnSync: function( jsObj, jsId )
     {
         if ( ! jsObj )
@@ -1168,11 +1196,13 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
     },
 
-    minimizeWindowTemporarily: function()
+    minimizeWindowTemporarily: function( setNeedsRenderOnRestore )
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
-        if ( this.minimizeTempRestore == null )
+        if ( setNeedsRenderOnRestore )
+            this.needsRenderOnRestore = true;
+        if ( ! this.minimizeTempRestore )
         {
             this.minimizeTempRestore = this.windowState;
             if ( this.windowState != jsId.ACT_MINIMIZE )
@@ -1182,22 +1212,85 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.actionBtnSync( jsObj, jsId );
         }
     },
-    restoreFromMinimizeWindowTemporarily: function()
+
+    /*  static  */
+    restoreAllFromMinimizeWindowTemporarily: function()
     {
         var jsObj = jetspeed;
         var jsId = jsObj.id;
-        var restoreToWindowState = this.minimizeTempRestore;
-        this.minimizeTempRestore = null;
-        if ( restoreToWindowState )
+        var idMin = jsId.ACT_MINIMIZE, idMax = jsId.ACT_MAXIMIZE;
+        var pWin;
+        var colNodes = [];
+        var winToMaximize = null;
+        var pWins = jsObj.page.getPWins();
+        for ( var i = 0; i < pWins.length; i++ )
         {
-            if ( restoreToWindowState != jsId.ACT_MINIMIZE )
+            pWin = pWins[i];
+            var restoreToWindowState = pWin.minimizeTempRestore;
+            delete pWin.minimizeTempRestore;
+            if ( restoreToWindowState )
             {
-                this.restoreWindow();
+
+                if ( restoreToWindowState == idMax )
+                    winToMaximize = pWin;
+                if ( restoreToWindowState == idMin )
+                {
+                    // nothing to do
+                }
+                else if ( pWin.needsRenderOnRestore && pWin.portlet )
+                {
+                    deferRestoreWindow = true;
+                    if ( restoreToWindowState != idMax )
+                        pWin.restoreOnNextRender = true;
+                    delete pWin.needsRenderOnRestore;
+                    pWin.portlet.renderAction( restoreToWindowState );
+                }
+                else 
+                {
+                    pWin.restoreWindow();
+                    if ( ! pWin.portlet )
+                    {
+                        pWin.actionBtnSyncDefer( false, jsObj, dojo );
+                    }
+                }
+                pWin.actionBtnSync( jsObj, jsId );
             }
-            this.actionBtnSync( jsObj, jsId );
+
+            if ( pWin.ie6 && pWin.posStatic )
+            {
+                var colDomNode = pWin.domNode.parentNode;
+                var added = false;
+                for ( var j = 0 ; j < colNodes.length ; j++ )
+                {
+                    if ( colNodes[j] == colDomNode )
+                    {
+                        added = true;
+                        break;
+                    }
+                }
+                if ( ! added )
+                    colNodes.push( colDomNode );
+            }
+        }
+
+        jsObj.widget.showAllPortletWindows();
+
+        if ( winToMaximize != null )
+        {
+            winToMaximize.maximizeWindow();
+        }
+
+        if ( jsObj.UAie6 )
+        {
+            // jsObj.page.displayAllPWins();   // line is from when this code was in PageEditor.editMoveExit
+            if ( colNodes.length > 0 )
+            {
+                var zappedContentRestorer = new jetspeed.widget.IE6ZappedContentRestorer( colNodes );
+                dojo.lang.setTimeout( zappedContentRestorer, zappedContentRestorer.showNext, 20 );
+            }
         }
     },
-    
+
     minimizeWindow: function( minimizeOnLoad )
     {
         if ( ! this.tbNode )
@@ -1473,7 +1566,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
     getLayoutActionsEnabled: function()
     {
-        return ( this.windowState != jetspeed.id.ACT_MAXIMIZE && ( ! this.portlet || ! this.portlet.layoutActionsDisabled ) );
+        return ( this.windowState != jetspeed.id.ACT_MAXIMIZE && ( this.portlet == null || ( ! this.portlet.layoutActionsDisabled || (this.cL_NA_ED == true) ) ) );
     },
     _setTitleBarDragging: function( suppressStyleUpdate, jsCss, enableDrag )
     {
@@ -1674,9 +1767,11 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this.portlet.submitWinState();
     },  // makeHeightVariable
 
-    editPageInitiate: function( jsObj, jsCss, suppressAlterCss )
+    editPageInitiate: function( cP_D, cL_NA_ED, jsObj, jsCss, suppressAlterCss )
     {
         this.editPageEnabled = true;
+        this.cP_D = cP_D;
+        this.cL_NA_ED = cL_NA_ED;
         var wDC = this.decConfig;
         if ( ! wDC.windowTitlebar || ! wDC.windowResizebar )
         {
@@ -1693,15 +1788,21 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 if ( this.rbNodeCss && this.windowState != jsObj.id.ACT_MINIMIZE )
                     this.rbNodeCss[ disIdx ] = "block";
             }
-            this._setTitleBarDragging( true, jsCss );
+            this._setTitleBarDragging( false, jsCss );
             if ( ! suppressAlterCss )
                 this._alterCss( true, true );
+        }
+        else
+        {
+            this._setTitleBarDragging( false, jsCss );
         }
     },
 
     editPageTerminate: function( jsCss, suppressAlterCss )
     {
         this.editPageEnabled = false;
+        delete this.cP_D;
+        delete this.cL_NA_ED;
         var wDC = this.decConfig;
         if ( ! wDC.windowTitlebar || ! wDC.windowResizebar )
         {
@@ -1718,9 +1819,13 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 if ( this.rbNodeCss )
                     this.rbNodeCss[ disIdx ] = "none";
             }
-            this._setTitleBarDragging( true, jsCss );
+            this._setTitleBarDragging( false, jsCss );
             if ( ! suppressAlterCss )
                 this._alterCss( true, true );
+        }
+        else
+        {
+            this._setTitleBarDragging( false, jsCss );
         }
     },
 
@@ -1777,7 +1882,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         
         if ( this.editPageEnabled )
         {
-            this.editPageInitiate( jsObj, jsCss, true );
+            this.editPageInitiate( this.cP_D, this.cL_NA_ED, jsObj, jsCss, true );
         }
         else
         {
@@ -1913,7 +2018,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var ofXIdx = jsCss.cssOx, ofYIdx = jsCss.cssOy;
             if ( heightToFit && ! iframeLayout )
             {
-                dNodeCss[ ofYIdx ] = "visible";
+                dNodeCss[ ofYIdx ] = "hidden";   // BOZO:NOW: was "visible" prior to 2007-11-05
                 cNodeCss[ ofYIdx ] = "visible";
             }
             else
@@ -3190,7 +3295,10 @@ dojo.extend( jetspeed.widget.PortletWindowResizeHandle, {
 	_endSizing: function(e)
     {
         var jsObj = jetspeed;
-        this._cleanUpLastEvt( dojo.event, jsObj, jsObj.ui );
+        var djObj = dojo;
+        this._cleanUpLastEvt( djObj.event, jsObj, jsObj.ui );
+
+        this.pWin.actionBtnSyncDefer( true, jsObj, djObj );
 
 		this._isSizing = false;
 	}
@@ -3215,7 +3323,7 @@ dojo.lang.extend(jetspeed.widget.BackgroundIframe, {
 if ( ! dojo.dnd )
     dojo.dnd = {};
 
-dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, dragLayoutColumn, moveableObj, e, notifyOnAbsolute, djObj, jsObj){
+dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, dragLayoutColumn, cL_NA_ED, moveableObj, e, notifyOnAbsolute, djObj, jsObj){
 	// summary: an object, which makes a node follow the mouse, 
 	//	used as a default mover, and as a base class for custom movers
 	// node: Node: a node (or node's id) to be moved
@@ -3236,7 +3344,8 @@ dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, dragLayoutColumn, move
     this.moveableObj = moveableObj;
     this.windowOrLayoutWidget = windowOrLayoutWidget;
 	this.node = dragNode;
-    this.nodeLayoutColumn = dragLayoutColumn;
+    this.dragLayoutColumn = dragLayoutColumn;
+    this.cL_NA_ED = cL_NA_ED;
     this.posStatic = windowOrLayoutWidget.posStatic;
     this.notifyOnAbsolute = notifyOnAbsolute;
     if ( e.ctrlKey && windowOrLayoutWidget.moveAllowTilingChg )
@@ -3250,7 +3359,12 @@ dojo.dnd.Mover = function(windowOrLayoutWidget, dragNode, dragLayoutColumn, move
         }
     }
     this.posRecord = {};
-    this.disqualifiedColumnIndexes = ( dragLayoutColumn != null ) ? dragLayoutColumn.getDescendantCols() : {};
+    this.disqualifiedColumnIndexes = {};
+    if ( dragLayoutColumn != null )
+    {
+        this.disqualifiedColumnIndexes = dragLayoutColumn.col.getDescendantCols();
+        
+    }
 
     this.marginBox = {l: e.pageX, t: e.pageY};
 
@@ -3789,17 +3903,10 @@ dojo.extend(dojo.dnd.Mover, {
         if ( this.posStatic || changeToTiled )
         {
             this.heightHalf = mP.h / 2;
-            var columnObjArray = jsObj.page.columns || [];
-            var noOfCols = columnObjArray.length;
-            var columnInfoArray = new Array( noOfCols );
-            var columnContainerNode = djObj.byId( jsObj.id.COLUMNS );
-            if ( columnContainerNode )
-            {
-                var pageLayoutInfo = jsObj.page.layoutInfo;
-                this._getChildColInfo( columnContainerNode, columnInfoArray, jsObj.page.columns, dqCols, pageLayoutInfo, pageLayoutInfo.columns, pageLayoutInfo.desktop, node, ( debugEnabled ? 1 : null ), indentT, djObj, jsObj );
-                if ( debugEnabled )
-                    djObj.hostenv.println( indentT + "--------------------" );
-            }
+            var dragLayoutColumn = this.dragLayoutColumn || {};
+            var columnInfoArray = jsUI.updateChildColInfo( node, dqCols, dragLayoutColumn.maxdepth, this.cL_NA_ED, ( debugEnabled ? 1 : null ), indentT );
+            if ( debugEnabled )
+                djObj.hostenv.println( indentT + "--------------------" );
             this.columnInfoArray = columnInfoArray;
         }
 
@@ -3809,7 +3916,7 @@ dojo.extend(dojo.dnd.Mover, {
             //djObj.debug( "initial node set-dims  l=" + node.style.left + "  t=" + node.style.top + "  w=" + node.style.width + "  h=" + node.style.height );
 
             if ( this.notifyOnAbsolute )
-            {   // BOZO:NOW: consider making width smaller during drag  // this.nodeLayoutColumn
+            {   // BOZO:NOW: consider making width smaller during drag  // this.dragLayoutColumn
                 wndORlayout.dragChangeToAbsolute( this, node, this.marginBox, djObj, jsObj );
                 //this.heightHalf = mP.h / 2;
             }
@@ -3821,78 +3928,7 @@ dojo.extend(dojo.dnd.Mover, {
             //djObj.debug( "initial position: " + jsObj.printobj( djObj.getMarginBox( node, null, jsObj ) ) );
         }
 	},   // Mover.onFirstMove
-
     
-    _getChildColInfo: function( parentNode, columnInfoArray, columnObjArray, disqualifiedColIndexes, pageLayoutInfo, parentNodeLayoutInfo, parentNodeParentLayoutInfo, dragNode, debugDepth, debugIndent, djObj, jsObj )
-    {   // getColFromColNode
-        var childNodes = parentNode.childNodes;
-        var childNodesLen = ( childNodes ? childNodes.length : 0 );
-        if ( childNodesLen == 0 ) return;
-        var absPosParent = djObj.html.getAbsolutePosition( parentNode, true );
-        var mbParent = jsObj.ui.getMarginBox( parentNode, parentNodeLayoutInfo, parentNodeParentLayoutInfo, jsObj );
-        var colLayoutInfo = pageLayoutInfo.column;
-        var child, col, pageColIndexStr, pageColIndex, layoutId, isLayout, mbCol, absLeftCol, absTopCol, heightCol, colInfo, highHeightCol, colGetChildren;
-        var colTopOffset = null, debugNextDepth = ( debugDepth != null ? (debugDepth + 1) : null ), tDebugNextDepth, debugMsg;
-        for ( var i = 0 ; i < childNodesLen ; i++ )
-        {
-            child = childNodes[i];
-            pageColIndexStr = child.getAttribute( "columnindex" );
-            pageColIndex = ( pageColIndexStr == null ? -1 : new Number( pageColIndexStr ) );
-            if ( pageColIndex >= 0 )
-            {
-                layoutId = child.getAttribute( "layoutid" );
-                isLayout = ( layoutId != null && layoutId.length > 0 );
-                colGetChildren = true;
-                tDebugNextDepth = debugNextDepth;
-                debugMsg = null;
-                if ( ! isLayout && ( ! ( child === dragNode ) ) )
-                {
-                    col = columnObjArray[pageColIndex];
-                    if ( col && ! col.layoutActionsDisabled && ( disqualifiedColIndexes == null || disqualifiedColIndexes[ pageColIndex ] == null ) )
-                    {
-                        mbCol = jsObj.ui.getMarginBox( child, colLayoutInfo, parentNodeLayoutInfo, jsObj );
-                        if ( colTopOffset == null )
-                        {
-                            colTopOffset = mbCol.t - mbParent.t;
-                            highHeightCol = mbParent.h - colTopOffset;
-                        }
-                        absLeftCol = absPosParent.left + ( mbCol.l - mbParent.l );
-                        absTopCol = absPosParent.top + colTopOffset;
-                        heightCol = mbCol.h;
-                        if ( heightCol < highHeightCol )
-                            heightCol = highHeightCol; // heightCol + Math.floor( ( highHeightCol - heightCol ) / 2 );
-                        if ( heightCol < 40 )
-                            heightCol = 40;
-                            
-                        var colChildNodes = child.childNodes;
-                        colInfo = { left: absLeftCol, top: absTopCol, right: (absLeftCol + mbCol.w), bottom: (absTopCol + heightCol), childCount: ( colChildNodes ? colChildNodes.length : 0 ), pageColIndex: pageColIndex };
-                        colInfo.height = colInfo.bottom - colInfo.top;
-                        colInfo.width = colInfo.right - colInfo.left;
-                        colInfo.yhalf = colInfo.top + ( colInfo.height / 2 );
-                        columnInfoArray[ pageColIndex ] = colInfo;
-                        colGetChildren = ( colInfo.childCount > 0 );
-                        if ( colGetChildren )
-                            child.style.height = "";
-                        else
-                            child.style.height = "1px";
-                        if ( debugDepth != null )
-                            debugMsg = ( jsObj.debugDims( colInfo, true ) + " yhalf=" + colInfo.yhalf + ( mbCol.h != heightCol ? ( " hreal=" + mbCol.h ) : "" ) + " childC=" + colInfo.childCount + "}" );
-                    }
-                }
-                if ( debugDepth != null )
-                {
-                    if ( isLayout )
-                        tDebugNextDepth = debugNextDepth + 1;
-                    if ( debugMsg == null )
-                        debugMsg = "---";
-                    djObj.hostenv.println( djObj.string.repeat( debugIndent, debugDepth ) + "["+( ( pageColIndex < 10 ? " " : "" ) + pageColIndexStr )+"] " + debugMsg );
-                }
-                if ( colGetChildren )
-                    this._getChildColInfo( child, columnInfoArray, columnObjArray, disqualifiedColIndexes, pageLayoutInfo, ( isLayout ? pageLayoutInfo.columnLayoutHeader : colLayoutInfo ), parentNodeLayoutInfo, dragNode, tDebugNextDepth, debugIndent, djObj, jsObj );
-            }
-        }
-    },  // _getChildColInfo
-
     mouseDownDestroy: function( e )
     {
         var jsObj = this.jsObj;
@@ -4055,7 +4091,6 @@ dojo.extend(dojo.dnd.Moveable, {
             this._cleanUpLastEvt( djObj, djEvtObj, jsObj, jsObj.ui );
 
             var wndORlayout = this.windowOrLayoutWidget;
-            var dragLayoutColumn = null;
             this.beforeDragColRowInfo = null;
 
             if ( ! wndORlayout.isLayoutPane )
@@ -4064,7 +4099,7 @@ dojo.extend(dojo.dnd.Moveable, {
                 if ( dragNode != null )
                 {
                     this.node = dragNode;
-		            this.mover = new djObj.dnd.Mover( wndORlayout, dragNode, dragLayoutColumn, this, e, false, djObj, jsObj );
+		            this.mover = new djObj.dnd.Mover( wndORlayout, dragNode, null, wndORlayout.cL_NA_ED, this, e, false, djObj, jsObj );
                 }
             }
             else

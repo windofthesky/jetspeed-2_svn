@@ -133,20 +133,29 @@ dojo.widget.defineWidget(
 
         postCreate: function( args, fragment, parent )
         {
-            this.editPageInitiate();
+            var startInEditModeMoveExecuteHere = false;
+            var startInEditModeMove = null;
+            //if ( this.editModeMove )
+            //    startInEditModeMove = {};
+            //if ( startInEditModeMove == null && this.checkPerm( this.PM_MZ_P, jetspeed ) )
+            //    startInEditModeMove = { execEditMode: true };
+            if ( this.editModeMove || this.checkPerm( this.PM_MZ_P, jetspeed ) )
+                startInEditModeMove = { execEditMode: true };
+
+            this.editPageInitiate( startInEditModeMove );
         },
 
         // initialization
-        editPageInitiate: function()
+        editPageInitiate: function( startInEditModeMove )
         {
             var themesContentManager = null;
             if ( this.editorInitiatedFromDesktop )
-                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, false, false, true, true, true );
+                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, false, false, true, true, true, startInEditModeMove );
             else
-                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, true, true, true, false, false );
+                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, true, true, true, false, false, startInEditModeMove );
             themesContentManager.getContent();
         },
-        editPageBuild: function()
+        editPageBuild: function( startInEditModeMove )
         {
             var jsObj = jetspeed;
             var jsPage = jsObj.page;
@@ -156,32 +165,35 @@ dojo.widget.defineWidget(
             this.layoutEditPaneWidgets = new Array();
             var pageEditPaneWidget = djObj.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jsPage.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jsPage.themeDefinitions.portletDecorations, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
             pageEditPaneWidget.pageEditorWidget = this;
-            pageEditPaneWidget.domNode.style.display = "none";
+            var dNodeStyle = pageEditPaneWidget.domNode.style;
+            dNodeStyle.display = "none";
+            dNodeStyle.visibility = "hidden";
             djObj.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
             this.pageEditorWidgets.push( pageEditPaneWidget );
             this.pageEditPaneWidget = pageEditPaneWidget;
             
-            if ( ! this.loadTimeDistribute )
+            jsObj.url.loadingIndicatorStep( jsObj );
+            this._buildDepth = 0;
+            this._buildRootPane( startInEditModeMove );
+            
+            if ( startInEditModeMove != null && startInEditModeMove.execEditMode )
             {
-                jsObj.url.loadingIndicatorStep( jsObj );
-                this._buildRootPane();
-            }
-            else
-            {
-                djObj.lang.setTimeout( this, this._buildRootPane, 10 );
-                jsObj.url.loadingIndicatorStep( jsObj );
+                djObj.lang.setTimeout( this, this.editMoveModeStart, 100 );
             }
         },
         
-        _buildRootPane: function()
+        _buildRootPane: function( startInEditModeMove )
         {
             var jsObj = jetspeed;
             var jsPage = jsObj.page;
             var djObj = dojo;
 
-            var rootLayoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsPage.rootFragmentId, isRootLayout: true, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
+            var editModeMove = ( startInEditModeMove != null );
+            var rootLayoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsPage.rootFragmentId, isRootLayout: true, depth: 0, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels, startInEditModeMove: editModeMove } );
             rootLayoutEditPaneWidget.pageEditorWidget = this;
-            rootLayoutEditPaneWidget.domNode.style.display = "none";
+            var dNodeStyle = rootLayoutEditPaneWidget.domNode.style;
+            dNodeStyle.display = "none";
+            dNodeStyle.visibility = "hidden";
             djObj.dom.insertAfter( rootLayoutEditPaneWidget.domNode, this.pageEditPaneWidget.domNode );
             this.pageEditorWidgets.push( rootLayoutEditPaneWidget );
             this.layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
@@ -217,9 +229,11 @@ dojo.widget.defineWidget(
                     col = jsPage.columns[i];
                     if ( col.layoutHeader )
                     {
-                        layoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutColumn: col, layoutId: col.layoutId, layoutInfo: jsPage.layoutInfo.columnLayoutHeader, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
+                        layoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutColumn: col, layoutId: col.layoutId, depth: col.layoutDepth, layoutInfo: jsPage.layoutInfo.columnLayoutHeader, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
                         layoutEditPaneWidget.pageEditorWidget = this;
-                        layoutEditPaneWidget.domNode.style.display = "none";
+                        var dNodeStyle = layoutEditPaneWidget.domNode.style;
+                        dNodeStyle.display = "none";
+                        dNodeStyle.visibility = "hidden";
                         if ( col.domNode.firstChild != null )
                             col.domNode.insertBefore( layoutEditPaneWidget.domNode, col.domNode.firstChild );
                         else
@@ -248,40 +262,69 @@ dojo.widget.defineWidget(
             }
             else
             {
-                if ( jsObj.UAie )   // provide background when prevent IE bleed-through problem
-                {
-                    this.bgIframe = new jsObj.widget.BackgroundIframe( this.domNode, "ieLayoutBackgroundIFrame", djObj );
-                }
-
-                var pageEditorWidgets = this.pageEditorWidgets;
-                if ( pageEditorWidgets != null )
-                {
-                    for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
-                    {
-                        pageEditorWidgets[i].domNode.style.display = "block";
-                    }
-                }
-
-                this.editPageSyncPortletActions();
-
-                jsObj.url.loadingIndicatorHide();
-                if ( jsObj.UAie6 )
-                {
-                    //jsObj.url.loadingIndicatorHide();
-                    jsPage.displayAllPWins();
-                }
+                djObj.lang.setTimeout( this, this._buildFinished, 10 );
             }
         },
 
-        editPageSyncPortletActions: function()
+        _buildFinished: function()
         {
-            var portlets = jetspeed.page.getPortletArray()
+            var jsObj = jetspeed;
+            
+            if ( jsObj.UAie )   // provide background when prevent IE bleed-through problem
+            {
+                this.bgIframe = new jsObj.widget.BackgroundIframe( this.domNode, "ieLayoutBackgroundIFrame", dojo );
+            }
+
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
+            {
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
+                {
+                    var dNodeStyle = pageEditorWidgets[i].domNode.style;
+                    dNodeStyle.display = "block";
+                    dNodeStyle.visibility = "visible";
+                }
+            }
+
+            this.editPageSyncPortletActions( true, jsObj );
+
+            jsObj.url.loadingIndicatorHide();
+            if ( jsObj.UAie6 )
+            {
+                //jsObj.url.loadingIndicatorHide();
+                jsObj.page.displayAllPWins();
+            }
+        },
+
+        editPageSyncPortletActions: function( showing, jsObj )
+        {
+            var jsPage = jsObj.page;
+            var jsCss = jsObj.css;
+            if ( showing )
+                jsObj.ui.updateChildColInfo();
+
+            var portlets = jsPage.getPortletArray()
             if ( portlets != null )
             {
                 for ( var i = 0 ; i < portlets.length ; i++ )
                 {
                     portlets[i].syncActions();
                 }
+            }
+
+            var peProto = jsObj.widget.PageEditor.prototype;
+            var cP_D = this.checkPerm(this.PM_P_D,jsObj,peProto);
+            var cL_NA_ED = this.canL_NA_ED(jsObj,peProto);
+
+            var pWins = jsPage.portlet_windows;
+            for ( var windowId in pWins )
+            {
+                var pWin = pWins[ windowId ];
+                if ( ! pWin ) continue;
+                if ( showing )
+                    pWin.editPageInitiate( cP_D, cL_NA_ED, jsObj, jsCss );
+                else
+                    pWin.editPageTerminate( jsObj, jsCss );
             }
         },
 
@@ -295,22 +338,32 @@ dojo.widget.defineWidget(
                     pageEditorWidgets[i].hide();
                 }
             }
+
             this.hide();
-            this.editPageSyncPortletActions();
+
+            this.editPageSyncPortletActions( false, jetspeed );            
         },
         editPageShow: function()
         {
             var jsObj = jetspeed;
             var pageEditorWidgets = this.pageEditorWidgets;
+            var moveModeIsEnabled = this.editModeMove;
             if ( pageEditorWidgets != null )
             {
                 for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    pageEditorWidgets[i].editModeRedisplay();
+                    pageEditorWidgets[i].editModeRedisplay( moveModeIsEnabled );
                 }
             }
+
             this.show();
-            this.editPageSyncPortletActions();
+
+            this.editPageSyncPortletActions( true, jsObj );
+
+            if ( moveModeIsEnabled )
+            {
+                this.editMoveModeStart();
+            }
             if ( jsObj.UAie6 )
                 jsObj.page.displayAllPWins();
         },
@@ -422,19 +475,149 @@ dojo.widget.defineWidget(
                 }
             }
         },
-
+        checkPerm: function(p,jsObj,proto)
+        {
+            var peProto = proto || jsObj.widget.PageEditor.prototype;
+            var perms = peProto.perms;
+            if ( perms == null )
+                perms = peProto.perms = jsObj.page._perms(jsObj.prefs,-1,String.fromCharCode);
+            if ( perms == null ) return false;
+            if ( p )
+                return ((perms[0] & p) > 0);
+            return perms;
+        },
+        getLDepthPerm: function(jsObj,proto)
+        {
+            var perms = this.checkPerm(null,jsObj,proto);
+            if ( perms && perms.length >= 2 )
+                return perms[1];
+            return -1;
+        },
+        canL_NA_ED: function(jsObj,proto)
+        {
+            var peProto = proto || jsObj.widget.PageEditor.prototype;
+            var cL_NA_ED = peProto.checkPerm( peProto.PM_L_NA_ED, jsObj, peProto );
+            if ( ! cL_NA_ED )
+                cL_NA_ED = peProto.hasRPerm( jsObj, peProto );
+            return cL_NA_ED;
+        },
+        hasRPerm: function(jsObj,proto)
+        {
+            var peProto = proto || jsObj.widget.PageEditor.prototype;
+            var rperm = false;
+            if ( typeof proto.permR != "undefined" )
+                rperm = proto.permR;
+            else
+            {
+                var perms = this.checkPerm(null,jsObj,proto);
+                if ( perms && perms.length >= 3 && perms[2] && perms[2].length > 0 )
+                {
+                    var u = jsObj.page._getU();
+                    if ( u && u.r && u.r[ perms[2] ] )
+                    {
+                        rperm = true;
+                    }
+                }
+                proto.permR = rperm;
+            }
+            return rperm;
+        },
         refreshPage: function()
         {
             dojo.lang.setTimeout( this, this._doRefreshPage, 10 );
         },
         _doRefreshPage: function()
         {
-            var pageUrl = jetspeed.page.getPageUrl();
-            pageUrl = jetspeed.url.addQueryParameter( pageUrl, jetspeed.id.PG_ED_PARAM, "true", true );
-            window.location.href = pageUrl.toString();
+            var jsObj = jetspeed;
+            var pageUrl = jsObj.page.getPageUrl();
+
+            //pageUrl = jsObj.url.addQueryParameter( pageUrl, jsObj.id.PG_ED_PARAM, "true", true );  // BOZO:NOW: is this ok when ajax-pagenavigation is off???? 
+            if ( ! jsObj.prefs.ajaxPageNavigation )
+            {
+                var stateVal = 0;
+                var wt = null;
+                    
+                if ( this.editModeMove )
+                {
+                    if ( ! this.checkPerm( this.PM_MZ_P, jetspeed ) )
+                        stateVal |= this.PM_MZ_P;
+                    var identifierCheck = /\b([a-z_A-Z$]\w*)\b(?!-)/;
+                    var pWins = jsObj.page.getPWins();
+                    var windowTitlesAdded = 0;
+                    var windowTitlesJSON = [];
+                    for ( var i = 0; i < pWins.length; i++ )
+                    {
+                        pWin = pWins[i];
+                        if ( pWin && pWin.portlet )
+                        {
+                            var pTitle = pWin.getPortletTitle();
+                            if ( pTitle != null && pTitle.length > 0 )
+                            {
+                                var pWinId = pWin.portlet.entityId;
+                                if ( ! identifierCheck.test( pWinId ) )
+                                    pWinId = "\"" +  pWinId + "\"";
+
+                                if ( windowTitlesAdded > 0 )
+                                    windowTitlesJSON.push( "," );
+                                windowTitlesJSON.push( pWinId+":\"" + pTitle + "\"" );
+                                windowTitlesAdded++;
+                                if ( windowTitlesJSON.length > 1024 )
+                                {
+                                    windowTitlesJSON = null;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if ( windowTitlesAdded > 0 && windowTitlesJSON != null && windowTitlesJSON.length > 0 )
+                    {
+                        wt = "";
+                        var wtRaw = windowTitlesJSON.join("");
+                        var wtRawLen = wtRaw.length;
+                        var wtCh, wtHCh, wtHChLen;
+                        for ( var wtRawI = 0 ; wtRawI < wtRawLen ; wtRawI++ )
+                        {
+                            wtCh = wtRaw.charCodeAt( wtRawI );
+                            wtHCh = (wtCh).toString(16);
+                            wtHChLen = wtHCh.length;
+                            if ( wtHChLen < 1 || wtHChLen > 2 )
+                            {
+                                wt = null;
+                                windowTitlesJSON = null;
+                                break;
+                            }
+                            else if ( wtHChLen == 1 )
+                            {
+                                wtHCh += "0";
+                            }
+                            wt += wtHCh;
+                        }
+                        if ( wt == null || wt.length == 0 )
+                            wt = null;
+                        else
+                            stateVal |= this.PM_MZ_P;
+                    }
+                }
+                var modPageUrl = pageUrl;
+                if ( wt != null || stateVal > 0 )
+                {
+                    var jsUrl = jsObj.url;
+                    modPageUrl = jsUrl.parse( pageUrl.toString() );
+                    if ( stateVal > 0 )
+                        modPageUrl = jsUrl.addQueryParameter( modPageUrl, jsObj.id.PG_ED_STATE_PARAM, (stateVal).toString(16), true );
+                    if ( wt != null && wt.length > 0 )
+                        modPageUrl = jsUrl.addQueryParameter( modPageUrl, jsObj.id.PG_ED_TITLES_PARAM, wt, true );
+                }
+
+                jsObj.pageNavigate( modPageUrl.toString(), null, true );
+            }
+            else
+            {
+                jsObj.updatePage( pageUrl.toString(), false, true, { editModeMove: this.editModeMove } );
+            }
         },
 
-        editMoveModeExit: function()
+        editMoveModeExit: function( sysInitiated )
         {
             var jsObj = jetspeed;
             var isIE6 = jsObj.UAie6;
@@ -442,29 +625,7 @@ dojo.widget.defineWidget(
                 jsObj.page.displayAllPWins( true );
 
             // restore all windows (that were not already minimized prior to move-mode)
-            var pWin;
-            var colNodes = [];
-            var pWins = jsObj.page.getPWins();
-            for ( var i = 0; i < pWins.length; i++ )
-            {
-                pWin = pWins[i];
-                pWin.restoreFromMinimizeWindowTemporarily();
-                if ( isIE6 && pWin.posStatic )
-                {
-                    var colDomNode = pWin.domNode.parentNode;
-                    var added = false;
-                    for ( var j = 0 ; j < colNodes.length ; j++ )
-                    {
-                        if ( colNodes[j] == colDomNode )
-                        {
-                            added = true;
-                            break;
-                        }
-                    }
-                    if ( ! added )
-                        colNodes.push( colDomNode );
-                }
-            }
+            jsObj.widget.PortletWindow.prototype.restoreAllFromMinimizeWindowTemporarily();
 
             var lepWidgets = this.layoutEditPaneWidgets;
             if ( lepWidgets != null )
@@ -475,17 +636,8 @@ dojo.widget.defineWidget(
                 }
             }
 
-            jsObj.widget.showAllPortletWindows();
-
-            if ( isIE6 )
-            {
-                jsObj.page.displayAllPWins();
-                if ( colNodes.length > 0 )
-                {
-                    var zappedContentRestorer = new jetspeed.widget.IE6ZappedContentRestorer( colNodes );
-                    dojo.lang.setTimeout( zappedContentRestorer, zappedContentRestorer.showNext, 20 );
-                }
-            }
+            if ( ! sysInitiated )
+                delete this.editModeMove;
         },
 
         editMoveModeStart: function()
@@ -541,6 +693,7 @@ dojo.widget.defineWidget(
                     jsObj.page.displayAllPWins( false, pWinObjsToRemainVisible );
                 }, 20);
             }
+            this.editModeMove = true;
         },
         onBrowserWindowResize: function()
         {   // called after ie6 resize window
@@ -572,7 +725,8 @@ dojo.widget.defineWidget(
                 }
             }
         },
-
+        PM_PG_L_D: 16, PM_L_N: 32, PM_L_CS: 64, PM_PG_AD: 128, PM_P_AD: 256, PM_PG_P_D: 512, PM_P_D: 1024, PM_MZ_P: 2048, PM_L_NA_ED: 4096, PM_L_NA_TLMV: 8192, PM_L_NA_CS: 16384,
+        
         _openDialog: function( dialogWidget )
         {   // this is to address a mozilla bug where insertion point is always invisible in text boxes
             var isMoz = jetspeed.UAmoz;
@@ -618,7 +772,7 @@ dojo.widget.defineWidget(
 
 
 // ... jetspeed.widget.EditPageGetThemesContentManager
-jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pageDecorations, portletDecorations, layouts, desktopPageDecorations, desktopPortletDecorations )
+jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pageDecorations, portletDecorations, layouts, desktopPageDecorations, desktopPortletDecorations, startInEditModeMove )
 {
     this.pageEditorWidget = pageEditorWidget;
     var getThemeTypes = new Array();
@@ -634,6 +788,7 @@ jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pa
         getThemeTypes.push( [ "desktopPortletDecorations", "portletDecorations" ] );
     this.getThemeTypes = getThemeTypes;
     this.getThemeTypeNextIndex = 0;
+    this.startInEditModeMove = startInEditModeMove;
 };
 jetspeed.widget.EditPageGetThemesContentManager.prototype =
 {
@@ -651,7 +806,7 @@ jetspeed.widget.EditPageGetThemesContentManager.prototype =
         }
         else
         {
-            this.pageEditorWidget.editPageBuild();
+            this.pageEditorWidget.editPageBuild( this.startInEditModeMove );
         }
     },
     notifySuccess: function( /* JSON */ getThemesData, /* String */ requestUrl, domainModelObject )
@@ -688,7 +843,7 @@ jetspeed.widget.RemovePageContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-remove-page" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-remove-page" ) )
         {
             var pageUrl = jetspeed.page.makePageUrl( "/" );
             pageUrl += "?" + jetspeed.id.PG_ED_PARAM + "=true";
@@ -764,7 +919,7 @@ jetspeed.widget.AddPageContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-add-page" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-add-page" ) )
         {
             var pageUrl = jetspeed.page.makePageUrl( this.pagePath );
             if ( ! dojo.string.endsWith( pageUrl, ".psml", true ) )
@@ -810,7 +965,7 @@ jetspeed.widget.MoveLayoutContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "moveabs-layout" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "moveabs-layout" ) )
         {
             
         }
@@ -850,7 +1005,7 @@ jetspeed.widget.UpdateFragmentContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-update-fragment" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-update-fragment" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
@@ -887,7 +1042,7 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-info" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-info" ) )
         {
             if ( this.refreshPage )
                 this.pageEditorWidget.refreshPage();
@@ -922,7 +1077,7 @@ jetspeed.widget.RemovePortletContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "removeportlet" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "removeportlet" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
@@ -956,7 +1111,7 @@ jetspeed.widget.RemoveLayoutContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "removeportlet" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "removeportlet" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
@@ -991,7 +1146,7 @@ jetspeed.widget.AddLayoutContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "addlayout" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "addlayout" ) )
         {
             this.pageEditorWidget.refreshPage();
         }

@@ -41,27 +41,19 @@ jetspeed.selector.PortletAddAjaxApiCallbackCL=function(_e){
 this.portletDef=_e;
 };
 jetspeed.selector.PortletAddAjaxApiCallbackCL.prototype={notifySuccess:function(_f,_10,_11){
-jetspeed.url.checkAjaxApiResponse(_10,_f,true,"add-portlet");
-},parseAddPortletResponse:function(_12){
-var _13=null;
-var _14=_12.getElementsByTagName("js");
-if(!_14||_14.length>1){
-dojo.raise("unexpected zero or multiple <js> elements in portlet selector xml");
-}
-var _15=_14[0].childNodes;
-for(var i=0;i<_15.length;i++){
-var _17=_15[i];
-if(_17.nodeType!=1){
-continue;
-}
-var _18=_17.nodeName;
-if(_18=="entity"){
-_13=((_17&&_17.firstChild)?_17.firstChild.nodeValue:null);
-break;
+var _12=jetspeed;
+var _13=_12.url.checkAjaxApiResponse(_10,_f,["refresh"],true,"add-portlet");
+if(_13=="refresh"&&_12.page!=null){
+var _14=_12.page.getPageUrl();
+if(_14!=null){
+if(!_12.prefs.ajaxPageNavigation){
+_12.pageNavigate(_14,null,true);
+}else{
+_12.updatePage(_14,false,true);
 }
 }
-return _13;
-},notifyFailure:function(_19,_1a,_1b,_1c){
-dojo.raise("PortletAddAjaxApiCallbackCL error ["+_1c.toString()+"] url: "+_1b+" type: "+_19+jetspeed.formatError(_1a));
+}
+},notifyFailure:function(_15,_16,_17,_18){
+dojo.raise("PortletAddAjaxApiCallbackCL error ["+_18.toString()+"] url: "+_17+" type: "+_15+jetspeed.formatError(_16));
 }};
 

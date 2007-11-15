@@ -62,7 +62,7 @@ jetspeed.debug =
 //jetspeed.debugContentDumpIds = [ "getmenus", "getmenu-.*" ];    // dump getmenus response and all getmenu responses
 //jetspeed.debugContentDumpIds = [ "page-.*" ];                   // dump page psml response
 //jetspeed.debugContentDumpIds = [ "js-cp-selector.2" ];          // dump portlet selector content
-//jetspeed.debugContentDumpIds = [ "moveabs-layout", "moveabs", "move", "addportlet" ];   // dump move and addportlet responses
+//jetspeed.debugContentDumpIds = [ "moveabs-layout", "moveabs", "move", "addportlet", "getuserinfo" ];   // dump move and addportlet responses
 //jetspeed.debugContentDumpIds = [ "js-cp-selector.*" ];          // dump portlet selector
 
 
@@ -104,7 +104,17 @@ jetspeed.debugWindowLoad = function()
         pwP.retrieveContent( null, null );
         var dbWW = jsObj.page.getPWin( dbWId );
 
-        djObj.event.connect( "after", djObj.hostenv, "println", dbWW, "contentChanged" );
+        dbWW.dbContentAdded = function( evt )
+        {
+            this.contentChanged( evt );
+            var clr = document.getElementById("_dbclrspan");
+            if ( clr )
+            {
+                clr.style.visibility = "visible";
+            }
+        };
+
+        djObj.event.connect( "after", djObj.hostenv, "println", dbWW, "dbContentAdded" );
     
         djObj.event.connect( dbWW, "actionBtnSync", jsObj, "debugWindowSave" );
         djObj.event.connect( dbWW, "endSizing", jsObj, "debugWindowSave" );
@@ -209,7 +219,7 @@ jetspeed.om.DojoDebugContentRetriever.prototype =
                 var indent = "";
                 for ( var i = 0 ; i < 20 ; i++ )
                     indent += "&nbsp;";
-                var titleWithClearAnchor = dbWindow.title + indent + '<a href="' + clearJS + '"><span style="font-size: xx-small; font-weight: normal">Clear</span></a>';
+                var titleWithClearAnchor = dbWindow.title + indent + '<a href="' + clearJS + '"><span id="_dbclrspan" style="visibility: hidden; font-size: xx-small; font-weight: normal; color: blue">Clear</span></a>';
                 dbWindow.tbTextNode.innerHTML = titleWithClearAnchor;
             }
         }
@@ -224,6 +234,11 @@ jetspeed.debugWindowClear = function()
     document.getElementById(dbNodeId).innerHTML='';
     if ( dbWindow && dbWindow.drag )
         dbWindow.drag.onMouseUp( null, true );
+    var clr = document.getElementById("_dbclrspan");
+    if ( clr )
+    {
+        clr.style.visibility = "hidden";
+    }
 };
 
 // debug info functions
@@ -329,8 +344,8 @@ jetspeed.debugColumn = function( col, suppressDims )
     if ( ! col ) return null;
     var dNodeCol = col.domNode;
     var out = "column[" + dojo.string.padLeft( String(col.pageColumnIndex), 2, " " ) + "]";
-    out += " layoutHeader=" + ( col.layoutHeader ? "T" : "F" ) + " id=" + ( dNodeCol != null ? dNodeCol.id : "null" ) + " layoutCol=" + col.layoutColumnIndex + " layoutId=" + col.layoutId + " size=" + col.size;
-    if ( dNodeCol != null && ! suppressDims )
+    out += " layoutHeader=" + ( col.layoutHeader ? "T" : "F" ) + " id=" + ( dNodeCol != null ? dNodeCol.id : "null" ) + " layoutCol=" + col.layoutColumnIndex + " layoutId=" + col.layoutId + " size=" + col.size + ( col.layoutDepth != null ? ( " depth=" + col.layoutDepth ) : "" ) + ( col.layoutMaxChildDepth > 0 ? ( " childDepth=" + col.layoutMaxChildDepth ) : "" ) + ( col.layoutActionsDisabled ? " noLayout=true" : "" );
+    if ( dNodeCol != null && ! suppressDims ) // layoutActionsDisabled
     {
         //var colCompStyle = dojo.gcs( dNodeCol );
         var colAbsPos = dojo.html.getAbsolutePosition( dNodeCol, true );
