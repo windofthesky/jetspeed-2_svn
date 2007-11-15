@@ -244,19 +244,19 @@ function clearAndDisableEditor()
 
     var buttonWidget = dojo.widget.byId( "newButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(false);
+        btnSetDisabled( buttonWidget, false );
 
     buttonWidget = dojo.widget.byId( "saveButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 
     buttonWidget = dojo.widget.byId( "revertButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 
     buttonWidget = dojo.widget.byId( "deleteButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 }
 
 function updateEditor( rowData )
@@ -384,6 +384,13 @@ function updateSelectedRow()
     }
 }
 
+function btnSetDisabled( btnWidget, /* Boolean */ disabled )
+{
+    if ( ! btnWidget ) return;
+    if ( btnWidget.disabled != disabled ) // bug in widget if called multiple times with same value
+        btnWidget.setDisabled(disabled);
+}
+
 function updateEditorControls()
 {
     var hasChanged = checkForChanges();
@@ -391,35 +398,35 @@ function updateEditorControls()
     {
         var buttonWidget = dojo.widget.byId( "saveButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
 
         buttonWidget = dojo.widget.byId( "revertButton" );
         if ( buttonWidget )
         {
             if ( hasChanged == "modified" )
             {
-                buttonWidget.setDisabled(false);
+                btnSetDisabled( buttonWidget, false );
             }
             else
             {
-                buttonWidget.setDisabled(true);
+                btnSetDisabled( buttonWidget, true );
             }
         }
 
         buttonWidget = dojo.widget.byId( "newButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(true);
+            btnSetDisabled( buttonWidget, true );
 
         buttonWidget = dojo.widget.byId( "deleteButton" );
         if ( buttonWidget )
         {
             if ( hasChanged == "modified" )
             {
-                buttonWidget.setDisabled(true);
+                btnSetDisabled( buttonWidget, true );
             }
             else
             {
-                buttonWidget.setDisabled(false);
+                btnSetDisabled( buttonWidget, false );
             }
         }
     }
@@ -427,19 +434,19 @@ function updateEditorControls()
     {
         var buttonWidget = dojo.widget.byId( "saveButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(true);
+            btnSetDisabled( buttonWidget, true );
 
         buttonWidget = dojo.widget.byId( "revertButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(true);
+            btnSetDisabled( buttonWidget, true );
 
         buttonWidget = dojo.widget.byId( "newButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
 
         buttonWidget = dojo.widget.byId( "deleteButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
     }
 }
 

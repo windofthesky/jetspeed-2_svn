@@ -17,19 +17,18 @@
 
 .permsRootLContainer { 
     width: 100%;
-    height: 100%;
+    height: 600px;
 }
 
 .permsTabLContainer { 
     width: 100%;
-    height: 49%;
+    height: 304px;
 }
 
 .editorLContainer {
     width: 100%;
-    height: 50%;
     border: 1px solid grey;
-    /* height: 200px; */
+    height: 200px;
 }
 
 .editorLTop {
@@ -42,7 +41,7 @@
 .editorLBottom  {
     padding: 4px;
     width: 100%;
-    height: 100%;
+    height: 140px;
 }
 
 .resourceNameLContainer {
@@ -109,9 +108,8 @@
 
 #permsTabContainer {
     width: 100%;
-    height: 90%;
     top: 2px;  /* without this, the tabs are cut off at the top */
-    /*height: 304px;*/
+    height: 304px;
 }
 
 * html div.tableContainer { /* IE only hack */

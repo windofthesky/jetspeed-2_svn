@@ -375,6 +375,13 @@ function updateEditor( rowData, tTableWidget )
     updateEditorControls( tTableWidget );
 }
 
+function btnSetDisabled( btnWidget, /* Boolean */ disabled )
+{
+    if ( ! btnWidget ) return;
+    if ( btnWidget.disabled != disabled ) // bug in widget if called multiple times with same value
+        btnWidget.setDisabled(disabled);
+}
+
 function clearAndDisableEditor( tTableWidget )
 {
     if ( ! tTableWidget )
@@ -404,23 +411,23 @@ function clearAndDisableEditor( tTableWidget )
 
     var buttonWidget = dojo.widget.byId( "newButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(false);
+        btnSetDisabled( buttonWidget, false );
 
     buttonWidget = dojo.widget.byId( "saveButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 
     buttonWidget = dojo.widget.byId( "revertButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 
     buttonWidget = dojo.widget.byId( "deleteButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 
     buttonWidget = dojo.widget.byId( "openConstraints" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 }
 
 function updateConstraintsEditor( rowData )
@@ -521,11 +528,11 @@ function updateConstraintsControls()
 {
     var buttonWidget = dojo.widget.byId( "newConstraintButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(false);
+        btnSetDisabled( buttonWidget, false );
 
     buttonWidget = dojo.widget.byId( "deleteConstraintButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(false);
+        btnSetDisabled( buttonWidget, false );
 }
 
 function clearAndDisableConstraintsEditor()
@@ -571,11 +578,11 @@ function clearAndDisableConstraintsEditor()
 
     var buttonWidget = dojo.widget.byId( "newConstraintButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(false);
+        btnSetDisabled( buttonWidget, false );
 
     buttonWidget = dojo.widget.byId( "deleteConstraintButton" );
     if ( buttonWidget )
-        buttonWidget.setDisabled(true);
+        btnSetDisabled( buttonWidget, true );
 }
 
 
@@ -778,7 +785,7 @@ function updateEditorControls( tTableWidget )
         if ( tTableWidget.js_type == "defs" )
         {
             buttonWidget.show();
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
         }
         else
         {
@@ -790,35 +797,35 @@ function updateEditorControls( tTableWidget )
     {
         buttonWidget = dojo.widget.byId( "saveButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
 
         buttonWidget = dojo.widget.byId( "revertButton" );
         if ( buttonWidget )
         {
             if ( hasChanged == "modified" )
             {
-                buttonWidget.setDisabled(false);
+                btnSetDisabled( buttonWidget, false );
             }
             else
             {
-                buttonWidget.setDisabled(true);
+                btnSetDisabled( buttonWidget, true );
             }
         }
 
         buttonWidget = dojo.widget.byId( "newButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(true);
+            btnSetDisabled( buttonWidget, true );
 
         buttonWidget = dojo.widget.byId( "deleteButton" );
         if ( buttonWidget )
         {
             if ( hasChanged == "modified" )
             {
-                buttonWidget.setDisabled(true);
+                btnSetDisabled( buttonWidget, true );
             }
             else
             {
-                buttonWidget.setDisabled(false);
+                btnSetDisabled( buttonWidget, false );
             }
         }
     }
@@ -826,19 +833,19 @@ function updateEditorControls( tTableWidget )
     {
         buttonWidget = dojo.widget.byId( "saveButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(true);
+            btnSetDisabled( buttonWidget, true );
 
         buttonWidget = dojo.widget.byId( "revertButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(true);
+            btnSetDisabled( buttonWidget, true );
 
         buttonWidget = dojo.widget.byId( "newButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
 
         buttonWidget = dojo.widget.byId( "deleteButton" );
         if ( buttonWidget )
-            buttonWidget.setDisabled(false);
+            btnSetDisabled( buttonWidget, false );
     }
 }
 
