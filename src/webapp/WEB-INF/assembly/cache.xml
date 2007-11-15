@@ -89,6 +89,21 @@
 		</constructor-arg>
 	</bean>
 
+	<bean id="ehDecorationConfigurationCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="decorationConfigurationCache" />
+	</bean>
+
+	<bean id="decorationConfigurationCache"
+		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+		<constructor-arg>
+			<ref bean="ehDesktopContentCache" />
+		</constructor-arg>
+	</bean>
+
 	<bean id="ehPreferencesCache"
 		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
 		<property name="cacheManager">
