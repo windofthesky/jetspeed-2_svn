@@ -207,8 +207,11 @@ public abstract class AbstractLdapDao
         {
             SearchResult searchResult = (SearchResult) searchResults.next();
             userDn = searchResult.getName();
-            // FIXME: Does this work?
-            userDn += "," + StringUtils.replace(getSearchDomain(), "," + getRootContext(), "");
+            String searchDomain = getSearchDomain();
+            if (searchDomain.length() > 0)
+            {
+                userDn += "," + StringUtils.replace(searchDomain, "," + getRootContext(), "");
+            }
         }
         return userDn;
     }
