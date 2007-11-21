@@ -1830,9 +1830,9 @@ limitations under the License.
 </portlet>
   
   <portlet id="CustomConfigModePortlet">    
+    <description>Provides common custom config mode edit portlet.</description>
     <portlet-name>CustomConfigModePortlet</portlet-name>
     <display-name>Custom Config Mode Portlet</display-name>
-    <description>Provides common custom config mode edit portlet.</description>
     <portlet-class>org.apache.jetspeed.portlets.custom.CustomConfigModePortlet</portlet-class>
     <init-param>
        <description>This parameter sets the template used in config mode.</description>
