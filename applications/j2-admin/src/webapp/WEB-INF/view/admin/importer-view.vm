@@ -65,6 +65,20 @@
 		var values = new Array(users.value,profiling.value,capabilities.value,permissions.value);
 		ajaxInvoke("jetspeedexport", names, values, new exportHandler() );     		
 	}
+	function buildPrefsquery()
+	{
+		var prefs = document.getElementById('prefs');
+		if(prefs.checked)
+		{
+			prefs = 'y';
+		}else
+		{
+			prefs = 'n';
+		}
+		var names = new Array("prefs");
+		var values = new Array(prefs);
+		ajaxInvoke("jetspeedexport", names, values, new exportHandler());     		
+	}
 	function exportHandler()
 	{
 		this.populate = function(xml) 
