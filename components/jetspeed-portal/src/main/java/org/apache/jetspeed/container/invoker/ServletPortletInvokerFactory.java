@@ -25,18 +25,19 @@ public class ServletPortletInvokerFactory
 {
 
     /**
-     * Wheter the servlet request instance should be wrapped or not if it is under WebSphere environment.
+     * requestResponseUnwrapper used to unwrap portlet request or portlet response
+     * to find the real servlet request or servlet response.
      */
-    protected boolean wrapRequestOfWebSphere;
+    protected PortletRequestResponseUnwrapper requestResponseUnwrapper;
     
     public ServletPortletInvokerFactory()
     {
-        this(false);
+        this(null);
     }
 
-    public ServletPortletInvokerFactory(boolean wrapRequestOfWebSphere)
+    public ServletPortletInvokerFactory(PortletRequestResponseUnwrapper requestResponseUnwrapper)
     {
-        this.wrapRequestOfWebSphere = wrapRequestOfWebSphere;
+        this.requestResponseUnwrapper = requestResponseUnwrapper;
     }
 
     /**
@@ -50,7 +51,7 @@ public class ServletPortletInvokerFactory
      */
     public ServletPortletInvoker createInstance() 
     {  
-        return new ServletPortletInvoker(this.wrapRequestOfWebSphere);        
+        return new ServletPortletInvoker(this.requestResponseUnwrapper);        
     }
 
     /**

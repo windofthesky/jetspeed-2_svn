@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.container.invoker;
 
-import java.lang.reflect.Constructor;
 import java.io.IOException;
 
 import javax.portlet.ActionRequest;
@@ -32,8 +31,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,18 +77,19 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     protected String servletMappingName;
     
     /**
-     * Wheter the servlet request instance should be wrapped or not if it is under WebSphere environment.
+     * requestResponseUnwrapper used to unwrap portlet request or portlet response
+     * to find the real servlet request or servlet response.
      */
-    protected boolean wrapRequestOfWebSphere;
+    protected PortletRequestResponseUnwrapper requestResponseUnwrapper;
 
     public ServletPortletInvoker()
     {
-        this(false);
+        this(new DefaultPortletRequestResponseUnwrapper());
     }
     
-    public ServletPortletInvoker(boolean wrapRequestOfWebSphere)
+    public ServletPortletInvoker(PortletRequestResponseUnwrapper requestResponseUnwrapper)
     {
-        this.wrapRequestOfWebSphere = wrapRequestOfWebSphere;
+        this.requestResponseUnwrapper = requestResponseUnwrapper;
     }
 
     /* (non-Javadoc)
@@ -228,8 +226,8 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         }
 
         // gather all required data from request and response
-        ServletRequest servletRequest = getServletRequestForContainer(portletRequest, appContext);
-        ServletResponse servletResponse = getServletResponseForContainer(portletResponse);
+        ServletRequest servletRequest = this.requestResponseUnwrapper.unwrapPortletRequest(portletRequest);
+        ServletResponse servletResponse = this.requestResponseUnwrapper.unwrapPortletResponse(portletResponse);
 
         try
         {
@@ -309,95 +307,4 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
 
     }
 
-    protected ServletRequest getServletRequestForContainer(PortletRequest portletRequest, ServletContext appContext)
-    {
-        ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest()).getRequest()).getRequest();
-        
-        if (this.wrapRequestOfWebSphere && CurrentWorkerContext.getParallelRenderingMode())
-        {
-            String entAppNameOnWebSphere = (String) appContext.getAttribute("com.ibm.websphere.servlet.enterprise.application.name");
-            
-            // If the container is WebSphere, wrap the request.
-            if (entAppNameOnWebSphere != null)
-            {
-                try
-                {
-                    servletRequest = wrapWebSphereSRTServletRequest(servletRequest);
-                }
-                catch (Throwable th)
-                {
-                    log.error("Failed to load websphere system classes.", th);
-                }
-            }
-        }
-        
-        return servletRequest;
-    }
-
-    protected ServletResponse getServletResponseForContainer(PortletResponse portletResponse)
-    {
-        ServletResponse servletResponse = ((HttpServletResponseWrapper) portletResponse).getResponse();
-        return servletResponse;
-    }
-
-    private static Class adjustedSRTServletRequestClazz;
-    private static Constructor adjustedSRTServletRequestClazzConstructor;
-    
-    private static ServletRequest wrapWebSphereSRTServletRequest(ServletRequest servletRequest) throws Throwable
-    {
-        if (adjustedSRTServletRequestClazzConstructor == null)
-        {
-            if (adjustedSRTServletRequestClazz == null)
-            {
-                synchronized (ServletPortletInvoker.class)
-                {
-                    if (adjustedSRTServletRequestClazz == null)
-                    {
-                        adjustedSRTServletRequestClazz = new AdjustedSRTServletRequestClassLoader().defineAdjustedSRTServletRequestClass();
-                    }
-                }
-            }
-            
-            adjustedSRTServletRequestClazzConstructor = adjustedSRTServletRequestClazz.getConstructors()[0];
-        }
-
-        Object [] args = new Object [] { servletRequest };
-        return (ServletRequest) adjustedSRTServletRequestClazzConstructor.newInstance(args);
-    }
-    
-    private static class AdjustedSRTServletRequestClassLoader extends ClassLoader
-    {
-        public AdjustedSRTServletRequestClassLoader()
-        {
-            super(PortletRequestContext.class.getClassLoader());
-        }
-        
-        public Class defineAdjustedSRTServletRequestClass() throws Throwable
-        {
-            byte [] bytes = AdjustedSRTServletRequestDump.dumpInner1();
-            
-            //if (log.isDebugEnabled())
-            //{
-            //    java.io.File classFile = java.io.File.createTempFile("AdjustedSRTServletRequest$1.class.", ".tmp");
-            //    java.io.FileOutputStream fos = new java.io.FileOutputStream(classFile);
-            //    fos.write(bytes, 0, bytes.length);
-            //    fos.close();
-            //    log.debug("Generated a class. See " + classFile.getCanonicalPath());
-            //}
-            
-            Class inner1 = defineClass("org.apache.jetspeed.container.invoker.AdjustedSRTServletRequest$1", bytes, 0, bytes.length);
-            bytes = AdjustedSRTServletRequestDump.dump();
-            
-            //if (log.isDebugEnabled())
-            //{
-            //    java.io.File classFile = java.io.File.createTempFile("AdjustedSRTServletRequest.class.", ".tmp");
-            //    java.io.FileOutputStream fos = new java.io.FileOutputStream(classFile);
-            //    fos.write(bytes, 0, bytes.length);
-            //    fos.close();
-            //    log.debug("Generated a class. See " + classFile.getCanonicalPath());
-            //}
-            
-            return defineClass("org.apache.jetspeed.container.invoker.AdjustedSRTServletRequest", bytes, 0, bytes.length);
-        }
-    }
 }

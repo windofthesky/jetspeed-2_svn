@@ -63,7 +63,7 @@
                     <td>A multi-threaded, asynchronous PSML page aggregator running CommonJ Work Monitor threads, tested only with IBM Websphere 6.1 only.</td>
                     <td>yes</td>
                     <td>yes</td>
-                </tr>                
+                </tr>                                
             </table>            
             <i>* multi-threading is accomplished with the Jetspeed Desktop combined with the PortletAggregator</i>
         </section>
@@ -142,6 +142,7 @@
             </p>
             <subsection name='1. Login Filter'>
             <p>Configure the WEB-INF/web.xml to use the PortalFilter for logging in by uncommented  the PortalFilter and its mapping:</p>
+            <source test="">
                 <![CDATA[
   <filter>
     <filter-name>PortalFilter</filter-name>
@@ -153,19 +154,24 @@
     <url-pattern>/*</url-pattern>    
   </filter-mapping>               
 ]]>            
+            </source>
             </subsection>
             <subsection name='2.Portal Login Portlet'>
             <p>Edit the default-page.psml, changing the login portlet to the filter-based login portlet as shown below.
             Make sure to also change the fragment id. Change:</p>
+            <source test="">
                 <![CDATA[
     <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
     ...
 ]]>            
+            </source>
 			<p>to ..</p>
+            <source test="">
                 <![CDATA[
     <fragment id="dp-12a" type="portlet" name="j2-admin::PortalLoginPortlet">
     ...
 ]]>            			            
+            </source>
             </subsection>
             <subsection name='3. Use the Jetspeed Portal Request Factory'>            
             <p>
@@ -180,17 +186,20 @@ Which wrapper is used is handled by a new PortalRequestFactory which can be spec
 For other web containers like Tomcat which doesn't have this "problem", nothing has to be specified (none is by default), in which case the request will be wrapped in an HttpServletRequestWrapper to maintain the same level of wrapping (needed for easy access to the original request in ServletPortletInvoker.            
             </p>
             <p>Edit WEB-INF/assembly/wps.xml, and uncomment the one bean found there</p>
+            <source test="">
 <![CDATA[            
 <beans>   
     <!-- required for websphere, uncomment if running under websphere
          see:  http://issues.apache.org/jira/browse/JS2-355 -->
     <bean id="org.apache.jetspeed.request.PortalRequestFactory" class="org.apache.jetspeed.request.PortalRequestFactoryImpl"/>   
 </beans>
-]]>            			                        
+]]>            			
+            </source>
             </subsection>
             <subsection name='4. Turn on the Multithreaded Aggregation Engine'>
             <p>Swap out the (org.apache.jetspeed.aggregator.PageAggregator) with the multithreaded aggregation engine in WEB-INF/assembly/pipelines.xml:
             </p>
+            <source test="">
 <![CDATA[            
   <bean id="aggregatorValve"
         class="org.apache.jetspeed.aggregator.AggregatorValve"
@@ -201,23 +210,27 @@ For other web containers like Tomcat which doesn't have this "problem", nothing 
    </constructor-arg>
   </bean> 
 ]]>            			                        
+          </source>
 		</subsection>
-		<subsection name='5. Pluto Factories'>
-		<p>Turn on the Websphere parallel rendering mode in the WEB-INF/assembly/pluto-factories.xml by setting the first constructor argument to true:</p>
+		<subsection name='Optional Replacement for Portlet Request/Response Unwrapper'>
+          <p>You can replace the default portlet request/response unwrapper with a third-party module.</p>
+          <p>Because the servlet request object of a servlet container could not be thread-safe under Jetspeed parallel rendering mode, the third-party unwrapper module can provide a thread-safe implementation by decorating the original request object.</p>
+          <p>Here's an example setting for third-party unwrapper module:</p>
+          <source test="">
 <![CDATA[            	
-   <bean id="ServletPortletInvokerFactory"
-        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory" 
-  /> 	
-        class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory">
-    <!-- Set the following argument to true when you are running the system with parallel rendering mode under WebSphere. -->
-    <constructor-arg index="0">
-        <value>true</value>
-    </constructor-arg>
-  </bean>
+  <!--  
+  PortletRequestResponseUnwrapper finds servlet request or servlet response from portlet request or portlet response by unwrapping.
+  Third-party module can provide an implementation to decorate the real request or response object of a servlet container.
+  For example, the real request object of a servlet container can be decorated because it is not thread-safe under Jetspeed parallel rendering mode.
+  -->
+  <bean id="PortletRequestResponseUnwrapper"
+        class="com.bluesunrise.jetspeed.container.invoker.WebspherePortletRequestResponseUnwrapper" />
 ]]>            			                        		
+          </source>
 		</subsection>            
 		<subsection name='Optional CommonJ Work Manager'>
 		<p> If you want to use Commonj Work Manager provided by the container, uncomment the followings in WEB-INF/assembly/aggregation.xml:</p>
+          <source test="">
 <![CDATA[            			
     <bean id="JetspeedWorkManager" class="org.springframework.jndi.JndiObjectFactoryBean">
         <property name="resourceRef"><value>false</value></property> 
@@ -233,8 +246,9 @@ For other web containers like Tomcat which doesn't have this "problem", nothing 
         </constructor-arg>
     </bean>
 ]]>            			
+          </source>
 <p>                        				
-   Also replace all references to org.apache.jetspeed.aggregator.WorkerMonitor with org.apache.jetspeed.aggregator.CommonjWorkerMonitor in WEB-INF/assembly/aggregation.xml.
+    Also replace all references to org.apache.jetspeed.aggregator.WorkerMonitor with org.apache.jetspeed.aggregator.CommonjWorkerMonitor in WEB-INF/assembly/aggregation.xml.
 </p>
 		</subsection>
         </section>
