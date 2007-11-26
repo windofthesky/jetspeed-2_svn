@@ -1,0 +1,242 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*#
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($req = $rc.Request)
+#set($app = $renderRequest.getContextPath())
+#set($rooturl = "${req.scheme}://${req.serverName}:${req.serverPort}${req.contextPath}/")
+#set($treeName = $renderRequest.getParameter("treeName"))
+#set($renderURL = $renderResponse.createRenderURL())
+#set($actionURL = $renderResponse.createActionURL())
+#set($status = $renderRequest.getPortletSession().getAttribute("status"))
+#set($msg = $renderRequest.getPortletSession().getAttribute("msg"))
+<script>
+	function buildExportquery(){
+		var users = document.getElementById('users');     
+		if(users.checked)
+		{
+			users.value = 'y';
+		}
+		else
+		{
+		    users.value = 'n';
+		}
+		var profiling = document.getElementById('profiling');     
+		if(profiling.checked)
+		{
+			profiling.value='y';
+		}		
+		else
+		{
+			profiling.value='n';
+		}
+		var capabilities = document.getElementById('capabilities');     
+		if(capabilities.checked)
+		{
+			capabilities.value='y';
+		}				
+		else
+		{
+			capabilities.value='n';
+		}						
+		var permissions = document.getElementById('permissions');     
+		if(permissions.checked)
+		{
+			permissions.value='y';
+		}				
+		else
+		{
+			permissions.value='n';
+		}						
+		var names = new Array("users", "profiles","capabilities", "permissions");
+		var values = new Array(users.value,profiling.value,capabilities.value,permissions.value);
+		ajaxInvoke("jetspeedexport", names, values, new exportHandler() );     		
+	}
+	function buildPrefsquery()
+	{
+		var prefs = document.getElementById('prefs');
+		if(prefs.checked)
+		{
+			prefs = 'y';
+		}else
+		{
+			prefs = 'n';
+		}
+		var names = new Array("prefs");
+		var values = new Array(prefs);
+		ajaxInvoke("jetspeedexport", names, values, new exportHandler());     		
+	}
+	function exportHandler()
+	{
+		this.populate = function(xml) 
+		{
+			var path = xml.getElementsByTagName("link");
+			if (path != null && path.length > 0)
+			{    
+			   for (ix=0; ix < path.length; ix++)
+			   {
+				  var refName = path[ix].firstChild.nodeValue;
+			   }
+			}
+			var pgCol = document.getElementById("exportAns");
+			var	a = document.createElement("a");
+			a.innerHTML ='Download';
+			a.href = refName;
+			a.setAttribute("target","_blank");
+			a.setAttribute("onClick","javascript:downloadObject()");
+			pgCol.appendChild(a);              
+		}     
+		this.failure = function(data)
+		{
+			var stsElmnt = xml.getElementsByTagName("status");
+			if(stsElmnt == 'failure')
+			{
+				alert('Error occurred during export');
+			}
+		}
+	}	
+	function downloadObject()
+	{
+		document.getElementById("exportAns").innerHTML = '';
+	}	
+	function ajaxInvoke(action, names, values, handler)
+	{	
+		var contextPath = document.location.protocol + "/" + "/" + document.location.host + "$req.ContextPath";
+		var requestUrl = contextPath + "/ajaxapi?action=" + action;		
+		if (names != null)
+		{
+			for (var ix=0;  ix<names.length; ix++)
+			{
+				requestUrl = requestUrl + "&" + names[ix] + "=" + encodeURIComponent(values[ix]);
+			}    
+		}
+		var mimeType = "text/xml";
+		dojo.io.bind({
+		url: requestUrl,
+	      mimetype: mimeType,
+	      load: function( type, data, evt )
+	      {
+	        var success = false;
+	        var statusElmt = data.getElementsByTagName( "status" );
+	        if ( statusElmt != null )
+	        {
+	            var successVal = statusElmt[0].firstChild.nodeValue;
+	            if ( successVal == "success" )
+	            {            
+	                handler.populate(data);
+	                success = true;                
+	            }                   
+	        }
+	        if ( ! success )
+	        {
+	            var textContent = dojo.dom.innerXML( data );
+	            if ( ! textContent )
+	                textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
+	            // dojo.raise( "saveEntrySubmit failure url=" + requestUrl + "  xml-content=" + textContent );
+	            if (data instanceof XMLDocument)
+	            {
+	                var reason = retrieveElementValue("reason", data);
+	                alert("Portal Communication Failure: " + reason);               
+	                handler.failure(reason);
+	            }
+	            else
+	                alert("Unknown Portal Communication Failure");                               
+	        }
+	    },    
+	    error: function( type, error )
+	    {
+	        var msg = "Portal Communication Error: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error );
+	        // dojo.raise(msg);
+	        alert(msg);
+	        handler.failure(msg);
+	    }
+	    });     
+	}
+</script>
+<table width="100%" height="194" border="1">
+  <tr>
+    <form><td width="40%" height="188">
+	<table width="97%" border="1">
+      <tr>
+        <td colspan="2"><div align="left"><b>Export</b></div></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="users" id="users" value="n">
+          Users/Groups/Roles</td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="profiling" id="profiling" value="n">
+          Profiling Rules </td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="Capabilities" id="capabilities" value="n">
+          Capabilities (Mimetypes, mediatypes, capabilities,clients)</td>		  
+	  </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="permissions"  id="permissions" value="n">
+          Permissions</td>
+      </tr>	  
+	  <tr>
+		  <td><input type="button" value="Export" onClick="javascript:buildExportquery();"></td>
+		  <td id='exportAns'></td>
+      </tr>
+    </table>
+	<table width="97%" border="1">
+      <tr>
+        <td colspan="2"><div align="left"><b>Export Preferences</b></div></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="prefs" id="prefs" value="n">
+          Preferences</td>
+      </tr>
+	  <tr>
+		  <td><input type="button" value="Export Prefs" onClick="javascript:buildPrefsquery();"></td>
+		  <td id='exportPrefsAns'></td>
+      </tr>
+    </table>    
+	</td>
+    </form>
+    <td width="60%">
+	<form action="$actionURL" method="post" name="importObject" enctype="multipart/form-data">
+	<table width="100%" border="1">
+      <tr>
+        <td><div><b>Import</b></div></td>
+      </tr>
+#if("$!status" != "")
+<tr>
+#if($status == 'false')
+  <td class="portlet-msg-error">$!msg</td>
+#else
+  <td class="portlet-msg-info">$!msg</td>
+#end
+</tr>	       
+#end
+      <tr>
+        <td>Choose file to import 
+          <input type="file" name="importFile"></td>
+      </tr>
+      <tr>
+        <td>Please select xml file to import, containing jetspeed objects</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><input type="button" value="Import" onClick="javascript:document.importObject.submit();"></td>
+      </tr>
+    </table></form></td>
+  </tr>
+</table>

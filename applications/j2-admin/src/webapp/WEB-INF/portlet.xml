@@ -1828,6 +1828,48 @@ limitations under the License.
         </preference>                        
     </portlet-preferences>
 </portlet>
+
+ <portlet>
+    <description>The Portal Data Importer, import and export the jetspeed data from jetspeed schema. From here you import/export the users,group,roles and jetspeed objects
+	</description>
+    <portlet-name>PortalSchemaExporter</portlet-name>
+    <display-name>Portal Schema Importer</display-name>
+    <display-name xml:lang="ja">ポータルサイトマネージャ</display-name>
+    <portlet-class>org.apache.jetspeed.portlets.admin.JetspeedDataImporter</portlet-class>
+    <init-param>
+      <name>ViewPage</name>
+      <value>/WEB-INF/view/admin/importer-view.vm</value>
+    </init-param>
+    <init-param>
+      <name>HeaderPage</name>
+      <value>/WEB-INF/view/admin/importer-header.vm</value>
+    </init-param>
+    <init-param>
+      <name>dojo.requires.core</name>
+      <value>dojo.lang.*;dojo.event.*;dojo.io.*;dojo.dnd.*;dojo.widget.*;dojo.widget.Tree;dojo.widget.Button;dojo.widget.Checkbox;dojo.widget.Dialog;dojo.widget.TabContainer;dojo.widget.ContentPane;dojo.widget.LayoutContainer;dojo.widget.TreeRPCController;dojo.widget.TreeSelector;dojo.widget.TreeNode;dojo.widget.TreeContextMenu;dojo.widget.validate;dojo.widget.ComboBox;</value>
+    </init-param>
+    <init-param>
+      <name>portlet-icon</name>
+      <value>user-home.png</value>
+    </init-param>
+    <expiration-cache>300</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>view</portlet-mode>
+    </supports>
+    <resource-bundle>org.apache.jetspeed.portlets.admin.resources.Importer</resource-bundle>
+    <portlet-info>
+      <title>Import Export Service</title>
+      <short-title>Import-Export</short-title>
+      <keywords>schema,export,import,users,group,roles</keywords>
+    </portlet-info>
+    <portlet-preferences>
+      <preference>
+        <name>defaultLayout</name>
+        <value>jetspeed-layouts::VelocityTwoColumns</value>
+      </preference>
+    </portlet-preferences>
+  </portlet>  
   
   <portlet id="CustomConfigModePortlet">    
     <description>Provides common custom config mode edit portlet.</description>
