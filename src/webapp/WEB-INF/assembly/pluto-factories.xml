@@ -29,12 +29,19 @@
           
   <bean id="ServletPortletInvokerFactory"
         class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory">
-    <!-- Set the following argument to true when you are running the system with parallel rendering mode under WebSphere. -->
     <constructor-arg index="0">
-        <value>false</value>
+        <ref bean="PortletRequestResponseUnwrapper" />
     </constructor-arg>
   </bean>
-	
+  
+  <!--  
+  PortletRequestResponseUnwrapper finds servlet request or servlet response from portlet request or portlet response by unwrapping.
+  Third-party module can provide an implementation to decorate the real request or response object of a servlet container.
+  For example, the real request object of a servlet container can be decorated because it is not thread-safe under Jetspeed parallel rendering mode.
+  -->
+  <bean id="PortletRequestResponseUnwrapper"
+        class="org.apache.jetspeed.container.invoker.DefaultPortletRequestResponseUnwrapper" />
+  
   <bean id="javax.portlet.ActionRequest"
         class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean"
   >             
