@@ -46,25 +46,7 @@ public class FragmentUtil
         // Build a request object and populate it with fragments
         RequestContext a_oRC = setupRequestContext("remove", "1234", "0", "0");
 
-        // Build some fragments and add them to the request context
-        // Prepare some fragments
-        Fragment a_oLayout = buildFragment("layout", "6", "layout", 0, 0);
-        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 1, 0);
-        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 1, 1);
-        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 2, 0);
-        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 2, 1);
-        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 2, 2);
-
-        LocalFragmentImpl a_oLocalLayout = (LocalFragmentImpl) a_oLayout;
-        a_oLocalLayout.addFragment(a_oFrag1);
-        a_oLocalLayout.addFragment(a_oFrag2);
-        a_oLocalLayout.addFragment(a_oFrag3);
-        a_oLocalLayout.addFragment(a_oFrag4);
-        a_oLocalLayout.addFragment(a_oFrag5);
-
-        Page a_oPage = new PageImpl();
-        a_oPage.setRootFragment(a_oLayout);
-        ContentPage a_oContentPage = new ContentPageImpl(a_oPage);
+        ContentPage a_oContentPage = new ContentPageImpl(setupPage());
         a_oRC.setPage(a_oContentPage);
 
         return a_oRC;
@@ -122,12 +104,12 @@ public class FragmentUtil
     {
         // Prepare some fragments
         Fragment a_oLayout = buildFragment("layout", "6", "layout", 0, 0);
-        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 1, 0);
-        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 1, 1);
-        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 2, 0);
-        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 2, 1);
-        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 2, 2);
-
+        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 0, 0);
+        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 0, 1); 
+        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 1, 0);
+        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 1, 1);
+        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 1, 2);
+        
         LocalFragmentImpl a_oLocalLayout = (LocalFragmentImpl) a_oLayout;
         a_oLocalLayout.addFragment(a_oFrag1);
         a_oLocalLayout.addFragment(a_oFrag2);
@@ -158,6 +140,12 @@ public class FragmentUtil
         MockHttpServletResponse mr = (MockHttpServletResponse) rc.getResponse();        
         String content = mr.getOutputStreamContent();
         System.out.println("content = " + content);
+    }
+    
+    public static String getContentOutput(RequestContext rc)
+    {
+        MockHttpServletResponse mr = (MockHttpServletResponse) rc.getResponse();        
+        return mr.getOutputStreamContent();
     }
 
 }

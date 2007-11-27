@@ -18,6 +18,7 @@ package org.apache.jetspeed.layout;
 
 import junit.framework.TestCase;
 
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.impl.CoordinateImpl;
 import org.apache.jetspeed.layout.impl.PortletPlacementContextImpl;
 import org.apache.jetspeed.om.page.Fragment;
@@ -31,7 +32,12 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class TestPortletPlacement extends TestCase
 {
+    private PortletRegistry portletRegistry;
 
+    public void setUp(){
+        portletRegistry = MockPortletRegistryFactory.createMockPortletRegistry();
+    }
+    
     public void testGetFragmentAt()
     {
         // Build a request object and populate it with fragments
@@ -39,44 +45,44 @@ public class TestPortletPlacement extends TestCase
 
         try
         {
-            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
+            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
             int a_iNumCols = ppc.getNumberColumns();
             assertEquals(a_iNumCols, 2);
 
-            int a_iNumRows = ppc.getNumberRows(1);
+            int a_iNumRows = ppc.getNumberRows(0);
             assertEquals(a_iNumRows, 2);
 
-            a_iNumRows = ppc.getNumberRows(2);
+            a_iNumRows = ppc.getNumberRows(1);
             assertEquals(a_iNumRows, 3);
 
             // Check the fragments
             Fragment a_oFrag = ppc
-                    .getFragmentAtNewCoordinate(new CoordinateImpl(1, 0, 1, 0));
-            assertNotNull("null fragment found at 1,0", a_oFrag);
+                    .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
+            assertNotNull("null fragment found at 0,0", a_oFrag);
             assertEquals(a_oFrag.getId(), "1");
             assertEquals(a_oFrag.getName(), "frag1");
+
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 1,
+                    0, 1));
+            assertNotNull("null fragment found at 0,1", a_oFrag);
+            assertEquals(a_oFrag.getId(), "2");
+            assertEquals(a_oFrag.getName(), "frag2");
+
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(1, 0,
+                    1, 0));
+            assertNotNull("null fragment found at 1,0", a_oFrag);
+            assertEquals(a_oFrag.getId(), "3");
+            assertEquals(a_oFrag.getName(), "frag3");
 
             a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(1, 1,
                     1, 1));
             assertNotNull("null fragment found at 1,1", a_oFrag);
-            assertEquals(a_oFrag.getId(), "2");
-            assertEquals(a_oFrag.getName(), "frag2");
-
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(2, 0,
-                    2, 0));
-            assertNotNull("null fragment found at 2,0", a_oFrag);
-            assertEquals(a_oFrag.getId(), "3");
-            assertEquals(a_oFrag.getName(), "frag3");
-
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(2, 1,
-                    2, 1));
-            assertNotNull("null fragment found at 2,1", a_oFrag);
             assertEquals(a_oFrag.getId(), "4");
             assertEquals(a_oFrag.getName(), "frag4");
 
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(2, 2,
-                    2, 2));
-            assertNotNull("null fragment found at 2,2", a_oFrag);
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(1, 2,
+                    1, 2));
+            assertNotNull("null fragment found at 1,2", a_oFrag);
             assertEquals(a_oFrag.getId(), "5");
             assertEquals(a_oFrag.getName(), "frag5");
 
@@ -93,7 +99,7 @@ public class TestPortletPlacement extends TestCase
 
         try
         {
-            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
+            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
             // Check the fragments
             Fragment a_oFrag = ppc.getFragmentById("1");
@@ -133,19 +139,19 @@ public class TestPortletPlacement extends TestCase
 
         try
         {
-            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
+            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
             Fragment a_oFrag = ppc
-                    .getFragmentAtNewCoordinate(new CoordinateImpl(1, 0, 1, 0));
+                    .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
 
             Coordinate a_oCoordinate = ppc.remove(a_oFrag);
 
-            assertEquals(a_oCoordinate.getOldCol(), 1);
+            assertEquals(a_oCoordinate.getOldCol(), 0);
             assertEquals(a_oCoordinate.getOldRow(), 0);
 
             // Should be the second fragment now that the first has been deleted
-            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(1, 0,
-                    1, 0));
+            a_oFrag = ppc.getFragmentAtNewCoordinate(new CoordinateImpl(0, 0,
+                    0, 0));
             assertEquals(a_oFrag.getId(), "2");
             assertEquals(a_oFrag.getName(), "frag2");
         } catch (PortletPlacementException e)
@@ -154,13 +160,13 @@ public class TestPortletPlacement extends TestCase
         }
     }
 
-    public void footestFragmentMoveabs()
+    public void testFragmentMoveabs()
     {
         RequestContext requestContext = FragmentUtil.buildFullRequestContext();
 
         try
         {
-            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
+            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
             Fragment a_oFrag = ppc
                     .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
@@ -189,13 +195,13 @@ public class TestPortletPlacement extends TestCase
         }
     }
 
-    public void footestFragmentMoveUp()
+    public void testFragmentMoveUp()
     {
         RequestContext requestContext = FragmentUtil.buildFullRequestContext();
 
         try
         {
-            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext);
+            PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
             Fragment a_oFrag = ppc
                     .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 1));
