@@ -29,7 +29,7 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
-import org.apache.jetspeed.serializer.JetspeedSerializerFactory;
+//import org.apache.jetspeed.serializer.JetspeedSerializerFactory;
 
 /**
  * Exporting the object using Ajax command
@@ -37,6 +37,12 @@ import org.apache.jetspeed.serializer.JetspeedSerializerFactory;
  * @author <a href="mailto:firevelocity@gmail.com">Vivek Kumar</a>
  * @version $Id$
  */
+/*
+ TODO: commenting out this class for now as it is still based upon the 2.1.3 JetspeedSerialzer
+       while in trunk the JetspeedSerializer has been refactored largely so it doesn't even compile.
+       Additionally, some related new 2.1.3 features haven't been ported over to trunk yet either (e.g. r592266 and more)
+       Will revisit this class and the JetspeedSerializer enhancements once 2.1.3 is released
+       
 public class ExportJetspeedSchema extends BaseGetResourceAction implements
         AjaxAction, AjaxBuilder, Constants
 {
@@ -200,3 +206,4 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
         }
     }
 }
+*/
