@@ -25,6 +25,7 @@ package org.apache.jetspeed.components.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -58,5 +59,14 @@ public abstract class RegistrySupportedTestCase extends AbstractPrefsSupportedTe
         confList.add("page-manager.xml");
         confList.add("registry.xml");               
         return (String[]) confList.toArray(new String[1]);
+    }
+    
+    protected Properties getPostProcessProperties()
+    {
+        Properties p = super.getPostProcessProperties();
+        p.setProperty("supported.portletmode.autoswitch.config", "false");
+        p.setProperty("supported.portletmode.autoswitch.edit_defaults", "false");
+        p.setProperty("supported.portletmode.autoswitch.config.surrogate.portlet", "j2-admin::CustomConfigModePortlet");
+        return p;
     }
 }

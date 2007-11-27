@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import javax.portlet.PortletRequest;
@@ -248,5 +249,14 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         confList.add("prefs.xml");
         confList.add("cache.xml");
         return (String[]) confList.toArray(new String[1]);
+    }
+
+    protected Properties getPostProcessProperties()
+    {
+        Properties p = super.getPostProcessProperties();
+        p.setProperty("supported.portletmode.autoswitch.config", "false");
+        p.setProperty("supported.portletmode.autoswitch.edit_defaults", "false");
+        p.setProperty("supported.portletmode.autoswitch.config.surrogate.portlet", "j2-admin::CustomConfigModePortlet");
+        return p;
     }
 }
