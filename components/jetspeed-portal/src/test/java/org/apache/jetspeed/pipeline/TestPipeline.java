@@ -47,20 +47,25 @@ public class TestPipeline extends TestCase
         Pipeline pipeline = engine.getPipeline();
         assertNotNull(pipeline);
         Valve[] valves = pipeline.getValves();
-        assertEquals("CapabilityValveImpl", valves[0].toString());
-        assertEquals("PortalURLValveImpl", valves[1].toString());
-        assertEquals("SecurityValve", valves[2].toString());
-        assertEquals("LocalizationValve", valves[3].toString());
-        assertEquals("PasswordCredentialValve", valves[4].toString());
-        assertEquals("LoginValidationValve", valves[5].toString());
-        assertEquals("ProfilerValve", valves[6].toString());
-        assertEquals("ContainerValve", valves[7].toString());
-        assertEquals("ActionValveImpl", valves[8].toString());
-        assertEquals("ResourceValveImpl", valves[9].toString());
-        assertEquals("DecorationValve", valves[10].toString());
-        assertEquals("HeaderAggregatorValve", valves[11].toString());
-        assertEquals("AggregatorValve", valves[12].toString());
-        assertEquals("CleanupValveImpl", valves[13].toString());
+        HashMap valvesMap = new HashMap(valves.length);
+        for (int i = 0; i < valves.length; i++)
+        {
+            valvesMap.put(valves[i].toString(), valves[i]);
+        }
+        assertNotNull("CapabilityValveImpl", valvesMap.get("CapabilityValveImpl"));
+        assertNotNull("PortalURLValveImpl", valvesMap.get("PortalURLValveImpl"));
+        assertNotNull("SecurityValve", valvesMap.get("SecurityValve"));
+        assertNotNull("LocalizationValve", valvesMap.get("LocalizationValve"));
+        assertNotNull("PasswordCredentialValve", valvesMap.get("PasswordCredentialValve"));
+        assertNotNull("LoginValidationValve", valvesMap.get("LoginValidationValve"));
+        assertNotNull("ProfilerValve", valvesMap.get("ProfilerValve"));
+        assertNotNull("ContainerValve", valvesMap.get("ContainerValve"));
+        assertNotNull("ActionValveImpl", valvesMap.get("ActionValveImpl"));
+        assertNotNull("ResourceValveImpl", valvesMap.get("ResourceValveImpl"));
+        assertNotNull("DecorationValve", valvesMap.get("DecorationValve"));
+        assertNotNull("HeaderAggregatorValve", valvesMap.get("HeaderAggregatorValve"));
+        assertNotNull("AggregatorValve", valvesMap.get("AggregatorValve"));
+        assertNotNull("CleanupValveImpl", valvesMap.get("CleanupValveImpl"));
         
         
         assertNotNull(engine.getPipeline("action-pipeline"));
