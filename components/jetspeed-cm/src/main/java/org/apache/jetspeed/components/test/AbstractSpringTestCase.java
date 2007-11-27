@@ -64,7 +64,7 @@ public abstract class AbstractSpringTestCase extends TestCase
                 ctx = new ClassPathXmlApplicationContext(getConfigurations(), false);
             }
             PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
-            Properties p = new Properties();
+            Properties p = getPostProcessProperties();
             p.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, System.getProperty("user.dir")+"/target/test-classes/webapp");
             ppc.setProperties(p);
             ctx.addBeanFactoryPostProcessor(ppc);
@@ -95,5 +95,10 @@ public abstract class AbstractSpringTestCase extends TestCase
     protected String[] getBootConfigurations()
     {
         return null;
+    }
+
+    protected Properties getPostProcessProperties()
+    {
+        return new Properties();
     }
 }
