@@ -57,6 +57,11 @@ public class TestPortalSite extends AbstractSpringTestCase
      * portalSite - PortalSite component
      */
     private PortalSite portalSite;
+    
+    /**
+     * default locale
+     */
+    private Locale defaultLocale;
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -66,6 +71,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         super.setUp();
         this.pageManager = (PageManager) ctx.getBean("pageManager");
         this.portalSite = (PortalSite) ctx.getBean("portalSite");
+        this.defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
     }
 
     /* (non-Javadoc)
@@ -74,6 +81,7 @@ public class TestPortalSite extends AbstractSpringTestCase
     protected void tearDown() throws Exception
     {
         super.tearDown();
+        Locale.setDefault(this.defaultLocale);
     }
 
     /**
