@@ -230,11 +230,11 @@ public class TestLayout extends TestCase
                                                                         // across
         moveSuccess("moveright", "2", "1", "1", "2", "1", "2", "1"); // Straight
                                                                         // across
-        moveSuccess("moveright", "3", "2", "0", "3", "0", "2", "0"); // Shouldn't
+        moveSuccess("moveright", "3", "2", "0", "3", "0", "3", "0"); // Shouldn't
 //                                                                        // move
-        moveSuccess("moveright", "4", "2", "1", "3", "0", "2", "1"); // Shouldn't
+        moveSuccess("moveright", "4", "2", "1", "3", "0", "3", "0"); // Shouldn't
                                                                         // move
-        moveSuccess("moveright", "5", "2", "2", "3", "0", "2", "2"); // Shouldn't
+        moveSuccess("moveright", "5", "2", "2", "3", "0", "3", "0"); // Shouldn't
                                                                         // move
 
         moveSuccess("moveup", "2", "1", "1", "1", "0", "1", "0"); // Straight
