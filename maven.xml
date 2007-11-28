@@ -123,13 +123,25 @@
           <j:set var="cmdargs" value="-o ${maven.multiproject.site.goals}"/>
         </j:otherwise>
       </j:choose>
+
+      <ant:condition property="os.windows.family">
+        <ant:os family="windows"/>
+      </ant:condition>
         
       <j:forEach var="reactorProject" items="${multiprojects}">
-
-        <!-- I don't know yet if this will work on Linux too ... -->
-        <exec dir="${reactorProject.context.getVariable('basedir')}" vmlauncher="false" failonerror="true" executable="maven">
-          <arg line="${cmdargs}"/>
-        </exec>
+        <j:choose>
+          <j:when test="${os.windows.family}">
+            <exec dir="${reactorProject.context.getVariable('basedir')}" vmlauncher="false" failonerror="true" executable="cmd">
+              <arg line="/c maven.bat ${cmdargs}"/>
+            </exec>
+          </j:when>
+          <j:otherwise>
+            <!-- I don't know yet if this will work on Linux too ... -->
+            <exec dir="${reactorProject.context.getVariable('basedir')}" vmlauncher="false" failonerror="true" executable="maven">
+              <arg line="${cmdargs}"/>
+            </exec>
+          </j:otherwise>
+        </j:choose>
       </j:forEach>        
       <echo>Now building reactor projects: ${multiprojects}</echo>
     
@@ -208,7 +220,7 @@
 
       <attainGoal name="j2:portal.conf.jetspeed"/>
       <attainGoal name="j2:portal.conf.tomcat"/>
-
+      
       <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
         <j:set var="online" value="${maven.mode.online}"/>
         <j:choose>
@@ -219,9 +231,24 @@
             <j:set var="cmdargs" value="-o j2:db.create.test"/>
           </j:otherwise>
         </j:choose>
-        <exec dir="${basedir}" vmlauncher="true" failonerror="true" executable="maven">
-          <arg line="${cmdargs}"/>
-        </exec>
+        
+        <ant:condition property="os.windows.family">
+          <ant:os family="windows"/>
+        </ant:condition>
+        
+        <j:choose>
+          <j:when test="${os.windows.family}">
+            <exec dir="${basedir}" vmlauncher="true" failonerror="true" executable="cmd">
+              <arg line="/c maven.bat ${cmdargs}"/>
+            </exec>
+          </j:when>
+          <j:otherwise>
+            <exec dir="${basedir}" vmlauncher="true" failonerror="true" executable="maven">
+              <arg line="${cmdargs}"/>
+            </exec>
+          </j:otherwise>
+        </j:choose>
+        
       </j:if>
 
 	  <attainGoal name="jetspeed2:schema" />
