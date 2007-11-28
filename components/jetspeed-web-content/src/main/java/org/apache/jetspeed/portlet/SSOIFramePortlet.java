@@ -167,11 +167,20 @@ public class SSOIFramePortlet extends IFrameGenericPortlet
             Subject subject = getSubject();
             if (sso.hasSSOCredentials(subject, site))
             {
-                sso.updateCredentialsForSite(getSubject(), ssoPrincipal, site, ssoCredential);
+                SSOContext context = sso.getCredentials(subject, site);
+                if (!context.getRemotePrincipalName().equals(ssoPrincipal))
+                {
+                    sso.removeCredentialsForSite(subject, site);
+                    sso.addCredentialsForSite(subject, ssoPrincipal, site, ssoCredential);
+                }
+                else
+                {
+                    sso.updateCredentialsForSite(subject, ssoPrincipal, site, ssoCredential);
+                }
             }
             else
             {
-                sso.addCredentialsForSite(getSubject(), ssoPrincipal, site, ssoCredential);
+                sso.addCredentialsForSite(subject, ssoPrincipal, site, ssoCredential);
             }
         }
         catch (SSOException e)
