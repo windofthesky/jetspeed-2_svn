@@ -168,28 +168,32 @@ _18=window.location.href;
 }
 var _19=jsU.parse(_18);
 var _1a=_19.path;
-var _1b=-1;
-for(var _1c=1;_1b<=_1c;_1c++){
-_1b=_1a.indexOf("/",_1c);
-if(_1b==-1){
+var _1b="";
+if(_19.scheme!=null){
+_1b+=_19.scheme+":";
+}
+if(_19.authority!=null){
+_1b+="//"+_19.authority;
+}
+var _1c=null;
+if(djConfig.jetspeed.rootContext){
+_1c="";
+}else{
+var _1d=-1;
+for(var _1e=1;_1d<=_1e;_1e++){
+_1d=_1a.indexOf("/",_1e);
+if(_1d==-1){
 break;
 }
 }
-var _1d="";
-if(_19.scheme!=null){
-_1d+=_19.scheme+":";
-}
-if(_19.authority!=null){
-_1d+="//"+_19.authority;
-}
-var _1e=null;
-if(_1b==-1){
-_1e=_1a;
+if(_1d==-1){
+_1c=_1a;
 }else{
-_1e=_1a.substring(0,_1b);
+_1c=_1a.substring(0,_1d);
 }
-_16.JETSPEED=_1e;
-_16.SERVER=_1d;
+}
+_16.JETSPEED=_1c;
+_16.SERVER=_1b;
 _16.AJAX_API=_16.JETSPEED+"/ajaxapi";
 _16.DESKTOP=_16.JETSPEED+"/desktop";
 _16.PORTAL=_16.JETSPEED+"/portal";

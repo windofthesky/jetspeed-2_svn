@@ -36,7 +36,6 @@ if ( ! jetspeed.url )
 if ( ! jetspeed.om )
     jetspeed.om = {};
 
-
 // jetspeed version
 
 jetspeed.version = 
@@ -250,23 +249,30 @@ jetspeed.url.pathInitialize = function( force )
 
     var basePath = baseTag.path;
     
-    var sepPos = -1;
-    for( var startPos =1 ; sepPos <= startPos ; startPos++ )
-    {
-        sepPos = basePath.indexOf( "/", startPos );
-        if ( sepPos == -1 )
-            break;
-    }
-
     var serverUri = "";
     if ( baseTag.scheme != null) { serverUri += baseTag.scheme + ":"; }
     if ( baseTag.authority != null) { serverUri += "//" + baseTag.authority; }
 
     var jetspeedPath = null;
-    if ( sepPos == -1 )
-        jetspeedPath = basePath;
+    if ( djConfig.jetspeed.rootContext )
+    {
+      jetspeedPath = "";
+    }
     else
+    {
+      var sepPos = -1;
+      for( var startPos =1 ; sepPos <= startPos ; startPos++ )
+      {
+        sepPos = basePath.indexOf( "/", startPos );
+        if ( sepPos == -1 )
+            break;
+      }
+
+      if ( sepPos == -1 )
+        jetspeedPath = basePath;
+      else
         jetspeedPath = basePath.substring( 0, sepPos );
+    } 
     
     //dojo.debug( "pathInitialize  new-JETSPEED=" + jetspeedPath + " orig-JETSPEED=" + jsUP.JETSPEED + " new-SERVER=" + serverUri + " orig-SERVER=" + document.location.protocol + "//" + document.location.host );
     
