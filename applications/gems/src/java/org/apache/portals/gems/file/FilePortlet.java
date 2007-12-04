@@ -154,7 +154,11 @@ public class FilePortlet extends GenericServletPortlet
                 PortletPreferences prefs = request.getPreferences();
                 path = prefs.getValue(PARAM_SOURCE_FILE, this.defaultSourceFile);
             }
-
+            else
+            {
+                if (path.endsWith(".css"))
+                    path = null;
+            }
             if (null == path && this.defaultSourceBasePath != null)
             {
                 String filepath = request.getParameter(PARAM_SOURCE_FILE_PATH);
