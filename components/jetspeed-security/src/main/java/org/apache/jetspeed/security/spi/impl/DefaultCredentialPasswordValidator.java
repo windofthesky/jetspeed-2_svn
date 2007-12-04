@@ -16,6 +16,9 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
@@ -30,16 +33,43 @@ import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
  */
 public class DefaultCredentialPasswordValidator implements CredentialPasswordValidator
 {
+    private String passwordPattern;
+    private boolean strictPassword = false;
+    /* Example:
+        * Must be at least 6 characters
+        * Must contain at least one one lower case letter, one upper case letter, one digit and one special character
+        * Valid special characters are @#$%^&+=
+     */
+    private final static String defaultPasswordPattern = "[^.*(?=.{6,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$]";
+    
+    public DefaultCredentialPasswordValidator(String passwordPattern)
+    {
+        this.passwordPattern = passwordPattern;
+        this.strictPassword = true;
+    }
     public DefaultCredentialPasswordValidator()
     {
+        strictPassword = false;
     }
-
+    
     /**
      * @see org.apache.jetspeed.security.spi.CredentialPasswordValidator#validate(java.lang.String)
      */
     public void validate(String clearTextPassword) throws SecurityException
     {
+       if (strictPassword)
+       {
+           Pattern p = Pattern.compile(passwordPattern);
+           //Match the given string with the pattern
+           Matcher m = p.matcher(clearTextPassword);
+           if(!m.matches())
+               throw new InvalidPasswordException();
+       }
+       else
+       {
         if ( clearTextPassword == null || clearTextPassword.length() == 0)
-            throw new InvalidPasswordException();
+             throw new InvalidPasswordException();
+       }
+ 
     }
 }
