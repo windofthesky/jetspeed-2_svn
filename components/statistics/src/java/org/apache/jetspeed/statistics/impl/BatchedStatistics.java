@@ -176,11 +176,18 @@ public abstract class BatchedStatistics implements Runnable
             // only clear the records if we actually store them...
             logRecords.clear();
             con.setAutoCommit(autoCommit);
-        } catch (SQLException e)
+        } 
+        catch (SQLException e)
         {
             // todo log to standard Jetspeed logger
             e.printStackTrace();
-        } finally
+            try
+            {
+                con.rollback();
+            }
+            catch (Exception e2) {}
+        } 
+        finally
         {
             try
             {
