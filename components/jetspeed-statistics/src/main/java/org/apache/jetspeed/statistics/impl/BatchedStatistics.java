@@ -180,6 +180,11 @@ public abstract class BatchedStatistics implements Runnable
         {
             // todo log to standard Jetspeed logger
             e.printStackTrace();
+            try
+            {
+                con.rollback();
+            }
+            catch (Exception e2) {}            
         } finally
         {
             try
