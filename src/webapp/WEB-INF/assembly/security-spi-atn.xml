@@ -23,7 +23,12 @@ limitations under the License.
   <!-- require a non-empty password -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator" 
        class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator"/>
-
+   <!-- UNCOMMENT TO TURN ON Regex-based password validation. The pattern below gives:
+        * Must be at least 6 characters
+        * Must contain at least one one lower case letter, one upper case letter, one digit and one special character
+        * Valid special characters are @#$%^&+=
+		<constructor-arg index="1"><value><![CDATA[^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$]]></value></constructor-arg>       
+    -->       
   <!-- MessageDigest encode passwords using SHA-1 -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" 
        class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
