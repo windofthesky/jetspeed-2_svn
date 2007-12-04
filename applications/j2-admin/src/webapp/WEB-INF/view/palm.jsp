@@ -61,7 +61,7 @@ limitations under the License.
     <th class="portlet-section-subheader">Running</th>
     <th class="portlet-section-subheader">Commands</th>
   </tr>
-<c_rt:set var="list" value="<%=renderRequest.getPortletSession().getAttribute("list")%>"/>
+<c_rt:set var='list' value='<%=renderRequest.getPortletSession().getAttribute("list")%>'/>
 <c:forEach var="pa" items="${list}" varStatus="status">
   <c:choose>
     <c:when test="${status.count % 2 != 0}">
