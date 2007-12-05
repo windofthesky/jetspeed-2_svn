@@ -1170,6 +1170,8 @@ limitations under the License.
         <mime-type>text/html</mime-type>
         <portlet-mode>VIEW</portlet-mode>
         <portlet-mode>EDIT</portlet-mode>
+        <!--  support custom edit_defaults mode -->
+        <portlet-mode>edit_defaults</portlet-mode>        
     </supports>
     <supported-locale>en</supported-locale>
     <supported-locale>ja</supported-locale>
@@ -1894,6 +1896,11 @@ limitations under the License.
       <keywords>admin,config,custom</keywords>
     </portlet-info>
   </portlet>
+
+   <custom-portlet-mode>
+        <description>a Custom Edit_defaults Mode</description>            
+        <portlet-mode>edit_defaults</portlet-mode>
+    </custom-portlet-mode>
   
 </portlet-app>
 
