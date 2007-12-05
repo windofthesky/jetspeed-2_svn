@@ -48,6 +48,40 @@
     	</constructor-arg>                  
      </bean>
             
+	<!-- 	
+			Optional configuration for table schema aware datasource.
+			
+			The way to inject the schema switching is database specific. Here only the DB2 way
+			is shown (set current schema = xx). Oracle statement might 
+			be: "alter session set current_schema=xx", PostGres
+			may look like this: "SET search_path TO xx"
+			
+			The idea was taken from http://forum.springframework.org/showthread.php?t=10728
+			
+			The runtime schema switching support was dropped because it is not needed here.
+	-->
+	<!--
+		<bean id="JetspeedDS"
+			class="org.apache.jetspeed.components.datasource.SchemaAwareDataSourceProxy">
+			<property name="targetDataSource">
+				<ref local="dataSourceTarget" />
+			</property>
+			<property name="schemaSql">
+				<value>set current schema = xx</value>
+			</property>
+		</bean>
+		
+		<bean id="dataSourceTarget"
+			class="org.springframework.jndi.JndiObjectFactoryBean">
+			<property name="resourceRef">
+				<value>false</value>
+			</property>
+			<property name="jndiName">
+				<value>java:comp/env/jdbc/jetspeed</value>
+			</property>
+		</bean>
+	-->
+            
   <!--       
       Creates a JNDI-based datasource bean name "JetspeedDS". The information
       provided here is merged with the basic configuration for the 
