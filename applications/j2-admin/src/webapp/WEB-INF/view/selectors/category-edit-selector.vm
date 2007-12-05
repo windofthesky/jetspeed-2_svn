@@ -156,7 +156,8 @@ function addCategory()
         jsCategories[newIndex].state = "new";
         var catList = document.getElementById('jsSelectCat');
         var opt = new Option(catName, catName);
-        catList.add(opt, null); 
+        catList.options[newIndex] = opt;
+        //catList.add(opt, null); 
     }
     dojo.widget.byId("AddCategoryDialog").hide();   
 }
@@ -180,7 +181,7 @@ function handleRemove()
                 j = j + 1;
             }
         }
-        delete jsCategories;
+        //delete jsCategories;
         jsCategories = temp;
         catList.remove(catList.selectedIndex);
     }
