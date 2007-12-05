@@ -519,7 +519,7 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
 
         PortletMode curMode = actionRequest.getPortletMode();
         if (curMode == PortletMode.EDIT ||
-            curMode == JetspeedActions.EDIT_DEFAULTS_MODE)
+            curMode.equals(JetspeedActions.EDIT_DEFAULTS_MODE))
         {
             PortletPreferences prefs = actionRequest.getPreferences();
             PreferencesHelper.requestParamsToPreferences(actionRequest);
