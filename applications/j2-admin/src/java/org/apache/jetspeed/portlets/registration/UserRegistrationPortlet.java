@@ -39,8 +39,10 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.AdministrationEmailException;
 import org.apache.jetspeed.administration.PortalAdministration;
@@ -242,6 +244,24 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
     {
         response.setContentType("text/html");
         doPreferencesEdit(request, response);
+    }
+    
+    protected void doDispatch(RenderRequest request, RenderResponse response) throws PortletException, IOException
+    {
+        if ( !request.getWindowState().equals(WindowState.MINIMIZED))
+        {
+            PortletMode curMode = request.getPortletMode();            
+            if (JetspeedActions.EDIT_DEFAULTS_MODE.equals(curMode))
+            {
+                //request.setAttribute(PARAM_EDIT_PAGE, DEFAULT_EDIT_DEFAULTS_PAGE);
+                doEdit(request, response);
+            }
+            else
+            {
+                super.doDispatch(request, response);
+            }
+        }
+        
     }
     
     public void doView(RenderRequest request, RenderResponse response)
@@ -497,7 +517,10 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
         ResourceBundle resource = getPortletConfig().getResourceBundle(
                 actionRequest.getLocale());
 
-        if (actionRequest.getPortletMode() == PortletMode.EDIT)
+        PortletMode curMode = actionRequest.getPortletMode();
+       
+        if (curMode == PortletMode.EDIT ||
+            curMode.equals(JetspeedActions.EDIT_DEFAULTS_MODE))
         {
             PortletPreferences prefs = actionRequest.getPreferences();
             PreferencesHelper.requestParamsToPreferences(actionRequest);
