@@ -17,17 +17,17 @@ limitations under the License.
 #set ($refreshLink = $renderResponse.createActionURL())
 $refreshLink.setParameter("reset","true")
 #set ($renderLink = $renderResponse.createActionURL())
-
+#set ($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
 #set ($portalContextPath=$renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext").request.contextPath)
 <!-- Search Form -->
 <form id='jsSelectorForm' onSubmit='return false;' style="height:21px; padding: 2px; margin:10px">
 <table>
 <tr>
-<td nowrap class="portlet-section-alternate" align="right">Search for portlets:&nbsp;</td>
+<td nowrap class="portlet-section-alternate" align="right">$messages.getString("search.portlet"):&nbsp;</td>
 <td nowrap class="portlet-section-alternate">
 <input type="text" name="filter" id="searchString" size="40" value="$!searchString" class="portlet-form-field-label">    
-<input type="submit" value="Search" onClick='javascript:performSearch();'>
-<input type="submit" value="Refresh" onClick="javascript:performRefresh()">
+<input type="submit" value="$messages.getString("search")" onClick='javascript:performSearch();'>
+<input type="submit" value="$messages.getString("refresh")" onClick="javascript:performRefresh()">
 <input type="hidden" value="$category" id="category" name="category">
 <input type="hidden" value="$pageNumber" id="pageNumber" name="pageNumber">
 <input type="hidden" value="$jspage" id="pagePath" name="pagePath">
@@ -87,7 +87,7 @@ function addPortletToPage(theNewPortlet,pID)
    var cell = document.getElementById(theNewPortlet);
    if (cell != null)
    {
-      cell.innerHTML = "Count: " + selectorPortlets[pID].count; // TODO: localize
+      cell.innerHTML = "$messages.getString("count"): " + selectorPortlets[pID].count; // TODO: localize
    }
 }
 function performSearch()
@@ -152,12 +152,12 @@ function createPagination(Pagenumber,PageCount)
     if (Pagenumber != 1)
     {
         a = document.createElement("a");
-        a.innerHTML = 'Previous';
+        a.innerHTML = '$messages.getString("previous")';
         a.href = "javascript:displayPortlets(" + "\"" + (Pagenumber-1)+ "\"" + ")";
         pgCol.appendChild(a);              
         pgCol = pgRoww.insertCell(1);    
         a = document.createElement("a");
-        a.innerHTML = 'First';
+        a.innerHTML = '$messages.getString("first")';
         a.href = "javascript:displayPortlets(" + "\"" + 1+ "\"" + ")";
         pgCol.appendChild(a);              
     }
@@ -187,12 +187,12 @@ function createPagination(Pagenumber,PageCount)
         if (PageCount > 1)	
         {
 			          a = document.createElement("a");
-          			a.innerHTML = 'Last';
+          			a.innerHTML = '$messages.getString("last")';
           			a.href = "javascript:displayPortlets(" + "\"" + PageCount+ "\"" + ")";
           			pgCol.appendChild(a);              
           			pgCol = pgRoww.insertCell(1);   
           			a = document.createElement("a");    
-          			a.innerHTML = 'Next';
+          			a.innerHTML = '$messages.getString("next")';
           			a.href = "javascript:displayPortlets(" + "\"" + (parseInt(Pagenumber)+1)+ "\"" + ")";
           			pgCol.appendChild(a);              
         		}
@@ -226,7 +226,7 @@ function categoriesBar()
   c1.appendChild(a);
   var c2 = row.insertCell(i+1);
   var a2 = document.createElement("a");
-  a2.innerHTML = "[Go Back]";  // TODO: localize
+  a2.innerHTML = "[$messages.getString("goback")]";  // TODO: localize
   // TODO: determine if JETSPEED or DESKTOP 
   a2.href = getReturnURL();
   a2.setAttribute("style", "font-weight:normal");
@@ -291,12 +291,12 @@ function displayGridPortlet()
    				 c0 = row3.insertCell(0);
    				 c0.setAttribute("style","font-size: 8pt; color: blue;");
    				 var a = document.createElement("a");
-   				 a.innerHTML = "Add"; // TODO: localize
+   				 a.innerHTML = "$messages.getString("add")"; // TODO: localize
    				 a.href = "javascript:addPortletToPage("+"\""+selectorPortlets[iz].name+"\""+",\"" + iz + "\")";
    				 c0.appendChild(a);
    				 c1 = row3.insertCell(1);
    				 // TODO: localize
-   				 c1.innerHTML = "Count: " + selectorPortlets[iz].count;
+   				 c1.innerHTML = "$messages.getString("count"): " + selectorPortlets[iz].count;
    				 c1.setAttribute("style","font-size: 8pt; color: blue;");
    				 c1.setAttribute("id", selectorPortlets[iz].name);
 

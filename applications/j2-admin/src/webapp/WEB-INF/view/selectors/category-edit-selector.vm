@@ -14,15 +14,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *#
+#set ($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
 <div dojoType="dialog" id="AddCategoryDialog" bgColor="grey" bgOpacity="0.5" toggle="fade" toggleDuration="250">
   <form onsubmit="return false;">
   <input type="hidden" id='theNewCategory'>
     <div id="AddCategoryPane" dojoType="ContentPane" label="Add Category" class="constraints">
-      <div style="height:21px; padding: 2px"><b>Category Name:&nbsp;</b><span id="categoryName"></span></div>
+      <div style="height:21px; padding: 2px"><b>$messages.getString("category.name"):&nbsp;</b><span id="categoryName"></span></div>
       <div class="categoryTableDiv">
       <table>
       <tr>
-        <td>Category Name:</td>
+        <td>$messages.getString("category.name"):</td>
         <td><input id='jsCatName' type="text"></td>
       </tr>
       </table>
@@ -44,8 +45,8 @@ limitations under the License.
                  layoutAlign="right"
                  style="padding: 4px; border-right: thin inset grey; width: 78%; height: 30px">
                 <div class="buttonbox">
-                    <button dojoType="Button" onClick="dojo.widget.byId( 'AddCategoryDialog' ).hide();" >Cancel</button>
-                    <button dojoType="Button" onClick="addCategory();">OK</button>
+                    <button dojoType="Button" onClick="dojo.widget.byId( 'AddCategoryDialog' ).hide();" >$messages.getString("cancel")</button>
+                    <button dojoType="Button" onClick="addCategory();">$messages.getString("ok")</button>
                 </div>
             </div>
       </div>
@@ -58,36 +59,36 @@ $cancelLink.setPortletMode($MODE_VIEW)
 <form id='jsEditSelectorForm' onSubmit='return false;' method="post" style="height:250px; padding: 2px; margin:10px">
 <table>
 <tr>
-<td nowrap class="portlet-section-alternate" align="right">Categories:&nbsp;</td>
+<td nowrap class="portlet-section-alternate" align="right">$messages.getString("categories"):&nbsp;</td>
 <td nowrap>
 <select id='jsSelectCat' size='10' onChange='javascript:handleSelect();'>
 </select>
-<td nowrap class="portlet-section-alternate" align="right">Keywords:&nbsp;</td>
+<td nowrap class="portlet-section-alternate" align="right">$messages.getString("keywords"):&nbsp;</td>
 <td nowrap>
 <input type="text" name="keywords" id="keywords" size="60" value="" class="portlet-form-field-label"/>    
 </tr>
 <tr>
 <td nowrap>
-<input type="submit" value="Add Category" onClick='javascript:handleAdd();'/>
+<input type="submit" value='$messages.getString("add.category")' onClick='javascript:handleAdd();'/>
 </td>
 <td nowrap>
-<input type="submit" value="Remove Category" onClick='javascript:handleRemove();'/>
+<input type="submit" value='$messages.getString("remove.category")' onClick='javascript:handleRemove();'/>
 </td>
 </tr>
 <tr>
-<td nowrap class="portlet-section-alternate" align="right">Rows:&nbsp;</td>
+<td nowrap class="portlet-section-alternate" align="right">$messages.getString("rows"):&nbsp;</td>
 <td nowrap>         
 <input type="text" name="Rows" id="Rows" size="6" value="$!Rows" class="portlet-form-field-label"/>    
 </td>
-<td nowrap class="portlet-section-alternate" align="right">Columns:&nbsp;</td>
+<td nowrap class="portlet-section-alternate" align="right">$messages.getString("columns"):&nbsp;</td>
 <td nowrap>
 <input type="text" name="Columns" id="Columns" size="6" value="$!Columns" class="portlet-form-field-label"/>    
 </td>
 </tr>
 <tr>
 <td nowrap>
-<input type="submit" value="Save" onClick='javascript:handleSave();'/>
-<input type="submit" value="Cancel" onClick='javascript:handleCancel();'/>
+<input type="submit" value='$messages.getString("save")' onClick='javascript:handleSave();'/>
+<input type="submit" value='$messages.getString("cancel")' onClick='javascript:handleCancel();'/>
 <input type="hidden" name='jsModifiedCats' id='jsModifiedCats' value=""/>
 <input type="hidden" name='jsModifiedKeys' id='jsModifiedKeys' value=""/>
 <input type="hidden" name='jsAddedCats' id='jsAddedCats' value=""/>
