@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -478,7 +479,7 @@ public class FolderImpl extends NodeImpl implements Folder
             // instance for this folder
             try
             {
-                return pageManager.getPageSecurity(this);
+                return getPageManager().getPageSecurity(this);
             }
             catch (NodeException ne)
             {
@@ -676,7 +677,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get and cache folders
             // collection for this folder
-            return pageManager.getFolders(this);
+            return getPageManager().getFolders(this);
         }
 
         // return nodes with view access
@@ -693,7 +694,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get folder instance without
             // caching the folders collection for this folder
-            return pageManager.getFolder(this, name);
+            return getPageManager().getFolder(this, name);
         }
 
         // select folder by name from cached folders collection
@@ -719,7 +720,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get and cache pages
             // collection for this folder
-            return pageManager.getPages(this);
+            return getPageManager().getPages(this);
         }
 
         // return nodes with view access
@@ -736,7 +737,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get page instance without
             // caching the pages collection for this folder
-            return pageManager.getPage(this, name);
+            return getPageManager().getPage(this, name);
         }
 
         // select page by name from cached pages collection
@@ -762,7 +763,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get and cache links
             // collection for this folder
-            return pageManager.getLinks(this);
+            return getPageManager().getLinks(this);
         }
 
         // return nodes with view access
@@ -779,7 +780,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get link instance without
             // caching the links collection for this folder
-            return pageManager.getLink(this, name);
+            return getPageManager().getLink(this, name);
         }
 
         // select link by name from cached links collection
@@ -805,7 +806,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get and cache page security
             // instance for this folder
-            return pageManager.getPageSecurity(this);
+            return getPageManager().getPageSecurity(this);
         }
         if (pageSecurity == null)
         {
@@ -828,7 +829,7 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // use PageManager to get and cache all nodes
             // collection for this folder
-            return pageManager.getAll(this);
+            return getPageManager().getAll(this);
         }
 
         // return nodes with view access
@@ -1096,4 +1097,13 @@ public class FolderImpl extends NodeImpl implements Folder
         }
         return nodes;
     }
+    
+    public PageManager getPageManager()
+    {
+        if(pageManager == null)
+        {
+            pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("PageManager");
+        }        
+        return pageManager;
+    }     
 }
