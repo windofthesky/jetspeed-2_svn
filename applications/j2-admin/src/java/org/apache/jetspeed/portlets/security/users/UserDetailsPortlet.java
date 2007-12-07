@@ -665,11 +665,13 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     Folder folder = pageManager.getFolder(subsite);                    
                     pageManager.removeFolder(folder);
                 }                
-                audit.logAdminUserActivity(actionRequest.getUserPrincipal().getName(), getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, USER_ADMINISTRATION);            
+                String firstName = attributes.get("user.name.given", "n/a");
+                String lastName =  attributes.get("user.name.family", "n/a");
+                audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), 
+                        getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, "", firstName, lastName, USER_ADMINISTRATION);                                                                                                        
                 // remove selected user from USERS_TOPIC
                 PortletMessaging.cancel(actionRequest,SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-                // TODO: send message to site manager portlet
-                
+                // TODO: send message to site manager portlet                
             }
             catch (Exception ex)
             {
