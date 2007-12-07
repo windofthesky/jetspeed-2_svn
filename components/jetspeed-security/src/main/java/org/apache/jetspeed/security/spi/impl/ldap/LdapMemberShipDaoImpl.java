@@ -99,7 +99,9 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		        	String cnfull = (String)it.next();
 		        	if(cnfull.toLowerCase().indexOf(getGroupFilterBase().toLowerCase())!=-1) {
 			        	String cn = extractLdapAttr(cnfull,getRoleUidAttribute());
-			        	groupUids.add(cn);
+			        	if (cn != null){
+			        		groupUids.add(cn);
+			        	}
 		        	}
 		        }
 	    //List uids = getAttributes(getAttribute(getUserGroupMembershipAttribute(), userAttributes),getGroupFilterBase());
@@ -152,7 +154,9 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 		        	String cnfull = (String)it.next();
 		        	if(cnfull.toLowerCase().indexOf(getRoleFilterBase().toLowerCase())!=-1) {
 			        	String cn = extractLdapAttr(cnfull,getRoleUidAttribute());
-			        	newAttrs.add(cn);
+			        	if (cn != null){
+			        		newAttrs.add(cn);
+			        	}
 		        	}else{
 		        		// No conversion required (I think!)
 		        		String cn = cnfull;
@@ -196,7 +200,9 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	        	if (!StringUtils.isEmpty(uidfull)) {
 		        	if (uidfull.toLowerCase().indexOf(getUserFilterBase().toLowerCase())!=-1) {
 			        	String uid = extractLdapAttr(uidfull,getUserIdAttribute());
-		        		newAttrs.add(uid);
+		        		if (uid != null){
+				        	newAttrs.add(uid);
+		        		}
 		        	}
 	        	}
 	        }
@@ -330,7 +336,9 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	        	String uidfull = (String)it.next();
 	        	if (!StringUtils.isEmpty(uidfull)) {	        	
 		        	String uid = extractLdapAttr(uidfull,getUserIdAttribute());
-		        	userPrincipalUids.add(uid);
+		        	if (uid!=null){
+			        	userPrincipalUids.add(uid);
+		        	}
 	        	}
 	        }
 	    }
