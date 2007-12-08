@@ -42,7 +42,11 @@ public class PortletActionSecurityConstraintsBehavior
     
     public PortletActionSecurityConstraintsBehavior(PageManager pageManager)
     {
-        super(pageManager);
+    	this( pageManager, Boolean.FALSE );
+    }
+    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, Boolean enableCreateUserPagesFromRolesOnEdit )
+    {
+        super( pageManager, enableCreateUserPagesFromRolesOnEdit );
         PortalConfiguration config = Jetspeed.getConfiguration();
         if (config != null)
         {
