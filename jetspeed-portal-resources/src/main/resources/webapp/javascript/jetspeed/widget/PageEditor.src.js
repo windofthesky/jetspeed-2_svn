@@ -55,9 +55,7 @@ dojo.widget.defineWidget(
 		columnSizeDialogBg: null,
 		columnSizeDialogFg: null,
 
-
         detail: null,
-
         
         // fields
         editorInitiatedFromDesktop: false,
@@ -65,25 +63,41 @@ dojo.widget.defineWidget(
 		isContainer: true,
         widgetsInTemplate: true,
 
+        loadTimeDistribute: jetspeed.UAie,
+
+        dbOn: djConfig.isDebug,
+
+        // style classes
+        styleBase: "pageEditorPaneContainer",
+        styleBaseAdd: ( jetspeed.UAie ? "pageEditorPaneContainerIE" : "pageEditorPaneContainerNotIE" ),
+        styleDetail: "pageEditorDetailContainer",
+        styleDetailAdd: ( jetspeed.UAie ? "pageEditorDetailContainerIE" : "pageEditorDetailContainerNotIE" ),
 
         // protocol - dojo.widget.Widget create
 
         postMixInProperties: function( args, fragment, parent )
         {
-            jetspeed.widget.PageEditor.superclass.postMixInProperties.apply( this, arguments );
+            var jsObj = jetspeed;
+            jsObj.widget.PageEditor.superclass.postMixInProperties.apply( this, arguments );
+    
+            this.layoutImagesRoot = jsObj.prefs.getLayoutRootUrl() + "/images/desktop/";
+            this.labels = jsObj.prefs.pageEditorLabels;
+            this.dialogLabels = jsObj.prefs.pageEditorDialogLabels;
 
-            this.templateCssPath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.css" ) ;
-            this.templatePath = new dojo.uri.Uri( jetspeed.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.html" ) ;
+            this.templateCssPath = new dojo.uri.Uri( jsObj.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.css" ) ;
+            this.templatePath = new dojo.uri.Uri( jsObj.url.basePortalDesktopUrl() + "/javascript/jetspeed/widget/PageEditor.html" ) ;
         },
 
         fillInTemplate: function( args, fragment )
         {
+            var jsObj = jetspeed;
+            var djObj = dojo;
             var self = this;
 
-            this.deletePortletDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePortletConfirmed: function() { this.hide(); self.deletePortletConfirmed( this.portletEntityId ); } }, this.deletePortletDialog );
+            this.deletePortletDialog = djObj.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePortletConfirmed: function() { this.hide(); self.deletePortletConfirmed( this.portletEntityId ); } }, this.deletePortletDialog );
 			this.deletePortletDialog.setCloseControl( this.deletePortletDialog.deletePortletCancel.domNode );
 
-            this.deleteLayoutDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deleteLayoutConfirmed: function() { this.hide(); self.deleteLayoutConfirmed( this.portletEntityId ); } }, this.deleteLayoutDialog );
+            this.deleteLayoutDialog = djObj.widget.createWidget( "dialog", { widgetsInTemplate: true, deleteLayoutConfirmed: function() { this.hide(); self.deleteLayoutConfirmed( this.portletEntityId ); } }, this.deleteLayoutDialog );
 			this.deleteLayoutDialog.setCloseControl( this.deleteLayoutDialog.deleteLayoutCancel.domNode );
 
             var columnSizeParams = {};
@@ -111,75 +125,185 @@ dojo.widget.defineWidget(
                 }
             };
 
-            this.columnSizeDialog = dojo.widget.createWidget( "dialog", columnSizeParams, this.columnSizeDialog );
+            this.columnSizeDialog = djObj.widget.createWidget( "dialog", columnSizeParams, this.columnSizeDialog );
             this.columnSizeDialog.setCloseControl( this.columnSizeDialog.columnSizeCancel.domNode );
 
-            jetspeed.widget.PageEditor.superclass.fillInTemplate.call( this );
+            jsObj.widget.PageEditor.superclass.fillInTemplate.call( this );
 		},
 
         postCreate: function( args, fragment, parent )
         {
-            this.editPageInitiate();
+            var startInEditModeMoveExecuteHere = false;
+            var startInEditModeMove = null;
+            //if ( this.editModeMove )
+            //    startInEditModeMove = {};
+            //if ( startInEditModeMove == null && this.checkPerm( this.PM_MZ_P, jetspeed ) )
+            //    startInEditModeMove = { execEditMode: true };
+            if ( this.editModeMove || this.checkPerm( this.PM_MZ_P, jetspeed ) )
+                startInEditModeMove = { execEditMode: true };
+
+            this.editPageInitiate( startInEditModeMove );
         },
 
         // initialization
-        editPageInitiate: function()
+        editPageInitiate: function( startInEditModeMove )
         {
             var themesContentManager = null;
             if ( this.editorInitiatedFromDesktop )
-                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, false, false, true, true, true );
+                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, false, false, true, true, true, startInEditModeMove );
             else
-                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, true, true, true, false, false );
+                themesContentManager = new jetspeed.widget.EditPageGetThemesContentManager( this, true, true, true, false, false, startInEditModeMove );
             themesContentManager.getContent();
         },
-        editPageBuild: function()
+        editPageBuild: function( startInEditModeMove )
         {
-            jetspeed.url.loadingIndicatorHide();
-
-            var layoutImagesUrl = jetspeed.prefs.getLayoutRootUrl() + "/images/desktop/"; 
-
-            var pageEditorWidgets = new Array();
-            var layoutEditPaneWidgets = new Array();
-            var pageEditPaneWidget = dojo.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jetspeed.page.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jetspeed.page.themeDefinitions.portletDecorations, layoutImagesRoot: layoutImagesUrl } );
-            pageEditPaneWidget.pageEditorWidget = this;
-            dojo.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
-            pageEditorWidgets.push( pageEditPaneWidget );
-
-            var rootLayoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jetspeed.page.rootFragmentId, isRootLayout: true, layoutDefinitions: jetspeed.page.themeDefinitions.layouts, layoutImagesRoot: layoutImagesUrl } );
-            rootLayoutEditPaneWidget.pageEditorWidget = this;
-            dojo.dom.insertAfter( rootLayoutEditPaneWidget.domNode, pageEditPaneWidget.domNode );
-            pageEditorWidgets.push( rootLayoutEditPaneWidget );
-            layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
+            var jsObj = jetspeed;
+            var jsPage = jsObj.page;
+            var djObj = dojo;
             
-            if ( jetspeed.prefs.windowTiling )
+            this.pageEditorWidgets = new Array();
+            this.layoutEditPaneWidgets = new Array();
+            var pageEditPaneWidget = djObj.widget.createWidget( "jetspeed:PageEditPane", { layoutDecoratorDefinitions: jsPage.themeDefinitions.pageDecorations, portletDecoratorDefinitions: jsPage.themeDefinitions.portletDecorations, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
+            pageEditPaneWidget.pageEditorWidget = this;
+            var dNodeStyle = pageEditPaneWidget.domNode.style;
+            dNodeStyle.display = "none";
+            dNodeStyle.visibility = "hidden";
+            djObj.dom.insertAfter( pageEditPaneWidget.domNode, this.domNode );
+            this.pageEditorWidgets.push( pageEditPaneWidget );
+            this.pageEditPaneWidget = pageEditPaneWidget;
+            
+            jsObj.url.loadingIndicatorStep( jsObj );
+            this._buildDepth = 0;
+            this._buildRootPane( startInEditModeMove );
+            
+            if ( startInEditModeMove != null && startInEditModeMove.execEditMode )
             {
-                for ( var i = 0 ; i < jetspeed.page.columns.length; i++ )
+                djObj.lang.setTimeout( this, this.editMoveModeStart, 100 );
+            }
+        },
+        
+        _buildRootPane: function( startInEditModeMove )
+        {
+            var jsObj = jetspeed;
+            var jsPage = jsObj.page;
+            var djObj = dojo;
+
+            var editModeMove = ( startInEditModeMove != null );
+            var rootLayoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_root", layoutId: jsPage.rootFragmentId, isRootLayout: true, depth: 0, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels, startInEditModeMove: editModeMove } );
+            rootLayoutEditPaneWidget.pageEditorWidget = this;
+            var dNodeStyle = rootLayoutEditPaneWidget.domNode.style;
+            dNodeStyle.display = "none";
+            dNodeStyle.visibility = "hidden";
+            djObj.dom.insertAfter( rootLayoutEditPaneWidget.domNode, this.pageEditPaneWidget.domNode );
+            this.pageEditorWidgets.push( rootLayoutEditPaneWidget );
+            this.layoutEditPaneWidgets.push( rootLayoutEditPaneWidget );
+
+            this._buildNextColI = 0;
+            this._buildColLen = ( jsObj.prefs.windowTiling ? jsPage.columns.length : 0 );
+            
+            if ( ! this.loadTimeDistribute )
+            {
+                jsObj.url.loadingIndicatorStep( jsObj );
+                this._buildNextPane();
+            }
+            else
+            {
+                djObj.lang.setTimeout( this, this._buildNextPane, 10 );
+                jsObj.url.loadingIndicatorStep( jsObj );
+            }
+        },
+
+        _buildNextPane: function()
+        {
+            var jsObj = jetspeed;
+            var jsPage = jsObj.page;
+            var djObj = dojo;
+
+            var i = this._buildNextColI;
+            var colLen = this._buildColLen;
+            if ( i < colLen )
+            {
+                var col, layoutEditPaneWidget = null;
+                while ( i < colLen && layoutEditPaneWidget == null )
                 {
-                    var col = jetspeed.page.columns[i];
+                    col = jsPage.columns[i];
                     if ( col.layoutHeader )
                     {
-                        var layoutEditPaneWidget = dojo.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutId: col.layoutId, layoutDefinitions: jetspeed.page.themeDefinitions.layouts, layoutImagesRoot: layoutImagesUrl } );
+                        layoutEditPaneWidget = djObj.widget.createWidget( "jetspeed:LayoutEditPane", { widgetId: "layoutEdit_" + i, layoutColumn: col, layoutId: col.layoutId, depth: col.layoutDepth, layoutInfo: jsPage.layoutInfo.columnLayoutHeader, layoutDefinitions: jsPage.themeDefinitions.layouts, layoutImagesRoot: this.layoutImagesRoot, labels: this.labels, dialogLabels: this.dialogLabels } );
                         layoutEditPaneWidget.pageEditorWidget = this;
+                        var dNodeStyle = layoutEditPaneWidget.domNode.style;
+                        dNodeStyle.display = "none";
+                        dNodeStyle.visibility = "hidden";
                         if ( col.domNode.firstChild != null )
                             col.domNode.insertBefore( layoutEditPaneWidget.domNode, col.domNode.firstChild );
                         else
                             col.domNode.appendChild( layoutEditPaneWidget.domNode );
                         layoutEditPaneWidget.initializeDrag();
-                        pageEditorWidgets.push( layoutEditPaneWidget );
-                        layoutEditPaneWidgets.push( layoutEditPaneWidget );
+                        this.pageEditorWidgets.push( layoutEditPaneWidget );
+                        this.layoutEditPaneWidgets.push( layoutEditPaneWidget );
                     }
+                    i++;
                 }
             }
-            this.pageEditorWidgets = pageEditorWidgets;
-            this.layoutEditPaneWidgets = layoutEditPaneWidgets;
-            this.editPageSyncPortletActions();
 
-            if ( dojo.render.html.ie60 )
-                jetspeed.page.displayAllPortlets();
+            if ( i < colLen )
+            {
+                this._buildNextColI = i;
+                if ( ! this.loadTimeDistribute )
+                {
+                    jsObj.url.loadingIndicatorStep( jsObj );
+                    this._buildNextPane();
+                }
+                else
+                {
+                    djObj.lang.setTimeout( this, this._buildNextPane, 10 );
+                    jsObj.url.loadingIndicatorStep( jsObj );
+                }
+            }
+            else
+            {
+                djObj.lang.setTimeout( this, this._buildFinished, 10 );
+            }
         },
-        editPageSyncPortletActions: function()
+
+        _buildFinished: function()
         {
-            var portlets = jetspeed.page.getPortletArray()
+            var jsObj = jetspeed;
+            
+            if ( jsObj.UAie )   // provide background when prevent IE bleed-through problem
+            {
+                this.bgIframe = new jsObj.widget.BackgroundIframe( this.domNode, "ieLayoutBackgroundIFrame", dojo );
+            }
+
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
+            {
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
+                {
+                    var dNodeStyle = pageEditorWidgets[i].domNode.style;
+                    dNodeStyle.display = "block";
+                    dNodeStyle.visibility = "visible";
+                }
+            }
+
+            this.editPageSyncPortletActions( true, jsObj );
+
+            jsObj.url.loadingIndicatorHide();
+            if ( jsObj.UAie6 )
+            {
+                //jsObj.url.loadingIndicatorHide();
+                jsObj.page.displayAllPWins();
+            }
+        },
+
+        editPageSyncPortletActions: function( showing, jsObj )
+        {
+            var jsPage = jsObj.page;
+            var jsCss = jsObj.css;
+            if ( showing )
+                jsObj.ui.updateChildColInfo();
+
+            var portlets = jsPage.getPortletArray()
             if ( portlets != null )
             {
                 for ( var i = 0 ; i < portlets.length ; i++ )
@@ -187,49 +311,85 @@ dojo.widget.defineWidget(
                     portlets[i].syncActions();
                 }
             }
+
+            var peProto = jsObj.widget.PageEditor.prototype;
+            var cP_D = this.checkPerm(this.PM_P_D,jsObj,peProto);
+            var cL_NA_ED = this.canL_NA_ED(jsObj,peProto);
+
+            var pWins = jsPage.portlet_windows;
+            for ( var windowId in pWins )
+            {
+                var pWin = pWins[ windowId ];
+                if ( ! pWin ) continue;
+                if ( showing )
+                    pWin.editPageInitiate( cP_D, cL_NA_ED, jsObj, jsCss );
+                else
+                    pWin.editPageTerminate( jsObj, jsCss );
+            }
         },
+
         editPageHide: function()
         {
-            if ( this.pageEditorWidgets != null )
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
             {
-                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].hide();
+                    pageEditorWidgets[i].hide();
                 }
             }
+
             this.hide();
-            this.editPageSyncPortletActions();
+
+            this.editPageSyncPortletActions( false, jetspeed );            
         },
         editPageShow: function()
         {
-            if ( this.pageEditorWidgets != null )
+            var jsObj = jetspeed;
+            var pageEditorWidgets = this.pageEditorWidgets;
+            var moveModeIsEnabled = this.editModeMove;
+            if ( pageEditorWidgets != null )
             {
-                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].editModeRedisplay();
+                    pageEditorWidgets[i].editModeRedisplay( moveModeIsEnabled );
                 }
             }
+
             this.show();
-            this.editPageSyncPortletActions();
-            if ( dojo.render.html.ie60 )
-                jetspeed.page.displayAllPortlets();
+
+            this.editPageSyncPortletActions( true, jsObj );
+
+            if ( moveModeIsEnabled )
+            {
+                this.editMoveModeStart();
+            }
+            if ( jsObj.UAie6 )
+                jsObj.page.displayAllPWins();
         },
         editPageDestroy: function()
         {
-            if ( this.pageEditorWidgets != null )
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
             {
-                for ( var i = 0 ; i < this.pageEditorWidgets.length ; i++ )
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    this.pageEditorWidgets[i].destroy();
-                    this.pageEditorWidgets[i] = null;
+                    pageEditorWidgets[i].destroy();
+                    pageEditorWidgets[i] = null;
                 }
             }
+
+            this.pageEditorWidgets = null;
+            this.layoutEditPaneWidgets = null;
+            this.pageEditPaneWidget = null;
+
             if ( this.deletePortletDialog != null )
                 this.deletePortletDialog.destroy();
             if ( this.deleteLayoutDialog != null )
                 this.deleteLayoutDialog.destroy();
             if ( this.columnSizeDialog != null )
                 this.columnSizeDialog.destroy();
+
             this.destroy();
         },
 
@@ -240,7 +400,7 @@ dojo.widget.defineWidget(
             this.deletePortletDialog.portletEntityId = portletEntityId;
             this.deletePortletDialog.portletTitle = portletTitle;
             this.deletePortletTitle.innerHTML = portletTitle;
-            this.deletePortletDialog.show();
+            this._openDialog( this.deletePortletDialog );
         },
         deletePortletConfirmed: function( portletEntityId )
         {
@@ -252,7 +412,7 @@ dojo.widget.defineWidget(
             this.deleteLayoutDialog.layoutId = layoutId;
             this.deleteLayoutDialog.layoutTitle = layoutId;
             this.deleteLayoutTitle.innerHTML = layoutId;
-            this.deleteLayoutDialog.show();
+            this._openDialog( this.deleteLayoutDialog );
         },
         deleteLayoutConfirmed: function()
         {
@@ -288,8 +448,8 @@ dojo.widget.defineWidget(
                 }
                 this.columnSizeDialog.layoutId = layoutId;
                 this.columnSizeDialog.columnCount = spinnerCount;
-                this.columnSizeDialog.show();
-            }            
+                this._openDialog( this.columnSizeDialog );
+            }
         },
         columnSizeConfirmed: function( layoutId, columnSizes )
         {
@@ -315,101 +475,304 @@ dojo.widget.defineWidget(
                 }
             }
         },
-
+        checkPerm: function(p,jsObj,proto)
+        {
+            var peProto = proto || jsObj.widget.PageEditor.prototype;
+            var perms = peProto.perms;
+            if ( perms == null )
+                perms = peProto.perms = jsObj.page._perms(jsObj.prefs,-1,String.fromCharCode);
+            if ( perms == null ) return false;
+            if ( p )
+                return ((perms[0] & p) > 0);
+            return perms;
+        },
+        getLDepthPerm: function(jsObj,proto)
+        {
+            var perms = this.checkPerm(null,jsObj,proto);
+            if ( perms && perms.length >= 2 )
+                return perms[1];
+            return -1;
+        },
+        canL_NA_ED: function(jsObj,proto)
+        {
+            var peProto = proto || jsObj.widget.PageEditor.prototype;
+            var cL_NA_ED = peProto.checkPerm( peProto.PM_L_NA_ED, jsObj, peProto );
+            if ( ! cL_NA_ED )
+                cL_NA_ED = peProto.hasRPerm( jsObj, peProto );
+            return cL_NA_ED;
+        },
+        hasRPerm: function(jsObj,proto)
+        {
+            var peProto = proto || jsObj.widget.PageEditor.prototype;
+            var rperm = false;
+            if ( typeof proto.permR != "undefined" )
+                rperm = proto.permR;
+            else
+            {
+                var perms = this.checkPerm(null,jsObj,proto);
+                if ( perms && perms.length >= 3 && perms[2] && perms[2].length > 0 )
+                {
+                    var u = jsObj.page._getU();
+                    if ( u && u.r && u.r[ perms[2] ] )
+                    {
+                        rperm = true;
+                    }
+                }
+                proto.permR = rperm;
+            }
+            return rperm;
+        },
         refreshPage: function()
         {
             dojo.lang.setTimeout( this, this._doRefreshPage, 10 );
         },
         _doRefreshPage: function()
         {
-            var pageUrl = jetspeed.page.getPageUrl();
-            pageUrl = jetspeed.url.addQueryParameter( pageUrl, jetspeed.id.PG_ED_PARAM, "true", true );
-            window.location.href = pageUrl.toString();
-        },
+            var jsObj = jetspeed;
+            var pageUrl = jsObj.page.getPageUrl();
 
-        editModeNormal: function()
-        {
-            var isIE6 = dojo.render.html.ie60;
-            if ( isIE6 )
-                jetspeed.page.displayAllPortlets( true );
-            // restore all portlets (that were not previously minimized)
-            var portletArray = jetspeed.page.getPortletArray();
-            var colNodes = [];
-            for ( var i = 0; i < portletArray.length; i++ )
+            //pageUrl = jsObj.url.addQueryParameter( pageUrl, jsObj.id.PG_ED_PARAM, "true", true );  // BOZO:NOW: is this ok when ajax-pagenavigation is off???? 
+            if ( ! jsObj.prefs.ajaxPageNavigation )
             {
-                var portletWindow = portletArray[i].getPortletWindow();
-                if ( portletWindow != null )
+                var stateVal = 0;
+                var wt = null;
+                    
+                if ( this.editModeMove )
                 {
-                    portletWindow.restoreFromMinimizeWindowTemporarily();
-                    if ( isIE6 && portletWindow.windowPositionStatic )
+                    if ( ! this.checkPerm( this.PM_MZ_P, jetspeed ) )
+                        stateVal |= this.PM_MZ_P;
+                    var identifierCheck = /\b([a-z_A-Z$]\w*)\b(?!-)/;
+                    var pWins = jsObj.page.getPWins();
+                    var windowTitlesAdded = 0;
+                    var windowTitlesJSON = [];
+                    for ( var i = 0; i < pWins.length; i++ )
                     {
-                        var colDomNode = portletWindow.domNode.parentNode;
-                        var added = false;
-                        for ( var j = 0 ; j < colNodes.length ; j++ )
+                        pWin = pWins[i];
+                        if ( pWin && pWin.portlet )
                         {
-                            if ( colNodes[j] == colDomNode )
+                            var pTitle = pWin.getPortletTitle();
+                            if ( pTitle != null && pTitle.length > 0 )
                             {
-                                added = true;
-                                break;
+                                var pWinId = pWin.portlet.entityId;
+                                if ( ! identifierCheck.test( pWinId ) )
+                                    pWinId = "\"" +  pWinId + "\"";
+
+                                if ( windowTitlesAdded > 0 )
+                                    windowTitlesJSON.push( "," );
+                                windowTitlesJSON.push( pWinId+":\"" + pTitle + "\"" );
+                                windowTitlesAdded++;
+                                if ( windowTitlesJSON.length > 1024 )
+                                {
+                                    windowTitlesJSON = null;
+                                    break;
+                                }
                             }
                         }
-                        if ( ! added )
-                            colNodes.push( colDomNode );
+                    }
+                    if ( windowTitlesAdded > 0 && windowTitlesJSON != null && windowTitlesJSON.length > 0 )
+                    {
+                        wt = "";
+                        var wtRaw = windowTitlesJSON.join("");
+                        var wtRawLen = wtRaw.length;
+                        var wtCh, wtHCh, wtHChLen;
+                        for ( var wtRawI = 0 ; wtRawI < wtRawLen ; wtRawI++ )
+                        {
+                            wtCh = wtRaw.charCodeAt( wtRawI );
+                            wtHCh = (wtCh).toString(16);
+                            wtHChLen = wtHCh.length;
+                            if ( wtHChLen < 1 || wtHChLen > 2 )
+                            {
+                                wt = null;
+                                windowTitlesJSON = null;
+                                break;
+                            }
+                            else if ( wtHChLen == 1 )
+                            {
+                                wtHCh += "0";
+                            }
+                            wt += wtHCh;
+                        }
+                        if ( wt == null || wt.length == 0 )
+                            wt = null;
+                        else
+                            stateVal |= this.PM_MZ_P;
+                    }
+                }
+                var modPageUrl = pageUrl;
+                if ( wt != null || stateVal > 0 )
+                {
+                    var jsUrl = jsObj.url;
+                    modPageUrl = jsUrl.parse( pageUrl.toString() );
+                    if ( stateVal > 0 )
+                        modPageUrl = jsUrl.addQueryParameter( modPageUrl, jsObj.id.PG_ED_STATE_PARAM, (stateVal).toString(16), true );
+                    if ( wt != null && wt.length > 0 )
+                        modPageUrl = jsUrl.addQueryParameter( modPageUrl, jsObj.id.PG_ED_TITLES_PARAM, wt, true );
+                }
+
+                jsObj.pageNavigate( modPageUrl.toString(), null, true );
+            }
+            else
+            {
+                jsObj.updatePage( pageUrl.toString(), false, true, { editModeMove: this.editModeMove } );
+            }
+        },
+
+        editMoveModeExit: function( sysInitiated )
+        {
+            var jsObj = jetspeed;
+            var isIE6 = jsObj.UAie6;
+            if ( isIE6 )
+                jsObj.page.displayAllPWins( true );
+
+            // restore all windows (that were not already minimized prior to move-mode)
+            jsObj.widget.PortletWindow.prototype.restoreAllFromMinimizeWindowTemporarily();
+
+            var lepWidgets = this.layoutEditPaneWidgets;
+            if ( lepWidgets != null )
+            {
+                for ( var i = 0 ; i < lepWidgets.length ; i++ )
+                {
+                    lepWidgets[i]._disableMoveMode();
+                }
+            }
+
+            if ( ! sysInitiated )
+                delete this.editModeMove;
+        },
+
+        editMoveModeStart: function()
+        {
+            var jsObj = jetspeed;
+            var hideTiledWins = false;
+
+            if ( jsObj.UAie6 )
+                jsObj.page.displayAllPWins( true );
+
+            var pWinObjsToRemainVisible = [];
+            var pWinIdsToRemainVisible = [];
+            if ( this.dbOn )   // keep showing debug window if appropriate
+            {
+                var pWinDebug = jsObj.debugWindow();
+                if ( pWinDebug && ( ! hideTiledWins || ! pWinDebug.posStatic || jsObj.debug.dragWindow ) )
+                {
+                    pWinObjsToRemainVisible.push( pWinDebug );
+                    pWinIdsToRemainVisible.push( pWinDebug.widgetId );
+                }
+            }        
+
+            // minimize or hide all windows
+            if ( ! hideTiledWins )
+            {
+                var pWin;
+                var pWins = jsObj.page.getPWins();
+                for ( var i = 0; i < pWins.length; i++ )
+                {
+                    pWin = pWins[i];
+                    if ( pWin.posStatic )
+                    {
+                        pWinObjsToRemainVisible.push( pWin );
+                        pWinIdsToRemainVisible.push( pWin.widgetId );
+                        pWin.minimizeWindowTemporarily();
                     }
                 }
             }
-            if ( this.layoutEditPaneWidgets != null )
+            jsObj.widget.hideAllPortletWindows( pWinIdsToRemainVisible );
+
+            var lepWidgets = this.layoutEditPaneWidgets;
+            if ( lepWidgets != null )
             {
-                for ( var i = 0 ; i < this.layoutEditPaneWidgets.length ; i++ )
+                for ( var i = 0 ; i < lepWidgets.length ; i++ )
                 {
-                    var lepWidget = this.layoutEditPaneWidgets[i];
-                    if ( lepWidget.layoutMoveContainer != null )
-                        lepWidget.layoutMoveContainer.domNode.style.display = "none";
+                    lepWidgets[i]._enableMoveMode();
                 }
             }
-            if ( isIE6 )
+
+            if ( jsObj.UAie6 )
             {
-                jetspeed.page.displayAllPortlets();
-                if ( colNodes.length > 0 )
+                setTimeout(function() {
+                    jsObj.page.displayAllPWins( false, pWinObjsToRemainVisible );
+                }, 20);
+            }
+            this.editModeMove = true;
+        },
+        onBrowserWindowResize: function()
+        {   // called after ie6 resize window
+            var deletePDialog = this.deletePortletDialog;
+            var deleteLDialog = this.deleteLayoutDialog;
+            var colSizeDialog = this.columnSizeDialog;
+            if ( deletePDialog && deletePDialog.isShowing() )
+            {
+                deletePDialog.domNode.style.display = "none";
+                deletePDialog.domNode.style.display = "block";
+            }
+            if ( deleteLDialog && deleteLDialog.isShowing() )
+            {
+                deleteLDialog.domNode.style.display = "none";
+                deleteLDialog.domNode.style.display = "block";
+            }
+            if ( colSizeDialog && colSizeDialog.isShowing() )
+            {
+                colSizeDialog.domNode.style.display = "none";
+                colSizeDialog.domNode.style.display = "block";
+            }
+
+            var pageEditorWidgets = this.pageEditorWidgets;
+            if ( pageEditorWidgets != null )
+            {
+                for ( var i = 0 ; i < pageEditorWidgets.length ; i++ )
                 {
-                    var zappedContentRestorer = new jetspeed.widget.IE6ZappedContentRestorer( colNodes );
-                    dojo.lang.setTimeout( zappedContentRestorer, zappedContentRestorer.showNext, 20 );
+                    pageEditorWidgets[i].onBrowserWindowResize();
                 }
             }
         },
-        editModeLayoutMove: function()
-        {
-            if ( dojo.render.html.ie60 )
-                jetspeed.page.displayAllPortlets( true );
-            // minimize all portlets
-            var portletArray = jetspeed.page.getPortletArray();
-            for ( var i = 0; i < portletArray.length; i++ )
+        PM_PG_L_D: 16, PM_L_N: 32, PM_L_CS: 64, PM_PG_AD: 128, PM_P_AD: 256, PM_PG_P_D: 512, PM_P_D: 1024, PM_MZ_P: 2048, PM_L_NA_ED: 4096, PM_L_NA_TLMV: 8192, PM_L_NA_CS: 16384,
+        
+        _openDialog: function( dialogWidget )
+        {   // this is to address a mozilla bug where insertion point is always invisible in text boxes
+            var isMoz = jetspeed.UAmoz;
+            if ( isMoz )
             {
-                var portletWindow = portletArray[i].getPortletWindow();
-                if ( portletWindow != null )
+                dialogWidget.domNode.style.position = "fixed";  // this fix involves setting position to fixed instead of absolute,
+                if ( ! dialogWidget._fixedIPtBug )              // and the change to var x and var y initialization in placeModalDialog
                 {
-                    portletWindow.minimizeWindowTemporarily();
+                    var _dialog = dialogWidget;
+                    _dialog.placeModalDialog = function() {
+			            // summary: position modal dialog in center of screen
+
+			            var scroll_offset = dojo.html.getScroll().offset;
+			            var viewport_size = dojo.html.getViewport();
+			
+			            // find the size of the dialog (dialog needs to be showing to get the size)
+			            var mb;
+			            if(_dialog.isShowing()){
+				            mb = dojo.html.getMarginBox(_dialog.domNode);
+			            }else{
+				            dojo.html.setVisibility(_dialog.domNode, false);
+				            dojo.html.show(_dialog.domNode);
+				            mb = dojo.html.getMarginBox(_dialog.domNode);
+				            dojo.html.hide(_dialog.domNode);
+				            dojo.html.setVisibility(_dialog.domNode, true);
+                        }
+                        //var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
+			            //var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
+                        var x = (viewport_size.width - mb.width)/2;
+			            var y = (viewport_size.height - mb.height)/2;
+			            with(_dialog.domNode.style){
+				            left = x + "px";
+				            top = y + "px";
+			            }
+                    };
+                    _dialog._fixedIPtBug = true;
                 }
-            }
-            // display layout-move-handle widget
-            if ( this.layoutEditPaneWidgets != null )
-            {
-                for ( var i = 0 ; i < this.layoutEditPaneWidgets.length ; i++ )
-                {
-                    var lepWidget = this.layoutEditPaneWidgets[i];
-                    if ( ! lepWidget.isRootLayout && lepWidget.layoutMoveContainer != null )
-                        lepWidget.layoutMoveContainer.domNode.style.display = "block"
-                }
-            }
-            if ( dojo.render.html.ie60 )
-                jetspeed.page.displayAllPortlets();
+		    }
+            dialogWidget.show();
         }
 	}
 );
 
 
 // ... jetspeed.widget.EditPageGetThemesContentManager
-jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pageDecorations, portletDecorations, layouts, desktopPageDecorations, desktopPortletDecorations )
+jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pageDecorations, portletDecorations, layouts, desktopPageDecorations, desktopPortletDecorations, startInEditModeMove )
 {
     this.pageEditorWidget = pageEditorWidget;
     var getThemeTypes = new Array();
@@ -425,6 +788,7 @@ jetspeed.widget.EditPageGetThemesContentManager = function( pageEditorWidget, pa
         getThemeTypes.push( [ "desktopPortletDecorations", "portletDecorations" ] );
     this.getThemeTypes = getThemeTypes;
     this.getThemeTypeNextIndex = 0;
+    this.startInEditModeMove = startInEditModeMove;
 };
 jetspeed.widget.EditPageGetThemesContentManager.prototype =
 {
@@ -442,7 +806,7 @@ jetspeed.widget.EditPageGetThemesContentManager.prototype =
         }
         else
         {
-            this.pageEditorWidget.editPageBuild();
+            this.pageEditorWidget.editPageBuild( this.startInEditModeMove );
         }
     },
     notifySuccess: function( /* JSON */ getThemesData, /* String */ requestUrl, domainModelObject )
@@ -456,7 +820,7 @@ jetspeed.widget.EditPageGetThemesContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, domainModelObject )
     {
-        dojo.raise( "EditPageGetThemesContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "EditPageGetThemesContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -479,7 +843,7 @@ jetspeed.widget.RemovePageContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-remove-page" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-remove-page" ) )
         {
             var pageUrl = jetspeed.page.makePageUrl( "/" );
             pageUrl += "?" + jetspeed.id.PG_ED_PARAM + "=true";
@@ -488,7 +852,7 @@ jetspeed.widget.RemovePageContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "RemovePageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "RemovePageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -555,7 +919,7 @@ jetspeed.widget.AddPageContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-add-page" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-add-page" ) )
         {
             var pageUrl = jetspeed.page.makePageUrl( this.pagePath );
             if ( ! dojo.string.endsWith( pageUrl, ".psml", true ) )
@@ -566,7 +930,7 @@ jetspeed.widget.AddPageContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "AddPageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "AddPageContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -601,14 +965,14 @@ jetspeed.widget.MoveLayoutContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "moveabs-layout" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "moveabs-layout" ) )
         {
             
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "MoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "MoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -641,14 +1005,14 @@ jetspeed.widget.UpdateFragmentContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-update-fragment" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-update-fragment" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "UpdateFragmentContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "UpdateFragmentContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -678,7 +1042,7 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "updatepage-info" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "updatepage-info" ) )
         {
             if ( this.refreshPage )
                 this.pageEditorWidget.refreshPage();
@@ -686,7 +1050,7 @@ jetspeed.widget.UpdatePageInfoContentManager.prototype =
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "UpdatePageInfoContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "UpdatePageInfoContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -713,14 +1077,14 @@ jetspeed.widget.RemovePortletContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "removeportlet" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "removeportlet" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "RemovePortletContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "RemovePortletContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -747,14 +1111,14 @@ jetspeed.widget.RemoveLayoutContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "removeportlet" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "removeportlet" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "RemoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "RemoveLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
 
@@ -782,13 +1146,13 @@ jetspeed.widget.AddLayoutContentManager.prototype =
     },
     notifySuccess: function( /* XMLDocument */ data, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, true, "addportlet" ) )
+        if ( jetspeed.url.checkAjaxApiResponse( requestUrl, data, null, true, "addlayout" ) )
         {
             this.pageEditorWidget.refreshPage();
         }
     },
     notifyFailure: function( /* String */ type, /* Object */ error, /* String */ requestUrl, /* Portlet */ portlet )
     {
-        dojo.raise( "AddLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error ) );
+        dojo.raise( "AddLayoutContentManager notifyFailure url: " + requestUrl + " type: " + type + jetspeed.formatError( error ) );
     }
 };
