@@ -25,6 +25,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -54,31 +55,33 @@ public class AddPortletAction
     protected GetPortletsAction getPortletsAction = null;
     protected boolean allowDuplicatePortlets = true;
 
-    public AddPortletAction(String template, String errorTemplate, GetPortletsAction getPortletsAction)
+    public AddPortletAction( String template, String errorTemplate, PortletRegistry registry, GetPortletsAction getPortletsAction )
         throws AJAXException
     {
-        this(template, errorTemplate, null, null, getPortletsAction, true);
+        this( template, errorTemplate, registry, null, null, getPortletsAction, true );
     }
 
-    public AddPortletAction(String template, 
-                            String errorTemplate, 
-                            PageManager pageManager,
-                            PortletActionSecurityBehavior securityBehavior,
-                            GetPortletsAction getPortletsAction)
+    public AddPortletAction( String template, 
+                             String errorTemplate, 
+                             PortletRegistry registry,
+                             PageManager pageManager,
+                             PortletActionSecurityBehavior securityBehavior,
+                             GetPortletsAction getPortletsAction )
         throws AJAXException
     {
-        this(template, errorTemplate, pageManager, securityBehavior, getPortletsAction, true);
+        this( template, errorTemplate, registry, pageManager, securityBehavior, getPortletsAction, true );
     }
 
-    public AddPortletAction(String template, 
-                            String errorTemplate, 
-                            PageManager pageManager,
-                            PortletActionSecurityBehavior securityBehavior,
-                            GetPortletsAction getPortletsAction,
-                            boolean allowDuplicatePortlets)
+    public AddPortletAction( String template, 
+                             String errorTemplate,
+                             PortletRegistry registry,
+                             PageManager pageManager,
+                             PortletActionSecurityBehavior securityBehavior,
+                             GetPortletsAction getPortletsAction,
+                             boolean allowDuplicatePortlets )
         throws AJAXException
     {
-        super(template, errorTemplate, pageManager, securityBehavior); 
+        super( template, errorTemplate, registry, pageManager, securityBehavior );
         this.getPortletsAction = getPortletsAction;
         this.allowDuplicatePortlets = allowDuplicatePortlets;
     }
@@ -89,42 +92,88 @@ public class AddPortletAction
         String status = "success";
         try
         {
-            resultMap.put(ACTION, "add");
+            resultMap.put( ACTION, "add" );
             // Get the necessary parameters off of the request
-            String portletId = getActionParameter(requestContext, PORTLETID);
+            String portletId = getActionParameter( requestContext, PORTLETID );
             if (portletId == null) 
             { 
-                throw new RuntimeException("portlet id not provided"); 
+                throw new RuntimeException( "portlet id not provided" ); 
             }
-            resultMap.put(PORTLETID, portletId);
+            resultMap.put( PORTLETID, portletId );
             
             // Verify that the specified portlet id is valid and accessible
             // If the portletid is not valid an exception will be thrown
-            verifyPortletId(requestContext, portletId);
+            verifyPortletId( requestContext, portletId );
             
-            if(allowDuplicatePortlets == false) {
+            if( allowDuplicatePortlets == false )
+            {
             	// Check to see if this portlet has already been added to the page
-            	checkForDuplicatePortlet(requestContext, resultMap, portletId);
+            	checkForDuplicatePortlet( requestContext, resultMap, portletId );
             }
             
-            if (false == checkAccess(requestContext, JetspeedActions.EDIT))
+            String layoutId = getActionParameter( requestContext, LAYOUTID );
+            
+            if ( false == checkAccess( requestContext, JetspeedActions.EDIT ) )
             {
-                if (!createNewPageOnEdit(requestContext))
+            	NestedFragmentContext addToFragmentContext = null;
+            	if ( layoutId != null && layoutId.length() > 0 )
+            	{
+            		Page page = requestContext.getPage();
+            		Fragment fragment = page.getFragmentById( layoutId );
+            		if ( fragment == null )
+            		{
+            			success = false;
+            			resultMap.put( REASON, "Specified layout fragment not found: " + layoutId );
+            			return success;
+            		}
+            	
+            		try
+            		{
+            			addToFragmentContext = new NestedFragmentContext( fragment, page, getPortletRegistry() );
+            		}
+            		catch ( Exception ex )
+            		{
+            			log.error( "Failure to construct nested context for fragment " + layoutId, ex );
+            			success = false;
+            			resultMap.put( REASON, "Cannot construct nested context for specified layout fragment" );
+            			return success;
+            		}
+            	}
+            	
+                if ( ! createNewPageOnEdit( requestContext ) )
                 {
                     success = false;
-                    resultMap.put(REASON, "Insufficient access to edit page");                
+                    resultMap.put( REASON, "Insufficient access to edit page" );
                     return success;
                 }
                 status = "refresh";
-            }           
+
+                if ( addToFragmentContext != null )
+                {
+                	Page newPage = requestContext.getPage();
+
+                	// using NestedFragmentContext, find portlet id for copy of target portlet in the new page 
+                	Fragment newFragment = null;
+                	try
+                	{
+                		newFragment = addToFragmentContext.getFragmentOnNewPage( newPage, getPortletRegistry() );
+                	}
+                	catch ( Exception ex )
+                	{
+                		log.error( "Failure to locate copy of fragment " + layoutId, ex );
+                		success = false;
+                		resultMap.put( REASON, "Failed to find new fragment for specified layout id: " + layoutId );
+                		return success;
+                	}
+                	layoutId = newFragment.getId();
+                }
+            }
             
             Page page = requestContext.getPage();
-            String layoutId = getActionParameter(requestContext, LAYOUTID);
+            
             Fragment fragment = pageManager.newFragment();
-            fragment.setType(Fragment.PORTLET);
-            fragment.setName(portletId);
-            //fragment.setLayoutColumn(iCol);
-            //fragment.setLayoutRow(iRow);
+            fragment.setType( Fragment.PORTLET );
+            fragment.setName( portletId );
             
             Fragment placeInLayoutFragment = null;
             if ( layoutId != null && layoutId.length() > 0 )
@@ -141,16 +190,18 @@ public class AddPortletAction
             }
 
             success = placeFragment( requestContext,
-                                     pageManager,
                                      batch,
                                      resultMap,
                                      fragment,
                                      placeInLayoutFragment ) ;
-
-            resultMap.put(STATUS, status);
-            resultMap.put(PORTLETENTITY, fragment.getId());            
+            
+            resultMap.put( PORTLETENTITY, fragment.getId() );
+            if ( success )
+            {
+            	resultMap.put( STATUS, status );
+            }
         } 
-        catch (Exception e)
+        catch ( Exception e )
         {
             // Log the exception
             log.error("exception while adding a portlet", e);
