@@ -71,6 +71,8 @@
 #foreach ($meta in $page.Metadata.Fields)
 	<metadata name="$meta.Name" xml:lang="$meta.Locale.toString()">$!meta.Value</metadata>
 #end
+  <npe>$pageQualifiedForCreateNewPageOnEdit</npe>
+  <uIA>$userIsAnonymous</uIA>
 #foreach ($action in $page.getRootContentFragment().decoration.actions)
      <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
 #end
