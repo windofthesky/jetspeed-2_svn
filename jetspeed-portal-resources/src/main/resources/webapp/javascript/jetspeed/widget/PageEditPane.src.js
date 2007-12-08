@@ -75,7 +75,7 @@ dojo.widget.defineWidget(
         {
             var self = this;
             this.deletePageDialog = dojo.widget.createWidget( "dialog", { widgetsInTemplate: true, deletePageConfirmed: function() { this.hide(); self.deletePageConfirmed(); } }, this.deletePageDialog );
-			this.deletePageDialog.setCloseControl( this.deletePageDialog.deletePageCancel.domNode );
+			    this.deletePageDialog.setCloseControl( this.deletePageDialog.deletePageCancel.domNode );
 
             var createPageParams = {};
             createPageParams.widgetsInTemplate = true;
@@ -88,7 +88,7 @@ dojo.widget.defineWidget(
                 self.createPageConfirmed( pageName, pageTitle, pageShortTitle );
             };
             this.createPageDialog = dojo.widget.createWidget( "dialog", createPageParams, this.createPageDialog );
-			this.createPageDialog.setCloseControl( this.createPageDialog.createPageCancel.domNode );
+			    this.createPageDialog.setCloseControl( this.createPageDialog.createPageCancel.domNode );
             
             jetspeed.widget.PageEditPane.superclass.fillInTemplate.call( this );
 		},
@@ -103,62 +103,88 @@ dojo.widget.defineWidget(
 
         postCreate: function( args, fragment, parent )
         {
-            jetspeed.widget.PageEditPane.superclass.postCreate.apply( this, arguments );
+            var jsObj = jetspeed;
+            var djH = dojo.html;
 
-            if ( ! dojo.render.html.ie )
-            {   /* in IE6, if fieldset background color is set the fieldset will not be rendered nicely (with rounded borders) */
-                if ( this.pageEditContainer != null )
-                    this.pageEditContainer.style.backgroundColor = "#d3d3d3";
-                if ( this.pageEditLDContainer != null )
-                    this.pageEditLDContainer.style.backgroundColor = "#eeeeee";
-                if ( this.pageEditPDContainer != null )
-                    this.pageEditPDContainer.style.backgroundColor = "#eeeeee";
-            }
+            jsObj.widget.PageEditPane.superclass.postCreate.apply( this, arguments );
+            
+            var pageEditorProto = jsObj.widget.PageEditor.prototype;
+            if ( this.pageEditContainer != null )
+                djH.addClass( this.pageEditContainer, pageEditorProto.styleBaseAdd );
+            if ( this.pageEditLDContainer != null )
+                djH.addClass( this.pageEditLDContainer, pageEditorProto.styleDetailAdd );
+            if ( this.pageEditPDContainer != null )
+                djH.addClass( this.pageEditPDContainer, pageEditorProto.styleDetailAdd );
 
             if ( this.layoutDecoratorSelect != null )
-            {    
-                var currentLayoutDecorator = jetspeed.page.layoutDecorator;
-    
-                var layoutDecoratorData = [];
-                if ( this.layoutDecoratorDefinitions )
+            {
+                if ( ! pageEditorProto.checkPerm( pageEditorProto.PM_PG_L_D, jsObj ) )
                 {
-                    for ( var i = 0 ; i < this.layoutDecoratorDefinitions.length ; i++ )
-                    {
-                        var layoutDecoratorDef = this.layoutDecoratorDefinitions[i];
-                        if ( layoutDecoratorDef && layoutDecoratorDef.length == 2 )
-                        {
-                            layoutDecoratorData.push( [layoutDecoratorDef[0], layoutDecoratorDef[1]] );
-                            if ( currentLayoutDecorator == layoutDecoratorDef[1] )
-                            {
-                                this.layoutDecoratorSelect.setAllValues( layoutDecoratorDef[0], layoutDecoratorDef[1] );
-                            }
-    					}
-    				}
+                    if ( this.pageEditLDContainer )
+                        this.pageEditLDContainer.style.display = "none";
+                    else
+                        this.layoutDecoratorSelect.domNode.style.display = "none";
                 }
-                this.layoutDecoratorSelect.dataProvider.setData( layoutDecoratorData );
+                else
+                {
+                    var currentLayoutDecorator = jsObj.page.layoutDecorator;
+                    var layoutDecoratorData = [];
+                    if ( this.layoutDecoratorDefinitions )
+                    {
+                        for ( var i = 0 ; i < this.layoutDecoratorDefinitions.length ; i++ )
+                        {
+                            var layoutDecoratorDef = this.layoutDecoratorDefinitions[i];
+                            if ( layoutDecoratorDef && layoutDecoratorDef.length == 2 )
+                            {
+                                layoutDecoratorData.push( [layoutDecoratorDef[0], layoutDecoratorDef[1]] );
+                                if ( currentLayoutDecorator == layoutDecoratorDef[1] )
+                                {
+                                    this.layoutDecoratorSelect.setAllValues( layoutDecoratorDef[0], layoutDecoratorDef[1] );
+                                }
+        					}
+        				}
+                    }
+                    this.layoutDecoratorSelect.dataProvider.setData( layoutDecoratorData );
+                }
             }
 
             if ( this.portletDecoratorSelect != null )
-            {    
-                var currentPortletDecorator = jetspeed.page.portletDecorator;
-    
-                var portletDecoratorData = [];
-                if ( this.portletDecoratorDefinitions )
+            {
+                if ( ! pageEditorProto.checkPerm( pageEditorProto.PM_PG_P_D, jsObj ) )
                 {
-                    for ( var i = 0 ; i < this.portletDecoratorDefinitions.length ; i++ )
-                    {
-                        var portletDecoratorDef = this.portletDecoratorDefinitions[i];
-                        if ( portletDecoratorDef && portletDecoratorDef.length == 2 )
-                        {
-                            portletDecoratorData.push( [portletDecoratorDef[0], portletDecoratorDef[1]] );
-                            if ( currentPortletDecorator == portletDecoratorDef[1] )
-                            {
-                                this.portletDecoratorSelect.setAllValues( portletDecoratorDef[0], portletDecoratorDef[1] );
-                            }
-    					}
-    				}
+                    if ( this.pageEditPDContainer )
+                        this.pageEditPDContainer.style.display = "none";
+                    else
+                        this.portletDecoratorSelect.domNode.style.display = "none";
                 }
-                this.portletDecoratorSelect.dataProvider.setData( portletDecoratorData );
+                else
+                {
+                    var currentPortletDecorator = jsObj.page.portletDecorator;
+                    var portletDecoratorData = [];
+                    if ( this.portletDecoratorDefinitions )
+                    {
+                        for ( var i = 0 ; i < this.portletDecoratorDefinitions.length ; i++ )
+                        {
+                            var portletDecoratorDef = this.portletDecoratorDefinitions[i];
+                            if ( portletDecoratorDef && portletDecoratorDef.length == 2 )
+                            {
+                                portletDecoratorData.push( [portletDecoratorDef[0], portletDecoratorDef[1]] );
+                                if ( currentPortletDecorator == portletDecoratorDef[1] )
+                                {
+                                    this.portletDecoratorSelect.setAllValues( portletDecoratorDef[0], portletDecoratorDef[1] );
+                                }
+        					}
+        				}
+                    }
+                    this.portletDecoratorSelect.dataProvider.setData( portletDecoratorData );
+                }
+            }
+
+            var addPgPerm = pageEditorProto.checkPerm( pageEditorProto.PM_PG_AD, jsObj );
+            if ( ! addPgPerm )
+            {
+                this.createPageButton.domNode.style.display = "none";
+                //this.deletePageButton.domNode.style.display = "none";
             }
         },
 
@@ -167,7 +193,7 @@ dojo.widget.defineWidget(
 
         deletePage: function()
         {
-            this.deletePageDialog.show();
+            this.pageEditorWidget._openDialog( this.deletePageDialog );
         },
         deletePageConfirmed: function()
         {
@@ -176,7 +202,7 @@ dojo.widget.defineWidget(
         },
         createPage: function()
         {
-            this.createPageDialog.show();
+            this.pageEditorWidget._openDialog( this.createPageDialog );
         },
         createPageConfirmed: function( pageName, pageTitle, pageShortTitle )
         {
@@ -201,6 +227,21 @@ dojo.widget.defineWidget(
         editModeRedisplay: function()
         {
             this.show();
+        },
+        onBrowserWindowResize: function()
+        {   // called after ie6 resize window
+            var deletePageDialog = this.deletePageDialog;
+            var createPageDialog = this.createPageDialog;
+            if ( deletePageDialog && deletePageDialog.isShowing() )
+            {
+                deletePageDialog.domNode.style.display = "none";
+                deletePageDialog.domNode.style.display = "block";
+            }
+            if ( createPageDialog && createPageDialog.isShowing() )
+            {
+                createPageDialog.domNode.style.display = "none";
+                createPageDialog.domNode.style.display = "block";
+            }
         }
 	}
 );
