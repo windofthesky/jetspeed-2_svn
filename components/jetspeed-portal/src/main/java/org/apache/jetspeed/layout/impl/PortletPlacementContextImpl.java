@@ -19,18 +19,23 @@ package org.apache.jetspeed.layout.impl;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
-import java.util.Vector;
 import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.common.Parameter;
+import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.portlet.PortletDefinition;
 
 
 /**
@@ -41,6 +46,10 @@ import org.apache.jetspeed.request.RequestContext;
  * This includes moving, adding, removing and getting
  * information about portlets that are on the page and
  * portlets that are available to be added to the page.
+ * 
+ * This object represents the fragment contents of a
+ * single layout fragment (i.e. nested depth cannot 
+ * be captured by this object).
  * 
  * An important note about this object:
  * This object is really only intended to be used to do
@@ -55,141 +64,355 @@ import org.apache.jetspeed.request.RequestContext;
  * 
  * @author <a>David Gurney</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @author <a href="mailto:smilek@apache.org">Steve Milek</a>
  * @version $Id: $
  */
 public class PortletPlacementContextImpl implements PortletPlacementContext 
 {
-    private static final int NO_DEPTH_LIMIT = -1;
-
-    /** Logger */
-    private Log log = LogFactory.getLog(PortletPlacementContextImpl.class);
+    private static Log log = LogFactory.getLog( PortletPlacementContextImpl.class );
+    protected static final String eol = System.getProperty( "line.separator" );
 
 	// Columns are reference by index, the rows are held
-	// in the array list as shown below:
+	// in the columnsList as shown below:
 	//
 	// [0]        [1]          [2]
 	// ArrayList  ArrayList    ArrayList
+	//  Row0Frag   Row0Frag     Row0Frag
 	//  Row1Frag   Row1Frag     Row1Frag
 	//  Row2Frag   Row2Frag     Row2Frag
-	//  Row3Frag   Row3Frag     Row3Frag
 	//  ...
 	//
-	protected Vector[] columnsList = null;
+	protected ArrayList[] columnsList = null;
 	
 	// Used as a convience when looking up a particular fragment
 	//
-	// Key is Fragment, value is a Coordinate object
+	// key is Fragment id (String), value is a Coordinate object
 	protected Map fragmentCoordinateMap = new HashMap();
 	
 	// Used as a convience when looking up a particular fragment by id
 	//
-	// Key is the Fragment id (String), value is the Fragment
+	// key is the Fragment id (String), value is the Fragment
 	protected Map fragmentMap = new HashMap();
 	
-	// Number of columns found
+	// Number of columns
 	protected int numberOfColumns = -1;
 	
     protected Page page;
-    protected Fragment containerFragment;
+    private PortletRegistry registry;
+    protected Fragment layoutContainerFragment;
         
-	public PortletPlacementContextImpl(RequestContext requestContext) 
-    throws PortletPlacementException 
+	public PortletPlacementContextImpl( Page page, PortletRegistry registry ) 
+        throws PortletPlacementException 
     {
-		init(requestContext, null, NO_DEPTH_LIMIT);
+		this( page, registry, null );
 	}
-    
-    public PortletPlacementContextImpl(RequestContext requestContext, Fragment container, int maxdepth) 
-    throws PortletPlacementException 
+        
+    public PortletPlacementContextImpl( Page page, PortletRegistry registry, Fragment container ) 
+        throws PortletPlacementException 
     {
-        init(requestContext, container, maxdepth);
+    	if ( page == null )
+    		throw new NullPointerException( "PortletPlacementContext cannot be instantiated with a null Page argument" );
+    	if ( registry == null )
+    		throw new NullPointerException( "PortletPlacementContext cannot be instantiated with a null PortletRegistry argument" );
+    	
+    	this.page = page;
+    	this.registry = registry;
+    	
+    	init( container );
     }
 	
-	// Initialize the data structures by getting the fragments
-	// from the page manager
-	protected void init(RequestContext requestContext, Fragment container, int maxdepth) 
-    throws PortletPlacementException 
+    protected void init( Fragment container )
+        throws PortletPlacementException 
     {
-        this.page = requestContext.getPage();
         if ( container == null )
         {
             container = page.getRootFragment();
+            if ( container == null )
+            	throw new PortletPlacementException( "PortletPlacementContext cannot acquire root layout fragment from page" );
+        }        
+        if ( ! "layout".equals( container.getType() ) )
+        {
+        	throw new PortletPlacementException( "PortletPlacementContext specified container fragment (" + container.getId() + ") is not a layout fragment, but is type: " + container.getType() );
         }
-        this.containerFragment = container;
+        this.layoutContainerFragment = container;
         
-        // Recursively process each fragment
-        processFragment( container, maxdepth, 0 );
-
-        // The final step is to populate the array with the fragments
-		populateArray();
+        int columnCount = PortletPlacementContextImpl.getColumnCountAndSizes( container, registry, null );
+        if ( columnCount <= 0 )
+        {
+        	throw new PortletPlacementException( "PortletPlacementContext cannot detemine number of columns in layout fragment (" + container.getId() + ")" );
+        }
+        this.numberOfColumns = columnCount;
+        
+        initProcessLayoutContainerFragment();
         
         //debugFragments( "init" );
 	}
 	
-	/**
-	 * Evaluate each portlet fragment and populate the internal data
-	 * structures
-	 */
-	protected int processFragment( Fragment fragment, int remainingDepth, int rowCount ) 
-    throws PortletPlacementException 
+	private void initProcessLayoutContainerFragment() 
+        throws PortletPlacementException 
     {
-        // Process this fragment, then its children
-		if(fragment != null) 
+        List fragChildren = this.layoutContainerFragment.getFragments();
+        int fragChildCount = fragChildren.size();
+        
+        int columnCount = this.numberOfColumns;
+        
+        // sort the fragments in the same manner as /portal and /desktop rendering
+        FragmentLinkedListEntry[][] colLinkedLists = new FragmentLinkedListEntry[columnCount][fragChildCount];
+        FragmentLinkedListInfo[] colLinkedListsInfo = new FragmentLinkedListInfo[columnCount];
+        for ( int colIndex = 0 ; colIndex < columnCount ; colIndex++ )
         {
-			// Only process portlet fragments
-			//if(fragment.getType().equalsIgnoreCase("portlet")) 
+        	colLinkedListsInfo[ colIndex ] = new FragmentLinkedListInfo();
+        }
+        for( int fragChildIndex = 0; fragChildIndex < fragChildCount; fragChildIndex++ ) 
+        {
+            Fragment fragment = (Fragment)fragChildren.get( fragChildIndex );		
+            if ( fragment != null )
             {
-				// Get the column and row of this fragment
-				int col = getFragmentCol(fragment);
-				int row = getFragmentRow(fragment);
-		        
-		        if(row < 0) 
-                {
-                    row = rowCount;
-                }
-	        	// Add this fragment to the data structures
-	        	addFragmentInternal(fragment, col, row);
-                rowCount++;
-			}
-			
-            if ( remainingDepth == NO_DEPTH_LIMIT || remainingDepth > 0 )
+            	int col = getColumnFromFragment( fragment );            	
+            	
+            	FragmentLinkedListEntry[] ll = colLinkedLists[col];
+            	FragmentLinkedListInfo llInfo = colLinkedListsInfo[col];
+            	
+            	Integer rowObj = getRowFromFragment( fragment );
+            	int row;
+            	if ( rowObj != null )
+            		row = rowObj.intValue();
+            	else
+            		row = llInfo.getHigh() + 1;   // fragment with unspecified row property is assigned 
+                                                  //    the value of current fragment in the highest row + 1
+            		                              //    - this is one of the reasons we are not using sort here
+            	
+            	FragmentLinkedListEntry fragLLentry = new FragmentLinkedListEntry( fragChildIndex, row );
+            	int llLen = llInfo.useNextAvailableIndex();
+            	ll[ llLen ] = fragLLentry;
+            	if ( llLen == 0 )
+            	{
+            		llInfo.setHead( 0 );
+            		llInfo.setTail( 0 );
+            		llInfo.setHigh( row );
+            	}
+            	else
+            	{
+            		if ( row > llInfo.getHigh() )
+            		{
+            			ll[ llInfo.getTail() ].setNextEntry( llLen );
+            			llInfo.setHigh( row );
+            			llInfo.setTail( llLen );
+            		}
+            		else
+            		{
+            			int llEntryIndex = llInfo.getHead();
+            			int llPrevEntryIndex = -1;
+            			while ( ll[llEntryIndex].getRow() < row )
+            			{
+            				llPrevEntryIndex = llEntryIndex;
+            				llEntryIndex = ll[llEntryIndex].getNextEntry();
+            			}
+            			if ( ll[llEntryIndex].getRow() == row )
+            			{   // a subsequent fragment (in the document) with a row value equal to that 
+            				//    of a previous fragment is inserted before the previous fragment
+            				//    - this is one of the reasons we are not using sort here
+            				int incrementedRow = row + 1;
+            				ll[llEntryIndex].setRow( incrementedRow );
+            				if ( llInfo.getTail() == llEntryIndex )
+            					llInfo.setHigh( incrementedRow );
+            			}
+            			fragLLentry.setNextEntry( llEntryIndex );
+            			if ( llPrevEntryIndex == -1 )
+            				llInfo.setHead( llLen );
+            			else
+            				ll[llPrevEntryIndex].setNextEntry( llLen );
+            		}
+            	}
+            }
+        }
+
+        ArrayList[] columnFragments = new ArrayList[ columnCount ];
+        for ( int colIndex = 0 ; colIndex < columnCount ; colIndex++ )
+        {
+        	ArrayList fragmentsInColumn = new ArrayList();
+        	columnFragments[ colIndex ] = fragmentsInColumn;
+        	
+        	FragmentLinkedListEntry[] ll = colLinkedLists[colIndex];
+        	FragmentLinkedListInfo llInfo = colLinkedListsInfo[colIndex];
+            
+        	int rowIndex = 0;
+            int nextEntryIndex = llInfo.getHead();
+            while ( nextEntryIndex != -1 )
             {
-                // Process the children
-                List children = fragment.getFragments();
-                int childRowCount = 0;
-                for(int ix = 0; ix < children.size(); ix++) 
-                {
-                    Fragment childFrag = (Fragment)children.get(ix);
-				
-                    if(childFrag != null) 
-                    {
-                        childRowCount = processFragment(childFrag, ((remainingDepth == NO_DEPTH_LIMIT) ? NO_DEPTH_LIMIT : remainingDepth-1), childRowCount );
-                    }
-                }
-			}
-		}
-        return rowCount;
+                FragmentLinkedListEntry fragLLentry = ll[nextEntryIndex];
+                Fragment fragment = (Fragment)fragChildren.get( fragLLentry.getFragmentIndex() );
+                
+                fragmentsInColumn.add( fragment );
+                CoordinateImpl coordinate = new CoordinateImpl( colIndex, rowIndex );
+        		this.fragmentCoordinateMap.put( fragment.getId(), coordinate );
+        		this.fragmentMap.put( fragment.getId(), fragment );
+        		
+                nextEntryIndex = fragLLentry.getNextEntry();
+        		rowIndex++;
+            }
+        }
+        this.columnsList = columnFragments;
 	}
+	
+	private int getColumnFromFragment( Fragment fragment )
+	{
+		// get column value in the same manner as /portal and /desktop rendering
+		
+		// get column from properties to distinguish between null and -1 (fragment.getLayoutColumn() is -1 when column is not specified)
+		String colStr = (String)fragment.getProperties().get( "column" );
+        int columnCount = this.numberOfColumns;
+		int col = columnCount - 1;
+		if ( colStr != null )
+		{
+			try
+    		{
+				col = Integer.parseInt( colStr );
+				if ( col < 0 )
+					col = 0;
+				else if ( col >= columnCount )
+					col = columnCount - 1;
+    		}
+    		catch ( NumberFormatException ex )
+    		{
+    			col = columnCount - 1;
+    		}
+		}
+		return col;
+	}
+	private Integer getRowFromFragment( Fragment fragment )
+	{
+		// get row value in the same manner as /portal and /desktop rendering
+		
+		// get row from properties to distinguish between null and -1 (fragment.getLayoutRow() is -1 when row is not specified)
+		String rowStr = (String)fragment.getProperties().get( "row" );
+		if ( rowStr != null )
+		{
+			try
+    		{
+				int row = Integer.parseInt( rowStr );
+				if ( row < 0 )
+					row = 0;
+				return new Integer( row );
+    		}
+    		catch ( NumberFormatException ex )
+    		{
+    		}
+		}
+		return null;
+	}
+	
+	private int normalizeColumnIndex( int col, ArrayList[] columnFragments, int defaultForUnspecifiedCol )
+	{
+		int columnCount = this.numberOfColumns;
+		if ( col >= columnCount )
+    		col = (columnCount -1);
+    	else if ( col < 0 && defaultForUnspecifiedCol >= 0 && defaultForUnspecifiedCol < columnCount )
+    		col = defaultForUnspecifiedCol;
+    	else if ( col < 0 )
+    		col = 0;
+		return col;
+	}
+
+	class FragmentLinkedListInfo
+	{
+		private int head = -1;
+		private int tail = -1;
+		private int high = -1;
+		private int availableNextIndex = 0;
+		
+		FragmentLinkedListInfo()
+		{
+		}
+		
+		public int getHead()
+		{
+        	return head;
+        }
+		public void setHead( int newOne )
+		{
+        	this.head = newOne;
+        }
+		public int getTail()
+		{
+        	return tail;
+        }
+		public void setTail( int newOne )
+		{
+        	this.tail = newOne;
+        }
+		public int getHigh()
+		{
+        	return high;
+        }
+		public void setHigh( int newOne )
+		{
+        	this.high = newOne;
+        }
+		public int useNextAvailableIndex()
+		{
+			return this.availableNextIndex++;
+		}
+	}
+	
+	class FragmentLinkedListEntry
+	{
+		private int fragmentIndex;
+		private int row;
+		private int nextEntry = -1;
+		
+		FragmentLinkedListEntry( int fragmentIndex, int row )
+		{
+			this.fragmentIndex = fragmentIndex;
+			this.row = row;
+		}
+		
+		public int getFragmentIndex()
+		{
+			return this.fragmentIndex;
+		}
+		public int getRow()
+		{
+			return this.row;
+		}
+		public void setRow( int newOne )
+		{
+			this.row = newOne;
+		}
+		public int getNextEntry()
+		{
+			return this.nextEntry;
+		}
+		public void setNextEntry( int newOne )
+		{
+			this.nextEntry = newOne;
+		}
+	}	
     
-    public Fragment debugFragments(String debug)
+	public String dumpFragments( String debug )
     {       
         StringBuffer out = new StringBuffer();
-        out.append( "PortletPlacementContext - " ).append( debug ).append( " - container: " ).append( containerFragment == null ? "<null>" : ( containerFragment.getId() + " / " + containerFragment.getType() ) ).append( "\n" );
+        out.append( "PortletPlacementContext - " );
+        if ( debug != null )
+        	out.append( debug ).append( " - " );
+        out.append( "container: " ).append( this.layoutContainerFragment == null ? "<null>" : ( this.layoutContainerFragment.getId() + " / " + this.layoutContainerFragment.getType() ) ).append( " column-count=" ).append( this.numberOfColumns ).append( eol );
         for (int ix = 0; ix < this.columnsList.length; ix++)
         {
-            Vector column = this.columnsList[ix];
-            out.append( "   column " ).append( ix ).append( "\n" );
+            ArrayList column = this.columnsList[ix];
+            out.append( "   column " ).append( ix ).append( eol );
             Iterator frags = column.iterator();
             while ( frags.hasNext() )
             {
                 Fragment f = (Fragment)frags.next();
-                out.append( "      frag " ).append( f == null ? "<null>" : f.getId() );
-                if ( f != null )
-                    out.append( " / " ).append( f.getType() ).append( " col=" ).append( f.getLayoutColumn() ).append( " row=" ).append( f.getLayoutRow() );
-                out.append( "\n" );
+                out.append( "      frag " ).append( f == null ? "<null>" : ( f.getId() + " / " + f.getType() ) ).append( eol );
             }
         }
-        log.debug( out.toString() );
-        return containerFragment;
+        return out.toString();
+    }
+    public Fragment debugFragments( String debug )
+    {
+        log.info( dumpFragments( debug ) );
+        return layoutContainerFragment;
     }
 
     /**
@@ -199,458 +422,485 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
      * @return the managed page layout with updated fragment state. 
      */
     public Page syncPageFragments()
-    {        
-        for (int col = 0; col < this.columnsList.length; col++)
-        {
-            Vector column = this.columnsList[col];
-            Iterator frags = column.iterator();
-            int row = 0;
-            while (frags.hasNext())
-            {
-                Fragment f = (Fragment)frags.next();
-                if (f == null)
-                    continue;
-                f.setLayoutColumn(col);
-                f.setLayoutRow(row);
-                row++;
-            }
-        }
-        //debugFragments( "syncPageFragments" );
-        return page;
+    {
+    	syncFragments( true, -1 );
+    	//debugFragments( "syncPage" );
+    	return this.page;
     }
     
-	// Helper method
-	// The implementation will probably change to get this information
-	// directly from the fragment via fragment.getFragmentCol()
-	protected int getFragmentRow(Fragment fragment)
+    protected int getLatestColumn( Coordinate coordinate )
     {
-        return fragment.getLayoutRow();
-	}
-	
-	// The implementation will probably change to get this information
-	// directly from the fragment via fragment.getFragmentRow()
-	protected int getFragmentCol(Fragment fragment) 
-    {
-        int col = fragment.getLayoutColumn();
-        if (col < 0)
-            col = 0;
-        return col;
-	}
-	
-	// Adds the fragment to the internal data structures
-	protected void addFragmentInternal(Fragment fragment, int col, int row) 
-    {
-		// Create a Coordinate object to hold the row and column
-		CoordinateImpl coordinate = new CoordinateImpl(col, row);
-		
-		// Save the fragment in the lookup hash
-		this.fragmentCoordinateMap.put(fragment, coordinate);
-		this.fragmentMap.put(fragment.getId(), fragment);
-		
-		// Establish the maximum column number
-		if(col > this.numberOfColumns) 
-        {
-			this.numberOfColumns = col + 1;
-		}
-	}
-	
-	/**
-	 * Now that we know the number of columns, the array can be
-	 * constructed and populated
-	 */
-	protected void populateArray() throws PortletPlacementException 
-    {
-		if(this.numberOfColumns == -1) 
-        {
-			//throw new PortletPlacementException("no columns found");
-            this.numberOfColumns = 1; // create a new column
-		}
-		
-		// Allocate the memory for the array of ArrayLists
-		// Add one since it is zero based
-		this.columnsList = new Vector[this.numberOfColumns + 1];
-		
-		// Put an array list into each index
-		for(int i = 0; i < this.numberOfColumns + 1; i++) 
-        {
-			this.columnsList[i] = new Vector();
-		}
-		
-		// Get all of the fragments from the hashmap
-		Set keys = this.fragmentCoordinateMap.keySet();
-		Iterator keyIterator = keys.iterator();
-		while(keyIterator.hasNext()) 
-        {
-			// The key is a Fragment
-			Fragment fragment = (Fragment) keyIterator.next();
-			
-			// Get the Coordinate associated with this fragment
-			Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
-			
-			// Make sure we have both
-			if(fragment != null && coordinate != null) 
-            {
-				// Get the array list for the column
-				Vector columnArray = this.columnsList[coordinate.getOldCol()];
-				
-				int row = coordinate.getOldRow();
-				
-				// Before setting the fragment in the array it might
-				// be necessary to add blank rows before this row
-				// An ArrayList can only set an element that already exists
-				prepareList(columnArray, row);
-				
-				// Place the fragment in the array list using the row
-				columnArray.set(row, fragment);
-			}
-		}
-	}
-	
-	// Ensures that the array list has at least row number of rows
-	protected void prepareList(Vector list, int row) 
-    {
-		if(list != null) 
-        {
-			int size = list.size();
-			if(row + 1 > size) 
-            {
-				// Add one to the row since it is zero based
-				for(int i = size; i < row + 1; i++) 
-                {
-					list.add(null);
-				}
-			}
-		}
-	}
-	
-	// Ensures that there is room for the fragment at the given row
-	// This method will insert null rows as necessary
-	protected List makeSpace(Coordinate newCoordinate) 
-    {
-		int newCol = newCoordinate.getNewCol();
-		int newRow = newCoordinate.getNewRow();
-		
-		// Find the column. Note that a new column will never be created
-		List column = this.columnsList[newCol];
-		if(newRow + 1 > column.size()) 
-        {
-			// Need to add rows
-			for(int i = column.size(); i < newRow + 1; i++) 
-            {
-				column.add(null);
-			}
-		}
-		return column;
-	}
-	
-    public int addColumns( int col )
-        throws PortletPlacementException 
-    {
-        if ( col > this.numberOfColumns )
-        {            
-            if ( col < 100 ) // arbitrary limit of columns
-            {
-                // expand
-                int prevNumberOfColumns = this.numberOfColumns;
-                this.numberOfColumns = col + 1;
-                
-                Vector [] temp = new Vector[this.numberOfColumns];
-                for (int ix = 0; ix < prevNumberOfColumns; ix++)
-                    temp[ix] = this.columnsList[ix];
-                for (int ix = prevNumberOfColumns; ix < temp.length; ix++)
-                    temp[ix] = new Vector();
-                this.columnsList = temp;
-            }
-            else
-            {
-                throw new PortletPlacementException( "cannot add column - " + col + " is above the limit of columns that this api supports" );
-            }
-        }
-        return col;
+    	int col = -1;
+    	if ( coordinate != null )
+    	{
+    		col = coordinate.getNewCol();
+    		if ( col == -1 )
+    			col = coordinate.getOldCol();
+    	}
+    	return col;
     }
-
-	public Coordinate add(Fragment fragment, Coordinate coordinate) throws PortletPlacementException 
+    protected int getLatestRow( Coordinate coordinate )
     {
-        int col = coordinate.getNewCol();
-        int row = coordinate.getNewRow();
-        
-        if (this.numberOfColumns == -1)
+    	int row = -1;
+    	if ( coordinate != null )
+    	{
+    		row = coordinate.getNewRow();
+    		if ( row == -1 )
+    			row = coordinate.getOldRow();
+    	}
+    	return row;
+    }
+    
+    protected void syncFragments( boolean updateFragmentObjects, int onlyForColumnIndex )
+    {
+        for ( int colIndex = 0; colIndex < this.columnsList.length; colIndex++ )
         {
-            this.numberOfColumns = 1;
-            this.columnsList = new Vector[this.numberOfColumns];
-            col = 0;
-        }        
-        if (col > this.numberOfColumns)
-        {    
-            col = addColumns( col );
+        	if ( onlyForColumnIndex == -1 || onlyForColumnIndex == colIndex )
+        	{
+	            ArrayList column = this.columnsList[colIndex];
+	            int colRowCount = column.size();
+	        	for ( int rowIndex= 0; rowIndex < colRowCount; rowIndex++ )
+	        	{
+	        		Fragment fragment = (Fragment)column.get( rowIndex );
+	                Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+	                boolean needsReplacementCoordinate = false;
+	                
+	                if ( getLatestColumn( coordinate ) != colIndex || getLatestRow( coordinate ) != rowIndex )
+	                	needsReplacementCoordinate = true;
+
+	                if ( needsReplacementCoordinate )
+	        		{
+	        			Coordinate replacementCoordinate = new CoordinateImpl( coordinate.getOldCol(), coordinate.getOldRow(), colIndex, rowIndex );
+	        			this.fragmentCoordinateMap.put( fragment.getId(), replacementCoordinate );
+	        		}
+	        		if ( updateFragmentObjects )
+	                {
+	                	fragment.setLayoutColumn( colIndex );
+	                	fragment.setLayoutRow( rowIndex );
+	                }
+	            }
+        	}
         }
-        
-        Vector column = this.columnsList[col];
-        if (column != null)
-        {
-            for (int ix = 0; ix < column.size(); ix++)
-            {                
-                Fragment frag = (Fragment)column.get(ix);
-                if (frag == null)
-                    continue;
-                Coordinate c = (Coordinate)this.fragmentCoordinateMap.get(frag);
-                if (c == null)
-                    continue;
-                if (c.getNewCol() == row)
-                {
-                    row++;
-                }
-                
-            }
-            // Make sure that the column has room to add the row
-            if(row < 0 || row > column.size()) {
-            	// Add to the end
-            	column.addElement(fragment);
-            	row = column.size()-1;
-            } else {
-            	column.add(row, fragment);
-            }
-            Coordinate newCoord = new CoordinateImpl(col, row, col, row);
-            this.fragmentCoordinateMap.put(fragment, newCoord);
-            return newCoord;
-        }
-        return coordinate;
+    }
+    
+    public int getFragmentRow( Fragment fragment )
+    {
+    	if ( fragment == null ) return -1;
+		Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+    	
+		if ( coordinate == null )
+			return -1;
+		if ( coordinate.getNewRow() >= 0  )
+			return coordinate.getNewRow();
+		return coordinate.getOldRow();
+    }
+    
+    public int getFragmentCol( Fragment fragment )
+    {
+    	if ( fragment == null ) return -1;
+		Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+    	
+		if ( coordinate == null )
+			return -1;
+		if ( coordinate.getNewCol() >= 0  )
+			return coordinate.getNewCol();
+		return coordinate.getOldCol();
+    }
+			
+	public Fragment getFragment( String fragmentId ) throws PortletPlacementException 
+    {
+		return (Fragment)this.fragmentMap.get( fragmentId );
 	}
 	
-	// Adds an existing fragment to the coordinate position
-	protected Coordinate addInternal(Fragment fragment, Coordinate coordinate) 
-    throws PortletPlacementException 
+	public Fragment getFragmentAtOldCoordinate( Coordinate coordinate ) throws PortletPlacementException 
     {
-		int newCol = coordinate.getNewCol();
-		int newRow = coordinate.getNewRow();
-		
-		// Check to see if the column exists
-		if(newCol < 0 || newCol > this.columnsList.length) 
-        {
-			throw new PortletPlacementException("column out of bounds" + fragment.getName());
-		}
-		
-		Vector columnArray = this.columnsList[newCol];
-
-		// Make sure the list has enough room for the set
-		prepareList(columnArray, newRow);
-		
-		columnArray.setElementAt(fragment, newRow);
-		
-		// Add the fragment to the hash map
-		this.fragmentCoordinateMap.put(fragment, coordinate);
-		
-		return coordinate;
+		return getFragmentAtCoordinate( coordinate, true, false );
 	}
 
-	public Fragment getFragment(String fragmentId) throws PortletPlacementException 
+	public Fragment getFragmentAtNewCoordinate( Coordinate coordinate ) throws PortletPlacementException 
     {
-		return (Fragment)this.fragmentMap.get(fragmentId);
-	}
-	
-	public Fragment getFragmentAtOldCoordinate(Coordinate coordinate) throws PortletPlacementException 
-    {
-		return getFragmentAtCoordinate(coordinate, true);
+		return getFragmentAtCoordinate( coordinate, false, false );
 	}
 
-	public Fragment getFragmentAtNewCoordinate(Coordinate coordinate) throws PortletPlacementException 
-    {
-		return getFragmentAtCoordinate(coordinate, false);
-	}
-
-	protected Fragment getFragmentAtCoordinate(Coordinate coordinate, boolean isOld) throws PortletPlacementException 
+	protected Fragment getFragmentAtCoordinate( Coordinate coordinate, boolean useOldCoordinateValues, boolean suppressExceptions ) throws PortletPlacementException 
     {
 		int col = -1;
 		int row = -1;
-		if (isOld == true) 
+		if ( useOldCoordinateValues ) 
         {
 			col = coordinate.getOldCol();
 			row = coordinate.getOldRow();
-		} else 
+		}
+		else 
         {
 			col = coordinate.getNewCol();
 			row = coordinate.getNewRow();
 		}
 		
 		// Do some sanity checking about the request
-		if(col < 0 || col > this.columnsList.length) 
+		if ( col < 0 || col >= this.numberOfColumns )
         {
-			throw new PortletPlacementException("requested column is out of bounds");
+			if ( suppressExceptions )
+				return null;
+			throw new PortletPlacementException( "Requested column (" + col + ") is out of bounds (column-count=" + this.numberOfColumns + ")" );
 		}
 		
 		// Get the array list associated with the column
-		Vector columnArray = this.columnsList[col];
-		if(row < 0 || row > columnArray.size()) 
+		ArrayList columnArray = this.columnsList[col];
+		if ( row < 0 || row >= columnArray.size() )
         {
-			throw new PortletPlacementException("requested row is out of bounds");
+			if ( suppressExceptions )
+				return null;
+			throw new PortletPlacementException( "Requested row (" + row + ") is out of bounds (col[" + col + "].row-count=" + columnArray.size() + ")" );
 		}
 		
-		return (Fragment)columnArray.get(row);
+		return (Fragment)columnArray.get( row );
 	}
 	
-	public Fragment getFragmentById(String fragmentId) throws PortletPlacementException 
+	public Fragment getFragmentById( String fragmentId ) throws PortletPlacementException 
     {
-		return (Fragment)this.fragmentMap.get(fragmentId);
+		return (Fragment)this.fragmentMap.get( fragmentId );
 	}
 
 	public int getNumberColumns() throws PortletPlacementException 
     {
-        return numberOfColumns;
-		//return this.columnsList.length;
+        return this.numberOfColumns;
 	}
 
-	public int getNumberRows(int col) throws PortletPlacementException 
+	public int getNumberRows( int col ) throws PortletPlacementException 
     {
 		// Sanity check the column
-		if(col < 0 || col > this.columnsList.length) 
+		if ( col < 0 || col >= this.numberOfColumns )
         {
-			throw new PortletPlacementException("column out of bounds");
+			throw new PortletPlacementException( "Requested column (" + col + ") is out of bounds (column-count=" + this.numberOfColumns + ")" );
 		}
-		
 		return this.columnsList[col].size();
 	}
-
-	public Coordinate moveAbsolute(Fragment fragment, Coordinate newCoordinate) 
-    throws PortletPlacementException 
+	
+	public Coordinate add( Fragment fragment, Coordinate coordinate ) throws PortletPlacementException 
     {
-		// Find the fragment
-		Coordinate oldCoordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
-		if(oldCoordinate == null) 
-        {
-			throw new PortletPlacementException("could not find fragment");
-		}
-		
-		// Save the old coordinates
-		int oldCol = oldCoordinate.getOldCol();
-		int oldRow = oldCoordinate.getOldRow();
-
-		// Create a new coordinate object with both the old and new positions
-		int newCol = newCoordinate.getNewCol();
-		int newRow = newCoordinate.getNewRow();
-		
-		// Make sure there is a place for the move
-		//List oldRowList = makeSpace(newCoordinate);
-
-		List oldRowList = this.columnsList[oldCol];
-		
-		// Remove the fragment from it's old position
-		oldRowList.remove(oldRow);
-
-		// The next two lines must occur after the remove above.  This is
-		// because the new and old columns might be the same and the remove
-		// will change the number of rows
-        if (newCol > this.numberOfColumns)
-        {    
-            newCol = addColumns( newCol );
-        }
-
-		List newRowList = this.columnsList[newCol];
-		int numRowsNewColumn = newRowList.size();
-		
-		// Decide whether an insert or an add is appropriate
-		if(newRow > (numRowsNewColumn - 1)) 
-        {
-			newRow = numRowsNewColumn;
-			// Add a new row
-			newRowList.add(fragment);
-		} 
-        else 
-        {
-			// Insert the fragment at the new position
-			((Vector)newRowList).insertElementAt(fragment, newRow);		
-		}
-
-        //debugFragments("move absolute ");
-        
-		// New coordinates after moving
-		return new CoordinateImpl(oldCol, oldRow, newCol, newRow);
+		return moveAbsolute( fragment, coordinate, true );
 	}
 
-	protected Coordinate moveDirection(Fragment fragment, int deltaCol, int deltaRow) 
-    throws PortletPlacementException 
+	public Coordinate moveAbsolute( Fragment fragment, Coordinate newCoordinate )
+        throws PortletPlacementException 
     {
-		// Find the fragment
-		Coordinate foundCoordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
-		if(foundCoordinate == null) 
-        {
-			throw new PortletPlacementException("could not find fragment");
-		}
+		return moveAbsolute( fragment, newCoordinate, false );
+    }
+	public Coordinate moveAbsolute( Fragment fragment, Coordinate newCoordinate, boolean okToAddFragment )
+        throws PortletPlacementException 
+    {
+		if ( fragment == null )
+    		throw new NullPointerException( "PortletPlacementContext moveAbsolute() cannot accept a null Fragment argument" );
 
-		// Check the coordinates to make sure that there is room to move down
-		int oldCol = foundCoordinate.getOldCol();
-		int oldRow = foundCoordinate.getOldRow();
+		Coordinate currentCoordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+		int currentCol = getLatestColumn( currentCoordinate );
+		int currentRow = getLatestRow( currentCoordinate );
 		
-		Vector columnArray = this.columnsList[oldCol];
-		
-		// Check the row and column boundaries to make sure there is room
-		// to do the move
-		if((oldRow + deltaRow + 1 > columnArray.size()) || ((oldRow + deltaRow) < 0) ||
-		   (oldCol + deltaCol + 1 > this.columnsList.length) || ((oldCol + deltaCol) < 0)) 
-        {
-			// Out of bounds, don't do the move
-			Coordinate c = new CoordinateImpl(oldCol, oldRow, oldCol, oldRow);
-            //debugFragments("move direction (1)");
-            return c;
+		int newCol = normalizeColumnIndex( getLatestColumn( newCoordinate ), this.columnsList, currentCol );
+		int newRow = getLatestRow( newCoordinate );
+
+		if ( currentCoordinate == null )
+		{
+			if ( ! okToAddFragment )
+				throw new NullPointerException( "PortletPlacementContext moveAbsolute() cannot add fragment (" + fragment.getId() + ") unless the okToAddFragment argument is set to true" );
+			
+			// add fragment
+			ArrayList newColumn = this.columnsList[newCol];
+			if ( newRow < 0 || newRow >= newColumn.size() )
+				newRow = newColumn.size();
+			newColumn.add( newRow, fragment );
+			
+			CoordinateImpl coordinate = new CoordinateImpl( newCol, newRow );
+        	this.fragmentCoordinateMap.put( fragment.getId(), coordinate );
+			this.fragmentMap.put( fragment.getId(), fragment );
+			syncFragments( false, newCol );
 		}
-        else 
-        {
-			Coordinate c = moveAbsolute(fragment, new CoordinateImpl(oldCol, oldRow, oldCol + deltaCol, oldRow + deltaRow));
-            //debugFragments("move direction (2)");
-            return c;
-		}        
+		else
+		{
+			boolean columnChanged = ( currentCol != newCol );
+			boolean rowChanged = ( currentRow != newRow );
+
+			if ( columnChanged || rowChanged )
+			{
+				verifyFragmentAtExpectedCoordinate( currentCol, currentRow, fragment, "moveAbsolute()" );
+				
+				ArrayList currentColumn = this.columnsList[currentCol];
+				currentColumn.remove( currentRow );
+				
+				ArrayList newColumn = currentColumn;
+				if ( columnChanged )
+					newColumn = this.columnsList[newCol];
+
+				if ( newRow < 0 || newRow >= newColumn.size() )
+					newColumn.add( fragment );
+				else
+					newColumn.add( newRow, fragment );
+				
+				this.fragmentMap.put( fragment.getId(), fragment );
+				
+				syncFragments( false, currentCol );
+				if ( columnChanged )
+					syncFragments( false, newCol );
+			}
+		}
+		return (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+	}
+
+	protected Coordinate moveDirection( Fragment fragment, int deltaCol, int deltaRow ) 
+        throws PortletPlacementException 
+    {
+		if ( fragment == null )
+    		throw new NullPointerException( "PortletPlacementContext moveDirection() cannot accept a null Fragment argument" );
+
+		if ( deltaCol != 0 || deltaRow != 0 )
+		{
+			Coordinate currentCoordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+			if ( currentCoordinate == null )
+				throw new NullPointerException( "PortletPlacementContext moveDirection() cannot locate target fragment (" + fragment.getId() + ")" );
+	
+			int currentCol = getLatestColumn( currentCoordinate );
+			int currentRow = getLatestRow( currentCoordinate );
+			
+			verifyFragmentAtExpectedCoordinate( currentCol, currentRow, fragment, "moveDirection()" );
+			
+			int newCol = currentCol + deltaCol;
+			int newRow = currentRow + deltaRow;
+			if ( newCol >= 0 && newCol < this.numberOfColumns )
+			{
+				ArrayList currentColumn = this.columnsList[currentCol];
+				ArrayList newColumn = currentColumn;
+				if ( newCol != currentCol )
+					newColumn = this.columnsList[newCol];
+				
+				currentColumn.remove( currentRow );
+					
+				if ( newRow < 0 || newRow >= newColumn.size() )
+					newColumn.add( fragment );
+				else
+					newColumn.add( newRow, fragment );
+				
+				this.fragmentMap.put( fragment.getId(), fragment );
+				
+				syncFragments( false, currentCol );
+				if ( newCol != currentCol )
+					syncFragments( false, newCol );
+			}
+		}
+		return (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
 	}
 	
-	public Coordinate moveDown(Fragment fragment) throws PortletPlacementException 
+	public Coordinate moveDown( Fragment fragment ) throws PortletPlacementException 
     {
-		return moveDirection(fragment, 0, 1);
+		return moveDirection( fragment, 0, 1 );
 	}
 
-	public Coordinate moveUp(Fragment fragment) throws PortletPlacementException 
+	public Coordinate moveUp( Fragment fragment ) throws PortletPlacementException 
     {
-		return moveDirection(fragment, 0, -1);
+		return moveDirection( fragment, 0, -1 );
 	}
 
-	public Coordinate moveLeft(Fragment fragment) throws PortletPlacementException 
+	public Coordinate moveLeft( Fragment fragment ) throws PortletPlacementException 
     {
-		return moveDirection(fragment, -1, 0);
+		return moveDirection( fragment, -1, 0 );
 	}
 
-	public Coordinate moveRight(Fragment fragment) throws PortletPlacementException 
+	public Coordinate moveRight( Fragment fragment ) throws PortletPlacementException 
     {
-		return moveDirection(fragment, 1, 0);
+		return moveDirection( fragment, 1, 0 );
 	}
 
-	public Coordinate remove(Fragment fragment) throws PortletPlacementException 
+	public Coordinate remove( Fragment fragment ) throws PortletPlacementException 
     {
-		// Locate the fragment
-		Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get(fragment);
-		if(coordinate == null) 
-        {
-			throw new PortletPlacementException("fragment not found:" + fragment.getName());
+		if ( fragment == null )
+    		throw new NullPointerException( "PortletPlacementContext remove() cannot accept a null Fragment argument" );
+		
+		Coordinate currentCoordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
+		if ( currentCoordinate == null )
+			throw new NullPointerException( "PortletPlacementContext remove() cannot locate target fragment (" + fragment.getId() + ")" );
+
+		int currentCol = getLatestColumn( currentCoordinate );
+		int currentRow = getLatestRow( currentCoordinate );
+		
+		verifyFragmentAtExpectedCoordinate( currentCol, currentRow, fragment, "moveDirection()" );
+
+		ArrayList currentColumn = this.columnsList[currentCol];
+		
+		currentColumn.remove( currentRow );
+		
+		this.fragmentCoordinateMap.remove( fragment.getId() );
+		this.fragmentMap.remove( fragment.getId() );
+		
+		syncFragments( false, currentCol );
+		
+		return currentCoordinate;
+	}
+	
+	protected Fragment verifyFragmentAtExpectedCoordinate( int colIndex, int rowIndex, Fragment fragment, String sourceDesc )
+		throws PortletPlacementException
+	{
+		CoordinateImpl coordinate = new CoordinateImpl( colIndex, rowIndex );
+		
+		boolean suppressExceptions = ( fragment != null );
+		Fragment foundFragment = getFragmentAtCoordinate( coordinate, true, suppressExceptions );
+		
+		if ( fragment != null )
+		{
+			if ( foundFragment == null || foundFragment.getId() != fragment.getId() )
+			{
+				sourceDesc = ( sourceDesc == null ? "getFragmentAtExpectedCoordinate" : sourceDesc );
+				
+				ArrayList column = null;
+				int colFragCount = -1;
+				if ( colIndex >= 0 && colIndex < this.numberOfColumns )
+				{
+					column = this.columnsList[colIndex];
+					colFragCount = column.size();
+				}
+				StringBuffer out = new StringBuffer();
+				out.append( "PortletPlacementContext " ).append( sourceDesc ).append( " has encountered unexpected results");
+				out.append( " using the current instance state to locate fragment " ).append( fragment.getId() ).append( " (" );
+				if ( foundFragment == null )
+					out.append( "no fragment" );
+				else
+					out.append( "different fragment" );
+				out.append( " in row " ).append( rowIndex ).append( " of column " ).append( colIndex );
+				if ( column == null )
+				{
+					out.append( " - column is out of bounds, column-count=" ).append( this.numberOfColumns );
+				}
+				else
+				{
+					out.append( " - " );
+					if ( rowIndex < 0 || rowIndex >= colFragCount )
+						out.append( "row is out of bounds, " );
+					out.append( "row-count=" ).append( colFragCount );
+				}
+				out.append( ")" );
+				throw new PortletPlacementException( out.toString() );
+			}
 		}
-		
-		int col = coordinate.getOldCol();
-		int row = coordinate.getOldRow();
-		
-		if(col < 0 || col > this.columnsList.length) 
-        {
-			throw new PortletPlacementException("column out of bounds:" + fragment.getName());
-		}
-		
-		Vector columnArray = this.columnsList[col];
-		if(row < 0 || row > columnArray.size()) 
-        {
-			throw new PortletPlacementException("row out of bounds:" + fragment.getName());
-		}
-		
-		// Remove the fragment from the array
-		columnArray.remove(row);
-		
-		// Remove the fragment from the hashmap
-		this.fragmentCoordinateMap.remove(fragment);
-		this.fragmentMap.remove(fragment.getId());
-		
-		return coordinate;
+		return fragment;
 	}
 
+	static public int getColumnCountAndSizes( Fragment layoutFragment, PortletRegistry registry, Map fragSizes )
+	{
+		return PortletPlacementContextImpl.getColumnCountAndSizes( layoutFragment, registry, fragSizes, false );
+	}
+    static public int getColumnCountAndSizes( Fragment layoutFragment, PortletRegistry registry, Map fragSizes, boolean suppressErrorLogging )
+	{
+    	if ( layoutFragment == null )
+    		throw new NullPointerException( "getColumnCountAndSizes cannot accept a null Fragment argument" );
+    	if ( registry == null )
+    		throw new NullPointerException( "getColumnCountAndSizes cannot accept a null PortletRegistry argument" );
+    	
+		int columnCount = -1;
+		if ( ! "layout".equals( layoutFragment.getType() ) )
+		{
+			if ( ! suppressErrorLogging )
+				log.error( "getColumnCountAndSizes not a layout fragment - " + layoutFragment.getId() + " type=" + layoutFragment.getType() );
+		}
+		else
+    	{   // get layout fragment sizes
+    		String sizesVal = layoutFragment.getProperty( "sizes" );
+    		String layoutName = layoutFragment.getName();
+    		layoutName = ( (layoutName != null && layoutName.length() > 0) ? layoutName : (String)null );
+    		ParameterSet paramSet = null;
+    		PortletDefinition portletDef = null;
+    		if ( sizesVal == null || sizesVal.length() == 0 )
+    		{
+    			if ( layoutName != null )
+    			{
+    				// logic below is copied from org.apache.jetspeed.portlets.MultiColumnPortlet
+    				portletDef = registry.getPortletDefinitionByUniqueName( layoutName );
+                    if ( portletDef != null )
+                    {
+                    	paramSet = portletDef.getInitParameterSet();
+                    	if ( paramSet != null )
+                    	{
+                    		Parameter sizesParam = paramSet.get( "sizes" );
+                    		sizesVal = ( sizesParam == null ) ? null : sizesParam.getValue();
+                    	}
+                    }
+    			}
+    		}
+    		if ( sizesVal != null && sizesVal.length() > 0 )
+    		{
+    			if ( fragSizes != null )
+    				fragSizes.put( layoutFragment.getId(), sizesVal );
+					
+				int sepPos = -1, startPos = 0, sizesLen = sizesVal.length();
+				columnCount = 0;
+				do
+				{
+					sepPos = sizesVal.indexOf( ',', startPos );
+					if ( sepPos != -1 )
+					{
+						if ( sepPos > startPos )
+							columnCount++;
+						startPos = sepPos +1;
+					}
+					else if ( startPos < sizesLen )
+					{
+						columnCount++;
+					}
+				} while ( startPos < sizesLen && sepPos != -1 );
+				if ( ! suppressErrorLogging && columnCount <= 0 )
+					log.error( "getColumnCountAndSizes invalid columnCount - " + layoutFragment.getId() + " / " + layoutName + " count=" + columnCount + " sizes=" + sizesVal );
+			}
+			else if ( paramSet == null )
+			{
+				if ( ! suppressErrorLogging )
+				{
+					if ( layoutName == null )
+						log.error( "getColumnCountAndSizes null sizes, null layoutName - " + layoutFragment.getId() );
+					else if ( portletDef == null )
+						log.error( "getColumnCountAndSizes null sizes, null PortletDefinition - " + layoutFragment.getId() + " / " + layoutName );
+					else
+						log.error( "getColumnCountAndSizes null sizes, null ParameterSet - " + layoutFragment.getId() + " / " + layoutName );
+				}
+			}
+			else
+			{
+				Parameter colsParam = paramSet.get( "columns" );
+				String colsParamVal = ( colsParam == null ) ? null : colsParam.getValue();
+				if ( colsParamVal != null && colsParamVal.length() > 0 )
+				{
+					try
+					{
+						columnCount = Integer.parseInt( colsParamVal );
+					}
+					catch ( NumberFormatException ex )
+					{
+					}
+					if ( columnCount < 1 )
+					{
+						columnCount = 2;
+					}
+					switch ( columnCount )
+					{
+	            		case 1: sizesVal = "100%"; break;
+	            		case 2: sizesVal = "50%,50%"; break;
+	            		case 3: sizesVal = "34%,33%,33%"; break;
+	            		case 4: sizesVal = "25%,25%,25%,25%"; break;
+	            		default: 
+	            		{
+	            			sizesVal = "50%,50%";
+	            			columnCount = 2;
+	            			break;
+	            		}
+					}
+					if ( fragSizes != null )
+						fragSizes.put( layoutFragment.getId(), sizesVal );
+					//log.info( "getColumnCountAndSizes " + layoutFragment.getId() + " count=" + columnCount + " defaulted-sizes=" + sizesParamVal );
+				}
+				else
+				{
+					if ( ! suppressErrorLogging )
+						log.error( "getColumnCountAndSizes null sizes, columns not defined in ParameterSet - " + layoutFragment.getId() + " / " + layoutName );
+				}
+			}
+    	}
+		return columnCount;
+	}	
 }
