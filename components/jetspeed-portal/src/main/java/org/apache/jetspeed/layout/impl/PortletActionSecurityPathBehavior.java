@@ -37,10 +37,16 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
 {
     protected Log log = LogFactory.getLog(PortletActionSecurityPathBehavior.class);    
     protected PageManager pageManager;
+    private boolean enableCreateUserPagesFromRolesOnEdit;
     
-    public PortletActionSecurityPathBehavior(PageManager pageManager)
+    public PortletActionSecurityPathBehavior(PageManager pageManager )
+    {
+    	this( pageManager, Boolean.FALSE ) ;
+    }
+    public PortletActionSecurityPathBehavior(PageManager pageManager, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
         this.pageManager = pageManager;
+        this.enableCreateUserPagesFromRolesOnEdit = ( enableCreateUserPagesFromRolesOnEdit == null ? false : enableCreateUserPagesFromRolesOnEdit.booleanValue() );
     }
 
     public boolean checkAccess(RequestContext context, String action)
@@ -57,23 +63,43 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
         }
         return true;
     }
+    
+    public boolean isCreateNewPageOnEditEnabled()
+    {
+    	return enableCreateUserPagesFromRolesOnEdit;
+    }
+    public boolean isPageQualifiedForCreateNewPageOnEdit(RequestContext context)
+    {
+    	if ( ! this.enableCreateUserPagesFromRolesOnEdit || context == null )
+    		return false ;
+    	return isPageQualifiedForCreateNewPageOnEdit( context.getPage().getPath() );
+    }
+    
+    protected boolean isPageQualifiedForCreateNewPageOnEdit( String pagePath )
+    {
+        if (pagePath == null)
+        	return false;
+        // page must be in role directory
+        return (pagePath.indexOf(Folder.ROLE_FOLDER) == 0);
+    }
 
     public boolean createNewPageOnEdit(RequestContext context)
     {
+    	if ( ! this.enableCreateUserPagesFromRolesOnEdit )
+    		return false ;
+
         Page page = context.getPage();        
-        String path = page.getPath();
+        String pagePath = page.getPath();
         try
-        {        
-            if (path == null)
-                return false;
-            // make sure we are not copying from user area
-            if (path.indexOf(Folder.USER_FOLDER) == -1)
+        {
+        	if ( isPageQualifiedForCreateNewPageOnEdit( pagePath ) )
             {
+        		String pageName = page.getName();
                 this.pageManager.createUserHomePagesFromRoles(context.getSubject());
                 page = this.pageManager.getPage(Folder.USER_FOLDER 
                                                 + context.getRequest().getUserPrincipal().getName()
                                                 + Folder.PATH_SEPARATOR 
-                                                + Folder.FALLBACK_DEFAULT_PAGE);                 
+                                                + pageName);   // was Folder.FALLBACK_DEFAULT_PAGE prior to 2007-11-06
                 context.setPage(new ContentPageImpl(page));
                 context.getRequest().getSession().removeAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);                
             }            
