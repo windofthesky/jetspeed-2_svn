@@ -18,32 +18,33 @@
       dojo will look for a body tag and use its content -->
 <body>
 <div class="pageEditPane">
+
     <div dojoAttachPoint="containerNode" class="container"></div>
 
     <fieldset class="pageEditorPaneContainer" dojoAttachPoint="pageEditContainer">
         <div class="detail">
-            <div><img src="${this.layoutImagesRoot}customizer.png">&nbsp;<span class="pageEditorName">Jetspeed Customizer</span></div>
+            <div><img src="${this.layoutImagesRoot}customizer.png">&nbsp;<span class="pageEditorName">${this.labels.title}</span></div>
             <div class="rowContainer">
-               <fieldset class="pageEditorDetailContainer" dojoAttachPoint="pageEditLDContainer">
+               <fieldset class="pageEditorPaneContainer pageEditorDetailContainer" dojoAttachPoint="pageEditLDContainer">
                    <div class="layoutDecoratorContainer">
                        <select class="layoutDecorator" name="layoutDecoratorSelect" dojoAttachPoint="layoutDecoratorSelect" dojoType="Select" autocomplete="false"></select>
                    </div>
-                   <button dojoType="Button" dojoAttachPoint="changeLayoutDecoratorButton" dojoAttachEvent="onClick:changeLayoutDecorator"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;Change Layout Theme</button>
+                   <button dojoType="Button" dojoAttachPoint="changeLayoutDecoratorButton" dojoAttachEvent="onClick:changeLayoutDecorator"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;${this.labels.changepagelayouttheme}</button>
                </fieldset>
-               <fieldset class="pageEditorDetailContainer" dojoAttachPoint="pageEditPDContainer">
+               <fieldset class="pageEditorPaneContainer pageEditorDetailContainer" dojoAttachPoint="pageEditPDContainer">
                    <div class="portletDecoratorContainer">
                        <select class="portletDecorator" name="portletDecoratorSelect" dojoAttachPoint="portletDecoratorSelect" dojoType="Select" autocomplete="false"></select>
                    </div>
-                   <button dojoType="Button" dojoAttachPoint="changePortletDecoratorButton" dojoAttachEvent="onClick:changePortletDecorator"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;Change Portlet Theme</button>
+                   <button dojoType="Button" dojoAttachPoint="changePortletDecoratorButton" dojoAttachEvent="onClick:changePortletDecorator"><img height="16" src="${this.layoutImagesRoot}button_ok.png">&nbsp;${this.labels.changepageportlettheme}</button>
                </fieldset>
                <div class="buttonContainerRight">
                    <table cellpadding="0" cellspacing="6" border="0">
                    <!-- height on images is currently needed to size the button properly, especially when button is inside a table -->
                    <tr align="right">
-                   <td><button dojoType="Button" dojoAttachEvent="onClick:createPage"><img height="16" src="${this.layoutImagesRoot}page_new.png">&nbsp;Create New Page&#133;</button></td>
+                   <td><button dojoType="Button" dojoAttachEvent="onClick:createPage" dojoAttachPoint="createPageButton"><img height="16" src="${this.layoutImagesRoot}page_new.png">&nbsp;${this.labels.newpage}</button></td>
                    </tr>
                    <tr align="right">
-                   <td><button dojoType="Button" dojoAttachEvent="onClick:deletePage"><img height="16" src="${this.layoutImagesRoot}page_delete.png">&nbsp;Delete Page&#133;</button></td>
+                   <td><button dojoType="Button" dojoAttachEvent="onClick:deletePage" dojoAttachPoint="deletePageButton"><img height="16" src="${this.layoutImagesRoot}page_delete.png">&nbsp;${this.labels.deletepage}</button></td>
                    </tr>
                    </table>
                </div>
@@ -54,9 +55,15 @@
 	<div dojoAttachPoint="deletePageDialog">
 		<div class="container" dojoAttachPoint="deletePageDialogBg">
 			<div class="deletePageDialog" dojoAttachPoint="deletePageDialogFg">
-				<h2>Are you sure you want to delete this page?</h2>
-				<button dojoType="Button" id="deletePageYes" dojoAttachEvent="onClick:deletePageConfirmed">Yes</button>
-				<button dojoType="Button" id="deletePageNo" dojoAttachPoint="deletePageCancel">No</button>
+				<h2>${this.dialogLabels.deletepage}</h2>
+                <div class="dialogBottom">
+                    <div class="dialogButtonContainerRight">
+                        <table><tr>
+				        <td><button dojoType="Button" id="deletePageYes" dojoAttachEvent="onClick:deletePageConfirmed">${this.dialogLabels.yes}</button></td>
+				        <td><button dojoType="Button" id="deletePageNo" dojoAttachPoint="deletePageCancel">${this.dialogLabels.no}</button></td>
+                        </tr></table>
+                    </div>
+                </div>
 				<p></p>
 			</div>
 		</div>
@@ -65,21 +72,21 @@
     <div dojoAttachPoint="createPageDialog">
 		<div class="container" dojoAttachPoint="createPageDialogBg">
 			<div class="createPageDialog" dojoAttachPoint="createPageDialogFg">
-				<h2>Create New Page</h2>
+				<h2>${this.dialogLabels.newpage}</h2>
                 <div dojoAttachPoint="createPageNameField" class="createPageField">
-                    <div>Name</div>
+                    <div>${this.dialogLabels.newpage_name}</div>
                     <input dojoType="Textbox" dojoAttachPoint="createPageNameTextbox" maxlength="30">
                 </div>
                 <div dojoAttachPoint="createPageTitleField" class="createPageField">
-                    <div>Title</div>
+                    <div>${this.dialogLabels.newpage_title}</div>
                     <input dojoType="Textbox" dojoAttachPoint="createPageTitleTextbox" maxlength="30">
                 </div>
                 <div dojoAttachPoint="createPageShortTitleField" class="createPageField">
-                    <div>Short Title</div>
+                    <div>${this.dialogLabels.newpage_titleshort}</div>
                     <input dojoType="Textbox" dojoAttachPoint="createPageShortTitleTextbox" maxlength="30">
                 </div>
-				<button dojoType="Button" id="createPageYes" dojoAttachEvent="onClick:createPageConfirmed">OK</button>
-				<button dojoType="Button" id="createPageNo" dojoAttachPoint="createPageCancel">Cancel</button>
+				<button dojoType="Button" id="createPageYes" dojoAttachEvent="onClick:createPageConfirmed">${this.dialogLabels.ok}</button>
+				<button dojoType="Button" id="createPageNo" dojoAttachPoint="createPageCancel">${this.dialogLabels.cancel}</button>
 				<p></p>
 			</div>
 		</div>
