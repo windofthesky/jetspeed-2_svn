@@ -31,12 +31,6 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
 
 #desktopIncludeHeaderContent()
 
-<script language="JavaScript" type="text/javascript">
-    function notifyRetrieveAllMenusFinished()
-    {
-    }
-    dojo.event.connect( jetspeed, "notifyRetrieveAllMenusFinished", "notifyRetrieveAllMenusFinished" );
-</script>
 </head>
 
 <body class="layout-${jetspeedDesktop.getLayoutDecorationName()}">
@@ -82,6 +76,7 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
      <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
 <!-- page level loading indicator (associated with layout decoration resource: desktop.action.loadpage) -->
+<!-- js-showloading-img is controlled by desktop.loading.img* properties, but src still needs to be set in content due to IE quirks -->
 <div id="js-showloading" class="js-showloading" style="display: none">
     <table cellpadding="0" cellspacing="0" border="0">
         <tbody>
@@ -89,8 +84,8 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
                 <td class="js-showloading-left"></td>
                 <td class="js-showloading-middle">
                     <div>
-                        <div class="js-showloading-content" id="js-showloading-content">Loading ...</div>
-                        <div class="js-showloading-animation"><img src="$jetspeedDesktop.getLayoutBaseUrl('images/desktop/loading/loaddots.gif')" border="0" /></div>
+                        <div class="js-showloading-content" id="js-showloading-content">Loading&#133;</div>
+                        <div class="js-showloading-imgcontainer"><img id="js-showloading-img" src="$jetspeedDesktop.getLayoutBaseUrl('images/desktop/loading/loaddots.gif')" border="0" /></div>
                     </div>
                 </td>
                 <td class="js-showloading-right"></td>
