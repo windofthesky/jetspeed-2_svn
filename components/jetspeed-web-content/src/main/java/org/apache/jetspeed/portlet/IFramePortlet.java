@@ -301,7 +301,7 @@ public class IFramePortlet extends GenericPortlet
         StringBuffer content = new StringBuffer(4096);
 
         // fix JS2-349
-        content.append("<TABLE WIDTH='100%'><TR><TD>");
+        content.append("<TABLE CLASS='iframePortletTableContainer' WIDTH='100%'><TBODY CLASS='iframePortletTbodyContainer'><TR><TD>");
         
         content.append("<IFRAME");
         content.append(" SRC=\"").append(sourceAttr).append("\"");
@@ -407,7 +407,7 @@ public class IFramePortlet extends GenericPortlet
         content.append("</IFRAME>");
 
         // end fix JS2-349
-        content.append("</TD></TR></TABLE>");
+        content.append("</TD></TR></TBODY></TABLE>");
 
         // set required content type and write HTML IFRAME content
         response.setContentType("text/html");
