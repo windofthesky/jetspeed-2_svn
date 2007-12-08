@@ -51,6 +51,15 @@ public class RolesSecurityBehavior implements PortletActionSecurityBehavior
         }        
         return false;
     }
+    
+    public boolean isCreateNewPageOnEditEnabled()
+    {
+    	return false;
+    }
+    public boolean isPageQualifiedForCreateNewPageOnEdit(RequestContext context)
+    {
+    	return false ;
+    }
 
     public boolean createNewPageOnEdit(RequestContext context)
     {
