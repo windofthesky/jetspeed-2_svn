@@ -43,7 +43,7 @@
                         <value>header.dojo.writeincludes</value>         <!-- generated dojo.hostenv.writeIncludes() statement -->
                         <value>header.dojo.modules.namespace</value>     <!-- dojo.registerNamespace statements -->
                         <value>header.dojo.style.bodyexpand</value>      <!-- css for body 100% height/width (for some dojo widgets) -->
-                        <value>header.basetag</value>                    <!-- generated <base href=".../jetspeed/"> -->
+                        <!-- <value>header.basetag</value> -->                    <!-- generated <base href=".../jetspeed/"> -->
                         <value>header.desktop.style.layout</value>       <!-- generated <link href=".../styles.css"> for layout decoration -->
                         <value>header.desktop.init</value>               <!-- generated desktop startup javascript -->
                     </list>
@@ -59,55 +59,62 @@
         <constructor-arg index="0">
             <map>
                 <!-- layout and portlet decorations -->
-                <entry key="desktop.decoration.layout">
+                <entry key="decoration.layout">
                     <!-- default layout decoration for desktop
                          this is used when a selected layout decoration does not support desktop -->
                     <value>blueocean</value>
                 </entry>
 
-                <entry key="desktop.decoration.portlet">
+                <entry key="decoration.portlet">
                     <!-- default portlet decoration for desktop
                          this is used when a selected portlet decoration does not support desktop -->
                     <value>tigris</value>
                 </entry>
 
                 <!-- page navigation -->
-                <entry key="desktop.page.ajaxnavigation">
+                <entry key="page.ajaxnavigation">
                     <!-- enable ajax page navigation - default is false -->
                     <!-- when set to true, the dojo parameter dojo.parameter.preventBackButtonFix should be set to false -->
                     <value>true</value>
                 </entry>
 
                 <!-- window modes -->
-                <entry key="desktop.window.tiling">
+                <entry key="window.tiling">
                     <!-- enable window tiling mode - default is true -->
                     <value>true</value>
                 </entry>
-                <entry key="desktop.window.heightexpand">
+                <entry key="window.heightexpand">
                     <!-- default tiled windows to expand in height to fit content - default is false -->
                     <value>true</value>
                 </entry>
 
                 <!-- window dimensions -->
-                <entry key="desktop.window.height">
+                <entry key="window.height">
                     <!-- default window height -->
                     <value>200</value>
                 </entry>
-                <entry key="desktop.window.width">
+                <entry key="window.width">
                     <!-- default window width -->
                     <value>280</value>
                 </entry>
 
                 <!-- window actions -->
-                <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
-                <entry key="desktop.window.action.button.order">
+                <!-- NOTE: each portlet decorator may override any of these properties in its decoratordesktop.properties file -->
+                <entry key="window.action.button.order">
                     <!-- order, left to right, that action buttons should be rendered -->
-                    <!-- all listed actions are expected to have associated images at derived path {windowtheme}/images/{action}.gif -->
+                    <!-- all listed actions are expected to have associated images at derived path -->
+                    <!--    decorations/portlet/{decorator-name}/images/desktop/{action}.gif -->
+
+                    <!-- if an action has no image, it can still be in this list as long as it also appears in -->
+                    <!--    the window.action.noimage entry (the goal here is that the decorator need only override window.action.noimage) -->
+
+                    <!-- of course, each portlet will only display those actions that it supports, etc. -->
                     <!-- no image mapping is offered because if it is to be supported, it should be from DecoratorAction -->
-                    <!-- any listed action not supported by portlet is omitted -->
                     <!-- some actions, such as "menu" and "restore" have special behaviors (e.g. restore replaces minimize when window is minimized) -->
                     <list>
                         <value>menu</value>
+                        <value>config</value>
+                        <value>edit_defaults</value>
                         <value>edit</value>
                         <value>view</value>
                         <value>print</value>
@@ -118,15 +125,11 @@
                         <value>removeportlet</value>   <!-- activated only when in page edit mode -->
                     </list>
                 </entry>
-                <entry key="desktop.window.action.button.maximum">
+                <entry key="window.action.button.maximum">
                     <!-- maximum number of action buttons allowed - overflow items will be displayed at top of action menu -->
-                    <value>10</value>
+                    <value>11</value>
                 </entry>
-                <entry key="desktop.window.action.button.hide">
-                    <!-- hide action buttons unless mouse is over window title bar -->
-                    <value>false</value>
-                </entry>
-                <entry key="desktop.window.action.noimage">
+                <entry key="window.action.noimage">
                     <!-- list of actions that do no have images -->
                     <list>
                         <value>tile</value>
@@ -135,33 +138,44 @@
                         <value>heightnormal</value>
                     </list>
                 </entry>
-                <entry key="desktop.window.action.menu.order">
-                    <!-- order, top to bottom, the actions should appear in action menu -->
+                <entry key="window.action.menu.order">
+                    <!-- order that the actions should appear in action menu (for each action that is not displayed as a button) -->
                     <list>
+                        <value>view</value>
+                        <value>maximized</value>
+                        <value>normal</value>
+                        <value>minimized</value>
+                        <value>print</value>
+                        <value>edit</value>
+                        <value>edit_defaults</value>
+                        <value>config</value>
                         <value>tile</value>
                         <value>untile</value>
                         <value>heightexpand</value>
                         <value>heightnormal</value>
+                        <value>about</value>
+                        <value>help</value>
+                        <value>removeportlet</value>
                     </list>
                 </entry>
-                <entry key="desktop.window.action.button.tooltip">
+                <entry key="window.action.button.tooltip">
                     <!-- display tooltips for window action buttons -->
                     <value>true</value>
                 </entry>
 
                 <!-- window icons -->
-                <!-- NOTE: each window theme may override any of these properties in its windowtheme.js file -->
-                <entry key="desktop.window.icon.enabled">
+                <!-- NOTE: each portlet decorator may override any of these properties in its decoratordesktop.properties file -->
+                <entry key="window.icon.enabled">
                     <!-- display icon for each window -->
                     <value>true</value>
                 </entry>
-                <entry key="desktop.window.icon.path">
+                <entry key="window.icon.path">
                     <!-- path to window icons -->
-                    <value>/images/portlets/small/</value> <!-- /javascript/jetspeed/windowicons/ -->
+                    <value>/images/portlets/small</value>
                 </entry>
 
                 <!-- page actions -->
-                <entry key="desktop.page.action.button.tooltip">
+                <entry key="page.action.button.tooltip">
                     <!-- display tooltips for page action buttons -->
                     <value>true</value>
                 </entry>
@@ -248,23 +262,9 @@
                 <value>dojo.event.*</value>
                 <value>dojo.io.*</value>
                 <value>dojo.widget.*</value>
-                <value>dojo.collections.ArrayList</value>
-                <value>dojo.collections.Set</value>
-                <value>dojo.widget.TaskBar</value>
-                <value>dojo.widget.FloatingPane</value>
                 <value>dojo.widget.TabContainer</value>
                 <value>dojo.widget.AccordionContainer</value>
                 <value>dojo.widget.Menu2</value>
-                <value>dojo.widget.Checkbox</value>
-                <value>dojo.widget.Dialog</value>
-                <value>dojo.widget.Button</value>
-                <value>dojo.widget.Select</value>
-                <value>dojo.widget.LayoutContainer</value>
-                <value>dojo.widget.ContentPane</value>
-                <value>dojo.widget.LinkPane</value>
-                <value>dojo.widget.SplitContainer</value>
-                <value>dojo.widget.Tree</value>
-                <value>dojo.widget.Tooltip</value>
             </list>
         </constructor-arg>
     </bean>
@@ -273,12 +273,11 @@
         <constructor-arg index="0">
             <list>
                 <value>jetspeed.desktop.core</value>
-                <value>jetspeed.widget.PortalTaskBar</value>
                 <value>jetspeed.widget.PortletWindow</value>
                 <value>jetspeed.widget.PortalTabContainer</value>
                 <value>jetspeed.widget.PortalAccordionContainer</value>
                 <value>jetspeed.widget.PortalBreadcrumbContainer</value>
-                <value>jetspeed.widget.PortletDefContainer</value>
+                <value>jetspeed.widget.PortalTooltipManager</value>
             </list>
         </constructor-arg>
     </bean>
@@ -418,9 +417,10 @@
                     <!-- note: current value is empty due to dojo 0.4.0 improvements which make this step unnecessary for this module -->
                     <value></value>
                 </entry>
-                <entry key="header.dojo.style.bodyexpand">   <!-- dojo.style.bodyexpand.noscroll -->
+                <entry key="header.dojo.style.bodyexpand">   <!-- dojo.style.bodyexpand -->
                     <!-- make the body expand to fill the visible window -->
                     <value>html, body { width: 100%; height: 100%; padding: 0 0 0 0; margin: 0 0 0 0; }</value>
+                    <!-- <value>html, body { padding: 0 0 0 0; margin: 0 0 0 0; }</value> -->
                 </entry>
                 <entry key="header.dojo.style.bodyexpand.noscroll">   <!-- dojo.style.bodyexpand.noscroll -->
                     <!-- make the body expand to fill the visible window - erase window level scrollbars -->
