@@ -36,29 +36,134 @@ limitations under the License.
 .dojoDialog .columnSizeDialog .columnSizeField .missing { font-size: 8pt; color: red }
 .dojoDialog .columnSizeDialog .columnSizeField .invalid { font-size: 8pt; color: red }
 
+
+
 .pageEditorPaneContainer {
     padding: 0.35em 0.625em 0.75em 0.625em;
-    /*background-color: #d3d3d3;*/
-    /*  ^^ set conditionally in code - in IE6, if fieldset background-color is set, fieldset is rendered poorly */
+
     -moz-border-radius: 5px;
     -moz-border-top-colors: ThreeDLightShadow ThreeDHighlight;
     -moz-border-right-colors: ThreeDDarkShadow ThreeDShadow;
     -moz-border-bottom-colors: ThreeDDarkShadow ThreeDShadow;
-    -moz-border-left-colors: ThreeDLightShadow ThreeDHighlight;
+    -moz-border-left-colors: ThreeDLightShadow ThreeDHighlight;   
+}
+
+.pageEditorPaneContainerNotIE {
+    background-color: #d3d3d3;
+
+}
+.pageEditorPaneContainerIE {
+    /* background-color: #d3d3d3; */
+    /* if background-color is set, IE6 and IE7 will not render rounded corner border for fieldset node */
+    /*    the reason fieldset is used here is to make it possible to get rounded corners in IE */
 }
 
 .pageEditorDetailContainer {
-    padding: 0.35em 0.625em 0.75em 0.625em;
-    /*background-color: #eeeeee;*/
-    /*  ^^ set conditionally in code - in IE6, if fieldset background-color is set, fieldset is rendered poorly */
+    float: left;
+
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.pageEditorDetailContainerNotIE {
+    background-color: #eeeeee;
+
+}
+
+.pageEditorDetailContainerIE {
+    /* background-color: #eeeeee; */
+    /* if background-color is set, IE6 and IE7 will not render rounded corner border for fieldset node */
+    /*    the reason fieldset is used here is to make it possible to get rounded corners in IE */
+}
+
+.layoutEdgeTop {
+    clear: both;
+    height: 30px;
+
+    display: none;
+}
+
+.layoutEdgeBottom {
+    clear: both;
+    height: 30px;
+
+    display: none;
+}
+
+.ieLayoutBackgroundIFrame {
+    position: absolute;
+    display: none;
+
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+
+    z-index: -1;
+
+    filter: Alpha(Opacity="100");
+}
+
+
+.layoutEdgeTopTest {
+    width: 100%;
+    height: 20px;
+    display: block;
+
+    /*background-color: #d3d3d3;*/
+
     -moz-border-radius: 5px;
     -moz-border-top-colors: ThreeDLightShadow ThreeDHighlight;
     -moz-border-right-colors: ThreeDDarkShadow ThreeDShadow;
     -moz-border-bottom-colors: ThreeDDarkShadow ThreeDShadow;
     -moz-border-left-colors: ThreeDLightShadow ThreeDHighlight;
 
-    float: left;
-    margin-right: 10px;
-    margin-bottom: 10px;
+    border-bottom-color: #000;
+    border-bottom-style: groove;
+    border-bottom-width: 2px;
+    border-collapse: separate;
+    border-left-color: #000;
+    border-left-style: groove;
+    border-left-width: 2px;
+    border-right-color: #000;
+    border-right-style: groove;
+    border-right-width: 2px;
+    border-top-color: #000;
+    border-top-style: groove;
+    border-top-width: 2px;
+
+    padding: 0.35em 0.62em 0.75em;
+    background-color: transparent;
+}
+
+.layoutEdgeBottomTest {
+    width: 100%;
+    height: 20px;
+    display: block;
+
+    /*background-color: #d3d3d3;*/
+
+    -moz-border-radius: 5px;
+    -moz-border-top-colors: ThreeDLightShadow ThreeDHighlight;
+    -moz-border-right-colors: ThreeDDarkShadow ThreeDShadow;
+    -moz-border-bottom-colors: ThreeDDarkShadow ThreeDShadow;
+    -moz-border-left-colors: ThreeDLightShadow ThreeDHighlight;
+
+    border-bottom-color: #000;
+    border-bottom-style: groove;
+    border-bottom-width: 2px;
+    border-collapse: separate;
+    border-left-color: #000;
+    border-left-style: groove;
+    border-left-width: 2px;
+    border-right-color: #000;
+    border-right-style: groove;
+    border-right-width: 2px;
+    border-top-color: #000;
+    border-top-style: groove;
+    border-top-width: 2px;
+
+    padding: 0.35em 0.62em 0.75em;
+    background-color: transparent;
 }
 
