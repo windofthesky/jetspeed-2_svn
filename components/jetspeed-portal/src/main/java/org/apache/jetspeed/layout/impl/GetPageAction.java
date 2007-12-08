@@ -21,6 +21,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
@@ -29,6 +33,7 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.DecorationValve;
+import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Fragment;
@@ -54,17 +59,17 @@ public class GetPageAction
     extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetPageAction.class);
+    protected Log log = LogFactory.getLog( GetPageAction.class );
     
     private PortletRegistry registry;
     private DecorationValve decorationValve;
     
-    public GetPageAction(String template, 
-            String errorTemplate, 
-            PageManager pageManager,
-            PortletActionSecurityBehavior securityBehavior,
-            PortletRegistry registry,
-            DecorationValve decorationValve)
+    public GetPageAction( String template, 
+                          String errorTemplate, 
+                          PageManager pageManager,
+                          PortletActionSecurityBehavior securityBehavior,
+                          PortletRegistry registry,
+                          DecorationValve decorationValve )
     {
         super(template, errorTemplate, pageManager, securityBehavior);
         this.registry = registry;
@@ -77,28 +82,27 @@ public class GetPageAction
         String status = "success";
         try
         {
-            resultMap.put(ACTION, "getpage");
-            if (false == checkAccess(requestContext, JetspeedActions.VIEW))
+            resultMap.put( ACTION, "getpage" );
+            if ( false == checkAccess( requestContext, JetspeedActions.VIEW ) )
             {
-                resultMap.put(REASON, "Insufficient access to view page");
+                resultMap.put( REASON, "Insufficient access to view page" );
                 success = false;
                 return success;
             }            
             
             // Run the Decoration valve to get actions
-            decorationValve.invoke(requestContext, null);
+            decorationValve.invoke( requestContext, null );
             
-            //String filter = getActionParameter(requestContext, FILTER);            
             Page page = requestContext.getPage();
-            String pageName = getActionParameter(requestContext, PAGE);
-            if (pageName != null)
+            String pageName = getActionParameter( requestContext, PAGE );
+            if ( pageName != null )
             {
-                page = retrievePage(requestContext, pageName);
+                page = retrievePage( requestContext, pageName );
             }
-            resultMap.put(STATUS, status);
-            resultMap.put(PAGE, page);
+            resultMap.put( STATUS, status );
+            resultMap.put( PAGE, page );
             
-            Theme theme = (Theme)requestContext.getAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE);
+            Theme theme = (Theme)requestContext.getAttribute( PortalReservedParameters.PAGE_THEME_ATTRIBUTE );
             String pageDecoratorName = null;
             if ( theme != null )
             {
@@ -111,30 +115,43 @@ public class GetPageAction
             if ( pageDecoratorName != null )
                 resultMap.put( DEFAULT_LAYOUT, pageDecoratorName );
                     
-            PortalSiteRequestContext siteRequestContext = (PortalSiteRequestContext)requestContext.getAttribute(ProfilerValveImpl.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY);
-            if (siteRequestContext == null)
+            PortalSiteRequestContext siteRequestContext = (PortalSiteRequestContext)requestContext.getAttribute( ProfilerValveImpl.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY );
+            if ( siteRequestContext == null )
             {
                 success = false;
-                resultMap.put(REASON, "Missing portal site request context from ProfilerValve");
+                resultMap.put( REASON, "Missing portal site request context from ProfilerValve" );
                 return success;
             }
             
-            resultMap.put(PROFILED_PATH, siteRequestContext.getPage().getPath() );  // requestContext.getPath());
-            putSecurityInformation(resultMap, page);                        
-            String fragments = getActionParameter(requestContext, FRAGMENTS);
-            if (fragments == null)
+            String profiledPath = siteRequestContext.getPage().getPath();
+            resultMap.put( PROFILED_PATH, profiledPath );
+            putSecurityInformation( resultMap, page );
+     
+            PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute( PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE );
+            Boolean userIsAnonymous = Boolean.TRUE;
+            if ( pageActionAccess != null )
+            	userIsAnonymous = new Boolean( pageActionAccess.isAnonymous() );
+            resultMap.put( USER_IS_ANONYMOUS, userIsAnonymous.toString() );
+     
+            Boolean isPageQualifiedForCreateNewPageOnEdit = Boolean.FALSE;
+            if ( ! userIsAnonymous.booleanValue() )
+            	isPageQualifiedForCreateNewPageOnEdit = new Boolean( isPageQualifiedForCreateNewPageOnEdit( requestContext ) );
+            resultMap.put( PAGE_QUALIFIED_CREATE_ON_EDIT, isPageQualifiedForCreateNewPageOnEdit.toString() );
+            
+            String fragments = getActionParameter( requestContext, FRAGMENTS );
+            if ( fragments == null )
             {
-                resultMap.put(FRAGMENTS, "true");
+                resultMap.put( FRAGMENTS, "true" );
             }
             else
             {
-                if (fragments.equalsIgnoreCase("true"))
+                if ( fragments.equalsIgnoreCase( "true" ) )
                 {
-                    resultMap.put(FRAGMENTS, "true");
+                    resultMap.put( FRAGMENTS, "true" );
                 }
                 else
                 {
-                    resultMap.put(FRAGMENTS, "false");
+                    resultMap.put( FRAGMENTS, "false" );
                     return success;
                 }
             }
@@ -142,17 +159,17 @@ public class GetPageAction
             Map fragSizes = new HashMap();
             Map portletIcons = new HashMap();
             
-            String singleLayoutId = getActionParameter(requestContext, LAYOUTID);
+            String singleLayoutId = getActionParameter( requestContext, LAYOUTID );
             if ( singleLayoutId != null )
             {   // build page representation with single layout
                 Fragment currentLayoutFragment = page.getFragmentById( singleLayoutId );
                 if ( currentLayoutFragment == null )
                 {
-                    throw new Exception("layout id not found: " + singleLayoutId );
+                    throw new Exception( "layout id not found: " + singleLayoutId );
                 }
                 Fragment currentPortletFragment = null;
                 
-                String singlePortletId = getActionParameter(requestContext, PORTLETENTITY);
+                String singlePortletId = getActionParameter( requestContext, PORTLETENTITY );
                 if ( singlePortletId != null )
                 {
                     Iterator layoutChildIter = currentLayoutFragment.getFragments().iterator();
@@ -170,7 +187,7 @@ public class GetPageAction
                     }
                     if ( currentPortletFragment == null )
                     {
-                        throw new Exception("portlet id " + singlePortletId + " not found in layout " + singleLayoutId );
+                        throw new Exception( "portlet id " + singlePortletId + " not found in layout " + singleLayoutId );
                     }
                     resultMap.put( "portletsingleId", currentPortletFragment.getId() );
                 }
@@ -185,10 +202,10 @@ public class GetPageAction
             resultMap.put( SIZES, fragSizes );
             resultMap.put( "portletIcons", portletIcons );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
             // Log the exception
-            log.error("exception while getting page", e);
+            log.error( "exception while getting page", e );
 
             // Return a failure indicator
             success = false;
@@ -197,14 +214,14 @@ public class GetPageAction
         return success;
 	}
     
-    protected Page retrievePage(RequestContext requestContext, String pageName)
-    throws Exception
+    protected Page retrievePage( RequestContext requestContext, String pageName )
+        throws Exception
     {        
-        if (pageName == null)
+        if ( pageName == null )
         {
             pageName = "/";
         }
-        Page page = pageManager.getPage(pageName);
+        Page page = pageManager.getPage( pageName );
         return page;
     }        
     
@@ -215,56 +232,12 @@ public class GetPageAction
         {
             return;
         }
-    	if ( fragSizes != null && "layout".equals( frag.getType() ) )
+        
+    	if ( "layout".equals( frag.getType() ) )
     	{   // get layout fragment sizes
-    		String sizesVal = frag.getProperty( "sizes" );
-    		if ( sizesVal == null || sizesVal.length() == 0 )
-    		{
-    			String layoutName = frag.getName();
-    			if ( layoutName != null && layoutName.length() > 0 )
-    			{
-    				// logic below is copied from org.apache.jetspeed.portlets.MultiColumnPortlet
-    				PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName( layoutName );
-                    
-    				ParameterSet paramSet = portletDef.getInitParameterSet();
-    				Parameter sizesParam = paramSet.get( "sizes" );
-    				String sizesParamVal = ( sizesParam == null ) ? null : sizesParam.getValue();
-    				if ( sizesParamVal != null && sizesParamVal.length() > 0 )
-    				{
-    					fragSizes.put( frag.getId(), sizesParamVal );
-    					//log.info( "GetPageAction settings sizes for " + frag.getId() + " to " + sizesParamVal);
-    				}
-    				else
-    				{
-    					Parameter colsParam = paramSet.get( "columns" );
-    					String colsParamVal = ( colsParam == null ) ? null : colsParam.getValue();
-    					if ( colsParamVal != null && colsParamVal.length() > 0 )
-    					{
-    						int cols = 0;
-    						try
-    						{
-    							cols = Integer.parseInt( colsParamVal );
-    						}
-    						catch ( NumberFormatException ex )
-    						{
-    						}
-    						if ( cols < 1 )
-    						{
-    							cols = 2;
-    						}
-    						switch (cols)
-    			            {
-    			            	case 1: sizesParamVal = "100%"; break;
-    			            	case 2: sizesParamVal = "50%,50%"; break;
-    			            	case 3: sizesParamVal = "34%,33%,33%"; break;
-    			            	default: sizesParamVal = "50%,50%"; break;
-    			            }
-    						fragSizes.put( frag.getId(), sizesParamVal );
-    						//log.info( "GetPageAction defaulting sizes for " + frag.getId() + " to " + sizesParamVal);
-    					}
-    				}
-    			}
-    		}
+    		if ( fragSizes != null )
+    			PortletPlacementContextImpl.getColumnCountAndSizes( frag, registry, fragSizes );
+    		
     		List childFragments = frag.getFragments();
     		if ( childFragments != null )
     		{
@@ -300,5 +273,4 @@ public class GetPageAction
             }
         }
     }
-    
 }
