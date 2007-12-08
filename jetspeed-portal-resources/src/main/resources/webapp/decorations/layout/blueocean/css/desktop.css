@@ -17,12 +17,6 @@ limitations under the License.
 
 /*  begin jetspeed desktop settings  */
 
-DIV.portlet
-{
-    margin: 2px;    /* necessary to override margin settings from decorations/layout/css/standard-columns.css */
-                    /* needs to match margin setting for .dojoFloatingPaneClient */
-}
-
 .layout-blueocean #jetspeedPageControls {
     float: right;
     width: 100px;
@@ -104,7 +98,7 @@ DIV.portlet
     font-size: small;
 }
 
-.js-showloading-animation {
+.js-showloading-imgcontainer {
     padding-top: 4px;
 }
 
