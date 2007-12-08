@@ -15,10 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.layoutEditPane { position: relative; width: 100% }  
+.layoutEditPane { position: relative; width: 100%; visibility: hidden; }  
 /*   ^^^ width: 100% is need to avoid IE auto-containing bug: http://www.satzansatz.de/cssd/rpfloat.html */
-
-.layoutEditPane .container{ }
+/*   ^^^ do not change visibility - makes the pane appear before it is positioned correctly */
 
 .layoutEditPane label,
 .layoutEditPane input,
@@ -34,6 +33,8 @@ limitations under the License.
 
 .layoutEditPane .detail .layoutNameContainer{ width: 270px; float:left; vertical-align: middle; margin-right: 20px; margin-bottom: 10px }
 .layoutEditPane .detail .layoutName { font-size: xx-small; width: 100% }
+
+.layoutEditPane .detail .buttonGroup { margin-left: 12px; margin-right: 0px; margin-top: 15px }
 
 .layoutEditPane .detail .buttonContainerLeft { float: left; clear: both }
 .layoutEditPane .detail .buttonContainerLeft .dojoButton { float: left; margin-right: 5px }
