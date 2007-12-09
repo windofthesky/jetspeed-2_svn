@@ -59,6 +59,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 public class PortletApplicationManager implements PortletApplicationManagement
 {
     private static int DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL = 10*1000; // 10 seconds
+    private static int DEFAULT_MAX_RETRIED_STARTS = 10; // 10 times retry PA
     private static final Log    log = LogFactory.getLog("deployment");
 
     protected PortletEntityAccessComponent entityAccess;
@@ -71,6 +72,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected boolean               autoCreateRoles;
     protected List                  permissionRoles;
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
+    /**
+     * holds the max number of retries in case of unsuccessful PA start
+     * this addresses possible startup errors in clustered environments
+     */
+    protected int  maxRetriedStarts = DEFAULT_MAX_RETRIED_STARTS;
     protected DescriptorChangeMonitor monitor;
     protected boolean started;
     protected String appRoot;
@@ -103,7 +109,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             try
             {
                 monitor = new DescriptorChangeMonitor(Thread.currentThread().getThreadGroup(),
-                                                "PortletApplicationManager Descriptor Change Monitor Thread", this, descriptorChangeMonitorInterval);
+                                                "PortletApplicationManager Descriptor Change Monitor Thread", this, descriptorChangeMonitorInterval, maxRetriedStarts);
 
                 monitor.setContextClassLoader(getClass().getClassLoader());
                 monitor.start();
@@ -411,7 +417,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 				}
 				catch (Exception re)
 				{
-					log.error("Failed to rollback registration of portlet application" + paName, re);
+					log.error("Failed to rollback registration of portlet application " + paName, re);
 				}
 			}
 
@@ -430,11 +436,25 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	        ClassLoader paClassLoader, int paType, long checksum)
 	throws RegistryException
 	{
+        boolean register = true;
+        boolean monitored = false;
+        DescriptorChangeMonitor changeMonitor = this.monitor;
+        if (changeMonitor != null)
+        {
+            monitored = changeMonitor.isMonitored(contextName);
+        }
+        if (log.isDebugEnabled())
+        {
+            log.debug("Is portlet application " + contextName + " monitored? -> " + monitored);
+        }
         PortletApplicationWar paWar = null;
 		try
 		{
-            boolean register = true;
-            boolean monitored = checksum != 0;
+            if (log.isDebugEnabled())
+            {
+                log.debug("Try to start portlet application " + contextName + ".");
+            }
+            // create PA  from war (file) structure
             // paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName, checksum);
             paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum);
             try
@@ -443,7 +463,13 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 {
                     paClassLoader = paWar.createClassloader(getClass().getClassLoader());
                 }                
+                // create checksum from PA descriptors
                 checksum = paWar.getPortletApplicationChecksum();                
+                
+                if (log.isDebugEnabled())
+                {
+                    log.debug("New checksum for portlet application " + contextName + " is " + checksum);
+                }
             }
             catch (IOException e)
             {
@@ -457,18 +483,26 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 register = false;
             }
 
+			// try to get the PA from database by context name
 			MutablePortletApplication pa = registry.getPortletApplication(contextName);
 
             if (pa != null)
             {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Portlet Application " + contextName + " found in registry.");
+            	}
                 if ( pa.getApplicationType() != paType )
                 {
                     throw new RegistryException("Cannot start portlet application "+contextName+": as Application Types don't match: " + pa.getApplicationType() + " != " + paType);
                 }
-                DescriptorChangeMonitor changeMonitor = this.monitor;
                 if (!monitored && changeMonitor != null)
                 {
                     changeMonitor.remove(contextName);
+                }
+                if (log.isDebugEnabled())
+                {
+                    log.debug("unregistering portlet application " + contextName + "...");
                 }
                 portletFactory.unregisterPortletApplication(pa);                        
             }
@@ -480,16 +514,30 @@ public class PortletApplicationManager implements PortletApplicationManagement
             		// new
 	                try
 	                {
+	                    if (log.isDebugEnabled())
+                        {
+	                        log.debug("Register new portlet application " + contextName + ".");
+                        }
 	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
 	                }
 	                catch (Exception e)
 	                {
-	                    // don't register the pa
-	                    register = false;
+	                    String msg = "Error register new portlet application " + contextName + ".";
+	                	
+	                    if (log.isDebugEnabled())
+	                	{
+	                	    log.debug(msg);
+	                	}
+                    	throw new RegistryException(msg);
+	                    
 	                }
             	}
             	else
             	{
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Re-register existing portlet application " + contextName + ".");
+                    }
             		int status = nodeManager.checkNode(new Long(pa.getId().toString()), pa.getName());
         			boolean reregister = false;
         			boolean deploy = false;
@@ -497,6 +545,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
         			{
         				case  NodeManager.NODE_NEW:
         				{
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Node for Portlet application " + contextName + " is NEW.");
+                            }
             				//only reason is that the file got somehow corrupted 
             				// so we really do not know what is going on here...
             				// the best chance at this point is to reregister (which might be the absolute wrong choice)
@@ -504,16 +556,20 @@ public class PortletApplicationManager implements PortletApplicationManagement
             				reregister = true;
         					if (checksum != pa.getChecksum())
         					{
-                				log.warn("The provided portlet application " + pa.getName() + " is a different version than in the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will redeploy (also to the database)");
+        					    log.warn("The provided portlet application " + pa.getName() + " is a different version than in the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will redeploy (also to the database)");
     							deploy = true;
         					}
         					break;
         				}
         				case  NodeManager.NODE_SAVED:
         				{
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Node for Portlet application " + contextName + " is SAVED.");
+                            }
         					if (checksum != pa.getChecksum())
                     		{	
-                				log.warn("The provided portlet application " + pa.getName() + " is a different version than in the local node info and the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will reregister AND redeploy (also to the database)");
+        					    log.warn("The provided portlet application " + pa.getName() + " is a different version than in the local node info and the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will reregister AND redeploy (also to the database)");
         						//database and local node info are in synch, so we assume that this is a brand new
         						// war .... let's deploy
         						reregister = true;
@@ -523,19 +579,39 @@ public class PortletApplicationManager implements PortletApplicationManagement
         				}
         				case  NodeManager.NODE_OUTDATED:
         				{
+                            // new version in database, maybe changed by a different cluster node
+        				    if (log.isDebugEnabled())
+        				    {
+        				        log.debug("Node for Portlet application " + contextName + " is OUTDATED (local PA.id < DB PA.id).");
+        				    }
             				//database version is older (determined by id) than the database 
         					//let's deploy and reregister
-        					if (checksum != pa.getChecksum())
-                				log.error("The portlet application " + pa.getName() + " provided for the upgrade IS WRONG. The database checksum= " + pa.getChecksum() + ", but the local=" + checksum + "....THIS NEEDS TO BE CORRECTED");
-       						reregister = true;
-        					break;
+        				    if (checksum != pa.getChecksum())
+        				    {
+        					    log.error("The portlet application " + pa.getName() + " provided for the upgrade IS WRONG. The database checksum= " + pa.getChecksum() + ", but the local=" + checksum + "....THIS NEEDS TO BE CORRECTED");
+        					    // if the checksums do not match make sure the database is updated with the new PA from file system
+        					    // I've observed "unavailable PA" in clustered env for the cluster node that reported OUTDATED state
+        					    deploy = true;
+        					}
+        				    reregister = true;
+        				    break;
         				}
         			}
         			if (deploy)
+        			{
+        			    if (log.isDebugEnabled())
+        			    {
+        			        log.debug("Register (deploy=true) Portlet application " + contextName + " in database.");
+                        }
 	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
+        			}
         			else
         				if (reregister)
         				{
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Re-Register (reregister=true) Portlet application " + contextName + ".");
+                            }
         					// add to search engine result
         					this.updateSearchEngine(true, pa);
         					this.updateSearchEngine(false, pa);
@@ -546,7 +622,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         						nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
         					} catch (Exception e)
         					{
-        						log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
+        					    log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
         					}
         				}
         				
@@ -555,15 +631,41 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
             if (register)
             {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Register Portlet application " + contextName + " in portlet factory.");
+                }
                 portletFactory.registerPortletApplication(pa, paClassLoader);
             }
             
-            DescriptorChangeMonitor changeMonitor = this.monitor;
             if (!monitored && changeMonitor != null)
             {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Add change monitor for application " + contextName + " with checksum " + checksum + ".");
+                }
                 changeMonitor.monitor(contextName, contextPath, paClassLoader, paType, warStruct.getRootDirectory(), checksum);
             }
 		}
+        catch (Exception e)
+        {
+            String msg = "Error starting portlet application " + contextName;
+            
+            log.error(msg, e);
+            // monitor PA for changes
+            // do not add monitor if a monitor already exists
+            if (!monitored && changeMonitor != null)
+            {
+                // this code should be hit only during startup process
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Add change monitor for application " + contextName + " and set unsuccessful starts to 1.");
+                }
+                changeMonitor.monitor(contextName, contextPath, paClassLoader, paType, warStruct.getRootDirectory(), checksum);
+                changeMonitor.get(contextName).setUnsuccessfulStarts(1);
+            }
+            throw new RegistryException(msg);
+        }
 		finally
 		{
 			if (paWar != null)
@@ -574,7 +676,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 				}
 				catch (IOException e)
 				{
-					log.error("Failed to close PA WAR for " + contextName, e);
+				    log.error("Failed to close PA WAR for " + contextName, e);
 				}
 			}
 		}
@@ -617,13 +719,13 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				searchEngine.remove(pa);
 				searchEngine.remove(pa.getPortletDefinitions());
-					log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
+				log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
 			}
 			else
 			{
-					searchEngine.add(pa);
-					searchEngine.add(pa.getPortletDefinitions());
-					log.info("Registered the portlet application in the search engine... " + pa.getName());
+			    searchEngine.add(pa);
+                searchEngine.add(pa.getPortletDefinitions());
+                log.info("Registered the portlet application in the search engine... " + pa.getName());
 			}
 		}
 		
@@ -749,6 +851,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
             private long extendedDescriptorModificationTime;
             private long checksum;
             private boolean obsolete;
+            
+            /**
+             * holds the number of unsuccessful starts of the monitored PA
+             */
+            private int unsuccessfulStarts;
                         
             /*
              * Constructor only used for looking up the matching registered one in monitorsInfo
@@ -813,9 +920,19 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         descriptorModificationTime = newDescriptorModificationTime;
                         extendedDescriptorModificationTime = newExtendedDescriptorModificationTime;
                         long newChecksum = MultiFileChecksumHelper.getChecksum(descriptors);
+                    	if (log.isDebugEnabled())
+                        {
+                    		log.debug("checksum check for descriptors for application " + contextName + ": old (" + checksum + ") new (" + newChecksum + ").");
+                    	}
                         if ( checksum != newChecksum )
                         {
+                        	if (log.isDebugEnabled())
+                            {
+                        		log.debug("portlet descriptors for application " + contextName + " have changed.");
+                        	}
                             checksum = newChecksum;
+                            // reset this to restart unsuccessful PA start handling for evers PA descriptor change
+                            unsuccessfulStarts = 0;
                             return true;
                         }
                     }
@@ -833,6 +950,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 return obsolete;
             }
 
+            public int getUnsuccessfulStarts()
+            {
+                return unsuccessfulStarts;
+            }
+            
+            public void setUnsuccessfulStarts(int unsuccessfulStarts)
+            {
+                this.unsuccessfulStarts = unsuccessfulStarts;
+            }
+            
             public String getContextPath()
             {
                 return contextPath;
@@ -843,8 +970,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
         private long interval;
         private boolean started = true;
         private ArrayList monitorInfos;
+        private int maxRetriedStarts;
 
-        public DescriptorChangeMonitor(ThreadGroup group, String name, PortletApplicationManager pam, long interval)
+        public DescriptorChangeMonitor(ThreadGroup group, String name, PortletApplicationManager pam, long interval, int maxretriedStarts)
         {
             super(group, name);
             this.pam = pam;
@@ -852,6 +980,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             monitorInfos = new ArrayList();
             setPriority(MIN_PRIORITY);
             setDaemon(true);
+            this.maxRetriedStarts = maxretriedStarts;
         }
         
         public void run()
@@ -906,6 +1035,30 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
             }
         }
+
+        public synchronized DescriptorChangeMonitorInfo get(String contextName)
+        {
+            DescriptorChangeMonitorInfo monitorInfo;
+            for ( int i = monitorInfos.size()-1; i > -1; i-- )
+            {
+                monitorInfo = (DescriptorChangeMonitorInfo)monitorInfos.get(i);
+                if (contextName.equals(monitorInfo.getContextName()))
+                {
+                    return monitorInfo;
+                }
+            }
+            return null;
+        }
+        
+        public boolean isMonitored(String contextName)
+        {
+        	DescriptorChangeMonitorInfo monitorInfo = this.get(contextName);
+        	if (monitorInfo != null && !monitorInfo.isObsolete())
+            {
+        		return true;
+        	}
+            return false;
+        }
         
         private void checkDescriptorChanges()
         {
@@ -914,6 +1067,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
             {
                 size = monitorInfos.size();
             }
+
+        	if (log.isDebugEnabled())
+            {
+        		log.debug("check for portlet application descriptor changes.");
+        	}
+            
             for (int i = size-1; i > -1; i--)
             {
                 DescriptorChangeMonitorInfo monitorInfo;
@@ -930,16 +1089,46 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         {
                             try
                             {
-                                if (monitorInfo.isChanged())
+                                int unsuccessfulStarts = monitorInfo.getUnsuccessfulStarts();
+                                // try to restart PA if the PA-descriptors have change
+                                // OR (if we encountered an exception while starting the PA)
+                                // keep on trying to restart PA until maxRetriedStarts is reached
+                                // This ensures we finally startup in a clustered enviroment, where parallel registration
+                                // of PAs could lead to contraint violation eceptions in DB.
+                                // see https://issues.apache.org/jira/browse/JS2-666
+                                // Note: monitorInfo.isChanged() will reset unsuccessfulStarts to 0 if a PA descriptor change 
+                                // has been detected (monitorInfo.isChanged() == true).
+                                if (monitorInfo.isChanged() || (unsuccessfulStarts > 0 && unsuccessfulStarts <= maxRetriedStarts))
                                 {
                                     try
                                     {
                                         pam.startPA(monitorInfo.getContextName(), monitorInfo.getContextPath(), new DirectoryHelper(monitorInfo.getPADir()),
                                                 monitorInfo.getPAClassLoader(), monitorInfo.getPortletApplicationType(), monitorInfo.getChecksum());
+                                        // great! we have a successful start. set unsuccessful starts to 0
+                                        monitorInfo.setUnsuccessfulStarts(0);
                                     }
                                     catch (Exception e)
                                     {
-                                        log.error("Failed to restart PortletApplication "+monitorInfo.getContextName(),e);
+                                        if (monitorInfo.isChanged())
+                                        {
+                                            log.error("Failed to restart PortletApplication "+monitorInfo.getContextName(),e);
+                                        }
+                                        else if (log.isWarnEnabled())
+                                        {
+                                            log.warn("Failed to restart PortletApplication "+monitorInfo.getContextName(),e);
+                                        }
+                                        // we encountered an error while starting the PA
+                                        // this could result from clustered environments problems (see above)
+                                        // increase unsuccessfulStarts until the maxRetriedStarts is reached
+                                        monitorInfo.setUnsuccessfulStarts(unsuccessfulStarts + 1);
+                                        if (log.isDebugEnabled())
+                                        {
+                                            log.debug("Number of unsuccessful PA starts is " + monitorInfo.getUnsuccessfulStarts() + ".");
+                                        }
+                                        if (monitorInfo.getUnsuccessfulStarts() > maxRetriedStarts)
+                                        {
+                                            log.error("Max number of retries (" + maxRetriedStarts +") reached. Ignoring Monitor for " + monitorInfo.getContextName());
+                                        }
                                     }
                                 }
                             }
@@ -952,8 +1141,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
                     }
                 }
             }
-        }        
+        }
     }
 
+    public void setMaxRetriedStarts(int maxRetriedStarts)
+    {
+        this.maxRetriedStarts = maxRetriedStarts;
+    }
 
+    public int getMaxRetriedStarts()
+    {
+        return maxRetriedStarts;
+    }    
 }
