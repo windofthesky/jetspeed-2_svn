@@ -31,6 +31,17 @@ public interface PortletApplicationManagement
   public static final String LOCAL_PA_PREFIX = "jetspeed-";
   
   public boolean isStarted();
+  /**
+   * Allows deployment to override the default of using the <code>contextName</code> as the
+   * context path.
+   * 
+   * @param contextName
+   * @param contextPath
+   * @param warStruct
+   * @param paClassLoader
+   * @throws RegistryException
+   */
+  void startPortletApplication(String contextName, String contextPath, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;
   void startPortletApplication(String contextName, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;
   void stopPortletApplication(String contextName) throws RegistryException;
   void startLocalPortletApplication(String contextName, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;

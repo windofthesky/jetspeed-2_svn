@@ -59,6 +59,7 @@ public class JetspeedContainerServlet extends HttpServlet
     private boolean started = false;
     private Timer   startTimer = null;
     private PortalSessionsManager psm;
+    private String contextPath;
 
     // -------------------------------------------------------------------
     // I N I T I A L I Z A T I O N
@@ -82,14 +83,26 @@ public class JetspeedContainerServlet extends HttpServlet
 
             started = false;
             startTimer = null;            
-            contextName = config.getInitParameter("contextName");
+            contextName = config.getInitParameter("contextName");            
+            contextPath = config.getInitParameter("contextPath");
 
             if (null == contextName || contextName.length() == 0)
             {
                 contextName = null; // just to make sure for the destroy method
                 
                 throw new ServletException(JCS + "Portlet Application contextName not supplied in Init Parameters.");
-            }            
+            }
+            
+            if (null == contextPath || contextPath.length() == 0)
+            {
+                contextPath = "/"+contextName;
+            }
+            else if(!contextPath.startsWith("/"))
+            {
+                throw new ServletException(JCS + "Portlet Application contextPath must start with a  \"/\"."); 
+            }
+            
+            
             String paDir = context.getRealPath("/");
             if ( paDir == null )
                 {
@@ -141,7 +154,7 @@ public class JetspeedContainerServlet extends HttpServlet
                       {
                         if (startTimer != null)
                         {
-                          if (attemptStart(context, contextName, paDir, paClassLoader)) {
+                          if (attemptStart(context, contextName, contextPath, paDir, paClassLoader)) {
                             startTimer.cancel();
                             startTimer = null;
                         } else {
@@ -156,7 +169,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 10000);
     }
 
-    private boolean attemptStart(ServletContext context, String contextPath, String paDir, ClassLoader paClassLoader) 
+    private boolean attemptStart(ServletContext context, String contextName, String contextPath, String paDir, ClassLoader paClassLoader) 
     {
         try
         {
@@ -170,7 +183,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 if (pam != null && pam.isStarted())
                 {
                     DirectoryHelper paDirHelper = new DirectoryHelper(new File(paDir));
-                    pam.startPortletApplication(contextPath, paDirHelper, paClassLoader);
+                    pam.startPortletApplication(contextName, contextPath, paDirHelper, paClassLoader);
                     started = true;
                     psm = (PortalSessionsManager)services.getService(PortalSessionsManager.SERVICE_NAME);
 
