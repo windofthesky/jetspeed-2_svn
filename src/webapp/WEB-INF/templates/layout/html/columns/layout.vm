@@ -186,7 +186,7 @@ limitations under the License.
             <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
         	    #end
           </select>
-          <input type="submit" name="jsSubmitTheme" value="$messages.getString("portal.page.editing.changethemeall")"/>
+          <input type="submit" name="jsChangeThemeAll" value="$messages.getString("portal.page.editing.changethemeall")"/>
         </div>
         #end	   
         #if($allowAddLayout||$allowChangeLayout)
