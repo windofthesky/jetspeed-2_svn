@@ -64,6 +64,12 @@ public class UserManagerImpl implements UserManager
     private String anonymousUser = "guest";
     private User guest = null;
     
+    /** 
+     * Flag whether the principals's user group matches the user group to which the role has been mapped. (See SRV.12.4) 
+     * If this flag is set to true, roles can be inherited to users via groups.
+     */
+    private boolean rolesInheritableViaGroups = true;
+    
     /**
      * @param securityProvider
      *            The security provider.
@@ -154,7 +160,12 @@ public class UserManagerImpl implements UserManager
     {
         return this.anonymousUser;
     }
-
+    
+    public void setRolesInheritableViaGroups(boolean rolesInheritableViaGroups)
+    {
+        this.rolesInheritableViaGroups = rolesInheritableViaGroups;
+    }
+    
     /**
      * @see org.apache.jetspeed.security.UserManager#authenticate(java.lang.String,
      *      java.lang.String)
@@ -392,7 +403,18 @@ public class UserManagerImpl implements UserManager
 
         principals.add(userPrincipal);
         principals.addAll(securityMappingHandler.getRolePrincipals(username));
-        principals.addAll(securityMappingHandler.getGroupPrincipals(username));
+        Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
+        principals.addAll(groupPrincipals);
+        
+        if (this.rolesInheritableViaGroups)
+        {
+            for (Iterator it = groupPrincipals.iterator(); it.hasNext(); )
+            {
+                Principal groupPrincipal = (Principal) it.next();
+                Set rolePrincipalsInGroup = securityMappingHandler.getRolePrincipalsInGroup(groupPrincipal.getName());
+                principals.addAll(rolePrincipalsInGroup);
+            }
+        }
 
         Subject subject = null;
         if (getAnonymousUser().equals(username))

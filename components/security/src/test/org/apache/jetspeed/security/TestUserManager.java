@@ -19,7 +19,10 @@ package org.apache.jetspeed.security;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
+import java.security.Principal;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
@@ -144,6 +147,76 @@ public class TestUserManager extends AbstractSecurityTestcase
         // Test the User Preferences.
         Preferences preferences = user.getPreferences();
         assertEquals("expected user node == /user/test", "/user/test", preferences.absolutePath());
+        
+        // Test if roles are inheritable to a user via groups
+        try
+        {
+            // If user 'inheritedUser' belongs to group 'inheritingGroup' and group 'group' has role 'assignedRole', then
+            // the role 'assignedRole' can be inherited to the user 'inheritedUser' via group 'inheritingGroup'.
+            
+            ums.addUser("inheritedUser", "password");
+            gms.addGroup("inheritingGroup");
+            gms.addUserToGroup("inheritedUser", "inheritingGroup");
+            rms.addRole("assignedRole");
+            rms.addRoleToGroup("assignedRole", "inheritingGroup");
+            User testUser = ums.getUser("inheritedUser");
+
+            List principalNames = new ArrayList();
+            for (Iterator it = testUser.getSubject().getPrincipals().iterator(); it.hasNext(); )
+            {
+                Principal p = (Principal) it.next();
+                principalNames.add(p.getName());
+            }
+            
+            assertTrue("user is expected to have a user principal named inheritedUser.", principalNames.contains("inheritedUser"));
+            assertTrue("user is expected to have a group principal named inheritingGroup.", principalNames.contains("inheritingGroup"));
+            assertTrue("user is expected to have a role principal named assignedRole which is inherited via the group.", principalNames.contains("assignedRole"));
+            
+            // However, roles from role manager should not contain the role 'assignedRole'
+            // because the role 'assignedRole' is not directly assigned to user 'inheritedUser'.
+            // For example, the Users Admin portlet uses RoleManager to retrieve roles directly assigned to a user.
+            
+            List userRoleNames = new ArrayList();
+            for (Iterator it = rms.getRolesForUser("inheritedUser").iterator(); it.hasNext(); )
+            {
+                Role role = (Role) it.next();
+                userRoleNames.add(role.getPrincipal().getName());
+            }
+            
+            assertFalse("role 'assignedRole' is not expected to be retrieved because the role 'assignedRole' is not directly assigned to user 'inheritedUser'.", userRoleNames.contains("assignedRole"));
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("failed to test 'rolesInheritableViaGroups' mode in testGetUser(), " + sex, false);
+        }
+        finally
+        {
+            // Cleanup test.
+            try
+            {
+                rms.removeRole("assignedRole");
+            }
+            catch (SecurityException sex)
+            {
+            }
+            
+            try
+            {
+                gms.removeGroup("inheritingGroup");
+            }
+            catch (SecurityException sex)
+            {
+            }
+            
+            try
+            {
+                ums.removeUser("inheritedUser");
+            }
+            catch (SecurityException sex)
+            {
+            }
+        }
+
     }
 
     /**
