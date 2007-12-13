@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<portlet-app id="jetspeed" version="1.0">
+<portlet-app version="1.0">
 
   <portlet id="SimpleLayoutPortlet">
     <description>The SimpleLayoutPortlet requires a ViewPage layout template set through the portlet preferences
