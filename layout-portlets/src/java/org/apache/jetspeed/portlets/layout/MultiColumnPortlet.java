@@ -926,68 +926,69 @@ public class MultiColumnPortlet extends LayoutPortlet
                     }
                     return;
                 }
-                // evlach
-                String decorators = request.getParameter("decorators");                
-                // change style for all pages in user folder 
-                String jsChangeUserPagesTheme = request.getParameter("jsChangeUserPagesTheme");
-                if ( jsChangeUserPagesTheme != null )
-                {
-                   String user_pages_theme = request.getParameter("user_pages_theme");
-                   try
-                    {
-                       Folder f = pageManager.getUserFolder(request.getRemoteUser());
-                       applyStyle(f,user_pages_theme,Fragment.LAYOUT);
-                       decorators=null;
-                    }
-                    catch (Exception e)
-                    {
-                       throw new PortletException("Unable to update folder for defUserLayoutDeco decorator: "+e.getMessage(), e);
-                    }
-                }                
-                String jsChangeUserPortletsDeco = request.getParameter("jsChangeUserPortletsDeco");
-                if ( jsChangeUserPortletsDeco != null )
-                {                  
-                   String user_portlets_deco = request.getParameter("user_portlets_deco");
-                   try
-                    {
-                       Folder f = pageManager.getUserFolder(request.getRemoteUser());
-                       applyStyle(f,user_portlets_deco,Fragment.PORTLET);
-                        decorators = null; //do insert next if
-                    }
-                   catch (Exception e)
-                    {
-                        throw new PortletException("Unable to update folder for defUserPortletDeco decorator: "+e.getMessage(), e);
-                    }
-                }                                
-                
-                if ( decorators != null && decorators.length() > 1)
-                {
-                    Iterator fragmentsIter = requestPage.getRootFragment().getFragments().iterator();
-                    while(fragmentsIter.hasNext())
-                    {
-                        Fragment fragment = (Fragment) fragmentsIter.next();
-                        if ( fragment == null )
-                        {
-                            // ignore no longer consistent page definition
-                            return;
-                        }
-                        
-                        if (decorators.trim().length() == 0)
-                            fragment.setDecorator(null);
-                        else
-                            fragment.setDecorator(decorators);
-                    }
-                    try
-                    {
-                        pageManager.updatePage(requestPage);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage(), e);
-                    }
-                    return;
-                }                
             }
+            
+            // change style for all pages in user folder 
+            String jsChangeUserPagesTheme = request.getParameter("jsChangeUserPagesTheme");
+            if ( jsChangeUserPagesTheme != null )
+            {
+               String user_pages_theme = request.getParameter("user_pages_theme");
+               try
+                {
+                   Folder f = pageManager.getUserFolder(request.getRemoteUser());
+                   applyStyle(f,user_pages_theme,Fragment.LAYOUT);
+                }
+                catch (Exception e)
+                {
+                   throw new PortletException("Unable to update folder for defUserLayoutDeco decorator: "+e.getMessage(), e);
+                }
+                return;
+            }                
+            String jsChangeUserPortletsDeco = request.getParameter("jsChangeUserPortletsDeco");
+            if ( jsChangeUserPortletsDeco != null )
+            {                  
+               String user_portlets_deco = request.getParameter("user_portlets_deco");
+               try
+                {
+                   Folder f = pageManager.getUserFolder(request.getRemoteUser());
+                   applyStyle(f,user_portlets_deco,Fragment.PORTLET);
+                }
+               catch (Exception e)
+                {
+                    throw new PortletException("Unable to update folder for defUserPortletDeco decorator: "+e.getMessage(), e);
+                }
+               return;
+            }                                
+            
+            String jsChangeThemeAll = request.getParameter("jsChangeThemeAll");
+            if (jsChangeThemeAll != null)
+            {
+                String decorators = request.getParameter("decorators");                
+                Iterator fragmentsIter = requestPage.getRootFragment().getFragments().iterator();
+                while(fragmentsIter.hasNext())
+                {
+                    Fragment fragment = (Fragment) fragmentsIter.next();
+                    if ( fragment == null )
+                    {
+                        // ignore no longer consistent page definition
+                        return;
+                    }
+                    
+                    if (decorators.trim().length() == 0)
+                        fragment.setDecorator(null);
+                    else
+                        fragment.setDecorator(decorators);
+                }
+                try
+                {
+                    pageManager.updatePage(requestPage);
+                }
+                catch (Exception e)
+                {
+                    throw new PortletException("Unable to update page for fragment decorator: "+e.getMessage(), e);
+                }
+                return;
+            }                
             
             String portlets = request.getParameter("portlets");
             if ( portlets != null && portlets.length() > 0 )
