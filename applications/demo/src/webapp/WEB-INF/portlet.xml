@@ -1039,7 +1039,10 @@ limitations under the License.
         <description>Hosts a Flash or Flex application inside a portlet. Go to edit mode to configure your Flash URL source.</description>
         <portlet-name>FlashPortlet</portlet-name>
         <display-name>Flash or Flex</display-name>
-        <portlet-class>org.apache.portals.applications.desktop.FlashPortlet</portlet-class>
+        <portlet-class>org.apache.portals.gems.flash.FlashPortlet</portlet-class>
+
+        <!-- using default templates from gems jar for ViewPage and EditPage - see org/apache/portals/gems/flash/templates/ -->
+        <!--
         <init-param>
             <name>ViewPage</name>
             <value>/WEB-INF/view/flash-demo.vm</value>
@@ -1048,10 +1051,33 @@ limitations under the License.
             <name>EditPage</name>
             <value>/WEB-INF/view/edit-prefs.vm</value>
         </init-param>
+        -->
         <init-param>
             <name>portlet-icon</name>
             <value>applications-multimedia.png</value>
-        </init-param>                                                        
+        </init-param>
+
+        <!-- use semicolon to separate each pair and equals to separate name and value for object-params
+             (url-encoding should not be used except for non-delimiter occurrences of ';' and '=' chars) -->
+        <init-param>
+            <name>object-params</name>
+            <value></value>
+        </init-param>
+
+        <!-- use semicolon to separate each pair and equals to separate name and value for object-attributes
+             (url-encoding should not be used except for non-delimiter occurrences of ';' and '=' chars) -->
+        <init-param>
+            <name>object-attributes</name>
+            <value></value>
+        </init-param>
+
+        <!-- use semicolon to separate each pair and equals to separate name and value for flashvars
+             (url-encoding should not be used except for non-delimiter occurrences of ';' and '=' chars) -->
+        <init-param>
+            <name>flashvars</name>
+            <value></value>
+        </init-param>
+
         <expiration-cache>120</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
