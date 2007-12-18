@@ -237,12 +237,12 @@ function setDestination(path,name)
 	createAddressBar(action);	
 	if (action == 'copy')
 	{	
-		dojo.widget.byId("copy.save").setDisabled(true);    		
+		btnSetDisabled( dojo.widget.byId("copy.save"), true );    		
 		foldersTable = document.getElementById('cfolderlist');   
 	}
 	else
 	{	
-		dojo.widget.byId("move.save").setDisabled(true);    		
+		btnSetDisabled( dojo.widget.byId("move.save"), true );    		
 		foldersTable = document.getElementById('mfolderlist');   
 	}
 	var folder_len = rootfolders.length;	
@@ -368,20 +368,26 @@ function getSelectionResult(domainObjects, folderList,pagesList,linksList)
 		alert(objectType+ " name " + name + " is already in use. Please chose another name.");
 		if (document.getElementById('action').value == 'copy')
 		{
-			dojo.widget.byId("copy.save").setDisabled(true);
+			btnSetDisabled( dojo.widget.byId("copy.save"), true );
 		}else{
-			dojo.widget.byId("move.save").setDisabled(true);
+			btnSetDisabled( dojo.widget.byId("move.save"), true );
 		}
 	}
 	else
 	{
 		if (document.getElementById('action').value == 'copy')
 		{
-			dojo.widget.byId("copy.save").setDisabled(false);
+			btnSetDisabled( dojo.widget.byId("copy.save"), false );
 		}else{
-			dojo.widget.byId("move.save").setDisabled(false);
+			btnSetDisabled( dojo.widget.byId("move.save"), false );
 		}
 	}
+}
+function btnSetDisabled( btnWidget, /* Boolean */ disabled )
+{
+    if ( ! btnWidget ) return;
+    if ( btnWidget.disabled != disabled ) // bug in widget if called multiple times with same value
+        btnWidget.setDisabled( disabled );
 }
 function getFoldersResult(domainObjects, folderList,pagesList,linksList)
 {
@@ -389,7 +395,7 @@ function getFoldersResult(domainObjects, folderList,pagesList,linksList)
 	links = linksList;
 	createAddressBar(document.getElementById("action").value);	
 	document.getElementById('destination').value = '';
-	dojo.widget.byId("copy.save").setDisabled(true);
+	btnSetDisabled( dojo.widget.byId("copy.save"), true );
     var folder_len = folderList.length
     var foldersTable;
 	if (document.getElementById("action").value =='copy')
@@ -459,13 +465,13 @@ function getFoldersResult(domainObjects, folderList,pagesList,linksList)
 function getSelectedFolders(folder)
 {
    document.getElementById('path').value = folder;
-   jetspeed.getFolders(folder,getSelectionResult);
+   jetspeed.site.getFolders(folder,getSelectionResult);
 }
 
 function getFolders(folder)
 {
    document.getElementById('path').value = folder; 
-   jetspeed.getFolders(folder,getFoldersResult);
+   jetspeed.site.getFolders(folder,getFoldersResult);
 }
 function getNewMetaPrototype()
 {
@@ -575,8 +581,8 @@ function editResource(node)
         var names = new Array("folder");
         var values = new Array(node.widgetId);
         ajaxInvoke("getfolder", names, values, new FolderHandler() );     
-        dojo.widget.byId( "saveFInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertFInfoButton" ).setDisabled(true);
+        btnSetDisabled( dojo.widget.byId( "saveFInfoButton" ), true );
+        btnSetDisabled( dojo.widget.byId( "revertFInfoButton" ), true );
         displayTabs( [ "infoTabFolder", "securityTab", "metaTab", "menusTab", "orderTab","import","export"] );
 		populateImport(node);		
     }
@@ -585,8 +591,8 @@ function editResource(node)
         var names = new Array("page", "fragments");
         var values = new Array(node.widgetId, "false");
         ajaxInvoke("getpage", names, values, new PageHandler() );     
-        dojo.widget.byId( "savePInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertPInfoButton" ).setDisabled(true);
+        btnSetDisabled( dojo.widget.byId( "savePInfoButton" ), true );
+        btnSetDisabled( dojo.widget.byId( "revertPInfoButton" ), true );
         displayTabs( [ "infoTabPage", "securityTab", "metaTab","export" ] );
     }
     else if ( node.object == "Link" )
@@ -594,8 +600,8 @@ function editResource(node)
         var names = new Array("link");
         var values = new Array(node.widgetId);
         ajaxInvoke("getlink", names, values, new LinkHandler() );         
-        dojo.widget.byId( "saveLInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertLInfoButton" ).setDisabled(true);        
+        btnSetDisabled( dojo.widget.byId( "saveLInfoButton" ), true );
+        btnSetDisabled( dojo.widget.byId( "revertLInfoButton" ), true );        
 		displayTabs( [ "infoTabLinks", "securityTab", "metaTab","export" ] );
     }
 	populateExport(node);
@@ -624,7 +630,7 @@ function populateExport(node)
 
 function validateNewField()
 {
-    dojo.widget.byId("res.save").setDisabled(disableNewSave());    
+    btnSetDisabled( dojo.widget.byId("res.save"), disableNewSave( ));    
 }
 function validateName(kind,name,action)
 {
@@ -657,10 +663,10 @@ function validateName(kind,name,action)
 	if(valid == false)
 	{
 		if (action =='copy'){
-			dojo.widget.byId("copy.save").setDisabled(true);
+			btnSetDisabled( dojo.widget.byId("copy.save"), true );
 			return true;
 		}else{
-			dojo.widget.byId("move.save").setDisabled(true);    		
+			btnSetDisabled( dojo.widget.byId("move.save"), true );    		
 			return  true;
 		}
 	}
@@ -694,10 +700,10 @@ function validateResourceName()
         if (isDupe(kind, name))
         {
              alert(kind + " name " + name + " is already in use. Please chose another name.");
-             dojo.widget.byId("res.save").setDisabled(true);    
+             btnSetDisabled( dojo.widget.byId("res.save"), true );    
         }
     }
-    dojo.widget.byId("res.save").setDisabled(disableNewSave());    
+    btnSetDisabled( dojo.widget.byId("res.save"), disableNewSave( ));    
 }
 function disableNewSave()
 {
@@ -802,7 +808,7 @@ function copyResource()
 	document.getElementById("c.name").innerHTML = node.title
 	document.getElementById("cType").value = node.object	
 	createpopUpTable('copy');
-    dojo.widget.byId( "CopyResourceDialog" ).show();	
+    jetspeed.widget.openDialog( dojo.widget.byId( "CopyResourceDialog" ) );
 }
 
 function copyAction()
@@ -882,7 +888,7 @@ function moveResource()
 	document.getElementById("mName").value = node.title.substring(0,node.title.lastIndexOf('.'));
 	document.getElementById("mType").value = node.object	
 	createpopUpTable('move');
-    dojo.widget.byId( "MoveResourceDialog" ).show();	
+    jetspeed.widget.openDialog( dojo.widget.byId( "MoveResourceDialog" ) );
 }
 
 function moveAction()
@@ -1079,30 +1085,57 @@ var ResourceAddHandler = function(parent, node)
   this.node = node;
   this.populate = function(data) 
   { 
-    // insert in sorted order
-    for(var i=0; i<parent.children.length; i++) 
+    var controller = dojo.widget.byId('treeController');
+    if ( parent.state != parent.loadStates.LOADED )
     {
-        var child = parent.children[i];
-        if (child.object == node.object)
+        controller.loadRemote( parent, true );
+        controller.expand( parent ) ;
+    }
+    else
+    {   // insert among already populated child tree nodes of parent
+        // insert in sorted order
+        var addAtIndex = -1;
+        var alreadyExists = false;
+        for(var i=0; i<parent.children.length; i++) 
         {
-             if (child.title > node.title)
-             {
-                break;
-             }
+            var child = parent.children[i];
+            if ( addAtIndex == -1 )
+            {
+                if (child.object == node.object)
+                {
+                     if (child.title > node.title)
+                     {
+                        addAtIndex = i;
+                     }
+                }
+                else
+                {
+                    if (node.object == "Folder")
+                        addAtIndex = i;
+                    if (node.object == "Page" && child.object == "Link")
+                        addAtIndex = i;
+                }
+            }
+            if ( child.object == node.object )
+            {
+                if ( child.title == node.title )
+                {
+                    alreadyExists = true;
+                    break;
+                }
+            }
         }
-        else
+        if ( ! alreadyExists )
         {
-            if (node.object == "Folder")
-                break;
-            if (node.object == "Page" && child.object == "Link")
-                break;
+            if ( addAtIndex == -1 )
+                addAtIndex = parent.children.length;
+            var controller = dojo.widget.byId('treeController');
+            var res = controller.createChild(parent, addAtIndex, node);
+            var selector = dojo.widget.byId('treeSelector');
+            selector.select({ source: parent, event: {} });
+            editResource(parent);
         }
     }
-    var controller = dojo.widget.byId('treeController');
-    var res = controller.createChild(parent, i, node);
-    var selector = dojo.widget.byId('treeSelector');
-    selector.select({ source: parent, event: {} });
-    editResource(parent);
   }
   this.failure = function(data)
   {
@@ -1163,8 +1196,8 @@ function removeResource(xnode)
     document.getElementById("res.short-title").value = "";
     document.getElementById("del.kind").innerHTML = node.object;
     document.getElementById("del.name").innerHTML = node.title;    
-    dojo.widget.byId("res.save").setDisabled(true);
-    dojo.widget.byId( "DeleteResourceDialog" ).show();
+    btnSetDisabled( dojo.widget.byId("res.save"), true );
+    jetspeed.widget.openDialog( dojo.widget.byId( "DeleteResourceDialog" ) );
 }
 function viewResource(xnode)
 {
@@ -1225,8 +1258,8 @@ function newResource(kind, xnode)
         document.getElementById("res.link").style.display = "";
     else
         document.getElementById("res.link").style.display = "none";
-    dojo.widget.byId("res.save").setDisabled(true);
-    dojo.widget.byId( "NewResourceDialog" ).show();
+    btnSetDisabled( dojo.widget.byId("res.save"), true );
+    jetspeed.widget.openDialog( dojo.widget.byId( "NewResourceDialog" ) ) ;
 }
 // single click node handler
 var TreeNodeSelectionHandler = function(notUsed) 
@@ -1898,7 +1931,7 @@ function ajaxInvoke(action, names, values, handler)
     },    
     error: function( type, error )
     {
-        var msg = "Portal Communication Error: " + requestUrl + " type: " + type + jetspeed.url.formatBindError( error );
+        var msg = "Portal Communication Error: " + requestUrl + " type: " + type + jetspeed.formatError( error );
         // dojo.raise(msg);
         alert(msg);
         handler.failure(msg);
@@ -1980,18 +2013,18 @@ function updateInfoFields()
     var currentTabName = dojo.widget.byId( "mainTabContainer" ).selectedChildWidget.widgetId;
     if (currentTabName == "infoTabFolder")
     {
-        dojo.widget.byId( "saveFInfoButton" ).setDisabled(false);
-        dojo.widget.byId( "revertFInfoButton" ).setDisabled(false);
+        btnSetDisabled( dojo.widget.byId( "saveFInfoButton" ), false );
+        btnSetDisabled( dojo.widget.byId( "revertFInfoButton" ), false );
     }
     else if (currentTabName == "infoTabPage")
     {
-        dojo.widget.byId( "savePInfoButton" ).setDisabled(false);
-        dojo.widget.byId( "revertPInfoButton" ).setDisabled(false);
+        btnSetDisabled( dojo.widget.byId( "savePInfoButton" ), false );
+        btnSetDisabled( dojo.widget.byId( "revertPInfoButton" ), false );
     }
     else
     {
-        dojo.widget.byId( "saveLInfoButton" ).setDisabled(false);
-        dojo.widget.byId( "revertLInfoButton" ).setDisabled(false);
+        btnSetDisabled( dojo.widget.byId( "saveLInfoButton" ), false );
+        btnSetDisabled( dojo.widget.byId( "revertLInfoButton" ), false );
     }
 }
 function newEntry()
@@ -2012,7 +2045,7 @@ function newEntry()
     {
         dojo.byId("security.list").options[0].selected = true;
         dojo.byId("security.list").disabled = false;
-        dojo.widget.byId("security.owner").setDisabled(false);
+        btnSetDisabled( dojo.widget.byId("security.owner"), false );
         changeButtonState("security", true, true, true, false);
     }
 }
@@ -2116,7 +2149,7 @@ function resetSecurity()
     var securityList = dojo.byId("security.list");
     securityList.value = "";
     securityList.disabled = true;
-    dojo.widget.byId("security.owner").setDisabled(true);
+    btnSetDisabled( dojo.widget.byId("security.owner"), true );
     changeButtonState("security", false, true, true, true);
 }
 function populateSecurity(xmlName, xml, kind)
@@ -2144,7 +2177,7 @@ function populateSecurity(xmlName, xml, kind)
        count = count + 1;
        data.push( { name: owner, kind: "Owner", Id: count } );
    }
-   dojo.widget.byId("security.owner").setDisabled(true);       
+   btnSetDisabled( dojo.widget.byId("security.owner"), true );       
    path = xml.getElementsByTagName("security-def");
    if (path != null && path.length > 0)
    {    
@@ -2192,10 +2225,10 @@ function createOwner()
 }
 function changeButtonState(prefix, newState, deleteState, saveState, revertState)
 {
-    dojo.widget.byId(prefix + "NewButton").setDisabled(newState);
-    dojo.widget.byId(prefix + "DeleteButton").setDisabled(deleteState);
-    dojo.widget.byId(prefix + "SaveButton").setDisabled(saveState);
-    dojo.widget.byId(prefix + "RevertButton").setDisabled(revertState);
+    btnSetDisabled( dojo.widget.byId(prefix + "NewButton"), newState );
+    btnSetDisabled( dojo.widget.byId(prefix + "DeleteButton"), deleteState );
+    btnSetDisabled( dojo.widget.byId(prefix + "SaveButton"), saveState );
+    btnSetDisabled( dojo.widget.byId(prefix + "RevertButton"), revertState );
 }
 function getTableWidget( containedInTab )
 {
@@ -2223,7 +2256,7 @@ function updateEditor( rowData, tTableWidget )
     {
         if (rowData.kind == "Security Reference")
         {
-            dojo.widget.byId("security.owner").setDisabled(true);       
+            btnSetDisabled( dojo.widget.byId("security.owner"), true );       
             var el = dojo.byId("security.list");
             for (var ix=0; ix < el.options.length; ix++)
             {
@@ -2421,18 +2454,18 @@ var UpdateInfoHandler = function()
      var node = dojo.widget.manager.getWidgetById('treeSelector').selectedNode;
      if ( node.object == "Folder" )
      {   
-        dojo.widget.byId( "saveFInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertFInfoButton" ).setDisabled(true);
+        btnSetDisabled( dojo.widget.byId( "saveFInfoButton" ), true );
+        btnSetDisabled( dojo.widget.byId( "revertFInfoButton" ), true );
      }
      else if ( node.object == "Page" )
      {   
-        dojo.widget.byId( "savePInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertPInfoButton" ).setDisabled(true);
+        btnSetDisabled( dojo.widget.byId( "savePInfoButton" ), true );
+        btnSetDisabled( dojo.widget.byId( "revertPInfoButton" ), true );
      }
      else if ( node.object == "Link" )
      {   
-        dojo.widget.byId( "saveLInfoButton" ).setDisabled(true);
-        dojo.widget.byId( "revertLInfoButton" ).setDisabled(true);
+        btnSetDisabled( dojo.widget.byId( "saveLInfoButton" ), true );
+        btnSetDisabled( dojo.widget.byId( "revertLInfoButton" ), true );
      }
   }     
   this.failure = function(data)
@@ -2494,8 +2527,8 @@ function enterOwner()
         }
     }
     document.getElementById("owner.name").value = path;
-    dojo.widget.byId("owner.save").setDisabled(path == "");
-    dojo.widget.byId( "NewOwnerDialog" ).show();
+    btnSetDisabled( dojo.widget.byId("owner.save"), path == "" );
+    jetspeed.widget.openDialog( dojo.widget.byId( "NewOwnerDialog" ) );
 }
 function validateOwnerName()
 {
@@ -2503,11 +2536,11 @@ function validateOwnerName()
     var disabled = false;    
     if (name == null || dojo.string.trim(name) == "")
         disabled = true;
-    dojo.widget.byId("owner.save").setDisabled(disabled);
+    btnSetDisabled( dojo.widget.byId("owner.save"), disabled );
 }
 function disableCopySave()
 {
-	dojo.widget.byId("copy.save").setDisabled(true);
+	btnSetDisabled( dojo.widget.byId("copy.save"), true );
 }
 
 var ExportHandler = function()
