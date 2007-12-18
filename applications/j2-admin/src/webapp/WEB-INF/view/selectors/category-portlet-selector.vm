@@ -228,11 +228,16 @@ function categoriesBar()
   var a2 = document.createElement("a");
   a2.innerHTML = "[$messages.getString("goback")]";  // TODO: localize
   // TODO: determine if JETSPEED or DESKTOP 
-  a2.href = getReturnURL();
+  var retHref = null;
+  if ( jetspeed.url.isDesktop() && jetspeed.page )
+     retHref = "javascript: jetspeed.page.addPortletTerminate( '" + getReturnURL() + "', '" + getReturnPagePath() + "' )";
+  else
+     retHref = getReturnURL();
+  a2.href = retHref;
   a2.setAttribute("style", "font-weight:normal");
   c2.appendChild(a2);
   var prevButton = document.getElementById("previousButton");
-  prevButton.setAttribute('href', getReturnURL());
+  prevButton.setAttribute('href', retHref);
 }
 function displayGridPortlet()
 {
