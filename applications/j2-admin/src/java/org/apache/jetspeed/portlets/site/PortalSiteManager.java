@@ -196,7 +196,8 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         headerResource.dojoAddCoreLibraryRequire("dojo.widget.Dialog");
         headerResource.dojoAddCoreLibraryRequire("dojo.widget.Button");
         
-        headerResource.dojoAddModuleLibraryRequire( "jetspeed.desktop.core" );
+        //headerResource.dojoAddModuleLibraryRequire( "jetspeed.desktop.core" );
+        headerResource.dojoAddModuleLibraryRequire( "jetspeed.site" );
         headerResource.dojoAddModuleLibraryRequire( "jetspeed.widget.EditorTable" );        
     }
 
