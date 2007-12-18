@@ -1338,29 +1338,63 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         this._updtDimsObj( false, tiledStateWillChange );
 
-        var jetspeedDesktop = document.getElementById( jsId.DESKTOP );
-        var yPos = dojo.html.getAbsolutePosition( jetspeedDesktop, true ).y;    // passing true to fix position at top (so not affected by vertically scrolled window)
-        var viewport = dojo.html.getViewport();
-        var docPadding = dojo.html.getPadding( jsObj.docBody );
-        
-        // hardcoded to fill document.body width leaving 1px on each side
-        this.dimsUntiledTemp = { w: viewport.width - docPadding.width - 2,
-                                 h: viewport.height - docPadding.height - yPos,
-                                 l: 1,
-                                 t: yPos };
-
         this._setTitleBarDragging( true, jsObj.css, false );
 
         this.posStatic = false;
         this.heightToFit = false;
+
+        this._setMaximizeSize( true, true, jsObj );    
 
         this._alterCss( true, true );
 
         if ( preMaxPosStatic )
             jetspeedDesktop.appendChild( dNode );
 
+        window.scrollTo(0, 0);
+
 		this.windowState = jsId.ACT_MAXIMIZE;
 	},  // maximizeWindow
+
+    _setMaximizeSize: function( addDeferredScrollBarSync, suppressAlterCss, jsObj )
+    {
+        if ( jsObj == null ) jsObj = jetspeed;
+        var adjH = 0, adjW = 0;
+        if ( addDeferredScrollBarSync )
+        {
+            var scrollWidth = jsObj.ui.scrollWidth;
+            if ( scrollWidth == null )
+                scrollWidth = jsObj.ui.getScrollbar( jsObj );
+
+            adjW = adjH = ((scrollWidth + 5) * -1);
+        }
+        
+        var jetspeedDesktop = document.getElementById( jsObj.id.DESKTOP );
+        
+        var djObj = dojo;
+        var djH = djObj.html;
+        var yPos = djH.getAbsolutePosition( jetspeedDesktop, true ).y;    // passing true to fix position at top (so not affected by vertically scrolled window)
+        var viewport = djH.getViewport();
+        var docPadding = djH.getPadding( jsObj.docBody );        
+    
+        // hardcoded to fill document.body width leaving 1px on each side
+        var dimsUntiled = { w: ( viewport.width + adjW ) - docPadding.width - 2,
+                            h: ( viewport.height + adjH ) - docPadding.height - yPos,
+                            l: 1,
+                            t: yPos };
+
+        this.dimsUntiledTemp = dimsUntiled;
+        
+        if ( ! suppressAlterCss )
+        {
+            this._alterCss( false, false, true );
+        }
+
+        if ( addDeferredScrollBarSync )
+        {
+            djObj.lang.setTimeout( this, this._setMaximizeSize, 40, false, false, jsObj );   // to allow the scroll bars to go away
+        }
+        return dimsUntiled;
+    },
 
 	restoreWindow: function()
     {
@@ -1375,12 +1409,14 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         }
 
         var lastPI = null;
+        var fromMax = false;
         if ( this.windowState == jsId.ACT_MAXIMIZE )
         {
             jsObj.widget.showAllPortletWindows() ;
             this.posStatic = this.preMaxPosStatic;
             this.heightToFit = this.preMaxHeightToFit;
             this.dimsUntiledTemp = null;
+            fromMax = true;
         }
         
         var disIdx = jsCss.cssDis;
@@ -1392,31 +1428,37 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
         this._setTitleBarDragging( true, jsObj.css );
 
+        var iNodeCssTemp = null;
         var ie6 = this.ie6;
-        
         if ( ! ie6 )
         {
             this._alterCss( true, true );
         }
         else
         {
-            var iNodeCss = null;
             if ( this.heightToFit )
             {
-                iNodeCss = this.iNodeCss;
+                iNodeCssTemp = this.iNodeCss;
                 // blank out height so that it can be recalculated based on actual content height
                 this.iNodeCss = null;   // if not null, _alterCss will not set content relative height
             }
+
             this._alterCss( true, true );
-            this._updtDimsObj( false, false, true, false, true );  // force update width and height
-            if ( iNodeCss != null )
-                this.iNodeCss = iNodeCss;
-            this._alterCss( false, false, true );   // resize
         }
 
         if ( this.posStatic && currentlyAbsolute )
         {   // tiled window in maximized or window just set from untiled to tiled - needs to be placed back in previous column/row
             this._tileWindow( jsObj );
+        }
+
+        if ( ie6 )
+        {
+            this._updtDimsObj( false, false, true, false, true );  // force update width and height
+            if ( fromMax )
+                this._resetIE6TiledSize( false, true );
+            if ( iNodeCssTemp != null )
+                this.iNodeCss = iNodeCssTemp;
+            this._alterCss( false, false, true );   // resize    // xxxx
         }
     },  // restoreWindow
 
@@ -1947,13 +1989,18 @@ dojo.extend( jetspeed.widget.PortletWindow, {
 
     onBrowserWindowResize: function()
     {
+        var jsObj = jetspeed;
         if ( this.ie6 )
         {
             this._resetIE6TiledSize( false );
         }
+        if ( this.windowState == jsObj.id.ACT_MAXIMIZE )
+        {
+            this._setMaximizeSize( true, false, jsObj );
+        }
     },
 
-    _resetIE6TiledSize: function( changeTiledState )
+    _resetIE6TiledSize: function( changeTiledState, suppressAlterCss )
     {
         var posStatic = this.posStatic;
         if ( posStatic )
@@ -1961,7 +2008,8 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var dNode = this.domNode;
             var dimsCurrent = this.getDimsObj( posStatic );
             dimsCurrent.w = Math.max( 0, this.domNode.parentNode.offsetWidth - this.colWidth_pbE );
-            this._alterCss( changeTiledState, false, false, false, true );    // changeWidth
+            if ( ! suppressAlterCss )
+                this._alterCss( changeTiledState, false, false, false, true );    // changeWidth
         }
     },
 
@@ -2532,21 +2580,43 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var childWidgets = this.setContent( setContentObj, doc, djObj );
         this.childWidgets = ( ( childWidgets && childWidgets.length > 0 ) ? childWidgets : null );
 
-        
-
+        var deferCompletion = false;
         if ( setContentObj.scripts != null && setContentObj.scripts.length != null && setContentObj.scripts.length > 0 )
         {
+            //djObj.debug( "Executing " + setContentObj.scripts.length + " script/s for " + this.widgetId + "  dojo.hostenv.post_load_=" + dojo.hostenv.post_load_ ) ;
+            jsObj.page.win_onload = false;
             this._executeScripts( setContentObj.scripts, djObj );
             this.onLoad();
+            if ( jsObj.page.win_onload && ( typeof setTimeout == "object" ) )
+            {   // some kind of detector for lame browsers used by dojo.addOnLoad to decide that addOnLoad fncs will be called via setTimeout
+                deferCompletion = true;
+            }
         }
+        if ( deferCompletion )
+        {
+            djObj.lang.setTimeout( this, this._setPortletContentScriptsDone, 20, jsObj, djObj, iNodeCss );
+        }
+        else
+        {
+            this._setPortletContentScriptsDone( jsObj, djObj, iNodeCss );
+        }
+    },
 
-        if ( jsObj.debug.setPortletContent )
-            djObj.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" );
-
+    _setPortletContentScriptsDone: function( jsObj, djObj, iNodeCss, deferred )
+    {
+        jsObj = ( jsObj != null ? jsObj : jetspeed );
+        djObj = ( djObj != null ? djObj : dojo );
+        var cNode = this.containerNode;
+        var doc = cNode.ownerDocument;
+        var ie6 = this.ie6;
+    
+        //if ( jsObj.debug.setPortletContent )
+        //    djObj.debug( "setPortletContent [" + ( this.portlet ? this.portlet.entityId : this.widgetId ) + "]" );
         
-        if ( this.portlet )
+        if ( this.portlet )   // BOZO: ( 2007-12-17 ) should this happen before the scripts are executed? seems more appropriate
             this.portlet.postParseAnnotateHtml( cNode );
-
+        
+        
         var iframesInfoCur = this.iframesInfo;
         var iframesInfoNew = this.getIFramesAndObjects( true, false );
         var setIFrame100P = null, iframeLayoutChg = false;
@@ -2663,7 +2733,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         {
             this._deferSetIFrameH( setIFrame100P, ( ! jsObj.UAie ? "100%" : "99%" ), true );
         }
-    },  // setPortletContent
+    },  // setPortletContentScriptsDone
 
     _setContentObjects: function()
     {
@@ -2813,6 +2883,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
         var scope = this.scriptScope || window;
         for(var i = 0;i < st.length; i++){
             try{
+                //alert( "exec onload " + i + " - " + this.widgetId ) ;
                 st[i].call(scope);
             }catch(e){ 
                 err += "\n"+st[i]+" failed: "+e.description;
@@ -3242,7 +3313,12 @@ dojo.extend( jetspeed.widget.PortletWindowResizeHandle, {
 
         this.tempEvents = resizeTempEvts;
         
-        e.preventDefault();
+        try
+        {        
+            e.preventDefault();
+        }
+        catch(ex){
+        }
 	},
     _changeSizing: function(e)
     {
@@ -3290,7 +3366,12 @@ dojo.extend( jetspeed.widget.PortletWindowResizeHandle, {
 
 		pWin.resizeTo( newW, newH );
 
-        e.preventDefault();
+        try
+        {        
+            e.preventDefault();
+        }
+        catch(ex){
+        }
 	},
 	_endSizing: function(e)
     {
