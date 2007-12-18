@@ -130,7 +130,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         }
         catch (Exception e)
         {
-            log.error("Failed to retrieve folders ", e);
+            log.error("Failed to get root folder", e);
             throw new PortletException("Failed to get root folder");
         }
         
@@ -196,7 +196,8 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
         headerResource.dojoAddCoreLibraryRequire("dojo.widget.Dialog");
         headerResource.dojoAddCoreLibraryRequire("dojo.widget.Button");
         
-        headerResource.dojoAddModuleLibraryRequire( "jetspeed.desktop.core" );
+        //headerResource.dojoAddModuleLibraryRequire( "jetspeed.desktop.core" );
+        headerResource.dojoAddModuleLibraryRequire( "jetspeed.site" );
         headerResource.dojoAddModuleLibraryRequire( "jetspeed.widget.EditorTable" );        
     }
 
