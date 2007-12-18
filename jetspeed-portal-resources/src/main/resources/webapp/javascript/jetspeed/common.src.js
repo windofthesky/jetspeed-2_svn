@@ -26,13 +26,20 @@ if ( window.dojo )
     dojo.require( "dojo.uri.Uri" );
 }
 
-// ... jetspeed base objects
+
+// jetspeed base objects
+
 if ( ! window.jetspeed )
     jetspeed = {};
 if ( ! jetspeed.url )
     jetspeed.url = {};
+if ( ! jetspeed.om )
+    jetspeed.om = {};
+if ( ! jetspeed.widget )
+    jetspeed.widget = {};
 
-// ... jetspeed version
+// jetspeed version
+
 jetspeed.version = 
 {
     major: 2, minor: 1, patch: 0, flag: "dev",
@@ -46,33 +53,91 @@ jetspeed.version =
     }
 };
 
-if ( ! window.dojo )
+jetspeed.initcommon = function()
 {
-    jetspeed.no_dojo_load_notifying = false;
-    jetspeed.no_dojo_post_load = false;
-    jetspeed.pageLoadedListeners = [];
-
-    window.onload = function()
+    var jsObj = jetspeed;
+    if ( ! window.dojo )
     {
-        if ( ! window.dojo )
+        var jsObj = jetspeed;
+        jsObj.no_dojo_load_notifying = false;
+        jsObj.no_dojo_post_load = false;
+        jsObj.pageLoadedListeners = [];
+    
+        window.onload = function()
         {
-            jetspeed.no_dojo_load_notifying = true;
-            jetspeed.no_dojo_post_load = true;
-            var pll = jetspeed.pageLoadedListeners;
-	        for( var x=0; x < pll.length; x++ )
+            if ( ! window.dojo )
             {
-		        pll[x]();
-	        }
-            jetspeed.pageLoadedListeners = [];
+                var _jsObj = jetspeed;
+                _jsObj.no_dojo_load_notifying = true;
+                _jsObj.no_dojo_post_load = true;
+                var pll = _jsObj.pageLoadedListeners;
+    	        for( var x=0; x < pll.length; x++ )
+                {
+    		        pll[x]();
+    	        }
+                _jsObj.pageLoadedListeners = [];
+            }
+        };
+    }
+    else
+    {
+        var djRH = dojo.render.html;
+        if ( djRH.ie )
+        {
+            jsObj.UAie = true;
+            if ( djRH.ie60 || djRH.ie50 || djRH.ie55 )
+                jsObj.UAie6 = true;
+    
+            jsObj.stopEvent = function(/*Event*/evt, suppressErrors)
+            {   // do no use in event connect
+                try
+                {
+                    evt = evt || window.event;
+                    if ( evt )
+                    {
+                        evt.cancelBubble = true;
+                        evt.returnValue = false;
+                    }
+                }
+                catch(ex)
+                {
+                    if ( ! suppressErrors && djConfig.isDebug )
+                        dojo.debug( "stopEvent (" + ( typeof evt ) + ") failure: " + jetspeed.formatError( ex ) );
+                }
+    	    };
+    	    jsObj._stopEvent = function(/*Event*/evt)
+            {   // use in event connect
+                jetspeed.stopEvent( evt );
+        	};
         }
-    };
-};
+        else
+        {
+            if ( djRH.mozilla )
+                jsObj.UAmoz = true;
+            else if ( djRH.safari )
+                jsObj.UAsaf = true ;
+            else if ( djRH.opera )
+                jsObj.UAope = true ;
+    
+            jsObj.stopEvent = function(/*Event*/evt)
+            {   // do no use in event connect
+                evt.preventDefault();
+                evt.stopPropagation();
+        	};
+            jsObj._stopEvent = function(/*Event*/evt)
+            {   // use in event connect
+                jetspeed.stopEvent( evt );
+        	};
+        }
+    }
+}
 
-/*
-Call styles:
-	jetspeed.addOnLoad( functionPointer )
-	jetspeed.addOnLoad( object, "functionName" )
-*/
+
+
+
+// Call styles:
+//	jetspeed.addOnLoad( functionPointer )
+//	jetspeed.addOnLoad( object, "functionName" )
 jetspeed.addOnLoad = function( obj, fcnName )
 {
     if ( window.dojo )
@@ -114,166 +179,51 @@ jetspeed.callPageLoaded = function()
 	}
 };
 
-jetspeed.printobj = function( obj, omitLineBreaks, omitEmptyValsProperties, arrayLengthsOnly )
+jetspeed.getBody = function()
 {
-    var props = [];
-    for( var prop in obj )
-    {
-        try
-        {
-            var propVal = obj[prop];
-            if ( arrayLengthsOnly )
-            {
-                if ( dojo.lang.isArray( propVal ) )
-                {
-                    propVal = "[" + propVal.length + "]";
-                }
-            }
-            propVal = propVal + "";
-            if ( ! omitEmptyValsProperties || propVal.length > 0 )
-                props.push( prop + ': ' + propVal );
-        }
-        catch(E)
-        {
-            props.push( prop + ': ERROR - ' + E.message );
-        }
-    }
-    props.sort();
-    var buff = "";
-    for( var i = 0; i < props.length; i++ )
-    {
-        if ( buff.length > 0 )
-            buff += ( omitLineBreaks ? ", " : "\r\n" );
-        buff += props[i];
-    }
-    return buff;
+    var jsObj = jetspeed;
+    if ( jsObj.docBody == null )
+        jsObj.docBody = document.body || document.getElementsByTagName( "body" )[0];
+    return jsObj.docBody;
 };
 
-jetspeed.println = function( line )
+jetspeed.formatError = function( ex )
 {
-    try
+    if ( ex == null ) return "";
+    var msg = " error:";
+    if ( ex.message != null )
+        msg += " " + ex.message;
+    var lineNo = ex.number||ex.lineNumber||ex.lineNo;
+    if ( lineNo == null || lineNo == "0" || lineNo.length == 0 )
+        lineNo = null;
+    var fileNm = ex.fileName;
+    if ( fileNm != null )
     {
-        var console = jetspeed.getDebugElement();
-        if( !console )
-        {
-            console = document.getElementsByTagName( "body" )[0] || document.body;
-        }
-        var div = document.createElement( "div" );
-        div.appendChild( document.createTextNode( line ) );
-        console.appendChild( div );
+        var lastDirSep = fileNm.lastIndexOf( "/" );
+        if ( lastDirSep != -1 && lastDirSep < (fileNm.length -1) )
+            fileNm = fileNm.substring( lastDirSep + 1 );
     }
-    catch (e)
+    if ( fileNm == null || fileNm.length == 0 )
+        fileNm = null;
+    var errType = ex.type;
+    if ( errType == null || errType.length == 0 || errType == "unknown" )
+        errType = null;
+
+    if ( lineNo != null || fileNm != null || errType != null )
     {
-        try
-        {   // safari needs the output wrapped in an element for some reason
-            document.write("<div>" + line + "</div>");
-        }
-        catch(e2)
-        {
-            window.status = line;
-        }
+        msg += " (" + ( fileNm != null ? ( " " + fileNm ) : "" );
+        msg += ( lineNo != null ? (" line " + lineNo) : "" );
+        msg += ( errType != null ? (" type " + errType) : "" );
+        msg += " )";
     }
+    return msg;
 };
 
-jetspeed.debugNodeTree = function( node, string )
-{
-    if ( ! node ) return ;
-    
-    if ( string )
-    {
-        if ( string.length > 0 )
-            jetspeed.println( string );
-    }
-    else
-    {
-        jetspeed.println( 'node: ' );
-    }
-    if ( node.nodeType != 1 && node.nodeType != 3 )
-    {
-        if ( node.length && node.length > 0 && ( node[0].nodeType == 1 || node[0].nodeType == 3 ) )
-        {
-            for ( var i = 0 ; i < node.length ; i++ )
-            {
-                jetspeed.debugNodeTree( node[i], " [" + i + "]" )
-            }
-        }
-        else
-        {
-            jetspeed.println( " node is not a node! " + node.length );
-        }   
-        return ;
-    }
-    if ( node.innerXML )
-    {
-        jetspeed.println( node.innerXML );
-    }
-    else if ( node.xml )
-    {
-        jetspeed.println( node.xml );
-    }
-    else if ( typeof XMLSerializer != "undefined" )
-    {
-        jetspeed.println( (new XMLSerializer()).serializeToString( node ) );
-    }
-    else
-    {
-        jetspeed.println( " node != null (IE no XMLSerializer)" );
-    }
-};
-jetspeed.debugShallow = function( obj, string )
-{
-    if ( string )
-        jetspeed.println( string );
-    else
-        jetspeed.println( 'Object: ' + obj );
-    var props = [];
-    for(var prop in obj){
-        try {
-            props.push(prop + ': ' + obj[prop]);
-        } catch(E) {
-            props.push(prop + ': ERROR - ' + E.message);
-        }
-    }
-    props.sort();
-    for(var i = 0; i < props.length; i++) {
-        jetspeed.println( props[i] );
-    }
-};
-jetspeed.getDebugElement = function( clear )
-{
-    var console = null ;
-    try {
-        var console = document.getElementById("debug_container");
-        if(!console)
-        {
-            var consoleContainer = document.getElementsByTagName("body")[0] || document.body;
-            var console = document.createElement("div");
-            console.setAttribute( "id", "debug_container" );
-            consoleContainer.appendChild(console);
-        }
-        else if ( clear )
-        {
-            console.innerHTML = "";
-        }
-    } catch (e) {
-        try {
 
-        } catch(e2){}
-    }
-    return console ;   
-};
-if ( window.djConfig != null && window.djConfig.isDebug )
-{
-    var ch = String.fromCharCode(0x00a0);
-    jetspeed.debugindentch = ch;
-    jetspeed.debugindentH = ch + ch;
-    jetspeed.debugindent = ch + ch + ch + ch;
-    jetspeed.debugindent2 = jetspeed.debugindent + jetspeed.debugindent;
-    jetspeed.debugindent3 = jetspeed.debugindent + jetspeed.debugindent + jetspeed.debugindent;
-}
+// jetspeed.url
 
-// ... jetspeed.url
 jetspeed.url.LOADING_INDICATOR_ID = "js-showloading";
+jetspeed.url.LOADING_INDICATOR_IMG_ID = "js-showloading-img";
 jetspeed.url.path =
 {
     SERVER: null,     //   http://localhost:8080
@@ -289,7 +239,9 @@ jetspeed.url.path =
 
 jetspeed.url.pathInitialize = function( force )
 {
-    if ( ! force && jetspeed.url.path.initialized ) return;
+    var jsU = jetspeed.url;
+    var jsUP = jsU.path;
+    if ( ! force && jsUP.initialized ) return;
     var baseTags = document.getElementsByTagName( "base" );
 
     var baseTagHref = null;
@@ -298,40 +250,47 @@ jetspeed.url.pathInitialize = function( force )
     else
         baseTagHref = window.location.href;
 
-    var baseTag = jetspeed.url.parse( baseTagHref );
+    var baseTag = jsU.parse( baseTagHref );
 
     var basePath = baseTag.path;
     
-    var sepPos = -1;
-    for( var startPos =1 ; sepPos <= startPos ; startPos++ )
-    {
-        sepPos = basePath.indexOf( "/", startPos );
-        if ( sepPos == -1 )
-            break;
-    }
-
     var serverUri = "";
     if ( baseTag.scheme != null) { serverUri += baseTag.scheme + ":"; }
     if ( baseTag.authority != null) { serverUri += "//" + baseTag.authority; }
 
     var jetspeedPath = null;
-    if ( sepPos == -1 )
-        jetspeedPath = basePath;
+    if ( djConfig.jetspeed.rootContext )
+    {
+      jetspeedPath = "";
+    }
     else
-        jetspeedPath = basePath.substring( 0, sepPos );
-    
-    //dojo.debug( "pathInitialize  new-JETSPEED=" + jetspeedPath + " orig-JETSPEED=" + jetspeed.url.path.JETSPEED + " new-SERVER=" + serverUri + " orig-SERVER=" + document.location.protocol + "//" + document.location.host );
-    
-    jetspeed.url.path.JETSPEED = jetspeedPath;
-    jetspeed.url.path.SERVER = serverUri;
-    jetspeed.url.path.AJAX_API = jetspeed.url.path.JETSPEED + "/ajaxapi";
-    jetspeed.url.path.DESKTOP = jetspeed.url.path.JETSPEED + "/desktop";
-    jetspeed.url.path.PORTAL = jetspeed.url.path.JETSPEED + "/portal";
-    jetspeed.url.path.PORTLET = jetspeed.url.path.JETSPEED + "/portlet";
-    jetspeed.url.path.ACTION = jetspeed.url.path.JETSPEED + "/action";
-    jetspeed.url.path.RENDER = jetspeed.url.path.JETSPEED + "/render";
+    {
+      var sepPos = -1;
+      for( var startPos =1 ; sepPos <= startPos ; startPos++ )
+      {
+        sepPos = basePath.indexOf( "/", startPos );
+        if ( sepPos == -1 )
+            break;
+      }
 
-    jetspeed.url.path.initialized = true;
+      if ( sepPos == -1 )
+        jetspeedPath = basePath;
+      else
+        jetspeedPath = basePath.substring( 0, sepPos );
+    } 
+    
+    //dojo.debug( "pathInitialize  new-JETSPEED=" + jetspeedPath + " orig-JETSPEED=" + jsUP.JETSPEED + " new-SERVER=" + serverUri + " orig-SERVER=" + document.location.protocol + "//" + document.location.host );
+    
+    jsUP.JETSPEED = jetspeedPath;
+    jsUP.SERVER = serverUri;
+    jsUP.AJAX_API = jsUP.JETSPEED + "/ajaxapi";
+    jsUP.DESKTOP = jsUP.JETSPEED + "/desktop";
+    jsUP.PORTAL = jsUP.JETSPEED + "/portal";
+    jsUP.PORTLET = jsUP.JETSPEED + "/portlet";
+    jsUP.ACTION = jsUP.JETSPEED + "/action";
+    jsUP.RENDER = jsUP.JETSPEED + "/render";
+
+    jsUP.initialized = true;
 };
 jetspeed.url.parse = function( url )
 {   // taken from dojo.uri.Uri
@@ -385,7 +344,7 @@ jetspeed.url.JSUri.prototype =
     }
 };
 jetspeed.url.scheme =
-{   // used to make jetspeed.url.validateUrlStartsWithHttp cleaner
+{   // used to make jetspeed.url.urlStartsWithHttp cleaner
     HTTP_PREFIX: "http://",
     HTTP_PREFIX_LEN: "http://".length,
     HTTPS_PREFIX: "https://",
@@ -460,7 +419,7 @@ jetspeed.url.addPath = function( url, path )
     var urlObj = jetspeed.url.parse( modUri );
     return urlObj.toString();
 };
-jetspeed.url.validateUrlStartsWithHttp = function( url )
+jetspeed.url.urlStartsWithHttp = function( url )
 {
     if ( url )
     {
@@ -640,6 +599,38 @@ jetspeed.url.getQueryParameter = function( urlObj, paramname )
     return null;
 };
 
+
+// jetspeed.om.Id
+
+jetspeed.om.Id = function( /* ... */ )  // intended as a simple, general object with an id and a getId() function
+{
+    var idBuff = "";
+    for ( var i = 0; i < arguments.length; i++ )
+    {
+        if( dojo.lang.isString( arguments[i] ) )
+        {
+            if ( idBuff.length > 0 )
+                idBuff += "-";
+            idBuff += arguments[i];
+        }
+        else if ( dojo.lang.isObject( arguments[i] ) )
+        {
+            for ( var slotKey in arguments[i] )
+            {
+                this[ slotKey ] = arguments[i][slotKey];
+            }
+        }
+    }
+    this.id = idBuff;
+};
+jetspeed.om.Id.prototype =
+{
+    getId: function()
+    {
+        return this.id;
+    }
+};
+
 if ( window.dojo )
 {
     jetspeed.url.BindArgs = function( bindArgs )
@@ -648,6 +639,9 @@ if ( window.dojo )
     
         if ( ! this.mimetype )
             this.mimetype = "text/html";
+
+        if ( ! this.encoding )
+            this.encoding = "utf-8";
     };
     
     dojo.lang.extend( jetspeed.url.BindArgs,
@@ -672,20 +666,26 @@ if ( window.dojo )
                 var dmId = null;
                 if ( this.debugContentDumpIds )
                 {
-                    dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : "" );
+                    dmId = ( ( this.domainModelObject && dojo.lang.isFunction( this.domainModelObject.getId ) ) ? this.domainModelObject.getId() : ( ( this.domainModelObject && this.domainModelObject.id ) ? String( this.domainModelObject.id ) : "" ) );
+                    var outputResponse = false;
                     for ( var debugContentIndex = 0 ; debugContentIndex < this.debugContentDumpIds.length; debugContentIndex++ )
                     {
                         if ( dmId.match( new RegExp( this.debugContentDumpIds[ debugContentIndex ] ) ) )
                         {
-                            if ( dojo.lang.isString( data ) )
-                                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
-                            else
-                            {
-                                var textContent = dojo.dom.innerXML( data );
-                                if ( ! textContent )
-                                    textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
-                                dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
-                            }
+                            outputResponse = true;
+                            break;
+                        }
+                    }
+                    if ( outputResponse )
+                    {
+                        if ( dojo.lang.isString( data ) )
+                            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] content: " + data );
+                        else
+                        {
+                            var textContent = dojo.dom.innerXML( data );
+                            if ( ! textContent )
+                                textContent = ( data != null ? "!= null (IE no XMLSerializer)" : "null" );
+                            dojo.debug( "retrieveContent [" + ( dmId ? dmId : this.url ) + "] xml-content: " + textContent );
                         }
                     }
                 }
@@ -705,10 +705,10 @@ if ( window.dojo )
             {
                 if ( this.hideLoadingIndicator )
                     jetspeed.url.loadingIndicatorHide();
-                throw e;
+                dojo.raise( "dojo.io.bind " + jetspeed.formatError( e ) );
             }
         },
-    
+
         error: function( type, error )
         {
             //dojo.debug( "r e t r i e v e C o n t e n t . e r r o r" ) ;
@@ -751,7 +751,7 @@ if ( window.dojo )
         dojo.io.bind( jetspeedBindArgs.createIORequest() ) ;
     };
     
-    jetspeed.url.checkAjaxApiResponse = function( requestUrl, data, reportError, apiRequestDescription, dumpOutput )
+    jetspeed.url.checkAjaxApiResponse = function( requestUrl, data, otherSuccessValues, reportError, apiRequestDescription, dumpOutput )
     {
         var success = false;
         var statusElmt = data.getElementsByTagName( "status" );
@@ -760,7 +760,18 @@ if ( window.dojo )
             var successVal = statusElmt[0].firstChild.nodeValue;
             if ( successVal == "success" )
             {
-                success = true;
+                success = successVal;
+            }
+            else if ( otherSuccessValues && otherSuccessValues.length > 0 )
+            {
+                for ( var i = 0 ; i < otherSuccessValues.length ; i++ )
+                {
+                    if ( successVal == otherSuccessValues[i] )
+                    {
+                        success = successVal;
+                        break;
+                    }
+                }
             }
         }
         if ( ( ! success && reportError ) || dumpOutput )
@@ -778,45 +789,111 @@ if ( window.dojo )
         return success;
     };
     
-    jetspeed.url.formatBindError = function( /* Object */ bindError )
+    jetspeed.url._loadingImgUpdate = function( useStepImgs, resetNextStep, stepPreloadOnly, doc, jsPrefs, jsUrl )
     {
-        if ( bindError == null ) return "";
-        var msg = " error:";
-        if ( bindError.message != null )
-            msg += " " + bindError.message;
-        if ( bindError.number != null && bindError.number != "0" )
+        var loadingProps = jsPrefs.loadingImgProps;
+        if ( loadingProps )
         {
-            msg += " (" + bindError.number;
-            if ( bindError.type != null && bindError.type != "unknown" )
-                msg += "/" + bindError.type;
-            msg += ")";
+            var loading = doc.getElementById( jsUrl.LOADING_INDICATOR_ID );
+            if ( loading == null || ! loading.style || loading.style.display == "none" )
+                return;
+            var imgAnimated = loadingProps.imganimated;
+            var loadingImgElmt = doc.getElementById( jsUrl.LOADING_INDICATOR_IMG_ID );
+            if ( imgAnimated && loadingImgElmt )
+            {
+                var imgBaseUrl = loadingProps._imgBaseUrl;
+                if ( imgBaseUrl == null )
+                {
+                    var imgDir = loadingProps.imgdir;
+                    if ( imgDir == null || imgDir.length == 0 )
+                        imgBaseUrl = false;
+                    else
+                        imgBaseUrl = jsPrefs.getLayoutRootUrl() + imgDir;
+                    loadingProps._imgBaseUrl = imgBaseUrl;
+                }
+                if ( imgBaseUrl )
+                {
+                    var srcSet = false;
+                    if ( ( useStepImgs || stepPreloadOnly ) && ! loadingProps._stepDisabled )
+                    {
+                        var stepPrefix = loadingProps.imgstepprefix;
+                        var stepExtn = loadingProps.imgstepextension;
+                        var steps = loadingProps.imgsteps;
+                        if ( stepPrefix && stepExtn && steps )
+                        {
+                            var nextStep = loadingProps._stepNext;
+                            if ( resetNextStep || nextStep == null || nextStep >= steps.length )
+                                nextStep = 0;
+                            var imgStepBaseUrl = imgBaseUrl + "/" + stepPrefix;
+                            if ( ! stepPreloadOnly )
+                            {
+                                loadingImgElmt.src = imgStepBaseUrl + steps[nextStep] + stepExtn;
+                                srcSet = true;
+                                loadingProps._stepNext = nextStep + 1;
+                            }
+                            else
+                            {
+                                var preloadImg, limit = Math.ceil( steps.length / 1.8 );
+                                for ( var i = 0 ; i <= limit ; i++ )
+                                {
+                                    preloadImg = new Image();
+                                    preloadImg.src = imgStepBaseUrl + steps[i] + stepExtn;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            loadingProps._stepDisabled = true;
+                        }
+                    }
+                    if ( ! srcSet && ! stepPreloadOnly )
+                    {
+                        loadingImgElmt.src = imgBaseUrl + "/" + imgAnimated;
+                    }
+                }
+            }
         }
-        else if ( bindError.type != null && bindError.type != "unknown" )
-        {
-            msg += " (" + bindError.type + ")";
-        }
-        return msg;
     };
-    jetspeed.url.loadingIndicatorShow = function( actionName )
+
+    jetspeed.url.loadingIndicatorStep = function( jsObj )
     {
+        var jsUrl = jsObj.url;
+        jsUrl._loadingImgUpdate( true, false, false, document, jsObj.prefs, jsUrl );
+    };
+
+    jetspeed.url.loadingIndicatorStepPreload = function()
+    {
+        var jsObj = jetspeed;
+        var jsUrl = jsObj.url;
+        jsUrl._loadingImgUpdate( true, false, true, document, jsObj.prefs, jsUrl );
+    };
+
+    jetspeed.url.loadingIndicatorShow = function( actionName, useStepImgs )
+    {
+        var jsObj = jetspeed;
+        var jsPrefs = jsObj.prefs;
+        var jsUrl = jsObj.url;
+        var doc = document;
         if ( typeof actionName == "undefined" )
             actionName = "loadpage";
-        var loading = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID );
+        var loading = doc.getElementById( jsUrl.LOADING_INDICATOR_ID );
         if ( loading != null && loading.style )
         {
             var actionlabel = null;
-            if ( jetspeed.prefs != null && jetspeed.prefs.desktopActionLabels != null )
-                actionlabel = jetspeed.prefs.desktopActionLabels[ actionName ];
+            if ( jsPrefs != null && jsPrefs.desktopActionLabels != null )
+                actionlabel = jsPrefs.desktopActionLabels[ actionName ];
 
             if ( actionlabel != null && actionlabel.length > 0 && loading.style[ "display" ] == "none" )
             {
+                jsUrl._loadingImgUpdate( useStepImgs, true, false, doc, jsPrefs, jsUrl );
+
                 loading.style[ "display" ] = "";
 
                 if ( actionName != null )
                 {
                     if ( actionlabel != null && actionlabel.length > 0 )
                     {
-                        var loadingContent = document.getElementById( jetspeed.url.LOADING_INDICATOR_ID + "-content" );
+                        var loadingContent = doc.getElementById( jsUrl.LOADING_INDICATOR_ID + "-content" );
                         if ( loadingContent != null )
                         {
                             loadingContent.innerHTML = actionlabel;
@@ -835,3 +912,46 @@ if ( window.dojo )
             loading.style[ "display" ] = "none";
     };
 }
+
+jetspeed.widget.openDialog = function( dialogWidget )
+{
+    var isMoz = jetspeed.UAmoz;
+    if ( isMoz )
+    {
+        dialogWidget.domNode.style.position = "fixed";  // this fix involves setting position to fixed instead of absolute,
+        if ( ! dialogWidget._fixedIPtBug )              // and the change to var x and var y initialization in placeModalDialog
+        {
+            var _dialog = dialogWidget;
+            _dialog.placeModalDialog = function() {
+                // summary: position modal dialog in center of screen
+
+                var scroll_offset = dojo.html.getScroll().offset;
+                var viewport_size = dojo.html.getViewport();
+    
+                // find the size of the dialog (dialog needs to be showing to get the size)
+                var mb;
+                if(_dialog.isShowing()){
+                    mb = dojo.html.getMarginBox(_dialog.domNode);
+                }else{
+                    dojo.html.setVisibility(_dialog.domNode, false);
+                    dojo.html.show(_dialog.domNode);
+                    mb = dojo.html.getMarginBox(_dialog.domNode);
+                    dojo.html.hide(_dialog.domNode);
+                    dojo.html.setVisibility(_dialog.domNode, true);
+                }
+                //var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
+                //var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
+                var x = (viewport_size.width - mb.width)/2;
+                var y = (viewport_size.height - mb.height)/2;
+                with(_dialog.domNode.style){
+                    left = x + "px";
+                    top = y + "px";
+                }
+            };
+            _dialog._fixedIPtBug = true;
+        }
+    }
+    dialogWidget.show();
+};
+
+jetspeed.initcommon();
