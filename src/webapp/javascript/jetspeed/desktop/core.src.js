@@ -118,6 +118,9 @@ jetspeed.id =
 
     PG_ED_WID: "jetspeed-page-editor",
     PG_ED_PARAM: "editPage",
+
+    ADDP_RFRAG: "aR",
+    
     PG_ED_STATE_PARAM: "epst",
     PG_ED_TITLES_PARAM: "wintitles",
     PORTAL_ORIGINATE_PARAMETER: "portal",
@@ -359,7 +362,7 @@ jetspeed.initializeDesktop = function()
 
     jsObj.page.retrievePsml();
 
-    if ( jsObj.UAie6 )
+    //if ( jsObj.UAie6 )
     {
         jsObj.ui.windowResizeMgr.init( window, jsObj.docBody );
     }
@@ -521,6 +524,7 @@ jetspeed.PortletRenderer = function( createWindows, isPageLoad, isPageUpdate, re
 {
     var jsObj = jetspeed;
     var jsPage = jsObj.page;
+    var djObj = dojo;
     this._jsObj = jsObj;
 
     this.mkWins = createWindows;
@@ -529,9 +533,6 @@ jetspeed.PortletRenderer = function( createWindows, isPageLoad, isPageUpdate, re
     this.noRender = ( this.minimizeTemp && initEditModeConf.windowTitles != null );
     this.isPgLd = isPageLoad;
     this.isPgUp = isPageUpdate;
-    this.pageLoadUrl = null;
-    if ( isPageLoad )
-        this.pageLoadUrl = jsObj.url.parse( jsPage.getPageUrl() );
     this.renderUrl = renderUrl;
     this.suppressGetActions = suppressGetActions;
 
@@ -539,8 +540,13 @@ jetspeed.PortletRenderer = function( createWindows, isPageLoad, isPageUpdate, re
     this._colIndex = 0;
     this._portletIndex = 0;
     this._renderCount = 0;
-
     this.psByCol = jsPage.portletsByPageColumn;
+    this.pageLoadUrl = null;
+    if ( isPageLoad )
+    {
+        this.pageLoadUrl = jsObj.url.parse( jsPage.getPageUrl() );
+        jsObj.ui.evtConnect( "before", djObj, "addOnLoad", jsPage, "_beforeAddOnLoad", djObj.event );
+    }
 
     this.dbgPgLd = jsObj.debug.pageLoad && isPageLoad;
     this.dbgMsg = null;
@@ -964,7 +970,7 @@ jetspeed.getActionsForPortlets = function( /* Array */ portletEntityIds )
     var ajaxApiContext = new jsObj.om.Id( "getactions", { } );
     jsObj.url.retrieveContent( { url: getActionsUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
 };
-jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* String */ changeActionState, /* String */ changeActionMode, contentListener )
+jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* String */ changeActionState, /* String */ changeActionMode, contentListener, pagePathOverride )
 {
     var jsObj = jetspeed;
     if ( portletEntityId == null ) return;
@@ -975,7 +981,10 @@ jetspeed.changeActionForPortlet = function( /* String */ portletEntityId, /* Str
         queryString += "&state=" + changeActionState;
     if ( changeActionMode != null )
         queryString += "&mode=" + changeActionMode;
-    var changeActionUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + jsObj.page.getPath() + queryString ;
+    var pagePath = pagePathOverride ;
+    if ( ! pagePath )
+        pagePath = jsObj.page.getPath();
+    var changeActionUrl = jsObj.url.basePortalUrl() + jsObj.url.path.AJAX_API + pagePath + queryString ;
     var mimetype = "text/xml";
     var ajaxApiContext = new jsObj.om.Id( "changeaction", { } );
     jsObj.url.retrieveContent( { url: changeActionUrl, mimetype: mimetype }, contentListener, ajaxApiContext, jsObj.debugContentDumpIds );
@@ -1038,21 +1047,20 @@ jetspeed.editPageInitiate = function( jsObj, initEditModeConf )
         jsPage.syncPageControls( jsObj );
     }
 };
-jetspeed.editPageTerminate = function( jsObj )
+jetspeed.editPageTerminate = function( jsObj, changeActionToView )
 {
     var jsPage = jsObj.page;
     if ( jsPage.editMode )
     {
+        var mustNavUrl = null;
         var jsCss = jsObj.css;
         var pageEditorWidget = dojo.widget.byId( jsObj.id.PG_ED_WID );
-        pageEditorWidget.editMoveModeExit( true );  // in case we're in move-mode
-        jsPage.editMode = false;
-        if ( ! pageEditorWidget.editorInitiatedFromDesktop )
+        if ( pageEditorWidget != null && ! pageEditorWidget.editorInitiatedFromDesktop )
         {
             var portalPageUrl = jsPage.getPageUrl( true );
             portalPageUrl = jsObj.url.removeQueryParameter( portalPageUrl, jsObj.id.PG_ED_PARAM );
             portalPageUrl = jsObj.url.removeQueryParameter( portalPageUrl, jsObj.id.PORTAL_ORIGINATE_PARAMETER );
-            window.location.href = portalPageUrl;
+            mustNavUrl = portalPageUrl;
         }
         else
         {
@@ -1061,16 +1069,22 @@ jetspeed.editPageTerminate = function( jsObj )
             {   // because of parameter, we must navigate
                 var dtPageUrl = window.location.href; // jsPage.getPageUrl( false );
                 dtPageUrl = jsObj.url.removeQueryParameter( dtPageUrl, jsObj.id.PG_ED_PARAM );
-                window.location.href = dtPageUrl;
-            }
-            else
-            {
-                if ( pageEditorWidget != null )
-                    pageEditorWidget.editPageHide();
-                jsPage.syncPageControls( jsObj );
+                mustNavUrl = dtPageUrl;
             }
         }
-        
+        if ( mustNavUrl != null )
+            mustNavUrl = mustNavUrl.toString();
+        jsPage.editMode = false;
+        jsObj.changeActionForPortlet( jsPage.rootFragmentId, null, jsObj.id.ACT_VIEW, new jsObj.om.PageChangeActionCL( mustNavUrl ) );
+        if ( mustNavUrl == null )
+        {
+            if ( pageEditorWidget != null )
+            {
+                pageEditorWidget.editMoveModeExit( true );  // in case we're in move-mode
+                pageEditorWidget.editPageHide();
+            }
+            jsPage.syncPageControls( jsObj );
+        }
     }
 };
 
@@ -1408,11 +1422,8 @@ dojo.lang.extend( jetspeed.om.Page,
         }
 
         // window resize
-        if ( jsObj.UAie6 )
-        {
-            jsObj.ui.evtConnect( "after", window, "onresize", jsObj.ui.windowResizeMgr, "onResize", dojo.event );
-            jsObj.ui.windowResizeMgr.onResizeDelayedCompare();   // in case resize occurred while loading
-        }
+        jsObj.ui.evtConnect( "after", window, "onresize", jsObj.ui.windowResizeMgr, "onResize", dojo.event );
+        jsObj.ui.windowResizeMgr.onResizeDelayedCompare();   // in case resize occurred while loading
 
         var colNode, columnObjArray = this.columns;
         if ( columnObjArray )
@@ -1432,7 +1443,7 @@ dojo.lang.extend( jetspeed.om.Page,
         {
             var pWinToMax = this.getPWin( maxOnInitId );
             if ( pWinToMax == null )
-                dojo.raise( "Cannot identify window to maximize" );
+                dojo.raise( "no pWin to max" );
             else
                 dojo.lang.setTimeout( pWinToMax, pWinToMax._postCreateMaximizeWindow, 500 );
             this.maximizedOnInit = null;
@@ -1461,7 +1472,7 @@ dojo.lang.extend( jetspeed.om.Page,
         var djObj = dojo;
         var pageElements = psml.getElementsByTagName( "page" );
         if ( ! pageElements || pageElements.length > 1 || pageElements[0] == null )
-            djObj.raise( "Expected one <page> in PSML" );
+            djObj.raise( "<page>" );
         var pageElement = pageElements[0];
         var children = pageElement.childNodes;
         var simpleValueLNames = new RegExp( "(name|path|profiledPath|title|short-title|uIA|npe)" );
@@ -1501,7 +1512,7 @@ dojo.lang.extend( jetspeed.om.Page,
 
         if ( rootFragment == null )
         {
-            djObj.raise( "No root fragment in PSML" );
+            djObj.raise( "root frag" );
             return null;
         }
         if ( this.requiredLayoutDecorator != null && this.pageUrlFallback != null )
@@ -1543,7 +1554,7 @@ dojo.lang.extend( jetspeed.om.Page,
         var layoutFragType = ( (layoutNode != null) ? layoutNode.getAttribute( "type" ) : null );
         if ( layoutFragType != "layout" )
         {
-            dojo.raise( "Expected layout fragment: " + layoutNode );
+            dojo.raise( "!layout frag=" + layoutNode );
             return null;
         }
         
@@ -1602,7 +1613,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 {
                     if ( sizes != null )
                     {
-                        dojo.raise( "Layout fragment has multiple sizes definitions: " + layoutNode );
+                        dojo.raise( "<sizes>: " + layoutNode );
                         return null;
                     }
                     if ( jsObj.prefs.printModeOnly != null )
@@ -2431,7 +2442,7 @@ dojo.lang.extend( jetspeed.om.Page,
     onBrowserWindowResize: function()
     {   // called after ie6 resize window
         var jsObj = jetspeed;
-        if ( jsObj.UAie6 )
+        //if ( jsObj.UAie6 )
         {
             var pWins = this.portlet_windows;
             var pWin;
@@ -2440,7 +2451,7 @@ dojo.lang.extend( jetspeed.om.Page,
                 pWin = pWins[ windowId ];
                 pWin.onBrowserWindowResize();
             }
-            if ( this.editMode )
+            if ( jsObj.UAie6 && this.editMode )
             {
                 var pageEditorWidget = dojo.widget.byId( jsObj.id.PG_ED_WID );
                 if ( pageEditorWidget != null )
@@ -2483,6 +2494,7 @@ dojo.lang.extend( jetspeed.om.Page,
         var layoutColumns = null;
         var layoutCol = null;
         var layoutColLayoutHeader = null;
+
         var desktopContainerNode = document.getElementById( jsObj.id.DESKTOP );
         if ( desktopContainerNode != null )
             layoutDesktop = jsObj.ui.getLayoutExtents( desktopContainerNode, null, djObj, jsObj );
@@ -2504,7 +2516,7 @@ dojo.lang.extend( jetspeed.om.Page,
                     break;
             }
         }
-
+        
         this.layoutInfo = { desktop: ( layoutDesktop != null ? layoutDesktop : {} ),
                             columns: ( layoutColumns != null ? layoutColumns : {} ),
                             column: ( layoutCol != null ? layoutCol : {} ),
@@ -2513,16 +2525,22 @@ dojo.lang.extend( jetspeed.om.Page,
         jsObj.widget.PortletWindow.prototype.colWidth_pbE = ( ( layoutCol && layoutCol.pbE ) ? layoutCol.pbE.w : 0 );
     },
 
+    _beforeAddOnLoad: function()
+    {
+        this.win_onload = true;
+    },
+
     destroy: function()
     {
         var jsObj = jetspeed;
         var djObj = dojo;
 
         // disconnect window onresize
-        if ( jsObj.UAie6 )
-        {
-            jsObj.ui.evtDisconnect( "after", window, "onresize", jsObj.ui.windowResizeMgr, "onResize", djObj.event );
-        }
+        jsObj.ui.evtDisconnect( "after", window, "onresize", jsObj.ui.windowResizeMgr, "onResize", djObj.event );
+        
+        // disconnect dojo.addOnLoad
+        jsObj.ui.evtDisconnect( "before", djObj, "addOnLoad", this, "_beforeAddOnLoad", djObj.event );
+
 
         // destroy portlets
         var pWins = this.portlet_windows;
@@ -2811,8 +2829,7 @@ dojo.lang.extend( jetspeed.om.Page,
         }
         else if ( actionName == jsObj.id.ACT_VIEW )
         {
-            jsObj.changeActionForPortlet( this.rootFragmentId, null, jsObj.id.ACT_VIEW, new jsObj.om.PageChangeActionCL() );
-            jsObj.editPageTerminate( jsObj );
+            jsObj.editPageTerminate( jsObj );  // action must be changed in editPageTerminate (since it has other factors for deciding to navigate)
         }
         else
         {
@@ -2841,10 +2858,30 @@ dojo.lang.extend( jetspeed.om.Page,
         var addportletPageUrl = jsObj.url.basePortalUrl() + jsObj.url.path.DESKTOP + "/system/customizer/selector.psml?jspage=" + jspage;
         if ( layoutId != null )
             addportletPageUrl += "&jslayoutid=" + escape( layoutId );
+        if ( ! this.editMode )
+            addportletPageUrl += "&" + jsObj.id.ADDP_RFRAG + "=" + escape( this.rootFragmentId );
         if ( this.actions && ( this.actions[ jsId.ACT_EDIT ] || this.actions[ jsId.ACT_VIEW ] ) )
             jsObj.changeActionForPortlet( this.rootFragmentId, null, jsId.ACT_EDIT, new jsObj.om.PageChangeActionCL( addportletPageUrl ) );
         else if ( ! this.isUA() )
             jsObj.pageNavigate( addportletPageUrl ); 
+    },
+    addPortletTerminate: function( retUrl, retPagePathAndQuery )   ///   xxxxxxxx
+    {
+        var jsObj = jetspeed;
+        var viewRetRootFragId = jsObj.url.getQueryParameter( document.location.href, jsObj.id.ADDP_RFRAG );
+        if ( viewRetRootFragId != null && viewRetRootFragId.length > 0 )
+        {
+            var retPagePath = retPagePathAndQuery ;
+            var qPos = retPagePathAndQuery.indexOf( "?" );
+            if ( qPos > 0 )
+                retPagePath.substring( 0, qPos );
+            
+            jsObj.changeActionForPortlet( viewRetRootFragId, null, jsObj.id.ACT_VIEW, new jsObj.om.PageChangeActionCL( retUrl ), retPagePath );
+        }
+        else
+        {
+            jsObj.pageNavigate( retUrl ); 
+        }
     },
 
     // ... edit mode
@@ -5102,10 +5139,39 @@ jetspeed.ui = {
         }
 
         return currentMaxChildDepth;
-    }  // _updateChildColInfo
+    },  // _updateChildColInfo
+
+    getScrollbar: function( jsObj )
+    {    //	returns the width of a scrollbar.
+        var scrollWidth = jsObj.ui.scrollWidth;
+        if ( scrollWidth == null )
+        {
+        	var scroll = document.createElement( "div" );
+            var scrollCss = "width: 100px; height: 100px; top: -300px; left: 0px; overflow: scroll; position: absolute";
+            scroll.style.cssText = scrollCss;
+            	
+        	var test = document.createElement( "div" );
+            scroll.style.cssText = "width: 400px; height: 400px";
+        
+            scroll.appendChild( test );
+        
+            var docBod = jsObj.docBody;
+    
+        	docBod.appendChild( scroll );
+        
+        	scrollWidth = scroll.offsetWidth - scroll.clientWidth;
+        
+        	docBod.removeChild( scroll );
+        	scroll.removeChild( test );
+        	scroll = test = null;
+            
+            jsObj.ui.scrollWidth = scrollWidth;
+        }
+    	return scrollWidth;
+    }
 };
 
-if ( jetspeed.UAie6 )
+//if ( jetspeed.UAie6 )
 {
     // object to bundle resize processing:
     jetspeed.ui.windowResizeMgr = 
