@@ -35,6 +35,8 @@ if ( ! jetspeed.url )
     jetspeed.url = {};
 if ( ! jetspeed.om )
     jetspeed.om = {};
+if ( ! jetspeed.widget )
+    jetspeed.widget = {};
 
 // jetspeed version
 
@@ -91,13 +93,16 @@ jetspeed.initcommon = function()
                 try
                 {
                     evt = evt || window.event;
-                    evt.cancelBubble = true;
-                    evt.returnValue = false;
+                    if ( evt )
+                    {
+                        evt.cancelBubble = true;
+                        evt.returnValue = false;
+                    }
                 }
                 catch(ex)
                 {
                     if ( ! suppressErrors && djConfig.isDebug )
-                        dojo.debug( "stopEvent failure: " + jetspeed.formatError( ex ) );
+                        dojo.debug( "stopEvent (" + ( typeof evt ) + ") failure: " + jetspeed.formatError( ex ) );
                 }
     	    };
     	    jsObj._stopEvent = function(/*Event*/evt)
@@ -634,6 +639,9 @@ if ( window.dojo )
     
         if ( ! this.mimetype )
             this.mimetype = "text/html";
+
+        if ( ! this.encoding )
+            this.encoding = "utf-8";
     };
     
     dojo.lang.extend( jetspeed.url.BindArgs,
@@ -904,5 +912,46 @@ if ( window.dojo )
             loading.style[ "display" ] = "none";
     };
 }
+
+jetspeed.widget.openDialog = function( dialogWidget )
+{
+    var isMoz = jetspeed.UAmoz;
+    if ( isMoz )
+    {
+        dialogWidget.domNode.style.position = "fixed";  // this fix involves setting position to fixed instead of absolute,
+        if ( ! dialogWidget._fixedIPtBug )              // and the change to var x and var y initialization in placeModalDialog
+        {
+            var _dialog = dialogWidget;
+            _dialog.placeModalDialog = function() {
+                // summary: position modal dialog in center of screen
+
+                var scroll_offset = dojo.html.getScroll().offset;
+                var viewport_size = dojo.html.getViewport();
+    
+                // find the size of the dialog (dialog needs to be showing to get the size)
+                var mb;
+                if(_dialog.isShowing()){
+                    mb = dojo.html.getMarginBox(_dialog.domNode);
+                }else{
+                    dojo.html.setVisibility(_dialog.domNode, false);
+                    dojo.html.show(_dialog.domNode);
+                    mb = dojo.html.getMarginBox(_dialog.domNode);
+                    dojo.html.hide(_dialog.domNode);
+                    dojo.html.setVisibility(_dialog.domNode, true);
+                }
+                //var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
+                //var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
+                var x = (viewport_size.width - mb.width)/2;
+                var y = (viewport_size.height - mb.height)/2;
+                with(_dialog.domNode.style){
+                    left = x + "px";
+                    top = y + "px";
+                }
+            };
+            _dialog._fixedIPtBug = true;
+        }
+    }
+    dialogWidget.show();
+};
 
 jetspeed.initcommon();
