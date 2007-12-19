@@ -28,7 +28,7 @@ limitations under the License.
 <tag id='body' remove='true'/>
 
 <!-- strip tags -->
-<tag id='head' strip='true'/>
+<tag id='head' remove='true'/>
 
 <!-- rewritten tags -->
 <tag id='a'>

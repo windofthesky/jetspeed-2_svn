@@ -120,8 +120,8 @@ public class SSOWebContentPortlet extends WebContentPortlet
     
     // Data Members
     
-    private PortletContext context;
-    private SSOProvider sso;
+    protected PortletContext context;
+    protected SSOProvider sso;
     
     
     // Methods
@@ -348,7 +348,8 @@ public class SSOWebContentPortlet extends WebContentPortlet
                 }
 
                 // resuse client - in case new cookies get set - but create a new method (for the formAction)
-                method = getHttpMethod(client, getURLSource(formAction, formParams, request, response), formParams, isPost, request);
+                String formMethod = (isPost) ? FORM_POST_METHOD : FORM_GET_METHOD;                
+                method = getHttpMethod(client, getURLSource(formAction, formParams, request, response), formParams, formMethod, request);
                 // System.out.println("...posting credentials");
                 result = doHttpWebContent(client, method, 0, request, response) ;
                 // System.out.println("Result of attempted authorization: "+success);
