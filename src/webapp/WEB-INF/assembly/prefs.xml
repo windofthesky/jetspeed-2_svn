@@ -26,6 +26,14 @@
         <constructor-arg index="1">
             <ref bean="preferencesCache" />
         </constructor-arg>
+        <!-- list of portlet applications default preferences to preload, leave list empty to not preload -->
+        <constructor-arg index='2'>
+	    <list>
+    		<value>j2-admin</value>
+        </list>
+        </constructor-arg>
+        <!--  preload ALL Entities: warning this can chew up lots of memory -->
+        <constructor-arg index='3'><value type="boolean">false</value></constructor-arg>
     </bean>
 
     <bean id="org.apache.jetspeed.prefs.PreferencesProvider" parent="baseTransactionProxy" name="prefsProvider">

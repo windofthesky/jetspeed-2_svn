@@ -18,13 +18,19 @@ package org.apache.jetspeed.prefs.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
@@ -48,7 +54,7 @@ import org.apache.ojb.broker.query.QueryFactory;
 public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBrokerDaoSupport implements
         PreferencesProvider
 {
-
+    
     private static class NodeCache implements DistributedCacheObject
     {
         /** The serial uid. */
@@ -165,15 +171,12 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     }
 
     private JetspeedCache preferenceCache;
-    
+    private List preloadedApplications;
+    private boolean preloadEntities = false;
     
     /**
-     * @param repository
+     * @param repositoryPath
      *            Location of repository mapping file. Must be available within the classpath.
-     * @param prefsFactoryImpl
-     *            <code>java.util.prefs.PreferencesFactory</code> implementation to use.
-     * @param enablePropertyManager
-     *            Whether or not we chould be suing the property manager.
      * @throws ClassNotFoundException
      *             if the <code>prefsFactoryImpl</code> argument does not reperesent a Class that exists in the
      *             current classPath.
@@ -183,8 +186,10 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     {
         super(repositoryPath);
         NodeImplProxy.setProvider(this);
+        this.preloadedApplications = new LinkedList();
     }
 
+    
     /**
      * @param repository
      *            Location of repository mapping file. Must be available within the classpath.
@@ -203,6 +208,15 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         this.preferenceCache = preferenceCache;
     }
 
+    public PersistenceBrokerPreferencesProvider(String repositoryPath, JetspeedCache preferenceCache, List apps, boolean preloadEntities)
+    throws ClassNotFoundException
+    {
+        this(repositoryPath);
+        this.preferenceCache = preferenceCache;
+        this.preloadedApplications = apps;
+        this.preloadEntities = preloadEntities;
+    }
+    
     protected void addToCache(NodeCache content)
     {
         CacheElement cachedElement = preferenceCache.createElement(content.getCacheKey(), content);
@@ -522,6 +536,104 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     public Property createProperty(Node node, String name, Object value)
     {
         return new PropertyImpl(node.getNodeId(), name, value);
+    }
+
+    public void init() throws Exception
+    {
+        super.init();
+        Iterator apps = this.preloadedApplications.iterator();
+        while (apps.hasNext())
+        {
+            String appName = (String)apps.next();
+            preloadApplicationPreferences(appName);
+        }
+        if (preloadEntities)
+            preloadAllEntities();
+    }
+    
+    public void preloadApplicationPreferences(String portletApplicationName) throws NodeDoesNotExistException
+    {
+        String portletDefPrefPath = "/" + MutablePortletApplication.PREFS_ROOT + "/" + portletApplicationName + "/";
+//        + PortletDefinitionComposite.PORTLETS_PREFS_ROOT + "/" + portlet.getName() + "/"
+//        + MutablePortletApplication.PORTLET_PREFERENCES_ROOT;
+//        NodeCache key = new NodeCache(portletDefPrefPath, 1);
+//        NodeCache hit = getNode(key.getCacheKey());
+//        if (hit != null)
+//        {
+//            return 1;
+//            //return hit.getNode();
+//        }        
+        long start = System.currentTimeMillis();        
+        int count = loadNodeAndAllChildren(portletDefPrefPath);
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("++++ PREFS:PA loaded " + count + " pref nodes for app " + portletDefPrefPath + " in " + elapsed + " milliseconds.");
+    }
+    
+    protected int loadNodeAndAllChildren(String path)
+    {
+        int count = 0;
+        NodeCache root = null;
+        Criteria c = new Criteria();
+        c.addLike("fullPath", path + "%");
+        //c.addOrderBy("fullPath");
+        Query query = QueryFactory.newQuery(NodeImpl.class, c);
+        Collection result = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        // TODO: ensure that we always get the first node back first
+        if (result == null || result.isEmpty())
+        {
+            return count;           
+        }
+        Iterator ri = result.iterator();
+        if (ri.hasNext())
+        {
+            Node n = (Node)ri.next();
+            NodeImplProxy proxy = new NodeImplProxy(n);
+            root = new NodeCache(proxy);
+            addToCache(root);
+            count++;
+        }
+        else
+        {
+            return count;        
+        }
+        Map parents = new HashMap();
+        parents.put(new Long(root.getNode().getNodeId()), root);
+        while (ri.hasNext())
+        {
+            // build children and subchildren
+            Node subNode = (Node)ri.next();
+            //System.out.println("*** Preloading: " + subNode.getFullPath());
+            // add to current node
+            NodeCache nodeKey = new NodeCache(subNode.getFullPath(), subNode.getNodeType());
+            NodeCache lookup = getNode(nodeKey.getCacheKey());
+            if (lookup == null)
+            {
+                NodeImplProxy proxy = new NodeImplProxy(subNode);
+                nodeKey.setNode(proxy);
+                addToCache(nodeKey);
+                lookup = nodeKey;
+            }
+            NodeCache parent = (NodeCache)parents.get(subNode.getParentNodeId());
+            if (parent != null)
+            {
+                if (parent.getChildren() == null)
+                    parent.setChildren(new ArrayList());
+                parent.getChildren().add(lookup.getCacheKey());
+                count += parent.getChildren().size();
+            }
+            parents.put(new Long(subNode.getNodeId()), lookup);
+            count++;
+        }         
+        return count;
+    }
+    
+    public void preloadAllEntities() throws NodeDoesNotExistException
+    {
+        String entitiesRoot = "/" + MutablePortletEntity.PORTLET_ENTITY_ROOT + "/";
+        long start = System.currentTimeMillis();        
+        int count = loadNodeAndAllChildren(entitiesRoot);
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("++++ PREFS:ENTITIES loaded " + count + " total entity pref nodes in " + elapsed + " milliseconds.");
     }
     
 }
