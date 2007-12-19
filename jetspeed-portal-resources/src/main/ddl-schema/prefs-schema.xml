@@ -20,23 +20,6 @@ limitations under the License.
 <database name="j2">
 
     <!--
-       prefs_property_value
-    -->
-    <table name="PREFS_PROPERTY_VALUE">
-        <column name="PROPERTY_VALUE_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="NODE_ID" type="INTEGER"/>
-        <column name="PROPERTY_NAME" size="100" type="VARCHAR"/>
-        <column name="PROPERTY_VALUE" size="254" type="VARCHAR"/>
-        <column name="CREATION_DATE" type="TIMESTAMP"/>
-        <column name="MODIFIED_DATE" type="TIMESTAMP"/>
-        <!-- Still an issue with OJB 1.0.3 when deleting M-N. Foreign Key Violation.
-        <foreign-key foreignTable="PREFS_NODE">
-            <reference foreign="NODE_ID" local="NODE_ID"/>
-        </foreign-key>
-        -->
-    </table>
-    
-    <!--
        pref_node
     -->
     <table name="PREFS_NODE">
@@ -47,9 +30,37 @@ limitations under the License.
         <column name="FULL_PATH" size="254" type="VARCHAR"/>
         <column name="CREATION_DATE" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" type="TIMESTAMP"/>
-        <foreign-key foreignTable="PREFS_NODE" name="FK_PREFS_NODE_1">
+        <foreign-key foreignTable="PREFS_NODE" name="FK_PREFS_NODE_1" onDelete="cascade">
             <reference foreign="NODE_ID" local="PARENT_NODE_ID"/>
-        </foreign-key>
+        </foreign-key>        
+        <index name="IX_PREFS_NODE_1">
+            <index-column name="PARENT_NODE_ID"/>
+        </index>        
+        <index name="IX_PREFS_NODE_2">
+            <index-column name="FULL_PATH"/>
+        </index>        
     </table>
+    <!--
+       prefs_property_value
+    -->
+    <table name="PREFS_PROPERTY_VALUE">
+        <column name="PROPERTY_VALUE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="NODE_ID" type="INTEGER"/>
+        <column name="PROPERTY_NAME" size="100" type="VARCHAR"/>
+        <column name="PROPERTY_VALUE" size="254" type="VARCHAR"/>
+        <column name="CREATION_DATE" type="TIMESTAMP"/>
+        <column name="MODIFIED_DATE" type="TIMESTAMP"/>
+        <!-- Still an issue with OJB 1.0.3 when deleting M-N. Foreign Key Violation. 
+             2007/12/13 - DST - I've been testing with this index enabled on Oracle, MySQL
+              and experiencing no issues. I think the index on should be the default case,
+              and inferior databases will have to turn it off as part of the integration process
+         -->
+        <foreign-key foreignTable="PREFS_NODE" onDelete="cascade">
+            <reference foreign="NODE_ID" local="NODE_ID" />
+        </foreign-key>        
+        <index name="IX_FKPPV_1">
+            <index-column name="NODE_ID"/>
+        </index>        
+    </table>            
         
 </database>
