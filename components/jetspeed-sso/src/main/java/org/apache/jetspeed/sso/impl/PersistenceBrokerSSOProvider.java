@@ -622,6 +622,8 @@ public class PersistenceBrokerSSOProvider extends
 		catch (Exception e)
         {
         	e.printStackTrace();
+            // current OJB model implementation isn't 100% correct, make sure no stale/broken state is left behind
+            mapSite.remove(site);
            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
         }
 								
@@ -634,6 +636,11 @@ public class PersistenceBrokerSSOProvider extends
          {
          	e.printStackTrace();
             throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
+         }
+         finally
+         {
+             // current OJB model implementation isn't 100% correct, make sure no stale/broken state is left behind
+             mapSite.remove(site);
          }
          
 	}
