@@ -54,6 +54,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -119,6 +120,9 @@ public class WebContentPortlet extends GenericVelocityPortlet
     private RulesetRewriter rewriter = null;
     private RewriterController rewriteController = null;
 
+    public static final String FORM_POST_METHOD = "post";
+    public static final String FORM_GET_METHOD = "get";
+    public static final String FORM_MULTIPART_METHOD = "multipart";
     
     public WebContentPortlet()
     {
@@ -323,7 +327,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
             
             // ...set up URL and HttpClient stuff
             HttpClient httpClient = getHttpClient(request) ;
-            httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, isPost, request);
+            String method = (isPost) ? FORM_POST_METHOD : FORM_GET_METHOD;
+            httpMethod = getHttpMethod(httpClient, getURLSource(sourceAttr, sourceParams, request, response), sourceParams, method, request);
             byte[] result = doPreemptiveAuthentication(httpClient, httpMethod, request, response);
             
             // ...get, cache, and return the content
@@ -517,14 +522,35 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return client ;
     }
     
-    protected HttpMethodBase getHttpMethod(HttpClient client, String uri, Map params, boolean isPost, RenderRequest request) throws IOException
+    protected HttpMethodBase getHttpMethod(HttpClient client, String uri, Map params, String formMethod, RenderRequest request) throws IOException
     {
+        formMethod = FORM_MULTIPART_METHOD;
         HttpMethodBase httpMethod = null;
         String useragentProperty = request.getProperty("User-Agent");
-        if (!isPost)
-        {
-            // System.out.println("WebContentPortlet.getHttpMethod() - HTTP GET from URL: "+uri);
+        if(formMethod.equalsIgnoreCase(FORM_MULTIPART_METHOD)){ 
+            // http mutipart
+            MultipartPostMethod mutlitPart = (MultipartPostMethod)( httpMethod = new MultipartPostMethod(uri)) ; 
+            if (params != null && !params.isEmpty())
+            {
+                Iterator iter = params.entrySet().iterator();
+                while (iter.hasNext())
+                {
+                    Map.Entry entry = (Map.Entry)iter.next();
+                    String name = (String)entry.getKey(); 
+                    String[] values = (String[])entry.getValue();
+                    if (values != null)
+                        for (int i=0,limit=values.length; i<limit; i++)
+                        {
+                            // System.out.println("...adding >>>POST parameter: "+name+", with value: "+values[i]+"<<<");
+                            
+                            mutlitPart.addParameter(name, values[i]);
+                        }
+                }   
+            }
             
+        }else if (formMethod.equalsIgnoreCase(FORM_GET_METHOD)){
+        
+            // System.out.println("WebContentPortlet.getHttpMethod() - HTTP GET from URL: "+uri);
             // http GET
             httpMethod = new GetMethod(uri);
             if (params != null && !params.isEmpty())
@@ -548,9 +574,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
             
             // automatically follow redirects (NOTE: not supported in POST - will throw exeception if you ask for it, then sees a redirect!!)
             httpMethod.setFollowRedirects(true);
-        }
-        else
-        {
+        }else if (formMethod.equalsIgnoreCase(FORM_POST_METHOD)) {
             // System.out.println("WebContentPortlet.getHttpMethod() - HTTP POST to URL: "+uri);
             
             // http POST
@@ -584,6 +608,8 @@ public class WebContentPortlet extends GenericVelocityPortlet
         return httpMethod ;
     }
 
+    
+    
 
     static final int BLOCK_SIZE = 4096;
 
