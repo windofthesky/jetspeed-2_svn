@@ -243,3 +243,35 @@
         </tr>
   #end
 #end
+
+#macro (MULTIMENU $_menu)
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr>
+#set ($found = "false")
+    #foreach($element in $_menu.elements.iterator())
+      #if($element.elementType == "option" || $element.elementType == "menu")  
+        #set($tabTitle = $element.getTitle($preferedLocale))
+        #set($tabName = $element.getShortTitle($preferedLocale))
+          #if($element.isSelected($site))
+            <td class="LTabLeft" nowrap="nowrap">&nbsp;</td>
+            <td class="LTab" align="center" valign="middle" nowrap="nowrap" title="$!tabTitle">${tabName}</td>
+            <td class="LTabRight"  nowrap="nowrap">&nbsp;</td>
+            #set ($sitem = $element)
+            #set ($found = "true")
+          #else
+            #set($tabUrl = $jetspeed.getAbsoluteUrl($element.url))
+            <td class="LTabLeftLow"  nowrap="nowrap">&nbsp;</td>
+            <td class="LTabLow" align="center" valign="middle" nowrap="nowrap" title="$!tabTitle"><a href="$tabUrl">${tabName}</a></td>
+            <td class="LTabRightLow"  nowrap="nowrap">&nbsp;</td>
+          #end
+        #else
+        #end      
+    #end
+          </tr>
+        </table>
+        #if ($found == "true")
+ 	    #if($sitem.elementType == "menu")
+	      #MULTIMENU($sitem)
+	    #end
+		#end
+#end

@@ -67,7 +67,8 @@ limitations under the License.
 #includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
       </div>
 #end
-
+## #set($multiMenu = $site.getMenu("site-navigations"))
+## #MULTIMENU($multiMenu)
 ## <!-- Back Navigation -->
 ##       <div id="breadcrumbs">
 ## #set($backStandardMenu = $site.getMenu("back"))
