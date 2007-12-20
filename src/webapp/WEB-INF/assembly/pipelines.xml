@@ -374,7 +374,10 @@ limitations under the License.
       <ref bean="PortletWindowAccessor" />    
     </constructor-arg>
   </bean> 
-    
+
+  <bean id="cleanupPortalURLValve"
+        class="org.apache.jetspeed.container.url.impl.CleanPathInfoEncodedNavStateFromPortalURLValve"/>
+       
   <bean id="jetspeed-pipeline"
         class="org.apache.jetspeed.pipeline.JetspeedPipeline"
         init-method="initialize"
@@ -398,6 +401,10 @@ limitations under the License.
       <ref bean="containerValve"/>
       <ref bean="actionValve"/>
       <ref bean="resourceValve"/>
+      <!-- 
+        JS2-834
+      <ref bean="cleanupPortalURLValve"/>
+      -->
       <ref bean="DecorationValve" />
       <ref bean="headerAggregatorValvePortal"/>  
       <ref bean="aggregatorValve"/>
