@@ -388,10 +388,26 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
 	    	while (it.hasNext())
 	    	{
 	    		String s = (String) it.next();
-	    		NodeCache hit =getNode(s);
+	    		NodeCache hit = getNode(s);
 	    		if (hit != null)
+                {
 	    			v.add(hit.getNode());
-	    	}
+                }
+                else
+                {
+                    int index = s.lastIndexOf("-");
+                    if (index > 0)
+                    {
+                        String fullPath = s.substring(0, index);
+                        int type = Integer.parseInt(s.substring(index + 1));
+                        Node node = getNode(fullPath, type);
+                        if (node != null)
+                        {
+                            v.add(node);
+                        }
+                    }
+                }
++	    	}
 	    	return v;
     	}
     	catch (Exception e)
