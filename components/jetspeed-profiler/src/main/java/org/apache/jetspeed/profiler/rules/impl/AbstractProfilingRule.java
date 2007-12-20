@@ -17,6 +17,7 @@
 package org.apache.jetspeed.profiler.rules.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.jetspeed.profiler.ProfileLocator;
@@ -42,7 +43,7 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     protected String ojbConcreteClass;
     
     /** Map of profile locators kept around for reuse TODO: evict entries after max size reached */    
-    protected Map locators = new HashMap();
+    protected Map locators = Collections.synchronizedMap(new HashMap());
     
     /** Map of resolver rules for criteria. The map goes from criterion name to resolver class */
     protected ProfileResolvers resolvers;
