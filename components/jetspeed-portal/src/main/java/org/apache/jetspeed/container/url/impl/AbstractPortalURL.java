@@ -313,4 +313,14 @@ public abstract class AbstractPortalURL implements PortalURL
             return null;
         }
     }
+
+    public boolean hasEncodedNavState()
+    {
+        return encodedNavState != null;
+    }
+
+    public boolean isPathInfoEncodingNavState()
+    {
+        return false;
+    }
 }

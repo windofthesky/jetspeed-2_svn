@@ -111,5 +111,10 @@ public class PathInfoEncodingPortalURL extends AbstractPortalURL
             buffer.append(getPath());
         }
         return buffer.toString();
+    }
+
+    public boolean isPathInfoEncodingNavState()
+    {
+        return true;
     }        
 }

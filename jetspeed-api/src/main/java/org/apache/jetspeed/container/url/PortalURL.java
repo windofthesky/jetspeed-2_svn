@@ -172,4 +172,16 @@ public interface PortalURL
      * @return a Portal URL with encoded current navigational state
      */
     String getPortalURL();
+    
+    /**
+     * @return true if navigational state was provided on the url
+     */
+    boolean hasEncodedNavState();
+    
+    /**
+     * @return true if navigational state is encoded as pathInfo
+     */
+    boolean isPathInfoEncodingNavState();
+    
+
 }
