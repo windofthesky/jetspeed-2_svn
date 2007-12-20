@@ -157,6 +157,10 @@ dojo.lang.shallowCopy(this.portlets) ;
                 <input type="checkbox" name="actionview" id="actionview" dojoType="Checkbox" /> <label for="actionview">View</label><br />
                 <input type="checkbox" name="actionedit" id="actionedit" dojoType="Checkbox" /> <label for="actionedit">Edit</label><br />
                 <input type="checkbox" name="actionhelp" id="actionhelp" dojoType="Checkbox" /> <label for="actionhelp">Help</label><br />
+                <input type="checkbox" name="actionabout" id="actionabout" dojoType="Checkbox" /> <label for="actionabout">About</label><br />
+                <input type="checkbox" name="actionconfig" id="actionconfig" dojoType="Checkbox" /> <label for="actionconfig">Config</label><br />
+                <input type="checkbox" name="actionedit_defaults" id="actionedit_defaults" dojoType="Checkbox" /> <label for="actionedit_defaults">Edit Defaults</label><br />
+                <input type="checkbox" name="actionprint" id="actionprint" dojoType="Checkbox" /> <label for="actionprint">Print</label><br />                
             </div>
 
             <div dojoType="ContentPane"
@@ -203,6 +207,10 @@ dojo.lang.shallowCopy(this.portlets) ;
     actionNames.push( "view" );
     actionNames.push( "edit" );
     actionNames.push( "help" );
+    actionNames.push( "about" );
+    actionNames.push( "config" );
+    actionNames.push( "edit_defaults" );
+    actionNames.push( "print" );
 </script>
 <script type="text/javascript">
 
