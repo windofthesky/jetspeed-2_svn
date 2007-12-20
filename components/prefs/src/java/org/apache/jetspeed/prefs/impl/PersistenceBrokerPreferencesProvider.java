@@ -407,7 +407,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
                         }
                     }
                 }
-+	    	}
+	    	}
 	    	return v;
     	}
     	catch (Exception e)
