@@ -85,6 +85,20 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
             HttpServletResponse servletResponse,
             InternalActionResponse _actionResponse) throws IOException
     {
+    	String encoding = servletRequest.getParameter( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER );
+        boolean requestHasDesktopEncoding = false;
+    	boolean requestIsDesktopAjax = false;
+        if ( encoding != null && encoding.equals( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE ) )
+        {   // used in cases where action request cannot be made via ajax (e.g. form has <input type=file/> element)
+        	requestHasDesktopEncoding = true;
+        	requestIsDesktopAjax = true;
+        	String ajaxOverride = servletRequest.getParameter( JetspeedDesktop.DESKTOP_AJAX_REQUEST_PARAMETER );
+        	if ( ajaxOverride != null && ajaxOverride.equals( "false" ) )
+        	{
+        		requestIsDesktopAjax = false;
+        	}
+        }
+    	
         if (location == null && _actionResponse != null)
         {
             DynamicInformationProvider provider = InformationProviderAccess
@@ -131,9 +145,15 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
             {
                 redirectURL.setSecure(); // TBD
             }
+            
+            if ( requestHasDesktopEncoding && ! requestIsDesktopAjax )
+            {   // add parameter to tell DesktopEncodingPortalURL that it should not add extra desktop parameters (e.g. entity and portlet)
+            	renderParameter.put( JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER, Boolean.TRUE );
+            }
+
             redirectURL.clearParameters();
             redirectURL.setParameters(renderParameter);
-
+            
             location = servletResponse
                     .encodeRedirectURL(redirectURL.toString());
         }
@@ -145,14 +165,13 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
                     .getResponse();
         }
 
-        String encoding = servletRequest.getParameter( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER );
-        if ( encoding != null && encoding.equals( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE ) )
-        {
+        if ( requestIsDesktopAjax )
+        {   // no real redirect will occur; instead, return the redirect URL in the response body
             location = location.replaceAll( this.desktopActionPipelinePath, this.desktopRenderPipelinePath );
             redirectResponse.getWriter().print( location );
         }
         else
-        {
+        {   // do real redirect
             location = location.replaceAll( this.desktopActionPipelinePath, this.desktopPipelinePath );
             location = location.replaceAll( this.desktopRenderPipelinePath, this.desktopPipelinePath);
             redirectResponse.sendRedirect(location);
