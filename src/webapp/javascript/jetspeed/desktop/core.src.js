@@ -2865,7 +2865,7 @@ dojo.lang.extend( jetspeed.om.Page,
         else if ( ! this.isUA() )
             jsObj.pageNavigate( addportletPageUrl ); 
     },
-    addPortletTerminate: function( retUrl, retPagePathAndQuery )   ///   xxxxxxxx
+    addPortletTerminate: function( retUrl, retPagePathAndQuery )
     {
         var jsObj = jetspeed;
         var viewRetRootFragId = jsObj.url.getQueryParameter( document.location.href, jsObj.id.ADDP_RFRAG );
@@ -3247,37 +3247,56 @@ dojo.lang.extend( jetspeed.om.Portlet,
             {
                 for ( var i = 0 ; i < formList.length ; i++ )
                 {
-                    var cForm = formList[i];                    
+                    var cForm = formList[i];
                     var cFormAction = cForm.action;
-
-                    var parsedPseudoUrl = jsPUrl.parseContentUrl( cFormAction );
-                    
-                    var submitOperation = parsedPseudoUrl.operation;
-
-                    if ( submitOperation == jsPUrl.PORTLET_REQUEST_ACTION || submitOperation == jsPUrl.PORTLET_REQUEST_RENDER )
-                    {
-                        //var replacementActionUrl = parsedPseudoUrl.url; 
-                        var replacementActionUrl = jsPUrl.genPseudoUrl( parsedPseudoUrl, true );
-                        cForm.action = replacementActionUrl;
-
-                        var formBind = new jsObj.om.ActionRenderFormBind( cForm, parsedPseudoUrl.url, parsedPseudoUrl.portletEntityId, submitOperation );
-                        //  ^^^ formBind serves as an event hook up - retained ref is not needed
-                        
-                        if ( debugOn )
-                            dojo.debug( "postParseAnnotateHtml [" + this.entityId + "] adding FormBind (" + submitOperation + ") for form with action: " + cFormAction );
-                    }
-                    else if ( cFormAction == null || cFormAction.length == 0 )
-                    {
-                        var formBind = new jsObj.om.ActionRenderFormBind( cForm, null, this.entityId, null );
-                        //  ^^^ formBind serves as an event hook up - retained ref is not needed
-                        
-                        if ( debugOn )
-                            dojo.debug( "postParseAnnotateHtml [" + this.entityId + "] form action attribute is empty - adding FormBind with expectation that form action will be set via script" ) ;
+                    var parsedPseudoUrl = jsPUrl.parseContentUrl( cFormAction );                        
+                    var op = parsedPseudoUrl.operation;
+                    var opActionOrRender = ( op == jsPUrl.PORTLET_REQUEST_ACTION || op == jsPUrl.PORTLET_REQUEST_RENDER );
+                    var noAnnotateAction = false;
+                    if ( dojo.io.formHasFile( cForm ) )
+                    {   // form with <input type=file cannot be submitted via ajax 
+                        if ( opActionOrRender )
+                        {   // add encoder=desktop to assure that content cache is cleared for each portlet on page
+                            // add jsdajax=false parameter to cause actual 302 redirect
+                            var modAction = jsObj.url.parse( cFormAction );
+                            modAction = jsObj.url.addQueryParameter( modAction, "encoder", "desktop", true );
+                            modAction = jsObj.url.addQueryParameter( modAction, "jsdajax", "false", true );
+                            cForm.action = modAction.toString();
+                        }
+                        else
+                        {
+                            noAnnotateAction = true;
+                        }
                     }
                     else
                     {
-                        if ( debugOn )
-                            dojo.debug( "postParseAnnotateHtml [" + this.entityId + "] form action attribute doesn't match annotation criteria, leaving as is: " + cFormAction ) ;
+                        if ( opActionOrRender )
+                        {
+                            var replacementActionUrl = jsPUrl.genPseudoUrl( parsedPseudoUrl, true );
+                            cForm.action = replacementActionUrl;
+    
+                            var formBind = new jsObj.om.ActionRenderFormBind( cForm, parsedPseudoUrl.url, parsedPseudoUrl.portletEntityId, op );
+                            //  ^^^ formBind serves as an event hook up - retained ref is not needed
+                            
+                            if ( debugOn )
+                                dojo.debug( "postParseAnnotateHtml [" + this.entityId + "] adding FormBind (" + op + ") for form with action: " + cFormAction );
+                        }
+                        else if ( cFormAction == null || cFormAction.length == 0 )
+                        {
+                            var formBind = new jsObj.om.ActionRenderFormBind( cForm, null, this.entityId, null );
+                            //  ^^^ formBind serves as an event hook up - retained ref is not needed
+                            
+                            if ( debugOn )
+                                dojo.debug( "postParseAnnotateHtml [" + this.entityId + "] form action attribute is empty - adding FormBind with expectation that form action will be set via script" ) ;
+                        }
+                        else
+                        {
+                            noAnnotateAction = true;
+                        }
+                    }
+                    if ( noAnnotateAction && debugOn )
+                    {
+                        dojo.debug( "postParseAnnotateHtml [" + this.entityId + "] form action attribute doesn't match annotation criteria, leaving as is: " + cFormAction ) ;
                     }
                 }
             }
