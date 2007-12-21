@@ -72,6 +72,8 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         if (null != pageState.maximizedWindowId)
         {
             pageState.windowStates.remove(pageState.maximizedWindowId);
+            removeFromCache(context, pageState.maximizedWindowId, cache);
+            removeFromCache(context, pageState.maximizedWindowId, decorationCache);            
             pageState.maximizedWindowId = null;
         }
 
