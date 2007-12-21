@@ -157,10 +157,10 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
     
     protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action)
     {   
-        return createPortletURL(encodedNavState, secure, window, action, false);
+        return createPortletURL(encodedNavState, secure, window, action, false, false);
     }
     
-    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action, boolean resource)
+    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action, boolean resource, boolean desktopRequestNotAjax)
     {   
         StringBuffer buffer = new StringBuffer("");
         buffer.append(getBaseURL(secure));
@@ -186,14 +186,16 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         
         if ( !resource )
         {
-            PortletEntity pe = window.getPortletEntity();
-            buffer.append( "?entity=" ).append( pe.getId() );
+        	if ( ! desktopRequestNotAjax )
+            {
+        		PortletEntity pe = window.getPortletEntity();
+        		buffer.append( "?entity=" ).append( pe.getId() );
             
-            PortletDefinition portlet = pe.getPortletDefinition();
-            MutablePortletApplication app = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-            String uniqueName = app.getName() + "::" + portlet.getName();
-            buffer.append( "&portlet=" ).append( uniqueName );
-            
+        		PortletDefinition portlet = pe.getPortletDefinition();
+        		MutablePortletApplication app = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+        		String uniqueName = app.getName() + "::" + portlet.getName();
+        		buffer.append( "&portlet=" ).append( uniqueName );
+            }
         }
         else
         {
@@ -208,7 +210,13 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         try
         {
             boolean resource = !action && parameters.containsKey(PortalReservedParameters.PORTLET_RESOURCE_URL_REQUEST_PARAMETER);
-            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window, action, resource);
+            boolean desktopRequestNotAjax = false;
+            if ( parameters.containsKey(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER) )
+            {
+            	desktopRequestNotAjax = true;
+            	parameters.remove(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER);
+            }
+            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window, action, resource, desktopRequestNotAjax);
         }
         catch (UnsupportedEncodingException e)
         {
