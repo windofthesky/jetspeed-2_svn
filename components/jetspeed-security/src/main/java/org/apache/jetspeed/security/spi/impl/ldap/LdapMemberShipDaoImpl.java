@@ -351,15 +351,25 @@ public class LdapMemberShipDaoImpl extends LdapPrincipalDaoImpl implements LdapM
 	public String[] searchUsersFromRoleByUser(final String rolePrincipalUid, SearchControls cons)
 	throws NamingException
 	{
-	
-		String query = "(&(" + getUserRoleMembershipAttribute() + "=" + rolePrincipalUid + ")" + getUserFilter() + ")";
+        String roleMemberAttr = getUserRoleMembershipAttribute();
+        /*
+         *  search for those users with a role membership attribute matching two possible values:  
+         *    - the role principal UID (e.g. 'admin') or
+         *    - the full DN of the role (e.g. 'cn=admin,ou=Roles,o=sevenSeas')     
+         */ 
+        StringBuffer byRolePrincipalUidMatch = new StringBuffer("(").append(roleMemberAttr).append("=").append(rolePrincipalUid).append(")");
+        StringBuffer byRoleDNMatch = new StringBuffer("(").append(roleMemberAttr).append("=").append(getRoleDN(rolePrincipalUid, true)).append(")");
+        
+        StringBuffer completeRoleAttrMatch = new StringBuffer("(|").append(byRolePrincipalUidMatch).append(byRoleDNMatch).append(")");
+        StringBuffer query= new StringBuffer("(&").append(completeRoleAttrMatch).append("(").append(getUserFilter()).append("))");
+        
 		if (logger.isDebugEnabled())
 		{
 		    logger.debug("query[" + query + "]");
 		}
 	    
 		cons.setSearchScope(getSearchScope());
-	    NamingEnumeration results = ((DirContext) ctx).search(getUserFilterBase(),query , cons);	    
+	    NamingEnumeration results = ((DirContext) ctx).search(getUserFilterBase(),query.toString() , cons);	    
 
 		ArrayList userPrincipalUids = new ArrayList();
 		
