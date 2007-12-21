@@ -179,9 +179,7 @@ When the server starts up, make sure that there are no error messages printing o
 	  <p>
 	  Before we begin, the LDAP code in Jetspeed was broken until recently, and therefore unusable without manual changes to the Java code (at least with Apache DS, according to our testing).  
 	  Therefore, you should make sure that you're using Jetspeed 2.1.3 or higher. 
-      (If 2.1.3 has not been release by the time you read this, you'll have to obtain the current LDAP implementation code from here:
       </p>
-	  <p><a href='http://people.apache.org/~taylor/LDAP/jetspeed-security-2.1.3-dev.jar'>http://people.apache.org/~taylor/LDAP/jetspeed-security-2.1.3-dev.jar</a></p>
 	  <p>For the first step, you will need to download three Spring configuration files. When Jetspeed is deployed to Tomcat, 
 	  it should be placed under <i>WEB-INF/assembly/override/</i> directory. Download from here:
 	  </p>
