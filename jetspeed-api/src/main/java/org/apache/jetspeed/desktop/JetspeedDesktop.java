@@ -32,6 +32,9 @@ public interface JetspeedDesktop
     String DESKTOP_ENCODER_REQUEST_PARAMETER = "encoder";
     String DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE = "desktop";
     
+    String DESKTOP_AJAX_REQUEST_PARAMETER = "jsdajax";
+    String DESKTOP_REQUEST_NOT_AJAX_PARAMETER = "org.apache.jetspeed.desktop.request.not.ajax";
+    
     String DEFAULT_DESKTOP_PIPELINE_PATH = "/desktop";
     String DEFAULT_DESKTOP_ACTION_PIPELINE_PATH = "/action";
     String DEFAULT_DESKTOP_RENDER_PIPELINE_PATH = "/render";
