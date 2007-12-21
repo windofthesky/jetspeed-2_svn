@@ -312,8 +312,16 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
 	}
 
 	protected String[] parseAttr(String attr, String replace) {
-		attr = StringUtils.replace(attr, "{u}", replace);
-		return StringUtils.split(attr,"=");
+        attr = StringUtils.replace(attr, "{u}", replace);
+        int index = attr.indexOf('=');
+        
+        if (index != -1){
+            return new String[]{ 
+                    attr.substring(0,index), 
+                    index < attr.length() -1 ? attr.substring(index + 1) : null}; 
+        } else {
+            return new String[]{ attr, null }; 
+        }
 	}
 
 	protected String getGroupDN(String groupPrincipalUid) {
