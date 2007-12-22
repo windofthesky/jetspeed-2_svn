@@ -61,6 +61,10 @@ Many developers still prefer Maven-1. If you are new to Maven, then maybe its be
 <li><a href='getting-started-binary.html' target='_blank'>Building a Custom Portal with the Maven-1 Plugin</a></li>
 <li><a href='j2-maven-plugin.html' target='_blank'>Maven-1 Plugin Documentation</a></li>
 </ul>
+<h3>Future Directions: Jetspeed 2.2</h3>
+<p>With the next major release version 2.2, the current Maven2 build will be deprecated, and replaced with a new Maven2 build.
+The Maven1 build will be completely dropped.
+</p>
 <h2>Building from Source</h2>
 <p>If you need to build the source, here are the guides:</p>
 <ul>
