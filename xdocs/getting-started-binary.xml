@@ -18,7 +18,7 @@
 <document>
 	<properties>
 		<title>
-			Getting Started with Jetspeed 2 using a Binary Release
+			Getting Started with Jetspeed 2 using a Binary Release (deprecated)
 		</title>
 		<subtitle>Getting ready to build your own portal</subtitle>
 		<authors>
@@ -30,7 +30,7 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="1. Some Basic Information">
+		<section name="1. Some Basic Information (deprecated)">
 			<subsection name="Basic Assumptions">
 				<ul>
 					<li>
