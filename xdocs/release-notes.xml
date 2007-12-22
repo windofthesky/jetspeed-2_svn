@@ -101,6 +101,7 @@
             <subsection name="New Feature">
                 <ul>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-634'>JS2-634</a>] - edit_defaults custom portlet mode</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-708'>JS2-708</a>] - Ant Custom Build Tutorial</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-716'>JS2-716</a>] - PSML and XML Import / Export Admin Portlet</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-729'>JS2-729</a>] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-791'>JS2-791</a>] - configure the security constraint on a particular portlet fragment using new custom config portlet mode</li>

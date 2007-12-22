@@ -66,6 +66,7 @@ Release Notes - Jetspeed 2 - Version 2.1.3
 
 ** New Feature
     * [JS2-634] - edit_defaults custom portlet mode
+    * [JS2-708] - Ant Custom Build Tutorial
     * [JS2-716] - PSML and XML Import / Export Admin Portlet
     * [JS2-729] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams
     * [JS2-791] - configure the security constraint on a particular portlet fragment using new custom config portlet mode
