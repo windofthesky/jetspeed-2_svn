@@ -95,7 +95,16 @@ limitations under the License.
             <artifactId>mockrunner</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>jmock</groupId>
+            <artifactId>jmock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jmock</groupId>
+            <artifactId>jmock-cglib</artifactId>
+			<scope>test</scope>
+        </dependency>
         <!--
             Note: junit is normally required only for test, but 
             in this case, abstract test cases are included in the
