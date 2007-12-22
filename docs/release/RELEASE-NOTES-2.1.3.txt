@@ -1,0 +1,76 @@
+
+Release Notes - Jetspeed 2 - Version 2.1.3
+
+
+** Bug
+    * [JS2-593] - NullPointerException whent getting database connection in BatchedStatistics
+    * [JS2-612] - Get NullPointerException around pageManager in FolderImpl under high load
+    * [JS2-666] - Clustered Environment: constraint violation if clones are started at the same time
+    * [JS2-750] - LDAP login not resolving DN correctly
+    * [JS2-752] - Desktop pipeline: drag and drop and portlet relocation
+    * [JS2-753] - Desktop Pipeline: sticky mouse pointer after portlet was resized in Untiled mode.
+    * [JS2-754] - Desktop Pipeline: javascript error when click on 'Aditional Link'
+    * [JS2-756] - Desktop Pipeline: Browser Refresh Issue After Page Edit
+    * [JS2-757] - Removing /_user/guest folder gives edit access to all pages
+    * [JS2-758] - Ukrainian symbols doesn't save through Portal Site Manager
+    * [JS2-759] - Jetspeed caches content of portal pages unexpectedly
+    * [JS2-762] - Cannot return to view mode after changing to simple layout theme in page edit mode.
+    * [JS2-764] - There are much DOCTYPE directives in every result page of portal 
+    * [JS2-767] - Portlet Action not working when using JetspeedPowerTool
+    * [JS2-768] - Desktop pipeline gets null page in request context
+    * [JS2-769] - Layout Portlets do not support content types other than text/html
+    * [JS2-784] - Adding portlet doesn't work in 2.1.3 trunk!
+    * [JS2-790] - Many bugs in portal site manager portlet
+    * [JS2-795] - Deadlock while release session on Websphere Release 6.0.2.19
+    * [JS2-796] - VelocityTwoColumns mentioned twice in layouts guide
+    * [JS2-798] - Portlet Selector fails on Safari browser
+    * [JS2-799] - Jetspeed cannot deploy portlet applications that run from the "/" context.
+    * [JS2-800] - Memeory Leak Caused by org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl
+    * [JS2-802] - Eclipse m2.classpath has some typos
+    * [JS2-803] - Java6 can't compile Jetspeed
+    * [JS2-807] - Attached files gives you the ability to run the tests under Maven-2 (currently broken)
+    * [JS2-810] - Rule criteria is not ordered correctly
+    * [JS2-814] - Ldap User DN is incorrectly calculated when search filterBase is empty
+    * [JS2-815] - SSOIframePortlet doesn't save changed remote principal name
+    * [JS2-816] - Jetspeed common javascript doesn't support running the portal under ROOT context
+    * [JS2-819] - Edit mode of Category Portlet Selector doesn't work on IE browser.
+    * [JS2-820] - display UNICODE in desktop mode.
+    * [JS2-822] - Flash Portlets are broken on Desktop
+    * [JS2-824] - Odd behavior on maximize and minimize of portlets under Desktop, IE6 only
+    * [JS2-826] - Invalid DN values in group/role member attributes result in null pointer dereferences in the BasePrincipalImpl class
+    * [JS2-827] - Does't work that uploading files in desktop mode using "multipart/form-data"
+    * [JS2-829] - Issue with PersistenceBrokerPreferencesProvider.resolveChildren() when cached preferences are evicted.
+    * [JS2-830] - Unpredictable exceptions due to unsynchronized HashMap in AbstractProfilingRul
+    * [JS2-833] - associations between portal and remote principal are not removed
+    * [JS2-836] - Lookup of LDAP users per role using a role membership attribute on a user is broken
+    * [JS2-837] - Attributes template for initial LDAP user/role/group attributes does not accept '=' sign
+
+** Improvement
+    * [JS2-710] - Dynamically Hide Portlets  at request time
+    * [JS2-755] - Desktop Pipeline: Blank deley when switch page
+    * [JS2-779] - Supporting Pocket PC
+    * [JS2-780] - Provide out-of-the-box Wicket portlet support
+    * [JS2-785] - Parallel Rendering on Websphere 6.1
+    * [JS2-787] - Non-informative error handling in PortalSiteManager. I've created a patch
+    * [JS2-788] - Localize File Portlet resources
+    * [JS2-789] - Login without posting all credentials via HTTP request
+    * [JS2-793] - Support deployment of jetspeed under a custom context name (e.g. ROOT) with the maven 1 jetspeed plugin
+    * [JS2-797] - Improve LDAP implementation and documentation for Apache DS 1.0.2
+    * [JS2-805] - Improve Credentials Password Support
+    * [JS2-806] - Portlets should return to normal view state on click of menu navigation from portal
+    * [JS2-808] - Maximize on edit-defaults option
+    * [JS2-812] - Better support for MSSQL
+    * [JS2-821] - CategoryPortletSelector no portlets displayed in IE6 / Update CategoryPortletSelector localization Korean
+    * [JS2-823] - NoAction Layouts under desktop pipeline behave different from portal pipeline
+    * [JS2-835] - Improve Permissions and Constraints Admin portlets to support the latest Portlet Modes
+
+** New Feature
+    * [JS2-634] - edit_defaults custom portlet mode
+    * [JS2-716] - PSML and XML Import / Export Admin Portlet
+    * [JS2-729] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams
+    * [JS2-791] - configure the security constraint on a particular portlet fragment.
+    * [JS2-809] - Add table schema aware datasource proxy
+    * [JS2-834] - Automatically cleanup of the PortalURL: no navigational state in browser url
+
+** Wish
+    * [JS2-786] - Tool for conversion preferences from database no-principal preferences to defaults preferences in psml pages
