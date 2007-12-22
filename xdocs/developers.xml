@@ -56,7 +56,7 @@ Many developers still prefer Maven-1. If you are new to Maven, then maybe its be
 <li><a href='http://portals.apache.org/tutorials/jetspeed-2/' target='_blank'>Jetspeed Tutorial - Building a Custom Portal with the Maven-2 Plugin</a></li>
 <li><a href='maven-2-custom.html' target='_blank'>Building a Custom Portal with the Maven-2 Plugin</a></li>
 </ul>
-<h3>Maven-1 Custom build</h3>
+<h3>Maven-1 Custom build (deprecated)</h3>
 <ul>
 <li><a href='getting-started-binary.html' target='_blank'>Building a Custom Portal with the Maven-1 Plugin</a></li>
 <li><a href='j2-maven-plugin.html' target='_blank'>Maven-1 Plugin Documentation</a></li>
