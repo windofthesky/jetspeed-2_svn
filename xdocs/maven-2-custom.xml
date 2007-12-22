@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>
+			Building a Custom Jetspeed 2.1.x Project with Maven-2
+		</title>
+		<subtitle>How-to for Building a Custom Portal with Maven-2 and Jetspeed 2.1.x</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="How-to for Building a Custom Portal with Maven-2 and Jetspeed 2.1.x">
+			<subsection name="Custom Portal Generation">
+            <p>
+The Maven1 j2:portal.genapp goal has been supported in the Maven2 build as an archetype.
+ However, until a Jetspeed2 Maven2 repository is completely populated, a normal Maven2 build must be completed to make Jetspeed2 archetypes 
+ available in your local repository. One can tweak the following command as needed to create a Jetspeed2 instance using this archetype:
+            </p>
+            <p><b>
+ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1-3 -DgroupId=myportalgroup -DartifactId=myportal -Dversion=1.0
+            </b>
+            </p>
+			</subsection>
+			<subsection name="Custom Portal Directory Structure Conventions">
+			<p>
+Note that this and other archetypes can issue many harmless warnings while expanding. 
+Please ignore the warnings unless the expansion of the archetype template fails. When complete, the portal archetype expansion will contain the following structure
+ within a directory named as the specified artifactId relative to the current working directory:			
+ 			</p>
+<ul>
+<li><p><tt>&lt;artifactId&gt;/applications</tt> - conventional subdirectory for portal application war modules. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/app-servers</tt> - contains portal deployment builds and resources. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/components</tt> - conventional subdirectory for portal component jar modules. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/assembly</tt> - custom portal application component Spring assemblies. </p>
+
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/conf</tt> - portal application context configuration files. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/decorations</tt> - custom decorations in images, layout, and portlet subdirectories. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/pages</tt> - custom portal PSML pages to augment/override minimal defaults, (e.g. /Administrative/**, /default-page.psml, /myaccount.psml, /page.security, and /system/**). </p>
+
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/schema</tt> - Jetspeed2 database schema definitions. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/sql</tt> - Jetspeed2 base database configuration scripts. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/templates</tt> - custom overrides for Jetspeed2 layout portlet templates. </p>
+
+</li>
+<li><p> <tt>&lt;artifactId&gt;/etc/webapp</tt> - custom content reaources to be packaged with portal application. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/portal</tt> - portal application war build scripts and webapp resource overrides. </p>
+</li>
+<li><p> <tt>&lt;artifactId&gt;/src</tt> - these directories are an artifact of archetype expansion and should be deleted. </p>
+
+</li>
+</ul> 			
+			</subsection>
+			<subsection name='Configuration'>
+<p>The archetype also contains a settings.xml.sample that is a subset of the Jetspeed2 source build parameters. 
+If one has not previously configured the ~/.m2/settings.xml file as described above, this sample can be used to do so without J2 test configurations. </p>
+<p>When the Maven2 enviroment is properly configured, the J2 Maven2 commands outlined above can now be used to build and deploy a customized portal.
+ Most of the command options are supported with the exception of these profiles: </p>
+<ul>
+<li><p> <strong><tt>min</tt></strong> and <strong><tt>full</tt></strong> are not supported because the archetype supports only the minimal deployment. </p>
+</li>
+<li><p> <strong><tt>test</tt></strong> features to populate the J2 test database have also been provisionally stripped from the archetype. </p>
+</li>
+<li><p> <strong><tt>dbpsml</tt></strong> is not yet supported in the custom portal build to import to the production database PSML. </p>
+</li>
+</ul>
+<p>Currently, only Maven2 builds are supported. Longer range goals include support for Ant custom portal builds and prepackaged Maven2 repository downloads. </p>
+<p>Two additional Maven2 archetypes are also available to generate custom portal applications and components on top of the generated portal template. Before these archetypes are used, the host portal archetype should have been previously built to install all parent POMs, (it is not necessary to deploy the portal before using these archetypes). These archetypes should be created from the applications and components subdirectories to work correctly. </p>
+	</subsection>
+	<subsection name='Archetype Commands'>
+<p>A portal portlets application to be deployed by Jetspeed2: </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=application-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-application -Dversion=1.0</tt></strong> </p>
+<p>A simple component to be used by other component and application modules: </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=component-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-component -Dversion=1.0</tt></strong> </p>
+
+<p>A shared component to be deployed as a shared JAR in the application server: </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=shared-component-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-shared-component -Dversion=1.0</tt></strong> </p>
+<p>A component to be deployed within the portal, (Jetspeed2), web application: </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-component-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-portal-component -Dversion=1.0</tt></strong> </p>
+
+<p><em>Note that the groupId and version settings should match the values used when generating the host portal template.</em> </p>
+</subsection>
+<subsection name='Maven POM Configuration'>
+<p>There are a few manual steps that must be followed to use these created applications and components. </p>
+<ul>
+<li><p>The new application/component must be added as &lt;module&gt; elements in the parent POM. An application would be added like this by subdirectory name, (artifactId):
+</p>
+<pre>&lt;modules&gt;
+    ...
+    &lt;module&gt;myportal-application&lt;/module&gt;
+
+    ...
+&lt;/modules&gt;
+</pre>
+<p>The same syntax is used for components.</p>
+</li>
+<li class="gap"><p>A dependency declaration should be added in the root POM. Components packaged as jars should be added like this:
+</p>
+<pre>&lt;dependencyManagement&gt;
+    &lt;dependencies&gt;
+        ...
+        &lt;dependency&gt;
+
+            &lt;groupId&gt;${pom.groupId}&lt;/groupId&gt;
+            &lt;artifactId&gt;myportal-component&lt;/artifactId&gt;
+            &lt;version&gt;${pom.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        ...
+    &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;
+</pre>
+<p>Applications are declared similarly, except for the addition of a required &lt;type&gt; element:
+</p>
+<pre>&lt;dependencyManagement&gt;
+    &lt;dependencies&gt;
+
+        ...
+        &lt;dependency&gt;
+            &lt;groupId&gt;${pom.groupId}&lt;/groupId&gt;
+            &lt;artifactId&gt;myportal-application&lt;/artifactId&gt;
+            &lt;type&gt;war&lt;/type&gt;
+
+            &lt;version&gt;${pom.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        ...
+    &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;
+</pre>
+</li>
+<li class="gap"><p>These dependencies can now be used to include the applications and components into the build process. Components are added as included dependencies to other applications and components in individual POMs associated with the modules that reference the component:
+
+</p>
+<pre>&lt;dependencies&gt;
+    ...
+    &lt;dependency&gt;
+        &lt;groupId&gt;${pom.groupId}&lt;/groupId&gt;
+        &lt;artifactId&gt;myportal-component&lt;/artifactId&gt;
+
+    &lt;/dependency&gt;
+    ...
+&lt;/dependencies&gt;
+</pre>
+<p>Shared components that are intended to be deployed as a shared JAR should be declared as a provided dependency in the applications POM or individual application and component POMs, (note the additional provided &lt;scope&gt; element):
+</p>
+<pre>&lt;dependencies&gt;
+    ...
+    &lt;dependency&gt;
+
+        &lt;groupId&gt;${pom.groupId}&lt;/groupId&gt;
+        &lt;artifactId&gt;myportal-shared-component&lt;/artifactId&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    ...
+&lt;/dependencies&gt;
+</pre>
+<p>Shared and portal components must also be made available for deployment and should be integrated in the app-servers module POM as a normal dependency:
+</p>
+<pre>&lt;dependencies&gt;
+    ...
+    &lt;dependency&gt;
+        &lt;groupId&gt;${pom.groupId}&lt;/groupId&gt;
+
+        &lt;artifactId&gt;myportal-shared-component&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    ...
+&lt;/dependencies&gt;
+</pre>
+<p>Applications are normally referenced only for deployment. To ensure they are available during deployment builds, they must be integrated in the app-servers module POM like this:
+</p>
+<pre>&lt;dependencies&gt;
+
+    ...
+    &lt;dependency&gt;
+        &lt;groupId&gt;${pom.groupId}&lt;/groupId&gt;
+        &lt;artifactId&gt;myportal-application&lt;/artifactId&gt;
+        &lt;type&gt;war&lt;/type&gt;
+
+    &lt;/dependency&gt;
+    ...
+&lt;/dependencies&gt;
+</pre>
+</li>
+<li class="gap"><p>Finally, the new applications and components must be added to the app-servers deployment Ant buildfiles. Applications should be added to the 'hot' application/WAR deployment hooks in the application server specific build files, (e.g. tomcat-build.xml):
+</p>
+<pre>&lt;target name="hot-deploy-apps"&gt;
+    ...
+    &lt;antcall target="hot-deploy-war"&gt;
+
+        &lt;param name="org.apache.jetspeed.deploy.groupid" value="${portal.groupid}"/&gt;
+        &lt;param name="org.apache.jetspeed.deploy.artifactid" value="myportal-application"/&gt;
+        &lt;param name="org.apache.jetspeed.deploy.version" value="${portal.version}"/&gt;
+    &lt;/antcall&gt;
+    ...
+&lt;/target&gt;
+</pre>
+
+<p>Shared components that are to be installed in the application server should be added to the shared deployment hook in the same buildfile:
+</p>
+<pre>&lt;target name="hot-deploy-shared-components"&gt;
+    ...
+    &lt;antcall target="hot-deploy-shared-jar"&gt;
+        &lt;param name="org.apache.jetspeed.deploy.groupid" value="${portal.groupid}"/&gt;
+        &lt;param name="org.apache.jetspeed.deploy.artifactid" value="myportal-shared-component"/&gt;
+        &lt;param name="org.apache.jetspeed.deploy.version" value="${portal.version}"/&gt;
+
+    &lt;/antcall&gt;
+    ...
+&lt;/target&gt;
+</pre>
+<p>And finally, portal components that are to be inserted into the portal application itself should be added to the 'hot' component/JAR hooks like this:
+</p>
+<pre>&lt;target name="hot-deploy-components"&gt;
+    ...
+    &lt;antcall target="hot-deploy-jar"&gt;
+        &lt;param name="org.apache.jetspeed.deploy.groupid" value="${portal.groupid}"/&gt;
+
+        &lt;param name="org.apache.jetspeed.deploy.artifactid" value="myportal-portal-component"/&gt;
+        &lt;param name="org.apache.jetspeed.deploy.version" value="${portal.version}"/&gt;
+    &lt;/antcall&gt;
+    ...
+&lt;/target&gt;
+</pre>
+</li>			
+</ul>
+<p>Please refer to the Maven2 site documentation for more detail or background information: <a href='http://maven.apache.org/guides/index.html'>Maven-2 Docs</a></p>
+			</subsection>
+		</section>
+	</body>
+</document>

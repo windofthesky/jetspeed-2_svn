@@ -36,10 +36,10 @@
                 Eclipse provides a .classpath GUI editor from the Project->Properties menu option. 
             </p>
 			</subsection>
-			<subsection name="JAR files and the Maven repository">
+			<subsection name="JAR files and the Maven-1 repository">
 				<p>
                   Jetspeed requires quite a few JAR files to be able to compile.
-                  The .classpath file that comes with Jetspeed is setup to get its JAR files out of a local Maven repository.
+                  The .classpath file that comes with Jetspeed is setup to get its JAR files out of a local Maven-1 repository.
                   You can see all the JAR file dependencies from Eclipse. Go to Project->Properties->Java Build Path->Libraries.
                   Notice all the JAR files are configured as VARIABLE library entries.
                   Take one example: 
@@ -49,16 +49,42 @@
                   The Variable is portion is MAVEN_REPO.
                   The Extension portion is /commons-lang/jars/commons-lang-2.0.jar
                   Eclipse locates the JAR dependency from a Variable location root.
-                  In order for this classpath to work correctly, the variable root is dependent on a Maven-1 local repository file structure.
+                  In order for this classpath to work correctly, the variable root is dependent on a Maven-1 local repository file structure.                  
 				</p>
 				<p>
                     To configure the MAVEN_REPO variable, go to Window->Preferences->Java->Build Path->Classpath Variables,
                     click on New, and define a new variable named MAVEN_REPO, pointing it out the root of your local Maven-1 repository,
-                    usually someplace like your $$HOME/.maven/repository
+                    usually someplace like your $HOME/.maven/repository. 
 				</p>
 			</subsection>
+			<subsection name="JAR files and the Maven-2 repository">
+			   <p>The same procedure applies for working a local Maven-2 repository. 
+			   We provide an alternative .classpath file found in the source code under <b>etc/editors/m2.classpath</b>.
+			   Copy m2.classpath over the .classpath file in the project root.
+			   </p>
+			   <p>This classpath requires a different Eclipse classpath variable: M2_REPO.
+			   To configure the M2_REPO variable, go to Window->Preferences->Java->Build Path->Classpath Variables,
+                    click on New, and define a new variable named MAVEN_REPO, pointing it out the root of your local Maven-2 repository,
+                    usually someplace like your $HOME/.m2/repository. 
+               </p>
+			</subsection>
 		</section>
-		<section name="Debugging with Eclipse">
+		<section name="Debugging with Eclipse and Tomcat">
+		<p>Remote debugging of the Jetspeed Portal running on Tomcat requires that you start Tomcat up with debugging enabled.
+		Here is a shell script that can be used to debug:
+		</p>
+<source><![CDATA[
+export JPDA_TRANSPORT=dt_socket
+export JPDA_ADDRESS=8000
+./catalina.sh jpda start
+]]></source>
+<source><![CDATA[
+<p>A DOS script:</p>
+set JPDA_TRANSPORT=dt_socket
+set JPDA_ADDRESS=8000
+catalina jpda start
+]]></source>		
+<p>From there, just follow the Eclipse documentation on how to remotely debug.</p>
         </section>
 	</body>
 </document>
