@@ -34,7 +34,7 @@ The Maven1 j2:portal.genapp goal has been supported in the Maven2 build as an ar
  available in your local repository. One can tweak the following command as needed to create a Jetspeed2 instance using this archetype:
             </p>
             <p><b>
- mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1-3 -DgroupId=myportalgroup -DartifactId=myportal -Dversion=1.0
+ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1.3 -DgroupId=myportalgroup -DartifactId=myportal -Dversion=1.0
             </b>
             </p>
 			</subsection>
@@ -95,14 +95,14 @@ If one has not previously configured the ~/.m2/settings.xml file as described ab
 	</subsection>
 	<subsection name='Archetype Commands'>
 <p>A portal portlets application to be deployed by Jetspeed2: </p>
-<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=application-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-application -Dversion=1.0</tt></strong> </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=application-archetype -DarchetypeVersion=2.1.3 -DgroupId=myportalgroup -DartifactId=myportal-application -Dversion=1.0</tt></strong> </p>
 <p>A simple component to be used by other component and application modules: </p>
-<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=component-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-component -Dversion=1.0</tt></strong> </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=component-archetype -DarchetypeVersion=2.1.3 -DgroupId=myportalgroup -DartifactId=myportal-component -Dversion=1.0</tt></strong> </p>
 
 <p>A shared component to be deployed as a shared JAR in the application server: </p>
-<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=shared-component-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-shared-component -Dversion=1.0</tt></strong> </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=shared-component-archetype -DarchetypeVersion=2.1.3 -DgroupId=myportalgroup -DartifactId=myportal-shared-component -Dversion=1.0</tt></strong> </p>
 <p>A component to be deployed within the portal, (Jetspeed2), web application: </p>
-<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-component-archetype -DarchetypeVersion=2.1-dev -DgroupId=myportalgroup -DartifactId=myportal-portal-component -Dversion=1.0</tt></strong> </p>
+<p><strong><tt>mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-component-archetype -DarchetypeVersion=2.1.3 -DgroupId=myportalgroup -DartifactId=myportal-portal-component -Dversion=1.0</tt></strong> </p>
 
 <p><em>Note that the groupId and version settings should match the values used when generating the host portal template.</em> </p>
 </subsection>
