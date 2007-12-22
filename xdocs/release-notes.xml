@@ -103,7 +103,7 @@
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-634'>JS2-634</a>] - edit_defaults custom portlet mode</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-716'>JS2-716</a>] - PSML and XML Import / Export Admin Portlet</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-729'>JS2-729</a>] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams</li>
-                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-791'>JS2-791</a>] - configure the security constraint on a particular portlet fragment.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-791'>JS2-791</a>] - configure the security constraint on a particular portlet fragment using new custom config portlet mode</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-809'>JS2-809</a>] - Add table schema aware datasource proxy</li>
                   <li>[<a href='https://issues.apache.org/jira/browse/JS2-834'>JS2-834</a>] - Automatically cleanup of the PortalURL: no navigational state in browser url</li>
                 </ul>
