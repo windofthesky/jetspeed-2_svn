@@ -653,6 +653,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
             try
             {
                 Preferences attributes = user.getUserAttributes();
+                String firstName = attributes.get("user.name.given", "n/a");
+                String lastName =  attributes.get("user.name.family", "n/a");
                 String subsite = attributes.get(User.USER_INFO_SUBSITE, null);                
                 userManager.removeUser(userName);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
@@ -664,15 +666,12 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     Folder folder = pageManager.getFolder(subsite);                    
                     pageManager.removeFolder(folder);
-                }    
-                String firstName = attributes.get("user.name.given", "n/a");
-                String lastName =  attributes.get("user.name.family", "n/a");
+                }
                 audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), 
                         getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, "", firstName, lastName, USER_ADMINISTRATION);                                                                                                        
                 // remove selected user from USERS_TOPIC
                 PortletMessaging.cancel(actionRequest,SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
-                // TODO: send message to site manager portlet
-                
+                // TODO: send message to site manager portlet                
             }
             catch (Exception ex)
             {
@@ -1167,7 +1166,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 }
                 
                 String requiredRole = actionRequest.getPreferences().getValue("requiredRole", "");
-                if (!SecurityUtil.isEmpty(requiredRole)  && user != null)                
+                if (!SecurityUtil.isEmpty(requiredRole)  && user != null)
                 {
                     roleManager.addRoleToUser(userName, requiredRole);
                 }
@@ -1196,7 +1195,7 @@ public class UserDetailsPortlet extends GenericServletPortlet
                 {
                     Folder source = pageManager.getFolder(templateFolder);                
                     pageManager.deepCopyFolder(source, subsite, userName);
-                }               
+                }
                 // TODO: send message that site tree portlet invalidated
                 
                 String rule = actionRequest.getParameter(RULES_CONTROL);
