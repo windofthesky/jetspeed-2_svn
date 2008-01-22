@@ -36,7 +36,6 @@ import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.impl.NodeImplProxy;
-import org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider.NodeCache;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;

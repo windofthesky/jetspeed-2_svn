@@ -118,7 +118,19 @@ public abstract class BasePortletAction
         }
         return access;
     }
-
+    
+    public boolean isCreateNewPageOnEditEnabled()
+    {
+    	if (securityBehavior == null)
+            return false;
+    	return securityBehavior.isCreateNewPageOnEditEnabled();
+    }
+    public boolean isPageQualifiedForCreateNewPageOnEdit(RequestContext context)
+    {
+    	if (securityBehavior == null)
+            return false;
+    	return securityBehavior.isPageQualifiedForCreateNewPageOnEdit(context);
+    }
     public boolean createNewPageOnEdit(RequestContext context)
     {
         if (securityBehavior == null)
@@ -126,17 +138,18 @@ public abstract class BasePortletAction
         
         return securityBehavior.createNewPageOnEdit(context);        
     }
-        
-    // TODO: support nested fragments
-    public Fragment getFragmentIdFromLocation(int row, int column, Page page)
+    
+    public Fragment getFragmentIdFromLocation( int row, int column, Page page )
     {
-        Fragment root = page.getRootFragment();
-        Iterator fragments = root.getFragments().iterator();
-        while (fragments.hasNext())
+    	return getFragmentIdFromLocation( row, column, page.getRootFragment() );
+    }
+    public Fragment getFragmentIdFromLocation( int row, int column, Fragment parentFragment )
+    {
+        Iterator fragments = parentFragment.getFragments().iterator();
+        while ( fragments.hasNext() )
         {
             Fragment fragment = (Fragment)fragments.next();
-            if (fragment.getLayoutColumn() == column &&
-                fragment.getLayoutRow() == row)
+            if ( fragment.getLayoutColumn() == column && fragment.getLayoutRow() == row )
             {
                 return fragment;
             }
@@ -164,45 +177,16 @@ public abstract class BasePortletAction
         return parameter;
     }
     
+    public String getNonNullActionParameter(RequestContext requestContext, String name)
+    {
+        String result = getActionParameter(requestContext, name);
+        if (result == null)
+            return "";
+        return result;
+    }
+    
     public Fragment getParentFragmentById(String id, Fragment root)
     {
-        if ( id == null )
-        {
-            return null;
-        }
-        return searchForParentFragmentById( id, root );
-    }
-    
-    protected Fragment searchForParentFragmentById( String id, Fragment parent )
-    {   
-        // find fragment by id, tracking fragment parent
-        Fragment matchedParent = null;
-        if( parent != null ) 
-        {
-            // process the children
-            List children = parent.getFragments();
-            for( int i = 0, cSize = children.size() ; i < cSize ; i++) 
-            {
-                Fragment childFrag = (Fragment)children.get( i );
-                if ( childFrag != null ) 
-                {
-                    if ( id.equals( childFrag.getId() ) )
-                    {
-                        matchedParent = parent;
-                        break;
-                    }
-                    else
-                    {
-                        matchedParent = searchForParentFragmentById( id, childFrag );
-                        if ( matchedParent != null )
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return matchedParent;
-    }
-    
+    	return NestedFragmentContext.getParentFragmentById( id, root );
+    }    
 }
