@@ -167,6 +167,14 @@
         <role>Java Developer</role>
       </roles>
     </developer>
+    <developer>
+      <name>Dennis Dam</name>
+      <id>ddam</id>
+      <email>ddam@apache.org</email>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
   </developers>
 
   <repositories>
