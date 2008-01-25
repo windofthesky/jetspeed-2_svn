@@ -171,6 +171,9 @@
       <name>Dennis Dam</name>
       <id>ddam</id>
       <email>ddam@apache.org</email>
+      <timezone>+2</timezone>
+      <organization>Hippo</organization>
+      <organizationUrl>http://www.hippo.nl</organizationUrl>
       <roles>
         <role>Java Developer</role>
       </roles>
