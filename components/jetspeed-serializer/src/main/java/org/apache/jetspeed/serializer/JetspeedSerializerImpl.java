@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.serializer.objects.JSApplication;
 import org.apache.jetspeed.serializer.objects.JSApplications;
 import org.apache.jetspeed.serializer.objects.JSCapabilities;
@@ -182,6 +183,19 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         }
     }
 
+    public void setComponentManager(ComponentManager cm)
+            throws SerializerException
+    {
+    }
+
+    public void initializeComponentManager(String appRoot, String[] bootConfig,
+            String[] appConfig) throws SerializerException
+    {
+    }
+
+    public void closeUp()
+    {
+    }
     
     protected Map getProcessSettings(Map settings)
     {

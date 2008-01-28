@@ -16,8 +16,9 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.util.List;
 import java.util.Map;
+
+import org.apache.jetspeed.components.ComponentManager;
 
 /**
  * Jetspeed Serializer
@@ -42,54 +43,86 @@ public interface JetspeedSerializer
 
     /** Password handling */
     /** Error in determening correct password handling */
-    short ERROR_DECODING = -1;
+    public final static short ERROR_DECODING = -1;
 
     /** the passwords are in clear text */
-    short NO_DECODING = 0;
+    public final static short NO_DECODING = 0;
 
     /**
      * the passwords are encoded and the provider is the same as the data
      * source, but is a 1-way algorithm
      */
-    short PASSTHRU_REQUIRED = 1;
+    public final static short PASSTHRU_REQUIRED = 1;
 
     /**
      * the passwords are encoded and the provider is the same as the data source
      * and we have a 2-way algorithm
      */
-    short DECODING_SUPPORTED = 2;
+    public final static short DECODING_SUPPORTED = 2;
 
     /** the passwords are encoded and the current provider is DIFFERENT.... */
-    short INVALID_PASSWORDS = 3;
+    public final static short INVALID_PASSWORDS = 3;
 
     /** export/import instructions */
 
-    String KEY_PROCESS_USERS = "process_users";
-    String KEY_PROCESS_CAPABILITIES = "process_capabilities";
-    String KEY_PROCESS_PROFILER = "process_profiler";
-    String KEY_PROCESS_USER_PREFERENCES = "process_user_preferences";
-    String KEY_PROCESS_PORTAL_PREFERENCES = "process_portal_preferences";
-    String KEY_PROCESS_ENTITIES = "process_entities";
-    String KEY_PROCESS_PREFERENCES = "process_preferences";
-    String KEY_LOGGER = "logger";
-    String KEY_OVERWRITE_EXISTING = "overwrite_existing";
-    String KEY_BACKUP_BEFORE_PROCESS = "backup_before_process";
+    public final static String KEY_PROCESS_USERS = "process_users".intern();
+    
+    public final static String KEY_LOGGER = "logger";
+    
+    public final static String KEY_PROCESS_CAPABILITIES = "process_capabilities"
+            .intern();
+
+    public final static String KEY_PROCESS_PROFILER = "process_profiler"
+            .intern();
+
+    public final static String KEY_PROCESS_PERMISSIONS = "process_permissions"
+        .intern();
+    
+    public final static String KEY_PROCESS_USER_PREFERENCES = "process_user_preferences"
+            .intern();
+    public final static String KEY_PROCESS_PORTAL_PREFERENCES = "process_portal_preferences"
+        .intern();
+
+    public final static String KEY_OVERWRITE_EXISTING = "overwrite_existing"
+            .intern();
+
+    public final static String KEY_BACKUP_BEFORE_PROCESS = "backup_before_process"
+            .intern();
+
+    /** export/import instructions secondary*/
+    public final static String KEY_PROCESS_ENTITIES = "process_entities".intern();
+    public final static String KEY_PROCESS_PREFERENCES = "process_preferences".intern();
+    
+    
     
     /**<p> the main tag in the XML file */
-    String TAG_SNAPSHOT = "Snapshot"; 
-    
-    List getSerializers();
-    Map getDefaultSettings();
+    public final static String TAG_SNAPSHOT = "Snapshot"; 
+    public final static String TAG_SECONDARYSNAPSHOT = "SecondaryData"; 
     
     /**
-     * Main routine to export the set of data elements and write them to the
-     * named XML file.
+     * hand the serializer an existing component manager to access the
+     * environment
      * 
-     * @param name
-     *            of the snapshot
-     * @param exportFileName
+     * @param cm
      */
-    void exportData(String name, String exportFileName) throws SerializerException;
+    public void setComponentManager(ComponentManager cm)
+            throws SerializerException;
+
+    /**
+     * Create a component manager with the list of primary components (boot),
+     * the application components and the root path of the application
+     * 
+     * @param appRoot
+     *            working directory
+     * @param bootConfig
+     *            boot (primary) file or files (wildcards are allowed)
+     * @param appConfig
+     *            application (secondary) file or files (wildcards are allowed)
+     * @return a newly initiated component manager
+     * @throws SerializerException
+     */
+    public void initializeComponentManager(String appRoot, String[] bootConfig,
+            String[] appConfig) throws SerializerException;
 
     /**
      * Main routine to export the set of data elements and write them to the
@@ -112,22 +145,13 @@ public interface JetspeedSerializer
      * @param settings
      *            optional Map overwriting default export behavior
      */
-    void exportData(String name, String exportFileName, Map settings) throws SerializerException;
+    public void exportData(String name, String exportFileName, Map settings)
+            throws SerializerException;
 
     /**
      * Main routine to import the set of data elements and write them to the
-     * current environment.
-     * 
-     * @param importFileName
-     * @param settings
-     *            optional Map overwriting default import behavior
-     * @return
-     */
-    void importData(String importFileName) throws SerializerException;
-    
-    /**
-     * Main routine to import the set of data elements and write them to the
-     * current environment.
+     * current environment. The default behavior of the serializer is that all
+     * available data is read and written to the current environment.
      * <p>
      * Existing entries (like users) etc. will be overwritten with the provided
      * data.
@@ -148,22 +172,27 @@ public interface JetspeedSerializer
      *            optional Map overwriting default import behavior
      * @return
      */
-    void importData(String importFileName, Map settings) throws SerializerException;
-    
-    void deleteData() throws SerializerException;
-    void deleteData(Map settings) throws SerializerException;
+    public void importData(String importFileName, Map settings)
+            throws SerializerException;
 
     /**
      * Set the default indent for the XML output
      * 
      * @param indent
      */
-    void setDefaultIndent(String indent);
+    public void setDefaultIndent(String indent);
 
     /**
      * Get the current indent setting for XML files
      * 
      * @return the current indent setting
      */
-    String getDefaultIndent();
+    public String getDefaultIndent();
+
+    /**
+     * release the resources etc.
+     * 
+     */
+    public void closeUp();
+
 }
