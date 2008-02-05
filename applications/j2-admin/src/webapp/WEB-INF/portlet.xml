@@ -201,6 +201,36 @@ limitations under the License.
     </portlet-preferences>
 </portlet>
 
+<portlet>
+    <description>The Wicket User Browser displays a list of users managed in this portal. From here you can select users for editing. Place this portlet on the same page as the Wicket User Details portlet.</description>
+    <description xml:lang="ja">ユーザーブラウザはこのポータル内で管理されているユーザーのリストを表示します。このポートレットにより、ユーザーを追加・編集することができます。</description>
+    <description xml:lang="zh">显示门户的用户列表。可以添加、修改用户资料。</description>
+    <description xml:lang="zh-TW">顯示門戶的用戶列表。可以添加、修改用戶資料。</description>        
+    <portlet-name>WicketUserBrowserPortlet</portlet-name>
+    <display-name>Wicket User Browser</display-name>
+    <display-name xml:lang="ja">ユーザーブラウザ</display-name>
+    <display-name xml:lang="zh">浏览用户</display-name>
+    <display-name xml:lang="zh-TW">流覽用戶</display-name>
+    <portlet-class>org.apache.jetspeed.portlets.wicket.AdminWicketPortlet</portlet-class>
+    <init-param>
+      <name>wicketFilterPath</name>
+      <value>/userbrowser</value>
+    </init-param>
+    <init-param>
+      <name>serviceComponentNames</name>
+      <value>cps:UserManager</value>
+    </init-param>
+    <supports>
+      <mime-type>*/*</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+        <title>User Browser</title>
+        <short-title>Users</short-title>
+        <keywords>admin,security,users</keywords>            
+    </portlet-info>
+</portlet>
+
 <portlet id="UserDetailsPortlet">
     <description>The User Details portlet displays a users details in a tabbed view. From here you can add, edit, and delete User information. Place this portlet on the same page as the User Browser portlet.</description>
     <description xml:lang="ja">ユーザー詳細ポートレットはタブで表示されたユーザー情報の詳細を表示します。このポートレットにより、ユーザー情報の追加・編集することができます。</description>

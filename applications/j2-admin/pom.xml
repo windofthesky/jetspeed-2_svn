@@ -337,6 +337,11 @@ limitations under the License.
             <version>${wicket.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-extensions</artifactId>
+            <version>${wicket.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
@@ -346,6 +351,7 @@ limitations under the License.
     <!-- Build Configuration -->
 
     <build>
+        <finalName>j2-admin</finalName>
         <sourceDirectory>${basedir}/src/java</sourceDirectory>
         <resources>
             <resource>
@@ -353,6 +359,7 @@ limitations under the License.
             <includes>
                 <include>**/*.properties</include>
                 <include>**/*.html</include>
+                <include>**/*.gif</include>
             </includes>
             </resource>
         </resources>
