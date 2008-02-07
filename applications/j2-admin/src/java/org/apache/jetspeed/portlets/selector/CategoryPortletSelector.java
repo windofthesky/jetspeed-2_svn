@@ -47,6 +47,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.headerresource.HeaderResource;
+import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -238,7 +239,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
                     {
                         PortletDefinitionComposite portlet = 
                             getPortletFromParsedObject((ParsedObject)portlets.next());
-                        PortletInfo portletInfo = filterPortlet(portlet, locale);
+                        PortletInfo portletInfo = filterPortlet(portlet, locale, request);
                         if (portletInfo != null)
                         {
                             cat.addPortlet(portletInfo);
@@ -276,7 +277,7 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
             else
                 portlet = getPortletFromParsedObject((ParsedObject)portlets.next());
             
-            PortletInfo portletInfo = filterPortlet(portlet, locale);
+            PortletInfo portletInfo = filterPortlet(portlet, locale, request);
             if (portletInfo != null)
             {
                 list.add(portletInfo);
@@ -318,6 +319,30 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
 		return list;
 	}
 
+    protected boolean filterByRole(PortletDefinitionComposite portlet, RenderRequest request)
+    {
+        boolean doFilter = false;
+        Collection c = portlet.getMetadata().getFields("selector.conditional.role");
+        if (c != null) 
+        {
+            Iterator it = c.iterator();
+            if (it.hasNext()) 
+            {
+                LocalizedField roleField = (LocalizedField) it.next();
+                String role = roleField.getValue();
+                if (role != null)
+                {
+                    if (role.equals("*"))
+                        doFilter = true;
+                    else
+                    {
+                        return (!request.isUserInRole(role));
+                    }
+                }
+            }
+        }
+        return doFilter;
+    }
     
     /**
      * Filters portlets being added to the based on security checks and layout criteria
@@ -325,11 +350,14 @@ public class CategoryPortletSelector extends AbstractDojoVelocityPortlet impleme
      * @param portlet
      * @return null if filtered, otherwise PortletInfo to be added to list
      */
-    protected PortletInfo filterPortlet(PortletDefinitionComposite portlet, Locale locale)
+    protected PortletInfo filterPortlet(PortletDefinitionComposite portlet, Locale locale, RenderRequest request)
     {
         if (portlet == null)
             return null;
-        
+        if (filterByRole(portlet, request))
+        {
+            return null; 
+        }        
         // Do not display Jetspeed Layout Applications
         MutablePortletApplication pa = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
         if (pa.isLayoutApplication())
