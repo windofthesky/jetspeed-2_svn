@@ -40,6 +40,7 @@ limitations under the License.
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
         <dc:title>Login XHTML Portlet</dc:title>
         <dc:creator>J2 Team</dc:creator>
+        <js:metadata name="selector.conditional.role">admin</js:metadata>                                 
     </portlet>
 
 
@@ -48,6 +49,7 @@ limitations under the License.
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
         <dc:title>Portal Login Portlet</dc:title>
         <dc:creator>J2 Team</dc:creator>
+       <js:metadata name="selector.conditional.role">admin</js:metadata>                         
     </portlet>
 
     <portlet>
@@ -81,21 +83,25 @@ limitations under the License.
          <js:security-constraint-ref>AEUV</js:security-constraint-ref>
          <js:metadata name="merge.portal.parameters.with.portlet.parameters">true</js:metadata>
          <js:metadata name="merge.portal.parameters.before.portlet.parameters">true</js:metadata>
+         <js:metadata name="selector.conditional.role">admin</js:metadata>                  
     </portlet>   
 
     <portlet>
         <portlet-name>WelcomeToJetspeed</portlet-name>
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+         <js:metadata name="selector.conditional.role">*</js:metadata>                         
     </portlet>
 
     <portlet>
         <portlet-name>AboutJetspeed</portlet-name>
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+         <js:metadata name="selector.conditional.role">*</js:metadata>                                 
     </portlet>
 
     <portlet>
         <portlet-name>JetspeedDeveloper</portlet-name>
         <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+         <js:metadata name="selector.conditional.role">*</js:metadata>                                 
     </portlet>
 	
 	<portlet>
@@ -105,12 +111,14 @@ limitations under the License.
 
 	<portlet>
 		<portlet-name>DevelopersBrowser</portlet-name>
-        <js:security-constraint-ref>devmgr</js:security-constraint-ref>       
+        <js:security-constraint-ref>devmgr</js:security-constraint-ref>    
+         <js:metadata name="selector.conditional.role">*</js:metadata>                                    
 	</portlet>
 
 	<portlet>
 		<portlet-name>DeveloperDetails</portlet-name>
         <js:security-constraint-ref>devmgr</js:security-constraint-ref>       
+         <js:metadata name="selector.conditional.role">*</js:metadata>                                 
 	</portlet>
 			
 	<js:services>        

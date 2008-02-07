@@ -29,7 +29,7 @@ $refreshLink.setParameter("reset", "true")
 		<tr><td colspan="2" > 
 			$MESSAGES.getString('page.welcome')
 			#if($MSG )
-	 			<p class="portlet-msg-error">$!MSG</p>
+	 			<p style='color:red'>$!MSG</p>
 	 		#end	
 		</td></tr>
 		

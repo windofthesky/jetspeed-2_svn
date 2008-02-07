@@ -654,6 +654,8 @@ public class UserDetailsPortlet extends GenericServletPortlet
             {
                 Preferences attributes = user.getUserAttributes();
                 String subsite = attributes.get(User.USER_INFO_SUBSITE, null);                
+                String firstName = attributes.get("user.name.given", "n/a");
+                String lastName =  attributes.get("user.name.family", "n/a");
                 userManager.removeUser(userName);
                 PortletMessaging.publish(actionRequest, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_REFRESH, "true");
                 if (subsite == null)
@@ -665,8 +667,6 @@ public class UserDetailsPortlet extends GenericServletPortlet
                     Folder folder = pageManager.getFolder(subsite);                    
                     pageManager.removeFolder(folder);
                 }                
-                String firstName = attributes.get("user.name.given", "n/a");
-                String lastName =  attributes.get("user.name.family", "n/a");
                 audit.logAdminAttributeActivity(actionRequest.getUserPrincipal().getName(), 
                         getIPAddress(actionRequest), userName, AuditActivity.USER_DELETE, "", firstName, lastName, USER_ADMINISTRATION);                                                                                                        
                 // remove selected user from USERS_TOPIC
