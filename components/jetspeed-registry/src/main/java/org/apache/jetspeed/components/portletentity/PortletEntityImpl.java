@@ -87,7 +87,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected String appName;
     private boolean dirty = false;
     private Fragment fragment;
-    private ThreadLocal fragmentPortletDefinition = new ThreadLocal();
     
     protected transient int timeoutCount = 0;
     protected transient long expiration = 0;
@@ -284,11 +283,21 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         }        
         
         // Wrap the portlet defintion every request thread
-        PortletDefinition fpd = (PortletDefinition)fragmentPortletDefinition.get();
+        // JS2-852: don't use thread local
+        RequestContext rc = rcc.getRequestContext();
+        String entityFragmentKey = getEntityFragmentKey();
+        PortletDefinition fpd = null;
+        if (rc != null)
+        {
+            fpd= (PortletDefinition)rc.getAttribute(entityFragmentKey);
+        }
         if (fpd == null)
         {
             fpd = new FragmentPortletDefinition(this.portletDefinition, fragment);
-            fragmentPortletDefinition.set(fpd);
+            if (rc != null)
+            {
+                rc.setAttribute(entityFragmentKey, fpd);
+            }
         }        
         return fpd;
     }
@@ -500,7 +509,11 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         {
             portletDefinition = (PortletDefinitionComposite) composite;
             // if the portletDefinition is modified, clear threadlocal fragmentPortletDefinition cache
-            fragmentPortletDefinition.set(null);
+            RequestContext rc = rcc.getRequestContext();
+            if (rc != null)
+            {
+                rc.getRequest().removeAttribute(getEntityFragmentKey());
+            }
             this.appName = ((MutablePortletApplication)portletDefinition.getPortletApplicationDefinition()).getName();
             this.portletName = portletDefinition.getName();
         }
@@ -665,7 +678,11 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     {
         this.fragment = fragment;
         // if the fragment is set, clear threadlocal fragmentPortletDefinition cache
-        fragmentPortletDefinition.set(null);
+        RequestContext rc = rcc.getRequestContext();
+        if (rc != null)
+        {
+            rc.getRequest().removeAttribute(getEntityFragmentKey());
+        }
     }
 
     public int getRenderTimeoutCount()
@@ -727,8 +744,14 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             catch (Exception e)
             {
             }
-        }
-        
+        }       
         return editDefaultsMode;
     }
+
+    protected String getEntityFragmentKey()
+    {
+        String entityId = (this.getId() == null) ? "-unknown-entity" : this.getId().toString();
+        return "org.apache.jetspeed" + entityId ;
+    }
+    
 }

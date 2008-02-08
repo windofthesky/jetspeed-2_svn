@@ -139,16 +139,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         {
             rc = (RequestContext) tlRequestContext.get();        
         }
-
-        if(rc != null)
-        {
-            return rc;
-        }
-        else
-        {
-            log.error("Cannot call getRequestContext() before it has been created and set for this thread.");
-            throw new IllegalStateException("Cannot call getRequestContext() before it has been created and set for this thread.");
-        }
+        return rc;
     }
 
 }
