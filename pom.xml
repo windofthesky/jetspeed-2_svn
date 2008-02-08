@@ -178,6 +178,17 @@
         <role>Java Developer</role>
       </roles>
     </developer>
+    <developer>
+      <name>Vivek Kumar</name>
+      <id>vkumar</id>
+      <email>vkumar@apache.org</email>
+      <timezone>+5:30</timezone>
+      <organization>Bluesunrise</organization>
+      <organizationUrl>http://www.bluesunrise.com</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>    
   </developers>
 
   <repositories>
