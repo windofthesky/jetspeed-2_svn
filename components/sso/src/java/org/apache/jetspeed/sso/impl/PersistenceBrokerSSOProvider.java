@@ -1434,4 +1434,97 @@ public class PersistenceBrokerSSOProvider extends
     	}
     	return result;
     }
+
+    public void addCredentialsForSite(SSOSite ssoSite, Subject subject, String remoteUser, String pwd)
+    throws SSOException 
+    {
+        String fullPath = ((BasePrincipal) SecurityHelper.getBestPrincipal(
+                subject, UserPrincipal.class)).getFullPath();
+        String principalName = ((BasePrincipal) SecurityHelper
+                .getBestPrincipal(subject, UserPrincipal.class)).getName();
+
+        // Add an entry for the principal to the site if it doesn't exist
+        SSOPrincipal principal = this.getPrincipalForSite(ssoSite, fullPath);
+
+        if (principal == null)
+        {
+            principal = getSSOPrincipal(fullPath);
+            ssoSite.addPrincipal(principal);
+        } else
+        {
+            // Check if the entry the user likes to update exists already
+            Collection remoteForSite = ssoSite.getRemotePrincipals();
+            Collection principalsForSite = ssoSite.getPrincipals();
+
+            if (remoteForSite != null && principalsForSite != null)
+            {
+                Collection remoteForPrincipals = this
+                        .getRemotePrincipalsForPrincipal(principalsForSite,
+                                fullPath);
+                if (remoteForPrincipals != null)
+                {
+                    if (findRemoteMatch(remoteForPrincipals, remoteForSite) != null)
+                    {
+                        // Entry exists can't to an add has to call update
+                        throw new SSOException(
+                                SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
+                    }
+                }
+            }
+        }
+
+        if (principal == null)
+            throw new SSOException(
+                    SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE);
+
+        // Create a remote principal and credentials
+        InternalUserPrincipalImpl remotePrincipal = new InternalUserPrincipalImpl(
+                remoteUser);
+
+        /*
+         * The RemotePrincipal (class InternalUserPrincipal) will have a
+         * fullPath that identifies the entry as an SSO credential. The entry
+         * has to be unique for a site and principal (GROUP -or- USER ) an
+         * therefore it needs to be encoded as following: The convention for the
+         * path is the following: /sso/SiteID/{user|group}/{user name | group
+         * name}/remote user name
+         */
+        if (fullPath.indexOf("/group/") > -1)
+            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId()
+                    + "/group/" + principalName + "/" + remoteUser);
+        else
+            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId()
+                    + "/user/" + principalName + "/" + remoteUser);
+
+        // New credential object for remote principal
+        InternalCredentialImpl credential = new InternalCredentialImpl(
+                remotePrincipal.getPrincipalId(), this.scramble(pwd), 0,
+                DefaultPasswordCredentialImpl.class.getName());
+
+        if (remotePrincipal.getCredentials() == null)
+            remotePrincipal.setCredentials(new ArrayList(0));
+
+        remotePrincipal.getCredentials().add(credential);
+
+        // Add it to Principals remotePrincipals list
+        principal.addRemotePrincipal(remotePrincipal);
+
+        // Update the site remotePrincipals list
+        ssoSite.getRemotePrincipals().add(remotePrincipal);
+
+        // Update database and reset cache
+        try
+        {
+            getPersistenceBrokerTemplate().store(ssoSite);
+
+            // Persist Principal/Remote
+            getPersistenceBrokerTemplate().store(principal);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB
+                    + e.toString());
+        }
+    }
+    
 }
