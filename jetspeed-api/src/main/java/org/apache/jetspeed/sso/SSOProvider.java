@@ -22,6 +22,9 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.sso.SSOException;
+import org.apache.jetspeed.sso.SSOSite;
+
 
 /**
 * <p>Utility component to handle SSO requests</p>
@@ -126,6 +129,18 @@ public interface SSOProvider
      * @throws SSOException
      */
     void addCredentialsForSite(String fullPath, String remoteUser, String site, String pwd) throws SSOException;
+
+    /**
+     * Add credentials inside a transaction using existing ssoSite
+     * 
+     * @param ssoSite
+     * @param subject
+     * @param remoteUser
+     * @param pwd
+     * @throws SSOException
+     */
+    public void addCredentialsForSite(SSOSite ssoSite, Subject subject, String remoteUser, String pwd) 
+    throws SSOException;
     
     /**
      * removeCredentialsForSite()
