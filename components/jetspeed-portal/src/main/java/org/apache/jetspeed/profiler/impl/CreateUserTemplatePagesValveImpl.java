@@ -156,6 +156,13 @@ public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
                 
                 // copy the entire dir tree from the template folder
                 this.pageManager.deepCopyFolder(source, userFolder, userName);
+                
+                // The user folder will have titles named after the user name.
+                Folder destFolder = this.pageManager.getFolder(userFolder);
+                destFolder.setTitle(userName);
+                destFolder.setShortTitle(userName);   
+                this.pageManager.updateFolder(destFolder);
+                
                 created = true;
             }
             catch (Exception e)
