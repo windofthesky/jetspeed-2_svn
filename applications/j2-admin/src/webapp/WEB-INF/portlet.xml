@@ -224,6 +224,8 @@ limitations under the License.
       <mime-type>*/*</mime-type>
       <portlet-mode>VIEW</portlet-mode>
     </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.users.WicketUserBrowser</resource-bundle>
     <portlet-info>
         <title>User Browser</title>
         <short-title>Users</short-title>
@@ -267,6 +269,121 @@ limitations under the License.
     </supports>
     <supported-locale>en</supported-locale>
     <resource-bundle>org.apache.jetspeed.portlets.security.resources.UserDetailsResources</resource-bundle>
+    <portlet-info>
+        <title>User Detail Information</title>
+        <short-title>User</short-title>
+        <keywords>admin,security,users</keywords>            
+    </portlet-info>        
+    <portlet-preferences>
+        <preference>
+            <name>showUserTab</name>
+            <value>false</value>
+        </preference>
+        <preference>
+            <name>showAttributesTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showPasswordTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showRoleTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showGroupTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showProfileTab</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showPasswordOnUserTab</name>
+            <value>false</value>
+        </preference>
+        <preference>
+            <name>showPasswordExpiration</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showChangePasswordRequiredForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showRoleForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showProfileForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>showSubsiteForAddUser</name>
+            <value>true</value>
+        </preference>
+        <preference>
+            <name>defaultChangePasswordRequired</name>
+            <value>false</value>
+        </preference>
+        <preference>
+            <name>defaultRole</name>
+            <value>user</value>
+        </preference>
+        <preference>
+            <name>defaultProfile</name>
+            <value>j2</value>
+        </preference>
+        <preference>
+            <name>newUserTemplateDirectory</name>
+            <value>/_user/template/</value>
+        </preference>        
+        <preference>
+     		<name>requiredRole</name>
+            <value></value>   
+        </preference>
+        <preference>
+     		<name>subsiteRootFolder</name>
+            <value>/__subsite-root/_hostname/</value>   
+        </preference>        
+        <preference>
+     		<name>defaultSubsite</name>
+            <value></value>   
+        </preference>                
+    </portlet-preferences>
+</portlet>
+
+<portlet id="WicketUserDetailsPortlet">
+    <description>The Wicket User Details portlet displays a users details in a tabbed view. From here you can add, edit, and delete User information. Place this portlet on the same page as the Wicket User Browser portlet.</description>
+    <description xml:lang="ja">ユーザー詳細ポートレットはタブで表示されたユーザー情報の詳細を表示します。このポートレットにより、ユーザー情報の追加・編集することができます。</description>
+    <description xml:lang="zh">显示用户的资料。可以添加修改用户信息。</description>
+    <description xml:lang="zh-TW">顯示用戶的資料。可以添加修改用戶資訊。</description>        
+    <portlet-name>WicketUserDetailsPortlet</portlet-name>
+    <display-name>Wicket User Details</display-name>
+    <display-name xml:lang="ja">ユーザー情報詳細</display-name>
+    <display-name xml:lang="zh">用户信息</display-name>
+    <display-name xml:lang="zh-TW">用戶資訊</display-name>
+    <portlet-class>org.apache.jetspeed.portlets.wicket.AdminWicketPortlet</portlet-class>
+    <init-param>
+      <name>wicketFilterPath</name>
+      <value>/userdetails</value>
+    </init-param>
+    <init-param>
+      <name>serviceComponentNames</name>
+      <value>cps:UserManager, cps:RoleManager, cps:GroupManager, cps:PortletRegistryComponent, cps:PageManager, cps:Profiler, cps:PortalConfiguration, cps:AuditActivity</value>
+    </init-param>
+    <expiration-cache>0</expiration-cache>
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>EDIT</portlet-mode>
+        <portlet-mode>VIEW</portlet-mode>
+        <!-- not implemented yet
+            <portlet-mode>HELP</portlet-mode>
+        -->
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>org.apache.jetspeed.portlets.security.users.WicketUserDetails</resource-bundle>
     <portlet-info>
         <title>User Detail Information</title>
         <short-title>User</short-title>

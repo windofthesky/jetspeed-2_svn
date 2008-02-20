@@ -30,6 +30,9 @@ import org.apache.wicket.util.string.StringList;
 import org.apache.wicket.util.string.IStringIterator;
 import org.apache.wicket.protocol.http.portlet.WicketPortlet;
 
+import org.apache.jetspeed.container.JetspeedPortletContext;
+import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+
 /**
  * AdminWicketPortlet which overrides init() and processRequest() to pass cps: components to Wicket pages.
  * 
@@ -38,9 +41,10 @@ import org.apache.wicket.protocol.http.portlet.WicketPortlet;
  */
 public class AdminWicketPortlet extends WicketPortlet
 {
-
+    public static final String JETSPEED_PA_IDENTIFIER = "JetspeedPAIdentifier";
     public static final String SERVICE_COMPONENT_NAMES = "serviceComponentNames";
     
+    protected String paIdentifier;
     protected StringList serviceComponentNameList;
     protected Map serviceComponentsMap = null;
 
@@ -70,10 +74,14 @@ public class AdminWicketPortlet extends WicketPortlet
                 }
             }
         }
+        
+        this.paIdentifier = ((MutablePortletApplication) ((JetspeedPortletContext) config.getPortletContext()).getApplication()).getApplicationIdentifier();
     }
     
 	protected void processRequest(PortletRequest request, PortletResponse response, String requestType, String pageType) throws PortletException, IOException
     {
+        request.setAttribute(JETSPEED_PA_IDENTIFIER, this.paIdentifier);
+        
         if (this.serviceComponentNameList != null)
         {
             for (IStringIterator it = this.serviceComponentNameList.iterator(); it.hasNext(); )

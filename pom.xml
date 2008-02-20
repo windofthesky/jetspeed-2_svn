@@ -189,6 +189,15 @@
         <role>Java Developer</role>
       </roles>
     </developer>    
+    <developer>
+      <name>Woonsan Ko</name>
+      <id>woonsan</id>
+      <email>woonsan@apache.org</email>
+      <timezone>+9</timezone>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
   </developers>
 
   <repositories>

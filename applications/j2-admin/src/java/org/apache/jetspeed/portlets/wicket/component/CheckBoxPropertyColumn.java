@@ -19,52 +19,30 @@ package org.apache.jetspeed.portlets.wicket.component;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 
 /**
- * SelectionImagePropertyColumn to show selection column with image icons.
+ * CheckBoxPropertyColumn to show selection column with checkbox.
  * 
  * @author <a href="mailto:woonsan@apache.org">Woonsan Ko</a>
  * @version $Id: $
  */
-public abstract class SelectionImagePropertyColumn extends PropertyColumn 
+public class CheckBoxPropertyColumn extends PropertyColumn 
 {
 	private static final long serialVersionUID = 1L;
     
-    protected String selectedImage = "Selected.gif";
-    protected String blankImage = "Blank.gif";
-    
     protected String cellWidth = "1%";
 
-    public SelectionImagePropertyColumn(IModel displayModel, String propertyExpressions) 
+    public CheckBoxPropertyColumn(IModel displayModel, String propertyExpressions) 
     {
         super(displayModel, propertyExpressions);
     }
-    
-    public void setSelectedImage(String selectedImage)
-    {
-        this.selectedImage = selectedImage;
-    }
-    
-    public String getSelectedImage()
-    {
-        return this.selectedImage;
-    }
-    
-    public void setBlankImage(String blankImage)
-    {
-        this.blankImage = blankImage;
-    }
-    
-    public String getBlankImage()
-    {
-        return this.blankImage;
-    }
-    
+        
     public void setCellWidth(String cellWidth)
     {
         this.cellWidth = cellWidth;
@@ -78,21 +56,16 @@ public abstract class SelectionImagePropertyColumn extends PropertyColumn
     public void populateItem(Item item, String componentId, IModel model) 
     {
         item.add(new AttributeModifier("width", true, new Model(getCellWidth())));
-        item.add(new ImagePanel(item, componentId, model));
+        item.add(new CheckBoxPanel(item, componentId, model));
     }
     
-    protected boolean isSelected(Item item, String componentId, IModel model)
+    public class CheckBoxPanel extends Panel 
     {
-        return false;
-    }
-    
-    public class ImagePanel extends Panel 
-    {
-        public ImagePanel(final Item item, final String componentId, final IModel model) 
+        public CheckBoxPanel(final Item item, final String componentId, final IModel model) 
         {
             super(componentId);
-            Image image = new Image("image", new Model(isSelected(item, componentId, model) ? getSelectedImage() : getBlankImage()));
-            add(image);
+            CheckBox checkBox = new CheckBox("checkBox", new PropertyModel(model.getObject(), getPropertyExpression()));
+            add(checkBox);
         }
     }
 

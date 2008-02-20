@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+
+<wicket:panel>
+    <br />
+
+    <form wicket:id="userAttrsForm">
+        <table wicket:id="entries" cellpadding="0" cellspacing="1" border="0">
+        </table>
+        <input wicket:id="updateAttr" type="submit" value="Update" class="portlet-form-button" />
+        <input wicket:id="removeAttr" type="submit" value="Remove" class="portlet-form-button" />
+    </form>
+    
+    <form wicket:id="addAttrForm">
+        <table>
+            <tr>
+                <td class="portlet-section-alternate">Name</td>
+                <td class="portlet-section-body">
+                    <input type="text" wicket:id="userAttrName" size="20" class="portlet-form-field-label" />
+                </td>
+            </tr>
+            <tr>
+                <td class="portlet-section-alternate">Value</td>
+                <td class="portlet-section-body">
+                    <input type="text" wicket:id="userAttrValue" size="20" class="portlet-form-field-label" />
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Add" class="portlet-form-button" />
+    </form>
+    
+</wicket:panel>
+
+</html>

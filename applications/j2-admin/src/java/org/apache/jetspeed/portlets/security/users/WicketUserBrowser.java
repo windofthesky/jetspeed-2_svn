@@ -29,6 +29,7 @@ import javax.portlet.PortletRequest;
 import org.apache.wicket.RequestContext;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -53,6 +54,8 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.portlets.security.SecurityResources;
 import org.apache.jetspeed.portlets.security.SecurityUtil;
+import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 
 import org.apache.jetspeed.portlets.wicket.component.SelectionImagePropertyColumn;
 import org.apache.jetspeed.portlets.wicket.component.LinkPropertyColumn;
@@ -64,7 +67,7 @@ import org.apache.jetspeed.portlets.wicket.component.PortletOddEvenItem;
  * @author <a href="mailto:woonsan@apache.org">Woonsan Ko</a>
  * @version $Id: $
  */
-public class WicketUserBrowser extends WebPage
+public class WicketUserBrowser extends WicketUserAdmin
 {
 
     protected List userNameList;
@@ -97,24 +100,23 @@ public class WicketUserBrowser extends WebPage
         {
             new SelectionImagePropertyColumn(new Model(" "), "")
             {
-                protected boolean isSelectedItem(Item item, String componentId, IModel model)
+                protected boolean isSelected(Item item, String componentId, IModel model)
                 {
                     String userName = (String) model.getObject();
                     return userName.equals(selectedUserName);
                 }
             },
-            new LinkPropertyColumn(new Model("User"), "")
+            new LinkPropertyColumn(new ResourceModel("user"), "")
             {
                 public void onClick(Item item, String componentId, IModel model)
                 {
-                    PortletRequest request = ((PortletRequestContext) RequestContext.get()).getPortletRequest();
                     setSelectedUserName((String) model.getObject());
                     
                     if (getSelectedUserName() != null)
                     {
                         try
                         {
-                            PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, getSelectedUserName());
+                            PortletMessaging.publish(getPortletRequest(), SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED, getSelectedUserName());
                         }
                         catch (NotSerializableException e)
                         {
@@ -144,11 +146,11 @@ public class WicketUserBrowser extends WebPage
             }
         };
         
-        TextField searchString = new TextField("searchString", new PropertyModel(this, "searchString"));
-        searchForm.add(searchString);
+        TextField searchStringField = new TextField("searchString", new PropertyModel(this, "searchString"));
+        searchForm.add(searchStringField);
         
-        CheckBox filtered = new CheckBox("filtered", new PropertyModel(this, "filtered"));
-        searchForm.add(filtered);
+        CheckBox filteredField = new CheckBox("filtered", new PropertyModel(this, "filtered"));
+        searchForm.add(filteredField);
         
         add(searchForm);
 	}
@@ -195,34 +197,50 @@ public class WicketUserBrowser extends WebPage
     
     protected void onBeforeRender()
     {
-        PortletRequest request = ((PortletRequestContext) RequestContext.get()).getPortletRequest();
-        
         try
         {
             if (getFiltered())
             {
-                PortletMessaging.publish(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED, "on");            
+                PortletMessaging.publish(getPortletRequest(), SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED, "on");            
             }
             else
             {
-                PortletMessaging.cancel(request, SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED);
+                PortletMessaging.cancel(getPortletRequest(), SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_FILTERED);
             }
 
             this.userNameList = new ArrayList();
-            UserManager userManager = (UserManager) request.getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
-            Iterator users = userManager.getUserNames(getSearchString());
+            Iterator users = getUserManager().getUserNames(getSearchString());
 
             while (users.hasNext())
             {
                 this.userNameList.add(users.next());
-            }            
+            }
+            
+            String userName = (String) PortletMessaging.receive(getPortletRequest(), SecurityResources.TOPIC_USERS, SecurityResources.MESSAGE_SELECTED);
+            setSelectedUserName(userName);
+            
+            if (userName != null)
+            {
+                DataTable userDataTable = (DataTable) get("userDataTable");
+                
+                if (userDataTable != null)
+                {
+                    int index = this.userNameList.indexOf(getSelectedUserName());
+                    
+                    if (index != -1)
+                    {
+                        int currentPage = Math.max(0, userDataTable.getRowCount() - 1) / userDataTable.getRowsPerPage();
+                        userDataTable.setCurrentPage(currentPage);
+                    }
+                }
+            }
         }
         catch (NotSerializableException e)
         {
         }
         catch (SecurityException e)
         {
-            SecurityUtil.publishErrorMessage(request, SecurityResources.TOPIC_USERS, e.getMessage());
+            SecurityUtil.publishErrorMessage(getPortletRequest(), SecurityResources.TOPIC_USERS, e.getMessage());
         }                                    
         
         super.onBeforeRender();

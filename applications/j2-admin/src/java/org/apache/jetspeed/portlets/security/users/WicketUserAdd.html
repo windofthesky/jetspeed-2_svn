@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+
+<h4 class="portlet-section-header">Add User</h4>
+
+<form wicket:id="userAddForm">
+    <table>
+        <tr colspan="2" align="right">
+            <td nowrap class="portlet-section-alternate" align="right">New User Name: </td>
+            <td class="portlet-section-body" align="left">
+                <input type="text" wicket:id="jetspeedUserName" size="30" class="portlet-form-field-label" />
+            </td>
+        </tr>
+        <tr colspan="2" align="right">
+            <td nowrap class="portlet-section-alternate" align="right">Password: </td>
+            <td class="portlet-section-body" align="left">
+                <input type="password" wicket:id="jetspeedPassword" size="30" class="portlet-form-field-label">
+            </td>
+        </tr>
+        <tr colspan="2" align="right">
+            <td nowrap class="portlet-section-alternate" align="right">Change Password on first Login: </td>
+            <td class="portlet-section-body" align="left">
+                <input type="checkbox" wicket:id="jetspeedChangePasswordRequiredOnFirstLogin" />
+            </td>
+        </tr>
+        <tr colspan="2" align="right">
+            <td nowrap class="portlet-section-alternate" align="right">Default Role: </td>
+            <td class="portlet-section-body" align="left">
+                <select wicket:id="jetspeedRole" class="portlet-form-field-label">
+                    <option value="" />
+                </select>      
+            </td>
+        </tr>
+        <tr colspan="2" align="right">
+            <td nowrap class="portlet-section-alternate" align="right">Profiling Rule: </td>
+            <td class="portlet-section-body" align="left">
+                <select wicket:id="jetspeedRule" class="portlet-form-field-label">
+                    <option value=""/> 		
+                </select>      
+            </td>
+        </tr>
+        <tr colspan="2" align="right">
+            <td nowrap class="portlet-section-alternate" align="right">Subsite: </td>
+            <td class="portlet-section-body" align="left">
+                <select wicket:id="jetspeedSubsite" class="portlet-form-field-label">
+                    <option value=""/>
+                </select>      
+            </td>
+        </tr>
+    </table>
+    
+    <br/>
+    
+    <input type="submit" value="Add User" class="portlet-form-button" />
+    
+</form>
+    
+</html>

@@ -56,6 +56,6 @@ public class PortletOddEvenItem extends OddEvenItem
 	protected void onComponentTag(ComponentTag tag)
 	{
 		super.onComponentTag(tag);
-		tag.put("class", (getIndex() % 2 == 0) ? this.evenClass : this.oddClass);
+		tag.put("class", (getIndex() % 2 == 0) ? this.oddClass : this.evenClass);
 	}
 }
