@@ -300,13 +300,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     
     protected boolean hasPipelineChanged(String requestPipeline, String sessionPipeline)
     {
-        if (!requestPipeline.equals(sessionPipeline))
-        {
-            if (requestPipeline.equals(PortalReservedParameters.JETSPEED_CONFIG_PIPELINE_NAME)
-             || sessionPipeline.equals(PortalReservedParameters.JETSPEED_CONFIG_PIPELINE_NAME))
-                return true;
-        }
-        return false;
+        return !requestPipeline.equals(sessionPipeline);
     }    
 
     /**
