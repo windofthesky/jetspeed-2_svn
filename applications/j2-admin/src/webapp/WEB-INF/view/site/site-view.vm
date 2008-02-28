@@ -1628,12 +1628,12 @@ dojo.addOnLoad(function()
       <td></td>
   </tr>
 </table>
-<div dojoType="LayoutContainer" widgetId="securityControls" minHeight="20" layoutAlign="bottom" style="width: 100%; height: 25px; margin-left:60px;">
+<div dojoType="LayoutContainer" widgetId="securityControls" minHeight="20" layoutAlign="bottom" style="width: 100%; height: 25px;">
   <div class="buttonbox">
-    <button widgetId="securityNewButton" dojoType="Button" onclick="newEntry()">New</button>
+    <button widgetId="securityRevertButton" dojoType="Button" onclick="revertEntry()">Revert</button>
     <button widgetId="securityDeleteButton" dojoType="Button" onclick="deleteEntry()">Delete</button>
     <button widgetId="securitySaveButton" dojoType="Button" onclick="saveEntry()">Save</button>
-    <button widgetId="securityRevertButton" dojoType="Button" onclick="revertEntry()">Revert</button>
+    <button widgetId="securityNewButton" dojoType="Button" onclick="newEntry()">New</button>
   </div>
 </div>
 </div> <!-- End Tab Security -->
@@ -1674,12 +1674,12 @@ dojo.addOnLoad(function()
     </td>
   </tr>
 </table>
-<div dojoType="LayoutContainer" widgetId="metaControls" minHeight="20" layoutAlign="bottom" style="width: 100%; height: 25px; margin-left:60px;">
+<div dojoType="LayoutContainer" widgetId="metaControls" minHeight="20" layoutAlign="bottom" style="width: 100%; height: 25px;">
   <div class="buttonbox">
-    <button widgetId="metaNewButton" dojoType="Button" onclick="newEntry()">New</button>
+    <button widgetId="metaRevertButton" dojoType="Button" onclick="revertEntry()">Revert</button>
     <button widgetId="metaDeleteButton" dojoType="Button" onclick="deleteEntry()">Delete</button>
     <button widgetId="metaSaveButton" dojoType="Button" onclick="saveEntry()">Save</button>
-    <button widgetId="metaRevertButton" dojoType="Button" onclick="revertEntry()">Revert</button>
+    <button widgetId="metaNewButton" dojoType="Button" onclick="newEntry()">New</button>
   </div>
 </div>
 </div> <!-- End Tab Metadata -->
