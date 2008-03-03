@@ -77,7 +77,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
      * this addresses possible startup errors in clustered environments
      */
     protected int  maxRetriedStarts = DEFAULT_MAX_RETRIED_STARTS;
-    protected DescriptorChangeMonitor monitor;
+    protected DescriptorChangeMonitor monitor = null;
     protected boolean started;
     protected String appRoot;
     protected NodeManager nodeManager;
@@ -155,7 +155,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		this.searchEngine = searchEngine;
 	}
     
-    private void checkStarted()
+    protected void checkStarted()
     {
         if (!started)
         {
@@ -262,7 +262,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 unregisterPortletApplication(pa, true);
                 try
                 {
-                	nodeManager.removeNode(paName);
+                    if (nodeManager != null)                    
+                        nodeManager.removeNode(paName);
                 }
                 catch (Exception ee)
                 {
@@ -375,8 +376,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			this.updateSearchEngine(false, pa);
 			
 			// and add to the current node info
-			nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
-            
+            if (nodeManager != null)
+            {            
+                nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
+            }
             // grant default permissions to portlet application
 			grantDefaultPermissions(paName);
             
