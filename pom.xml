@@ -811,6 +811,11 @@
         <version>${xerces.version}</version>
       </dependency>
       <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xerces</artifactId>
+        <version>${xerces.version}</version>
+      </dependency>
+      <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
         <version>${xalan.version}</version>
