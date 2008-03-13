@@ -52,11 +52,11 @@
   </issueManagement>
   <inceptionYear>1999</inceptionYear>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk</connection>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk</connection>
     <developerConnection>
-      scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk
+      scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk
     </developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk</url>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/trunk</url>
   </scm>
   <mailingLists>
     <mailingList>
