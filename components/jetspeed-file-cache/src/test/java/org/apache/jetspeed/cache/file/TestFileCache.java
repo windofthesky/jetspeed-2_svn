@@ -27,7 +27,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.commons.io.StreamUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 
@@ -194,7 +194,7 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
         BufferedInputStream input;
 
         input = new BufferedInputStream(new FileInputStream(file));
-        String result = StreamUtils.streamAsString(input);
+        String result = IOUtils.toString(input);
         input.close();
         return result;
     }
