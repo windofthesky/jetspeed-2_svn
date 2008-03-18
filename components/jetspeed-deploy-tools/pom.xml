@@ -65,5 +65,42 @@
     </dependency>
     
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-build-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <unpack>
+                <targetDirectory>${project.build.directory}/classes/org/apache/jetspeed/tools/deploy</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>webapp/WEB-INF/tld</path>
+                    <include>portlet.tld</include>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
   
 </project>

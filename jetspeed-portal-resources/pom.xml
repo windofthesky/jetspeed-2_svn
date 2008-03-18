@@ -39,7 +39,7 @@
     <plugins>
       <plugin>
         <groupId>${pom.groupId}</groupId>
-        <artifactId>jetspeed-maven-plugins</artifactId>
+        <artifactId>jetspeed-build-maven-plugin</artifactId>
         <version>${pom.version}</version>        
         <executions>
           <execution>

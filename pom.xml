@@ -53,9 +53,7 @@
   <inceptionYear>1999</inceptionYear>
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk</connection>
-    <developerConnection>
-      scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk
-    </developerConnection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/trunk</url>
   </scm>
   <mailingLists>
@@ -188,7 +186,7 @@
       <roles>
         <role>Java Developer</role>
       </roles>
-    </developer>    
+    </developer>
     <developer>
       <name>Woonsan Ko</name>
       <id>woonsan</id>
@@ -257,15 +255,17 @@
   <!-- Properties -->
   <properties>
 
-    <!-- Default Build Properties -->        
-    
+    <!-- Default Build Properties -->
+
     <maven.test.skip>true</maven.test.skip>
-    
+
     <!-- default test jdbc driver artifact definition which is *required* to have proper default values to keep installed POMs valid -->
     <org.apache.jetspeed.test.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
     <org.apache.jetspeed.test.jdbc.driver.artifactId>derby</org.apache.jetspeed.test.jdbc.driver.artifactId>
-    <org.apache.jetspeed.test.jdbc.driver.version>${org.apache.derby.version}</org.apache.jetspeed.test.jdbc.driver.version>
-    
+    <org.apache.jetspeed.test.jdbc.driver.version>
+      ${org.apache.derby.version}
+    </org.apache.jetspeed.test.jdbc.driver.version>
+
     <!-- Build Dependency Version Properties -->
     <ant.version>1.7</ant.version>
     <jmock.version>1.0.1</jmock.version>
@@ -296,12 +296,12 @@
     <commons-digester.version>1.8</commons-digester.version>
     <commons-fileupload.version>1.2</commons-fileupload.version>
     <commons-httpclient.version>3.0.1</commons-httpclient.version>
-    <commons-io.version>0.1</commons-io.version>
+    <commons-io.version>1.3.1</commons-io.version>
     <commons-lang.version>2.1</commons-lang.version>
     <commons-logging.version>1.1</commons-logging.version>
     <commons-pool.version>1.3</commons-pool.version>
     <!-- ddlutils svn r551445 with patch applied from http://issues.apache.org/jira/browse/DDLUTILS-75#action_12521579 -->
-      <ddlutils.version>r551445-patched-75</ddlutils.version>
+    <ddlutils.version>r551445-patched-75</ddlutils.version>
     <directory.version>0.9.3</directory.version>
     <ehcache.version>1.2.4</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
@@ -343,7 +343,7 @@
     <velocity.version>1.5</velocity.version>
     <xalan.version>2.4.1</xalan.version>
     <xerces.version>2.3.0</xerces.version>
-    <xml-apis.version>1.0.b2</xml-apis.version>
+    <xml-apis.version>2.0.2</xml-apis.version>
     <asm.version>2.2</asm.version>
     <commonj.version>1.1</commonj.version>
   </properties>
@@ -361,6 +361,29 @@
       </dependency>
       <dependency>
         <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-maven-utils</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-build-maven</artifactId>
+        <version>${pom.version}</version>
+        <type>plugin</type>
+      </dependency>
+      <dependency>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-db-maven</artifactId>
+        <version>${pom.version}</version>
+        <type>plugin</type>
+      </dependency>
+      <dependency>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-deploy-maven</artifactId>
+        <version>${pom.version}</version>
+        <type>plugin</type>
+      </dependency>
+      <dependency>
+        <groupId>${pom.groupId}</groupId>
         <artifactId>jetspeed-commons</artifactId>
         <version>${pom.version}</version>
       </dependency>
@@ -374,7 +397,7 @@
         <artifactId>jetspeed-portal-resources</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      
+
       <!-- J2 Components -->
       <dependency>
         <groupId>${pom.groupId}</groupId>
@@ -465,7 +488,7 @@
         <groupId>${pom.groupId}</groupId>
         <artifactId>jetspeed-statistics</artifactId>
         <version>${pom.version}</version>
-      </dependency>        
+      </dependency>
       <dependency>
         <groupId>${pom.groupId}</groupId>
         <artifactId>jetspeed-header-resource</artifactId>
@@ -496,7 +519,13 @@
         <artifactId>jetspeed-serializer</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      
+      <dependency>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed</artifactId>
+        <type>war</type>
+        <version>${pom.version}</version>
+      </dependency>
+
       <!-- Portals Applications JARs -->
       <dependency>
         <groupId>${pom.groupId}</groupId>
@@ -513,7 +542,7 @@
         <artifactId>jetspeed-layout-portlets</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      
+
       <!-- Portals Applications -->
       <dependency>
         <groupId>${pom.groupId}</groupId>
@@ -545,7 +574,7 @@
         <type>war</type>
         <version>${pom.version}</version>
       </dependency>
-      
+
       <!-- Standard APIs -->
       <dependency>
         <groupId>portlet-api</groupId>
@@ -661,7 +690,7 @@
         <groupId>regexp</groupId>
         <artifactId>regexp</artifactId>
         <version>${regexp.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
@@ -671,6 +700,11 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commons-lang.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging-api</artifactId>
+        <version>${commons-logging.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
@@ -737,9 +771,9 @@
         <artifactId>ehcache</artifactId>
         <version>${ehcache.version}</version>
       </dependency>
-      
+
       <!-- defining dom4j (which is included by commons-configuration) just to be able to exclude
-           isorelax, msv and relaxngDatatype
+        isorelax, msv and relaxngDatatype
       -->
       <dependency>
         <groupId>dom4j</groupId>
@@ -761,7 +795,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -1041,7 +1075,7 @@
         <artifactId>ant</artifactId>
         <version>${ant.version}</version>
       </dependency>
-      
+
       <!-- ASM -->
       <dependency>
         <groupId>asm</groupId>
@@ -1061,7 +1095,7 @@
         <version>${commonj.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
     </dependencies>
   </dependencyManagement>
 
@@ -1125,12 +1159,12 @@
             <disableXmlReport>true</disableXmlReport>
             <trimStackTrace>false</trimStackTrace>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
-            
+
             <!-- workaround for still not fixed SUREFIRE-288: Surefire tries to instantiate nested TestCase classes -->
             <excludes>
               <exclude>**/*$*</exclude>
             </excludes>
-            <!-- database related tests system properties -->	
+            <!-- database related tests system properties -->
             <systemProperties>
               <property>
                 <name>org.apache.jetspeed.test.database.user</name>
@@ -1169,9 +1203,7 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <plugins>
-        
-    </plugins>        
+
     <resources>
       <resource>
         <!-- default from Super POM -->
@@ -1187,7 +1219,8 @@
           <include>**/*.conf</include>
         </includes>
       </resource>
-    </resources>    
+    </resources>
+
     <testResources>
       <!-- default from Super POM -->
       <testResource>
@@ -1200,6 +1233,7 @@
         </excludes>
       </testResource>
     </testResources>
+
   </build>
 
   <profiles>
@@ -1209,69 +1243,21 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+        <module>jetspeed-api</module>
         <module>maven</module>
         <module>jetspeed-portal-resources</module>
-        <module>jetspeed-api</module>
         <module>jetspeed-commons</module>
-        <module>components</module>    
+        <module>components</module>
+        <module>applications</module>
       </modules>
     </profile>
     <profile>
       <id>init</id>
       <modules>
+        <module>jetspeed-api</module>
         <module>maven</module>
         <module>jetspeed-portal-resources</module>
       </modules>
-    </profile>
-    <profile>
-      <id>init-db</id>
-      <build>
-        <plugins>
-          <plugin>
-            <inherited>false</inherited>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-maven-plugins</artifactId>
-            <version>${pom.version}</version>
-            <dependencies>
-              <dependency>
-                <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
-                <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
-                <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
-              </dependency>
-            </dependencies>
-            <executions>
-              <execution>
-                <id>pom-init-db</id>
-                <phase>test-compile</phase>
-                <goals>
-                  <goal>init-db</goal>
-                </goals>
-                <configuration>
-                  <unpackResources>
-                    <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
-                    <resources>
-                      <unpack includes="ddl/${org.apache.jetspeed.test.database.default.name}/"/> 
-                    </resources>
-                  </unpackResources>
-                  <sqlScripts>
-                    <sqlScript>
-                      <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/drop-schema.sql</path>
-                      <ignoreErrors>true</ignoreErrors>
-                    </sqlScript>
-                    <sqlScript>
-                      <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/create-schema.sql</path>
-                    </sqlScript>
-                  </sqlScripts>
-                  <username>${org.apache.jetspeed.test.database.user}</username>
-                  <password>${org.apache.jetspeed.test.database.password}</password>
-                  <url>${org.apache.jetspeed.test.database.url}</url>
-                  <driver>${org.apache.jetspeed.test.database.driver}</driver>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>test</id>
@@ -1285,107 +1271,133 @@
         <maven.test.skip>false</maven.test.skip>
       </properties>
       <modules>
+        <module>jetspeed-api</module>
         <module>maven</module>
         <module>jetspeed-portal-resources</module>
-        <module>jetspeed-api</module>
         <module>jetspeed-commons</module>
-        <module>components</module>    
+        <module>components</module>
       </modules>
     </profile>
     <profile>
       <id>prod-db</id>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>${pom.groupId}</groupId>
-              <artifactId>jetspeed-maven-plugins</artifactId>
-              <version>${pom.version}</version>
-              <dependencies>
-                <dependency>
-                  <groupId>${org.apache.jetspeed.production.jdbc.driver.groupId}</groupId>
-                  <artifactId>${org.apache.jetspeed.production.jdbc.driver.artifactId}</artifactId>
-                  <version>${org.apache.jetspeed.production.jdbc.driver.version}</version>
-                </dependency>
-              </dependencies>
-              <goals>
-                <goal>init-db</goal>
-              </goals>
-              <configuration>
-                <unpackResources>
-                  <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
-                  <resources>
-                    <unpack includes="ddl/${org.apache.jetspeed.production.database.default.name}/"/> 
-                  </resources>
-                </unpackResources>
-                <sqlScripts>
-                  <sqlScript>
-                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.production.database.default.name}/drop-schema.sql</path>
-                    <ignoreErrors>true</ignoreErrors>
-                  </sqlScript>
-                  <sqlScript>
-                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.production.database.default.name}/create-schema.sql</path>
-                  </sqlScript>
-                </sqlScripts>
+        <plugins>
+          <plugin>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-db-maven-plugin</artifactId>
+            <version>${pom.version}</version>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <connection>
                 <username>${org.apache.jetspeed.production.database.user}</username>
                 <password>${org.apache.jetspeed.production.database.password}</password>
                 <url>${org.apache.jetspeed.production.database.url}</url>
                 <driver>${org.apache.jetspeed.production.database.driver}</driver>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
+              </connection>
+              <unpack>
+                <artifact>${groupId}:jetspeed-portal-resources:jar</artifact>
+                <resources>
+                  <resource>
+                    <destination>ddl/production</destination>
+                    <path>ddl</path>
+                    <include>${org.apache.jetspeed.production.database.default.name}/</include>
+                  </resource>
+                </resources>
+              </unpack>
+              <sql>
+                <scripts>
+                  <script>
+                    <path>
+                      ${project.build.directory}/ddl/production/${org.apache.jetspeed.production.database.default.name}/drop-schema.sql
+                    </path>
+                    <ignoreErrors>true</ignoreErrors>
+                  </script>
+                  <script>
+                    <path>
+                      ${project.build.directory}/ddl/production/${org.apache.jetspeed.production.database.default.name}/create-schema.sql
+                    </path>
+                  </script>
+                </scripts>
+              </sql>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>jetspeed-portal-resources</artifactId>
+                <version>${pom.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>${org.apache.jetspeed.production.jdbc.driver.groupId}</groupId>
+                <artifactId>${org.apache.jetspeed.production.jdbc.driver.artifactId}</artifactId>
+                <version>${org.apache.jetspeed.production.jdbc.driver.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
       </build>
-    </profile>      
+    </profile>
     <profile>
       <id>test-db</id>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>${pom.groupId}</groupId>
-              <artifactId>jetspeed-maven-plugins</artifactId>
-              <version>${pom.version}</version>
-              <dependencies>
-                <dependency>
-                  <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
-                  <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
-                  <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
-                </dependency>
-              </dependencies>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>init-db</goal>
-                  </goals>
-                </execution>
-              </executions>
-              <configuration>
-                <unpackResources>
-                  <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
-                  <resources>
-                    <unpack includes="ddl/${org.apache.jetspeed.test.database.default.name}/"/> 
-                  </resources>
-                </unpackResources>
-                <sqlScripts>
-                  <sqlScript>
-                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/drop-schema.sql</path>
-                    <ignoreErrors>true</ignoreErrors>
-                  </sqlScript>
-                  <sqlScript>
-                    <path>${project.build.directory}/ddl/${org.apache.jetspeed.test.database.default.name}/create-schema.sql</path>
-                  </sqlScript>
-                </sqlScripts>
+        <plugins>
+          <plugin>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-db-maven-plugin</artifactId>
+            <version>${pom.version}</version>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <connection>
                 <username>${org.apache.jetspeed.test.database.user}</username>
                 <password>${org.apache.jetspeed.test.database.password}</password>
                 <url>${org.apache.jetspeed.test.database.url}</url>
                 <driver>${org.apache.jetspeed.test.database.driver}</driver>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
+              </connection>
+              <unpack>
+                <artifact>${groupId}:jetspeed-portal-resources:jar</artifact>
+                <resources>
+                  <resource>
+                    <destination>ddl/test</destination>
+                    <path>ddl</path>
+                    <include>${org.apache.jetspeed.test.database.default.name}/</include>
+                  </resource>
+                </resources>
+              </unpack>
+              <sql>
+                <scripts>
+                  <script>
+                    <path>
+                      ${project.build.directory}/ddl/test/${org.apache.jetspeed.test.database.default.name}/drop-schema.sql
+                    </path>
+                    <ignoreErrors>true</ignoreErrors>
+                  </script>
+                  <script>
+                    <path>
+                      ${project.build.directory}/ddl/test/${org.apache.jetspeed.test.database.default.name}/create-schema.sql
+                    </path>
+                  </script>
+                </scripts>
+              </sql>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>jetspeed-portal-resources</artifactId>
+                <version>${pom.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+                <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+                <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
       </build>
-    </profile>      
-  </profiles>      
-  
+    </profile>
+  </profiles>
+
 </project>

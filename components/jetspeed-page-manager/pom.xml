@@ -139,33 +139,45 @@
             </plugin>
             <plugin>
                 <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-maven-plugins</artifactId>
+                <artifactId>jetspeed-build-maven-plugin</artifactId>
                 <version>${pom.version}</version>
-                <dependencies>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>unpack-test-resources</id>
                         <goals>
-                            <goal>unpack-resources</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <phase>process-test-resources</phase>
                         <configuration>
                             <skip>${maven.test.skip}</skip>
-                            <resourceBundle>${groupId}:jetspeed-portal-resources:${pom.version}</resourceBundle>
-                            <targetBaseDirectory>${project.build.directory}</targetBaseDirectory>                            
-                            <resources>
-                                <unpack dest="webapp/WEB-INF/pages">
-                                    <entryset dir="webapp/WEB-INF/pages"/>
-                                </unpack>
-                                <unpack dest="test-classes">
-                                    <entryset dir="webapp/WEB-INF/assembly" includes="transaction.xml"/>
-                                    <entryset dir="db-ojb"/>
-                                </unpack>
-                            </resources>
+                            <unpack>
+                                <targetDirectory>${project.build.directory}</targetDirectory>
+                                <resources>
+                                    <resource>
+                                        <path>webapp/WEB-INF/pages</path>
+                                        <destination>webapp/WEB-INF/pages</destination>
+                                    </resource>
+                                    <resource>
+                                        <path>webapp/WEB-INF/assembly</path>
+                                        <include>transaction.xml</include>
+                                        <destination>test-classes</destination>
+                                    </resource>
+                                    <resource>
+                                        <path>db-ojb</path>
+                                        <destination>test-classes</destination>
+                                    </resource>
+                                </resources>
+                            </unpack>
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>${groupId}</groupId>
+                        <artifactId>jetspeed-portal-resources</artifactId>
+                        <version>${pom.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
         <testResources>
