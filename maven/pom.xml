@@ -26,8 +26,8 @@
     </prerequisites>
     
     <artifactId>maven</artifactId>
-    <name>Maven Plugins</name>
-    <description>Maven Plugins</description>
+    <name>Jetspeed-2 Maven Plugins</name>
+    <description>Jetspeed-2 Maven Plugins</description>
     <parent>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-2</artifactId>
@@ -36,7 +36,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>jetspeed-maven-plugins</module>
+        <module>jetspeed-maven-utils</module>
+        <module>jetspeed-build-maven-plugin</module>        
+        <module>jetspeed-deploy-maven-plugin</module>
+        <module>jetspeed-db-maven-plugin</module>
     </modules>
     
 </project>
