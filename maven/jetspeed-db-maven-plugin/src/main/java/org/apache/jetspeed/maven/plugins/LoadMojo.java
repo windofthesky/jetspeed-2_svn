@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.apache.jetspeed.maven.utils.Artifacts;
 import org.apache.jetspeed.maven.utils.DbConnection;
-import org.apache.jetspeed.maven.utils.SeedConfig;
 import org.apache.jetspeed.maven.utils.SqlScripts;
 import org.apache.jetspeed.maven.utils.UnpackResources;
 import org.apache.maven.plugin.AbstractMojo;
@@ -31,9 +30,9 @@ import org.apache.maven.settings.Settings;
 
 /**
  * @version $Id$
- * @goal run
+ * @goal load
  */
-public class DatabaseMojo extends AbstractMojo
+public class LoadMojo extends AbstractMojo
 {
     /**
      * Database connection
@@ -50,11 +49,6 @@ public class DatabaseMojo extends AbstractMojo
      * @parameter
      */
     private UnpackResources unpack;
-    
-    /**
-     * @parameter
-     */
-    private SeedConfig seedConfig;
     
     /**
      * @parameter expression="${settings}"
@@ -86,7 +80,7 @@ public class DatabaseMojo extends AbstractMojo
     {
         if ( skip )
         {
-            this.getLog().info( "Skipping init-db" );
+            this.getLog().info( "Skipping db load" );
             return;
         }
         

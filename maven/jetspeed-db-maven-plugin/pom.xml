@@ -62,12 +62,6 @@
       <groupId>org.apache.ddlutils</groupId>
       <artifactId>ddlutils</artifactId>
     </dependency>
-    <dependency>
-      <artifactId>plexus-utils</artifactId>
-      <groupId>org.codehaus.plexus</groupId>
-      <version>1.4.1</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

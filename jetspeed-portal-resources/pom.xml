@@ -39,10 +39,11 @@
     <plugins>
       <plugin>
         <groupId>${pom.groupId}</groupId>
-        <artifactId>jetspeed-build-maven-plugin</artifactId>
+        <artifactId>jetspeed-db-maven-plugin</artifactId>
         <version>${pom.version}</version>        
         <executions>
           <execution>
+            <phase>process-resources</phase>
             <goals>
               <goal>ddl</goal>
             </goals>

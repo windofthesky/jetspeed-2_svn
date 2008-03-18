@@ -46,11 +46,5 @@
       <version>2.0.7</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <artifactId>plexus-utils</artifactId>
-      <groupId>org.codehaus.plexus</groupId>
-      <version>1.4.1</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 </project>

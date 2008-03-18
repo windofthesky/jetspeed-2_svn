@@ -103,13 +103,6 @@
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>${groupId}</groupId>
-            <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
     <testResources>

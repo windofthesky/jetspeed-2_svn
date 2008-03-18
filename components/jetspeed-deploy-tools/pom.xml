@@ -36,7 +36,7 @@
   <packaging>jar</packaging>
 
   <dependencies>
-    
+
     <!-- Build Dependencies -->
     <dependency>
       <groupId>${pom.groupId}</groupId>
@@ -51,7 +51,7 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    
+
     <!-- Runtime Dependencies -->
     <dependency>
       <groupId>jaxen</groupId>
@@ -63,7 +63,7 @@
       <artifactId>saxpath</artifactId>
       <scope>runtime</scope>
     </dependency>
-    
+
   </dependencies>
 
   <build>
@@ -92,15 +92,8 @@
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>${groupId}</groupId>
-            <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
-  
+
 </project>
