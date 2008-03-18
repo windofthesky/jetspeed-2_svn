@@ -43,4 +43,18 @@ public class JetspeedDeployFactory implements DeployFactory
     {
         return new JetspeedDeploy(inputWarPath, outputWarPath, stripLoggers);
     }
+
+    /**
+     * getInstance
+     *
+     * @param inputWarPath
+     * @param outputWarPath
+     * @param stripLoggers
+     * @param forcedVersion
+     * @return JetspeedDeploy instance
+     */
+    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean stripLoggers, String forcedVersion) throws Exception
+    {
+        return new JetspeedDeploy(inputWarPath, outputWarPath, stripLoggers, forcedVersion);
+    }
 }
