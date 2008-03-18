@@ -33,4 +33,15 @@ public interface DeployFactory
      * @return Deploy instance
      */
     public Deploy getInstance(String inputWarPath, String outputWarPath, boolean stripLoggers) throws Exception;
+
+    /**
+     * getInstance
+     *
+     * @param inputWarPath
+     * @param outputWarPath
+     * @param stripLoggers
+     * @param forcedVersion
+     * @return Deploy instance
+     */
+    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean stripLoggers, String forcedVersion) throws Exception;
 }
