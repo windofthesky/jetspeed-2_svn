@@ -27,8 +27,8 @@ limitations under the License.
 
 	<Resource name="jdbc/jetspeed" auth="Container"
             factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-            type="javax.sql.DataSource" username="@USERNAME@" password="@PASSWORD@"
-            driverClassName="@DRIVER@" url="@URL@"
+	    type="javax.sql.DataSource" username="${org.apache.jetspeed.production.database.user}" password="${org.apache.jetspeed.production.database.password}"
+	    driverClassName="${org.apache.jetspeed.production.database.driver}" url="${org.apache.jetspeed.production.database.url}"
             maxActive="100" maxIdle="30" maxWait="10000"/> 
 
 	<Valve className="org.apache.catalina.authenticator.FormAuthenticator" characterEncoding="UTF-8"/>
