@@ -1245,7 +1245,14 @@
       <modules>
         <module>jetspeed-api</module>
         <module>maven</module>
+<!-- Ate:
+        When building/installing jetspeed-portal-resources it is not immediately visible/provided
+        as dependent artifact to other plugins like unpack in other modules :(
+        This needs further research how to fix this or work around, but for now
+        the jetspeed-portal-resources have to be build separately (e.g. with -P init)
+
         <module>jetspeed-portal-resources</module>
+-->
         <module>jetspeed-commons</module>
         <module>components</module>
         <module>applications</module>
@@ -1273,7 +1280,14 @@
       <modules>
         <module>jetspeed-api</module>
         <module>maven</module>
+<!-- Ate:
+        When building/installing jetspeed-portal-resources it is not immediately visible/provided
+        as dependent artifact to other plugins like unpack in other modules :(
+        This needs further research how to fix this or work around, but for now
+        the jetspeed-portal-resources have to be build separately (e.g. with -P init)
+
         <module>jetspeed-portal-resources</module>
+-->
         <module>jetspeed-commons</module>
         <module>components</module>
       </modules>
