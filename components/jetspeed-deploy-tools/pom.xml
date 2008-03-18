@@ -84,7 +84,7 @@
                 <targetDirectory>${project.build.directory}/classes/org/apache/jetspeed/tools/deploy</targetDirectory>
                 <resources>
                   <resource>
-                    <path>webapp/WEB-INF/tld</path>
+                    <path>tld</path>
                     <include>portlet.tld</include>
                   </resource>
                 </resources>
