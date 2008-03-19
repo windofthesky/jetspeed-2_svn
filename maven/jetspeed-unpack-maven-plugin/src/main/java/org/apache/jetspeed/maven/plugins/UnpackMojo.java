@@ -26,7 +26,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * UnpackResourcesMojo provides extracting specific folders within a (remote) resource bundle jar to specific output folders.
+ * UnpackMojo provides extracting specific folders within a (remote) resource jar to specific output folders.
  * 
  * @version $Id$
  * @goal unpack

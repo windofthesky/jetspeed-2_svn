@@ -37,7 +37,7 @@
 
     <modules>
         <module>jetspeed-maven-utils</module>
-        <module>jetspeed-build-maven-plugin</module>        
+        <module>jetspeed-unpack-maven-plugin</module>        
         <module>jetspeed-deploy-maven-plugin</module>
         <module>jetspeed-db-maven-plugin</module>
     </modules>

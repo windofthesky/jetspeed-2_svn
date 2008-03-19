@@ -139,7 +139,7 @@
             </plugin>
             <plugin>
                 <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-build-maven-plugin</artifactId>
+                <artifactId>jetspeed-unpack-maven-plugin</artifactId>
                 <version>${pom.version}</version>
                 <executions>
                     <execution>
@@ -158,7 +158,7 @@
                                         <destination>webapp/WEB-INF/pages</destination>
                                     </resource>
                                     <resource>
-                                        <path>webapp/WEB-INF/assembly</path>
+                                        <path>assembly</path>
                                         <include>transaction.xml</include>
                                         <destination>test-classes</destination>
                                     </resource>

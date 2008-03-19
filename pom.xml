@@ -1215,7 +1215,7 @@
                defining it as default provided dependency in pluginManagement.
           -->
           <groupId>${pom.groupId}</groupId>
-          <artifactId>jetspeed-build-maven-plugin</artifactId>
+          <artifactId>jetspeed-unpack-maven-plugin</artifactId>
           <version>${pom.version}</version>
           <dependencies>
             <dependency>
