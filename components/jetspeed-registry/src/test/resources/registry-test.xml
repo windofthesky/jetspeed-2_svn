@@ -44,6 +44,8 @@
         </constructor-arg>        
     </bean>
 
+    <bean id="org.apache.jetspeed.request.RequestContextComponent" class="org.apache.jetspeed.request.MockRequestContextComponent"/>
+    
     <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry" parent="baseTransactionProxy">
         <property name="proxyInterfaces">
             <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
@@ -73,6 +75,9 @@
         <constructor-arg>
             <ref bean="portletRegistry" />
         </constructor-arg>
+        <constructor-arg>
+            <ref bean="org.apache.jetspeed.request.RequestContextComponent" />
+        </constructor-arg>    
     </bean>
 
     <bean id="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" parent="baseTransactionProxy" name="portletEntityAccess">
