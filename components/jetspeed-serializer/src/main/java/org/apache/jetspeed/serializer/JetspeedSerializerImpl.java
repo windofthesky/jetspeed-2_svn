@@ -183,20 +183,6 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         }
     }
 
-    public void setComponentManager(ComponentManager cm)
-            throws SerializerException
-    {
-    }
-
-    public void initializeComponentManager(String appRoot, String[] bootConfig,
-            String[] appConfig) throws SerializerException
-    {
-    }
-
-    public void closeUp()
-    {
-    }
-    
     protected Map getProcessSettings(Map settings)
     {
         Map processSettings = new HashMap(defaultSettings);

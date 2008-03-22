@@ -54,5 +54,5 @@ public interface CommonPortletServices
     public final static String CPS_DECORATOR_CACHE = "cps:decorationContentCache";
     public final static String CPS_PORTLET_CACHE = "cps:portletContentCache";
     public final static String CPS_AUDIT_ACTIVITY = "cps:AuditActivity";
-    public final static String CPS_JETSPEED_SERIALIZER_FACTORY = "cps:JetspeedSerializerFactory";
+    public final static String CPS_JETSPEED_SERIALIZER = "cps:JetspeedSerializer";
 }
