@@ -154,10 +154,6 @@
                                 <targetDirectory>${project.build.directory}</targetDirectory>
                                 <resources>
                                     <resource>
-                                        <path>webapp/WEB-INF/pages</path>
-                                        <destination>webapp/WEB-INF/pages</destination>
-                                    </resource>
-                                    <resource>
                                         <path>assembly</path>
                                         <include>transaction.xml</include>
                                         <destination>test-classes</destination>

@@ -115,7 +115,7 @@ interface PageManagerTestShared
             // copy documents under webapp/pages folder and strip fragment Ids
             File webappDestDirFile = new File("target/testdata/" + pagesDirName+"/webapp-no-ids");
             dirHelper.setBaseDirectory(webappDestDirFile);
-            File webappPagesDirFile = new File("target/webapp/WEB-INF/pages");
+            File webappPagesDirFile = new File("src/test/testdata/pages");
             dirHelper.copyFromAndTransform(webappPagesDirFile, noCVSorSVNorBackups);
 
             // copy documents under webapp/pages folder without transforming them
