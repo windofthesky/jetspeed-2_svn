@@ -1,123 +1,120 @@
 <?xml version="1.0"?>
 <!--
-  Licensed to the Apache Software Foundation (ASF) under one or more
-  contributor license agreements.  See the NOTICE file distributed with
-  this work for additional information regarding copyright ownership.
-  The ASF licenses this file to You under the Apache License, Version 2.0
-  (the "License"); you may not use this file except in compliance with
-  the License.  You may obtain a copy of the License at
-  
-  http://www.apache.org/licenses/LICENSE-2.0
-  
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 -->
 <document>
-  <properties>
-    <title>Jetspeed-2 Release Notes</title>
-    <subtitle>Jetspeed-2 Release Notes</subtitle>
-    <authors>
-      <person name="Ate Douma" email="ate@douma.nu" />
-    </authors>
-  </properties>
-  <body>
-  	  <section name="Release Notes - Jetspeed 2 - Version 2.1.2">  
-  	  <p>
-  	  The list below outlines the issues that are addressed with release 2.1.2  For a full list of features, see the
-  	  <a href="features.html">features list</a>.
-  	  </p>
-  	  <p>
-  	  And the release notes of the previous major release 2.1 are available here: <a href="release-notes-2.1.html">release notes 2.1</a>.
-  	  </p>
-  	    <subsection name="Bug">
-  	      <ul>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-282'>JS2-282</a>] - Error when session expires and portlet window is maximized</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-471'>JS2-471</a>] - Document Derby as the default database</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-484'>JS2-484</a>] - UserDetailsPortlet doesn't &quot;see&quot; newly added roles until after logging out and in again</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-502'>JS2-502</a>] - cannot disable user</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-512'>JS2-512</a>] - Profiler admin portlet can not display other language except English.</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-525'>JS2-525</a>] - Roles and Groups appear in the User Details portlet when having been deleted</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-566'>JS2-566</a>] - Tapestry portlet's header doesn't display in jetspeed</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-580'>JS2-580</a>] - localization SSO Details portlet</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-657'>JS2-657</a>] - Installer fails with firewall</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-660'>JS2-660</a>] - Request attribute not available in jsp when using the JetspeedPowerTool</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-661'>JS2-661</a>] - Error in the antinstall-config script</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-665'>JS2-665</a>] - Duplicate Objects creation</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-667'>JS2-667</a>] - Portlet Selector is not returning to the correct page after navigation</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-668'>JS2-668</a>] - Adding Portlets to multiple layouts always adds to the top level layout</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-669'>JS2-669</a>] - Site Manager Admin portlet does not allow copying of a resource into the same folder where it exists</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-670'>JS2-670</a>] - Fragment Security Constraints only check View Mode</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-674'>JS2-674</a>] - Site component fails on profile navigations for subsites</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-675'>JS2-675</a>] - Site Manager Admin portlet: cannot view pages located via profiling rules with navigations or controls</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-681'>JS2-681</a>] - Login portlet doesn't run in Tomcat ROOT context</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-682'>JS2-682</a>] - Jetspeed thread waiting to lock for infinity time</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-687'>JS2-687</a>] - jetspeed deployment engine removes WEB-INF/tld/portlet.tld from portlet app web archive</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-688'>JS2-688</a>] - Unable to use Jetspeed services</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-689'>JS2-689</a>] - Spring Bean Factory creation of Prototype (non-singleton) beans causes serious performance degradation under load</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-690'>JS2-690</a>] - Caching issue with Print Mode</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-692'>JS2-692</a>] - Fragment ids are not automatically created, causing runtime errors</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-693'>JS2-693</a>] - Portal Site Manager  error in java script for button &quot;view&quot; </li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-694'>JS2-694</a>] - actionResponse.sendRedirect(&quot;some psml page.psml&quot;) fails on the desktop</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-696'>JS2-696</a>] - Creating actionURLs on the desktop with javascript: tags in them fails</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-697'>JS2-697</a>] - Maximized mode overlaps as popup on desktop</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-698'>JS2-698</a>] - Minimized mode functions only in un-tiled state on desktop</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-699'>JS2-699</a>] - When going back from view mode to edit mode, icon is not always updated on desktop</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-703'>JS2-703</a>] - Remove Print Mode Window Decoration on Desktop</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-705'>JS2-705</a>] - Desktop window dragging mouse position offset bug</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-714'>JS2-714</a>] - Filter Admin users from delegated-security portlets</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-717'>JS2-717</a>] - MenuElement interface does not support getUrl method</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-718'>JS2-718</a>] - forgot pass portlet: password reset link does not work</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-719'>JS2-719</a>] - Default ehcache configuration is setup for distributed operation which will fail the portal to startup when no network is available</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-725'>JS2-725</a>] - Dociumentation mismatch </li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-727'>JS2-727</a>] - Appy Findbugs patches</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-731'>JS2-731</a>] - DESKTOP_ATTRIBUTE should be DESKTOP_CONTEXT_ATTRIBUTE</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-733'>JS2-733</a>] - Desktop: non-movable portlets are deletable</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-735'>JS2-735</a>] - Jetty-6 ConcurrentModificationException on logout</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-737'>JS2-737</a>] - Desktop doesn't work on IE 6.0</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-745'>JS2-745</a>] - File System Page Manager does not accept folders with dots</li>
-  	      </ul>
-  	    </subsection>
-  	    <subsection name="Improvement">
-  	      <ul>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-584'>JS2-584</a>] - enable adding Velocity context objects without recompilation</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-672'>JS2-672</a>] - Add createProperty API to the Preferences Provider component</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-673'>JS2-673</a>] - Set sql.src.path value in the project.properties</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-680'>JS2-680</a>] - Folder configuration form at a page edit area</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-683'>JS2-683</a>] - Folder/Page customizer improvement</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-685'>JS2-685</a>] - Add functionality to AJAX API to information about users</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-695'>JS2-695</a>] - The Desktop does NOT support the no-action layouts</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-700'>JS2-700</a>] - Display loading in progress message from desktop</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-701'>JS2-701</a>] - Package and compress the Jetspeed Desktop Javascript</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-702'>JS2-702</a>] - Optimize desktop menu loading</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-707'>JS2-707</a>] - When creating a new user, give option to create inside a subsite</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-709'>JS2-709</a>] - Update to latest dependencies</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-711'>JS2-711</a>] - Support JSP decorators as well as Velocity </li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-712'>JS2-712</a>] - Create new servlet session upon login (configurable)</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-713'>JS2-713</a>] - Put a hard-limit on session time-out for portal sessions</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-721'>JS2-721</a>] - Ability to determine if a Menu Option has a default page or not</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-723'>JS2-723</a>] - Option to configure DB PSML from the installer</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-739'>JS2-739</a>] - Improve Algorithms for Resource Validation and Template Localization</li>  	      	
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-740'>JS2-740</a>] - Allow overriding the default Spring assembly without having to modify it</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-741'>JS2-741</a>] - More GroovyPortlet demos using the new Portals Bridges GroovyPortlet</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-747'>JS2-747</a>] - A valve creating template pages when a user logs on first.</li>
-  	      </ul>
-  	    </subsection>
-  	    <subsection name="New Feature">
-  	      <ul>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-317'>JS2-317</a>] - Virtual Portal Implementation</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-691'>JS2-691</a>] - Allow user to customize all his pages and portlets (in user home folder) at once</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-716'>JS2-716</a>] - PSML and XML Import / Export Admin Portlet</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-724'>JS2-724</a>] - Audit logs for administrative actions</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-728'>JS2-728</a>] - Provide a Portals Bridges common.PortletResourceURLFactory implementation for Jetspeed</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-729'>JS2-729</a>] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams</li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-732'>JS2-732</a>] - A GroovyPortlet demo using the new Portals Bridges GroovyPortlet </li>
-  	      	<li>[<a href='https://issues.apache.org/jira/browse/JS2-743'>JS2-743</a>] - Maximize on Edit</li>
-  	      </ul>
-  	    </subsection>
+    <properties>
+        <title>Jetspeed-2 Release Notes</title>
+        <subtitle>Jetspeed-2 Release Notes</subtitle>
+        <authors>
+            <person name="Ate Douma" email="ate@douma.nu" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Release Notes - Jetspeed 2 - Version 2.1.3">  
+            <p>
+                The list below outlines the issues that are addressed with release 2.1.3  For a full list of features, see the
+                <a href="features.html">features list</a>.
+            </p>
+            <p>
+                And the release notes of the previous release 2.1.2 are available here: <a href="release-notes-2.1.2.html">release notes 2.1.2</a>.
+            </p>
+            <subsection name="Bug">
+                <ul>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-593'>JS2-593</a>] - NullPointerException whent getting database connection in BatchedStatistics</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-612'>JS2-612</a>] - Get NullPointerException around pageManager in FolderImpl under high load</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-666'>JS2-666</a>] - Clustered Environment: constraint violation if clones are started at the same time</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-750'>JS2-750</a>] - LDAP login not resolving DN correctly</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-752'>JS2-752</a>] - Desktop pipeline: drag and drop and portlet relocation</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-753'>JS2-753</a>] - Desktop Pipeline: sticky mouse pointer after portlet was resized in Untiled mode.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-754'>JS2-754</a>] - Desktop Pipeline: javascript error when click on 'Aditional Link'</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-756'>JS2-756</a>] - Desktop Pipeline: Browser Refresh Issue After Page Edit</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-757'>JS2-757</a>] - Removing /_user/guest folder gives edit access to all pages</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-758'>JS2-758</a>] - Ukrainian symbols doesn't save through Portal Site Manager</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-759'>JS2-759</a>] - Jetspeed caches content of portal pages unexpectedly</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-762'>JS2-762</a>] - Cannot return to view mode after changing to simple layout theme in page edit mode.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-764'>JS2-764</a>] - There are much DOCTYPE directives in every result page of portal </li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-767'>JS2-767</a>] - Portlet Action not working when using JetspeedPowerTool</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-768'>JS2-768</a>] - Desktop pipeline gets null page in request context</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-769'>JS2-769</a>] - Layout Portlets do not support content types other than text/html</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-784'>JS2-784</a>] - Adding portlet doesn't work in 2.1.3 trunk!</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-790'>JS2-790</a>] - Many bugs in portal site manager portlet</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-795'>JS2-795</a>] - Deadlock while release session on Websphere Release 6.0.2.19</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-796'>JS2-796</a>] - VelocityTwoColumns mentioned twice in layouts guide</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-798'>JS2-798</a>] - Portlet Selector fails on Safari browser</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-799'>JS2-799</a>] - Jetspeed cannot deploy portlet applications that run from the &quot;/&quot; context.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-800'>JS2-800</a>] - Memeory Leak Caused by org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-802'>JS2-802</a>] - Eclipse m2.classpath has some typos</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-803'>JS2-803</a>] - Java6 can't compile Jetspeed</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-807'>JS2-807</a>] - Attached files gives you the ability to run the tests under Maven-2 (currently broken)</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-810'>JS2-810</a>] - Rule criteria is not ordered correctly</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-814'>JS2-814</a>] - Ldap User DN is incorrectly calculated when search filterBase is empty</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-815'>JS2-815</a>] - SSOIframePortlet doesn't save changed remote principal name</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-816'>JS2-816</a>] - Jetspeed common javascript doesn't support running the portal under ROOT context</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-819'>JS2-819</a>] - Edit mode of Category Portlet Selector doesn't work on IE browser.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-820'>JS2-820</a>] - display UNICODE in desktop mode.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-822'>JS2-822</a>] - Flash Portlets are broken on Desktop</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-824'>JS2-824</a>] - Odd behavior on maximize and minimize of portlets under Desktop, IE6 only</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-826'>JS2-826</a>] - Invalid DN values in group/role member attributes result in null pointer dereferences in the BasePrincipalImpl class</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-827'>JS2-827</a>] - Does't work that uploading files in desktop mode using &quot;multipart/form-data&quot;</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-829'>JS2-829</a>] - Issue with PersistenceBrokerPreferencesProvider.resolveChildren() when cached preferences are evicted.</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-830'>JS2-830</a>] - Unpredictable exceptions due to unsynchronized HashMap in AbstractProfilingRul</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-833'>JS2-833</a>] - associations between portal and remote principal are not removed</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-836'>JS2-836</a>] - Lookup of LDAP users per role using a role membership attribute on a user is broken</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-837'>JS2-837</a>] - Attributes template for initial LDAP user/role/group attributes does not accept '=' sign</li>
+                </ul>
+            </subsection>
+            <subsection name="Improvement">
+                <ul>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-710'>JS2-710</a>] - Dynamically Hide Portlets  at request time</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-755'>JS2-755</a>] - Desktop Pipeline: Blank deley when switch page</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-779'>JS2-779</a>] - Supporting Pocket PC</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-780'>JS2-780</a>] - Provide out-of-the-box Wicket portlet support</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-785'>JS2-785</a>] - Parallel Rendering on Websphere 6.1</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-787'>JS2-787</a>] - Non-informative error handling in PortalSiteManager. I've created a patch</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-788'>JS2-788</a>] - Localize File Portlet resources</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-789'>JS2-789</a>] - Login without posting all credentials via HTTP request</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-793'>JS2-793</a>] - Support deployment of jetspeed under a custom context name (e.g. ROOT) with the maven 1 jetspeed plugin</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-797'>JS2-797</a>] - Improve LDAP implementation and documentation for Apache DS 1.0.2</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-805'>JS2-805</a>] - Improve Credentials Password Support</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-806'>JS2-806</a>] - Portlets should return to normal view state on click of menu navigation from portal</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-808'>JS2-808</a>] - Maximize on edit-defaults option</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-812'>JS2-812</a>] - Better support for MSSQL</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-821'>JS2-821</a>] - CategoryPortletSelector no portlets displayed in IE6 / Update CategoryPortletSelector localization Korean</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-823'>JS2-823</a>] - NoAction Layouts under desktop pipeline behave different from portal pipeline</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-835'>JS2-835</a>] - Improve Permissions and Constraints Admin portlets to support the latest Portlet Modes</li>
+                </ul>
+            </subsection>
+            <subsection name="New Feature">
+                <ul>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-634'>JS2-634</a>] - edit_defaults custom portlet mode</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-708'>JS2-708</a>] - Ant Custom Build Tutorial</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-716'>JS2-716</a>] - PSML and XML Import / Export Admin Portlet</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-729'>JS2-729</a>] - Preliminary Portlet API 2.0 ResourceURL support allowing full response control like for cookies and compressed output streams</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-791'>JS2-791</a>] - configure the security constraint on a particular portlet fragment using new custom config portlet mode</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-809'>JS2-809</a>] - Add table schema aware datasource proxy</li>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-834'>JS2-834</a>] - Automatically cleanup of the PortalURL: no navigational state in browser url</li>
+                </ul>
+            </subsection>
+            <subsection name="Wish">
+                <ul>
+                  <li>[<a href='https://issues.apache.org/jira/browse/JS2-786'>JS2-786</a>] - Tool for conversion preferences from database no-principal preferences to defaults preferences in psml pages</li>
+                </ul>
+            </subsection>
             
-      </section>
-  </body>
+        </section>
+    </body>
 </document>

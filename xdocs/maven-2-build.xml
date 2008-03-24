@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>
+			Building Jetspeed 2.1.x from Source with Maven-2
+		</title>
+		<subtitle>How-to for Building from Source with Maven-2 and Jetspeed 2.1.x</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Building Jetspeed 2.1.x from Source with Maven-2">
+			<subsection name="Overview">
+            <p>
+           The Maven2 build support is currently under development and is co-resident with the existing Maven1 build scripts and sources. 
+           The general strategy is to make heavy use of Ant from within the Maven2 build or as Ant Tasks/Ant Maven2 Plugins if required. 
+           For this reason, the Maven2 build can be found in the pom.xml and build.xml files throughout the Jetspeed2 source tree. 
+           As with the Maven1 build, it is a multi-module build, primarily following the J2 component and application subprojects. 
+           There are also two Maven2 build specific top level subprojects: ant-tasks and maven-archetypes.            
+            </p>
+            <p>
+            The development team is actively keeping both environments up to date, 
+            but the Maven2 build modifications may lag behind newly committed changes. 
+            At the moment, Maven2 does not build all LDAP related artifacts and it does not build the uberjar/classworlds executable jar files 
+            for the deploy tool. Otherwise it is generally complete, (at least AFAIK).
+            </p>
+            <p>
+            Maven 2.0.4 and the accompanying Ant artifact tasks are now being used for this effort, 
+            with an upgraded surefire plugin version, (2.1.3). If you wish to use the Maven2 build, 
+            please ensure that maven 2.0.4 is installed and in your path.
+             Due to modifications in the pom.xml files, earlier versions of maven will not work correctly.
+             </p>
+			</subsection>
+			<subsection name="Future Directions: 2.2">
+				<p>This Maven2 build will be deprecated in 2.2, and replaced with a new Maven2 build.
+				The Maven1 build will be completely dropped in 2.2
+				</p>
+			</subsection>
+			<subsection name="The first step in using Maven2">
+			<p>The first step in using the Maven2 build is to either:
+				<ul>
+				<li>copy the settings.xml.sample to ~/.m2/settings.xml</li>
+      			<li>--or--</li>
+                <li>encorporate the settings in this file into your existing Maven2 configuration.</li>
+                </ul>
+            </p>
+            </subsection>
+			<subsection name="Properties Customization">
+			<p>
+	Once in place, please customize the properties as one would have done for Maven1 using build.properties. 
+	The properties are preconfigured for embedded Derby, so more changes are required if another database solution is to be used. 
+	To complete this step, ensure that the proper jetspeed database active profile is uncommented for your database in
+	 the &lt;activeProfiles&gt; element <b>jetspeed-db-drivers-path</b> should be selected for all non-embedded databases. 
+	 This setting is needed to execute Jetspeed component tests.			
+			</p>
+			</subsection>
+			<subsection name="Repository Relocation">
+			<p>
+While the default location of the settings.xml file should not be changed, (e.g. ~/.m2/settings.xml), 
+one can relocate the repository using the &lt;localRepository&gt; element in the settings.xml file. 
+See the settings.xml.sample file for an example. 
+Note that the repository path must be an absolute path and not contain any property expressions.			
+			</p>
+			</subsection>
+			<subsection name="Overview of current Jetspeed2 Maven2 commands">
+			<p>
+			Here is a quick summary of the current Jetspeed2 Maven2 build commands, 
+			(most of these commands can be executed at the root of the J2 source tree or at lower levels to perform partial builds/deployments):
+			</p>
+<table>
+<tbody><tr>
+<td>
+<p> <strong><tt>commands</tt></strong> </p>
+</td>
+<td>
+
+<p> <strong><tt>explanation</tt></strong> </p>
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>mvn</tt></strong> </p>
+</td>
+<td>
+<p> performs base build and installs J2 artifacts in the Maven2 repository, (install is the default Maven2 goal for this build)</p>
+
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>mvn -P test</tt></strong> </p>
+</td>
+<td>
+<p> performs base build and includes execution of test cases, (includes test database setup) </p>
+</td>
+</tr>
+
+<tr>
+<td>
+<p> <strong><tt>mvn -P tomcat</tt></strong> </p>
+</td>
+<td>
+<p> performs base build and deploys to Tomcat app server, (includes prodution database setup). Other app servers will be supported in the future, (see below for details)</p>
+</td>
+</tr>
+<tr>
+<td>
+
+<p> <strong><tt>mvn clean</tt></strong> </p>
+</td>
+<td>
+<p> cleans all build target directories </p>
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>other commands</tt></strong> </p>
+
+</td>
+<td>
+<p> explanation </p>
+</td>
+</tr>
+</tbody></table>						
+<p><i>Please note that the Maven2 repositories used by default with this build are generally saturated and the Jetspeed2 Maven2 
+repository does not yet contain a full mirror of the artifacts required to build Jetspeed2. If you experience download or connection failures,
+ simply restart the build by issuing your last command again to retry.
+ </i></p>			
+		</subsection>
+		<subsection name='Additional Notes'>
+		<ul>
+		<li><b>mvn -P test</b> and <b>mvn -Dmaven.test.skip=false</b> are equivalent.</li>
+		<li><b>mvn -P test -Dtest=MyTest</b> will execute a single test or matching tests if Ant wildcards are used. </li>		
+		<li>Due to forking bugs in the Surefire Maven2 test runner plugin, test output, (e.g. System.out.println()), is not echoed to the build shell. If you wish to see console output for component tests, temporarily comment out the &lt;forkMode&gt;
+		 elements in the components/pom.xml and the components pom.xml and run single tests. Note: the forking is required to run multiple tests. 
+        </li>
+        <li><p> The <strong><tt>-o</tt></strong> offline option can be specified with the commands documented here to force Maven2 to use only the local repository. This can be invaluable in the event the main Maven2 repositories are down and the build insists upon validating a missing or troublesome POM. </p>
+       </li>
+		</ul>
+		<p>
+		</p>
+		</subsection>	
+		</section>
+		<section name='Maven Profiles'>
+<p>the following profiles are optional and can be supplied when building/deploying to Tomcat </p>
+<div>
+<table>
+
+<tbody><tr>
+<td>
+<p> <strong><tt>mvn -P tomcat,min</tt></strong> </p>
+</td>
+<td>
+<p> specified that only the administrative portlets be deployed along with a minimal set of PSML pages.</p>
+</td>
+</tr>
+<tr>
+<td>
+
+<p> <strong><tt>mvn -P tomcat,full</tt></strong> </p>
+</td>
+<td>
+<p> at the moment, this is the same as the default build: deploys a full J2 set of portlets and PSML pages.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>mvn -P tomcat,nodb</tt></strong> </p>
+
+</td>
+<td>
+<p> specifies that configuration of the production database should be skipped.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>mvn -P tomcat,hot</tt></strong> </p>
+</td>
+<td>
+
+<p> indicates that a portlet app, component, or content should be directly written to the deployed Jetspeed2 webapp.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>mvn -P tomcat,dbpsml</tt></strong> </p>
+</td>
+<td>
+<p> specifies portal build and database deployment/import to include configuration of database PSML.</p>
+
+</td>
+</tr>
+<tr>
+<td>
+<p> <strong><tt>mvn -P prod</tt></strong> </p>
+</td>
+<td>
+<p> executes deployment to application server specified in settings.xml, (see below).</p>
+</td>
+</tr>
+
+</tbody></table>
+</div>
+<p>Currently, only Tomcat 5 and Tomcat 5.5 application servers are supported by this build. More platforms are to be supported in the near future. To do so, additional deployment profiles and new app-servers Ant deployment build files will need to be added. See the following files for details: </p>
+<ul>
+<li><p> <tt>pom.xml</tt>, </p>
+</li>
+<li><p> <tt>app-servers/tomcat-build.xml</tt>, </p>
+</li>
+<li><p> <tt>maven-archetypes/portal/src/archetype/archetype-resources/pom.xml</tt>, and </p>
+
+</li>
+<li><p> <tt>maven-archetypes/portal/src/archetype/archetype-resources/app-servers/tomcat-build.xml</tt>. </p>
+</li>
+</ul>		
+		<subsection name='Use case for some additional profiles:'>
+<p>Some of the additional profiles make sense to preconfigure in your settings.xml, (see the settings.xml.sample file for syntax) </p>
+<ul>
+<li><p> <tt>org.apache.jetspeed.env.deploy.target</tt>, application server to deploy to. Setting this property allows one to use the generic <strong><tt>prod</tt></strong> profile. </p>
+
+</li>
+<li><p> <tt>org.apache.jetspeed.env.deploy.type</tt>, set to <tt>full</tt> or <tt>min</tt>. Takes the place of the <strong><tt>full</tt></strong> and <strong><tt>min</tt></strong> profiles. </p>
+</li>
+
+<li><p> <tt>org.apache.jetspeed.env.deploy.db.psml</tt>, set to <tt>true</tt> or <tt>false</tt>. Equivalent to using <strong><tt>dbpsml</tt></strong> if enabled. </p>
+</li>
+</ul>		
+		</subsection>
+		</section>
+	</body>
+</document>

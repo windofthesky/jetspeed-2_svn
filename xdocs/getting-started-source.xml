@@ -18,7 +18,7 @@
 <document>
 	<properties>
 		<title>
-			Getting Started with Jetspeed 2 using a Source Release
+			Getting Started with Jetspeed 2 using a Source Release (deprecated)
 		</title>
 		<subtitle>Getting ready to modify Jetspeed</subtitle>
 		<authors>
@@ -30,7 +30,7 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="1. Naming Conventions and Basic Assumptions">
+		<section name="1. Naming Conventions and Basic Assumptions (deprecated)">
 			<subsection name="Source Basic Assumptions">
 				<ul>
 					<li>
@@ -339,14 +339,15 @@
 						</td>
 						<td>
 							The folder where the maven-plugin will
-							create its build-in HSQLDB database(s).
+							create build-in HSQLDB database(s).
 							<br />
 							This folder and its contents is created or
 							updated by plugin goal
 							<code>j2:start.production.server</code>
 							or
-							<code>j2:start.test.server</code>
-							.
+							<code>j2:start.test.server</code>.
+							<br/>
+							<i>This property is not needed/used for anything else.</i>
 						</td>
 						<td>
 							<i>target/portal-db</i>
@@ -527,7 +528,7 @@
 			<subsection name="Optional Database Server Properties">
 				<p>
 					Jetspeed-2 and its maven-plugin uses, as well as
-					provides, by default a HSQLDB database.
+					provides, by default a Derby database.
 				</p>
 				<p>
 					If you want to use a different database you will
@@ -552,14 +553,26 @@
 							Currently supported databases (with
 							corresponding Torque target database name):
 							<ul>
+								<li>derby</li>
 								<li>hsql (hypersonic)</li>
 								<li>oracle (oracle)</li>
 								<li>mysql (mysql)</li>
-								<li>postgres (postresql)</li>
+								<li>postgres (postgresql)</li>
 								<li>mssql (mssql)</li>
+								<li>sapdb (sapdb)</li>
+								<li>db2 (db2)</li>
 							</ul>
 						</td>
-						<td>hsql</td>
+						<td>derby</td>
+					</tr>
+					<tr>
+						<td>
+							<code>
+								org.apache.jetspeed.derbydatabase.path
+							</code>
+						</td>
+						<td>Path to where the embedded derby database will be created/expected</td>
+						<td>/tmp</td>
 					</tr>
 					<tr>
 						<td>
@@ -568,7 +581,7 @@
 							</code>
 						</td>
 						<td>The jdbc connection url</td>
-						<td>jdbc:hsqldb:hsql://127.0.0.1:9001</td>
+						<td>jdbc:derby:${org.apache.jetspeed.derbydatabase.path}/productiondb;create=true</td>
 					</tr>
 					<tr>
 						<td>
@@ -600,7 +613,7 @@
 							</code>
 						</td>
 						<td>The jdbc driver class name</td>
-						<td>org.hsqldb.jdbcDriver</td>
+						<td>org.apache.derby.jdbc.EmbeddedDriver</td>
 					</tr>
 					<tr>
 						<td>
@@ -631,7 +644,7 @@
 					properties as described above in your
 					<code>${USER_HOME}/build.properties</code>
 					. A minimal custom portal configuration using the
-					default HSQLDB database can be something like:
+					default embedded Derby database can be something like:
 					<source>
 						<![CDATA[
 # required portal configuration properties          
@@ -693,12 +706,12 @@ maven.repo.remote = http://www.bluesunrise.com/maven/, http://www.ibiblio.org/ma
 					maven-plugin as follows:
 					<source>
 						<![CDATA[
-maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-2 -Dversion=2.1.2 plugin:download]]>
+maven -DartifactId=maven-jetspeed2-plugin -DgroupId=org.apache.portals.jetspeed-2 -Dversion=2.1.3 plugin:download]]>
 					</source>
 					<i>
 						Note: you can set the version flag to the
 						specific version you want to install,
-						2.1.2 is just an example here.
+						2.1.3 is just an example here.
 					</i>
 				</p>
 			</subsection>
@@ -833,7 +846,7 @@ org.apache.jetspeed.portal.home = ${org.apache.jetspeed.project.home}]]>
 					If you want to run the testcases when building the
 					Jetspeed 2 sources
 					<i>and</i>
-					don't want to use the default HSQLDB test database,
+					don't want to use the default Derby test database,
 					you need to override the default test database
 					properties, similar to the production database
 					properties as described
@@ -908,9 +921,9 @@ maven initMavenPlugin]]>
 			<subsection
 				name="Optional: start the HSQLDB test database first">
 				<p>
-					If you are going to run the testcases and are using
-					the default HSQLDB database configuration, you will
-					need to start the test database before building
+					If you are going to run the testcases and want to use
+					a HSQLDB database, you will
+					need to start a test database before building
 					Jetspeed 2 in a
 					<i>separate</i>
 					console:
@@ -957,11 +970,11 @@ maven -Dmaven.test.skip=false allClean allBuild]]>
 			<subsection
 				name="Optional: start the HSQLDB production database first">
 				<p>
-					If you are using the default HSQLDB database you
+					If you are using a HSQLDB database you
 					need to start it before deploying the portal.
 				</p>
 				<p>
-					To start the HSQLDB production database run the
+					To start a HSQLDB production database run the
 					following in a
 					<i>separate</i>
 					console:

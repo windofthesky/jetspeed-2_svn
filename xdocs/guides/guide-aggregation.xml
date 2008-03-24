@@ -213,7 +213,7 @@ For other web containers like Tomcat which doesn't have this "problem", nothing 
           </source>
 		</subsection>
 		<subsection name='Optional Replacement for Portlet Request/Response Unwrapper'>
-          <p>You can replace the default portlet request/response unwrapper with a third-party module.</p>
+          <p>You can replace the default portlet request/response unwrapper with a third-party module in WEB-INF/assembly/pluto-factories.xml.</p>
           <p>Because the servlet request object of a servlet container could not be thread-safe under Jetspeed parallel rendering mode, the third-party unwrapper module can provide a thread-safe implementation by decorating the original request object.</p>
           <p>Here's an example setting for third-party unwrapper module:</p>
           <source test="">

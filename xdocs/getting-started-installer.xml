@@ -29,32 +29,32 @@
 		<section name="Jetspeed-2 Installer">
 			<subsection name="Getting Started with the Installer">
 			<p>
-			Jetspeed 2.1.2 provides 2 installers:
+			Jetspeed 2.1.3 provides 2 installers:
 			<ul>
 			<li>The minimal installation, containing only the core portal and administrative portlets: 
-			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.2-installer.jar">Standard (Minimal) Installer</a></li>
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.3-installer.jar">Standard (Minimal) Installer</a></li>
 			<li>An installer for installing Jetspeed-2 on a third party database: 
-			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.2-demo-installer.jar">Jetspeed Demo Installer</a></li>
+			<a href="http://www.apache.org/dyn/closer.cgi/portals/jetspeed-2/binaries/jetspeed-2.1.3-demo-installer.jar">Jetspeed Demo Installer</a></li>
 			</ul>
 			</p>
 			<p>
 			To run the standard (minimal) installer:
 			</p>
 			<source>
-java -jar jetspeed-2.1.2-installer.jar
+java -jar jetspeed-2.1.3-installer.jar
             </source>
             <p>
 To run the Jetspeed Demo installer:
             </p>
             <source>
-java -jar jetspeed-2.1.2-demo-installer.jar
+java -jar jetspeed-2.1.3-demo-installer.jar
 			</source>
 			<p>	
 			The installers are capable of running on headless (i.e. no gui) machines, and will detect so automatically.<br/>
 			To force the installer in text mode manually, pass in the <b><i>text</i></b> parameter:
 			</p>
 			<source>
-java -jar jetspeed-2.1.2-installer.jar text	
+java -jar jetspeed-2.1.3-installer.jar text	
             </source>
 		    </subsection>
 		    <subsection name="Database Selection">
@@ -111,14 +111,14 @@ java -jar jetspeed-2.1.2-installer.jar text
 			On linux, here is an example where you have installed to the default location:
 			</p>
 			<source>
-cd ~/jetspeed-2.1.2/bin
+cd ~/jetspeed-2.1.3/bin
 ./startup.sh
 			</source>
 			<p>
 			On windows, here is an example where you have installed to the default location:
 			</p>
    			<source>
-   cd C:\Apache\Jetspeed-2.1.2\bin
+   cd C:\Apache\Jetspeed-2.1.3\bin
    startup.bat
    			</source>
    			<p>

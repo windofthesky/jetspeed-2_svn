@@ -47,6 +47,7 @@
 					<li>Full Support for JSR-168 Portlet Caching and per portlet cache configuration</li>
 					<li>Portlet Timeout Tracking with mimimal render time limits</li>
 					<li>Portlet Service Manager for automated removal of slow or dead portlets.</li>
+					<li>Parallel rendering on Websphere 6.1</li>										
 				</ul>
 			</subsection>
 			<subsection name="Customization Features">
@@ -67,6 +68,7 @@
 					<li>Fully swappable Security Constraint or Security Permission support</li>
 					<li>Jetspeed SSO (Single Sign-on)</li>
 					<li>Delegation of Security</li>
+					<li>Administrative actions logged to Audit Activity database</li>					
 				</ul>
 			</subsection>
 			<subsection name="Distributed Cluster Support">
@@ -100,6 +102,7 @@
 					<li>Role-based Aggregation of Visible Pages</li>
 					<li>Integrates with most popular databases including Derby, MySQL, MS SQL, Postgres, Oracle, DB2</li>
 					<li>Client independent capability engine (html, xhtml, wml,vml)</li>
+					<li>Support for Pocket PC</li>
 					<li>Internationalization: Localized Portal Resources in 12 Languages</li>
 					<li>Statistics Logging Engine</li>
 					<li>Portlet Registry</li>
@@ -107,7 +110,6 @@
 					<li>User Registration</li>
 					<li>Forgotten Password</li>
 					<li>Rich Login and Password Configuration Management</li>
-					<li>Custom Portlet Modes and Window States - a "print" PortletMode and "solo" WindowState are now standard supported</li>
 				</ul>
 			</subsection>
 			<subsection name="Administrative Portlets">
@@ -124,11 +126,12 @@
 					<li>Profiler Administration</li>
 					<li>Statistics Reports</li>
 					<li>Portlet Out of Service Manager</li>
+					<li>PSML and XML Import / Export Admin Portlet</li>					
 				</ul>
 			</subsection>
 			<subsection name="Web Framework Support and Sample Portlets">
 				<ul>
-					<li>Bridges to other Web Frameworks: JSF, Struts, PHP, Perl, Velocity</li>
+					<li>Bridges to other Web Frameworks: Wicket, JSF, Groovy, Struts, PHP, Perl, Velocity</li>
 					<li>Sample Portlets:
 						<ul><li>RSS, IFrame, Calendar XSLT, Struts Petstore, Bookmark, Database Browser</li>
 							<li>Integration with Display Tags, Spring MVC</li></ul>
@@ -151,8 +154,9 @@
 			</subsection>
 			<subsection name="Development Tools">
 				<ul>
-					<li>Automated Maven-1 Build</li>
+				    <li>Ant-based Custom Build with Tutorial and Installer</li>
 					<li>Automated Maven-2 Build</li>
+					<li>Automated Maven-1 Build</li>
 					<li>Jetspeed-2 Maven Plugin for Custom Portal Development</li>
 					<li>Maven-2 Profiles and Archetypes</li>
 					<li>AutoDeployment of Portlet Applications, Portal Resources</li>
@@ -160,6 +164,13 @@
 					<li>Plugin Goals integrated with Auto Deployment Feature</li>
 					<li>XML Schemas for PSML, jetspeed-portlet.xml, and Jetspeed XML (seed data)</li>			
 				</ul>
+			</subsection>
+			<subsection name='Extended JSR-168 Features'>
+					<li>Custom Portlet Modes and Window States: <b>Edit Defaults, Configure, Print, About</b></li>
+					<li>Custom Window States: <b>Solo</b></li>
+					<li>Dynamically hide Portlets at request time</li>
+				    <li>Maximize on Edit Defaults or Edit modes option</li>					
+					<li>Preliminary Portlet API 2.0 ResourceURL support allowing full response control</li>
 			</subsection>
 			<subsection name='Other Features'>
 				<ul>

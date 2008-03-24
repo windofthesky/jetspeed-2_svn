@@ -158,7 +158,7 @@
               <code>org.apache.jetspeed.portal.db.dir</code>
             </td>
             <td>
-              The folder where the maven-plugin will create its HSQLDB database(s).
+              The folder where the maven-plugin will create build-in HSQLDB database(s).
               <br />
               This folder and its contents is created or updated by plugin goal <code>j2:start.production.server</code>
               or <code>j2:start.test.server</code>.
