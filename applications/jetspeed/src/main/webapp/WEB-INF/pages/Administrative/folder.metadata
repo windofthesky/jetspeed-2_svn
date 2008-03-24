@@ -34,6 +34,7 @@ limitations under the License.
   <document-order>palm.psml</document-order>
   <document-order>profiler.psml</document-order>
   <document-order>rpad.psml</document-order>
+  <document-order>export.psml</document-order>
 
   <menu name="page-navigations">
     <separator>
