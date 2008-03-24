@@ -31,6 +31,9 @@ limitations under the License.
 	<constructor-arg index="2">
 		<ref bean="ResourceValidator" />
 	</constructor-arg>
+    <constructor-arg index="3">
+        <ref bean="decorationConfigurationCache" />
+    </constructor-arg>
   </bean>  
-
+	
 </beans>
