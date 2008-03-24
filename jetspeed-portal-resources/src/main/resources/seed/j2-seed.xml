@@ -66,6 +66,13 @@
 			<capabilities></capabilities>
 			<mimeTypes>text/xml</mimeTypes>
 		</MediaType>
+		<MediaType name="html-basic">
+			<charcterSet value="UTF-8"/>
+			<title value="HTML-BASIC"/>
+			<description value="Simple HTML for Handheld PC browsers such as Pocket IE"/>
+			<capabilities></capabilities>
+			<mimeTypes>text/html</mimeTypes>
+		</MediaType>
 	</MediaTypes>
 	<Capabilities>
 		<Capability>HTML_3_2</Capability>
@@ -255,6 +262,14 @@
 			<manufacturer value="Opera"/>
 			<capabilities>HTML_3_2,HTML_4_0,HTML_TABLE,HTML_JAVA,HTML_JAVA_JRE,HTML_JAVASCRIPT,HTML_NESTED_TABLE,HTML_FORM,HTML_FRAME,HTML_IMAGE,HTML_IFRAME,HTML_CSS1,HTML_CSS2,HTML_CSSP,HTML_DOM_1,HTTP_COOKIE,HTML_PLUGIN</capabilities>
 			<mimeTypes>text/html,text/xml,text/xhtml</mimeTypes>
+		</Client>
+		<Client name="ie4ppc" evalOrder="4" preferredMimeTypeID="text/html">
+			<userAgentPattern value=".*MSIE 4.*Windows CE.*"/>
+			<version value="4.01"/>
+			<model value="None"/>
+			<manufacturer value="Microsoft"/>
+			<capabilities>HTML_3_2,HTML_TABLE,HTML_FORM,HTML_IMAGE,HTML_CSS1,HTTP_COOKIE</capabilities>
+			<mimeTypes>text/html</mimeTypes>
 		</Client>
 	</Clients>
 	<Roles>
