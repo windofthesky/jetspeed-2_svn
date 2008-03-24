@@ -606,7 +606,7 @@
         <ref bean="PortletActionSecurityBehavior"/>
     </constructor-arg>
     <constructor-arg index='4'>
-        <ref bean="org.apache.jetspeed.serializer.JetspeedSerializerFactory"/>
+        <ref bean="JetspeedSerializer"/>
     </constructor-arg>
 	<constructor-arg index='5'>
 		<value>${java.io.tmpdir}</value>
