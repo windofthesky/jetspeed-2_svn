@@ -35,7 +35,6 @@ import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
 import org.apache.jetspeed.prefs.PreferencesProvider;
-import org.apache.jetspeed.prefs.impl.NodeImplProxy;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.impl.NodeImpl;
@@ -176,12 +175,8 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     private boolean preloadEntities = false;    
     
     /**
-     * @param repository
+     * @param repositoryPath
      *            Location of repository mapping file. Must be available within the classpath.
-     * @param prefsFactoryImpl
-     *            <code>java.util.prefs.PreferencesFactory</code> implementation to use.
-     * @param enablePropertyManager
-     *            Whether or not we chould be suing the property manager.
      * @throws ClassNotFoundException
      *             if the <code>prefsFactoryImpl</code> argument does not reperesent a Class that exists in the
      *             current classPath.

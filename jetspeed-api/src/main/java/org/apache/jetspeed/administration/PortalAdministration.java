@@ -22,8 +22,6 @@ import java.util.Map;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-
-import org.apache.jetspeed.administration.AdministrationEmailException;
 import org.apache.jetspeed.security.User;
 
 /**
