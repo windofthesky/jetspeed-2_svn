@@ -42,10 +42,11 @@ import org.apache.jetspeed.serializer.JetspeedSerializer;
        while in trunk the JetspeedSerializer has been refactored largely so it doesn't even compile.
        Additionally, some related new 2.1.3 features haven't been ported over to trunk yet either (e.g. r592266 and more)
        Will revisit this class and the JetspeedSerializer enhancements once 2.1.3 is released
-       
+*/       
 public class ExportJetspeedSchema extends BaseGetResourceAction implements
         AjaxAction, AjaxBuilder, Constants
 {
+/*    
 
     protected Log log = LogFactory.getLog(GetFolderAction.class);
 
@@ -65,21 +66,22 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
     private static final String PREFS = "prefs";
 
     String pathSeprator = System.getProperty("file.separator");
-
+*/
     public ExportJetspeedSchema(String template, String errorTemplate,
             PageManager pageManager,
             PortletActionSecurityBehavior securityBehavior,
-            JetspeedSerializerFactory serializerFactory,
+            JetspeedSerializer serializer,
             String dir)
     {
         super(template, errorTemplate, pageManager, securityBehavior);
-        this.serializerFactory = serializerFactory;
-        this.pageRoot = dir;
+//        this.serializerFactory = serializerFactory;
+//        this.pageRoot = dir;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
     {
         boolean success = true;
+        /*        
         String status = "success";
         String userName = requestContext.getUserPrincipal().toString();
         Map settings = new HashMap();
@@ -142,9 +144,10 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
             // Return a failure indicator
             success = false;
         }
+*/        
         return success;
     }
-
+/*
     private String getDownloadLink(RequestContext requestContext,
             String ObjectName, String userName) throws Exception
     {
@@ -205,5 +208,5 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
             return pageRoot + pathSeprator + userName;
         }
     }
-}
 */
+}

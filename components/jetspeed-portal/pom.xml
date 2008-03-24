@@ -270,6 +270,10 @@
                                         <path>assembly</path>
                                     </resource>
                                     <resource>
+                                        <path>assembly</path>
+                                        <destination>webapp/WEB-INF/assembly</destination>
+                                    </resource>
+                                    <resource>
                                         <path>db-ojb</path>
                                     </resource>
                                     <resource>
