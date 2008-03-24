@@ -417,8 +417,29 @@
                             replicateUpdates=false, replicateUpdatesViaCopy=false,
                             replicateRemovals=true"/>
   -->                           
-            </cache>
-            
+   </cache>
+
+
+   <cache name="decorationConfigurationCache"
+          maxElementsInMemory="500"
+          maxElementsOnDisk="250"
+          eternal="false"
+          overflowToDisk="false"
+          timeToIdleSeconds="3600"
+          timeToLiveSeconds="3600"
+          memoryStoreEvictionPolicy="LFU">
+   </cache>
+
+   <cache name="desktopContentCache"
+          maxElementsInMemory="500"
+          maxElementsOnDisk="250"
+          eternal="false"
+          overflowToDisk="false"
+          timeToIdleSeconds="3600"
+          timeToLiveSeconds="3600"
+          memoryStoreEvictionPolicy="LFU">
+   </cache>
+   
     <!--
     Sample distributed cache named sampleDistributedCache1.
     This cache replicates using defaults.
@@ -480,6 +501,15 @@
            timeToLiveSeconds="30"
            memoryStoreEvictionPolicy="LFU"
             />
+   
+     <cache name="portletWindowCache"
+           maxElementsInMemory="200"
+           maxElementsOnDisk="1000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="28800"
+           timeToLiveSeconds="28800"
+           memoryStoreEvictionPolicy="LFU"/>
 
     <cache name="decorationContentCache"
            maxElementsInMemory="1000"

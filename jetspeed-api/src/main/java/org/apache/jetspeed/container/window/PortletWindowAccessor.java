@@ -107,9 +107,10 @@ public interface PortletWindowAccessor
     void removeWindow(PortletWindow window);
     
     /**
-     *  Get a list of all windows
+     *  Gets a {@link Set} of currently available {@link PortletWindow}s within
+     *  the current engine instance.
      *  
-     * @return
+     * @return {@link Set} of {@link PortletWindow}s, never returns <code>null</code>
      */
     Set getPortletWindows();
 }

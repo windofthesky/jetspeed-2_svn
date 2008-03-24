@@ -89,6 +89,21 @@
 		</constructor-arg>
 	</bean>
 
+	<bean id="ehDecorationConfigurationCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="decorationConfigurationCache" />
+	</bean>
+
+	<bean id="decorationConfigurationCache"
+		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+		<constructor-arg>
+			<ref bean="ehDesktopContentCache" />
+		</constructor-arg>
+	</bean>
+
 	<bean id="ehPreferencesCache"
 		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
 		<property name="cacheManager">
@@ -120,6 +135,14 @@
 		<property name="cacheName" value="portletApplicationNameCache" />
 	</bean>
 
+	<bean id="ehDesktopContentCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="desktopContentCache" />
+	</bean>
+
 	<bean id="portletApplicationOidCache"
 		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
 		<constructor-arg>
@@ -131,6 +154,13 @@
 		class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
 		<constructor-arg>
 			<ref bean="ehPortletApplicationNameCache" />
+		</constructor-arg>
+	</bean>
+
+	<bean id="desktopContentCache"
+		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+		<constructor-arg>
+			<ref bean="ehDesktopContentCache" />
 		</constructor-arg>
 	</bean>
 
@@ -180,6 +210,21 @@
 		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
 		<constructor-arg index="0">
 			<ref bean="ehActiveAuthenticationCache" />
+		</constructor-arg>
+	</bean>
+	
+	<bean id="ehPortletWindowCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName" value="portletWindowCache" />
+	</bean>
+	
+    <bean id="portletWindowCache"
+		class="org.apache.jetspeed.cache.impl.EhPortletWindowCache">
+		<constructor-arg index="0">
+			<ref bean="ehPortletWindowCache" />
 		</constructor-arg>
 	</bean>
 

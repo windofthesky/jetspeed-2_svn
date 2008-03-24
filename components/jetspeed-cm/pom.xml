@@ -99,6 +99,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>jmock</groupId>
+            <artifactId>jmock-cglib</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
             <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
             <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>

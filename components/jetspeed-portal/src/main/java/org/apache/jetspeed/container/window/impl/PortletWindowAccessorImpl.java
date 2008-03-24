@@ -16,15 +16,12 @@
  */
 package org.apache.jetspeed.container.window.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cache.PortletWindowCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
@@ -55,27 +52,33 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
 {
     protected final static Log log = LogFactory.getLog(PortletWindowAccessorImpl.class);
    
-    private Map windows = Collections.synchronizedMap(new HashMap());    
+    //private Map windows = Collections.synchronizedMap(new HashMap());    
     private PortletEntityAccessComponent entityAccessor;
     private PortletFactory portletFactory;
     private boolean validateWindows = false;
+    private PortletWindowCache portletWindowCache;
+   
     
 
-    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, PortletFactory portletFactory, boolean validateWindows)
+    public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, PortletFactory portletFactory, PortletWindowCache portletWindowCache, boolean validateWindows)
     {
         this.entityAccessor = entityAccessor;
         this.portletFactory = portletFactory;
         this.validateWindows = validateWindows;
+        this.portletWindowCache = portletWindowCache;
+
     }
 
     public PortletWindowAccessorImpl(PortletEntityAccessComponent entityAccessor, 
                                      PortletFactory portletFactory, 
-                                     PortletRegistry registry,
+                                     PortletRegistry registry, 
+                                     PortletWindowCache portletWindowCache,
                                      boolean validateWindows)
     {
         this.entityAccessor = entityAccessor;
         this.portletFactory = portletFactory;
         this.validateWindows = validateWindows;
+        this.portletWindowCache = portletWindowCache;
         registry.addRegistryListener(this);
     }
     
@@ -99,7 +102,8 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         window.setPortletEntity(entity);
         if ( isValidPortletEntity(entity))
         {
-            windows.put(windowId, window);
+            // windows.put(windowId, window);
+        	portletWindowCache.putPortletWindow(window);
         }
         return window;        
     }
@@ -245,7 +249,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         
         if ( !temporaryWindow )
         {
-            windows.put(fragment.getId(), portletWindow);   
+            portletWindowCache.putPortletWindow(portletWindow);
         }
         
         return portletWindow;
@@ -254,32 +258,35 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
 
     public void removeWindows(PortletEntity portletEntity)
     {
-        List tmpWindows = new ArrayList(windows.entrySet());
-        for(int i = 0; i < tmpWindows.size(); i++)
-        {
-            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
-            if (portletEntity.getId().equals(window.getPortletEntity().getId()))
-            {
-                removeWindow(window);
-            }
-        }        
-        tmpWindows.clear();
+//        List tmpWindows = new ArrayList(windows.entrySet());
+//        for(int i = 0; i < tmpWindows.size(); i++)
+//        {
+//            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
+//            if (portletEntity.getId().equals(window.getPortletEntity().getId()))
+//            {
+//                removeWindow(window);
+//            }
+//        }        
+//        tmpWindows.clear();
+//        
+        portletWindowCache.removePortletWindowByPortletEntityId(portletEntity.getId().toString());
 
     }
     
     public void removeWindow(PortletWindow window)
     {
-        windows.remove(window.getId().toString());
+       // windows.remove(window.getId().toString());
+    	portletWindowCache.removePortletWindow(window.getId().toString());
     }
     
     private PortletWindow getWindowFromCache(ContentFragment fragment)
     {
-        return (PortletWindow)windows.get(fragment.getId());
+        return portletWindowCache.getPortletWindow(fragment.getId());
     }
     
     private PortletWindow getWindowFromCache(String id)
     {
-        return (PortletWindow)windows.get(id);
+        return portletWindowCache.getPortletWindow(id);
     }
 
     private boolean checkPortletWindowEntity(PortletWindow window)
@@ -303,43 +310,76 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
     
     public Set getPortletWindows()
     {
-        return this.windows.entrySet();
+        return portletWindowCache.getAllPortletWindows();
     }
 
     protected void removeForPortletDefinition(PortletDefinitionComposite def)
     {
-        List tmpWindows = new ArrayList(windows.entrySet());
-        for (int i = 0; i < tmpWindows.size(); i++)
+//        List tmpWindows = new ArrayList(windows.entrySet());
+//        for (int i = 0; i < tmpWindows.size(); i++)
+//        {
+//            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
+//            PortletDefinitionComposite windowDef = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
+//            if(def != null && windowDef != null && def.getUniqueName() != null && def.getUniqueName().equals(windowDef.getUniqueName()))
+//            {
+//                removeWindow(window);
+//            }
+//        }        
+//        tmpWindows.clear(); 
+//        if (def != null)
+//            portletFactory.updatePortletConfig(def);
+        
+        
+        Iterator windows  = getPortletWindows().iterator();
+        while(windows.hasNext())
         {
-            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
-            PortletDefinitionComposite windowDef = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
+        	PortletWindow window = (PortletWindow) windows.next();
+        	PortletDefinitionComposite windowDef = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
             if(def != null && windowDef != null && def.getUniqueName() != null && def.getUniqueName().equals(windowDef.getUniqueName()))
             {
                 removeWindow(window);
             }
-        }        
-        tmpWindows.clear(); 
+        }
+        
         if (def != null)
             portletFactory.updatePortletConfig(def);
     }
 
     protected void removeForPortletApplication(MutablePortletApplication app)
     {
-        List tmpWindows = new ArrayList(windows.entrySet());
-        for (int i = 0; i < tmpWindows.size(); i++)
+//        List tmpWindows = new ArrayList(windows.entrySet());
+//        for (int i = 0; i < tmpWindows.size(); i++)
+//        {
+//            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
+//            PortletDefinitionComposite pd =  (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();
+//            if (pd != null)
+//            {
+//                MutablePortletApplication windowApp = (MutablePortletApplication)pd.getPortletApplicationDefinition();            
+//                if (app.getName().equals(windowApp.getName()))
+//                {
+//                    removeWindow(window);
+//                }
+//            }
+//        }        
+//        tmpWindows.clear();   
+        
+        Iterator windows  = getPortletWindows().iterator();
+        while(windows.hasNext())
         {
-            PortletWindow window = (PortletWindow)((Map.Entry)tmpWindows.get(i)).getValue();
-            PortletDefinitionComposite pd =  (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();
-            if (pd != null)
-            {
-                MutablePortletApplication windowApp = (MutablePortletApplication)pd.getPortletApplicationDefinition();            
-                if (app.getName().equals(windowApp.getName()))
-                {
-                    removeWindow(window);
-                }
-            }
-        }        
-        tmpWindows.clear();        
+        	PortletWindow window = (PortletWindow) windows.next();
+        	PortletDefinitionComposite pd =  (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
+        	 if (pd != null)
+             {
+                 MutablePortletApplication windowApp = (MutablePortletApplication)pd.getPortletApplicationDefinition();            
+                 if (app.getName().equals(windowApp.getName()))
+                 {
+                     removeWindow(window);
+                 }
+             }
+        }
+        
+        
+        
     }
     
     public void applicationRemoved(MutablePortletApplication app)
