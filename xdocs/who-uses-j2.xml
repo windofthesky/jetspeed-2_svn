@@ -48,6 +48,10 @@
             <td><a href="http://www.chikpea.com/">Chikpea</a>provides a self-service portal, where Business can register as a Service Provider to serve their own customers to manage Sales and Services. It allows the Business to represent its own self-service website to capture sales and service requests, as well as provides complete solution to manage those requests.</td>
           </tr>                                    
           <tr>
+            <td><a href="http://www.condast.de/"><img src="images/users/condast.gif" border="0" /></a></td>
+            <td><a href="http://www.condast.de/"></a>We use Jetspeed for our homepage so that we can offer our customers personalized information. The Condast GmbH is a german IT-consulting company. We offer our own products and consulting in application development and portals (JetSpeed, WebSphere).</td>
+          </tr>                                    
+          <tr>
             <td><a href="http://www.convergys.com/"><img src="images/users/convergys.gif" border="0" /></a></td>
             <td><a href="http://www.convergys.com/">Convergys</a> uses Jetspeed-2 as a B2B Business Intelligence 
 			Portal to expose reports from third party enterprise OLAP engines such as Cognos and MicroStrategy.</td>
