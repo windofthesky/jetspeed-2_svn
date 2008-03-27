@@ -210,7 +210,6 @@ public class CategoryFilteringPostProcessor extends PropertyResourceConfigurer
     {
         interpolateProperties(properties);
         HashSet categoriesList = new HashSet();
-        categoriesList.add("all");
         StringTokenizer st = null;
         BeanDefinitionRegistry beanRegistry = beanFactory instanceof BeanDefinitionRegistry ? (BeanDefinitionRegistry)beanFactory : null;
 
