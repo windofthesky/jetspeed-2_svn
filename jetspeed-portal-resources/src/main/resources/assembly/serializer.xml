@@ -3,7 +3,7 @@
 
 <beans>
 
-  <bean id="JetspeedSerializer" class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
+  <bean id="org.apache.jetspeed.serializer.JetspeedSerializer" name="JetspeedSerializer" class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
     <constructor-arg index="0">
       <list>
         <bean class="org.apache.jetspeed.serializer.JetspeedCapabilitiesSerializer">
@@ -20,6 +20,11 @@
           <constructor-arg index="0" ref="org.apache.jetspeed.profiler.Profiler" />
           <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
         </bean>
+        <bean class="org.apache.jetspeed.serializer.JetspeedRegistrySerializer">
+          <constructor-arg index="0" ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
+          <constructor-arg index="1" ref="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
+          <constructor-arg index="2" ref="org.apache.jetspeed.search.SearchEngine"</constructor-arg>
+        </bean>
       </list>
     </constructor-arg>
     <constructor-arg index="1">
@@ -33,17 +38,17 @@
         <entry key="process_profiler">
           <value type="java.lang.Boolean">true</value>
         </entry>
-        <!--  following serializers are not yet implemented/available -->
-        <entry key="process_user_preferences">
-          <value type="java.lang.Boolean">false</value>
-        </entry>
-        <entry key="process_portal_preferences">
-          <value type="java.lang.Boolean">false</value>
-        </entry>
         <entry key="process_entities">
-          <value type="java.lang.Boolean">false</value>
+          <value type="java.lang.Boolean">true</value>
         </entry>
         <entry key="process_preferences">
+          <value type="java.lang.Boolean">true</value>
+        </entry>
+        <entry key="process_user_preferences">
+          <value type="java.lang.Boolean">true</value>
+        </entry>
+        <!--  following serializers are not yet implemented/available -->
+        <entry key="process_portal_preferences">
           <value type="java.lang.Boolean">false</value>
         </entry>
       </map>

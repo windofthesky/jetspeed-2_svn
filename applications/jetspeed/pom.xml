@@ -144,11 +144,6 @@
       <scope>runtime</scope>
       <exclusions>
         <exclusion>
-          <!-- the portal already includes the full spring -->
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
-        </exclusion>
-        <exclusion>
           <!-- brought in by ddlutils -->
           <groupId>stax</groupId>
           <artifactId>stax-api</artifactId>
