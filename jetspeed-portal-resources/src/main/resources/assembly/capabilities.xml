@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <!--
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -16,8 +15,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<beans>
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
     <!-- Capabilities DAO-->
     <bean id="capabilitiesImpl" class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities" init-method="init">
         <constructor-arg index="0">
@@ -58,15 +59,15 @@
 	<!-- Capability related content -->
 
 	<!-- Client -->
-	<bean id="Client" class="org.apache.jetspeed.capabilities.impl.ClientImpl" singleton="false"></bean>
+	<bean id="Client" class="org.apache.jetspeed.capabilities.impl.ClientImpl" scope="prototype"></bean>
 
 	<!-- MediaType -->
-	<bean id="MediaType" class="org.apache.jetspeed.capabilities.impl.MediaTypeImpl" singleton="false"></bean>
+    <bean id="MediaType" class="org.apache.jetspeed.capabilities.impl.MediaTypeImpl" scope="prototype"></bean>
 
 	<!-- MimeType -->
-	<bean id="MimeType" class="org.apache.jetspeed.capabilities.impl.MimeTypeImpl" singleton="false"></bean>
+    <bean id="MimeType" class="org.apache.jetspeed.capabilities.impl.MimeTypeImpl" scope="prototype"></bean>
 
 	<!-- Capability -->
-	<bean id="Capability" class="org.apache.jetspeed.capabilities.impl.CapabilityImpl" singleton="false"></bean>
+    <bean id="Capability" class="org.apache.jetspeed.capabilities.impl.CapabilityImpl" scope="prototype"></bean>
  
 </beans>

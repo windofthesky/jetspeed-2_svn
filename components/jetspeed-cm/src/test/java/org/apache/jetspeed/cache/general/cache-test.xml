@@ -15,12 +15,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<!--
-  - Application context definition for PortletEntity using Apache OJB.
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
+  <!--
+    - Application context definition for PortletEntity using Apache OJB.
 	-->
-<beans>	
      
      <!-- define our caching service.  This one uses a simple hashmap and counts method access
      	- for testing purposes 

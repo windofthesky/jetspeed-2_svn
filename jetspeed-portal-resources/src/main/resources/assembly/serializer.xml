@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
   <bean id="org.apache.jetspeed.serializer.JetspeedSerializer" name="JetspeedSerializer" class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
     <constructor-arg index="0">
       <list>
@@ -23,7 +23,7 @@
         <bean class="org.apache.jetspeed.serializer.JetspeedRegistrySerializer">
           <constructor-arg index="0" ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
           <constructor-arg index="1" ref="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
-          <constructor-arg index="2" ref="org.apache.jetspeed.search.SearchEngine"</constructor-arg>
+          <constructor-arg index="2" ref="org.apache.jetspeed.search.SearchEngine" />
         </bean>
       </list>
     </constructor-arg>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <!--
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -16,7 +15,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
     <!-- Profiler -->
     <bean id="profilerImpl" class="org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl" init-method="init">
         <constructor-arg index="0">
@@ -166,19 +168,19 @@
 	<!-- Profiling Rules -->
 
 	<!-- Standard Profiler -->
-	<bean id="StandardProfilingRule" class="org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule" singleton="false"></bean>
+    <bean id="StandardProfilingRule" class="org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule" scope="prototype"></bean>
 
 	<!-- Fallback Profiler -->
-	<bean id="RoleFallbackProfilingRule" class="org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule" singleton="false"></bean>
+    <bean id="RoleFallbackProfilingRule" class="org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule" scope="prototype"></bean>
 
 	<!-- Locator -->
-	<bean id="ProfileLocator" class="org.apache.jetspeed.profiler.impl.JetspeedProfileLocator" singleton="false"></bean>
+    <bean id="ProfileLocator" class="org.apache.jetspeed.profiler.impl.JetspeedProfileLocator" scope="prototype"></bean>
 
 	<!-- Principal Rule -->
-	<bean id="PrincipalRule" class="org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl" singleton="false"></bean>
+    <bean id="PrincipalRule" class="org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl" scope="prototype"></bean>
 
 
 	<!-- Rule Criterion -->
-	<bean id="RuleCriterion" class="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" singleton="false"></bean>
+    <bean id="RuleCriterion" class="org.apache.jetspeed.profiler.rules.impl.RuleCriterionImpl" scope="prototype"></bean>
     
 </beans>

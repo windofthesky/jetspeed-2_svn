@@ -15,13 +15,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!--
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
+  <!--
     Database PSML Manager Interception for handling Cache Rollback
     We also have examples here of replay interception for failover to 
     a second database on update failures
    -->    
-<beans>
 
     <bean id="pageManagerInterceptor" class="org.apache.jetspeed.util.interceptors.PageManagerInterceptor">
     </bean>
