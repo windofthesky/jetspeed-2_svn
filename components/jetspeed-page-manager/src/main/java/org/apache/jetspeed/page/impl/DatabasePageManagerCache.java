@@ -55,17 +55,18 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheInit(DatabasePageManager dbPageManager)
     {
-        if (pageManager == null)
+        if (pageManager != null)
         {
-            cacheByOID = new HashMap();
-            cacheLRUList = new LinkedList();
-            cacheByPath = new HashMap();
-            cacheSize = dbPageManager.getCacheSize();
-            cacheExpiresSeconds = dbPageManager.getCacheExpiresSeconds();
-            constraintsEnabled = dbPageManager.getConstraintsEnabled();
-            permissionsEnabled = dbPageManager.getPermissionsEnabled();
-            pageManager = dbPageManager;
+            cacheClear();
         }
+        cacheByOID = new HashMap();
+        cacheLRUList = new LinkedList();
+        cacheByPath = new HashMap();
+        cacheSize = dbPageManager.getCacheSize();
+        cacheExpiresSeconds = dbPageManager.getCacheExpiresSeconds();
+        constraintsEnabled = dbPageManager.getConstraintsEnabled();
+        permissionsEnabled = dbPageManager.getPermissionsEnabled();
+        pageManager = dbPageManager;
     }
 
     /**
