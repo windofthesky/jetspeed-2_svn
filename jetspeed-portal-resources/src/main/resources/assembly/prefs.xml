@@ -20,7 +20,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     
     <!-- Preferences Implementation -->
-    <bean id="PreferencesProviderImpl" class="org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider" name="prefsPersistenceBroker" init-method="init">
+    <bean id="PreferencesProviderImpl" class="org.apache.jetspeed.prefs.impl.PersistenceBrokerPreferencesProvider" name="prefsPersistenceBroker" init-method="init" destroy-method="destroy">
         <constructor-arg index="0">
             <value>JETSPEED-INF/ojb/prefs_repository.xml</value>
         </constructor-arg>
@@ -37,7 +37,7 @@
         <constructor-arg index='3'><value type="boolean">false</value></constructor-arg>        
     </bean>
 
-    <bean id="org.apache.jetspeed.prefs.PreferencesProvider" parent="baseTransactionProxy" name="prefsProvider">
+    <bean id="org.apache.jetspeed.prefs.PreferencesProvider" parent="baseTransactionProxy" name="prefsProvider" destroy-method="destroy">
         <property name="proxyInterfaces">
             <value>org.apache.jetspeed.prefs.PreferencesProvider</value>
         </property>
@@ -56,7 +56,9 @@
     </bean>
 
     <!-- PreferencesFactory implementation -->
-    <bean id="java.util.prefs.PreferencesFactory" class="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl" name="prefsFactory" init-method="init">
+    <bean id="java.util.prefs.PreferencesFactory" class="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl" name="prefsFactory" init-method="init" destroy-method="destroy">
+        <!-- dummy constructor argument to distinguish it from the default constructor invoked by the Java Preferences itself --> 
+        <constructor-arg><value>1</value></constructor-arg>
         <property name="prefsProvider">
             <ref bean="prefsProvider" />
         </property>

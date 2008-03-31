@@ -215,6 +215,13 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         this.preloadedApplications = apps;
         this.preloadEntities = preloadEntities;
     }
+    
+    public void destroy()
+    {
+        NodeImplProxy.setProvider(null);
+        preferenceCache = null;
+        preloadedApplications = null;
+    }
 
     protected void addToCache(NodeCache content)
     {
