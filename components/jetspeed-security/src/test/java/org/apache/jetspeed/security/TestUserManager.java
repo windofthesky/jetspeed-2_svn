@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
-import java.security.Principal;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;

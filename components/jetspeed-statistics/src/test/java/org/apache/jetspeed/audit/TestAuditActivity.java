@@ -45,7 +45,6 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
      */
     protected void tearDown() throws Exception
     {
-        ctx.close();
         super.tearDown();
     }
 
@@ -66,7 +65,7 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
     {
         super.setUp();
         
-        this.audit = (AuditActivity) ctx.getBean("org.apache.jetspeed.audit.AuditActivity");
+        this.audit = (AuditActivity) scm.getComponent("org.apache.jetspeed.audit.AuditActivity");
         assertNotNull("audit activity service not found ", this.audit);
     }
     

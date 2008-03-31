@@ -24,8 +24,6 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import junit.framework.TestCase;
-
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -41,6 +39,8 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
+
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockHttpSession;
@@ -53,7 +53,7 @@ import com.mockrunner.mock.web.MockServletContext;
  * @author <a>David Sean Taylor </a>
  * @version $Id: $
  */
-public class TestConstraintsAction extends TestCase
+public class TestConstraintsAction extends JetspeedTestCase
 {
 
     private ComponentManager cm;
@@ -74,10 +74,8 @@ public class TestConstraintsAction extends TestCase
     {
         super.setUp();
 
-        String appRoot =  "./"; //PortalTestConstants.JETSPEED_APPLICATION_ROOT;
-        
         MockServletConfig servletConfig = new MockServletConfig();        
-        ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(appRoot));        
+        ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(getBaseDir()));        
         servletConfig.setServletContext(servletContent);
         ServletConfigFactoryBean.setServletConfig(servletConfig);
         
@@ -89,7 +87,7 @@ public class TestConstraintsAction extends TestCase
                 "src/test/assembly/page-manager.xml"};
         
                 
-        cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");
+        cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, getBaseDir());
         cm.start();
         valve = (LayoutValve) cm.getComponent("layoutValve");
         pageManager = (PageManager) cm.getComponent("pageManager");
@@ -98,6 +96,7 @@ public class TestConstraintsAction extends TestCase
     protected void tearDown() throws Exception
     {
         cm.stop();
+        super.tearDown();
     }
 
     public void testUpdate()

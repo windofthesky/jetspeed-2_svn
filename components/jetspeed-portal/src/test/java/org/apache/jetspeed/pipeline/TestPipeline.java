@@ -19,10 +19,9 @@ package org.apache.jetspeed.pipeline;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.pipeline.valve.Valve;
+import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 /**
@@ -31,7 +30,7 @@ import org.apache.jetspeed.testhelpers.SpringEngineHelper;
  * @author <a href="taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestPipeline extends TestCase
+public class TestPipeline extends JetspeedTestCase
 {
      private Engine engine;
     private SpringEngineHelper engineHelper;
@@ -74,14 +73,16 @@ public class TestPipeline extends TestCase
 
     protected void setUp() throws Exception
     {
+        super.setUp();
         Map context = new HashMap();
         engineHelper = new SpringEngineHelper(context);
-        engineHelper.setUp();
+        engineHelper.setUp(getBaseDir());
         this.engine = (Engine)context.get(SpringEngineHelper.ENGINE_ATTR);
     }
 
     protected void tearDown() throws Exception
     {
         engineHelper.tearDown();
+        super.tearDown();
     }
 }

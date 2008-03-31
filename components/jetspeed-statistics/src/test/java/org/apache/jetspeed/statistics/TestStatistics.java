@@ -52,17 +52,6 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
 
     private PortalStatistics statistics = null;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {
-        ctx.close();
-        super.tearDown();
-    }
-
     /**
      * Start the tests.
      * 
@@ -80,7 +69,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
     {
         super.setUp();
         
-        this.statistics = (PortalStatistics) ctx.getBean("PortalStatistics");
+        this.statistics = (PortalStatistics) scm.getComponent("PortalStatistics");
         assertNotNull("statistics not found ", statistics);
     }
 

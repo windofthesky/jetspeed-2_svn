@@ -41,10 +41,7 @@ import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * TestPageXmlPersistence
@@ -53,19 +50,41 @@ import junit.framework.TestSuite;
  * @version $Id: $
  *          
  */
-public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase implements PageManagerTestShared, PageManagerEventListener
+public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase implements PageManagerTestShared
 {
-    private String deepFolderPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
-    private String deepPagePath = deepFolderPath + "/default-page.psml";
+    private static final String deepFolderPath = "/__subsite-rootx/_user/userx/_role/rolex/_group/groupx/_mediatype/xhtml/_language/en/_country/us/_custom/customx";
+    private static final String deepPagePath = deepFolderPath + "/default-page.psml";       
 
-    private static ClassPathXmlApplicationContext context;
-    private static boolean lastTestRun;
+    private static class PageManagerEventListenerImpl implements PageManagerEventListener
+    {
+        int newNodeCount;
+        int updatedNodeCount;
+        int removedNodeCount;
 
-    private static PageManager pageManager;
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
+         */
+        public void newNode(Node node)
+        {
+            newNodeCount++;
+        }
 
-    private static int newNodeCount;
-    private static int updatedNodeCount;
-    private static int removedNodeCount;
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
+         */
+        public void updatedNode(Node node)
+        {
+            updatedNodeCount++;
+        }
+
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
+         */
+        public void removedNode(Node node)
+        {
+            removedNodeCount++;
+        }
+    }
 
     public static void main(String args[])
     {
@@ -73,55 +92,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         { TestDatabasePageManager.class.getName() });
     }
     
-    protected void setUp() throws Exception
-    {
-        // reuse context between test cases below
-        // that is normally configured if null in
-        // super class setUp() implementation
-        if (context == null)
-        {
-            // new context
-            super.setUp();
-            context = ctx;
-            lastTestRun = false;
-
-            // lookup page manager in context and reset to initial state
-            pageManager = (PageManager)context.getBean("pageManager");
-            try
-            {
-                Folder removeRootFolder = pageManager.getFolder("/");
-                pageManager.removeFolder(removeRootFolder);
-                pageManager.reset();
-            }
-            catch (FolderNotFoundException e)
-            {
-            }
-
-            // setup page manager listener
-            pageManager.addListener(this);
-        }
-        else
-        {
-            // recycle context
-            ctx = context;
-            super.setUp();
-        }
-    }
-
-    protected void tearDown() throws Exception
-    {
-        // save context for reuse
-        if (!lastTestRun)
-        {
-            ctx = null;
-        }
-        super.tearDown();
-    }
     
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestDatabasePageManager.class);
+        return createFixturedTestSuite(TestDatabasePageManager.class, "firstTestSetup", null);
     }
     
     protected String[] getConfigurations()
@@ -130,34 +104,26 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         { "database-page-manager.xml", "transaction.xml" };
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
-     */
-    public void newNode(Node node)
+    public void firstTestSetup() throws Exception
     {
-        newNodeCount++;
-    }
+        System.out.println("Running firstTestSetup");
+        try
+        {
+            PageManager pageManager = (PageManager)scm.getComponent("pageManager");
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
-     */
-    public void updatedNode(Node node)
-    {
-        updatedNodeCount++;
+            Folder removeRootFolder = pageManager.getFolder("/");
+            pageManager.removeFolder(removeRootFolder);
+        }
+        catch (FolderNotFoundException e)
+        {
+        }
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
-     */
-    public void removedNode(Node node)
-    {
-        removedNodeCount++;
-    }
-
+    
     public void testCreates() throws Exception
     {
-        // reset page manager cache
-        pageManager.reset();
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
+        pageManager.addListener(pmel);
 
         // test document and folder creation
         Folder folder = pageManager.newFolder("/");
@@ -537,12 +503,18 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(0, folder.getAll().inclusiveSubset("nomatch").size());
         assertNotNull(folder.getAll().exclusiveSubset(".*-page.psml"));
         assertEquals(3, folder.getAll().exclusiveSubset(".*-page.psml").size());
+        
+        // verify listener functionality and operation counts
+        assertEquals(22, pmel.newNodeCount);
+        assertEquals(0, pmel.updatedNodeCount);
+        assertEquals(0, pmel.removedNodeCount);
     }
 
     public void testGets() throws Exception
     {
-        // reset page manager cache
-        pageManager.reset();
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
+        pageManager.addListener(pmel);
         
         // read documents and folders from persisted store
         try
@@ -846,12 +818,18 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         {
             assertTrue("Folder " + deepFolderPath + " NOT FOUND", false);
         }
+        
+        // verify listener functionality and operation counts
+        assertEquals(0, pmel.newNodeCount);
+        assertEquals(0, pmel.updatedNodeCount);
+        assertEquals(0, pmel.removedNodeCount);
     }
 
     public void testUpdates() throws Exception
     {
-        // reset page manager cache
-        pageManager.reset();
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
+        pageManager.addListener(pmel);
         
         // update documents and folders in persisted store
         PageSecurity pageSecurity = pageManager.getPageSecurity();
@@ -905,12 +883,18 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         Page deepPage = pageManager.getPage(deepPagePath);
         deepPage.setTitle("FOLDER-UPDATED-DEEP");
         pageManager.updateFolder(folder, true);
+
+        // verify listener functionality and operation counts
+        assertEquals(0, pmel.newNodeCount);
+        assertEquals(26, pmel.updatedNodeCount);
+        assertEquals(0, pmel.removedNodeCount);
     }
 
     public void testRemoves() throws Exception
     {
-        // reset page manager cache
-        pageManager.reset();
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
+        pageManager.addListener(pmel);
         
         // remove root folder
         try
@@ -984,16 +968,9 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         catch (PageNotFoundException e)
         {
         }
-    }
-
-    public void testEvents() throws Exception
-    {
         // verify listener functionality and operation counts
-        assertEquals(22, newNodeCount);
-        assertEquals(26, updatedNodeCount);
-        assertEquals(22, removedNodeCount);
-
-        // last test has been run
-        lastTestRun = true;
+        assertEquals(0, pmel.newNodeCount);
+        assertEquals(0, pmel.updatedNodeCount);
+        assertEquals(22, pmel.removedNodeCount);
     }
 }

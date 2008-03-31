@@ -69,8 +69,8 @@ public class TestPortalSite extends AbstractSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.pageManager = (PageManager) ctx.getBean("pageManager");
-        this.portalSite = (PortalSite) ctx.getBean("portalSite");
+        this.pageManager = (PageManager) scm.getComponent("pageManager");
+        this.portalSite = (PortalSite) scm.getComponent("portalSite");
         this.defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.ENGLISH);
     }
@@ -80,8 +80,8 @@ public class TestPortalSite extends AbstractSpringTestCase
      */
     protected void tearDown() throws Exception
     {
-        super.tearDown();
         Locale.setDefault(this.defaultLocale);
+        super.tearDown();
     }
 
     /**

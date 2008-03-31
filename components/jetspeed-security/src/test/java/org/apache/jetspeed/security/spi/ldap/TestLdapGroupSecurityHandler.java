@@ -42,8 +42,8 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
      */
     protected void tearDown() throws Exception
     {
-        super.tearDown();
         LdapDataHelper.removeGroupData(gpUid1);
+        super.tearDown();
     }
 
     /**

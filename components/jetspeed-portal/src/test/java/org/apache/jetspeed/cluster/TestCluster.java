@@ -41,10 +41,9 @@ public class TestCluster extends DatasourceEnabledSpringTestCase
      */
     public void setUp() throws Exception
     {
-    	System.setProperty("applicationRoot","target/jetspeed");
         super.setUp();
 
-        single = (NodeManager) ctx.getBean("org.apache.jetspeed.cluster.NodeManager");
+        single = (NodeManager) scm.getComponent("org.apache.jetspeed.cluster.NodeManager");
     }
   
     public static Test suite()

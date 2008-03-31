@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
@@ -54,28 +53,29 @@ public class TestCapability extends AbstractSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        capabilities = (Capabilities) ctx.getBean("capabilities");
+        capabilities = (Capabilities) scm.getComponent("capabilities");
     }
 
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestCapability.class);
+        return createFixturedTestSuite(TestCapability.class, "firstTestSetup", "lastTestTeardown");
     }
 
-    /**
-     * First test defined is used to setup the data(base)
-     * <b>DO NOT ADD TESTS ABOVE THIS ONE</b>
-     * 
-     */
-    public void testSetup() throws Exception
+    public void firstTestSetup() throws Exception
     {
-        System.out.println("testSetup");
-        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
+        System.out.println("firstTestSetup");
+        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
         serializer.deleteData();
-        serializer.importData("target/test-classes/j2-seed.xml");
+        serializer.importData(getBaseDir()+"target/test-classes/j2-seed.xml");
     }
 
+    public void lastTestTeardown() throws Exception
+    {
+        System.out.println("lastTestTeardown");
+        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
+        serializer.deleteData();
+    }
+    
     /**
      * Tests categories
      * 
@@ -539,15 +539,5 @@ public class TestCapability extends AbstractSpringTestCase
     {
         return new String[]
         { "boot/datasource.xml"};
-    }
-    /**
-     * Last test defined is used to cleanup the data(base)
-     * <b>DO NOT ADD TESTS BELOW THIS ONE</b>
-     */
-    public void testTeardown() throws Exception
-    {
-        System.out.println("testTeardown");
-        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
-        serializer.deleteData();
     }
 }

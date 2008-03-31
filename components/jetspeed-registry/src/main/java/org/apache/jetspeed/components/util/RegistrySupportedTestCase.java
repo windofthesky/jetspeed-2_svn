@@ -29,7 +29,6 @@ import java.util.Properties;
 
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.engine.JetspeedEngineConstants;
 import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 
 /**
@@ -48,8 +47,8 @@ public abstract class RegistrySupportedTestCase extends AbstractPrefsSupportedTe
     protected void setUp() throws Exception
     {       
         super.setUp();
-        portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
-        entityAccess = (PortletEntityAccessComponent) ctx.getBean("portletEntityAccess");
+        portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
+        entityAccess = (PortletEntityAccessComponent) scm.getComponent("portletEntityAccess");
     }   
     
     protected String[] getConfigurations()

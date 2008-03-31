@@ -78,13 +78,13 @@ public class TestLdapSecurityMappingHandler extends AbstractLdapTest
      */
     protected void tearDown() throws Exception
     {
-        super.tearDown();
         LdapDataHelper.removeGroupData(gpUid1);
         LdapDataHelper.removeGroupData(gpUid2);
         LdapDataHelper.removeUserData(uid1);
         LdapDataHelper.removeUserData(uid2);
         LdapDataHelper.removeRoleData(roleUid1);
         LdapDataHelper.removeRoleData(roleUid2);
+        super.tearDown();
     }
 
     /**

@@ -93,13 +93,13 @@ interface PageManagerTestShared
          * @param constraintsEnabled
          * @return page manager instance
          */
-        static CastorXmlPageManager makeCastorXMLPageManager(String pagesDirName, boolean permissionsEnabled, boolean constraintsEnabled)
+        static CastorXmlPageManager makeCastorXMLPageManager(String baseDir, String pagesDirName, boolean permissionsEnabled, boolean constraintsEnabled)
             throws Exception
         {
             Map extensionsToXslt = new HashMap();
-            extensionsToXslt.put("psml","src/main/resources/stripIds.xslt");
+            extensionsToXslt.put("psml",baseDir+"src/main/resources/stripIds.xslt");
                 
-            File pagesDirFile = new File("target/testdata/" + pagesDirName);
+            File pagesDirFile = new File(baseDir+"target/testdata/" + pagesDirName);
             
             
             DirectoryXMLTransform dirHelper = new DirectoryXMLTransform(pagesDirFile,extensionsToXslt);
@@ -110,33 +110,33 @@ interface PageManagerTestShared
                         return !pathname.getName().equals("CVS") && !pathname.getName().equals(".svn") && !pathname.getName().endsWith("~");
                     }
                 };
-            dirHelper.copyFrom(new File("src/test/testdata/" + pagesDirName), noCVSorSVNorBackups);
+            dirHelper.copyFrom(new File(baseDir+"src/test/testdata/" + pagesDirName), noCVSorSVNorBackups);
             
             // copy documents under webapp/pages folder and strip fragment Ids
-            File webappDestDirFile = new File("target/testdata/" + pagesDirName+"/webapp-no-ids");
+            File webappDestDirFile = new File(baseDir+"target/testdata/" + pagesDirName+"/webapp-no-ids");
             dirHelper.setBaseDirectory(webappDestDirFile);
-            File webappPagesDirFile = new File("src/test/testdata/pages");
+            File webappPagesDirFile = new File(baseDir+"src/test/testdata/pages");
             dirHelper.copyFromAndTransform(webappPagesDirFile, noCVSorSVNorBackups);
 
             // copy documents under webapp/pages folder without transforming them
-            webappDestDirFile = new File("target/testdata/" + pagesDirName+"/webapp-ids");
+            webappDestDirFile = new File(baseDir+"target/testdata/" + pagesDirName+"/webapp-ids");
             dirHelper.setBaseDirectory(webappDestDirFile);
             dirHelper.copyFrom(webappPagesDirFile, noCVSorSVNorBackups);
 
             IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
             FileCache cache = new FileCache(10, 12);
             
-            DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, "target/testdata/" + pagesDirName, cache);
-            DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, "target/testdata/" + pagesDirName, cache);
-            DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, "target/testdata/" + pagesDirName, cache);
-            DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, "target/testdata/" + pagesDirName, cache);
+            DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, baseDir + "target/testdata/" + pagesDirName, cache);
             
             DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
             handlerFactory.registerDocumentHandler(psmlHandler);
             handlerFactory.registerDocumentHandler(linkHandler);
             handlerFactory.registerDocumentHandler(folderMetaDataHandler);
             handlerFactory.registerDocumentHandler(pageSecurityHandler);
-            FolderHandler folderHandler = new FileSystemFolderHandler("target/testdata/" + pagesDirName, handlerFactory, cache);
+            FolderHandler folderHandler = new FileSystemFolderHandler(baseDir+"target/testdata/" + pagesDirName, handlerFactory, cache);
 
             return new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, permissionsEnabled, constraintsEnabled);
         }

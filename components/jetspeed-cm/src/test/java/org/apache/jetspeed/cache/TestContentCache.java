@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.cache;
 
-import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 import java.security.Principal;
 import java.util.LinkedList;
@@ -27,7 +26,6 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.jetspeed.aggregator.PortletContent;
-import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl;
 import org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;

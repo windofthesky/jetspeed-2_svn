@@ -32,35 +32,43 @@ import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 
 import com.mockrunner.mock.web.MockServletConfig;
 
-public class SpringEngineHelper extends AbstractTestHelper
+public class SpringEngineHelper
 {
     public static final String ENGINE_ATTR = "Engine";     
     
+    private final Map context;
+
+    private Engine engine;
+
     protected JetspeedTestJNDIComponent jndiDS;
     
     public SpringEngineHelper(Map context)
     {
-        super(context);
+        this.context = context;
     }
     
-    private Engine engine;
-
-    public void setUp() throws Exception
+    public Map getContext()
+    {
+        return context;
+    }
+    
+    public void setUp(String baseDir) throws Exception
     {
         jndiDS = new JetspeedTestJNDIComponent();
         jndiDS.setup();
 
+        
         PropertiesConfiguration config = new PropertiesConfiguration();
-        config.load(new FileInputStream(PortalTestConstants.JETSPEED_PROPERTIES_PATH));
+        config.load(new FileInputStream(baseDir+PortalTestConstants.JETSPEED_PROPERTIES_PATH));
                 
-        String appRoot = PortalTestConstants.JETSPEED_APPLICATION_ROOT;
+        String appRoot = baseDir+PortalTestConstants.JETSPEED_APPLICATION_ROOT;
         
         MockServletConfig servletConfig = new MockServletConfig();        
         ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(appRoot));        
         servletConfig.setServletContext(servletContent);
         ServletConfigFactoryBean.setServletConfig(servletConfig);
         
-        SpringComponentManager scm = new SpringComponentManager(new String[] {"/WEB-INF/assembly/boot/datasource.xml"}, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
+        SpringComponentManager scm = new SpringComponentManager(null, new String[] {"/WEB-INF/assembly/boot/datasource.xml"}, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
        
         engine = new JetspeedEngine(config, appRoot, servletConfig, scm );
         Jetspeed.setEngine(engine);

@@ -67,18 +67,6 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {
-        //  super.tearDown();
-    }
-
- 
-
     /**
      * <p>
      * buildTestData

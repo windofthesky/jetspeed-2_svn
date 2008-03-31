@@ -59,10 +59,10 @@ public class DatasourceTestCase extends TestCase
     {
         super.setUp();
         jndi = new TyrexJNDIComponent();
-        String url = System.getProperty("org.apache.jetspeed.test.database.url");
-        String driver = System.getProperty("org.apache.jetspeed.test.database.driver");
-        String user = System.getProperty("org.apache.jetspeed.test.database.user");
-        String password = System.getProperty("org.apache.jetspeed.test.database.password");
+        String url = System.getProperty("org.apache.jetspeed.database.url");
+        String driver = System.getProperty("org.apache.jetspeed.database.driver");
+        String user = System.getProperty("org.apache.jetspeed.database.user");
+        String password = System.getProperty("org.apache.jetspeed.database.password");
         datasourceComponent = new BoundDBCPDatasourceComponent(user, password, driver, url, 20, 5000,
                 GenericObjectPool.WHEN_EXHAUSTED_GROW, true, "jetspeed", jndi);
         datasourceComponent.start();

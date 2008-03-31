@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -47,6 +46,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
  * TestCastorXmlPageManager
@@ -55,7 +55,7 @@ import org.apache.jetspeed.page.psml.CastorXmlPageManager;
  * @author <a href="rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class TestCastorXmlPageManager extends TestCase implements PageManagerTestShared 
+public class TestCastorXmlPageManager extends JetspeedTestCase implements PageManagerTestShared 
 {
     private String testPage002 = "/test002.psml";
     private String testPage003 = "/test003.psml";
@@ -75,20 +75,7 @@ public class TestCastorXmlPageManager extends TestCase implements PageManagerTes
     protected void setUp() throws Exception
     {
         super.setUp();
-        pageManager = Shared.makeCastorXMLPageManager("pages", false, false);
-    }
-
-    /**
-     * <p>
-     * tearDown
-     * </p>
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     * @throws java.lang.Exception
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
+        pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "pages", false, false);
     }
 
     /**

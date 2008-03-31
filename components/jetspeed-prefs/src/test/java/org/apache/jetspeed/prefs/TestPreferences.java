@@ -47,14 +47,6 @@ public class TestPreferences extends DatasourceEnabledSpringTestCase
     }
 
     /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
      * @return The test suite.
      */
     public static Test suite()

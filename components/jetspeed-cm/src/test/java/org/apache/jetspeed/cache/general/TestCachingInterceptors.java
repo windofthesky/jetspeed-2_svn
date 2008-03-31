@@ -37,8 +37,8 @@ public class TestCachingInterceptors extends AbstractSpringTestCase
     
     public void testInterceptors() throws Exception
     {
-        MockComponent mc = (MockComponent) ctx.getBean("mockComponent");
-        InvocationCountingCache cache = (InvocationCountingCache) ctx.getBean("systemCache");
+        MockComponent mc = (MockComponent)scm.getComponent("mockComponent");
+        InvocationCountingCache cache = (InvocationCountingCache) scm.getComponent("systemCache");
         assertNotNull(mc);
         assertNotNull(cache);
         

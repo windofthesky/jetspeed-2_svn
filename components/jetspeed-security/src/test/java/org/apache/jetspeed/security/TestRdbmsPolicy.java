@@ -207,7 +207,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
     public void testPermissionWithSubjectInAccessControlContextAndDefaultPolicy()
     {
         System.out.println("\n\n\t\t[TestRdbmsPolicy] Test with default Policy enabled.");
-        AuthorizationProvider atzProvider = (AuthorizationProvider) ctx.getBean("org.apache.jetspeed.security.AuthorizationProvider");
+        AuthorizationProvider atzProvider = (AuthorizationProvider) scm.getComponent("org.apache.jetspeed.security.AuthorizationProvider");
         atzProvider.useDefaultPolicy(true);
         testPermissionWithSubjectInAccessControlContext();
     }

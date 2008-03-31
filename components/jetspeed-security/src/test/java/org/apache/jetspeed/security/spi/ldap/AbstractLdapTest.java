@@ -120,7 +120,7 @@ public abstract class AbstractLdapTest extends AbstractSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        LdapBindingConfig ldapConfig = (LdapBindingConfig)ctx.getBean(LdapBindingConfig.class.getName());
+        LdapBindingConfig ldapConfig = (LdapBindingConfig)scm.getComponent(LdapBindingConfig.class.getName());
         InitLdapSchema ldapSchema = new InitLdapSchema(ldapConfig);
         try
         {
@@ -156,14 +156,6 @@ public abstract class AbstractLdapTest extends AbstractSpringTestCase
         LdapDataHelper.setRoleSecurityHandler(roleHandler);
         
         secHandler = new LdapSecurityMappingHandler(ldapPrincipalDao, ldapGroupDao, ldapRoleDao);
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
     }
 
     protected String[] getConfigurations()

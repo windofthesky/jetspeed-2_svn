@@ -36,24 +36,6 @@ import junit.framework.TestSuite;
  */
 public class TestRoleSecurityHandler extends AbstractSecurityTestcase
 {
-
-
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
     /**
      * <p>
      * Constructs the suite.

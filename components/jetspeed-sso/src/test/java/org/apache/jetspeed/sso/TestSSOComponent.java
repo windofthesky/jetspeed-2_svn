@@ -77,7 +77,7 @@ public class TestSSOComponent extends AbstractSecurityTestcase
 
         try
         {
-            ssoBroker = (SSOProvider) ctx.getBean("ssoProvider");
+            ssoBroker = (SSOProvider) scm.getComponent("ssoProvider");
         }
         catch (Exception ex)
         {
@@ -92,7 +92,7 @@ public class TestSSOComponent extends AbstractSecurityTestcase
     public void tearDown() throws Exception
     {
         clean();
-        // super.tearDown();
+        super.tearDown();
     }
 
     public static Test suite()

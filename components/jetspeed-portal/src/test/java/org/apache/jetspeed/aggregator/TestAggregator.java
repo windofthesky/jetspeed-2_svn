@@ -28,7 +28,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalReservedParameters;
@@ -48,6 +47,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -62,7 +62,7 @@ import com.mockrunner.mock.web.MockServletConfig;
  * @version $Id$
  * 
  */
-public class TestAggregator extends TestCase
+public class TestAggregator extends JetspeedTestCase
 {
     private SpringEngineHelper engineHelper;
     private Engine engine;
@@ -103,7 +103,7 @@ public class TestAggregator extends TestCase
         
         HashMap context = new HashMap();
         engineHelper = new SpringEngineHelper(context);
-        engineHelper.setUp();
+        engineHelper.setUp(getBaseDir());
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
 
         pageAggregator = (PageAggregator) engine.getComponentManager().getComponent(PageAggregator.class);

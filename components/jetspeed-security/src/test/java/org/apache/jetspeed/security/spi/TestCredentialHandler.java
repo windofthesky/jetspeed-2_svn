@@ -45,14 +45,6 @@ public class TestCredentialHandler extends AbstractSecurityTestcase
     }
 
     /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
      * <p>
      * Constructs the suite.
      * </p>

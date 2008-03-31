@@ -16,15 +16,11 @@
  */
 package org.apache.jetspeed.components.test;
 
-import java.io.File;
 import java.util.Properties;
 
-import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import junit.framework.TestCase;
+import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
+import org.apache.jetspeed.components.SpringComponentManager;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
  * <p>
@@ -38,12 +34,9 @@ import junit.framework.TestCase;
  * @version $Id$
  *  
  */
-public abstract class AbstractSpringTestCase extends TestCase
+public abstract class AbstractSpringTestCase extends JetspeedTestCase
 {
-    /**
-     * Provides access to the Spring ApplicationContext.
-     */
-    protected ClassPathXmlApplicationContext ctx;
+    protected SpringComponentManager scm;
 
     /**
      * setup Spring context as part of test setup
@@ -51,25 +44,8 @@ public abstract class AbstractSpringTestCase extends TestCase
     protected void setUp() throws Exception
     {        
         super.setUp();
-        if (ctx == null)
-        {
-            String [] bootConfigurations = getBootConfigurations();
-            if (bootConfigurations != null)
-            {
-                ApplicationContext bootContext = new ClassPathXmlApplicationContext(bootConfigurations, true);
-                ctx = new ClassPathXmlApplicationContext(getConfigurations(), false, bootContext);
-            }
-            else
-            {
-                ctx = new ClassPathXmlApplicationContext(getConfigurations(), false);
-            }
-            PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
-            Properties p = getPostProcessProperties();
-            p.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, System.getProperty("user.dir")+"/target/test-classes/webapp");
-            ppc.setProperties(p);
-            ctx.addBeanFactoryPostProcessor(ppc);
-            ctx.refresh();
-        }
+        scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir()+"target/test-classes/webapp", getPostProcessProperties(), false);
+        scm.start();
     }
 
     /**
@@ -77,11 +53,8 @@ public abstract class AbstractSpringTestCase extends TestCase
      */
     protected void tearDown() throws Exception
     {        
+        scm.stop();
         super.tearDown();
-        if (ctx != null)
-        {
-            ctx.close();
-        }
     }
 
     /**
@@ -100,5 +73,10 @@ public abstract class AbstractSpringTestCase extends TestCase
     protected Properties getPostProcessProperties()
     {
         return new Properties();
+    }
+    
+    protected JetspeedBeanDefinitionFilter getBeanDefinitionFilter()
+    {
+        return null;
     }
 }

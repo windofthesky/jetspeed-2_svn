@@ -35,17 +35,6 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  */
 public class TestRegistryDirectPart2a extends AbstractRegistryTest
 {
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
     /*
      * (non-Javadoc)
      * 

@@ -16,21 +16,19 @@
  */
 package org.apache.jetspeed.page.document.psml;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
-import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.cache.file.FileCache;
 
 /**
@@ -45,7 +43,7 @@ import org.apache.jetspeed.cache.file.FileCache;
  * @version $Id$
  *  
  */
-public class TestCastorFileSystemDocumentHandler extends TestCase
+public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
 {
 
     protected CastorFileSystemDocumentHandler folderMetaDataDocumentHandler;
@@ -63,26 +61,13 @@ public class TestCastorFileSystemDocumentHandler extends TestCase
             "/JETSPEED-INF/castor/page-mapping.xml",
             "folder.metadata",
             FolderMetaDataImpl.class,
-            "src/test/testdata/pages",
+            getBaseDir()+"src/test/testdata/pages",
             new FileCache());
             
         Map handlerMap = new HashMap();
         handlerMap.put("folder.metadata", folderMetaDataDocumentHandler);
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl(handlerMap);
         folderMetaDataDocumentHandler.setHandlerFactory(handlerFactory);
-    }
-
-    /**
-     * <p>
-     * tearDown
-     * </p>
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     * @throws java.lang.Exception
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
     }
 
     /**

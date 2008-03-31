@@ -108,7 +108,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
     
     public void testFileSystemManagerOnDir() throws Exception
     {
-        File demoApp = new File("src/test/testdata/deploy/webapp");
+        File demoApp = new File(getBaseDir()+"src/test/testdata/deploy/webapp");
         assertTrue(demoApp.exists());
         
         DirectoryHelper dirHelper = new DirectoryHelper(demoApp);
@@ -361,12 +361,12 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
         try
         {
             super.setUp();
-            copyFrom = new File("src/test/deployment/deploy");
-            deploySrc = new File("./target/deployment/deploy");
+            copyFrom = new File(getBaseDir()+"src/test/deployment/deploy");
+            deploySrc = new File(getBaseDir()+"target/deployment/deploy");
             deploySrc.mkdirs();
-            deployRootFile = new File("./target/deployment/templates/decorators");
+            deployRootFile = new File(getBaseDir()+"target/deployment/templates/decorators");
             deployRootFile.mkdirs();
-            webAppsDirFile = new File("./target/deployment/webapps");
+            webAppsDirFile = new File(getBaseDir()+"target/deployment/webapps");
             webAppsDirFile.mkdirs();
 
             webAppsDir = webAppsDirFile.getCanonicalPath();
@@ -431,48 +431,4 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
             }
         }
     }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-/*        
-        manager = new TomcatManager("", "", 0, "", 0, "", "");
-        FileSystemPAM pam = new FileSystemPAM(webAppsDir, portletRegistry, entityAccess, windowAccess, portletCache, portletFactory, manager);
-
-        try
-        {
-            DirectoryHelper dirHelper = new DirectoryHelper(new File(webAppsDir + "/" + TEST_PORTLET_APP_NAME));
-            paWar1 = new PortletApplicationWar(dirHelper, TEST_PORTLET_APP_NAME, "/"
-                    + TEST_PORTLET_APP_NAME);
-            pam.undeploy(paWar1);
-        }
-        catch (Exception e1)
-        {
-
-        }
-
-        pam.unregister("jetspeed");
-
-        try
-        {
-            DirectoryHelper dirHelper = new DirectoryHelper(new File(webAppsDir + "/TestSecurityRoles"));
-            paWar3 = new PortletApplicationWar(dirHelper, "TestSecurityRoles", "/TestSecurityRoles" );
-
-            pam.undeploy(paWar3);
-        }
-        catch (Exception e3)
-        {
-
-        }
-
-        // DirectoryUtils.rmdir(new File("./target/deployment"));
-        new DirectoryHelper(new File("./target/deployment")).remove();
-*/        
-        super.tearDown();
-
-    }
-
-    
 }

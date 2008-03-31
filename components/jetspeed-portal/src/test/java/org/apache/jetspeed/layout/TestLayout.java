@@ -18,8 +18,6 @@ package org.apache.jetspeed.layout;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -27,6 +25,8 @@ import org.apache.jetspeed.layout.impl.LayoutValve;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.test.JetspeedTestCase;
+
 import com.mockrunner.mock.web.MockServletConfig;
 
 /**
@@ -35,7 +35,7 @@ import com.mockrunner.mock.web.MockServletConfig;
  * @author <a>David Gurney </a>
  * @version $Id: $
  */
-public class TestLayout extends TestCase
+public class TestLayout extends JetspeedTestCase
 {
 
     private ComponentManager cm;
@@ -54,7 +54,7 @@ public class TestLayout extends TestCase
     {
         super.setUp();
 
-        String appRoot =  "./"; //PortalTestConstants.JETSPEED_APPLICATION_ROOT;
+        String appRoot = getBaseDir(); //PortalTestConstants.JETSPEED_APPLICATION_ROOT;
         
         MockServletConfig servletConfig = new MockServletConfig();        
         ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(appRoot));        
@@ -68,7 +68,7 @@ public class TestLayout extends TestCase
                 "src/test/assembly/test-layout-api.xml"};
         
                 
-        cm = new SpringComponentManager(bootConfigs, appConfigs, servletContent, ".");
+        cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, ".");
         cm.start();
         valve = (LayoutValve) cm.getComponent("layoutValve");
     }
@@ -76,6 +76,7 @@ public class TestLayout extends TestCase
     protected void tearDown() throws Exception
     {
         cm.stop();
+        super.tearDown();
     }
 
     public void testNullRequestContext()

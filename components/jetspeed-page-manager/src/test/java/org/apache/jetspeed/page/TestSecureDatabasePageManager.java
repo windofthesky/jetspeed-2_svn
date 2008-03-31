@@ -29,22 +29,12 @@ import junit.framework.TestSuite;
  */
 public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCase implements PageManagerTestShared
 {
-    protected PageManager pageManager;
-
-    protected String somePortletId;
-    
     public static void main(String args[])
     {
         junit.awtui.TestRunner.main(new String[]
         { TestSecureDatabasePageManager.class.getName() });
     }
     
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        pageManager = (PageManager)ctx.getBean("pageManager");
-    }
-
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
@@ -60,6 +50,6 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
     public void testSecurePageManager() throws Exception
     {
         // utilize standard secure page manager test
-        Shared.testSecurePageManager(this, pageManager);
+        Shared.testSecurePageManager(this, (PageManager)scm.getComponent("pageManager"));
     }
 }

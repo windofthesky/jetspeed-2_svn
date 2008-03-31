@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -39,6 +38,7 @@ import org.apache.jetspeed.rewriter.rules.Rule;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.rules.Tag;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
  * TestRewriterRules
@@ -47,7 +47,7 @@ import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
  * @version $Id: TestRewriterController.java,v 1.3 2004/10/13 15:53:22 weaver
  *          Exp $
  */
-public class TestRewriterController extends TestCase
+public class TestRewriterController extends JetspeedTestCase
 {
 
     /**
@@ -91,7 +91,7 @@ public class TestRewriterController extends TestCase
 
         Rewriter basic = component.createRewriter();
         assertNotNull("basic rewriter is null", basic);
-        FileReader reader = new FileReader("src/test/rewriter/test-rewriter-rules.xml");
+        FileReader reader = new FileReader(getBaseDir()+"src/test/rewriter/test-rewriter-rules.xml");
         Ruleset ruleset = component.loadRuleset(reader);
         assertNotNull("ruleset is null", ruleset);
         RulesetRewriter rewriter = component.createRewriter(ruleset);
@@ -105,7 +105,7 @@ public class TestRewriterController extends TestCase
         assertNotNull("template component is null", component);
 
         assertNotNull("rewriter component is null", component);
-        FileReader reader = new FileReader("src/test/rewriter/test-rewriter-rules.xml");
+        FileReader reader = new FileReader(getBaseDir()+"src/test/rewriter/test-rewriter-rules.xml");
         Ruleset ruleset = component.loadRuleset(reader);
         assertNotNull("ruleset is null", ruleset);
         assertEquals("ruleset id", "test-set-101", ruleset.getId());
@@ -201,7 +201,7 @@ public class TestRewriterController extends TestCase
 
         assertNotNull("rewriter component is null", component);
 
-        FileReader reader = new FileReader("src/test/rewriter/test-remove-rules.xml");
+        FileReader reader = new FileReader(getBaseDir()+"src/test/rewriter/test-remove-rules.xml");
 
         Ruleset ruleset = component.loadRuleset(reader);
         reader.close();
@@ -210,7 +210,7 @@ public class TestRewriterController extends TestCase
         assertNotNull("ruleset rewriter is null", rewriter);
         assertNotNull("ruleset is null", rewriter.getRuleset());
 
-        FileReader htmlReader = new FileReader("src/test/rewriter/test-001.html");
+        FileReader htmlReader = new FileReader(getBaseDir()+"src/test/rewriter/test-001.html");
         FileWriter htmlWriter = getTestWriter("test-001-output.html");
 
         ParserAdaptor adaptor = component.createParserAdaptor("text/html");
@@ -220,7 +220,7 @@ public class TestRewriterController extends TestCase
         htmlReader.close();
 
         // validate result
-        FileReader testReader = new FileReader("target/test/rewriter/test-001-output.html");
+        FileReader testReader = new FileReader(getBaseDir()+"target/test/rewriter/test-001-output.html");
         UnitTestRewriter testRewriter = new UnitTestRewriter();
         testRewriter.parse(component.createParserAdaptor("text/html"), testReader);
         assertTrue("1st rewritten anchor: " + testRewriter.getAnchorValue("1"), testRewriter.getAnchorValue("1")
@@ -248,8 +248,8 @@ public class TestRewriterController extends TestCase
      */
     private FileWriter getTestWriter(String filename) throws IOException
     {
-        new File("target/test/rewriter").mkdirs();
-        return new FileWriter("target/test/rewriter/" + filename);
+        new File(getBaseDir()+"target/test/rewriter").mkdirs();
+        return new FileWriter(getBaseDir()+"target/test/rewriter/" + filename);
     }
 
 
@@ -263,7 +263,7 @@ public class TestRewriterController extends TestCase
         
         Class[] adaptorClasses = new Class[]
         { SwingParserAdaptor.class, SaxParserAdaptor.class};
-        return new JetspeedRewriterController("src/test/webapp/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays
+        return new JetspeedRewriterController(getBaseDir()+"src/test/webapp/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays
                 .asList(rewriterClasses), Arrays.asList(adaptorClasses));
     }
     
@@ -274,7 +274,7 @@ public class TestRewriterController extends TestCase
 
         assertNotNull("rewriter component is null", component);
 
-        Reader reader = new FileReader("src/test/rewriter/default-rewriter-rules.xml");
+        Reader reader = new FileReader(getBaseDir()+"src/test/rewriter/default-rewriter-rules.xml");
 
         Ruleset ruleset = component.loadRuleset(reader);
         reader.close();

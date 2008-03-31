@@ -24,7 +24,6 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalContext;
@@ -43,6 +42,7 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.entity.PortletEntity;
@@ -65,7 +65,7 @@ import com.mockrunner.mock.web.MockHttpSession;
  * @version $Id$
  */
 
-public class TestNavigationalState extends TestCase
+public class TestNavigationalState extends JetspeedTestCase
 {
     // needed to be able to Mock PortletWindowListCtrl
     private interface CompositeWindowList extends PortletWindowList, PortletWindowListCtrl{}
@@ -102,7 +102,7 @@ public class TestNavigationalState extends TestCase
 
         HashMap context = new HashMap();
         engineHelper = new SpringEngineHelper(context);
-        engineHelper.setUp();
+        engineHelper.setUp(getBaseDir());
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
         // mock test PortletWindow, PortletEntity, PortletDefinition and PortletApplication
         Mock entityMock = new Mock(MutablePortletEntity.class);        

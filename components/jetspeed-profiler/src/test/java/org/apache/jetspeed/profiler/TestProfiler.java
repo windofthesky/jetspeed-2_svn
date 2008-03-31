@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
@@ -66,16 +65,6 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         TEST_PROPS.put("profilingRule.impl", "org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule");
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
     /**
      * Start the tests.
      * 
@@ -92,18 +81,17 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.profiler = (Profiler) ctx.getBean("profiler");
-        JetspeedProfilerImpl profilerImpl = (JetspeedProfilerImpl) ctx.getBean("profilerImpl");
+        this.profiler = (Profiler) scm.getComponent("profiler");
+        JetspeedProfilerImpl profilerImpl = (JetspeedProfilerImpl)scm.getComponent("profilerImpl");
         assertNotNull("profiler not found ", profiler);
-        ProfileResolvers resolvers = (ProfileResolvers) ctx.getBean("ProfileResolvers");
+        ProfileResolvers resolvers = (ProfileResolvers)scm.getComponent("ProfileResolvers");
         assertNotNull("resolvers not found ", resolvers);
         profilerImpl.setDefaultRule(JetspeedProfilerImpl.DEFAULT_RULE);
     }
 
     public static Test suite()
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestProfiler.class);
+        return createFixturedTestSuite(TestProfiler.class, "firstTestSetup", "lastTestTeardown");
     }
 
     private static final String DEFAULT_RULE = "j1";
@@ -133,17 +121,19 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     };
 
     
-    /**
-     * First test defined is used to setup the data(base)
-     * <b>DO NOT ADD TESTS ABOVE THIS ONE</b>
-     * 
-     */
-    public void testSetup() throws Exception
+    public void firstTestSetup() throws Exception
     {
-        System.out.println("testSetup");
-        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
+        System.out.println("firstTestSetup");
+        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
         serializer.deleteData();
-        serializer.importData("target/test-classes/j2-seed.xml");
+        serializer.importData(getBaseDir()+"target/test-classes/j2-seed.xml");
+    }
+    
+    public void lastTestTeardown() throws Exception
+    {
+        System.out.println("lastTestTeardown");
+        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
+        serializer.deleteData();
     }
     
     public void testUserRoleFallback() 
@@ -532,7 +522,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     protected String[] getConfigurations()
     {
-        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml",
+        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "prefs.xml", "cache.xml",
                 "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-spi-atz.xml", "security-atz.xml" };
     }
 
@@ -720,17 +710,5 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         }
         assertTrue("didnt find expected number of standard rules, expected = " + EXPECTED_STANDARD, standardCount == 1);
         assertTrue("didnt find expected number of fallback rules, expected = " + EXPECTED_FALLBACK, fallbackCount == 1);
-    }
-    
-
-    /**
-     * Last test defined is used to cleanup the data(base)
-     * <b>DO NOT ADD TESTS BELOW THIS ONE</b>
-     */
-    public void testTeardown() throws Exception
-    {
-        System.out.println("testTeardown");
-        JetspeedSerializer serializer = (JetspeedSerializer)ctx.getBean("serializer");
-        serializer.deleteData();
     }
 }

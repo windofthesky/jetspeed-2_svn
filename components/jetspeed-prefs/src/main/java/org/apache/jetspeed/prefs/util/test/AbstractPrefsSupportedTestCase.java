@@ -46,6 +46,6 @@ public class AbstractPrefsSupportedTestCase extends DatasourceEnabledSpringTestC
     protected void setUp() throws Exception
     {
         super.setUp();
-        prefsProvider = (PreferencesProvider) ctx.getBean("prefsProvider");
+        prefsProvider = (PreferencesProvider) scm.getComponent("prefsProvider");
     }
 }

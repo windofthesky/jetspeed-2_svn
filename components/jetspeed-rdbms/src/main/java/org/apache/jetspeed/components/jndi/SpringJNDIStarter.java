@@ -88,7 +88,7 @@ public class SpringJNDIStarter
     public void setUp() throws Exception
     {
     	setupJNDI();
-         scm = new SpringComponentManager(bootConfig, appConfig,  appRoot );
+         scm = new SpringComponentManager(null, bootConfig, appConfig,  appRoot, true );
         }
 
     public void tearDown() throws Exception

@@ -42,8 +42,8 @@ public class TestLdapRoleSecurityHandler extends AbstractLdapTest
      */
     protected void tearDown() throws Exception
     {
-        super.tearDown();
         LdapDataHelper.removeRoleData(roleUid1);
+        super.tearDown();
     }
 
     /**

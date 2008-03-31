@@ -27,19 +27,19 @@ import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.search.SearchResults;
 import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
 import org.apache.jetspeed.search.lucene.SearchEngineImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
  * @author jford
  *
  */
-public class TestSearch extends TestCase
+public class TestSearch extends JetspeedTestCase
 {
     
-    private final static String INDEX_DIRECTORY = "./target/search_index";
+    private final static String INDEX_DIRECTORY = "target/search_index";
 
     private File indexRoot;
     SearchEngine searchEngine;
@@ -56,7 +56,7 @@ public class TestSearch extends TestCase
             e.printStackTrace();
         }
         
-        indexRoot = new File(INDEX_DIRECTORY);
+        indexRoot = new File(getBaseDir()+INDEX_DIRECTORY);
     }
     
     /**
@@ -105,6 +105,7 @@ public class TestSearch extends TestCase
         }
         
         indexRoot.delete();
+        super.tearDown();
     }
     
     public void testRemoveWebPage() throws Exception

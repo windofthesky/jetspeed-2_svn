@@ -70,22 +70,9 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.registry = (PortletRegistry) ctx.getBean("portletRegistry");
+        this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
 
         testPasses++;
-    }
-
-    /**
-     * <p>
-     * tearDown
-     * </p>
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     * @throws Exception
-     */
-    protected void tearDown() throws Exception
-    {
-        //super.tearDown();
     }
 
     protected void validateDublinCore(GenericMetadata metadata)

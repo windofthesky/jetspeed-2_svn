@@ -36,15 +36,7 @@ public class TestNodePreferences extends DatasourceEnabledSpringTestCase
     public void setUp() throws Exception
     {
         super.setUp();      
-        provider = (PreferencesProvider) ctx.getBean("prefsProvider");        
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
+        provider = (PreferencesProvider) scm.getComponent("prefsProvider");        
     }
 
     /**

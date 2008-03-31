@@ -50,14 +50,6 @@ public class TestPreferencesNoPropManager extends AbstractPrefsSupportedTestCase
 
     }
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
     protected void clearChildren(Preferences node) throws Exception
     {
         String[] names = node.childrenNames();

@@ -43,8 +43,8 @@ public class TestLdapUserSecurityDao extends AbstractLdapTest
      */
     protected void tearDown() throws Exception
     {
-        super.tearDown();
         LdapDataHelper.removeUserData(uid1);
+        super.tearDown();
     }
 
     /**

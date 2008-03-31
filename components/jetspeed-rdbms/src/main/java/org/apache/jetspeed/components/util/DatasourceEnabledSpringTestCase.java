@@ -49,8 +49,8 @@ public abstract class DatasourceEnabledSpringTestCase extends AbstractSpringTest
      */
     protected void tearDown() throws Exception
     {
-        jndiDS.tearDown();
         super.tearDown();
+        jndiDS.tearDown();
     }
 
     protected String[] getBootConfigurations()

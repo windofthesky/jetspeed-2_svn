@@ -18,9 +18,8 @@ package org.apache.jetspeed.engine;
 
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
 import org.apache.jetspeed.components.ComponentManagement;
+import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
 /**
@@ -31,7 +30,7 @@ import org.apache.jetspeed.testhelpers.SpringEngineHelper;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public abstract class AbstractEngineTest extends TestCase
+public abstract class AbstractEngineTest extends JetspeedTestCase
 {
 
     /**
@@ -70,7 +69,7 @@ public abstract class AbstractEngineTest extends TestCase
     {
        HashMap context = new HashMap();
        engineHelper = new SpringEngineHelper(context);
-       engineHelper.setUp();
+       engineHelper.setUp(getBaseDir());
        engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
     }
 

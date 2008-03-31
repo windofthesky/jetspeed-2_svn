@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.locator;
 
-import java.io.File;
 import java.util.ArrayList;
 
+import org.apache.jetspeed.test.JetspeedTestCase;
+
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
@@ -29,7 +29,7 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestTemplateLocator extends TestCase
+public class TestTemplateLocator extends JetspeedTestCase
 {
     private JetspeedTemplateLocator templateLocator;
 
@@ -126,7 +126,7 @@ public class TestTemplateLocator extends TestCase
     protected void setUp() throws Exception
     {
         ArrayList roots = new ArrayList(1);
-        roots.add("target/test-classes/templates");
+        roots.add(getBaseDir()+"target/test-classes/templates");
         ArrayList classes = new ArrayList(2);
         classes.add(JetspeedTemplateDescriptor.class);
         classes.add(JetspeedLocatorDescriptor.class);

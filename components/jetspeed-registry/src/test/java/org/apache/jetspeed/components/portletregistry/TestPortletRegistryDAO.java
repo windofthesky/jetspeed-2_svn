@@ -84,7 +84,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
+        this.portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
 
         buildTestData();
 
@@ -100,6 +100,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         {
             portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
         }
+        super.tearDown();
     }
 
     public void test1() throws Exception

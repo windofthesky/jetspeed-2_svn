@@ -20,13 +20,13 @@ import java.io.FileReader;
 import java.util.Collection;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
@@ -39,8 +39,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  * @version $Id$
  */
 public class TestJetspeedPortletDescriptor
-    extends TestCase { 
-    //extends AbstractPrefsSupportedTestCase {
+    extends AbstractPrefsSupportedTestCase {
     
     private static final String PORTLET_01 = "HelloPortlet";
     private static final String PORTLET_02 = "DisplayRequestPortlet";
@@ -73,7 +72,7 @@ public class TestJetspeedPortletDescriptor
     public void testLoadPortletApplicationTree() throws Exception
     {
         System.out.println("Testing loadPortletApplicationTree");
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("src/test/testdata/deploy/portlet.xml"), "unit-test");
+        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(getBaseDir()+"src/test/testdata/deploy/portlet.xml"), "unit-test");
         MutablePortletApplication app = pad.createPortletApplication();            
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
@@ -83,7 +82,7 @@ public class TestJetspeedPortletDescriptor
                 "PA Identifier invalid: " + app.getApplicationIdentifier(),
                 app.getApplicationIdentifier().equals("TestRegistry"));
        
-        ExtendedPortletMetadata md = new ExtendedPortletMetadata(new FileReader("src/test/testdata/deploy/jetspeed-portlet.xml"), app); 
+        ExtendedPortletMetadata md = new ExtendedPortletMetadata(new FileReader(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml"), app); 
         md.load();
        
         PortletDefinitionComposite def1 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_01);

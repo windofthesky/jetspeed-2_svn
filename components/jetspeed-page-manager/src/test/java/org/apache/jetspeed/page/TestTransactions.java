@@ -34,29 +34,14 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerCache;
  */
 public class TestTransactions extends  DatasourceEnabledSpringTestCase implements PageManagerTestShared
 {
-    protected PageManager pageManager;
-
-    protected String somePortletId;
-    
     public static void main(String args[])
     {
         junit.awtui.TestRunner.main(new String[]
         { TestTransactions.class.getName() });
     }
     
-    protected void setUp() throws Exception
-    {
-        super.setUp();        
-        pageManager = (PageManager)ctx.getBean("pageManager");
-    }
-
     public static Test suite()
     {
-//        System.setProperty("org.apache.jetspeed.database.url", "jdbc:mysql://j2-server/j2"); 
-//        System.setProperty("org.apache.jetspeed.database.driver", "com.mysql.jdbc.Driver");
-//        System.setProperty("org.apache.jetspeed.database.user", "j2");
-//        System.setProperty("org.apache.jetspeed.database.password", "xxxxx");
-        
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestTransactions.class);
     }
@@ -75,6 +60,8 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
     
     public void testTx() throws Exception
     {
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+
         if (pageManager.folderExists("/"))
         {
             pageManager.removeFolder(pageManager.getFolder("/"));

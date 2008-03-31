@@ -25,9 +25,9 @@ import java.util.Arrays;
 import org.apache.jetspeed.rewriter.html.neko.NekoParserAdaptor;
 import org.apache.jetspeed.rewriter.rules.Ruleset;
 import org.apache.jetspeed.rewriter.xml.SaxParserAdaptor;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 
@@ -37,7 +37,7 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:dyoung@phase2systems.com">David L Young</a>
  * @version $Id:$
  */
-public class TestNekoRewriter extends TestCase
+public class TestNekoRewriter extends JetspeedTestCase
 {
 
     /**
@@ -165,7 +165,7 @@ public class TestNekoRewriter extends TestCase
         Class[] rewriterClasses = new Class[]{ RulesetRewriterImpl.class, RulesetRewriterImpl.class};
         
         Class[] adaptorClasses = new Class[]{ NekoParserAdaptor.class, SaxParserAdaptor.class};
-        return new JetspeedRewriterController("src/test/webapp/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays.asList(rewriterClasses), Arrays.asList(adaptorClasses));
+        return new JetspeedRewriterController(getBaseDir()+"src/test/webapp/WEB-INF/conf/rewriter-rules-mapping.xml", Arrays.asList(rewriterClasses), Arrays.asList(adaptorClasses));
     }
 
     /*
@@ -188,7 +188,7 @@ public class TestNekoRewriter extends TestCase
      */
     private FileReader getTestReader(String filename) throws IOException
     {
-        return new FileReader("src/test/rewriter/" + filename);
+        return new FileReader(getBaseDir()+"src/test/rewriter/" + filename);
     }
 
     /**
@@ -199,8 +199,8 @@ public class TestNekoRewriter extends TestCase
      */
     private FileWriter getTestWriter(String filename) throws IOException
     {
-        new File("target/test/rewriter").mkdirs();
-        return new FileWriter("target/test/rewriter/" + filename);
+        new File(getBaseDir()+"target/test/rewriter").mkdirs();
+        return new FileWriter(getBaseDir()+"target/test/rewriter/" + filename);
     }
     
     

@@ -17,10 +17,10 @@
 package org.apache.jetspeed.page;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
  * TestSecureCastorXmlPageManager
@@ -28,7 +28,7 @@ import org.apache.jetspeed.page.psml.CastorXmlPageManager;
  * @author <a href="rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class TestSecureCastorXmlPageManager extends TestCase implements PageManagerTestShared 
+public class TestSecureCastorXmlPageManager extends JetspeedTestCase implements PageManagerTestShared 
 {
     protected CastorXmlPageManager pageManager;
 
@@ -40,20 +40,7 @@ public class TestSecureCastorXmlPageManager extends TestCase implements PageMana
     protected void setUp() throws Exception
     {
         super.setUp();
-        pageManager = Shared.makeCastorXMLPageManager("secure-pages", false, true);
-    }
-
-    /**
-     * <p>
-     * tearDown
-     * </p>
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     * @throws java.lang.Exception
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
+        pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "secure-pages", false, true);
     }
 
     /**

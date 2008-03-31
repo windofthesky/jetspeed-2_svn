@@ -24,11 +24,11 @@ import java.util.Date;
 import java.util.Iterator;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 
 /**
@@ -38,7 +38,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
  * @version $Id$
  */
 
-public class TestFileCache extends TestCase implements FileCacheEventListener
+public class TestFileCache extends JetspeedTestCase implements FileCacheEventListener
 {    
     protected static final String TEST_DIRECTORY = "target/test-classes";
     protected static final int CACHE_SIZE = 20;
@@ -74,8 +74,8 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
      */
     public void tearDown() throws Exception
     {
-        super.tearDown();
         removeTestFiles();
+        super.tearDown();
     }
 
      /**
@@ -85,7 +85,7 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
 
     public void testLoadCache() throws Exception 
     {        
-        String templateFile = TEST_DIRECTORY+"/default.psml";
+        String templateFile = getBaseDir() + TEST_DIRECTORY+"/default.psml";
         try
         {
             File file = new File(templateFile);            
@@ -97,7 +97,7 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
             // FileCache cache = new FileCache(10, 20);
 
             // load the Cache
-            File directory = new File(TEST_DIRECTORY);
+            File directory = new File(getBaseDir() + TEST_DIRECTORY);
             File[] files = directory.listFiles();
             for (int ix=0; ix < files.length; ix++)
             {
@@ -172,7 +172,7 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
     {
         for (int ix=1; ix < 31; ix++)
         {
-            String testFile = TEST_DIRECTORY+"/testFile-" + ix + ".psml";
+            String testFile = getBaseDir()+TEST_DIRECTORY+"/testFile-" + ix + ".psml";
             FileCopy.copy(templateFile, testFile);
         }
     }
@@ -181,7 +181,7 @@ public class TestFileCache extends TestCase implements FileCacheEventListener
     {
         for (int ix=1; ix < 31; ix++)
         {
-            String testFile = TEST_DIRECTORY+"/testFile-" + ix + ".psml";
+            String testFile = getBaseDir()+TEST_DIRECTORY+"/testFile-" + ix + ".psml";
             File file = new File(testFile);
             if ( file.exists() )
                 file.delete();

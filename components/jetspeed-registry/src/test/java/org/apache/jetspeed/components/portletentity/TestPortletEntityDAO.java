@@ -64,8 +64,8 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.registry = (PortletRegistry) ctx.getBean("portletRegistry");
-        this.entityAccess = (PersistenceBrokerPortletEntityAccess) ctx.getBean("portletEntityAccessImpl");
+        this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
+        this.entityAccess = (PersistenceBrokerPortletEntityAccess) scm.getComponent("portletEntityAccessImpl");
 
         teardownTestData();
         setupTestData();
@@ -74,6 +74,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     protected void tearDown() throws Exception
     {
         teardownTestData();
+        super.tearDown();
     }
 
     public void test1() throws Exception

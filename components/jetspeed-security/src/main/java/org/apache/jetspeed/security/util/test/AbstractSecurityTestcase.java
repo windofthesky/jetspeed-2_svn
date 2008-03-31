@@ -91,30 +91,30 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
         super.setUp();
 
         // SPI Security handlers.
-        securityAccess = (SecurityAccess) ctx.getBean("org.apache.jetspeed.security.spi.SecurityAccess");
-        ch =  (CredentialHandler) ctx.getBean("org.apache.jetspeed.security.spi.CredentialHandler");
-        ush = (UserSecurityHandler) ctx.getBean("org.apache.jetspeed.security.spi.UserSecurityHandler");
-        rsh = (RoleSecurityHandler) ctx.getBean("org.apache.jetspeed.security.spi.RoleSecurityHandler");
-        gsh = (GroupSecurityHandler) ctx.getBean("org.apache.jetspeed.security.spi.GroupSecurityHandler");
-        smh = (SecurityMappingHandler) ctx.getBean("org.apache.jetspeed.security.spi.SecurityMappingHandler");
+        securityAccess = (SecurityAccess) scm.getComponent("org.apache.jetspeed.security.spi.SecurityAccess");
+        ch =  (CredentialHandler) scm.getComponent("org.apache.jetspeed.security.spi.CredentialHandler");
+        ush = (UserSecurityHandler) scm.getComponent("org.apache.jetspeed.security.spi.UserSecurityHandler");
+        rsh = (RoleSecurityHandler) scm.getComponent("org.apache.jetspeed.security.spi.RoleSecurityHandler");
+        gsh = (GroupSecurityHandler) scm.getComponent("org.apache.jetspeed.security.spi.GroupSecurityHandler");
+        smh = (SecurityMappingHandler) scm.getComponent("org.apache.jetspeed.security.spi.SecurityMappingHandler");
         
         // Security Providers.        
-        AuthenticationProvider atnProvider = (AuthenticationProvider) ctx.getBean("org.apache.jetspeed.security.AuthenticationProvider");
+        AuthenticationProvider atnProvider = (AuthenticationProvider) scm.getComponent("org.apache.jetspeed.security.AuthenticationProvider");
         List atnProviders = new ArrayList();
         atnProviders.add(atnProvider);
         
        
-        AuthenticationProviderProxy atnProviderProxy = (AuthenticationProviderProxy) ctx.getBean("org.apache.jetspeed.security.AuthenticationProviderProxy");
+        AuthenticationProviderProxy atnProviderProxy = (AuthenticationProviderProxy) scm.getComponent("org.apache.jetspeed.security.AuthenticationProviderProxy");
         securityProvider = new SecurityProviderImpl(atnProviderProxy, rsh, gsh, smh);
         
-        securityProvider = (SecurityProvider) ctx.getBean("org.apache.jetspeed.security.SecurityProvider");
+        securityProvider = (SecurityProvider) scm.getComponent("org.apache.jetspeed.security.SecurityProvider");
         
-        ums = (UserManager) ctx.getBean("org.apache.jetspeed.security.UserManager");
-        gms = (GroupManager) ctx.getBean("org.apache.jetspeed.security.GroupManager");
-        rms = (RoleManager) ctx.getBean("org.apache.jetspeed.security.RoleManager");
+        ums = (UserManager) scm.getComponent("org.apache.jetspeed.security.UserManager");
+        gms = (GroupManager) scm.getComponent("org.apache.jetspeed.security.GroupManager");
+        rms = (RoleManager) scm.getComponent("org.apache.jetspeed.security.RoleManager");
                 
         // Authorization.
-        pms = (PermissionManager) ctx.getBean("org.apache.jetspeed.security.PermissionManager");
+        pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
         
         new JetspeedActions(new String[] {"secure"}, new String[] {});
     }

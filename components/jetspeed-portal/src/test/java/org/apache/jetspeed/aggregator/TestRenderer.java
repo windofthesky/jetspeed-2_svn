@@ -32,7 +32,7 @@ import org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl;
 public class TestRenderer extends AbstractPortalContainerTestCase
 {
     protected PortletRenderer renderer;
-    
+    protected WorkerMonitor monitor;
    
     /**
      * Start the tests.
@@ -47,10 +47,16 @@ public class TestRenderer extends AbstractPortalContainerTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        WorkerMonitor monitor = new WorkerMonitorImpl(5, 20, 5, 10);
+        monitor = new WorkerMonitorImpl(5, 20, 5, 10);
         monitor.start();
         
         renderer = new PortletRendererImpl(portletContainer, windowAccessor, monitor, null);       
+    }
+    
+    protected void tearDown() throws Exception
+    {
+        monitor.stop();
+        super.tearDown();
     }
 
     /**

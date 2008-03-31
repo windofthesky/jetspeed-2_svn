@@ -23,13 +23,13 @@ import java.util.Set;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
  * TestSecureCastorXmlPageManager
@@ -37,7 +37,7 @@ import org.apache.jetspeed.security.impl.UserPrincipalImpl;
  * @author <a href="rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class TestCreateUserHomePagesFromRoles extends TestCase implements PageManagerTestShared 
+public class TestCreateUserHomePagesFromRoles extends JetspeedTestCase implements PageManagerTestShared 
 {
     protected CastorXmlPageManager pageManager;
 
@@ -49,20 +49,7 @@ public class TestCreateUserHomePagesFromRoles extends TestCase implements PageMa
     protected void setUp() throws Exception
     {
         super.setUp();
-        pageManager = Shared.makeCastorXMLPageManager("secure-pages", false, true);
-    }
-
-    /**
-     * <p>
-     * tearDown
-     * </p>
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     * @throws java.lang.Exception
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
+        pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "secure-pages", false, true);
     }
 
     /**
@@ -113,7 +100,7 @@ public class TestCreateUserHomePagesFromRoles extends TestCase implements PageMa
     
     public void testCreateUserHomePagesFromRoles() throws Exception
     {
-        PageManager pageManager = Shared.makeCastorXMLPageManager("pages", false, false);         
+        PageManager pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "pages", false, false);         
 
         assertTrue("folder1 failed to create", pageManager.folderExists(FOLDER1));
         assertTrue("folder2 failed to create", pageManager.folderExists(FOLDER2));

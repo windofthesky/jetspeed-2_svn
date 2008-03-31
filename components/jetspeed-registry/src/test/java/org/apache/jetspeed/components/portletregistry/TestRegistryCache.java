@@ -60,7 +60,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
+        this.portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
 
         buildTestData();
 
@@ -172,6 +172,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         {
             portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
         }
+        super.tearDown();
     }
     
     protected String[] getConfigurations()
