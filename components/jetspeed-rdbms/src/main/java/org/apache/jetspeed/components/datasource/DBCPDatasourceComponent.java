@@ -16,8 +16,12 @@
  */
 package org.apache.jetspeed.components.datasource;
 
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -38,7 +42,8 @@ import org.apache.commons.pool.impl.GenericObjectPool;
  * 
  * @
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $ $
+ * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
+ * @version $Id$
  *
  */
 public class DBCPDatasourceComponent implements DatasourceComponent
@@ -131,14 +136,6 @@ public class DBCPDatasourceComponent implements DatasourceComponent
         return dataSource;
     }
 
-    /** 
-     * <p>
-     * start
-     * </p>
-     * 
-     * @see org.picocontainer.Startable#start()
-     * 
-     */
     public void start()
     {
 
@@ -171,33 +168,58 @@ public class DBCPDatasourceComponent implements DatasourceComponent
         }
         catch (Throwable e)
         {
-            
-            String msg = "Unable to start DBCPCDatasourceComponent: "+e.toString();
-            log.error(msg, e);
-            throw new IllegalStateException(msg);
+            CharArrayWriter caw = new CharArrayWriter();
+            e.printStackTrace(new PrintWriter(caw));
+            String msg = "Unable to start DBCPCDatasourceComponent: ";
+            log.error(msg+e.toString(), e);
+            throw new IllegalStateException(msg+caw.toString());
         }
     }
 
-    /** 
-     * <p>
-     * stop
-     * </p>
-     * 
-     * @see org.picocontainer.Startable#stop()
-     * 
-     */
     public void stop()
     {
         try
         {
+            log.info("Stopping DBCPCDatasourceComponent");
             dsConnectionFactory.getPool().close();
+
+            // Support for using an embedded Derby database multiple times from one JVM
+            // by properly shutting it down after each (test) run
+            if (driverName.equals("org.apache.derby.jdbc.EmbeddedDriver"))
+            {
+                String shutDownURI = null;
+                int parIndex = connectURI.indexOf(";");
+                if (parIndex > -1)
+                {
+                    shutDownURI = connectURI.substring(0, parIndex)+";shutdown=true";
+                }
+                else
+                {
+                    shutDownURI = connectURI+";shutdown=true";
+                }
+                Class dc = Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+                Driver driver = (Driver)dc.newInstance();                
+                Properties info = new Properties();
+                info.put( "user", user );
+                info.put( "password", password );
+                
+                driver.connect(shutDownURI, info);
+            }
+
         }
         catch (Exception e)
         {
             IllegalStateException ise =
                 new IllegalStateException("Unable to sfaely shutdown the DBCPConnection pool: " + e.toString());
             ise.initCause(e);
+            try
+            {
+                log.error(ise);
+            }
+            catch (Exception e1)
+            {
+                // ignore if logger itself is gone too
+            }
         }
     }
-
 }
