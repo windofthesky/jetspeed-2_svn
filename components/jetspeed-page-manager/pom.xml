@@ -128,8 +128,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- multiple database PageManager related tests require forking for each and every testcase -->
-                    <forkMode>always</forkMode>
                     <excludes>
                         <exclude>**/*$*</exclude>
                         <exclude>**/PageManagerTestShared.java</exclude>
