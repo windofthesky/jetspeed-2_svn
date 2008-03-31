@@ -32,15 +32,6 @@ public class BoundDBCPDatasourceComponent extends DBCPDatasourceComponent
     private JNDIComponent jndi;
     private String bindName;
 
-    
-    /* (non-Javadoc)
-     * @see java.lang.Object#finalize()
-     */
-    protected void finalize() throws Throwable
-    {
-        stop();
-        super.finalize();
-    }
     /**
      * 
      * @param user
