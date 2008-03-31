@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.components;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,23 +26,18 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * <p>
  * SpringComponentManager
  * </p>
- * <p>
- * 
- * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  * 
  */
@@ -59,27 +53,30 @@ public class SpringComponentManager implements ComponentManager
 
     private boolean started = false;
 
-    public SpringComponentManager(String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
+    public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
             String appRoot)
     {
-        File appRootDir = new File(appRoot);
-        System.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRootDir.getAbsolutePath());
+        this(filter, bootConfigs, appConfigs, servletContext, appRoot, null);
+    }
 
+    public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
+            String appRoot, Properties bootProperties)
+    {
+        if (bootProperties == null)
+        {
+            bootProperties = new Properties();
+        }
+        bootProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
+        
         if (bootConfigs != null && bootConfigs.length > 0)
         {
-            bootCtx = new XmlWebApplicationContext();
-            ((XmlWebApplicationContext) bootCtx).setServletContext(servletContext);
-            ((XmlWebApplicationContext) bootCtx).setConfigLocations(bootConfigs);
+            bootCtx = new FilteringXmlWebApplicationContext(filter, bootConfigs, bootProperties, servletContext);
         }
         else
         {
-            bootCtx = new GenericApplicationContext();
+            bootCtx = new FileSystemXmlApplicationContext();
         }
-
-        appContext = new XmlWebApplicationContext();
-        ((XmlWebApplicationContext) appContext).setParent(bootCtx);
-        ((XmlWebApplicationContext) appContext).setServletContext(servletContext);
-        ((XmlWebApplicationContext) appContext).setConfigLocations(appConfigs);
+        appContext = new FilteringXmlWebApplicationContext(filter, appConfigs, bootProperties, servletContext, bootCtx);
 
         factories = new ArrayList();
         factories.add(appContext);
@@ -87,38 +84,45 @@ public class SpringComponentManager implements ComponentManager
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appContext);
     }
 
-    public SpringComponentManager(String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
-            String appRoot, Map preconfiguredBeans)
-    {
-        this(bootConfigs, appConfigs, servletContext, appRoot);
-        this.preconfiguredBeans = preconfiguredBeans;
-    }
-
-    
-    public SpringComponentManager(String[] bootConfigs, String[] appConfigs, String appRoot)
+    public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, String appRoot, boolean fileSystem)
     {        
-        PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
-        Properties p = new Properties();
-        //p.setProperty(APPLICATION_ROOT_KEY,appRootDir.getAbsolutePath());
-        ppc.setProperties(p);
+        this(filter, bootConfigs, appConfigs, appRoot, null, fileSystem);
+    }
+    
+    public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, String appRoot, Properties bootProperties, boolean fileSystem)
+    {        
+        if (bootProperties == null)
+        {
+            bootProperties = new Properties();
+        }
+        bootProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
         
         if (bootConfigs != null && bootConfigs.length > 0)
         {
-            bootCtx = new FileSystemXmlApplicationContext(bootConfigs, false);
-            bootCtx.addBeanFactoryPostProcessor(ppc);
-            bootCtx.refresh();
+            if (fileSystem)
+            {
+                bootCtx = new FilteringFileSystemXmlApplicationContext(filter, bootConfigs, bootProperties);
+            }
+            else
+            {
+                bootCtx = new FilteringClassPathXmlApplicationContext(filter, bootConfigs, bootProperties);
+            }
         }
         else
         {
-            bootCtx = new GenericApplicationContext();
+            bootCtx = new FileSystemXmlApplicationContext();
         }
-
-        appContext = new FileSystemXmlApplicationContext(appConfigs, false, bootCtx);
-        appContext.addBeanFactoryPostProcessor(ppc);
-        appContext.refresh();
-        factories = new ArrayList();
-        factories.add(appContext);
         
+        if (fileSystem)
+        {
+            appContext = new FilteringFileSystemXmlApplicationContext(filter, appConfigs, bootProperties, bootCtx);
+        }
+        else
+        {
+            appContext = new FilteringClassPathXmlApplicationContext(filter, appConfigs, bootProperties, bootCtx);
+        }
+        factories = new ArrayList();
+        factories.add(appContext);        
     }
     
     /**
@@ -248,5 +252,4 @@ public class SpringComponentManager implements ComponentManager
         appContext.refresh();
         started = true;
     }
-
 }

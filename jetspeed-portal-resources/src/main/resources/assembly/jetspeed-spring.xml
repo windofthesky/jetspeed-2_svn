@@ -181,6 +181,9 @@
                 <value>file:///${applicationRoot}/WEB-INF/conf/override.properties</value>
             </list>
         </property>
+        <property name="properties">
+          <value>applicationRoot=${applicationRoot}</value>
+        </property>
     </bean>
 
     <!-- HeaderResource Factory -->
