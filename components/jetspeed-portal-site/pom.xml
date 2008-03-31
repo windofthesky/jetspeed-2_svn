@@ -83,30 +83,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>portal-site-testdata</id>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-                            <tasks>
-                                <delete dir="${basedir}/target/testdata"/>
-                                <mkdir dir="${basedir}/target/testdata"/>
-                                <copy todir="${basedir}/target/testdata">
-                                    <fileset dir="${basedir}/src/test/testdata"/>
-                                </copy>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
