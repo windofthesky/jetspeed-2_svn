@@ -27,9 +27,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -74,18 +72,6 @@ import org.springframework.core.io.support.PropertiesLoaderSupport;
  * not define an id or name attribute directly, or only an unique one which is not referenced or
  * only referenced by other beans which have a "matching" j2:cat meta value.
  * </p>
- * <p>
- * Optionally, all beans without a "j2:cat" meta value can be set to lazy initialization
- * too, through method {@link #setDefaultLazyInit} (default value: null). This property can also
- * be defined directly as <code>CategoryFilteringPostProcessor.defaultLazyInit</code> property in one
- * of the loaded properties files or as System parameter. The order of evaluation is the same as with
- * the <code>categoriesKey</code> (see above).
- * </p>
- * <p>
- * For beans which explicitely need lazy initialization (or not), a meta value can
- * be defined to overrule/enforce the default behavior:
- * <pre>&lt;meta key="j2:lazy" value="&lt;true|false&gt;"/&gt;</pre>
- * </p>
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @since 2.2
@@ -96,55 +82,42 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
     private static Log log = LogFactory.getLog(JetspeedBeanDefinitionFilter.class);
     
     public static final String SYSTEM_PROPERTY_CATEGORIES_KEY = "JetspeedBeanDefinitionFilter.categoriesKey";
-    public static final String SYSTEM_PROPERTY_DEFAULT_LAZY_INIT = "JetspeedBeanDefinitionFilter.defaultLazyInit";
     
     public static final String CATEGORY_META_KEY = "j2:cat";
     public static final String ALIAS_META_KEY = "j2:alias";
-    public static final String LAZY_META_KEY = "j2:lazy";
+
+    public static final String DEFAULT_CATEGORIES = "default";
 
     private String categoriesKey;
-    private Boolean defaultLazyInit;
     private Properties props;
     private Set categories;
     private boolean initialized;
     
     public JetspeedBeanDefinitionFilter()
     {
+        setCategories(DEFAULT_CATEGORIES);
     }
     
-    public JetspeedBeanDefinitionFilter(Boolean defaultLazyInit, String categories)
+    public JetspeedBeanDefinitionFilter(String categories)
     {
-        setDefaultLazyInit(defaultLazyInit);
         setCategories(categories);
     }
     
-    public JetspeedBeanDefinitionFilter(Boolean defaultLazyInit, Set categories)
+    public JetspeedBeanDefinitionFilter(Set categories)
     {
-        setDefaultLazyInit(defaultLazyInit);
         setCategories(categories);
     }
     
-    public JetspeedBeanDefinitionFilter(String categoriesKey, Boolean defaultLazyInit)
+    public JetspeedBeanDefinitionFilter(String propertiesLocation, String categoriesKey) throws IOException
     {
+        loadProperties(new String[]{propertiesLocation});
         setCategoriesKey(categoriesKey);
-        setDefaultLazyInit(defaultLazyInit);
     }
     
-    public JetspeedBeanDefinitionFilter(String propertiesLocation) throws IOException
+    public JetspeedBeanDefinitionFilter(String[] propertiesLocations, String categoriesKey) throws IOException
     {
-        loadProperties(new String[]{propertiesLocation});
-    }
-    
-    public JetspeedBeanDefinitionFilter(String propertiesLocation, String categoriesKey, Boolean defaultLazyInit) throws IOException
-    {
-        this(categoriesKey, defaultLazyInit);
-        loadProperties(new String[]{propertiesLocation});
-    }
-    
-    public JetspeedBeanDefinitionFilter(String[] propertiesLocations, String categoriesKey, Boolean defaultLazyInit) throws IOException
-    {
-        this(categoriesKey, defaultLazyInit);
         loadProperties(propertiesLocations);
+        setCategoriesKey(categoriesKey);
     }
     
     protected void loadProperties(String[] propertiesLocations) throws IOException
@@ -241,11 +214,6 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
         this.categoriesKey = categoriesKey;
     }
 
-    public void setDefaultLazyInit(Boolean defaultLazyInit)
-    {
-        this.defaultLazyInit = defaultLazyInit;
-    }
-    
     public void setCategories(String categories)
     {
         if (categories != null && categories.length()>0)
@@ -308,22 +276,12 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
             {
                 this.categories = new HashSet();
             }
-            String value = System.getProperty(SYSTEM_PROPERTY_DEFAULT_LAZY_INIT);
-            if (value == null && props != null)
-            {
-                value = props.getProperty(SYSTEM_PROPERTY_DEFAULT_LAZY_INIT);
-            }
-            if (value != null)
-            {
-                defaultLazyInit = Boolean.valueOf(value);
-            }
         }
     }
     
     public boolean match(BeanDefinition bd)
     {
         String beanCategories = (String)bd.getAttribute(CATEGORY_META_KEY);
-        Boolean lazyInit = defaultLazyInit;
         boolean matched = true;
         if (beanCategories != null)
         {
@@ -338,22 +296,6 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
                 }
             }
         }
-        if (matched)
-        {
-            if (bd instanceof AbstractBeanDefinition)
-            {
-                AbstractBeanDefinition abd = (AbstractBeanDefinition)bd;
-                String j2Lazy = (String)bd.getAttribute(LAZY_META_KEY);
-                if (j2Lazy != null)
-                {
-                    lazyInit = Boolean.valueOf((String)bd.getAttribute(LAZY_META_KEY));
-                }
-                if (lazyInit != null)
-                {
-                    abd.setLazyInit(lazyInit.booleanValue());
-                }
-            }
-        }
         return matched;
     }
     
@@ -362,15 +304,6 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
         String alias = (String)bd.getAttribute(ALIAS_META_KEY);
         if (alias != null && !alias.equals(beanName))
         {
-            if (registry.isBeanNameInUse(alias))
-            {
-                String src = "";
-                if (bd.getSource() != null)
-                {
-                    src = "("+bd.getSource().toString()+")";
-                }
-                throw new BeanDefinitionValidationException("j2:alias '"+alias+"' for bean '"+beanName+"' already in use "+src);
-            }
             registry.registerAlias(beanName, alias);
         }
     }

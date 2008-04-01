@@ -36,10 +36,11 @@ public class FilteringListableBeanFactory extends DefaultListableBeanFactory
     {
         super(parentBeanFactory);
         this.filter = filter;
-        if (filter != null)
+        if (this.filter == null)
         {
-            this.filter.init();
+            this.filter = new JetspeedBeanDefinitionFilter();
         }
+        this.filter.init();
     }
 
     /**
@@ -49,8 +50,7 @@ public class FilteringListableBeanFactory extends DefaultListableBeanFactory
     public void registerBeanDefinition(String beanName, BeanDefinition bd)
             throws BeanDefinitionStoreException
     {
-        boolean match = filter != null && filter.match(bd);
-        if (filter == null || match)
+        if (filter.match(bd))
         {
             super.registerBeanDefinition(beanName, bd);
             if (filter != null)
