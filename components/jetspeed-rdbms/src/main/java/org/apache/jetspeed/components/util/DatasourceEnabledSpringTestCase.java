@@ -59,4 +59,8 @@ public abstract class DatasourceEnabledSpringTestCase extends AbstractSpringTest
         { "boot/datasource.xml"};
     }
 
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "jdbcDS";
+    }
 }

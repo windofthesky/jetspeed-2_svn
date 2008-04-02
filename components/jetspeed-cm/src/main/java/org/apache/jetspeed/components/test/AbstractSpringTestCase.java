@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.components.test;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
@@ -75,8 +76,10 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
         return new Properties();
     }
     
-    protected JetspeedBeanDefinitionFilter getBeanDefinitionFilter()
+    protected JetspeedBeanDefinitionFilter getBeanDefinitionFilter() throws IOException
     {
-        return null;
+        return new JetspeedBeanDefinitionFilter(getBeanDefinitionFilterCategories());
     }
+    
+    protected abstract String getBeanDefinitionFilterCategories();
 }

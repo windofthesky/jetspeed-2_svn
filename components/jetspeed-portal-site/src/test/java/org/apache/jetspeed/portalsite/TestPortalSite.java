@@ -114,6 +114,11 @@ public class TestPortalSite extends AbstractSpringTestCase
     {
         return new String[] {"/JETSPEED-INF/spring/test-spring.xml"};
     }
+    
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "default";
+    }
 
     /**
      * testPageManagerSetup - Test PageManager test configuration

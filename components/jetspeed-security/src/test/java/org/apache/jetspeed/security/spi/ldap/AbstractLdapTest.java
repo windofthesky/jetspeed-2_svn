@@ -162,4 +162,9 @@ public abstract class AbstractLdapTest extends AbstractSpringTestCase
     {
         return new String[] {"JETSPEED-INF/directory/config/" + LDAP_CONFIG + "/security-spi-ldap.xml" };
     }    
+
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "jdbcDS";
+    }
 }

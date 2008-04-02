@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.capabilities;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 import junit.framework.Test;
 
+import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 
@@ -539,5 +541,10 @@ public class TestCapability extends AbstractSpringTestCase
     {
         return new String[]
         { "boot/datasource.xml"};
+    }
+
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "jdbcDS";
     }
 }

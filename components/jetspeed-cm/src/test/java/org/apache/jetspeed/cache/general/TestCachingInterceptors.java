@@ -76,4 +76,9 @@ public class TestCachingInterceptors extends AbstractSpringTestCase
     {
         return new String[] {"org/apache/jetspeed/cache/general/cache-test.xml"};
     }
+
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "default";
+    }
 }

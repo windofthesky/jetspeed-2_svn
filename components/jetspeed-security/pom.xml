@@ -138,7 +138,7 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>prefs.xml,transaction.xml,cache.xml,security-*.xml</include>
+                                        <include>prefs.xml,transaction.xml,cache.xml,security-*.xml,boot/datasource.xml</include>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>

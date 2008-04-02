@@ -153,7 +153,7 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>transaction.xml</include>
+                                        <include>transaction.xml,boot/datasource.xml</include>
                                         <destination>test-classes</destination>
                                     </resource>
                                     <resource>

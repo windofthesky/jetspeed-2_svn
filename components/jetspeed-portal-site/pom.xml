@@ -83,4 +83,35 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+                <version>${pom.version}</version>
+                <executions>
+                    <execution>
+                        <id>unpack-test-resources</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <skip>${maven.test.skip}</skip>
+                            <unpack>
+                                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                                <resources>
+                                    <resource>
+                                        <path>assembly</path>
+                                        <include>boot/datasource.xml</include>
+                                    </resource>
+                                </resources>
+                            </unpack>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
 </project>
