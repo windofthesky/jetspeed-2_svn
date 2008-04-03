@@ -43,9 +43,108 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-
+  
+  <properties>
+    <org.apache.jetspeed.server.home>${project.build.directory}/demo-deploy</org.apache.jetspeed.server.home>
+  </properties>
+  
   <build>
     <finalName>jetspeed</finalName>
+    <pluginManagement>
+      <plugins>
+          <plugin>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-deploy-maven-plugin</artifactId>
+            <version>${pom.version}</version>
+            <dependencies>
+              <!-- shared/lib deps -->
+              <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>${pom.artifactId}</artifactId>
+                <version>${pom.version}</version>
+                <type>war</type>
+              </dependency>
+              <dependency>
+                <groupId>portlet-api</groupId>
+                <artifactId>portlet-api</artifactId>
+                <version>${portlet-api.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-api</artifactId>
+                <version>${pom.version}</version>
+                <scope>runtime</scope>
+              </dependency>
+              <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>jetspeed-commons</artifactId>
+                <version>${pom.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.pluto</groupId>
+                <artifactId>pluto</artifactId>
+                <version>${org.apache.pluto.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>portals-bridges-common</artifactId>
+                <version>${org.apache.portals.bridges.common.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+                <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+                <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+              </dependency>
+              <!-- j2-admin -->
+              <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>j2-admin</artifactId>
+                <version>2.1.3</version>
+                <type>war</type>
+              </dependency>
+              <!-- demo pa's -->
+              <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>rss</artifactId>
+                <version>2.1.3</version>
+                <type>war</type>
+              </dependency>
+              <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>demo</artifactId>
+                <version>2.1.3</version>
+                <type>war</type>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>jsf-demo</artifactId>
+                <version>1.0.4</version>
+                <type>war</type>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.portals.bridges</groupId>
+                <artifactId>jpetstore</artifactId>
+                <version>1.0.4</version>
+                <type>war</type>
+              </dependency>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-layouts</artifactId>
+            <version>2.1.3</version>
+            <type>war</type>
+          </dependency>
+
+              <!-- plugin own dependencies -->
+              <dependency>
+                <groupId>org.apache.portals.jetspeed-2</groupId>
+                <artifactId>jetspeed-deploy-tools</artifactId>
+                <version>${pom.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>${pom.groupId}</groupId>
@@ -74,6 +173,32 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-deploy-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>deploy-jetspeed-layouts</id>
+            <goals>
+              <goal>deploy</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <targetBaseDir>${project.build.directory}/${project.build.finalName}</targetBaseDir>
+              <destinations>
+                <local>WEB-INF/deploy/local</local>
+              </destinations>
+              <deployments>
+                <deployment>
+                  <artifact>${pom.groupId}:jetspeed-layouts:war</artifact>
+                  <destination>local</destination>
+                </deployment>
+              </deployments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.0.2</version>
@@ -91,7 +216,7 @@
 
   <profiles>
     <profile>
-      <id>test-portal-deploy</id>
+      <id>demo</id>
       <build>
         <plugins>
           <plugin>
@@ -99,31 +224,65 @@
             <artifactId>jetspeed-deploy-maven-plugin</artifactId>
             <version>${pom.version}</version>
             <configuration>
-              <targetDeployDirectory>${project.build.directory}/deploy</targetDeployDirectory>
+              <targetBaseDir>${org.apache.jetspeed.server.home}</targetBaseDir>
+              <portalName>ROOT</portalName>
               <deployments>
+                <!-- shared/lib -->
+                <deployment>
+                  <artifact>portlet-api:portlet-api:jar</artifact>
+                </deployment>
+                <deployment>
+                  <artifact>${pom.groupId}:jetspeed-api:jar</artifact>
+                </deployment>
+                <deployment>
+                  <artifact>${pom.groupId}:jetspeed-commons:jar</artifact>
+                </deployment>
+                <deployment>
+                  <artifact>org.apache.pluto:pluto:jar</artifact>
+                </deployment>
+                <deployment>
+                  <artifact>org.apache.portals.bridges:portals-bridges-common:jar</artifact>
+                </deployment>
+                <deployment>
+                  <artifact>
+                    ${org.apache.jetspeed.test.jdbc.driver.groupId}:${org.apache.jetspeed.test.jdbc.driver.artifactId}:jar
+                  </artifact>
+                  <destination>system</destination>
+                </deployment>
+                <!-- jetspeed portal expanded -->
+                <deployment>
+                  <artifact>${pom.groupId}:${pom.artifactId}:war</artifact>
+                  <expand>true</expand>
+                  <targetName>ROOT</targetName>
+                  <delete>./ROOT</delete>
+                </deployment>
+                <!-- admin pa -->
+                <deployment>
+                  <artifact>${pom.groupId}:j2-admin:war</artifact>
+                  <delete>./j2-admin</delete>
+                </deployment>
+                <!-- demo pa's -->
+                <deployment>
+                  <artifact>${pom.groupId}:demo:war</artifact>
+                  <delete>./demo</delete>
+                </deployment>
+                <deployment>
+                  <artifact>${pom.groupId}:rss:war</artifact>
+                  <delete>./rss</delete>
+                </deployment>
+                <deployment>
+                  <artifact>org.apache.portals.bridges:jpetstore:war</artifact>
+                  <infuse>true</infuse>
+                  <delete>./jpetstore</delete>
+                </deployment>
                 <deployment>
                   <artifact>org.apache.portals.bridges:jsf-demo:war</artifact>
-                  <type>war</type>
                   <infuse>true</infuse>
-                  <expand>false</expand>
-                  <target>jsf-demo.war</target>
+                  <expand>true</expand>
                   <delete>./jsf-demo</delete>
                 </deployment>
               </deployments>
             </configuration>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.portals.bridges</groupId>
-                <artifactId>jsf-demo</artifactId>
-                <type>war</type>
-                <version>1.0.4</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-deploy-tools</artifactId>
-                <version>${pom.version}</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
