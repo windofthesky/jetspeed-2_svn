@@ -203,7 +203,7 @@
             <configuration>
               <unpack>
                 <file>${basedir}/src/main/javascript/dojo/dojo.zip</file>
-                <targetDirectory>${project.build.directory}/${project.build.finalName}/javascript/</targetDirectory>
+                <targetDirectory>${project.build.directory}/${project.build.finalName}/javascript/dojo</targetDirectory>
               </unpack>
             </configuration>
           </execution>
