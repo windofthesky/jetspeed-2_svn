@@ -60,6 +60,7 @@
         <module>jetspeed-utils</module>
         <module>jetspeed-web-content</module>
         <module>jetspeed-webapp-logging</module>
-    </modules>
+        <module>jetspeed-layout-portlets</module>
+</modules>
     
 </project>

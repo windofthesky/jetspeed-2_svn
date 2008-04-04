@@ -36,11 +36,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>jetspeed-layouts</module>
         <module>jetspeed</module>
         <module>jetspeed-demo</module>
-<!--        
-        <module>layout-portlets</module>
--->        
     </modules>
 
 </project>
