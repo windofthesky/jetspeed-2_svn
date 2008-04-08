@@ -692,7 +692,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for folders
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", folderImpl.getId());
+            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -749,7 +749,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for pages
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", folderImpl.getId());
+            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -806,7 +806,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for links
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", folderImpl.getId());
+            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
             QueryByCriteria query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -868,7 +868,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 // query for page security
                 Criteria filter = new Criteria();
-                filter.addEqualTo("parent", folderImpl.getId());
+                filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
                 QueryByCriteria query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
                 PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
 
@@ -906,7 +906,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             // query for all nodes
             List all = DatabasePageManagerUtils.createList();
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", folderImpl.getId());
+            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
@@ -1221,7 +1221,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // construct general node query criteria
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", folderImpl.getId());
+            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
 
             // update pages
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
@@ -1345,7 +1345,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // construct general node query criteria
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", folderImpl.getId());
+            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
 
             // remove folders first: depth first recursion
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
