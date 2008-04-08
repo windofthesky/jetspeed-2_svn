@@ -1063,13 +1063,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
             return false;
         }
         
-        private void checkDescriptorChanges()
+        private synchronized void checkDescriptorChanges()
         {
-            int size;
-            synchronized (this)
-            {
-                size = monitorInfos.size();
-            }
+            int size = monitorInfos.size();
 
         	if (log.isDebugEnabled())
             {
@@ -1079,8 +1075,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             for (int i = size-1; i > -1; i--)
             {
                 DescriptorChangeMonitorInfo monitorInfo;
-                synchronized (this)
-                {
+                
                     if ( started )
                     {
                         monitorInfo = (DescriptorChangeMonitorInfo)monitorInfos.get(i);
@@ -1143,7 +1138,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         }
                     }
                 }
-            }
         }
     }
 
