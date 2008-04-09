@@ -22,8 +22,8 @@
     Simply use the JNDI data source provided via Spring
   -->
   <bean id="JetspeedDS" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="resourceRef" value="false"/>
-    <property name="jndiName" value="java:comp/env/jdbc/jetspeed"/>
+    <property name="resourceRef" value="false" />
+    <property name="jndiName" value="java:comp/env/jdbc/jetspeed" />
   </bean>
 
   <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer" />
@@ -34,10 +34,11 @@
     Its important to get this right otherwise you will be sending the wrong (most likely HSQL)
     flavor of SQL statements to the backend database.
   -->
-  <bean id="PlatformConfigurator" class="org.apache.jetspeed.components.rdbms.ojb.DatabasePlatformConfigurator" init-method="init">
-    <constructor-arg index='0' ref="JetspeedDS"/>
+  <bean id="PlatformConfigurator" class="org.apache.jetspeed.components.rdbms.ojb.DatabasePlatformConfigurator"
+    init-method="init">
+    <constructor-arg index='0' ref="JetspeedDS" />
     <!-- JNDI Name -->
-    <constructor-arg index='1' value="JetspeedDS"/>
+    <constructor-arg index='1' value="JetspeedDS" />
   </bean>
 
   <!-- 	
@@ -56,15 +57,17 @@
   <bean class="org.apache.jetspeed.components.datasource.SchemaAwareDataSourceProxy">
     <meta key="j2:cat" value="schemaAwareDS" />
     <meta key="j2:alias" value="JetspeedDS" />
-    <property name="targetDataSource" ref="dataSourceTarget"/>
-    <property name="schemaSql"><value>${org.apache.jetspeed.database.set.schema.sql}</value></property>
+    <property name="targetDataSource" ref="dataSourceTarget" />
+    <property name="schemaSql">
+      <value>${org.apache.jetspeed.database.set.schema.sql}</value>
+    </property>
   </bean>
 
   <bean class="org.springframework.jndi.JndiObjectFactoryBean">
     <meta key="j2:cat" value="schemaAwareDS" />
     <meta key="j2:alias" value="dataSourceTarget" />
-    <property name="resourceRef" value="false"/>
-    <property name="jndiName" value="java:comp/env/jdbc/jetspeed"/>
+    <property name="resourceRef" value="false" />
+    <property name="jndiName" value="java:comp/env/jdbc/jetspeed" />
   </bean>
 
 
@@ -92,7 +95,7 @@
   <bean class="org.apache.jetspeed.components.rdbms.ojb.ConnectionRepositoryEntry">
     <meta key="j2:cat" value="ojbConnectionRepositoryDS" />
     <meta key="j2:alias" value="JetspeedDS" />
-    <property name="jndiName" value="java:comp/env/jdbc/jetspeed"/>
+    <property name="jndiName" value="java:comp/env/jdbc/jetspeed" />
   </bean>
 
 
@@ -109,10 +112,16 @@
   <bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <meta key="j2:cat" value="jdbcDS" />
     <meta key="j2:alias" value="JetspeedDS" />
-    <property name="driverClassName" value="${org.apache.jetspeed.database.driver}"/>
-    <property name="url"><value>${org.apache.jetspeed.database.url}</value></property>
-    <property name="username"><value>${org.apache.jetspeed.database.user}</value></property>
-    <property name="password"><value>${org.apache.jetspeed.database.password}</value></property>
+    <property name="driverClassName" value="${org.apache.jetspeed.database.driver}" />
+    <property name="url">
+      <value>${org.apache.jetspeed.database.url}</value>
+    </property>
+    <property name="username">
+      <value>${org.apache.jetspeed.database.user}</value>
+    </property>
+    <property name="password">
+      <value>${org.apache.jetspeed.database.password}</value>
+    </property>
   </bean>
 
 </beans>
