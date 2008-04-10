@@ -1308,6 +1308,7 @@
         <module>jetspeed-portal-resources</module>
         <module>jetspeed-commons</module>
         <module>components</module>
+        <module>applications</module>
       </modules>
     </profile>
     <profile>
