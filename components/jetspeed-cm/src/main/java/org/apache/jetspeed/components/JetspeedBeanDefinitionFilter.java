@@ -236,6 +236,16 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
         this.categories = categories;
     }
     
+    public Properties getProperties()
+    {
+        props = new Properties();
+        if (this.props != null)
+        {
+            props.putAll(this.props);
+        }
+        return props;
+    }
+    
     public void init() throws IllegalStateException
     {
         if (!initialized)
