@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.jetspeed.maven.utils.Artifacts;
 import org.apache.jetspeed.maven.utils.DbConnection;
+import org.apache.jetspeed.maven.utils.Serializer;
 import org.apache.jetspeed.maven.utils.SqlScripts;
 import org.apache.jetspeed.maven.utils.UnpackResources;
 import org.apache.maven.plugin.AbstractMojo;
@@ -44,6 +45,11 @@ public class LoadMojo extends AbstractMojo
      * @parameter
      */
     private SqlScripts sql;
+    
+    /**
+     * @parameter
+     */
+    private Serializer seed;
     
     /**
      * @parameter
@@ -99,6 +105,11 @@ public class LoadMojo extends AbstractMojo
             }
             connection.checkSettings(settings);
             sql.execute(connection, getLog());
+        }
+        
+        if (seed != null && seed.isConfigered())
+        {
+            seed.execute(getLog());
         }
     }
 }
