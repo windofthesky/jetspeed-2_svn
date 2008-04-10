@@ -19,6 +19,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="AJAXService" class="org.apache.jetspeed.ajax.AJAXServiceImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <map>
         <entry key="portletRegistry.getPortletApplications">

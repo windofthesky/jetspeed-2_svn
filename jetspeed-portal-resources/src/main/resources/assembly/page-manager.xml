@@ -20,6 +20,7 @@
 
   <!-- PageManager -->
   <bean id="PsmlDocumentHandler" class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
@@ -38,6 +39,7 @@
   </bean>
 
   <bean id="LinkDocumentHandler" class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
@@ -57,6 +59,7 @@
 
   <bean id="FolderMetaDataDocumentHandler"
     class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
@@ -76,6 +79,7 @@
 
   <bean id="PageSecurityDocumentHandler"
     class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
@@ -94,6 +98,7 @@
   </bean>
 
   <bean id="DocumentHandlerFactory" class="org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <map>
         <entry key=".psml">
@@ -113,6 +118,7 @@
   </bean>
 
   <bean id="FolderHandler" class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>${applicationRoot}/WEB-INF/pages</value>
     </constructor-arg>
@@ -126,6 +132,7 @@
 
   <bean id="org.apache.jetspeed.page.PageManager" name="pageManager"
     class="org.apache.jetspeed.page.psml.CastorXmlPageManager">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="IdGenerator" />
     </constructor-arg>
@@ -148,9 +155,16 @@
     </constructor-arg>
   </bean>
 
+  <bean class="org.apache.jetspeed.components.factorybeans.NullReferenceFactoryBean">
+    <meta key="j2:cat" value="noPageManager" />
+    <meta key="j2:alias" value="org.apache.jetspeed.page.PageManager"/>
+    <property name="objectType" value="org.apache.jetspeed.page.PageManager"></property>
+  </bean>
+
   <!-- PortalSite -->
   <bean id="org.apache.jetspeed.portalsite.PortalSite" name="portalSite"
     class="org.apache.jetspeed.portalsite.impl.PortalSiteImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="pageManager" />
     </constructor-arg>

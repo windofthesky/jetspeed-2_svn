@@ -4,6 +4,7 @@
 
   <bean id="org.apache.jetspeed.serializer.JetspeedSerializer" name="JetspeedSerializer"
     class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
+    <meta key="j2:cat" value="default,serializer" />
     <constructor-arg index="0">
       <list>
         <bean class="org.apache.jetspeed.serializer.JetspeedCapabilitiesSerializer">
@@ -51,6 +52,14 @@
         <entry key="process_portal_preferences">
           <value type="java.lang.Boolean">false</value>
         </entry>
+        <!--  following settings are for export -->
+        <entry key="overwrite_existing">
+          <value type="java.lang.Boolean">true</value>
+        </entry>
+        <entry key="backup_before_process">
+          <value type="java.lang.Boolean">true</value>
+        </entry>
+        <entry key="export_indentation" value="  "/>
       </map>
     </constructor-arg>
   </bean>

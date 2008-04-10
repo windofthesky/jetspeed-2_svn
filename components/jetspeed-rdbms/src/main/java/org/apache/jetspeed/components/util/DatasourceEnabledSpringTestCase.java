@@ -61,6 +61,6 @@ public abstract class DatasourceEnabledSpringTestCase extends AbstractSpringTest
 
     protected String getBeanDefinitionFilterCategories()
     {
-        return "jdbcDS";
+        return "default,jdbcDS";
     }
 }

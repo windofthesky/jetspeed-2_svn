@@ -22,6 +22,7 @@
   <!-- Security: Login Module Proxy -->
   <bean id="org.apache.jetspeed.security.LoginModuleProxy"
     class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl">
+    <meta key="j2:cat" value="default,security" />
     <!-- User Manager to construct JAAS subject/principals returned to container -->
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.UserManager" />

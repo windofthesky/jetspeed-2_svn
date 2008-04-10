@@ -20,6 +20,7 @@
 
   <!--CLUSTER NODE COMPONENT-->
   <bean id="org.apache.jetspeed.cluster.NodeManager" class="org.apache.jetspeed.cluster.NodeManagerImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>${applicationRoot}/WEB-INF/cluster_node</value>
       <!--   				<value>target/jetspeed/WEB-INF/cluster_node</value> -->
@@ -32,6 +33,8 @@
   </bean>
 
   <!-- Rule Criterion -->
-  <bean id="NodeInformation" class="org.apache.jetspeed.cluster.NodeInformationImpl" scope="prototype"></bean>
+  <bean id="NodeInformation" class="org.apache.jetspeed.cluster.NodeInformationImpl" scope="prototype">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
 </beans>

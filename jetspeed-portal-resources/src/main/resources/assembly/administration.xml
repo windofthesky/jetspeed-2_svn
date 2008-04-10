@@ -19,6 +19,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <meta key="j2:cat" value="default" />
     <property name="host">
       <value>localhost</value>
     </property>
@@ -36,6 +37,7 @@
   </bean>
 
   <bean id="adminVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="resourceLoaderPath">
       <value>/WEB-INF/templates/</value>
     </property>
@@ -58,6 +60,7 @@
 
   <bean id='PortalAdministrationImpl' init-method="start"
     class='org.apache.jetspeed.administration.PortalAdministrationImpl'>
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.security.UserManager" />
     </constructor-arg>
@@ -85,6 +88,7 @@
   </bean>
 
   <bean id="PortalAdministration" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.administration.PortalAdministration</value>
     </property>
@@ -101,6 +105,7 @@
 
   <bean id="org.apache.jetspeed.security.SecurityAccessController"
     class='org.apache.jetspeed.security.impl.SecurityAccessControllerImpl'>
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
@@ -116,6 +121,7 @@
 
   <bean id='org.apache.jetspeed.administration.PortalAuthenticationConfiguration'
     class='org.apache.jetspeed.administration.PortalAuthenticationConfigurationImpl'>
+    <meta key="j2:cat" value="default" />
 
     <!--  create new session upon authentication -->
     <constructor-arg index='0'>
@@ -135,6 +141,7 @@
 
   <bean id='org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider'
     class='org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProviderImpl'>
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="activeAuthenticationCache" />
     </constructor-arg>

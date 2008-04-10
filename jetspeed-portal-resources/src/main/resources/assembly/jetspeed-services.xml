@@ -20,6 +20,7 @@
 
   <!-- Portlet Services  -->
   <bean id="PortalServices" class="org.apache.jetspeed.services.JetspeedPortletServices">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <map>
         <entry key="PortletRegistryComponent">

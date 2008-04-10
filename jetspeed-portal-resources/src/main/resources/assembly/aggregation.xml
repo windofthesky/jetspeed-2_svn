@@ -20,6 +20,7 @@
 
   <bean id="org.apache.jetspeed.aggregator.PortletTrackingManager"
     class="org.apache.jetspeed.aggregator.impl.PortletTrackingManagerImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="PortletWindowAccessor" />
     </constructor-arg>
@@ -39,6 +40,7 @@
   <!-- Aggregation: Portlet -->
   <bean id="org.apache.jetspeed.aggregator.PortletAggregator"
     class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
     </constructor-arg>
@@ -46,6 +48,7 @@
 
   <bean id="org.apache.jetspeed.aggregator.PortletAggregatorTitleInHeader"
     class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.PortletRendererWithTitleHeader" />
     </constructor-arg>
@@ -54,6 +57,7 @@
   <!-- Portlet Renderer -->
   <bean id="org.apache.jetspeed.aggregator.PortletRenderer"
     class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl" init-method="start" destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
     </constructor-arg>
@@ -89,6 +93,7 @@
   <!-- Portlet Renderer w/title in http response header -->
   <bean id="org.apache.jetspeed.aggregator.PortletRendererWithTitleHeader"
     class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl" init-method="start" destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
     </constructor-arg>
@@ -126,6 +131,7 @@
 
   <bean id="org.apache.jetspeed.aggregator.PageAggregator"
     class="org.apache.jetspeed.aggregator.impl.PageAggregatorImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
     </constructor-arg>
@@ -133,6 +139,7 @@
 
   <bean id="org.apache.jetspeed.aggregator.AsyncPageAggregator"
     class="org.apache.jetspeed.aggregator.impl.AsyncPageAggregatorImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
     </constructor-arg>
@@ -141,6 +148,7 @@
   <!-- The default Worker Monitor -->
   <bean id="org.apache.jetspeed.aggregator.WorkerMonitor" class="org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl"
     init-method="start" destroy-method="stop">
+    <meta key="j2:cat" value="default" />
 
     <constructor-arg index="0">
       <!-- Minimum number of workers to create -->
@@ -193,6 +201,7 @@
   -->
 
   <bean id="HeaderAggregatorPortal" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="portletFactory" />
     </constructor-arg>
@@ -220,6 +229,7 @@
   </bean>
 
   <bean id="HeaderAggregatorDesktop" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="portletFactory" />
     </constructor-arg>

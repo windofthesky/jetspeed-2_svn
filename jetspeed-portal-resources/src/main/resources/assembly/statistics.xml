@@ -21,6 +21,7 @@
   <!-- Statistics Implementation -->
   <bean id="PortalStatistics" class="org.apache.jetspeed.statistics.impl.PortalStatisticsImpl" init-method="springInit"
     destroy-method="springDestroy">
+    <meta key="j2:cat" value="default" />
     <!-- logToCLF -->
     <constructor-arg index='0' type="boolean">
       <value>false</value>
@@ -69,6 +70,7 @@
 
   <!-- Audit Activity Implementation -->
   <bean id="org.apache.jetspeed.audit.AuditActivity" class="org.apache.jetspeed.audit.impl.AuditActivityImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="JetspeedDS" />
     </constructor-arg>

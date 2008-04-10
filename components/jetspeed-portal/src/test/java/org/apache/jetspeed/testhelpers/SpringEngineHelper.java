@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalTestConstants;
+import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.components.jndi.JetspeedTestJNDIComponent;
@@ -67,8 +68,8 @@ public class SpringEngineHelper
         ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(appRoot));        
         servletConfig.setServletContext(servletContent);
         ServletConfigFactoryBean.setServletConfig(servletConfig);
-        
-        SpringComponentManager scm = new SpringComponentManager(null, new String[] {"/WEB-INF/assembly/boot/datasource.xml"}, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
+        JetspeedBeanDefinitionFilter filter = new JetspeedBeanDefinitionFilter("file:"+appRoot+"/WEB-INF/conf/spring-filter.properties", "portal");
+        SpringComponentManager scm = new SpringComponentManager(filter, new String[] {"/WEB-INF/assembly/boot/datasource.xml"}, new String[] {"/WEB-INF/assembly/*.xml"}, servletContent, appRoot );
        
         engine = new JetspeedEngine(config, appRoot, servletConfig, scm );
         Jetspeed.setEngine(engine);

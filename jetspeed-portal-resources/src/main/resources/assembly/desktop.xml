@@ -24,6 +24,7 @@
   -->
 
   <bean id="JetspeedDesktop" class="org.apache.jetspeed.desktop.impl.JetspeedDesktopImpl">
+    <meta key="j2:cat" value="default" />
     <!-- Location of the desktop themes -->
     <constructor-arg index="0">
       <ref bean="DecorationFactory" />

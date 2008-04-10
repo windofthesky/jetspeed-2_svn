@@ -21,6 +21,7 @@
   <!-- Single Source User Info -->
   <bean id="org.apache.jetspeed.userinfo.UserInfoManager"
     class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.UserManager" />
     </constructor-arg>

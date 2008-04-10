@@ -23,7 +23,9 @@
   -->
 
   <!-- Transaction manager for a single OJB PersistenceBroker (alternative to JTA) -->
-  <bean id="transactionManager" class="org.springframework.orm.ojb.PersistenceBrokerTransactionManager" />
+  <bean id="transactionManager" class="org.springframework.orm.ojb.PersistenceBrokerTransactionManager">
+    <meta key="j2:cat" value="default,transaction" />
+  </bean>
 
   <!-- Transaction manager that delegates to JTA (for a transactional JNDI DataSource) -->
   <!--
@@ -38,6 +40,7 @@
   -->
   <bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
     abstract="true">
+    <meta key="j2:cat" value="default,transaction" />
     <property name="transactionManager">
       <ref bean="transactionManager" />
     </property>

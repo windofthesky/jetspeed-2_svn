@@ -20,6 +20,7 @@
 
   <bean id="localizationValve" class="org.apache.jetspeed.localization.impl.LocalizationValveImpl"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value><!--@defaultLanguage--><!--defaultLanguage@-->
       </value>
@@ -28,6 +29,7 @@
 
   <bean id="capabilityValve" class="org.apache.jetspeed.capabilities.impl.CapabilityValveImpl"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.capabilities.Capabilities" />
     </constructor-arg>
@@ -40,6 +42,7 @@
   -->
   <bean id="capabilityCustomizerValve" class="org.apache.jetspeed.capabilities.impl.CapabilityCustomizerValveImpl"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.capabilities.Capabilities" />
     </constructor-arg>
@@ -58,12 +61,14 @@
 
   <bean id="portalURLValve" class="org.apache.jetspeed.container.url.impl.PortalURLValveImpl"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="NavigationalStateComponent" />
     </constructor-arg>
   </bean>
 
   <bean id="securityValve" class="org.apache.jetspeed.security.impl.SecurityValveImpl" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.profiler.Profiler" />
     </constructor-arg>
@@ -79,10 +84,13 @@
   </bean>
 
   <bean id="passwordCredentialValve" class="org.apache.jetspeed.security.impl.PasswordCredentialValveImpl"
-    init-method="initialize" />
+    init-method="initialize">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="loginValidationValve" class="org.apache.jetspeed.security.impl.LoginValidationValveImpl"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <!-- remove (from the session) the following list of session attributes upon login -->
     <constructor-arg index="0">
       <list>
@@ -91,6 +99,7 @@
     </constructor-arg>
   </bean>
   <bean id="profilerValve" class="org.apache.jetspeed.profiler.impl.ProfilerValveImpl" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.profiler.Profiler" />
     </constructor-arg>
@@ -122,6 +131,7 @@
     below
   -->
   <bean id="createPageValve" class="org.apache.jetspeed.profiler.impl.CreatePageValveImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="PortletActionSecurityBehavior" />
     </constructor-arg>
@@ -133,6 +143,7 @@
     below
   -->
   <bean id="createUserTemplatePagesValve" class="org.apache.jetspeed.profiler.impl.CreateUserTemplatePagesValveImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.profiler.Profiler" />
     </constructor-arg>
@@ -170,12 +181,16 @@
     : "false" (enables it and sets the previous page id in session)
   -->
   <bean id="pageHistoryValve" class="org.apache.jetspeed.container.PageHistoryValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <property name="valveDisabled" value="true" />
   </bean>
 
-  <bean id="containerValve" class="org.apache.jetspeed.container.ContainerValve" init-method="initialize" />
+  <bean id="containerValve" class="org.apache.jetspeed.container.ContainerValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="actionValve" class="org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
     </constructor-arg>
@@ -197,6 +212,7 @@
 
   <bean id="desktopActionValve" class="org.apache.jetspeed.pipeline.valve.impl.ActionValveImpl"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.DesktopPortletContainer" />
     </constructor-arg>
@@ -217,6 +233,7 @@
   </bean>
 
   <bean id="desktopEncoderRedirectValve" class="org.apache.jetspeed.desktop.impl.DesktopEncoderRedirectValveImpl">
+    <meta key="j2:cat" value="default" />
     <!-- /desktop pipeline -->
     <constructor-arg index="0">
       <value>/desktop</value>
@@ -228,18 +245,21 @@
   </bean>
 
   <bean id="portletValve" class="org.apache.jetspeed.aggregator.PortletValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.PortletAggregator" />
     </constructor-arg>
   </bean>
 
   <bean id="portletValveTitleInHeader" class="org.apache.jetspeed.aggregator.PortletValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.PortletAggregatorTitleInHeader" />
     </constructor-arg>
   </bean>
 
   <bean id="fileServerValve" class="org.apache.jetspeed.aggregator.FileServerValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <!-- portlet -->
     <constructor-arg index="0">
       <value>demo::ContentViewer</value>
@@ -251,6 +271,7 @@
   </bean>
 
   <bean id="aggregatorValve" class="org.apache.jetspeed.aggregator.AggregatorValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.PageAggregator" />
     </constructor-arg>
@@ -258,6 +279,7 @@
 
   <bean id="headerAggregatorValvePortal" class="org.apache.jetspeed.aggregator.HeaderAggregatorValve"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="HeaderAggregatorPortal" />
     </constructor-arg>
@@ -265,15 +287,18 @@
 
   <bean id="headerAggregatorValveDesktop" class="org.apache.jetspeed.aggregator.HeaderAggregatorValve"
     init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="HeaderAggregatorDesktop" />
     </constructor-arg>
   </bean>
 
   <bean id="cleanUpValve" class="org.apache.jetspeed.pipeline.valve.impl.CleanupValveImpl" init-method="initialize">
+    <meta key="j2:cat" value="default" />
   </bean>
 
   <bean id="AJAXValve" class="org.apache.jetspeed.ajax.AJAXValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="AJAXService" />
     </constructor-arg>
@@ -283,6 +308,7 @@
   </bean>
 
   <bean id="DecorationValve" class="org.apache.jetspeed.decoration.DecorationValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="DecorationFactory" />
     </constructor-arg>
@@ -320,18 +346,21 @@
   </bean>
 
   <bean id="loginViewValve" class="org.apache.jetspeed.login.impl.LoginJSPViewValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>/WEB-INF/templates/login</value>
     </constructor-arg>
   </bean>
 
   <bean id="desktopValve" class="org.apache.jetspeed.desktop.impl.DesktopValveImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="JetspeedDesktop" />
     </constructor-arg>
   </bean>
 
   <bean id="resourceValve" class="org.apache.jetspeed.resource.ResourceValveImpl" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
     </constructor-arg>
@@ -341,9 +370,12 @@
   </bean>
 
   <bean id="cleanupPortalURLValve"
-    class="org.apache.jetspeed.container.url.impl.CleanPathInfoEncodedNavStateFromPortalURLValve" />
+    class="org.apache.jetspeed.container.url.impl.CleanPathInfoEncodedNavStateFromPortalURLValve">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="jetspeed-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>JetspeedPipeline</value>
     </constructor-arg>
@@ -376,6 +408,7 @@
   </bean>
 
   <bean id="configure-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>ConfigurePipeline</value>
     </constructor-arg>
@@ -400,6 +433,7 @@
   </bean>
 
   <bean id="login-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>LoginPipeline</value>
     </constructor-arg>
@@ -413,6 +447,7 @@
   </bean>
 
   <bean id="action-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>ActionPipeline</value>
     </constructor-arg>
@@ -428,6 +463,7 @@
   </bean>
 
   <bean id="desktop-action-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>DesktopActionPipeline</value>
     </constructor-arg>
@@ -445,6 +481,7 @@
   </bean>
 
   <bean id="desktop-render-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <!-- same as /portlet pipeline except for the addition of the desktopEncoderRedirectValve -->
     <constructor-arg>
       <value>DesktopRenderPipeline</value>
@@ -465,6 +502,7 @@
   </bean>
 
   <bean id="portlet-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>PortletPipeline</value>
     </constructor-arg>
@@ -482,6 +520,7 @@
   </bean>
 
   <bean id="ajax-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>AjaxPipeline</value>
     </constructor-arg>
@@ -500,6 +539,7 @@
   </bean>
 
   <bean id="ajax-direct-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>AjaxDirectPipeline</value>
     </constructor-arg>
@@ -517,6 +557,7 @@
   </bean>
 
   <bean id="fileserver-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>FileServerPipeline</value>
     </constructor-arg>
@@ -534,6 +575,7 @@
   </bean>
 
   <bean id="desktop-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>DesktopPipeline</value>
     </constructor-arg>
@@ -551,6 +593,7 @@
   </bean>
 
   <bean id="dtconfigure-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>DesktopConfigurePipeline</value>
     </constructor-arg>
@@ -569,6 +612,7 @@
 
 
   <bean id='pipeline-map' class='java.util.HashMap'>
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <map>
         <entry key='/portlet'>
@@ -613,6 +657,8 @@
     </constructor-arg>
   </bean>
 
-  <bean id="debugValve" class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl" />
+  <bean id="debugValve" class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
 </beans>

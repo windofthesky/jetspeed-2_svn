@@ -24,6 +24,7 @@
   <!--  /desktop header configuration  -->
   <!--  *****  -->
   <bean id="HeaderResourceConfigurationDesktop" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <entry key="dojo">
@@ -57,6 +58,7 @@
   </bean>
 
   <bean id="DesktopConfiguration" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <!-- layout and portlet decorations -->
@@ -185,6 +187,7 @@
   </bean>
 
   <bean id="DojoConfigurationDesktop" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <entry key="dojo.enable">
@@ -257,6 +260,7 @@
   </bean>
 
   <bean id="DojoRequiresDesktop" class="java.util.ArrayList">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <list>
         <value>dojo.lang.*</value>
@@ -271,6 +275,7 @@
   </bean>
 
   <bean id="DojoRequiresModulesDesktop" class="java.util.ArrayList">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <list>
         <value>jetspeed.desktop.core</value>
@@ -288,6 +293,7 @@
   <!--  /portal header configuration  -->
   <!--  *****  -->
   <bean id="HeaderResourceConfigurationPortal" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <entry key="dojo">
@@ -314,6 +320,7 @@
     </constructor-arg>
   </bean>
   <bean id="DojoConfigurationPortal" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <entry key="dojo.enable">
@@ -393,6 +400,7 @@
   <!--  shared /portal and /desktop header configuration  -->
   <!--  *****  -->
   <bean id="HeaderResourceRegistry" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <!-- override of content for header fragments added with specified key -->
@@ -444,6 +452,7 @@
     base-tag
   -->
   <bean id="HeaderTypes" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <entry key="header.dojo.style.bodyexpand">

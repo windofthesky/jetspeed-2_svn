@@ -20,6 +20,7 @@
 
   <!-- Security: User Manager -->
   <bean id="org.apache.jetspeed.security.UserManager" class="org.apache.jetspeed.security.impl.UserManagerImpl">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.SecurityProvider" />
     </constructor-arg>
@@ -27,6 +28,7 @@
 
   <!-- Security: Group Manager -->
   <bean id="org.apache.jetspeed.security.GroupManager" class="org.apache.jetspeed.security.impl.GroupManagerImpl">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.SecurityProvider" />
     </constructor-arg>
@@ -34,6 +36,7 @@
 
   <!-- Security: Role Manager -->
   <bean id="org.apache.jetspeed.security.RoleManager" class="org.apache.jetspeed.security.impl.RoleManagerImpl">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.SecurityProvider" />
     </constructor-arg>
@@ -41,9 +44,12 @@
 
   <!-- Security: Permission Manager -->
   <bean id="org.apache.jetspeed.security.impl.PermissionManagerImpl"
-    class="org.apache.jetspeed.security.impl.PermissionManagerImpl" />
+    class="org.apache.jetspeed.security.impl.PermissionManagerImpl">
+    <meta key="j2:cat" value="default,security" />
+  </bean>
 
   <bean id="org.apache.jetspeed.security.PermissionManager" parent="baseTransactionProxy" name="permissionManager">
+    <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.PermissionManager</value>
     </property>

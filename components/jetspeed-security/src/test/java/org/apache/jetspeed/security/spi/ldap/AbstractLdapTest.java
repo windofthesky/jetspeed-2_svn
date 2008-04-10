@@ -165,6 +165,6 @@ public abstract class AbstractLdapTest extends AbstractSpringTestCase
 
     protected String getBeanDefinitionFilterCategories()
     {
-        return "jdbcDS";
+        return "default,jdbcDS";
     }
 }

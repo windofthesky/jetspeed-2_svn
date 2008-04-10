@@ -29,6 +29,7 @@
   -->
 
   <bean id="EnableCreateUserPagesFromRolesOnEdit" class="java.lang.Boolean">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>true</value>
     </constructor-arg>
@@ -36,6 +37,7 @@
 
   <bean id="PortletActionSecurityBehavior"
     class="org.apache.jetspeed.layout.impl.PortletActionSecurityConstraintsBehavior">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
@@ -45,6 +47,7 @@
   </bean>
 
   <bean id="RolesSecurityBehavior" class="org.apache.jetspeed.layout.impl.RolesSecurityBehavior">
+    <meta key="j2:cat" value="default" />
     <!-- List of required roles (comma-separated) 
       Only need to match one of the listed  roles to pass security requirements
     -->
@@ -56,6 +59,7 @@
   </bean>
 
   <bean id="AjaxMove" class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/xmove.vm</value>
     </constructor-arg>
@@ -77,6 +81,7 @@
   </bean>
 
   <bean id="AjaxMovePortletAbsolute" class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/move.vm</value>
     </constructor-arg>
@@ -98,6 +103,7 @@
   </bean>
 
   <bean id="AjaxMovePortletLeft" class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/move.vm</value>
     </constructor-arg>
@@ -119,6 +125,7 @@
   </bean>
 
   <bean id="AjaxMovePortletRight" class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/move.vm</value>
     </constructor-arg>
@@ -140,6 +147,7 @@
   </bean>
 
   <bean id="AjaxMovePortletUp" class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/move.vm</value>
     </constructor-arg>
@@ -161,6 +169,7 @@
   </bean>
 
   <bean id="AjaxMovePortletDown" class="org.apache.jetspeed.layout.impl.MovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/move.vm</value>
     </constructor-arg>
@@ -182,6 +191,7 @@
   </bean>
 
   <bean id="AjaxAddPortlet" class="org.apache.jetspeed.layout.impl.AddPortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/add.vm</value>
     </constructor-arg>
@@ -203,6 +213,7 @@
   </bean>
 
   <bean id="AjaxRemovePortlet" class="org.apache.jetspeed.layout.impl.RemovePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/remove.vm</value>
     </constructor-arg>
@@ -221,6 +232,7 @@
   </bean>
 
   <bean id="AjaxGetPortlets" class="org.apache.jetspeed.layout.impl.GetPortletsAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getportlets.vm</value>
     </constructor-arg>
@@ -245,6 +257,7 @@
   </bean>
 
   <bean id="AjaxGetPage" class="org.apache.jetspeed.layout.impl.GetPageAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/psml.vm</value>
     </constructor-arg>
@@ -266,6 +279,7 @@
   </bean>
 
   <bean id="AjaxGetPages" class="org.apache.jetspeed.layout.impl.GetPagesAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getpages.vm</value>
     </constructor-arg>
@@ -281,6 +295,7 @@
   </bean>
 
   <bean id="AjaxGetFolder" class="org.apache.jetspeed.layout.impl.GetFolderAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getfolder.vm</value>
     </constructor-arg>
@@ -296,6 +311,7 @@
   </bean>
 
   <bean id="AjaxGetLink" class="org.apache.jetspeed.layout.impl.GetLinkAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getlink.vm</value>
     </constructor-arg>
@@ -311,6 +327,7 @@
   </bean>
 
   <bean id="AjaxGetFolderList" class="org.apache.jetspeed.layout.impl.GetFolderListAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getfolderlist.vm</value>
     </constructor-arg>
@@ -325,6 +342,7 @@
     </constructor-arg>
   </bean>
   <bean id="AjaxGetFoldersList" class="org.apache.jetspeed.layout.impl.GetFoldersListAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getfolders.vm</value>
     </constructor-arg>
@@ -340,6 +358,7 @@
   </bean>
 
   <bean id="AjaxGetThemes" class="org.apache.jetspeed.layout.impl.GetThemesAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getthemes.vm</value>
     </constructor-arg>
@@ -355,6 +374,7 @@
   </bean>
 
   <bean id="AjaxChangeWindow" class="org.apache.jetspeed.layout.impl.ChangePortletAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/window.vm</value>
     </constructor-arg>
@@ -376,6 +396,7 @@
   </bean>
 
   <bean id="AjaxGetActions" class="org.apache.jetspeed.layout.impl.GetPortletActionsAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/getactions.vm</value>
     </constructor-arg>
@@ -397,6 +418,7 @@
   </bean>
 
   <bean id="AjaxGetMenus" class="org.apache.jetspeed.layout.impl.GetMenusAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/menu.vm</value>
     </constructor-arg>
@@ -409,6 +431,7 @@
   </bean>
 
   <bean id="AjaxGetMenu" class="org.apache.jetspeed.layout.impl.GetMenuAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/menu.vm</value>
     </constructor-arg>
@@ -421,6 +444,7 @@
   </bean>
 
   <bean id="AjaxSecurityPermissions" class="org.apache.jetspeed.layout.impl.SecurityPermissionAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/permissions.vm</value>
     </constructor-arg>
@@ -449,6 +473,7 @@
   </bean>
 
   <bean id="AjaxSecurityConstraints" class="org.apache.jetspeed.layout.impl.SecurityConstraintsAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/constraints.vm</value>
     </constructor-arg>
@@ -464,6 +489,7 @@
   </bean>
 
   <bean id="AjaxUpdateFolder" class="org.apache.jetspeed.layout.impl.UpdateFolderAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/update.vm</value>
     </constructor-arg>
@@ -479,6 +505,7 @@
   </bean>
 
   <bean id="AjaxUpdatePage" class="org.apache.jetspeed.layout.impl.UpdatePageAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/update.vm</value>
     </constructor-arg>
@@ -500,6 +527,7 @@
   </bean>
 
   <bean id="AjaxUpdateLink" class="org.apache.jetspeed.layout.impl.UpdateLinkAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/update.vm</value>
     </constructor-arg>
@@ -515,6 +543,7 @@
   </bean>
 
   <bean id="AjaxGetUserInformation" class="org.apache.jetspeed.layout.impl.GetUserInformationAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/userinfo.vm</value>
     </constructor-arg>
@@ -541,6 +570,7 @@
   -->
 
   <bean id="AjaxGetUserList" class="org.apache.jetspeed.layout.impl.GetUserListAction">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/userlist.vm</value>
     </constructor-arg>
@@ -564,6 +594,7 @@
     </constructor-arg>
   </bean>
   <bean id="AjaxJetspeedSchemaExportObject" class="org.apache.jetspeed.layout.impl.ExportJetspeedSchema">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/jetspeedSchema.vm</value>
     </constructor-arg>
@@ -585,6 +616,7 @@
   </bean>
 
   <bean id="AjaxExportObject" class="org.apache.jetspeed.layout.impl.ExportObject">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org/apache/jetspeed/layout/ajax-xml/export.vm</value>
     </constructor-arg>
@@ -605,6 +637,7 @@
     </constructor-arg>
   </bean>
   <bean id="AjaxActionMap" class="java.util.HashMap">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <map>
         <entry key="move">
@@ -699,6 +732,7 @@
   </bean>
 
   <bean id="AjaxRequestService" class="org.apache.jetspeed.ajax.AjaxRequestServiceImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="AjaxActionMap" />
     </constructor-arg>
@@ -708,6 +742,7 @@
   </bean>
 
   <bean id="AjaxVelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="velocityProperties">
       <props>
         <!-- use webapp-logging CommonsLoggingLog4JLogSystem for logging through IsolatedLog4JLogger -->
@@ -730,6 +765,7 @@
   </bean>
 
   <bean id="layoutValve" class="org.apache.jetspeed.layout.impl.LayoutValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="AjaxRequestService" />
     </constructor-arg>

@@ -20,12 +20,14 @@
 
   <!-- Commons configuration object generated from jetspeed.properties -->
   <bean id="portal_configuration" class="org.apache.commons.configuration.PropertiesConfiguration">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${applicationRoot}/WEB-INF/conf/jetspeed.properties</value>
     </constructor-arg>
   </bean>
 
   <bean id="PortalConfiguration" class="org.apache.jetspeed.administration.PortalConfigurationImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="portal_configuration" />
     </constructor-arg>
@@ -33,11 +35,14 @@
 
   <!-- ServletConfig -->
   <bean id="javax.servlet.ServletConfig" name="ServletConfig"
-    class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean" />
+    class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <!-- Template Locators -->
   <bean id="TemplateLocator" class="org.apache.jetspeed.locator.JetspeedTemplateLocator" init-method="start"
     destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <list>
         <value>${applicationRoot}/WEB-INF/templates</value>
@@ -50,6 +55,7 @@
 
   <bean id="DecorationLocator" class="org.apache.jetspeed.locator.JetspeedTemplateLocator" init-method="start"
     destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <list>
         <value>${applicationRoot}/decorations</value>
@@ -61,6 +67,7 @@
   </bean>
 
   <bean id="Powertools" class="org.apache.jetspeed.velocity.JetspeedPowerToolFactory">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>org.apache.jetspeed.velocity.JetspeedPowerToolImpl</value>
     </constructor-arg>
@@ -76,6 +83,7 @@
   <!-- Request Context -->
   <bean id="org.apache.jetspeed.request.RequestContextComponent"
     class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
+    <meta key="j2:cat" value="default,registry" />
     <constructor-arg index='0'>
       <value>org.apache.jetspeed.request.JetspeedRequestContext</value>
     </constructor-arg>
@@ -86,10 +94,17 @@
       <ref bean="RequestContextObjects" />
     </constructor-arg>
   </bean>
+  
+  <bean class="org.apache.jetspeed.components.factorybeans.NullReferenceFactoryBean">
+    <meta key="j2:cat" value="noRequestContext" />
+    <meta key="j2:alias" value="org.apache.jetspeed.request.RequestContextComponent"/>
+    <property name="objectType" value="org.apache.jetspeed.request.RequestContextComponent"></property>
+  </bean>
 
   <!-- Portlet Window Component -->
   <bean id="PortletWindowAccessor" class="org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl"
     name="org.apache.jetspeed.container.window.PortletWindowAccessor">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
     </constructor-arg>
@@ -109,10 +124,13 @@
   </bean>
 
   <!-- Pluto Portlet Container -->
-  <bean id="Pluto" class="org.apache.pluto.PortletContainerImpl" />
+  <bean id="Pluto" class="org.apache.pluto.PortletContainerImpl">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <!-- Desktop Pluto Portlet Container -->
   <bean id="DesktopPluto" class="org.apache.jetspeed.container.DesktopPortletContainerImpl">
+    <meta key="j2:cat" value="default" />
 
     <constructor-arg index='0'>
       <value>/desktop</value>
@@ -130,6 +148,7 @@
   <!-- settings for this bean will start the underlying pluto portlet container -->
   <bean id="org.apache.pluto.PortletContainer" class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper"
     init-method="start" destroy-method="shutdown">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="Pluto" />
     </constructor-arg>
@@ -155,6 +174,7 @@
   <bean id="org.apache.pluto.DesktopPortletContainer"
     class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper" init-method="start"
     destroy-method="shutdown">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="DesktopPluto" />
     </constructor-arg>
@@ -179,6 +199,7 @@
   <!-- ${applicationRoot} is acutally set as a system property via the SpringEngine -->
 
   <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <meta key="j2:cat" value="default,springProperties" />
     <property name="locations">
       <list>
         <value>file:///${applicationRoot}/WEB-INF/conf/jetspeed.properties</value>
@@ -193,11 +214,13 @@
   <!-- HeaderResource Factory -->
   <bean id="org.apache.jetspeed.headerresource.HeaderResourceFactory"
     class="org.apache.jetspeed.headerresource.impl.HeaderResourceFactoryImpl">
+    <meta key="j2:cat" value="default" />
   </bean>
 
   <!-- Security: Session Manager -->
   <bean id="org.apache.jetspeed.container.session.PortalSessionsManager"
     class="org.apache.jetspeed.container.session.PortalSessionsManagerImpl">
+    <meta key="j2:cat" value="default" />
     <!-- By default force invalidate portal and portlet applications when a user logs out (or a session timesout)
       For Jetty 6.x which does that already automatically set to false to prevent ConcurrentModificationException
       see https://issues.apache.org/jira/browse/JS2-735

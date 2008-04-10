@@ -22,17 +22,21 @@
 
   <!-- require a non-empty password -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator"
-    class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator" />
-  <!-- UNCOMMENT TO TURN ON Regex-based password validation. The pattern below gives:
-    * Must be at least 6 characters
-    * Must contain at least one one lower case letter, one upper case letter, one digit and one special character
-    * Valid special characters are @#$%^&+=
-    <constructor-arg index="1"><value><![CDATA[^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$]]></value></constructor-arg>       
-  -->
+    class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator">
+    <meta key="j2:cat" value="default,security" />
+
+    <!-- UNCOMMENT TO TURN ON Regex-based password validation. The pattern below gives:
+      * Must be at least 6 characters
+      * Must contain at least one one lower case letter, one upper case letter, one digit and one special character
+      * Valid special characters are @#$%^&+=
+      <constructor-arg index="1"><value><![CDATA[^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$]]></value></constructor-arg>       
+    -->
+  </bean>
 
   <!-- MessageDigest encode passwords using SHA-1 -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"
     class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <value>SHA-1</value>
     </constructor-arg>
@@ -49,6 +53,7 @@
 
   <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider"
     class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator" />
     </constructor-arg>
@@ -98,6 +103,7 @@
   <!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler -->
   <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
     class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <list>
         <!-- enforce an invalid preset password value in the persisent store is required to be changed -->
@@ -112,6 +118,7 @@
   <!-- Security SPI: CredentialHandler -->
   <bean id="org.apache.jetspeed.security.spi.CredentialHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
@@ -128,6 +135,7 @@
     may demarcate its own transactions -->
   <bean id="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl"
     class="org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
@@ -135,6 +143,7 @@
 
   <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" parent="baseTransactionProxy"
     name="userSecurityHandler">
+    <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.spi.UserSecurityHandler</value>
     </property>

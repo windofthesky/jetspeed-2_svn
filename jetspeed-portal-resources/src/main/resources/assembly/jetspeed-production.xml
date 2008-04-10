@@ -21,6 +21,7 @@
   <!-- Production configuration holds properties that can be configured at runtime by system administrator -->
   <!-- NOTE: you will probably want to put the property file OUTSIDE the web application -->
   <bean id="ProductionConfiguration" class="org.apache.commons.configuration.PropertiesConfiguration">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${applicationRoot}/WEB-INF/conf/jetspeed-production.properties</value>
     </constructor-arg>

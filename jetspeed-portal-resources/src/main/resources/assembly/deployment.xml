@@ -26,6 +26,7 @@
   <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager"
     class="org.apache.jetspeed.tools.pamanager.servletcontainer.TomcatManager" init-method="start"
     destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>${autodeployment.catalina.base}</value>
     </constructor-arg>
@@ -46,9 +47,13 @@
     </constructor-arg>
   </bean>
 
-  <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory" />
+  <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory">
+    <meta key="j2:cat" value="default" />
+  </bean>
+
   <bean id="PAM" class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" init-method="start"
     destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="portletFactory" />
     </constructor-arg>
@@ -103,6 +108,7 @@
 
   <!-- Portlet Application and Decorator deployment event listeners -->
   <bean id="portletAppDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="PAM" />
     </constructor-arg>
@@ -125,8 +131,10 @@
   </bean>
   <bean id="decoratorDeploymentRegistry"
     class="org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl">
+    <meta key="j2:cat" value="default" />
   </bean>
   <bean id="decoratorDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${applicationRoot}/decorations</value>
     </constructor-arg>
@@ -138,6 +146,7 @@
   -->
   <bean id="deploymentManager" class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" init-method="start"
     destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${autodeployment.staging.dir},${autodeployment.staging.dir}/local</value>
     </constructor-arg>

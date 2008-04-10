@@ -109,7 +109,7 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
                 cache.put(files[ix], testData);
             }
 
-            assertTrue(cache.getSize() == 31);
+            assertTrue(cache.getSize() == 32);
 
             dumpCache(cache.getIterator());
 

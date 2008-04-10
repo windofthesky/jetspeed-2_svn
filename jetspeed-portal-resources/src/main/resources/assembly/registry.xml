@@ -20,6 +20,7 @@
 
   <!-- Portlet Factory -->
   <bean id="portletFactory" class="org.apache.jetspeed.factory.JetspeedPortletFactory">
+    <meta key="j2:cat" value="default,registry" />
     <!-- If the following constructor-arg is set to true, 
       proxy instances will switch config mode to built-in custom config mode portlet. -->
     <constructor-arg index="0">
@@ -39,6 +40,7 @@
   <!-- Portlet Registry DAO-->
   <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry"
     init-method="init">
+    <meta key="j2:cat" value="default,registry" />
 
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/registry_repository.xml</value>
@@ -62,6 +64,7 @@
 
   <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry"
     parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,registry" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
     </property>
@@ -94,6 +97,7 @@
 
   <bean id="portletEntityAccessImpl"
     class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess">
+    <meta key="j2:cat" value="default,registry" />
     <constructor-arg>
       <ref bean="portletRegistry" />
     </constructor-arg>
@@ -118,6 +122,7 @@
 
   <bean id="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" parent="baseTransactionProxy"
     name="portletEntityAccess">
+    <meta key="j2:cat" value="default,registry" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent</value>
     </property>
@@ -145,6 +150,7 @@
 
   <!-- Inject Portlet Entity Proxy into Portlet Entity impl -->
   <bean id="injectEntityAccessProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default,registry" />
     <property name="targetObject">
       <ref bean="portletEntityAccessImpl" />
     </property>

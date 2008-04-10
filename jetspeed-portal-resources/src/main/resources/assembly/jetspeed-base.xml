@@ -21,6 +21,7 @@
   <!-- ID Generator -->
   <bean id="IdGenerator" class="org.apache.jetspeed.idgenerator.JetspeedIdGenerator" init-method="start"
     destroy-method="stop">
+    <meta key="j2:cat" value="default" />
     <!-- ID Start value -->
     <constructor-arg index="0">
       <value>65536</value>
@@ -38,6 +39,7 @@
   <!-- Page File Cache -->
   <bean id="PageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner"
     destroy-method="stopFileScanner">
+    <meta key="j2:cat" value="default" />
     <!-- Scan rate for changes in cached files on the file system -->
     <constructor-arg index="0">
       <value>10</value>

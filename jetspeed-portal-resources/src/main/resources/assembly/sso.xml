@@ -21,12 +21,14 @@
   <!-- SSO Implementation -->
   <bean id="PersistenceBrokerSSOProvider" class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider"
     init-method="init">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/sso_repository.xml</value>
     </constructor-arg>
   </bean>
 
   <bean id="org.apache.jetspeed.sso.SSOProvider" parent="baseTransactionProxy" name="ssoProvider">
+    <meta key="j2:cat" value="default" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.sso.SSOProvider</value>
     </property>

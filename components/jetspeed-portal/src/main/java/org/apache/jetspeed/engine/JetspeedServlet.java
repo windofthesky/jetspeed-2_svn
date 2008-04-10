@@ -39,6 +39,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKeyGenerator;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.container.session.PortalSessionsManager;
@@ -312,11 +313,13 @@ implements JetspeedEngineConstants, HttpSessionListener
         ServletConfigFactoryBean.setServletConfig(servletConfig);
         final String assemblyDir = configuration.getString("assembly.dir","/WEB-INF/assembly");
         final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
+        String springFilterKey = configuration.getString("spring.filter.key", "portal");
                     
         String[] bootConfigs = new String[] {"/WEB-INF/assembly/boot/*.xml"};
         String[] appConfigs =  new String[] {assemblyDir+"/*"+assemblyFileExtension, assemblyDir+"/override/*"+assemblyFileExtension};
         ServletContext servletContext = servletConfig.getServletContext();
-        SpringComponentManager cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContext, appRoot);      
+        JetspeedBeanDefinitionFilter filter = new JetspeedBeanDefinitionFilter("file:"+appRoot+"/WEB-INF/conf/spring-filter.properties", springFilterKey);
+        SpringComponentManager cm = new SpringComponentManager(filter, bootConfigs, appConfigs, servletContext, appRoot);      
         
         return cm;        
     }

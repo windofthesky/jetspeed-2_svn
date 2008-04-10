@@ -22,6 +22,7 @@
   <!-- Security SPI: RoleSecurityHandler -->
   <bean id="org.apache.jetspeed.security.spi.RoleSecurityHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultRoleSecurityHandler">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
@@ -30,6 +31,7 @@
   <!-- Security SPI: GroupSecurityHandler -->
   <bean id="org.apache.jetspeed.security.spi.GroupSecurityHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultGroupSecurityHandler">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
@@ -38,6 +40,7 @@
   <!-- Security SPI: SecurityMappingHandler -->
   <bean id="org.apache.jetspeed.security.spi.SecurityMappingHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultSecurityMappingHandler">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>

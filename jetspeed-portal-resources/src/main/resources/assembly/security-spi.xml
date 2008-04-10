@@ -22,6 +22,7 @@
   <!-- Security SPI: CommonQueries -->
   <bean id="org.apache.jetspeed.security.spi.impl.SecurityAccessImpl"
     class="org.apache.jetspeed.security.spi.impl.SecurityAccessImpl" init-method="init">
+    <meta key="j2:cat" value="default,security" />
     <constructor-arg>
       <value>JETSPEED-INF/ojb/security_repository.xml</value>
     </constructor-arg>
@@ -29,6 +30,7 @@
 
   <bean id="org.apache.jetspeed.security.spi.SecurityAccess" parent="baseTransactionProxy"
     name="SecurityCommonQueries">
+    <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.spi.SecurityAccess</value>
     </property>

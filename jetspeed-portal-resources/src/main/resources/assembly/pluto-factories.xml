@@ -19,14 +19,18 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="JetspeedNamespaceMapper" class="org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <value>js_</value>
     </constructor-arg>
   </bean>
 
-  <bean id="LocalPortletInvokerFactory" class="org.apache.jetspeed.container.invoker.LocalPortletInvokerFactory" />
+  <bean id="LocalPortletInvokerFactory" class="org.apache.jetspeed.container.invoker.LocalPortletInvokerFactory">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="ServletPortletInvokerFactory" class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="PortletRequestResponseUnwrapper" />
     </constructor-arg>
@@ -38,9 +42,12 @@
     For example, the real request object of a servlet container can be decorated because it is not thread-safe under Jetspeed parallel rendering mode.
   -->
   <bean id="PortletRequestResponseUnwrapper"
-    class="org.apache.jetspeed.container.invoker.DefaultPortletRequestResponseUnwrapper" />
+    class="org.apache.jetspeed.container.invoker.DefaultPortletRequestResponseUnwrapper">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="javax.portlet.ActionRequest" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.ActionRequestFactoryImpl</value>
     </property>
@@ -50,6 +57,7 @@
   </bean>
 
   <bean id="javax.portlet.RenderRequest" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.RenderRequestFactoryImpl</value>
     </property>
@@ -66,6 +74,7 @@
   </bean>
 
   <bean id="javax.portlet.RenderResponse" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.RenderResponseFactoryImpl</value>
     </property>
@@ -75,6 +84,7 @@
   </bean>
 
   <bean id="javax.portlet.PortletSession" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.PortletSessionFactoryImpl</value>
     </property>
@@ -84,6 +94,7 @@
   </bean>
 
   <bean id="javax.portlet.PortletConfig" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.PortletConfigFactoryImpl</value>
     </property>
@@ -93,6 +104,7 @@
   </bean>
 
   <bean id="javax.portlet.PortletContext" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.PortletContextFactoryImpl</value>
     </property>
@@ -102,6 +114,7 @@
   </bean>
 
   <bean id="javax.portlet.PortalContext" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.jetspeed.PortalContextFactoryImpl</value>
     </property>
@@ -111,6 +124,7 @@
   </bean>
 
   <bean id="javax.portlet.ActionResponse" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.ActionResponseFactoryImpl</value>
     </property>
@@ -120,6 +134,7 @@
   </bean>
 
   <bean id="javax.portlet.PortletURL" class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.jetspeed.container.url.impl.PortletURLFactoryImpl</value>
     </property>
@@ -130,6 +145,7 @@
 
   <bean id="javax.portlet.PortletPreferences"
     class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.pluto.factory.impl.PortletPreferencesFactoryImpl</value>
     </property>
@@ -149,6 +165,7 @@
 
   <bean id="org.apache.pluto.invoker.PortletInvoker"
     class="org.apache.jetspeed.container.invoker.PortletInvokerFactoryImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="ServletConfig" />
     </constructor-arg>
@@ -168,6 +185,7 @@
 
   <bean id="org.apache.pluto.util.NamespaceMapper"
     class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactoryImpl</value>
     </property>
@@ -184,6 +202,7 @@
   </bean>
 
   <bean id="StaticInformationProvider" class="org.apache.jetspeed.services.information.StaticInformationProviderImpl">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     </constructor-arg>
@@ -192,6 +211,7 @@
   <bean id="org.apache.pluto.services.information.InformationProviderService"
     class="org.apache.jetspeed.services.information.InformationProviderServiceImpl"
     name="org.apache.pluto.services.information.StaticInformationProvider,org.apache.pluto.services.information.DynamicInformationProvider,org.apache.pluto.services.information.PortletActionProvider,org.apache.pluto.services.information.PortalContextProvider">
+    <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="StaticInformationProvider" />
     </constructor-arg>
@@ -202,14 +222,18 @@
 
 
   <bean id="ServletRequestFactory" name="javax.servlet.http.HttpServletRequest"
-    class="org.apache.jetspeed.engine.servlet.ServletRequestFactoryImpl" />
+    class="org.apache.jetspeed.engine.servlet.ServletRequestFactoryImpl">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="ServletResponseFactory" name="javax.servlet.http.HttpServletResponse"
-    class="org.apache.jetspeed.engine.servlet.ServletResponseFactoryImpl" />
-
+    class="org.apache.jetspeed.engine.servlet.ServletResponseFactoryImpl">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="org.apache.pluto.om.ControllerFactory"
     class="org.apache.jetspeed.components.factorybeans.PlutoFactoryFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="className">
       <value>org.apache.jetspeed.om.ControllerFactoryImpl</value>
     </property>
@@ -219,10 +243,13 @@
   </bean>
 
   <bean id="org.apache.pluto.services.log.LogService"
-    class="org.apache.jetspeed.container.services.log.PlutoLogService" />
+    class="org.apache.jetspeed.container.services.log.PlutoLogService">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
   <bean id="org.apache.pluto.services.title.DynamicTitleService" name="DynamicTitleService"
-    class="org.apache.jetspeed.services.title.DynamicTitleServiceImpl" />
-
+    class="org.apache.jetspeed.services.title.DynamicTitleServiceImpl">
+    <meta key="j2:cat" value="default" />
+  </bean>
 
 </beans>
