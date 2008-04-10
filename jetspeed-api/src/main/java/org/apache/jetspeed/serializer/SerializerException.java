@@ -49,7 +49,7 @@ public class SerializerException extends JetspeedException
     public static final KeyedMessage FILE_ALREADY_EXISTS = new KeyedMessage("File {0} already exists");
 
     /** <p>Filename already exists</p> */
-    public static final KeyedMessage FILE_BACKUP_FAILED = new KeyedMessage("File {0} backup failed. Could create new name.");
+    public static final KeyedMessage FILE_BACKUP_FAILED = new KeyedMessage("File {0} backup failed. Could not create new backup file name.");
 
     /** <p>io error</p> */
     public static final KeyedMessage FILE_PROCESSING_ERROR = new KeyedMessage("Error processing File {0} : {1}");
@@ -57,6 +57,12 @@ public class SerializerException extends JetspeedException
     public static final KeyedMessage FILE_WRITER_ERROR = new KeyedMessage("Error creating Writer for {0} : {1}");
     /** <p>reader error</p> */
     public static final KeyedMessage FILE_READER_ERROR = new KeyedMessage("Error creating Reader for {0} : {1}");
+
+    /** <p>import error</p> */
+    public static final KeyedMessage IMPORT_ERROR = new KeyedMessage("Unexpected error during import: {0}");
+    
+    /** <p>export error</p> */
+    public static final KeyedMessage EXPORT_ERROR = new KeyedMessage("Unexpected error during export: {0}");
     
     /** <p>version problem -  version in XML file is not compatible with current environment </p> */
     public static final KeyedMessage INCOMPETIBLE_VERSION  = new KeyedMessage("Incompetible version in {0} : CurrentVersion = {1}, RequestedVersion = {2}");

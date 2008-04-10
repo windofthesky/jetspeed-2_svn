@@ -74,6 +74,7 @@ public interface JetspeedSerializer
     String KEY_LOGGER = "logger";
     String KEY_OVERWRITE_EXISTING = "overwrite_existing";
     String KEY_BACKUP_BEFORE_PROCESS = "backup_before_process";
+    String KEY_EXPORT_INDENTATION = "export_indentation";
     
     /**<p> the main tag in the XML file */
     String TAG_SNAPSHOT = "Snapshot"; 
@@ -152,11 +153,4 @@ public interface JetspeedSerializer
     
     void deleteData() throws SerializerException;
     void deleteData(Map settings) throws SerializerException;
-
-    /**
-     * Get the current indent setting for XML files
-     * 
-     * @return the current indent setting
-     */
-    String getDefaultIndent();
 }

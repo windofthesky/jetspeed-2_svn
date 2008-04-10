@@ -80,8 +80,6 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 {
     private static final Log log = LogFactory.getLog(JetspeedSerializerImpl.class);
 
-    private String defaultIndent;
-
     private List serializers;
     private XMLBinding binding;
     private Map defaultSettings;
@@ -102,26 +100,6 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     public Map getDefaultSettings()
     {
         return defaultSettings;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#setDefaultIndent(String)
-     */
-    public final void setDefaultIndent(String indent)
-    {
-        this.defaultIndent = indent;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.serializer.JetspeedSerializer#getDefaultIndent()
-     */
-    public final String getDefaultIndent()
-    {
-        return this.defaultIndent;
     }
 
     public void importData(String filename) throws SerializerException
@@ -296,10 +274,15 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     {
         XMLObjectWriter writer = openWriter(filename, settings);
         writer.setBinding(binding);
-        if (this.getDefaultIndent() != null)
+        if (settings != null)
         {
-            writer.setIndentation(this.getDefaultIndent());
+            Object o = settings.get(JetspeedSerializer.KEY_EXPORT_INDENTATION);
+            if (o != null && o instanceof String)
+            {
+                writer.setIndentation((String)o);
+            }
         }
+
         try
         {
             log.debug("*********Writing data*********");
@@ -354,7 +337,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
                 throw new SerializerException(SerializerException.FILE_ALREADY_EXISTS.create(filename));
             if (isSettingSet(settings, JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS))
             {
-                String backName = createUniqueBackupFilename(f.getName());
+                String backName = createUniqueBackupFilename(f.getParentFile(), f.getName());
                 if (backName == null)
                     throw new SerializerException(SerializerException.FILE_BACKUP_FAILED.create(filename));
                 File ftemp = new File(backName);
@@ -400,19 +383,21 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * @param name
      * @return
      */
-    protected static String createUniqueBackupFilename(String name)
+    protected static String createUniqueBackupFilename(File folder, String name)
     {
-        String newName = name + ".bak";
-
-        File f = new File(newName);
+        File f = new File(folder, name + ".bak");
         int counter = 0;
         if (!(f.exists()))
-            return newName;
+        {
+            return f.getAbsolutePath();
+        }
         while (counter < 100)
         {
-            String newName1 = newName + counter;
-            if (!(new File(newName1).exists()))
-                return newName1;
+            f = new File(folder, name + ".bak" + counter);
+            if (!(f).exists())
+            {
+                return f.getAbsolutePath();
+            }
             counter++;
         }
         return null;
