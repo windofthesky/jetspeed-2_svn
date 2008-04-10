@@ -36,8 +36,6 @@ import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.jetspeed.maven.plugins.DeployMojo.Deployment;
-import org.apache.jetspeed.maven.plugins.DeployMojo.DeploymentObject;
 import org.apache.jetspeed.maven.utils.Artifacts;
 import org.apache.jetspeed.tools.deploy.DeployFactory;
 import org.apache.maven.artifact.Artifact;
