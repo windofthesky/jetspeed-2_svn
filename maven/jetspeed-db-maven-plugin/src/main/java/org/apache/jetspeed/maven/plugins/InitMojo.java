@@ -31,9 +31,9 @@ import org.apache.maven.settings.Settings;
 
 /**
  * @version $Id$
- * @goal load
+ * @goal init
  */
-public class LoadMojo extends AbstractMojo
+public class InitMojo extends AbstractMojo
 {
     /**
      * Database connection

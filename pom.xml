@@ -1320,7 +1320,7 @@
             <artifactId>jetspeed-db-maven-plugin</artifactId>
             <version>${pom.version}</version>
             <goals>
-              <goal>load</goal>
+              <goal>init</goal>
             </goals>
             <configuration>
               <connection>
@@ -1380,7 +1380,7 @@
             <artifactId>jetspeed-db-maven-plugin</artifactId>
             <version>${pom.version}</version>
             <goals>
-              <goal>load</goal>
+              <goal>init</goal>
             </goals>
             <configuration>
               <connection>
