@@ -223,6 +223,10 @@
                     <destination>assembly</destination>
                   </resource>
                   <resource>
+                    <path>conf/jetspeed</path>
+                    <destination>conf</destination>
+                  </resource>
+                  <resource>
                     <path>db-ojb</path>
                     <destination>classes</destination>
                   </resource>
