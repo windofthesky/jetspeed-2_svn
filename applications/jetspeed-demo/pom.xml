@@ -27,7 +27,7 @@
 
   <groupId>org.apache.portals.jetspeed-2</groupId>
   <artifactId>jetspeed-demo</artifactId>
-  <version>1.0</version>
+  <version>2.2-SNAPSHOT</version>
   <name>Jetspeed-2 Demo Portal Application</name>
   <description>Jetspeed-2 Demo Portal Application</description>
 
