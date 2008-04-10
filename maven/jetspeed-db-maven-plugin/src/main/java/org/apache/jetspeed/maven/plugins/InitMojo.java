@@ -86,7 +86,7 @@ public class InitMojo extends AbstractMojo
     {
         if ( skip )
         {
-            this.getLog().info( "Skipping db load" );
+            this.getLog().info( "Skipping db init" );
             return;
         }
         
