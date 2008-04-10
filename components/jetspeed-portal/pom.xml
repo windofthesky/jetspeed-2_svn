@@ -272,6 +272,10 @@
                                         <destination>webapp/WEB-INF/assembly</destination>
                                     </resource>
                                     <resource>
+                                        <path>conf/jetspeed</path>
+                                        <destination>webapp/WEB-INF/conf</destination>
+                                    </resource>
+                                    <resource>
                                         <path>db-ojb</path>
                                     </resource>
                                     <resource>
