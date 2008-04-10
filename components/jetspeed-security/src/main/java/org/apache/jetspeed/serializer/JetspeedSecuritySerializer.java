@@ -407,7 +407,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         {
             JSPermission _js = (JSPermission) list.next();
             PortalResourcePermission perm = getPermissionForType(_js);
-            if ((perm != null) && (perm instanceof PortalResourcePermission))
+            if ((perm != null) && (perm instanceof PortalResourcePermission) && !pm.permissionExists(perm))
             {
                 try
                 {
