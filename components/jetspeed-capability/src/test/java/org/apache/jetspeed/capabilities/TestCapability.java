@@ -545,6 +545,6 @@ public class TestCapability extends AbstractSpringTestCase
 
     protected String getBeanDefinitionFilterCategories()
     {
-        return "jdbcDS";
+        return "default,jdbcDS";
     }
 }
