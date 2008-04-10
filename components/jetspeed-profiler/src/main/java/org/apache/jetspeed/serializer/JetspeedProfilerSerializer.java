@@ -306,9 +306,10 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
             if (c != null)
             {
                 Collection cHelp = rule.getRuleCriteria();
-                if ((existing) && (cHelp.contains(c)))
-                    cHelp.remove(c); // remove existing duplicate
-                cHelp.add(c); // add the current version back in
+                if (!(existing && (cHelp.contains(c))))
+                {
+                    cHelp.add(c);
+                }
             }
         }
         return rule;
