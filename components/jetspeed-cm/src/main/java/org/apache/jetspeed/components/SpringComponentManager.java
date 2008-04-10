@@ -60,23 +60,23 @@ public class SpringComponentManager implements ComponentManager
     }
 
     public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
-            String appRoot, Properties bootProperties)
+            String appRoot, Properties initProperties)
     {
-        if (bootProperties == null)
+        if (initProperties == null)
         {
-            bootProperties = new Properties();
+            initProperties = new Properties();
         }
-        bootProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
+        initProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
         
         if (bootConfigs != null && bootConfigs.length > 0)
         {
-            bootCtx = new FilteringXmlWebApplicationContext(filter, bootConfigs, bootProperties, servletContext);
+            bootCtx = new FilteringXmlWebApplicationContext(filter, bootConfigs, initProperties, servletContext);
         }
         else
         {
             bootCtx = new FileSystemXmlApplicationContext();
         }
-        appContext = new FilteringXmlWebApplicationContext(filter, appConfigs, bootProperties, servletContext, bootCtx);
+        appContext = new FilteringXmlWebApplicationContext(filter, appConfigs, initProperties, servletContext, bootCtx);
 
         factories = new ArrayList();
         factories.add(appContext);
@@ -89,23 +89,23 @@ public class SpringComponentManager implements ComponentManager
         this(filter, bootConfigs, appConfigs, appRoot, null, fileSystem);
     }
     
-    public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, String appRoot, Properties bootProperties, boolean fileSystem)
+    public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, String appRoot, Properties initProperties, boolean fileSystem)
     {        
-        if (bootProperties == null)
+        if (initProperties == null)
         {
-            bootProperties = new Properties();
+            initProperties = new Properties();
         }
-        bootProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
+        initProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
         
         if (bootConfigs != null && bootConfigs.length > 0)
         {
             if (fileSystem)
             {
-                bootCtx = new FilteringFileSystemXmlApplicationContext(filter, bootConfigs, bootProperties);
+                bootCtx = new FilteringFileSystemXmlApplicationContext(filter, bootConfigs, initProperties);
             }
             else
             {
-                bootCtx = new FilteringClassPathXmlApplicationContext(filter, bootConfigs, bootProperties);
+                bootCtx = new FilteringClassPathXmlApplicationContext(filter, bootConfigs, initProperties);
             }
         }
         else
@@ -115,11 +115,11 @@ public class SpringComponentManager implements ComponentManager
         
         if (fileSystem)
         {
-            appContext = new FilteringFileSystemXmlApplicationContext(filter, appConfigs, bootProperties, bootCtx);
+            appContext = new FilteringFileSystemXmlApplicationContext(filter, appConfigs, initProperties, bootCtx);
         }
         else
         {
-            appContext = new FilteringClassPathXmlApplicationContext(filter, appConfigs, bootProperties, bootCtx);
+            appContext = new FilteringClassPathXmlApplicationContext(filter, appConfigs, initProperties, bootCtx);
         }
         factories = new ArrayList();
         factories.add(appContext);        
@@ -212,9 +212,12 @@ public class SpringComponentManager implements ComponentManager
      */
     public void stop()
     {
-        appContext.close();
-        bootCtx.close();
-        started = false;
+        if (started)
+        {
+            appContext.close();
+            bootCtx.close();
+            started = false;
+        }
     }
 
     public ApplicationContext getApplicationContext()
