@@ -367,21 +367,27 @@
       </dependency>
       <dependency>
         <groupId>${pom.groupId}</groupId>
-        <artifactId>jetspeed-build-maven</artifactId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
         <version>${pom.version}</version>
-        <type>plugin</type>
+        <type>maven-plugin</type>
       </dependency>
       <dependency>
         <groupId>${pom.groupId}</groupId>
-        <artifactId>jetspeed-db-maven</artifactId>
+        <artifactId>jetspeed-db-maven-plugin</artifactId>
         <version>${pom.version}</version>
-        <type>plugin</type>
+        <type>maven-plugin</type>
       </dependency>
       <dependency>
         <groupId>${pom.groupId}</groupId>
-        <artifactId>jetspeed-deploy-maven</artifactId>
+        <artifactId>jetspeed-deploy-maven-plugin</artifactId>
         <version>${pom.version}</version>
-        <type>plugin</type>
+        <type>maven-plugin</type>
+      </dependency>
+      <dependency>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-attached-deploy-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <type>maven-plugin</type>
       </dependency>
       <dependency>
         <groupId>${pom.groupId}</groupId>
