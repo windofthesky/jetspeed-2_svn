@@ -257,7 +257,7 @@
                 </deployment>
                 <deployment>
                   <artifact>
-                    ${org.apache.jetspeed.test.jdbc.driver.groupId}:${org.apache.jetspeed.test.jdbc.driver.artifactId}:jar
+                    ${org.apache.jetspeed.production.jdbc.driver.groupId}:${org.apache.jetspeed.production.jdbc.driver.artifactId}:jar
                   </artifact>
                   <destination>system</destination>
                 </deployment>
@@ -330,9 +330,9 @@
                 <version>${org.apache.portals.bridges.common.version}</version>
               </dependency>
               <dependency>
-                <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
-                <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
-                <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+                <groupId>${org.apache.jetspeed.production.jdbc.driver.groupId}</groupId>
+                <artifactId>${org.apache.jetspeed.production.jdbc.driver.artifactId}</artifactId>
+                <version>${org.apache.jetspeed.production.jdbc.driver.version}</version>
               </dependency>
               <!-- j2-admin -->
               <dependency>
