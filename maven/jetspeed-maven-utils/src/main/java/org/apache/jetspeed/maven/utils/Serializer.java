@@ -17,6 +17,7 @@
 package org.apache.jetspeed.maven.utils;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -83,6 +84,17 @@ public class Serializer
         if (initProperties != null)
         {
             props = new Properties();
+            // working around an odd Maven on MacOS issue which stored empty mapped properties actually as null values,
+            // which isn't allowed for properties
+            Iterator iter = initProperties.entrySet().iterator();
+            while (iter.hasNext())
+            {
+                Map.Entry entry = (Map.Entry)iter.next();
+                if (entry.getValue() == null)
+                {
+                    entry.setValue("");
+                }
+            }
             props.putAll(initProperties);
         }
         
