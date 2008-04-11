@@ -419,7 +419,12 @@ public class DeployMojo extends AbstractMojo
                 File tmpTarget = null;
                 try
                 {
-                    tmpTarget = File.createTempFile(dobj.src.getName()+".infused-", "");
+                    String contextName = dobj.deployment.targetName;
+                    if (contextName.endsWith(".war"))
+                    {
+                        contextName = contextName.substring(0,contextName.length()-4);
+                    }
+                    tmpTarget = File.createTempFile(contextName+"-infused.war", "");
                     tmpTarget.deleteOnExit();
                 }
                 catch (IOException e)
