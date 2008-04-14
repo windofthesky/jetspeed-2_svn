@@ -25,10 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.UserManager;
 

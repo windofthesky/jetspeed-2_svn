@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.SAXParserFactory;

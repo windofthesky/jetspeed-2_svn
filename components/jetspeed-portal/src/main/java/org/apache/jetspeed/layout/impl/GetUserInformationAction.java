@@ -28,12 +28,9 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.User;

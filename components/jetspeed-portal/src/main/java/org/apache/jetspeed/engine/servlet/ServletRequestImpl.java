@@ -44,7 +44,6 @@ import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;

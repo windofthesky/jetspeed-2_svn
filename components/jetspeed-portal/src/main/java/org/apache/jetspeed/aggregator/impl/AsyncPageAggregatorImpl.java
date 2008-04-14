@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
-import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;

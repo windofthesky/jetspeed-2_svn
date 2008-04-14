@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
-import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;

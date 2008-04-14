@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;

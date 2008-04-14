@@ -18,8 +18,6 @@ package org.apache.jetspeed.aggregator;
 
 import java.util.List;
 
-import org.apache.jetspeed.util.Queue;
-
 /**
  * The Worker Monitor is a thread manager and monitor for async portlet aggregation
  * and rendering.

@@ -17,7 +17,6 @@
 
 package org.apache.jetspeed.cache.impl;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.cache.ContentCacheKey;

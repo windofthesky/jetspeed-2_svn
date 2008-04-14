@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,7 +33,6 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
