@@ -88,6 +88,7 @@
         <unitTestSourceDirectory>${basedir}/src/test</unitTestSourceDirectory>
         <unitTest>
             <excludes>
+                <exclude>**/Mock*</exclude>
                 <exclude>**/Abstract*</exclude>
                 <exclude>**/ContentFragmentTestImpl.java</exclude>
                 <!--
