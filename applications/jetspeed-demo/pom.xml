@@ -22,7 +22,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
-    <maven>2.0.8</maven>
+    <maven>2.0.9</maven>
   </prerequisites>
 
   <groupId>org.apache.portals.jetspeed-2</groupId>
@@ -90,7 +90,7 @@
       </plugin>
       <plugin>
         <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>jetspeed-attached-deploy-maven-plugin</artifactId>
+        <artifactId>jetspeed-deploy-maven-plugin</artifactId>
         <version>${org.apache.portals.jetspeed.version}</version>
         <executions>
           <execution>

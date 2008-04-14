@@ -22,7 +22,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
-    <maven>2.0.8</maven>
+    <maven>2.0.9</maven>
   </prerequisites>
 
   <artifactId>jetspeed-api</artifactId>
