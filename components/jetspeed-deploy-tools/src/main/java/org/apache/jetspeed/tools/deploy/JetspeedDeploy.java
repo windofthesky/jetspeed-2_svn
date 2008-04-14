@@ -46,7 +46,7 @@ public class JetspeedDeploy implements Deploy
 {
     public static void main(String[] args) throws Exception
     {
-        if (args.length < 2)
+        if (args.length < 3)
         {
             printUsage();
             System.exit(1);
@@ -55,11 +55,11 @@ public class JetspeedDeploy implements Deploy
         
         boolean stripLoggers = false;
         String version = null;
-        for(int i = 0; i < args.length-2; i++) {
+        for(int i = 0; i < args.length-3; i++) {
             String option = args[i];
             if(option.equals("-s")) {
                 stripLoggers = true;
-            } else if(option.equals("-v") && i < args.length-3) {
+            } else if(option.equals("-v") && i < args.length-4) {
                 version = args[i+1];
                 i++;
             } else {
@@ -70,11 +70,11 @@ public class JetspeedDeploy implements Deploy
             }
         }
         
-        new JetspeedDeploy(args[args.length-2], args[args.length-1], stripLoggers, version);
+        new JetspeedDeploy(args[args.length-3], args[args.length-2], args[args.length-1], stripLoggers, version);
     }
     
     private static void printUsage() {
-        System.out.println("Usage: java -jar jetspeed-deploy-tools-<version>.jar [options] INPUT OUTPUT");
+        System.out.println("Usage: java -jar jetspeed-deploy-tools-<version>.jar [options] INPUT OUTPUT CONTEXT");
         System.out.println("Options:");
         System.out.println("  -s: stripLoggers - remove commons-logging[version].jar and/or log4j[version].jar from war");
         System.out.println("                     (required when targetting application servers like JBoss)");
@@ -84,11 +84,11 @@ public class JetspeedDeploy implements Deploy
 
     private final byte[] buffer = new byte[4096];
 
-    public JetspeedDeploy(String inputName, String outputName, boolean stripLoggers) throws Exception {
-        this(inputName, outputName, stripLoggers, null);
+    public JetspeedDeploy(String inputName, String outputName, String contextName, boolean stripLoggers) throws Exception {
+        this(inputName, outputName, contextName, stripLoggers, null);
     }
     
-    public JetspeedDeploy(String inputName, String outputName, boolean stripLoggers, String forcedVersion) throws Exception
+    public JetspeedDeploy(String inputName, String outputName, String contextName, boolean stripLoggers, String forcedVersion) throws Exception
     {
         File tempFile = null;
         JarFile jin = null;
@@ -98,7 +98,7 @@ public class JetspeedDeploy implements Deploy
 
         try
         {
-            String portletApplicationName = getPortletApplicationName(outputName);
+            String portletApplicationName = contextName;
             tempFile = File.createTempFile(portletApplicationName, "");
             tempFile.deleteOnExit();
 
@@ -333,27 +333,5 @@ public class JetspeedDeploy implements Deploy
                 jos.closeEntry();
             }
         }
-    }
-
-    protected String getPortletApplicationName(String path)
-    {
-        File file = new File(path);
-        String name = file.getName();
-        String portletApplicationName = name;
-
-        int index = name.lastIndexOf("-infused.war");
-        if (index > -1)
-        {
-            portletApplicationName = name.substring(0, index);            
-        }
-        else
-        {
-            index = name.lastIndexOf(".");
-            if (index > -1)
-            {
-                portletApplicationName = name.substring(0, index);
-            }            
-        }
-        return portletApplicationName;
     }
 }

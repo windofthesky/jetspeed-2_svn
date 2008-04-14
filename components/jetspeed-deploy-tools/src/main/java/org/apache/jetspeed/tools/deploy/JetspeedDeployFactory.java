@@ -39,9 +39,9 @@ public class JetspeedDeployFactory implements DeployFactory
      * @param stripLoggers
      * @return JetspeedDeploy instance
      */
-    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean stripLoggers) throws Exception
+    public Deploy getInstance(String inputWarPath, String outputWarPath, String contextName, boolean stripLoggers) throws Exception
     {
-        return new JetspeedDeploy(inputWarPath, outputWarPath, stripLoggers);
+        return new JetspeedDeploy(inputWarPath, outputWarPath, contextName, stripLoggers);
     }
 
     /**
@@ -53,8 +53,8 @@ public class JetspeedDeployFactory implements DeployFactory
      * @param forcedVersion
      * @return JetspeedDeploy instance
      */
-    public Deploy getInstance(String inputWarPath, String outputWarPath, boolean stripLoggers, String forcedVersion) throws Exception
+    public Deploy getInstance(String inputWarPath, String outputWarPath, String contextName, boolean stripLoggers, String forcedVersion) throws Exception
     {
-        return new JetspeedDeploy(inputWarPath, outputWarPath, stripLoggers, forcedVersion);
+        return new JetspeedDeploy(inputWarPath, outputWarPath, contextName, stripLoggers, forcedVersion);
     }
 }

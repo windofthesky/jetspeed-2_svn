@@ -419,12 +419,7 @@ public class DeployMojo extends AbstractMojo
                 File tmpTarget = null;
                 try
                 {
-                    String contextName = dobj.deployment.targetName;
-                    if (contextName.endsWith(".war"))
-                    {
-                        contextName = contextName.substring(0,contextName.length()-4);
-                    }
-                    tmpTarget = File.createTempFile(contextName+"-infused.war", "");
+                    tmpTarget = File.createTempFile(dobj.src.getName()+".infused-", "");
                     tmpTarget.deleteOnExit();
                 }
                 catch (IOException e)
@@ -433,7 +428,7 @@ public class DeployMojo extends AbstractMojo
                 }
                 try
                 {
-                    deployFactory.getInstance(dobj.src.getAbsolutePath(), tmpTarget.getAbsolutePath(), dobj.deployment.infusionStripLoggers.booleanValue(), dobj.deployment.infusionForcedVersion);
+                    deployFactory.getInstance(dobj.src.getAbsolutePath(), tmpTarget.getAbsolutePath(), dobj.deployment.targetName, dobj.deployment.infusionStripLoggers.booleanValue(), dobj.deployment.infusionForcedVersion);
                     dobj.src = tmpTarget;
                 }
                 catch (Exception e)
