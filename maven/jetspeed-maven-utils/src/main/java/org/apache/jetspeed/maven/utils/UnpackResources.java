@@ -362,7 +362,7 @@ public class UnpackResources
         if (resources == null)
         {
             unpackResources = new UnpackResource[1];
-            unpackResources[0] = new UnpackResource(overwrite);
+            unpackResources[0] = new UnpackResource(overwrite.booleanValue());
         }
         else
         {

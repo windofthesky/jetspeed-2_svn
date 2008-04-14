@@ -43,7 +43,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 
 /**
  * DeployerMojo is a generic Jetspeed Portal artifacts en resources deployer.
@@ -107,13 +106,6 @@ public class DeployMojo extends AbstractMojo
      * @required
      */
     private Deployment[] deployments;
-    
-    /** The Maven project.
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
     
     /**
      * @parameter expression="${localRepository}"
