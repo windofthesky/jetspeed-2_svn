@@ -24,12 +24,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
-import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -47,7 +46,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a>Woonsan Ko</a>
  * @version $Id: $
  */
-public class AsyncPageAggregatorImpl implements PageAggregator
+public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageAggregator
 {
     protected final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
 
@@ -95,6 +94,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
+        releaseBuffers(root, context);                
     }
 
     /**

@@ -98,5 +98,10 @@ public interface PortletContent
      * @param title
      */
     void setTitle(String title);
-        
+
+    /**
+     * Release the buffers used by the portlet content cache. Note the actual release may not occur until garbage collection. 
+     *
+     */
+    void release();            
 }

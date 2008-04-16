@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAggregator;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -78,6 +79,11 @@ public class PortletAggregatorImpl implements PortletAggregator
         ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
         renderer.renderNow(contentFragment, context);
         context.getResponse().getWriter().write(contentFragment.getRenderedContent());
+        PortletContent content = contentFragment.getPortletContent();
+        if (content.getExpiration() == 0)
+        {
+            contentFragment.getPortletContent().release();
+        }        
     }
     
 }

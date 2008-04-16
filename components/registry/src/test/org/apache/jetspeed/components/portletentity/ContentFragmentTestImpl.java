@@ -59,6 +59,11 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
         this.instantlyRendered = instantlyRendered;
     }
 
+    public PortletContent getPortletContent()
+    {
+        return null;        
+    }
+    
     /**
      * @param actions
      * @throws SecurityException

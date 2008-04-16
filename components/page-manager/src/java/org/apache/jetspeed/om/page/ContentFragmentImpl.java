@@ -870,5 +870,10 @@ public class ContentFragmentImpl implements ContentFragment
     {
         return this.instantlyRendered;
     }
+
+    public PortletContent getPortletContent()
+    {
+        return this.portletContent;
+    }
     
 }

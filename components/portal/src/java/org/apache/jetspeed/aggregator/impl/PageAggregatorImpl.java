@@ -39,7 +39,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class PageAggregatorImpl implements PageAggregator
+public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggregator 
 {
     private final static Log log = LogFactory.getLog(PageAggregatorImpl.class);
     private PortletRenderer renderer;
@@ -83,6 +83,7 @@ public class PageAggregatorImpl implements PageAggregator
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
+        releaseBuffers(root, context);        
     }
 
     /**
