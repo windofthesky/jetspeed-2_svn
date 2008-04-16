@@ -94,6 +94,13 @@ public interface ContentFragment extends Fragment
      * @param portletContent
      */
     public void setPortletContent(PortletContent portletContent);
+
+    /**
+     * Retrieve the content for this fragment
+     * 
+     * @return PortletContent
+     */
+    public PortletContent getPortletContent();
     
     /**
      * Retrieves the actual <code>org.apache.jetspeed.decoration.decorator</code>

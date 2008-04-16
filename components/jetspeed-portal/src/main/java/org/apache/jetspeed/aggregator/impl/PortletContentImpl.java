@@ -66,7 +66,13 @@ public class PortletContentImpl implements PortletContent
 
     public void release()
     {
-        writer.close();
+        if (writer != null)
+        {
+            writer.close();
+            cw.reset();
+        }
+        cw = null;
+        writer = null;
     }
 
     public String toString()

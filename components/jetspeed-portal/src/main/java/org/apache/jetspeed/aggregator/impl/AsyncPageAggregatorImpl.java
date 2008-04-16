@@ -29,6 +29,7 @@ import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
+import org.apache.jetspeed.aggregator.impl.BaseAggregatorImpl;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -46,7 +47,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a>Woonsan Ko</a>
  * @version $Id: $
  */
-public class AsyncPageAggregatorImpl implements PageAggregator
+public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageAggregator
 {
     protected final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
 
@@ -66,7 +67,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
      */
     public void build( RequestContext context ) throws JetspeedException, IOException
     {
-        ContentPage page = context.getPage();
+        ContentPage page = context.getPage();        
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
@@ -94,6 +95,7 @@ public class AsyncPageAggregatorImpl implements PageAggregator
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
+        releaseBuffers(root, context);                
     }
 
     /**

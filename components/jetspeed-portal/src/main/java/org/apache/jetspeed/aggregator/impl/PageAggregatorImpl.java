@@ -25,6 +25,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.aggregator.impl.BaseAggregatorImpl;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -39,7 +40,7 @@ import org.apache.pluto.om.window.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class PageAggregatorImpl implements PageAggregator
+public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggregator 
 {
     private final static Log log = LogFactory.getLog(PageAggregatorImpl.class);
     private PortletRenderer renderer;
@@ -83,6 +84,7 @@ public class PageAggregatorImpl implements PageAggregator
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
             context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
+        releaseBuffers(root, context);        
     }
 
     /**
