@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.serializer.CommonsToolsLogger;
+import org.apache.jetspeed.components.util.CommonsToolsLogger;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 import org.apache.jetspeed.serializer.JetspeedSerializerApplication;
 import org.apache.jetspeed.serializer.SerializerException;

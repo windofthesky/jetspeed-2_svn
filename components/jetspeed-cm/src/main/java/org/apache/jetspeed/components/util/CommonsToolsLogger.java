@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.serializer;
+package org.apache.jetspeed.components.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.jetspeed.tools.ToolsLogger;
