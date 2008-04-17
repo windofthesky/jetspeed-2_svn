@@ -26,11 +26,11 @@ import org.apache.jetspeed.tools.ToolsLogger;
  * @version $Id$
  *
  */
-public class CommonsToolsLogger implements Log
+public class CommonsLogToolsLogger implements Log
 {
     ToolsLogger toolsLogger;
     
-    public CommonsToolsLogger(ToolsLogger toolsLogger)
+    public CommonsLogToolsLogger(ToolsLogger toolsLogger)
     {
         this.toolsLogger = toolsLogger;
     }

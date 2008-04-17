@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.components.util.CommonsToolsLogger;
+import org.apache.jetspeed.components.util.CommonsLogToolsLogger;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 import org.apache.jetspeed.serializer.JetspeedSerializerApplication;
 import org.apache.jetspeed.serializer.SerializerException;
@@ -142,7 +142,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
        
     public void importFiles(ToolsLogger logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String[] seedFiles) throws SerializerException
     {        
-        importFiles(new CommonsToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, seedFiles);
+        importFiles(new CommonsLogToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, seedFiles);
     }
     
     
@@ -209,7 +209,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
 
     public void export(ToolsLogger logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String exportFile, String exportName) throws SerializerException
     {
-        export(new CommonsToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, exportFile, exportName);
+        export(new CommonsLogToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, exportFile, exportName);
     }
     
     public void export(Log logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String exportFile, String exportName) throws SerializerException
