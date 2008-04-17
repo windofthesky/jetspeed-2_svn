@@ -59,7 +59,8 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         
         if (args == null)
         {
-            throw new IllegalArgumentException("Either import or export have to be defined (-I or -E follwoed by the filename");
+            System.out.println("Usage for import: -I importFiles (, delimited if multiple) -a applicationRootFolder -c <categories | categories filter key (requires -n)> [-n <categories properties file>]");
+            System.out.println("Usage for export: -E exportFile  -a applicationRootFolder -c <categories | categories filter key (requires -n)> [-n <categories properties file>] [-N <exportName>");
         }
 
         // Parse all the command-line arguments
@@ -92,7 +93,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         
             if ((!doImport) && (!doExport))
             {
-              throw new IllegalArgumentException("Either import or export have to be defined (-I or -E follwoed by the filename");
+              throw new IllegalArgumentException("Either import or export have to be defined (-I or -E followed by the filename");
             }
 
             if ((doImport) && (doExport))
@@ -190,11 +191,11 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         }
         catch (Exception e)
         {
+            logger.error(e);
             if (e instanceof SerializerException)
             {
                 throw (SerializerException)e;
             }
-            logger.error(e);
             throw new SerializerException(SerializerException.IMPORT_ERROR.create(e.getMessage()));
         }
         finally
