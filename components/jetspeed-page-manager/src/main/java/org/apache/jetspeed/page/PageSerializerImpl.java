@@ -49,6 +49,8 @@ public class PageSerializerImpl implements PageSerializer
         protected boolean overwritePages;
 
         protected boolean overwriteFolders;
+        
+        protected boolean fullImport;
 
         protected transient ToolsLogger logger;
         
@@ -82,11 +84,17 @@ public class PageSerializerImpl implements PageSerializer
             return overwriteFolders;
         }
         
-        public Context(String folder, boolean overwritePages, boolean overwriteFolders, ToolsLogger logger)
+        public boolean isFullImport()
+        {
+            return fullImport;
+        }
+        
+        public Context(String folder, boolean overwritePages, boolean overwriteFolders, boolean fullImport, ToolsLogger logger)
         {
             this.folder = folder;
             this.overwritePages = overwritePages;
             this.overwriteFolders = overwriteFolders;
+            this.fullImport = fullImport;
             this.logger = logger;
         }
     }
@@ -96,6 +104,10 @@ public class PageSerializerImpl implements PageSerializer
 
     /* destination page manager impl */
     private PageManager destManager;
+    
+    private Boolean defaultOverwriteFolders = Boolean.TRUE;
+    private Boolean defaultOverwritePages = Boolean.TRUE;
+    private Boolean defaultFullImport = Boolean.TRUE;
 
     public PageSerializerImpl(PageManager sourceManager, PageManager destManager)
     {
@@ -103,17 +115,39 @@ public class PageSerializerImpl implements PageSerializer
         this.destManager = destManager;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageSerializer#importPages(java.lang.String, boolean, boolean, boolean, org.apache.commons.logging.Log)
-     */
-    public Result importPages(ToolsLogger logger, String rootFolder, boolean overwriteFolders, boolean overwritePages, boolean fullImport) throws JetspeedException
+    public PageSerializerImpl(PageManager sourceManager, PageManager destManager, boolean defaultOverwriteFolders, boolean defaultOverwritePages, boolean defaultFullImport)
     {
-        Context context = new Context(rootFolder, overwritePages, overwriteFolders, logger);
-        context.logger.info("Starting " + (fullImport ? "full" : "") + " import of folder: " + rootFolder
+        this.sourceManager = sourceManager;
+        this.destManager = destManager;
+        this.defaultOverwriteFolders = new Boolean(defaultOverwriteFolders);
+        this.defaultOverwritePages = new Boolean(defaultOverwritePages);
+        this.defaultFullImport = new Boolean(defaultFullImport);
+    }
+
+    private boolean boolValue(Boolean bool, Boolean defaultValue)
+    {
+        return bool != null ? bool.booleanValue() : defaultValue.booleanValue();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageSerializer#importPages(org.apache.jetspeed.tools.ToolsLogger, java.lang.String)
+     */
+    public Result importPages(ToolsLogger logger, String rootFolder) throws JetspeedException
+    {
+        return importPages(logger, rootFolder, defaultOverwriteFolders, defaultOverwritePages, defaultFullImport);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageSerializer#importPages(java.lang.String, Boolean, Boolean, Boolean, org.apache.commons.logging.Log)
+     */
+    public Result importPages(ToolsLogger logger, String rootFolder, Boolean overwriteFolders, Boolean overwritePages, Boolean fullImport) throws JetspeedException
+    {
+        Context context = new Context(rootFolder, boolValue(overwritePages, defaultOverwritePages), boolValue(overwriteFolders, defaultOverwriteFolders), boolValue(fullImport, defaultFullImport),logger);
+        context.logger.info("Starting " + (context.fullImport ? "full" : "") + " import of folder: " + rootFolder
                 + " (overwriting folders: " + overwriteFolders + ", pages: " + overwritePages + ")");
         importFolder(sourceManager.getFolder(rootFolder), context);
 
-        if (fullImport)
+        if (context.fullImport)
         {
             // create the root page security
             PageSecurity sourcePageSecurity = null;
