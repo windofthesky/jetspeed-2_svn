@@ -45,7 +45,7 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
     protected void setUp() throws Exception
     {        
         super.setUp();
-        scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir()+"target/test-classes/webapp", getPostProcessProperties(), false);
+        scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir()+"target/test-classes/webapp", getInitProperties(), false);
         scm.start();
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
         return null;
     }
 
-    protected Properties getPostProcessProperties()
+    protected Properties getInitProperties()
     {
         return new Properties();
     }

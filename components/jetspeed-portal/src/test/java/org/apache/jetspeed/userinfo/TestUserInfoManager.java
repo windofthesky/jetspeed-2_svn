@@ -242,6 +242,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
         confList.add("jetspeed-base.xml");
+        confList.add("jetspeed-properties.xml");
         confList.add("page-manager.xml");
         confList.add("registry.xml");
         confList.add("rc3.xml");
@@ -251,12 +252,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         return (String[]) confList.toArray(new String[1]);
     }
 
-    protected Properties getPostProcessProperties()
+    protected String getBeanDefinitionFilterCategories()
     {
-        Properties p = super.getPostProcessProperties();
-        p.setProperty("supported.portletmode.autoswitch.config", "false");
-        p.setProperty("supported.portletmode.autoswitch.edit_defaults", "false");
-        p.setProperty("supported.portletmode.autoswitch.config.surrogate.portlet", "j2-admin::CustomConfigModePortlet");
-        return p;
+        return super.getBeanDefinitionFilterCategories()+",xmlPageManager";
     }
 }
