@@ -17,31 +17,25 @@
 
 package org.apache.jetspeed.page;
 
-import java.io.Serializable;
+import java.util.Properties;
 
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.page.PageSerializer.Result;
 import org.apache.jetspeed.tools.ToolsLogger;
 
 /**
- * PageSerializer
- *
+ * Standalone execution of JetspeedPageSerializer
+ * 
  * @version $Id$
+ *
  */
-public interface PageSerializer
+public interface JetspeedPageSerializerApplication
 {
-    public interface Result extends Serializable
-    {
-        String getFolder();
-        int getFolderCount();
-        int getPageCount();
-        int getLinkCount();
-        boolean isOverwritePages();
-        boolean isOverwriteFolders();
-        boolean isSerializeAll();
-    }
-    
-    Result importPages(ToolsLogger logger, String rootFolder) throws JetspeedException;
-    Result exportPages(ToolsLogger logger, String rootFolder) throws JetspeedException;
-    Result importPages(ToolsLogger logger, String rootFolder, Boolean overwriteFolders, Boolean overwritePages, Boolean all) throws JetspeedException;
-    Result exportPages(ToolsLogger logger, String rootFolder, Boolean overwriteFolders, Boolean overwritePages, Boolean all) throws JetspeedException;
+
+    Result importPages(ToolsLogger logger, String applicationRootPath, String categories,
+            String filterPropertiesFileName, Properties initProperties, String rootFolder) throws JetspeedException;
+
+    Result exportPages(ToolsLogger logger, String applicationRootPath, String categories,
+            String filterPropertiesFileName, Properties initProperties, String rootFolder) throws JetspeedException;
+
 }

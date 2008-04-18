@@ -50,7 +50,7 @@ public class PageSerializerImpl implements PageSerializer
 
         protected boolean overwriteFolders;
         
-        protected boolean fullImport;
+        protected boolean all;
 
         protected transient ToolsLogger logger;
         
@@ -84,17 +84,17 @@ public class PageSerializerImpl implements PageSerializer
             return overwriteFolders;
         }
         
-        public boolean isFullImport()
+        public boolean isSerializeAll()
         {
-            return fullImport;
+            return all;
         }
         
-        public Context(String folder, boolean overwritePages, boolean overwriteFolders, boolean fullImport, ToolsLogger logger)
+        public Context(String folder, boolean overwritePages, boolean overwriteFolders, boolean all, ToolsLogger logger)
         {
             this.folder = folder;
             this.overwritePages = overwritePages;
             this.overwriteFolders = overwriteFolders;
-            this.fullImport = fullImport;
+            this.all = all;
             this.logger = logger;
         }
     }
@@ -107,7 +107,7 @@ public class PageSerializerImpl implements PageSerializer
     
     private Boolean defaultOverwriteFolders = Boolean.TRUE;
     private Boolean defaultOverwritePages = Boolean.TRUE;
-    private Boolean defaultFullImport = Boolean.TRUE;
+    private Boolean defaultAll = Boolean.TRUE;
 
     public PageSerializerImpl(PageManager sourceManager, PageManager destManager)
     {
@@ -115,13 +115,13 @@ public class PageSerializerImpl implements PageSerializer
         this.destManager = destManager;
     }
 
-    public PageSerializerImpl(PageManager sourceManager, PageManager destManager, boolean defaultOverwriteFolders, boolean defaultOverwritePages, boolean defaultFullImport)
+    public PageSerializerImpl(PageManager sourceManager, PageManager destManager, boolean defaultOverwriteFolders, boolean defaultOverwritePages, boolean defaultAll)
     {
         this.sourceManager = sourceManager;
         this.destManager = destManager;
         this.defaultOverwriteFolders = new Boolean(defaultOverwriteFolders);
         this.defaultOverwritePages = new Boolean(defaultOverwritePages);
-        this.defaultFullImport = new Boolean(defaultFullImport);
+        this.defaultAll = new Boolean(defaultAll);
     }
 
     private boolean boolValue(Boolean bool, Boolean defaultValue)
@@ -134,26 +134,49 @@ public class PageSerializerImpl implements PageSerializer
      */
     public Result importPages(ToolsLogger logger, String rootFolder) throws JetspeedException
     {
-        return importPages(logger, rootFolder, defaultOverwriteFolders, defaultOverwritePages, defaultFullImport);
+        return importPages(logger, rootFolder, defaultOverwriteFolders, defaultOverwritePages, defaultAll);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageSerializer#exportPages(org.apache.jetspeed.tools.ToolsLogger, java.lang.String)
+     */
+    public Result exportPages(ToolsLogger logger, String rootFolder) throws JetspeedException
+    {
+        return exportPages(logger, rootFolder, defaultOverwriteFolders, defaultOverwritePages, defaultAll);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageSerializer#importPages(java.lang.String, Boolean, Boolean, Boolean, org.apache.commons.logging.Log)
      */
-    public Result importPages(ToolsLogger logger, String rootFolder, Boolean overwriteFolders, Boolean overwritePages, Boolean fullImport) throws JetspeedException
+    public Result importPages(ToolsLogger logger, String rootFolder, Boolean overwriteFolders, Boolean overwritePages, Boolean all) throws JetspeedException
     {
-        Context context = new Context(rootFolder, boolValue(overwritePages, defaultOverwritePages), boolValue(overwriteFolders, defaultOverwriteFolders), boolValue(fullImport, defaultFullImport),logger);
-        context.logger.info("Starting " + (context.fullImport ? "full" : "") + " import of folder: " + rootFolder
-                + " (overwriting folders: " + overwriteFolders + ", pages: " + overwritePages + ")");
-        importFolder(sourceManager.getFolder(rootFolder), context);
+        return execute(sourceManager, destManager, new Context(rootFolder, boolValue(overwritePages, defaultOverwritePages), boolValue(overwriteFolders, defaultOverwriteFolders), boolValue(all, defaultAll),logger), true);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageSerializer#exportPages(java.lang.String, Boolean, Boolean, Boolean, org.apache.commons.logging.Log)
+     */
+    public Result exportPages(ToolsLogger logger, String rootFolder, Boolean overwriteFolders, Boolean overwritePages, Boolean all) throws JetspeedException
+    {
+        return execute(destManager, sourceManager, new Context(rootFolder, boolValue(overwritePages, defaultOverwritePages), boolValue(overwriteFolders, defaultOverwriteFolders), boolValue(all, defaultAll),logger), false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageSerializer#importPages(java.lang.String, Boolean, Boolean, Boolean, org.apache.commons.logging.Log)
+     */
+    private Result execute(PageManager src, PageManager dest, Context context, boolean importing) throws JetspeedException
+    {
+        context.logger.info("Starting " + (context.all ? "complete" : "") + " " + (importing?"import":"export") + " of folder: " + context.folder
+                + " (overwriting folders: " + context.overwriteFolders + ", pages: " + context.overwritePages + ")");
+        processFolder(src.getFolder(context.folder), dest, context);
 
-        if (context.fullImport)
+        if (context.all)
         {
             // create the root page security
             PageSecurity sourcePageSecurity = null;
             try
             {
-                sourcePageSecurity = sourceManager.getPageSecurity();
+                sourcePageSecurity = src.getPageSecurity();
             }
             catch (DocumentNotFoundException e)
             {
@@ -162,32 +185,32 @@ public class PageSerializerImpl implements PageSerializer
 
             if (sourcePageSecurity != null)
             {
-                context.logger.info("Importing page security");
-                PageSecurity rootSecurity = destManager.copyPageSecurity(sourcePageSecurity);
-                destManager.updatePageSecurity(rootSecurity);
+                context.logger.info((importing?"Importing":"Exporting")+" page security");
+                PageSecurity rootSecurity = dest.copyPageSecurity(sourcePageSecurity);
+                dest.updatePageSecurity(rootSecurity);
             }
             else
             {
                 context.logger.info("Skipping page security: not found");
             }
         }
-        context.logger.info("Import finished: processed " + context.folderCount + " folder(s), " + context.pageCount
+        context.logger.info((importing?"Import":"Export")+" finished: processed " + context.folderCount + " folder(s), " + context.pageCount
                 + " page(s), " + context.linkCount + " link(s).");
         context.logger = null;
         return context;
     }
-
-    private Folder importFolder(Folder srcFolder, Context context) throws JetspeedException
+    
+    private Folder processFolder(Folder srcFolder, PageManager dest, Context context) throws JetspeedException
     {
-        Folder dstFolder = lookupFolder(srcFolder.getPath());
+        Folder dstFolder = lookupFolder(dest, srcFolder.getPath());
         if (null != dstFolder)
         {
             if (context.overwriteFolders)
             {
                 context.logger.info("overwriting folder " + srcFolder.getPath());
-                destManager.removeFolder(dstFolder);
-                dstFolder = destManager.copyFolder(srcFolder, srcFolder.getPath());
-                destManager.updateFolder(dstFolder);
+                dest.removeFolder(dstFolder);
+                dstFolder = dest.copyFolder(srcFolder, srcFolder.getPath());
+                dest.updateFolder(dstFolder);
                 context.folderCount++;
 
             }
@@ -198,24 +221,24 @@ public class PageSerializerImpl implements PageSerializer
         }
         else
         {
-            context.logger.info("importing new folder " + srcFolder.getPath());
-            dstFolder = destManager.copyFolder(srcFolder, srcFolder.getPath());
-            destManager.updateFolder(dstFolder);
+            context.logger.info("processing new folder " + srcFolder.getPath());
+            dstFolder = dest.copyFolder(srcFolder, srcFolder.getPath());
+            dest.updateFolder(dstFolder);
             context.folderCount++;
         }
         Iterator pages = srcFolder.getPages().iterator();
         while (pages.hasNext())
         {
             Page srcPage = (Page) pages.next();
-            Page dstPage = lookupPage(srcPage.getPath());
+            Page dstPage = lookupPage(dest, srcPage.getPath());
             if (null != dstPage)
             {
                 if (context.overwritePages)
                 {
                     context.logger.info("overwriting page " + srcPage.getPath());
-                    destManager.removePage(dstPage);
-                    dstPage = destManager.copyPage(srcPage, srcPage.getPath());
-                    destManager.updatePage(dstPage);
+                    dest.removePage(dstPage);
+                    dstPage = dest.copyPage(srcPage, srcPage.getPath());
+                    dest.updatePage(dstPage);
                     context.pageCount++;
                 }
                 else
@@ -225,9 +248,9 @@ public class PageSerializerImpl implements PageSerializer
             }
             else
             {
-                context.logger.info("importing new page " + srcPage.getPath());
-                dstPage = destManager.copyPage(srcPage, srcPage.getPath());
-                destManager.updatePage(dstPage);
+                context.logger.info("processing new page " + srcPage.getPath());
+                dstPage = dest.copyPage(srcPage, srcPage.getPath());
+                dest.updatePage(dstPage);
                 context.pageCount++;
             }
         }
@@ -236,15 +259,15 @@ public class PageSerializerImpl implements PageSerializer
         while (links.hasNext())
         {
             Link srcLink = (Link) links.next();
-            Link dstLink = lookupLink(srcLink.getPath());
+            Link dstLink = lookupLink(dest, srcLink.getPath());
             if (null != dstLink)
             {
                 if (context.overwritePages)
                 {
                     context.logger.info("overwriting link " + srcLink.getPath());
-                    destManager.removeLink(dstLink);
-                    dstLink = destManager.copyLink(srcLink, srcLink.getPath());
-                    destManager.updateLink(dstLink);
+                    dest.removeLink(dstLink);
+                    dstLink = dest.copyLink(srcLink, srcLink.getPath());
+                    dest.updateLink(dstLink);
                     context.linkCount++;
                 }
                 else
@@ -254,9 +277,9 @@ public class PageSerializerImpl implements PageSerializer
             }
             else
             {
-                context.logger.info("importing new link " + srcLink.getPath());
-                dstLink = destManager.copyLink(srcLink, srcLink.getPath());
-                destManager.updateLink(dstLink);
+                context.logger.info("processing new link " + srcLink.getPath());
+                dstLink = dest.copyLink(srcLink, srcLink.getPath());
+                dest.updateLink(dstLink);
                 context.linkCount++;
             }
         }
@@ -265,17 +288,17 @@ public class PageSerializerImpl implements PageSerializer
         while (folders.hasNext())
         {
             Folder folder = (Folder) folders.next();
-            importFolder(folder, context);
+            processFolder(folder, dest, context);
         }
 
         return dstFolder;
     }
 
-    private Page lookupPage(String path)
+    private static Page lookupPage(PageManager mgr, String path)
     {
         try
         {
-            return destManager.getPage(path);
+            return mgr.getPage(path);
         }
         catch (Exception e)
         {
@@ -283,11 +306,11 @@ public class PageSerializerImpl implements PageSerializer
         }
     }
 
-    private Link lookupLink(String path)
+    private static Link lookupLink(PageManager mgr, String path)
     {
         try
         {
-            return destManager.getLink(path);
+            return mgr.getLink(path);
         }
         catch (Exception e)
         {
@@ -295,11 +318,11 @@ public class PageSerializerImpl implements PageSerializer
         }
     }
 
-    private Folder lookupFolder(String path)
+    private static Folder lookupFolder(PageManager mgr, String path)
     {
         try
         {
-            return destManager.getFolder(path);
+            return mgr.getFolder(path);
         }
         catch (Exception e)
         {
