@@ -378,6 +378,60 @@
         </plugins>
       </build>
     </profile>
+    
+    <profile>
+      <id>demo-dbpsml</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-db-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <goals>
+              <goal>init</goal>
+            </goals>
+            <configuration>
+              <psml>
+                <categories>pageSerializer</categories>
+                <filterPropertiesFileName>
+                  ${project.build.directory}/${project.build.finalName}/WEB-INF/conf/spring-filter.properties
+                </filterPropertiesFileName>
+                <applicationRootPath>${project.build.directory}/${project.build.finalName}</applicationRootPath>
+                <initProperties>
+                  <org.apache.jetspeed.database.user>
+                    ${org.apache.jetspeed.production.database.user}
+                  </org.apache.jetspeed.database.user>
+                  <org.apache.jetspeed.database.password>
+                    ${org.apache.jetspeed.production.database.password}
+                  </org.apache.jetspeed.database.password>
+                  <org.apache.jetspeed.database.url>
+                    ${org.apache.jetspeed.production.database.url}
+                  </org.apache.jetspeed.database.url>
+                  <org.apache.jetspeed.database.driver>
+                    ${org.apache.jetspeed.production.database.driver}
+                  </org.apache.jetspeed.database.driver>
+                </initProperties>
+              </psml>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>dbpsml</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>${basedir}/src/etc/dbpsml</directory>
+            <includes>
+              <include>spring-filter-key.properties</include>
+            </includes>
+            <targetPath>../${project.build.finalName}/WEB-INF/conf</targetPath>
+          </resource>
+        </resources>
+      </build>
+    </profile>
   </profiles>
 
 </project>
