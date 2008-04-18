@@ -67,6 +67,10 @@ public class SpringComponentManager implements ComponentManager
             initProperties = new Properties();
         }
         initProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
+        if (!initProperties.containsKey(JetspeedEngineConstants.JETSPEED_PROPERTIES_PATH_KEY))
+        {
+            initProperties.put(JetspeedEngineConstants.JETSPEED_PROPERTIES_PATH_KEY, appRoot+JetspeedEngineConstants.JETSPEED_PROPERTIES_PATH_DEFAULT);
+        }
         
         if (bootConfigs != null && bootConfigs.length > 0)
         {
@@ -96,6 +100,10 @@ public class SpringComponentManager implements ComponentManager
             initProperties = new Properties();
         }
         initProperties.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, appRoot);
+        if (!initProperties.containsKey(JetspeedEngineConstants.JETSPEED_PROPERTIES_PATH_KEY))
+        {
+            initProperties.put(JetspeedEngineConstants.JETSPEED_PROPERTIES_PATH_KEY, appRoot+JetspeedEngineConstants.JETSPEED_PROPERTIES_PATH_DEFAULT);
+        }
         
         if (bootConfigs != null && bootConfigs.length > 0)
         {

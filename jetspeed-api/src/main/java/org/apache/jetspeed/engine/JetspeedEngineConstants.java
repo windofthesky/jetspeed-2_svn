@@ -63,6 +63,13 @@ public interface JetspeedEngineConstants
 
     public static final String JETSPEED_PROPERTIES_KEY = "properties";
     public static final String JETSPEED_PROPERTIES_DEFAULT = "/WEB-INF/conf/jetspeed.properties";
+    public static final String JETSPEED_PROPERTIES_PATH_KEY = "jetspeedPropertiesPath";
+    public static final String JETSPEED_PROPERTIES_PATH_DEFAULT = "/WEB-INF/conf";
+    public static final String OVERRIDE_PROPERTIES = "override.properties";
+    public static final String SPRING_FILTER_KEY_PROPERTIES = "spring-filter-key.properties";
+    public static final String SPRING_FILTER_KEY = "spring.filter.key";
+    public static final String SPRING_FILTER_KEY_DEFAULT = "portal";
+    public static final String SPRING_FILTER_PROPERTIES = "spring-filter.properties";
 
     /** If this value is set as applicationRoot, then the webContext is used
      * as application root

@@ -16,8 +16,10 @@
  */
 package org.apache.jetspeed.engine;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Properties;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
@@ -30,6 +32,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -145,12 +148,40 @@ implements JetspeedEngineConstants, HttpSessionListener
                     applicationRoot = webappRoot;
                 }
 
-                Configuration properties = new PropertiesConfiguration(ServletHelper.getRealPath(
-                        config, propertiesFilename));
-
+                // load jetspeed.properties, override.properties and spring-filter-key.properties separately
+                // and "merge" them by hand instead of relaying on Commons Configuration "include" functionality...
+                // Commons Configuration performs property value *appending* if keys are encountered multiple times,
+                // thereby *not* resulting in the proper override functionality we need.
+                PropertiesConfiguration properties = new PropertiesConfiguration();
+                File propsFile = new File(ServletHelper.getRealPath(config, propertiesFilename));
+                if (!propsFile.isFile())
+                {
+                    throw new IOException("Jetspeed properties not found: "+propsFile.getAbsolutePath());
+                }
+                File jetspeedPropertiesPath = propsFile.getParentFile();
+                properties.load(propsFile);
+                propsFile = new File(jetspeedPropertiesPath,OVERRIDE_PROPERTIES);
+                if (propsFile.exists())
+                {
+                    PropertiesConfiguration extraProps = new PropertiesConfiguration();
+                    extraProps.load(propsFile);
+                    ConfigurationUtils.copy(extraProps,properties);
+                }
+                propsFile = new File(jetspeedPropertiesPath,SPRING_FILTER_KEY_PROPERTIES);
+                if (propsFile.exists())
+                {
+                    PropertiesConfiguration extraProps = new PropertiesConfiguration();
+                    extraProps.load(propsFile);
+                    Object springFilterKey = extraProps.getProperty(SPRING_FILTER_KEY);
+                    if (springFilterKey != null)
+                    {
+                        properties.setProperty(SPRING_FILTER_KEY, springFilterKey);
+                    }
+                }
                 properties.setProperty(APPLICATION_ROOT_KEY, applicationRoot);
                 properties.setProperty(WEBAPP_ROOT_KEY, webappRoot);
-
+                properties.setProperty(JETSPEED_PROPERTIES_PATH_KEY, jetspeedPropertiesPath.getAbsolutePath());
+                
                 console.info("JetspeedServlet attempting to create the  portlet engine...");
 
                 engine = new JetspeedEngine(properties, applicationRoot, config, initializeComponentManager(config, applicationRoot, properties));
@@ -313,13 +344,19 @@ implements JetspeedEngineConstants, HttpSessionListener
         ServletConfigFactoryBean.setServletConfig(servletConfig);
         final String assemblyDir = configuration.getString("assembly.dir","/WEB-INF/assembly");
         final String assemblyFileExtension = configuration.getString("assembly.extension",".xml");
-        String springFilterKey = configuration.getString("spring.filter.key", "portal");
-                    
+        String springFilterKey = configuration.getString(SPRING_FILTER_KEY, SPRING_FILTER_KEY_DEFAULT);
+        File springFilterProperties = new File(configuration.getString(JETSPEED_PROPERTIES_PATH_KEY), SPRING_FILTER_PROPERTIES);
+        if (!springFilterProperties.isFile())
+        {
+            throw new IOException("Spring filter properties not found: "+springFilterProperties.getAbsolutePath());
+        }
         String[] bootConfigs = new String[] {"/WEB-INF/assembly/boot/*.xml"};
         String[] appConfigs =  new String[] {assemblyDir+"/*"+assemblyFileExtension, assemblyDir+"/override/*"+assemblyFileExtension};
         ServletContext servletContext = servletConfig.getServletContext();
-        JetspeedBeanDefinitionFilter filter = new JetspeedBeanDefinitionFilter("file:"+appRoot+"/WEB-INF/conf/spring-filter.properties", springFilterKey);
-        SpringComponentManager cm = new SpringComponentManager(filter, bootConfigs, appConfigs, servletContext, appRoot);      
+        JetspeedBeanDefinitionFilter filter = new JetspeedBeanDefinitionFilter("file:"+springFilterProperties.getAbsolutePath(), springFilterKey);
+        Properties initProperties = new Properties();
+        initProperties.put(JETSPEED_PROPERTIES_PATH_KEY, configuration.getString(JETSPEED_PROPERTIES_PATH_KEY));
+        SpringComponentManager cm = new SpringComponentManager(filter, bootConfigs, appConfigs, servletContext, appRoot, initProperties);      
         
         return cm;        
     }

@@ -23,7 +23,7 @@
   <bean id="ProductionConfiguration" class="org.apache.commons.configuration.PropertiesConfiguration">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
-      <value>${applicationRoot}/WEB-INF/conf/jetspeed-production.properties</value>
+      <value>${jetspeedPropertiesPath}/jetspeed-production.properties</value>
     </constructor-arg>
   </bean>
 </beans>

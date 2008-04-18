@@ -18,14 +18,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <!-- Commons configuration object generated from jetspeed.properties -->
-  <bean id="portal_configuration" class="org.apache.commons.configuration.PropertiesConfiguration">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg>
-      <value>${applicationRoot}/WEB-INF/conf/jetspeed.properties</value>
-    </constructor-arg>
-  </bean>
-
   <bean id="PortalConfiguration" class="org.apache.jetspeed.administration.PortalConfigurationImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
@@ -192,22 +184,6 @@
     </property>
     <property name="responseFactory">
       <ref bean="ServletResponseFactory" />
-    </property>
-  </bean>
-
-  <!-- Adds jetspeed.properties as our configuration object to support ${...} vars -->
-  <!-- ${applicationRoot} is acutally set as a system property via the SpringEngine -->
-
-  <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <meta key="j2:cat" value="default,springProperties" />
-    <property name="locations">
-      <list>
-        <value>file:///${applicationRoot}/WEB-INF/conf/jetspeed.properties</value>
-        <value>file:///${applicationRoot}/WEB-INF/conf/override.properties</value>
-      </list>
-    </property>
-    <property name="properties">
-      <value>applicationRoot=${applicationRoot}</value>
     </property>
   </bean>
 
