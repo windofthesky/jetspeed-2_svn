@@ -311,10 +311,18 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
     
     public void registerDynamicAlias(BeanDefinitionRegistry registry, String beanName, BeanDefinition bd)
     {
-        String alias = (String)bd.getAttribute(ALIAS_META_KEY);
-        if (alias != null && !alias.equals(beanName))
+        String aliases = (String)bd.getAttribute(ALIAS_META_KEY);
+        if (aliases != null)
         {
-            registry.registerAlias(beanName, alias);
+            StringTokenizer st = new StringTokenizer(aliases, " ,");
+            while (st.hasMoreTokens())
+            {
+                String alias = st.nextToken();
+                if (!alias.equals(beanName))
+                {
+                    registry.registerAlias(beanName, alias);
+                }
+            }
         }
     }
 }
