@@ -51,7 +51,10 @@ public class ServletHelper
         {
             path = path.substring(1);
         }
-
+        else if (path.startsWith("file:"))
+        {
+            return new File(path.substring(5)).getAbsolutePath();
+        }
         return new File(config.getServletContext().getRealPath(""), path).getAbsolutePath();
     }
 
