@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.jetspeed.maven.utils.Artifacts;
 import org.apache.jetspeed.maven.utils.DbConnection;
+import org.apache.jetspeed.maven.utils.PageSerializer;
 import org.apache.jetspeed.maven.utils.Serializer;
 import org.apache.jetspeed.maven.utils.SqlScripts;
 import org.apache.jetspeed.maven.utils.UnpackResources;
@@ -50,6 +51,11 @@ public class InitMojo extends AbstractMojo
      * @parameter
      */
     private Serializer seed;
+    
+    /**
+     * @parameter
+     */
+    private PageSerializer psml;
     
     /**
      * @parameter
@@ -110,6 +116,11 @@ public class InitMojo extends AbstractMojo
         if (seed != null && seed.isConfigered())
         {
             seed.execute(getLog());
+        }
+        
+        if (psml != null && psml.isConfigered())
+        {
+            psml.execute(getLog());
         }
     }
 }
