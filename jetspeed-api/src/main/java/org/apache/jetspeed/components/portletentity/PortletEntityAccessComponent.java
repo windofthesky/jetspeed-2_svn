@@ -58,19 +58,6 @@ public interface PortletEntityAccessComponent
 	 * </p>
 	 *
 	 * @param fragment
-	 * @param principal
-	 * @return
-	 * @throws PortletEntityNotGeneratedException
-	 */
-	MutablePortletEntity generateEntityFromFragment(ContentFragment fragment, String principal) throws PortletEntityNotGeneratedException;
-	
-	/**
-	 * 
-	 * <p>
-	 * generateEntityFromFragment
-	 * </p>
-	 *
-	 * @param fragment
 	 * @return
 	 * @throws PortletEntityNotGeneratedException
 	 */
@@ -83,10 +70,9 @@ public interface PortletEntityAccessComponent
 	 * </p>
 	 *
 	 * @param fragment
-	 * @param principal
 	 * @return
 	 */
-	ObjectID generateEntityKey(Fragment fragment, String principal);
+	ObjectID generateEntityKey(Fragment fragment);
 
 	/**
 	 * 
@@ -99,19 +85,6 @@ public interface PortletEntityAccessComponent
 	 */
 	MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
     MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id);
-	
-	/**
-	 * 
-	 * <p>
-	 * getPortletEntityForFragment
-	 * </p>
-	 *
-	 * @param fragment
-	 * @param principal
-	 * @return
-	 * @throws PortletEntityNotStoredException 
-	 */
-	MutablePortletEntity getPortletEntityForFragment(ContentFragment fragment, String principal) throws PortletEntityNotStoredException;
 	
 	/**
 	 * 

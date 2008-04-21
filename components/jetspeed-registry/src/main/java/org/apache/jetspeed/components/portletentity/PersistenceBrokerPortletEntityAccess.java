@@ -124,18 +124,16 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * generateEntityFromFragment
      * </p>
      * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment,
-     *      java.lang.String)
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment)
      * @param fragment
-     * @param principal
      * @return @throws
      *         PortletEntityNotGeneratedException
      */
-    public MutablePortletEntity generateEntityFromFragment( ContentFragment fragment, String principal )
+    public MutablePortletEntity generateEntityFromFragment( ContentFragment fragment)
             throws PortletEntityNotGeneratedException
     {
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
-        ObjectID entityKey = generateEntityKey(fragment, principal);
+        ObjectID entityKey = generateEntityKey(fragment);
         MutablePortletEntity portletEntity = null;
 
         if (pd != null)
@@ -163,23 +161,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     /**
      * 
      * <p>
-     * generateEntityFromFragment
-     * </p>
-     * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment)
-     * @param fragment
-     * @return @throws
-     *         PortletEntityNotGeneratedException
-     */
-    public MutablePortletEntity generateEntityFromFragment( ContentFragment fragment )
-            throws PortletEntityNotGeneratedException
-    {
-        return generateEntityFromFragment(fragment, null);
-    }
-
-    /**
-     * 
-     * <p>
      * generateEntityKey
      * </p>
      * 
@@ -189,16 +170,9 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * @param principal
      * @return
      */
-    public ObjectID generateEntityKey( Fragment fragment, String principal )
+    public ObjectID generateEntityKey( Fragment fragment)
     {
-        StringBuffer key = new StringBuffer();
-        if (principal != null && principal.length() > 0)
-        {
-            key.append(principal);
-            key.append("/");
-        }
-        key.append(fragment.getId());
-        return JetspeedObjectID.createFromString(key.toString());
+        return JetspeedObjectID.createFromString(fragment.getId());
     }
 
     /**
@@ -312,14 +286,9 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         return getPortletEntity(oid);
     }
 
-    public MutablePortletEntity getPortletEntityForFragment( ContentFragment fragment, String principal ) throws PortletEntityNotStoredException
-    {
-        return getPortletEntity(generateEntityKey(fragment, principal), fragment);
-    }
-
     public MutablePortletEntity getPortletEntityForFragment( ContentFragment fragment ) throws PortletEntityNotStoredException
     {
-        return getPortletEntity(generateEntityKey(fragment, null), fragment);
+        return getPortletEntity(generateEntityKey(fragment), fragment);
     }
 
     public MutablePortletEntity newPortletEntityInstance( PortletDefinition portletDefinition )

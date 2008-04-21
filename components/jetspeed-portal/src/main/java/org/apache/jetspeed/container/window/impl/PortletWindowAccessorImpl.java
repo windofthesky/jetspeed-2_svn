@@ -185,40 +185,18 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         }
     }
 
-    public PortletWindow getPortletWindow(ContentFragment fragment, String principal) throws FailedToRetrievePortletWindow, FailedToCreateWindowException, PortletEntityNotStoredException
-    {
-        ArgUtil.assertNotNull(ContentFragment.class, fragment, this, "getPortletWindow(Fragment fragment, String principal)");
-        ArgUtil.assertNotNull(String.class, principal, this, "getPortletWindow(Fragment fragment, String principal)");
-        PortletWindow portletWindow = getWindowFromCache(fragment);
-        if (portletWindow == null)
-        {
-            return createPortletWindow(fragment, principal);
-        }        
-        else
-        {
-            // make sure the window has the most up-to-date portlet entity
-            validateWindow(fragment, portletWindow);
-        }
-        return portletWindow;
-    }
-
     private PortletWindow createPortletWindow(ContentFragment fragment) throws FailedToCreateWindowException, PortletEntityNotStoredException
-    {
-        return createPortletWindow(fragment, null);
-    }
-    
-    private PortletWindow createPortletWindow(ContentFragment fragment, String principal) throws FailedToCreateWindowException, PortletEntityNotStoredException
     {        
         PortletWindow portletWindow = new PortletWindowImpl(fragment.getId());
         boolean temporaryWindow = false;
                 
-        MutablePortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment, principal);
+        MutablePortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment);
         if (portletEntity == null)
         {
             log.info("No portlet entity defined for fragment ID "+fragment.getId()+" attempting to auto-generate...");
             try
             {
-                portletEntity = entityAccessor.generateEntityFromFragment(fragment, principal);
+                portletEntity = entityAccessor.generateEntityFromFragment(fragment);
                 // not portlet definition most likely means that the portlet has not been deployed so dont worry about storing off the entity
                 if(isValidPortletEntity(portletEntity))
                 {

@@ -43,18 +43,6 @@ public interface PortletWindowAccessor
     PortletWindow getPortletWindow(ContentFragment fragment) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException;
     
     /**
-     * Get the portlet window for a fragment and given principal
-     * @param fragment
-     * @param principal
-     * @return
-     * @throws FailedToCreateWindowException
-     * @throws FailedToRetrievePortletWindow
-     * @throws PortletEntityNotStoredException 
-     * @throws InconsistentWindowStateException If the window references a non-existsent PortletEntity
-     */
-    PortletWindow getPortletWindow(ContentFragment fragment, String principal) throws FailedToCreateWindowException, FailedToRetrievePortletWindow, PortletEntityNotStoredException;
-
-    /**
      * Lookup a portlet window in the cache
      * If not found, return null
      * 
