@@ -113,10 +113,14 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USERS))
         {
-            log.info("collecting users/roles/groups and permissions");
+            log.info("collecting users/roles/groups");
             Refs refs = new Refs();
             exportRolesGroupsUsers(refs, snapshot, settings, log);
-            exportPermissions(refs, snapshot, settings, log);
+            if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
+            {
+                log.info("collecting permissions");
+                exportPermissions(refs, snapshot, settings, log);
+            }
         }
     }
 
@@ -133,7 +137,11 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             log.info("creating users/roles/groups and permissions");
             Refs refs = new Refs();
             recreateRolesGroupsUsers(refs, snapshot, settings, log);
-            recreatePermissions(refs, snapshot, settings, log);
+            if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
+            {
+                log.info("creating permissions");
+                recreatePermissions(refs, snapshot, settings, log);
+            }
         }
     }
 

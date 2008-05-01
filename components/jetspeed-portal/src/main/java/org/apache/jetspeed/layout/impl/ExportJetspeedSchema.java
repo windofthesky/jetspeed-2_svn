@@ -29,7 +29,6 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
-//import org.apache.jetspeed.serializer.JetspeedSerializerFactory;
 
 /**
  * Exporting the object using Ajax command
@@ -38,55 +37,42 @@ import org.apache.jetspeed.serializer.JetspeedSerializer;
  * @version $Id$
  */
 /*
- TODO: commenting out this class for now as it is still based upon the 2.1.3 JetspeedSerialzer
-       while in trunk the JetspeedSerializer has been refactored largely so it doesn't even compile.
-       Additionally, some related new 2.1.3 features haven't been ported over to trunk yet either (e.g. r592266 and more)
-       Will revisit this class and the JetspeedSerializer enhancements once 2.1.3 is released
-*/       
-public class ExportJetspeedSchema extends BaseGetResourceAction implements
-        AjaxAction, AjaxBuilder, Constants
+ * TODO: commenting out this class for now as it is still based upon the 2.1.3 JetspeedSerialzer while in trunk the
+ * JetspeedSerializer has been refactored largely so it doesn't even compile. Additionally, some related new 2.1.3
+ * features haven't been ported over to trunk yet either (e.g. r592266 and more) Will revisit this class and the
+ * JetspeedSerializer enhancements once 2.1.3 is released
+ */
+public class ExportJetspeedSchema extends BaseGetResourceAction implements AjaxAction, AjaxBuilder, Constants
 {
-/*    
-
     protected Log log = LogFactory.getLog(GetFolderAction.class);
-
     protected PageManager castorPageManager;
-
-    protected JetspeedSerializerFactory serializerFactory;
-
+    protected JetspeedSerializer serializer;
     protected String pageRoot;
-
     // categories of export
     private static final String USERS = "users";
-    private static final String GROUPS = "groups";
-    private static final String ROLES = "roles";
     private static final String PERMISSIONS = "permissions";
     private static final String PROFILES = "profiles";
     private static final String CAPABILITIES = "capabilities";
-    private static final String PREFS = "prefs";
-
+    private static final String USER_PREFS = "uprefs";
+    private static final String ENTITIES = "entities";
     String pathSeprator = System.getProperty("file.separator");
-*/
-    public ExportJetspeedSchema(String template, String errorTemplate,
-            PageManager pageManager,
-            PortletActionSecurityBehavior securityBehavior,
-            JetspeedSerializer serializer,
-            String dir)
+
+    public ExportJetspeedSchema(String template, String errorTemplate, PageManager pageManager,
+                                PortletActionSecurityBehavior securityBehavior, JetspeedSerializer serializer,
+                                String dir)
     {
         super(template, errorTemplate, pageManager, securityBehavior);
-//        this.serializerFactory = serializerFactory;
-//        this.pageRoot = dir;
+        this.serializer = serializer;
+        this.pageRoot = dir;
     }
 
     public boolean run(RequestContext requestContext, Map resultMap)
     {
         boolean success = true;
-        /*        
         String status = "success";
         String userName = requestContext.getUserPrincipal().toString();
         Map settings = new HashMap();
-        String exportFileName = getUserFolder(userName, false) + pathSeprator
-                + "ldapExport.xml";
+        String exportFileName = getUserFolder(userName, false) + pathSeprator + "ldapExport.xml";
         try
         {
             resultMap.put(ACTION, "export");
@@ -96,64 +82,64 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
                 resultMap.put(REASON, "Insufficient access to get portlets");
                 return success;
             }
-            boolean processPrefs = getNonNullActionParameter(requestContext, PREFS).equalsIgnoreCase("y") ? true : false;
-            if (!processPrefs)
+            settings.put(JetspeedSerializer.KEY_PROCESS_USERS,
+                         getNonNullActionParameter(requestContext, USERS).equalsIgnoreCase("y") ? Boolean.TRUE
+                                                                                               : Boolean.FALSE);
+            Boolean value = getNonNullActionParameter(requestContext, PERMISSIONS).equalsIgnoreCase("y") ? Boolean.TRUE
+                                                                                                        : Boolean.FALSE;
+            settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, value);
+            if (value.booleanValue())
             {
-                settings.put(JetspeedSerializer.KEY_PROCESS_USERS, 
-                        getNonNullActionParameter(requestContext, USERS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
-                settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, 
-                        getNonNullActionParameter(requestContext, PERMISSIONS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
-                settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, 
-                        getNonNullActionParameter(requestContext, PROFILES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
-                settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, 
-                        getNonNullActionParameter(requestContext, CAPABILITIES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+                // export of permissions requires export of USERS too
+                settings.put(JetspeedSerializer.KEY_PROCESS_USERS, Boolean.TRUE);
             }
-            else
+            settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER,
+                         getNonNullActionParameter(requestContext, PROFILES).equalsIgnoreCase("y") ? Boolean.TRUE
+                                                                                                  : Boolean.FALSE);
+            settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES,
+                         getNonNullActionParameter(requestContext, CAPABILITIES).equalsIgnoreCase("y") ? Boolean.TRUE
+                                                                                                      : Boolean.FALSE);
+            settings.put(JetspeedSerializer.KEY_PROCESS_ENTITIES,
+                         getNonNullActionParameter(requestContext, ENTITIES).equalsIgnoreCase("y") ? Boolean.TRUE
+                                                                                                  : Boolean.FALSE);
+            value = getNonNullActionParameter(requestContext, USER_PREFS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE;
+            settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, value);
+            if (value.booleanValue())
             {
-                settings.put(JetspeedSerializer.KEY_PROCESS_PREFERENCES, Boolean.TRUE);
+                // export of user preferences requires export of ENTITIES too
+                settings.put(JetspeedSerializer.KEY_PROCESS_ENTITIES, Boolean.TRUE);
             }
-            if (!cleanUserFolder(userName)) 
+            if (!cleanUserFolder(userName))
             {
                 resultMap.put(STATUS, "failure");
                 resultMap.put(REASON, "Could not create temp files on disk.");
                 success = false;
                 return success;
             }
-            settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING,
-                    Boolean.TRUE);
-            settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS,
-                    Boolean.FALSE);
-            JetspeedSerializer serializer = null;
-            if (processPrefs)
-                serializer = serializerFactory.create(JetspeedSerializerFactory.SECONDARY);
-            else
-                serializer = serializerFactory.create(JetspeedSerializerFactory.PRIMARY);
-            serializer.setDefaultIndent("\t");
+            settings.put(JetspeedSerializer.KEY_EXPORT_INDENTATION, "\t");
+            settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING, Boolean.TRUE);
+            settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, Boolean.FALSE);
             serializer.exportData("jetspeedadmin_export_process", exportFileName, settings);
             requestContext.getRequest().getSession().setAttribute("file", userName + "_ldapExport.xml");
             resultMap.put("link", getDownloadLink(requestContext, "tmpExport.xml", userName));
-
             resultMap.put(STATUS, status);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             // Log the exception
-            e.printStackTrace();
             log.error("exception while getting folder info", e);
             resultMap.put(STATUS, "failure");
             resultMap.put(REASON, e.getMessage());
             // Return a failure indicator
             success = false;
         }
-*/        
         return success;
     }
-/*
-    private String getDownloadLink(RequestContext requestContext,
-            String ObjectName, String userName) throws Exception
+
+    private String getDownloadLink(RequestContext requestContext, String ObjectName, String userName) throws Exception
     {
         String link = "";
-        String basePath = requestContext.getRequest().getContextPath()
-                + "/fileserver/_content/";
+        String basePath = requestContext.getRequest().getContextPath() + "/fileserver/_content/";
         link = basePath + userName + "/" + ObjectName;
         return link;
     }
@@ -165,8 +151,8 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
         {
             String folder = getUserFolder(userName, false);
             File dir = new File(pageRoot + pathSeprator + userName + ".zip");
-            if (dir.exists()) dir.delete();
-
+            if (dir.exists())
+                dir.delete();
             dir = new File(folder);
             if (dir.exists())
             {
@@ -187,7 +173,8 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
                 if (files[i].isDirectory())
                 {
                     deleteDir(files[i]);
-                } else
+                }
+                else
                 {
                     files[i].delete();
                 }
@@ -203,10 +190,10 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
         if (fullPath)
         {
             return userName + pathSeprator;
-        } else
+        }
+        else
         {
             return pageRoot + pathSeprator + userName;
         }
     }
-*/
 }

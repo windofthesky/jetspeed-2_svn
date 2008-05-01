@@ -206,7 +206,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
 
     private void importEntityPref(JSEntity entity, MutablePortletEntity portletEntity, Map settings, Log log)
     {
-        if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PREFERENCES) && isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
+        if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
             // do I carry any preferences?
             JSEntityPreferences preferences = entity.getEntityPreferences();
@@ -306,7 +306,11 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 MutablePortletApplication pa = (MutablePortletApplication) list.next();
                 // PortletApplicationDefinition pa =
                 // (PortletApplicationDefinition)list.next();
-                snapshot.getApplications().add(exportPA(pa, settings, log));
+                JSApplication app = exportPA(pa, settings, log);
+                if (app != null)
+                {
+                    snapshot.getApplications().add(app);
+                }
             }
             catch (Exception e)
             {
@@ -318,11 +322,6 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
 
     private JSApplication exportPA(MutablePortletApplication pa, Map settings, Log log) throws SerializerException
     {
-
-        JSApplication app = new JSApplication();
-        log.debug("--processed PA " + pa.getName() + " with id=" + pa.getId());
-        app.setID(pa.getId().toString());
-        app.setName(pa.getName());
         /**
          * while more PAs for each portletDef
          * list:entityMan:getPortletEntity(pd)
@@ -353,20 +352,25 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                         "PortletDefinition", e.getMessage() }));
             }
         }
-        app.setPortlets(portlets);
-        return app;
+        if (!portlets.isEmpty())
+        {
+            JSApplication app = new JSApplication();
+            log.debug("--exporting PA " + pa.getName() + " with id=" + pa.getId());
+            app.setID(pa.getId().toString());
+            app.setName(pa.getName());
+            app.setPortlets(portlets);
+            return app;
+        }
+        return null;
     }
 
     private JSPortlet exportPD(PortletDefinition pd, Map settings, Log log) throws SerializerException
     {
-
         try
         {
             Collection col = entityAccess.getPortletEntities(pd);
             if ((col == null) || (col.size() == 0))
                 return null;
-            JSPortlet portlet = new JSPortlet();
-            portlet.setName(pd.getName());
             Iterator list = null;
             try
             {
@@ -387,10 +391,15 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                     entities.add(jsEntity);
 
             }
-            log.debug("-----processedAnyEntities for PD=" + pd.getName());
-            portlet.setEntities(entities);
-            return portlet;
-
+            if (!entities.isEmpty())
+            {
+                JSPortlet portlet = new JSPortlet();
+                portlet.setName(pd.getName());
+                log.debug("-----exporting for PD=" + pd.getName());
+                portlet.setEntities(entities);
+                return portlet;
+            }
+            return null;
         }
         catch (Exception e)
         {
@@ -403,7 +412,10 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
     {
         JSEntity jsEntity = null;
         
-        if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PREFERENCES) && isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
+        jsEntity = new JSEntity();
+        jsEntity.setId(entity.getId().toString());
+        
+        if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
             String rootForEntity = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + entity.getId();
             try
@@ -414,18 +426,21 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                     String[] children = prefNode.childrenNames();
                     if ((children != null) && (children.length > 0))
                     {
-                        jsEntity = new JSEntity();
-                        jsEntity.setId(entity.getId().toString());
-                        JSEntityPreferences permissions = new JSEntityPreferences();
+                        JSEntityPreferences preferences = new JSEntityPreferences();
 
                         for (int i = 0; i < children.length; i++)
                         {
-                            JSEntityPreference permission = exportPreferenceNode(entity, children[i], settings, log);
-                            if (permission != null)
-                                permissions.add(permission);
+                            JSEntityPreference preference = exportPreferenceNode(entity, children[i], settings, log);
+                            if (preference != null)
+                            {
+                                preferences.add(preference);
+                            }
                         }
-                        log.debug("processed preferences for entity=" + entity.getId());
-                        jsEntity.setEntityPreferences(permissions);
+                        if (!preferences.isEmpty())
+                        {
+                            log.debug("processed preferences for entity=" + entity.getId());
+                            jsEntity.setEntityPreferences(preferences);
+                        }
                     }
                 }
             }

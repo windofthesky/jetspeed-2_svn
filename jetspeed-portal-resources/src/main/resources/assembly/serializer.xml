@@ -36,6 +36,10 @@
         <entry key="process_users">
           <value type="java.lang.Boolean">true</value>
         </entry>
+        <!-- process_permissions depends on process_users being enabled, otherwise ignored -->
+        <entry key="process_permissions">
+          <value type="java.lang.Boolean">true</value>
+        </entry>
         <entry key="process_profiler">
           <value type="java.lang.Boolean">true</value>
         </entry>
