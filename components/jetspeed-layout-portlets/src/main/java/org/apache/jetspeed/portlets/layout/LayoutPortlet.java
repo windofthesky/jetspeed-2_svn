@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -85,6 +86,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected PortletEntityAccessComponent entityAccess;
     protected PortletWindowAccessor windowAccess;
     protected TemplateLocator decorationLocator;
+    protected boolean storeViewPageInSession;
     
     private Map layoutTemplatesCache = new HashMap();
     public static final String DEFAULT_TEMPLATE_EXT = ".vm";
@@ -123,6 +125,13 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         {
             throw new PortletException("Failed to find the Window Access on portlet initialization");
         }        
+
+        PortalConfiguration portalConfiguration = (PortalConfiguration) getPortletContext().getAttribute(CommonPortletServices.CPS_PORTAL_CONFIGURATION);
+        if (null == portalConfiguration)
+        {
+            throw new PortletException("Failed to find the Portal Configuration on portlet initialization");
+        }        
+        storeViewPageInSession = portalConfiguration.getBoolean("layout.page.storeViewPageInSession", true);
         
         templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
         decorationLocator = (TemplateLocator) getPortletContext().getAttribute("DecorationLocator");
@@ -141,7 +150,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
 
         try
         {
-            String helpPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_HELP);                       
+            String helpPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_HELP);                       
             if (helpPage == null)
             {
                 PortletPreferences prefs = request.getPreferences();
@@ -152,7 +161,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                     if (helpPage == null)
                         helpPage = "columns";
                 }
-                request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_HELP, helpPage);
+                cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_HELP, helpPage);
             }
 
             String templateKey = helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE  + "-help";
@@ -222,7 +231,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             JetspeedPowerTool jpt = getJetspeedPowerTool(request);
             if (maximized)
             {
-                viewPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_MAX);                       
+                viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX);                       
                 if (viewPage == null)
                 {
                     PortletPreferences prefs = request.getPreferences();
@@ -233,12 +242,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                         if (viewPage == null)
                             viewPage = "maximized";
                     }
-                    request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_MAX, viewPage);
+                    cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX, viewPage);
                 }
             }
             else if (solo)
             {
-                viewPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_SOLO);                       
+                viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_SOLO);                       
                 if (viewPage == null)
                 {
                     PortletPreferences prefs = request.getPreferences();                
@@ -251,12 +260,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                             viewPage = "solo";
                         }
                     }
-                    request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_SOLO, viewPage);                    
+                    cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_SOLO, viewPage);                    
                 }
             }
             else
             {
-                viewPage = (String)request.getPortletSession().getAttribute(PortalReservedParameters.PAGE_LAYOUT_VIEW);                       
+                viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_VIEW);                       
                 if (viewPage == null)
                 {
                     PortletPreferences prefs = request.getPreferences();                                
@@ -267,7 +276,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                         if (viewPage == null)
                             viewPage = "columns";
                     }
-                    request.getPortletSession().setAttribute(PortalReservedParameters.PAGE_LAYOUT_VIEW, viewPage);                                        
+                    cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_VIEW, viewPage);                    
                 }
             }
             
@@ -739,6 +748,32 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         return props;
     }
 
+    
+    /**
+     * Retrieve the cached layout view page location. This method provides an easy way to turn on/off caching of 
+     * layout view page locations. By default, view page locations are stored in the portlet session. Set the Jetspeed property 
+     * <code>layout.page.storeViewPageInSession</code> to <code>true</code> / <code>false</code> to turn on / off caching.
+     * @param request portlet request
+     * @param viewPageType the view page type, see the PortalReservedParameters.PAGE_LAYOUT_* parameters.
+     * @return the cached view page location
+     */
+    protected String getCachedLayoutViewPage(RenderRequest request, String viewPageType){
+    	return storeViewPageInSession ? (String)request.getPortletSession().getAttribute(viewPageType) : null;  
+    }
+    
+    /**
+     * Cache a layout view page location. By default, the value is stored in the portlet session. 
+     * @param request portlet request
+     * @param viewPageType the type of the view page (e.g. help, maximized view, solo, etc.). See the 
+     * PortalReservedParameters.PAGE_LAYOUT_* parameters.
+     * @param page the view page to cache
+     */
+    protected void cacheLayoutViewPage(RenderRequest request, String viewPageType, String page){
+    	if (storeViewPageInSession){
+        	request.getPortletSession().setAttribute(viewPageType, page);
+    	}
+    }
+    
     class CachedTemplate
     {
         private String key;

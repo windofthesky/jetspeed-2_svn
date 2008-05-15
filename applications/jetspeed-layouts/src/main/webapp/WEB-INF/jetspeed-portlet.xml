@@ -42,6 +42,7 @@ limitations under the License.
         <js:service name='Desktop'/>
         <js:service name='decorationContentCache'/>
         <js:service name='portletContentCache'/>        
+	    <js:service name='PortalConfiguration'/>        
 	</js:services>
 	
 </portlet-app>
