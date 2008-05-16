@@ -704,6 +704,7 @@ public class PersistenceBrokerSSOProvider extends
 			 try
 			 {
 			     getPersistenceBrokerTemplate().store(credential);
+                 //this.updateSite(ssoSite);
 			  }
 			 catch (Exception e)
 			 {
@@ -1033,9 +1034,10 @@ public class PersistenceBrokerSSOProvider extends
     public SSOSite getSite(String siteUrl)
     {
         Criteria filter = new Criteria();
-        filter.addEqualTo("url", siteUrl);
+        filter.addEqualTo("siteURL", siteUrl);
         Query query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
         SSOSite site = (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        this.mapSite.put(siteUrl, site);
         return site;       
     }
     
@@ -1045,7 +1047,7 @@ public class PersistenceBrokerSSOProvider extends
         try
         {
             getPersistenceBrokerTemplate().store(site);
-            this.mapSite.put(site.getName(), site);                        
+            this.mapSite.put(site.getSiteURL(), site);                        
         }
         catch (Exception e)
         {
@@ -1079,7 +1081,7 @@ public class PersistenceBrokerSSOProvider extends
             ssoSite.setFormUserField(userField);
             ssoSite.setFormPwdField(pwdField);
             getPersistenceBrokerTemplate().store(ssoSite);
-            this.mapSite.put(siteName, ssoSite);            
+            this.mapSite.put(siteUrl, ssoSite);            
         }
         catch (Exception e)
         {
@@ -1109,7 +1111,7 @@ public class PersistenceBrokerSSOProvider extends
             ssoSite.setRealm(realm);
             ssoSite.setChallengeResponseAuthentication(true);
              getPersistenceBrokerTemplate().store(ssoSite);
-            this.mapSite.put(siteName, ssoSite);            
+            this.mapSite.put(siteUrl, ssoSite);            
         }
         catch (Exception e)
         {
@@ -1130,7 +1132,7 @@ public class PersistenceBrokerSSOProvider extends
             ssoSite.setCertificateRequired(false);
             ssoSite.setAllowUserSet(true);            
             getPersistenceBrokerTemplate().store(ssoSite);
-            this.mapSite.put(siteName, ssoSite);            
+            this.mapSite.put(siteUrl, ssoSite);            
         }
         catch (Exception e)
         {
@@ -1515,15 +1517,23 @@ public class PersistenceBrokerSSOProvider extends
         // Update database and reset cache
         try
         {
-            getPersistenceBrokerTemplate().store(ssoSite);
-
-            // Persist Principal/Remote
             getPersistenceBrokerTemplate().store(principal);
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             e.printStackTrace();
             throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB
                     + e.toString());
+        }
+    }
+
+    void debugSite(SSOSite site)
+    {
+        Iterator i = site.getRemotePrincipals().iterator();
+        while (i.hasNext())
+        {
+            InternalUserPrincipal p = (InternalUserPrincipal)i.next();
+            Object o = p.getCredentials().iterator();
         }
     }
     
