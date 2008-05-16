@@ -883,12 +883,19 @@
     <util:available file="${sql.src.path}">
       <echo>Running SQL scripts in directory ${sql.src.path}...</echo>
       <util:file name="${sql.src.path}" var="sqldir"/>
-      <j:set var="fileList" value="${sqldir.listFiles()}"/>
-      <j:forEach items="${fileList}" var="sqlfile" >
+      <!-- first check the files and then add them to a sorted Set to ensure they are executed in sorted order -->
+      <j:new className="java.util.TreeSet" var="fileList"/>
+      <j:forEach items="${sqldir.listFiles()}" var="sqlfile" >
         <j:if test="${sqlfile.name.endsWith('.sql')}" >
-          <j:set var="database.arg.script" value="${sqlfile.absolutePath}"/>
-          <attainGoal name="${process.database.script.goal}"/>
+          <j:invoke on="${fileList}" method="add">
+            <j:arg value="${sqlfile.absolutePath}"/>
+          </j:invoke>
         </j:if>
+      </j:forEach>
+      <!-- now execute the found sql scripts, sorted by full path -->
+      <j:forEach items="${fileList.iterator()}" var="sqlfile" >
+          <j:set var="database.arg.script" value="${sqlfile}"/>
+          <attainGoal name="${process.database.script.goal}"/>
       </j:forEach>
     </util:available>
   </goal>
