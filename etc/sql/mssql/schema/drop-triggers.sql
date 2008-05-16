@@ -10,6 +10,8 @@ IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='TR' AND name='trig_page_menu')
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='TR' AND name='trig_fragment')
     DROP TRIGGER trig_fragment;
 
+IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='TR' AND name='trig_prefs_node')
+    DROP TRIGGER trig_prefs_node;
+
 IF EXISTS (SELECT 1 FROM sysobjects WHERE type ='TR' AND name='trig_security_principal')
     DROP TRIGGER trig_security_principal;
-
