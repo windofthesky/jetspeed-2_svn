@@ -138,20 +138,6 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 
         assertEquals("2", pref.getValueAt(0));
 
-        entity.reset();
-
-        pref = (PreferenceComposite) prefs.get("pref1");
-
-        assertEquals("1", pref.getValueAt(0));
-
-        prefs.remove(pref);
-
-        assertNull(prefs.get("pref1"));
-
-        entity.reset();
-
-        assertNotNull(prefs.get("pref1"));
-
         prefs.add("pref2", Arrays.asList(new String[]
         { "2", "3" }));
 
@@ -181,22 +167,11 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
         assertEquals(3, count);
 
-        entity.reset();
-
-        prefsValues = pref2.getValues();
-        count = 0;
-        while (prefsValues.hasNext())
-        {
-            assertEquals(String.valueOf(count + 2), prefsValues.next());
-            count++;
-        }
-        assertEquals(2, count);
-
         // testing preferences null values assignments fix, issue JS2-607
         pref2.setValueAt(0, null);        
         assertNull("pref2.value[0] should be null", pref2.getValueAt(0));        
         String[] values = pref2.getValueArray();
-        assertEquals(2, values.length);
+        assertEquals(3, values.length);
         assertNull("pref2.value[0] should be null", values[0]);
         assertEquals("3", values[1]);
         pref2.setValues(new String[]{"2",null,"3"});
@@ -210,13 +185,9 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         pref2.setValues((String[])null);
         assertFalse(pref2.isValueSet());
         assertTrue(pref2.getValueArray().length == 0);
-        entity.reset();
-        assertTrue(pref2.getValueArray().length == 2);
         pref2.setValues(new String[]{});
         assertFalse(pref2.isValueSet());
         assertTrue(pref2.getValueArray().length == 0);
-        entity.reset();
-        assertTrue(pref2.getValueArray().length == 2);
 
         MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));

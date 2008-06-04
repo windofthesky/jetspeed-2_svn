@@ -79,7 +79,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     protected PrefsPreferenceSetImpl pagePreferenceSet;
     protected Map perPrincipalPrefs = new HashMap();
-    protected Map originalValues;
     private PortletApplicationEntity applicationEntity = null;
     private PortletWindowList portletWindows = new PortletWindowListImpl();
     private PortletDefinitionComposite portletDefinition = null;  
@@ -157,7 +156,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
                 {
                     mergePreferencesSet(preferenceSet);
                 }
-                backupValues(preferenceSet);
                 dirty = true;
             }
         }
@@ -197,8 +195,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
                         preferenceSet.add(preference.getName(), preferenceValues);
                     }
                 }
-                
-                backupValues(preferenceSet);
                 dirty = true;
             }
         }
@@ -235,29 +231,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             userPrefSet.add(sharedPref.getName(), prefs);
             index++;
         }        
-    }
-
-    /**
-     * <p>
-     * backupValues
-     * </p>
-     * 
-     *  
-     */
-    protected void backupValues( PreferenceSet preferenceSet )
-    {
-        originalValues = new HashMap();
-        Iterator itr = preferenceSet.iterator();
-        while (itr.hasNext())
-        {
-            PrefsPreference pref = (PrefsPreference) itr.next();
-
-            String[] currentValues = pref.getValueArray();
-            String[] backUp = new String[currentValues.length];
-            System.arraycopy(currentValues, 0, backUp, 0, currentValues.length);
-            originalValues.put(pref.getName(), backUp);
-
-        }
     }
 
     public PortletDefinition getPortletDefinition()
@@ -343,10 +316,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         PreferenceSet preferenceSet = (PreferenceSet)perPrincipalPrefs.get(principal);
         pac.storePreferenceSet(preferenceSet, this);
         dirty = false;
-        if (preferenceSet != null)
-        {
-            backupValues(preferenceSet);
-        }
     }
     
     private void storeToPage() throws IOException
@@ -388,10 +357,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         }
         
         dirty = false;
-        if (preferenceSet != null)
-        {
-            backupValues(preferenceSet);
-        }
     }
 
     /**
@@ -404,48 +369,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public void reset() throws IOException
     {
-        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) perPrincipalPrefs.get(getPrincipal());
-        try
-        {
-            if (originalValues != null && preferenceSet != null)
-            {
-                Iterator prefs = preferenceSet.iterator();
-
-                while (prefs.hasNext())
-                {
-                    PrefsPreference pref = (PrefsPreference) prefs.next();
-                    if (originalValues.containsKey(pref.getName()))
-                    {
-                        pref.setValues((String[]) originalValues.get(pref.getName()));
-                    }
-                    else
-                    {
-                        preferenceSet.remove(pref);
-                    }
-                    preferenceSet.flush();
-                }
-
-                Iterator keys = originalValues.keySet().iterator();
-                while (keys.hasNext())
-                {
-                    String key = (String) keys.next();
-                    if (preferenceSet.get(key) == null)
-                    {
-                        preferenceSet.add(key, Arrays.asList((String[]) originalValues.get(key)));
-                    }
-                }
-            }
-            dirty = false;
-            backupValues(preferenceSet);
-        }
-        catch (BackingStoreException e)
-        {
-            String msg = "Preference backing store failed: " + e.toString();
-            IOException ioe = new IOException(msg);
-            ioe.initCause(e);
-            throw ioe;
-        }
-
+        dirty = true;
+        getPreferenceSet(getPrincipal());        
     }
 
     // internal methods used for debugging purposes only
