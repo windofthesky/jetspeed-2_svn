@@ -16,6 +16,7 @@
 */
 package org.apache.jetspeed.cache.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,7 +50,7 @@ public class EhPortletWindowCache extends EhCacheImpl implements PortletWindowCa
 	public EhPortletWindowCache(Ehcache ehcache) 
 	{
 		super(ehcache);
-		portletEntityIdToEntityid = new HashMap();
+        portletEntityIdToEntityid = Collections.synchronizedMap(new HashMap());
 	}
 	
 	/* (non-Javadoc)
