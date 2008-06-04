@@ -83,7 +83,7 @@ public class PreferencesImpl extends AbstractPreferences
         super(parent, nodeName);
         try
         {
-            node = prefsProvider.getNode(this.absolutePath(), nodeType);
+            node = ppw.provider().getNode(this.absolutePath(), nodeType);
             newNode = false;
         }
         catch (NodeDoesNotExistException e1)
@@ -92,11 +92,11 @@ public class PreferencesImpl extends AbstractPreferences
             {
                 if (parent != null)
                 {
-                    this.node = prefsProvider.createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
+                    this.node = ppw.provider().createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
                 }
                 else
                 {
-                    this.node = prefsProvider.createNode(null, nodeName, nodeType, this.absolutePath());
+                    this.node = ppw.provider().createNode(null, nodeName, nodeType, this.absolutePath());
                 }
 
                 newNode = true;
@@ -112,7 +112,7 @@ public class PreferencesImpl extends AbstractPreferences
             {
                 try
                 {
-                    node = prefsProvider.getNode(this.absolutePath(), nodeType);
+                    node = ppw.provider().getNode(this.absolutePath(), nodeType);
                     newNode = false;
                 }
                 catch (NodeDoesNotExistException e2)
