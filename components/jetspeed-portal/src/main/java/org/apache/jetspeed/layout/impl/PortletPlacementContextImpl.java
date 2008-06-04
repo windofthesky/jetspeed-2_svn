@@ -743,7 +743,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		
 		if ( fragment != null )
 		{
-			if ( foundFragment == null || foundFragment.getId() != fragment.getId() )
+            if ( foundFragment == null || !foundFragment.getId().equals(fragment.getId()) )               
 			{
 				sourceDesc = ( sourceDesc == null ? "getFragmentAtExpectedCoordinate" : sourceDesc );
 				
@@ -773,6 +773,10 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 						out.append( "row is out of bounds, " );
 					out.append( "row-count=" ).append( colFragCount );
 				}
+                if(foundFragment != null)
+                {
+                    out.append(" - found fragment ").append(foundFragment.getId());
+                }                
 				out.append( ")" );
 				throw new PortletPlacementException( out.toString() );
 			}
