@@ -16,6 +16,9 @@
  */
 package org.apache.jetspeed.pipeline.valve.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.util.Enumeration;
 import java.util.Stack;
 
 import javax.servlet.RequestDispatcher;
@@ -79,6 +82,7 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
                     rd.include(httpRequest, request.getResponse());
                 }
             }
+            // this.dumpSession(request);            
         }
         catch (Exception e)
         {
@@ -95,4 +99,47 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
         return "CleanupValveImpl";
     }
 
+
+
+    public void dumpSession(RequestContext context)
+    {
+        try
+        {
+            int count = 0;
+            ByteArrayOutputStream bout =  new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream (bout);
+            Enumeration e = context.getRequest().getSession().getAttributeNames();
+            while (e.hasMoreElements())
+            {
+                String name = (String)e.nextElement();
+                Object o = context.getSessionAttribute(name);
+                serializeObject(name, o);
+                out.writeObject(o); 
+                count++;
+            }
+            out.close();
+            log.info("Session object: " + count);
+            log.info("Session footprint: " + bout.size());
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+        }
+    }
+    
+    public void serializeObject(String name, Object o)
+    {
+        try
+        {
+            ByteArrayOutputStream bout =  new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream (bout);
+            out.writeObject(o);
+            out.close();
+            log.info("o = " + name + ", " + o + ", size = " + bout.size() );            
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+        }
+    }            
 }
