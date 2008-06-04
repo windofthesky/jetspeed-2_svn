@@ -49,8 +49,8 @@ public class EhPortletWindowCache extends EhCacheImpl implements PortletWindowCa
 	public EhPortletWindowCache(Ehcache ehcache) 
 	{
 		super(ehcache);
-		portletEntityIdToEntityid = new HashMap();
-	}
+        portletEntityIdToEntityid = Collections.synchronizedMap(new HashMap());
+    }
 	
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.cache.impl.PortletWindowCache#getPortletWindow(java.lang.String)
