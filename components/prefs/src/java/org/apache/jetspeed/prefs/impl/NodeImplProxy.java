@@ -153,19 +153,28 @@ public class NodeImplProxy implements  Node
     {
     	this.node = node;
     }
+
     protected void reset()
     {
-    	try
-    	{
-    		provider.redoNode(this,node.getFullPath(), node.getNodeType());
-    		dirty = false;
-    	}
-    	catch (Exception e)
-    	{
-    		e.printStackTrace();
-    		node = null;
-    	}
-    }
-    
+        try
+        {
+            provider.redoNode(this,node.getFullPath(), node.getNodeType());
+            dirty = false;
+        }
+        catch (Exception e)
+        {
+            try
+            {
+                // try again, we may have ran out of connections as reproduced May 2008
+                provider.redoNode(this,node.getFullPath(), node.getNodeType());
+                dirty = false;                
+            }
+            catch (Exception e2)
+            {
+                throw new RuntimeException("Failed to reset preference node. Unable to load node.", e2);                 
+            }
+            e.printStackTrace();            
+        }
+    }        
 
 }

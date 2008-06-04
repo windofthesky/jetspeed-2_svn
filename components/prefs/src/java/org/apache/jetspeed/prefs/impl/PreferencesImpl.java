@@ -79,48 +79,54 @@ public class PreferencesImpl extends AbstractPreferences
     public PreferencesImpl(PreferencesImpl parent, String nodeName, int nodeType) throws IllegalStateException
     {
         super(parent, nodeName);
-
         try
         {
-            if (parent != null)
-            {
-                this.node = prefsProvider.createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
-            }
-            else
-            {
-                this.node = prefsProvider.createNode(null, nodeName, nodeType, this.absolutePath());
-            }
-
-            newNode = true;
+            node = prefsProvider.getNode(this.absolutePath(), nodeType);
+            newNode = false;
         }
-        catch (FailedToCreateNodeException e)
-        {
-            IllegalStateException ise = new IllegalStateException("Failed to create new Preferences of type "
-                    + nodeType + " for path " + this.absolutePath());
-            ise.initCause(e);
-            throw ise;
-        }
-        catch (NodeAlreadyExistsException e)
+        catch (NodeDoesNotExistException e1)
         {
             try
             {
-                node = prefsProvider.getNode(this.absolutePath(), nodeType);
-                newNode = false;
+                if (parent != null)
+                {
+                    this.node = prefsProvider.createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
+                }
+                else
+                {
+                    this.node = prefsProvider.createNode(null, nodeName, nodeType, this.absolutePath());
+                }
+
+                newNode = true;
             }
-            catch (NodeDoesNotExistException e1)
+            catch (FailedToCreateNodeException e)
             {
-                // If we get this at this point something is very wrong
-                IllegalStateException ise = new IllegalStateException(
-                        "Unable to create node for Preferences of type "
-                                + nodeType
-                                + " for path "
-                                + this.absolutePath()
-                                + ".  If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
-                ise.initCause(e1);
+                IllegalStateException ise = new IllegalStateException("Failed to create new Preferences of type "
+                        + nodeType + " for path " + this.absolutePath());
+                ise.initCause(e);
                 throw ise;
             }
+            catch (NodeAlreadyExistsException e)
+            {
+                try
+                {
+                    node = prefsProvider.getNode(this.absolutePath(), nodeType);
+                    newNode = false;
+                }
+                catch (NodeDoesNotExistException e2)
+                {
+                    // If we get this at this point something is very wrong
+                    IllegalStateException ise = new IllegalStateException(
+                            "Unable to create node for Preferences of type "
+                                    + nodeType
+                                    + " for path "
+                                    + this.absolutePath()
+                                    + ".  If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
+                    ise.initCause(e2);
+                    throw ise;
+                }
+            }
         }
-
     }
 
     /**
