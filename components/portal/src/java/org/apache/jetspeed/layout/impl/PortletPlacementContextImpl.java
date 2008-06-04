@@ -16,21 +16,18 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 import java.util.Map;
-import java.util.Collections;
-import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
-import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
+import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.pluto.om.common.Parameter;
@@ -746,7 +743,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		
 		if ( fragment != null )
 		{
-			if ( foundFragment == null || foundFragment.getId() != fragment.getId() )
+			if ( foundFragment == null || !foundFragment.getId().equals(fragment.getId()) )
 			{
 				sourceDesc = ( sourceDesc == null ? "getFragmentAtExpectedCoordinate" : sourceDesc );
 				
@@ -775,7 +772,11 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 					if ( rowIndex < 0 || rowIndex >= colFragCount )
 						out.append( "row is out of bounds, " );
 					out.append( "row-count=" ).append( colFragCount );
-				}
+				}			
+				if(foundFragment != null)
+				{
+					out.append(" - found fragment ").append(foundFragment.getId());
+				}				
 				out.append( ")" );
 				throw new PortletPlacementException( out.toString() );
 			}
