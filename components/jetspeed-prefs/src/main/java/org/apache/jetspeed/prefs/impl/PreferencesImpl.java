@@ -81,6 +81,7 @@ public class PreferencesImpl extends AbstractPreferences
     PreferencesImpl(PreferencesImpl parent, PreferencesProviderWrapper ppw, String nodeName, int nodeType) throws IllegalStateException
     {
         super(parent, nodeName);
+        this.ppw = ppw;
         try
         {
             node = ppw.provider().getNode(this.absolutePath(), nodeType);
