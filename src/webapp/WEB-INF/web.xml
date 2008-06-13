@@ -215,6 +215,12 @@ limitations under the License.
        </servlet-name>
        <url-pattern>/dtconfigure/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+       <servlet-name>
+          jetspeed
+       </servlet-name>
+       <url-pattern>/healthcheck/*</url-pattern>
+    </servlet-mapping>
     
     <!-- Map *.vm files to Velocity  -->
 	<servlet-mapping>
