@@ -374,6 +374,115 @@
     <meta key="j2:cat" value="default" />
   </bean>
 
+  <bean id="healthCheckValve" class="org.apache.jetspeed.pipeline.valve.HealthCheckValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <!-- Validators -->
+      <list>
+        <ref bean="portletApplicationValidator" />
+        <ref bean="databaseValidator" />
+      </list>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <!-- successMessage -->
+      <value>THE SERVER IS UP</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <!-- failMessage -->
+      <value>THE SERVER IS DOWN</value>
+    </constructor-arg>
+    <constructor-arg index="3">
+      <!-- addValidationMessagesToResponse -->
+      <value>false</value>
+    </constructor-arg>
+    <constructor-arg index="4">
+      <!-- stopValidationOnError -->
+      <value>true</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="portletApplicationValidator" class="org.apache.jetspeed.healthcheck.validators.PortletApplicationAvailableHeathCheckValidator">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <!-- requiredPortletApplications -->
+      <list>
+        <!-- names of the portlet applications which are required to be available -->
+        <!--
+        <value>j2-admin</value>
+         -->
+      </list>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <!-- numberOfRetries -->
+      <value>0</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <!-- retryDelay -->
+      <value>0</value>
+    </constructor-arg>
+    <constructor-arg index="3">
+      <!-- portletRegistry -->
+      <ref bean="portletRegistry" />
+    </constructor-arg>
+    <constructor-arg index="4">
+      <!-- portletFactory -->
+      <ref bean="portletFactory" />
+    </constructor-arg>
+    <constructor-arg index="5">
+      <!-- stopValidationOnError -->
+      <value>true</value>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="databaseValidator" class="org.apache.jetspeed.healthcheck.validators.DatasourceAvailableHealthCheckValidator">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <!-- resources -->
+      <map>
+        <!-- entries to DataSourceValidationBean instances which should be checked
+             see (commented out) example below -->
+        <!-- 
+        <entry key="mydata">
+          <bean class="org.apache.jetspeed.healthcheck.validators.DataSourcesValidationBean">
+            <constructor-arg index="0">
+               <!- - Oracle database specific validation query - ->
+               <value>SELECT * FROM SYS.DUAL</value>
+            </constructor-arg>
+            <constructor-arg index="1">
+              <list>
+                 <!- - list of datasources (all using the same validation query)
+                       which needs to be validated - ->
+                 <bean id="mydataDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+                    <property name="jndiName" value="java:comp/env/jdbc/mydata1" />
+                 </bean>
+                 <bean id="mydataDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+                    <property name="jndiName" value="java:comp/env/jdbc/mydata2" />
+                 </bean>
+              </list>
+            </constructor-arg>
+          </bean>
+        </entry>
+        -->
+      </map>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <!-- numberOfRetries -->
+      <value>0</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <!-- retryDelay -->
+      <value>0</value>
+    </constructor-arg>
+    <constructor-arg index="3">
+      <!-- stopValidationOnError -->
+      <value>true</value>
+    </constructor-arg>
+    <constructor-arg index="4">
+      <!-- requireAllValid -->
+      <value>true</value>
+    </constructor-arg>
+  </bean>
+
   <bean id="jetspeed-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
@@ -610,6 +719,17 @@
     </constructor-arg>
   </bean>
 
+  <bean id="healthcheck-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <value>HealthCheckPipeline</value>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <ref bean="healthCheckValve" />
+      </list>
+    </constructor-arg>
+  </bean>
 
   <bean id='pipeline-map' class='java.util.HashMap'>
     <meta key="j2:cat" value="default" />
@@ -652,6 +772,9 @@
         </entry>
         <entry key='/dtconfigure'>
           <value>dtconfigure-pipeline</value>
+        </entry>
+        <entry key='/healthcheck'>
+          <value>healthcheck-pipeline</value>
         </entry>
       </map>
     </constructor-arg>
