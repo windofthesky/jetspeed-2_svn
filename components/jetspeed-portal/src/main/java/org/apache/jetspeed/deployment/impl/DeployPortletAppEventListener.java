@@ -215,8 +215,10 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
     {
         try
         {
-            File toFile = new File(webAppDir, event.getName());
-            new JetspeedDeploy(event.getPath(), toFile.getAbsolutePath(), event.getName(), stripLoggers);
+            String fileName = event.getName();
+            File toFile = new File(webAppDir, fileName);
+            String contextName = fileName.substring(0, fileName.length() - 4); // strip ".war"
+            new JetspeedDeploy(event.getPath(), toFile.getAbsolutePath(), contextName, stripLoggers);
             event.setStatus(DeploymentStatus.STATUS_OKAY);
         }
         catch (Exception e)
