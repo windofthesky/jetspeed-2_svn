@@ -57,7 +57,7 @@ limitations under the License.
   </security-constraints-def>
   <security-constraints-def name="public-edit">
     <security-constraint>
-      <roles>user</roles>
+      <roles>user,guest</roles>
       <permissions>view, edit</permissions>
     </security-constraint>
   </security-constraints-def>
