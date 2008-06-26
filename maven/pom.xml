@@ -40,6 +40,7 @@
         <module>jetspeed-unpack-maven-plugin</module>        
         <module>jetspeed-deploy-maven-plugin</module>
         <module>jetspeed-db-maven-plugin</module>
+        <module>jetspeed-archetype</module>
     </modules>
     
 </project>
