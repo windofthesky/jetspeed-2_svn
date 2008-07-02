@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.portals.jetspeed-2</groupId>
   <artifactId>jetspeed-archetype</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Archetype - jetspeed-archetype</name>
+  <version>2.2-SNAPSHOT</version>
+  <name>Jetspeed 2 Maven Archetype</name>
   <url>http://maven.apache.org</url>
 </project>

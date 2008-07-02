@@ -18,4 +18,10 @@
 -->
 <archetype>
   <id>jetspeed-archetype</id>
+  <resources>
+    <resource>src/main/webapp/decorations/layout/readme.txt</resource>
+    <resource>src/main/webapp/decorations/portlet/readme.txt</resource>
+    <resource>src/main/webapp/desktop-themes/readme.txt</resource>
+    <resource>src/main/webapp/WEB-INF/pages/readme.txt</resource>
+  </resources>
 </archetype>

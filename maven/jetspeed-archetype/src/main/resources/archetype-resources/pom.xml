@@ -28,7 +28,7 @@
 
   <groupId>${groupId}</groupId>
   <artifactId>${artifactId}</artifactId>
-  <version>2.2-SNAPSHOT</version>
+  <version>${version}</version>  
   <name>Jetspeed-2 Portal Application</name>
   <description>Jetspeed-2 Portal Application</description>
 
