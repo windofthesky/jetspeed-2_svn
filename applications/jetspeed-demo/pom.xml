@@ -41,6 +41,12 @@
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-dependencies</artifactId>
+      <version>${org.apache.portals.jetspeed.version}</version>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 
   <properties>
