@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-cm</artifactId>
-      <scope>runtime</scope>
       <exclusions>
         <exclusion>
           <groupId>dom4j</groupId>
