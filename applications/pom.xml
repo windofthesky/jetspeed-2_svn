@@ -36,6 +36,7 @@
     <packaging>pom</packaging>
 
     <modules>
+      <module>jetspeed-dependencies</module>
         <module>jetspeed-layouts</module>
         <module>jetspeed</module>
         <module>jetspeed-demo</module>

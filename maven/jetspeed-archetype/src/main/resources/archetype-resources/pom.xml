@@ -37,6 +37,12 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-dependencies</artifactId>
+      <version>${dollar}{org.apache.portals.jetspeed.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed</artifactId>
       <version>${dollar}{org.apache.portals.jetspeed.version}</version>
       <type>war</type>
