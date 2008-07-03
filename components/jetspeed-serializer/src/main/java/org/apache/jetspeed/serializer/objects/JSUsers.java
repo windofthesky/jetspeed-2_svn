@@ -24,6 +24,6 @@ import java.util.ArrayList;
  * @author hajo
  *
  */
-public class JSUsers extends ArrayList
+public class JSUsers extends ArrayList<JSUser>
 {
 }

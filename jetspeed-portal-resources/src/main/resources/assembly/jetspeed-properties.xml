@@ -20,7 +20,7 @@
 
   <!-- Commons configuration object generated from jetspeed.properties + override.properties -->
   <bean id="portal_configuration" class="org.apache.jetspeed.components.util.ConfigurationProperties">
-    <meta key="j2:cat" value="default" />
+    <meta key="j2:cat" value="default,springProperties" />
     <property name="locations">
       <list>
         <value>file:///${jetspeedPropertiesPath}/jetspeed.properties</value>

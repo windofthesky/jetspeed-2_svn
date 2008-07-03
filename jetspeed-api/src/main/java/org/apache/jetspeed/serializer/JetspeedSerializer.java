@@ -71,6 +71,7 @@ public interface JetspeedSerializer
     String KEY_PROCESS_USER_PREFERENCES = "process_user_preferences";
     String KEY_PROCESS_PORTAL_PREFERENCES = "process_portal_preferences";
     String KEY_PROCESS_ENTITIES = "process_entities";
+    String KEY_PROCESS_USER_TEMPLATES = "process_user_templates";
     String KEY_LOGGER = "logger";
     String KEY_OVERWRITE_EXISTING = "overwrite_existing";
     String KEY_BACKUP_BEFORE_PROCESS = "backup_before_process";

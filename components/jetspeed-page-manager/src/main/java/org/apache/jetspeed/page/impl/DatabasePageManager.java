@@ -1844,6 +1844,12 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
     }
+
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner)
+    throws NodeException, PageNotUpdatedException
+    {
+        PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner);
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#addPages(org.apache.jetspeed.om.page.Page[])

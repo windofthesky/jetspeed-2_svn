@@ -349,7 +349,7 @@
 				<Rule locator="page" rule="subsite-by-hostname"/>
 			</Rules>
 		</User>
-		<User name="tomcat">
+	<User name="tomcat" userTemplate='/_user/template/' subsite='_hostname/localhost'>
 			<credentials password="tomcat" enabled="TRUE" requiresUpdate="FALSE"/>
 			<roles></roles>
 			<groups></groups>

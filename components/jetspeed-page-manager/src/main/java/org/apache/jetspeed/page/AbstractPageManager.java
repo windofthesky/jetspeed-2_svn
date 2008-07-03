@@ -1208,7 +1208,19 @@ public abstract class AbstractPageManager
     {
         PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
     }
-            
+
+    /**
+     * Deep merge a folder
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     */
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner)
+    throws NodeException
+    {
+        PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner);
+    }
+    
     public Page getUserPage(String userName, String pageName)
     throws PageNotFoundException, NodeException
     {

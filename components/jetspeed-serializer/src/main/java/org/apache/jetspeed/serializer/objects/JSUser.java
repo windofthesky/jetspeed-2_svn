@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringEscapeUtils;
  */
 public class JSUser
 {
-
     private String name;
 
     private char[] password;
@@ -60,6 +59,9 @@ public class JSUser
 
     private JSPrincipalRules rules = new JSPrincipalRules();
 
+    private String userTemplate;
+    private String subsite;
+    
     private transient Principal principal;
 
     public JSUser()
@@ -301,18 +303,29 @@ public class JSUser
      */
     private static final XMLFormat XML = new XMLFormat(JSUser.class)
     {
-
         public void write(Object o, OutputElement xml)
-                throws XMLStreamException
+        throws XMLStreamException
         {
             try
             {
                 JSUser g = (JSUser) o;
                 String s = g.getName();
-                if ((s == null) || (s.length() == 0)) s = "guest";
+                if ((s == null) || (s.length() == 0))
+                {
+                    s = "guest";
+                }
                 xml.setAttribute("name", s);
-
-                
+                s = g.getUserTemplate();
+                if ((s != null) && (s.length() > 0))
+                {
+                    xml.setAttribute("userTemplate", s);
+                }
+                s = g.getSubsite();
+                if ((s != null) && (s.length() > 0))
+                {
+                    xml.setAttribute("subsite", s);
+                }
+                                
                 xml.add(g.getPwData());
 
                 /** named fields HERE */
@@ -339,11 +352,14 @@ public class JSUser
             {
                 JSUser g = (JSUser) o;
                 g.name = StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "unknown"));
-                
+                g.userTemplate = StringEscapeUtils.unescapeHtml(xml.getAttribute("userTemplate", ""));
+                if (g.userTemplate.equals(""))
+                    g.userTemplate = null;
+                g.subsite = StringEscapeUtils.unescapeHtml(xml.getAttribute("subsite", ""));
+                if (g.subsite.equals(""))
+                    g.subsite = null;
                 
                 Object o1 = null;
- 
-
 				while (xml.hasNext())
 				{
 					o1 = xml.getNext(); // mime
@@ -354,25 +370,19 @@ public class JSUser
 						g.pwData = (JSPWAttributes) o1;
 						g.resetPassword();
 					}
-					else
-					if (o1 instanceof JSUserGroups)
+					else if (o1 instanceof JSUserGroups)
 						g.groupString = (JSUserGroups) o1;
-					else
-	                    if (o1 instanceof JSUserRoles)
-	                        g.roleString = (JSUserRoles) o1;
-	                    else
-                            if (o1 instanceof JSUserAttributes)
-	                            g.userInfo  = (JSUserAttributes) o1;
-	                            else
-		                        if (o1 instanceof JSNVPElements)
-		                        	g.preferences  = (JSNVPElements) o1;
-		                        else
-	                                if (o1 instanceof JSPrincipalRules)
-	                                g.rules  = (JSPrincipalRules) o1;
+					else if (o1 instanceof JSUserRoles)
+	                    g.roleString = (JSUserRoles) o1;
+	                else if (o1 instanceof JSUserAttributes)
+	                    g.userInfo  = (JSUserAttributes) o1;
+	                else if (o1 instanceof JSNVPElements)
+		                g.preferences  = (JSNVPElements) o1;
+                    else if (o1 instanceof JSPrincipalRules)
+	                    g.rules  = (JSPrincipalRules) o1;
                 }
-                
- 
-            } catch (Exception e)
+            } 
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -478,5 +488,29 @@ public class JSUser
 	{
 		this.pwData = pwData;
 	}
+
+    
+    public String getSubsite()
+    {
+        return subsite;
+    }
+
+    
+    public void setSubsite(String subsite)
+    {
+        this.subsite = subsite;
+    }
+
+    
+    public String getUserTemplate()
+    {
+        return userTemplate;
+    }
+
+    
+    public void setUserTemplate(String userTemplate)
+    {
+        this.userTemplate = userTemplate;
+    }
 
 }

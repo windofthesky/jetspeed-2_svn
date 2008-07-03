@@ -191,6 +191,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             logger.error(e);
             if (e instanceof SerializerException)
             {

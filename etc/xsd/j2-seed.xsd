@@ -21,19 +21,58 @@ limitations under the License.
   <xs:element name="Snapshot">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="tns:softwareVersion"/>
-        <xs:element ref="tns:softwareSubVersion"/>
-        <xs:element ref="tns:default_rule"/>
-        <xs:element ref="tns:encryption"/>
-        <xs:element ref="tns:MimeTypes"/>
-        <xs:element ref="tns:MediaTypes"/>
-        <xs:element ref="tns:Capabilities"/>
-        <xs:element ref="tns:Clients"/>
-        <xs:element ref="tns:Roles"/>
-        <xs:element ref="tns:Groups"/>
-        <xs:element ref="tns:Users"/>
-        <xs:element ref="tns:Permissions"/>
-        <xs:element ref="tns:ProfilingRules"/>
+        <xs:choice>
+	        <xs:element ref="tns:Null"/>
+            <xs:element ref="tns:softwareVersion"/>
+        </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>        
+	        <xs:element  ref="tns:softwareSubVersion"/>
+		</xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        
+	        <xs:element  ref="tns:default_rule"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:encryption"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:MimeTypes"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:MediaTypes"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Capabilities"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Clients"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Roles"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Groups"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Users"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Permissions"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:ProfilingRules"/>
+	    </xs:choice>
       </xs:sequence>
       <xs:attribute name="name" use="required" type="xs:string"/>
     </xs:complexType>
@@ -155,12 +194,12 @@ limitations under the License.
   <xs:element name="Role" type="xs:string"/>
   <xs:element name="Groups">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="tns:Group"/>
+      <xs:sequence minOccurs='0'>
+        <xs:element minOccurs='0' maxOccurs="unbounded" ref="tns:Group"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="Group" type="xs:string"/>
+  <xs:element name="Group" type="xs:string" />
   <xs:element name="Users">
     <xs:complexType>
       <xs:sequence>
@@ -177,11 +216,22 @@ limitations under the License.
         </xs:choice>
         <xs:element ref="tns:roles"/>
         <xs:element ref="tns:groups"/>
-        <xs:element ref="tns:preferences"/>
-        <xs:element ref="tns:userinfo"/>
-        <xs:element ref="tns:Rules"/>
+        <xs:choice>
+          <xs:element ref="tns:Null"/>        
+	      <xs:element ref="tns:preferences"/>
+	    </xs:choice>
+	    <xs:choice>
+          <xs:element ref="tns:Null"/>	    
+          <xs:element ref="tns:userinfo"/>
+        </xs:choice>
+        <xs:choice>
+           <xs:element ref="tns:Null"/>        
+           <xs:element ref="tns:Rules"/>
+        </xs:choice>
       </xs:sequence>
       <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="userTemplate" type="xs:string"/>
+      <xs:attribute name="subsite"  type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="Null">
@@ -198,7 +248,7 @@ limitations under the License.
         </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="password" use="required" type="xs:string"/>
-      <xs:attribute name="requiresUpdate" use="required">
+      <xs:attribute name="requiresUpdate">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="TRUE" />

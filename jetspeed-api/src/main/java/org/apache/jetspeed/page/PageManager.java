@@ -597,10 +597,23 @@ public interface PageManager
      * @param source source folder
      * @param dest destination folder
      * @param owner set owner of the new folder(s), or null for no owner
+     * @throws NodeException if the root folder already exists
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
         throws NodeException;
 
+    /**
+     * Deep merges a source folder into a destination folder. Copies a folder and all subcontents including
+     * other folders, subpages, links, menus, security, fragments. If a destination resource already exists,
+     * it is skipped over without error.
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     * @param owner set owner of the new folder(s), or null for no owner
+     */
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner)
+        throws NodeException;
+    
     /**
      * Retrieve a page for the given user name and page name
      * 
