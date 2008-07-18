@@ -292,7 +292,8 @@
     <javax.activation.version>1.0.2</javax.activation.version>
     <javax.mail.version>1.3.3</javax.mail.version>
     <javax.servlet.jstl.version>1.1.2</javax.servlet.jstl.version>
-    <javax.servlet.version>2.3</javax.servlet.version>
+    <javax.servlet.version>2.4</javax.servlet.version>
+    <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
     <javax.sql.version>2.0</javax.sql.version>
     <javax.transaction.version>1.0.1B</javax.transaction.version>
     <jaxen.version>1.0-FCS</jaxen.version>
@@ -304,14 +305,14 @@
     <ojb.version>1.0.3</ojb.version>
     <org.apache.derby.version>10.3.2.1</org.apache.derby.version>
     <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
-    <org.apache.portals.bridges.common.version>1.0.3</org.apache.portals.bridges.common.version>
-    <org.apache.portals.bridges.frameworks.version>1.0.3</org.apache.portals.bridges.frameworks.version>
-    <org.apache.portals.bridges.jpetstore.version>1.0.3</org.apache.portals.bridges.jpetstore.version>
-    <org.apache.portals.bridges.jsf-demo.version>1.0.3</org.apache.portals.bridges.jsf-demo.version>
-    <org.apache.portals.bridges.jsf.version>1.0.3</org.apache.portals.bridges.jsf.version>
-    <org.apache.portals.bridges.velocity.version>1.0.3</org.apache.portals.bridges.velocity.version>
-    <org.apache.portals.bridges.groovy.version>1.0.3</org.apache.portals.bridges.groovy.version>
-    <org.apache.portals.bridges.portletfilter.version>1.0.3</org.apache.portals.bridges.portletfilter.version>
+    <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
+    <org.apache.portals.bridges.frameworks.version>1.0.4</org.apache.portals.bridges.frameworks.version>
+    <org.apache.portals.bridges.jpetstore.version>1.0.4</org.apache.portals.bridges.jpetstore.version>
+    <org.apache.portals.bridges.jsf-demo.version>1.0.4</org.apache.portals.bridges.jsf-demo.version>
+    <org.apache.portals.bridges.jsf.version>1.0.4</org.apache.portals.bridges.jsf.version>
+    <org.apache.portals.bridges.velocity.version>1.0.4</org.apache.portals.bridges.velocity.version>
+    <org.apache.portals.bridges.groovy.version>1.0.4</org.apache.portals.bridges.groovy.version>
+    <org.apache.portals.bridges.portletfilter.version>1.0.4</org.apache.portals.bridges.portletfilter.version>
     <oro.version>2.0.8</oro.version>
     <portlet-api.version>1.0</portlet-api.version>
     <regexp.version>1.2</regexp.version>
@@ -339,178 +340,178 @@
 
       <!-- J2 Subprojects -->
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-api</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-maven-utils</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-unpack-maven-plugin</artifactId>
         <version>${pom.version}</version>
         <type>maven-plugin</type>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-db-maven-plugin</artifactId>
         <version>${pom.version}</version>
         <type>maven-plugin</type>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-deploy-maven-plugin</artifactId>
         <version>${pom.version}</version>
         <type>maven-plugin</type>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-attached-deploy-maven-plugin</artifactId>
         <version>${pom.version}</version>
         <type>maven-plugin</type>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-commons</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed2-taglib-treecontrol</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-portal-resources</artifactId>
         <version>${pom.version}</version>
       </dependency>
 
       <!-- J2 Components -->
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-cm</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-components</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-deploy-tools</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-rdbms</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-prefs</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-search</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-security</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-registry</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-id-generator</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-file-cache</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-locator</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-capability</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-profiler</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-page-manager</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-portal-site</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-portlet-factory</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-sso</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-statistics</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-header-resource</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-portal</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-rewriter</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-web-content</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-webapp-logging</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-serializer</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed</artifactId>
         <type>war</type>
         <version>${pom.version}</version>
@@ -518,48 +519,48 @@
 
       <!-- Portals Applications JARs -->
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-rss</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>portals-gems</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-layout-portlets</artifactId>
         <version>${pom.version}</version>
       </dependency>
 
       <!-- Portals Applications -->
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-layouts</artifactId>
         <type>war</type>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed</artifactId>
         <type>war</type>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>demo</artifactId>
         <type>war</type>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>j2-admin</artifactId>
         <type>war</type>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>rss</artifactId>
         <type>war</type>
         <version>${pom.version}</version>
@@ -575,6 +576,11 @@
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>${javax.servlet.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>${javax.servlet.jsp.version}</version>
       </dependency>
 
       <!-- Pluto Container -->
@@ -685,6 +691,16 @@
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <version>${commons-configuration.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -699,7 +715,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>${commons-logging.version}</version>
+        <version>[1.1,)</version>
         <exclusions>
           <exclusion>
             <groupId>logkit</groupId>
@@ -708,6 +724,10 @@
           <exclusion>
             <groupId>avalon-framework</groupId>
             <artifactId>avalon-framework</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -720,6 +740,12 @@
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>${commons-httpclient.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -782,6 +808,18 @@
           <exclusion>
             <groupId>relaxngDatatype</groupId>
             <artifactId>relaxngDatatype</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>clover</groupId>
+            <artifactId>clover</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax-ri</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -906,6 +944,16 @@
         <groupId>org.apache.ddlutils</groupId>
         <artifactId>ddlutils</artifactId>
         <version>${ddlutils.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- LDAP -->
@@ -966,6 +1014,12 @@
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>${javax.servlet.jstl.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>taglibs</groupId>
@@ -1005,6 +1059,15 @@
         <groupId>org.apache.portals.bridges</groupId>
         <artifactId>portals-bridges-velocity</artifactId>
         <version>${org.apache.portals.bridges.velocity.version}</version>
+        <exclusions>
+        <!-- brought in by portals-bridges-velocity (1.0.4) 
+             TODO: we should fix this for bridges 1.0.5
+        -->
+        <exclusion>
+          <groupId>org.apache.portals.bridges</groupId>
+          <artifactId>portals-bridges-common</artifactId>
+        </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.portals.bridges</groupId>
@@ -1108,6 +1171,11 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <scope>provided</scope>
+      </dependency>
     <dependency>
       <groupId>org.apache.pluto</groupId>
       <artifactId>pluto</artifactId>
@@ -1211,7 +1279,7 @@
                when it itself is build during a full mvn install -P all (mvn bug?),
                defining it as default provided dependency in pluginManagement.
           -->
-          <groupId>${pom.groupId}</groupId>
+          <groupId>org.apache.portals.jetspeed-2</groupId>
           <artifactId>jetspeed-unpack-maven-plugin</artifactId>
           <version>${pom.version}</version>
           <dependencies>

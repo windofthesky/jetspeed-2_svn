@@ -42,22 +42,6 @@
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-cm</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>dom4j</groupId>
-          <artifactId>dom4j</artifactId>
-        </exclusion>
-        <!-- brought in by commons-configuration -->
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-        <!-- commons-configuration pulls in old xerces:xerces 2.0.2 -->
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xerces</artifactId>          
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
@@ -134,26 +118,10 @@
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-serializer</artifactId>
-      <exclusions>
-        <exclusion>
-          <!-- brought in by ddlutils -->
-          <groupId>stax</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-portal</artifactId>
-      <exclusions>
-        <!-- brought in by portals-bridges-velocity (1.0.3) 
-             TODO: we should fix this for bridges 1.0.4
-         -->
-        <exclusion>
-          <groupId>org.apache.portals.bridges</groupId>
-          <artifactId>portals-bridges-common</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -168,14 +136,16 @@
       <artifactId>request</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
