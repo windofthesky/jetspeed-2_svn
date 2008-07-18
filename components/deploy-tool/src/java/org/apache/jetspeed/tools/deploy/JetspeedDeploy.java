@@ -150,7 +150,7 @@ public class JetspeedDeploy implements Deploy
                             System.out.println("Warning: WEB-INF/tld/portlet.tld already provided, won't be replaced.");
                             taglibFound = true;
                         }
-                        addFile(target, source, jout);
+                        addFile(target, source, jout, src.getTime());
                     }
                 }
                 finally
@@ -196,7 +196,7 @@ public class JetspeedDeploy implements Deploy
 
                     try
                     {
-                        addFile("WEB-INF/tld/portlet.tld", is, jout);
+                        addFile("WEB-INF/tld/portlet.tld", is, jout, 0);
                     }
                     finally
                     {
@@ -301,9 +301,14 @@ public class JetspeedDeploy implements Deploy
         return document;
     }
 
-    protected void addFile(String path, InputStream source, JarOutputStream jos) throws IOException
+    protected void addFile(String path, InputStream source, JarOutputStream jos, long fileTime) throws IOException
     {
-        jos.putNextEntry(new ZipEntry(path));
+        ZipEntry ze = new ZipEntry(path);
+        if (fileTime > 0)
+        {
+            ze.setTime(fileTime);
+        }
+        jos.putNextEntry(ze);
         try
         {
             int count;
