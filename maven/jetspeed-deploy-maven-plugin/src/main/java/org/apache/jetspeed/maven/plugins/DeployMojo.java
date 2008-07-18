@@ -432,6 +432,10 @@ public class DeployMojo extends AbstractMojo
             {
                 try
                 {
+                    if (target.exists() && !rmdir(target))
+                    {
+                        throw new MojoExecutionException("Failed to delete directory "+ target.getAbsolutePath());
+                    }
                     expandWar(dobj.src, target);
                 }
                 catch (IOException e)
