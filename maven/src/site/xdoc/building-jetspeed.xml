@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  $Id$
+-->
+<document>
+  <properties>
+    <title>Building the Jetspeed-2 Portal Project from source</title>
+    <authors>
+      <person name="Ate Douma" email="ate@douma.nu" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Building the Jetspeed-2 Portal Project from source">
+      <p>
+        <em>Note: this documation page will eventually be moved to the main Jetspeed-2 Portal documentation</em> 
+      </p>
+      <p>
+        With the new <a href="jetspeed-mvn-plugin.html">jetspeed-mvn</a> plugin, building the Jetspeed-2 Portal itself from source
+        as well as building and deploying the default jetspeed-demo portal is now extremely easy.
+      </p>
+      <p>
+        After checking out the current source tree using svn from
+        <a href="http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk">http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk</a>,
+        only two local configuration changes are needed:
+        <ul>
+          <li>
+            Defining the Jetspeed-2 groupId as Maven pluginGroup, see the <a href="index.html">Introduction</a> page how to do that<br/>
+            <em>this only has to be done once as it is not related to the Jetspeed-2 codebase</em>
+          </li>
+          <li>
+            Creating your own local <strong><code>jetspeed-mvn-setttings.xml</code></strong> configuration in the root folder.
+          </li>
+        </ul>
+      </p>
+      <subsection name="Configuring the jetspeed-mvn-settings.xml">
+        <p>
+          All the settings needed during the build (and the jetspeed-demo Portal deployment) are isolated in one single file in the root folder
+          of the project: <strong><code>jetspeed-mvn-setttings.xml</code></strong>.
+        </p>
+        <p>
+          When you check out the Jetspeed-2 Portal source tree however, you'll notice that this file does not exist (yet).
+        </p>
+        <p>
+          The reason is that every developer has its own specific environment requirements and checking in one set of these most likely
+          won't work for someone else. And, when this file subsequently would need to be modified, you'll end up with a file flagged by subversion as
+          modified. 
+        </p>
+        <p>
+          The solution is simple: an existing <strong><code>jetspeed-mvn-setttings.xml</code></strong> file is marked with svn:ignore in subversion.
+        </p>
+        <p>
+          Now, everyone can create its own copy of this settings file without risk of it being accidentally commited.
+        </p>
+        <p>
+          To make it easy to create your own jetspeed-mvn-settings.xml, a sample file, <strong><code>jetspeed-mvn-setttings-sample.xml</code></strong>
+          is provided which you can simply copy to <strong><code>jetspeed-mvn-setttings.xml</code></strong> and modify only
+          the properties you'll need.
+        </p>
+        <p>
+          The <strong><code>jetspeed-mvn-setttings-sample.xml</code></strong> provides a default configuration using an Embbedded Derby database, and if that
+          suites you, probably the only changes needed will be for the location of the Derby database(s) and the deployment target directory for the
+          jetspeed-demo Portal:
+        <source><![CDATA[<properties>
+  ...      
+  <org.apache.jetspeed.server.home>@rootdir@/applications/jetspeed-demo/target/demo-deploy</org.apache.jetspeed.server.home>
+  ...
+  <org.apache.jetspeed.production.database.url>jdbc:derby:/tmp/derby/productiondb;create=true</org.apache.jetspeed.production.database.url>
+  <org.apache.jetspeed.test.database.url>jdbc:derby:/tmp/derby/testdb;create=true</org.apache.jetspeed.test.database.url>  
+  ...
+</properties>]]></source>
+          For example, <strong><code>/tmp</code></strong> on Linux might be restricted, and the target deployment folder for the jetspeed-demo probably
+          better point at a real <a href="http://tomcat.apache.org">Tomcat</a> installation.
+        </p>
+        <p>
+          <em>Note: required minimum version of Tomcat for the jetspeed-demo is now 5.5.26</em>
+        </p>
+      </subsection>
+      <subsection name="Optional: bootstrapping the build">
+        <p>
+          If, and only if, no (full) build of the source tree has been done yet, <em>and</em> you want to start with a full <em>test</em> build,
+          a subset of the build has to be performed <em>once</em> first:
+          <source>$mvn install -P init</source>
+          This will ensure the required Jetspeed-2 Maven plugins are build and installed as well as the jetspeed-portal-resources artifact.
+        </p>
+      </subsection>
+      <subsection name="Optional: running the test-cases during a build">
+        <p>
+          By default, running test-cases is disabled for Jetspeed-2 because it is very time-consuming and also requires the setup and initialization
+          of a dedicated test database <em><strong>every time</strong></em>!
+        </p>
+        <p>
+          But if you are a Jetspeed committer or otherwise would like to run the test-cases anyway, the following command is used to setup and
+          initialize the test database:
+          <source>$mvn jetspeed:mvn -Dtarget=testdb</source>
+          Thereafter, enabling the test-cases during a build is done by using profile <strong><code>test</code></strong>:
+          <source>$mvn install -P test</source>
+          But, to make it even a little more easier, another jetspeed:mvn target is provided which already combines the above two steps in one:
+          <source>$mvn jetspeed:mvn -Dtarget=test-install</source>
+          <em>
+            Running the test-cases requires (and only for this) the proper configuration of the org.apache.jetspeed.test.database.* properties
+            in jetspeed-mvn-settings.xml
+          </em>
+        </p>
+      </subsection>
+      <subsection name="building">
+        <p>
+          Performing a full build of all the Jetspeed-2 components, as well as the jetspeed-demo Portal is plain Maven-2 simple:
+          <source>$mvn install</source>
+        </p>
+      </subsection>
+      <subsection name="initializing the production database">
+        <p>
+          The production database configuration provided by the Jetspeed-2 Portal project itself is primarly intended to be used
+          by the developers using the jetspeed-demo Portal,
+        </p>
+        <p>
+          Manual initializing or reinitializing of the production database is done using the following command:
+          <source>$mvn jetspeed:mvn -Dtarget=proddb</source>
+          The above command however will <em>only</em> created the required database tables, <em>not</em> seed it with (demo) data,
+          for which the following command is needed:
+          <source>$mvn jetspeed:mvn -Dtarget=demo-seed</source>
+          As the above two commands usually goes together, the following command can be used instead to automatically invoke both:
+          <source>$mvn jetspeed:mvn -Dtarget=demo-db</source>
+        </p>
+      </subsection>
+      <subsection name="Using the jetspeed-demo Portal">
+        <p>
+          The jetspeed-demo Portal is an example custom Portal project used by the Jetspeed-2 committers for development and testing, but
+          can of course also be used as real "demo" for other purposes.
+        </p>
+        <p>
+          The full setup and usage of the jetspeed-demo Portal requires the following steps:
+          <table>
+            <tr>
+              <th>Task</th><th>Command</th>
+            </tr>
+            <tr>
+              <td>building and installing the jetspeed-demo war</td>
+              <td><source>$mvn jetspeed:mvn -Dtarget=demo-install</source></td>
+            </tr>
+            <tr>
+              <td>
+                database initialization and seeding<br/>
+                <em>see also previous section above</em>                
+              </td>
+              <td><source>$mvn jetspeed:mvn -Dtarget=demo-db</source></td>
+            </tr>
+            <tr>
+              <td>setting up a (clean) Tomcat server</td>
+              <td>
+                This requires downloading and installing your own <a href="http://tomcat.apache.org">Tomcat</a>
+                (<em>for Jetspeed-2.2 at least version 5.5.26 is now required!</em>)<br/>
+                Once you've installed Tomcat, adjust the <strong><code>org.apache.jetspeed.server.home</code></strong> property
+                in the jetspeed-mvn-settings.xml file to point at the installation directory.
+              </td>
+            </tr>
+            <tr>
+              <td>deploying the jetspeed-demo Portal</td>
+              <td><source>$mvn jetspeed:mvn -Dtarget=demo-deploy</source></td>
+            </tr>
+            <tr>
+              <td>performing everything above (except Tomcat installation) with a single command instead</td>
+              <td><source>$mvn jetspeed:mvn -Dtarget=demo</source></td>
+            </tr>
+            <tr>
+              <td>starting Tomcat</td>
+              <td><source>$ $TOMCAT_HOME/bin/catalina.sh run</source></td>
+            </tr>
+            <tr>
+              <td>Using the jetspeed-demo Portal</td>
+              <td>
+                <a href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a><br/><br/>
+                For login, use one of the following username/password combinations: admin/admin, user/user, jetspeed/jetspeed                
+              </td>
+            </tr>            
+          </table>            
+        </p>
+        <p>
+          There is one optional feature for building and deploying the jetspeed-demo Portal: storing and using PSML in the database.
+          This requires using an additional profile, dbpsml, during building the jetspeed-demo war as well as slightly different jetspeed:mvn targets to execute.
+          To execute all of that with one command, use:
+          <source>$mvn jetspeed:mvn -Dtarget=demo-dbpsml</source>
+          instead of using the -Dtarget=demo as shown above.
+        </p>
+        <p>
+          Further detail of the different jetspeed:mvn targets and configurations used for the dbpsml demo can be found in the jetspeed-mvn-plugin configuration
+          within the root pom.xml.  
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>
