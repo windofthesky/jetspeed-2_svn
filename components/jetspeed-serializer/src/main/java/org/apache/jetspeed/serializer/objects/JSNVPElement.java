@@ -24,10 +24,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class JSNVPElement
 {
-
-	
     private String key;
     private String value;
+    private boolean nullValue;
     public JSNVPElement() {};
     public JSNVPElement(String key, String value)
     {
@@ -43,9 +42,18 @@ public class JSNVPElement
             public void write(Object o, OutputElement xml)
             throws XMLStreamException
             {
+                JSNVPElement e = (JSNVPElement)o;
                 // xml.add((String) g.get(_key), _key, String.class);
-            	xml.add(((JSNVPElement)o).key,"name",String.class);
-            	xml.add(((JSNVPElement)o).value,"value",String.class);
+                
+            	xml.add(e.key,"name",String.class);
+            	if (e.nullValue)
+            	{
+            	    xml.setAttribute("nullValue", true);
+            	}
+            	else
+            	{
+                    xml.add(e.value,"value",String.class);
+            	}
             }
             public void read(InputElement xml, Object o)
             {
@@ -53,7 +61,11 @@ public class JSNVPElement
                 {
                     JSNVPElement g = (JSNVPElement) o;
                     g.key = StringEscapeUtils.unescapeHtml((String)xml.get("name", String.class));
-                    g.value = StringEscapeUtils.unescapeHtml((String)xml.get("value", String.class));
+                    g.nullValue = xml.getAttribute("nullValue", false);
+                    if (!g.nullValue)
+                    {
+                        g.value = StringEscapeUtils.unescapeHtml((String)xml.get("value", String.class));
+                    }
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -75,6 +87,7 @@ public class JSNVPElement
 		public void setValue(String value)
 		{
 			this.value = value;
+			nullValue = value == null;
 		}
     }
     

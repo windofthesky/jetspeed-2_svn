@@ -344,7 +344,15 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                             roleManager.addRoleToUser(jsuser.getName(), (String) _itTemp.next());
                         }
                     }
+
+                    // TODO: the JSNVPElements class doesn't support/use Preferences anymore
+                    //       because of its dual usage for PortletPreferences as well
+                    //       goto break these two usages apart and provide separate implementations
+                    // NOTE: JSVNPElements is't very well implemented anyway (doesn't seem to be able to handle multi-value elements...)                    
+/*                    
+                    
                     JSUserAttributes attributes = jsuser.getUserInfo();
+
                     if (attributes != null)
                     {
                         Preferences userAttributes = user.getUserAttributes();
@@ -363,8 +371,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         }
 
                     }
-
+                    
                     JSNVPElements jsNVP = jsuser.getPreferences();
+
                     if ((jsNVP != null) && (jsNVP.getMyMap() != null))
                     {
                         Preferences preferences = user.getPreferences();
@@ -376,7 +385,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                             preferences.put(prefKey, prefValue);
                         }
                     }
-
+*/
                     refs.userMap.put(jsuser.getName(), getUserPrincipal(user));
 
                 }

@@ -35,7 +35,25 @@ public interface MutablePortletEntity
 
     public static final String PORTLET_ENTITY_ROOT = "portlet_entity";
     
+    Long getOid();
+    
     String getPortletUniqueName();
     
     void setFragment(Fragment fragment);
+
+    /**
+     * <p>
+     * Persistence callback to allow a PortletEntity instance to persist children
+     * objects (like portlet preferences) <em>within</em> the same transaction.
+     * </p>
+     * <p>
+     * This method must be called <em>always</em> from the #store() method. Using a callback from
+     * the persistence manager might not be reliable when the PortletEntity <em>itself</em>
+     * isn't changed but children might.
+     * </p>
+     * <p>
+     * Notably condition when this might happen is the Pluto 1.0.1 preferences handling calling
+     * the portletEntity store() method
+     * */
+    void storeChildren();
 }

@@ -16,20 +16,19 @@
  */
 package org.apache.jetspeed.serializer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
-import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
+import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.preference.impl.PrefsPreference;
-import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
+import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.serializer.objects.JSApplication;
 import org.apache.jetspeed.serializer.objects.JSApplications;
@@ -37,6 +36,7 @@ import org.apache.jetspeed.serializer.objects.JSEntities;
 import org.apache.jetspeed.serializer.objects.JSEntity;
 import org.apache.jetspeed.serializer.objects.JSEntityPreference;
 import org.apache.jetspeed.serializer.objects.JSEntityPreferences;
+import org.apache.jetspeed.serializer.objects.JSNVPElement;
 import org.apache.jetspeed.serializer.objects.JSNVPElements;
 import org.apache.jetspeed.serializer.objects.JSPortlet;
 import org.apache.jetspeed.serializer.objects.JSPortlets;
@@ -56,6 +56,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
     protected PortletEntityAccessComponent entityAccess;
 
     protected PortletRegistry registry;
+    protected PortletPreferencesProvider prefsProvider;
     protected SearchEngine searchEngine;
 
     
@@ -64,11 +65,12 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
      * @param entityAccess
      * @param searchEngine
      */
-    public JetspeedRegistrySerializer(PortletRegistry registry, PortletEntityAccessComponent entityAccess,
+    public JetspeedRegistrySerializer(PortletRegistry registry, PortletEntityAccessComponent entityAccess, PortletPreferencesProvider prefsProvider,
             SearchEngine searchEngine)
     {
         this.registry = registry;
         this.entityAccess = entityAccess;
+        this.prefsProvider = prefsProvider;
         this.searchEngine = searchEngine;
     }
 
@@ -213,23 +215,40 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
             if ((preferences == null) || (preferences.size() == 0))
                 return;
 
-            // since I do have preferences let us make sure we have a root node
-
-            String rootForEntity = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + portletEntity.getId();
             try
             {
-                Preferences.userRoot().node(rootForEntity); // will create it if it
-                // doesn't exist
 
                 Iterator it = preferences.iterator();
                 while (it.hasNext())
                 {
                     JSEntityPreference preference = (JSEntityPreference) it.next();
-
-                    // do we have preferences for this one?
-                    importPreferenceNode(preference, portletEntity, settings, log);
+                    
+                    String userName = preference.getName();
+                    PreferenceSetComposite preferenceSet = prefsProvider.getPreferenceSet(portletEntity, userName);
+                    for (Object name : preferenceSet.getNames())
+                    {
+                        preferenceSet.remove((String)name);
+                    }
+                    String name = null;
+                    ArrayList<String> values = null;
+                    for ( JSNVPElement element : preference.getPreferences().getValues() )
+                    {
+                        if (!element.getKey().equals(name))
+                        {
+                            if (name != null)
+                            {
+                                preferenceSet.add(name, values);
+                            }
+                            values = new ArrayList<String>();
+                        }
+                        values.add(element.getValue());
+                    }
+                    if (name != null)
+                    {
+                        preferenceSet.add(name, values);
+                    }
+                    prefsProvider.savePreferenceSet(portletEntity, userName, preferenceSet);
                 }
-
             }
             catch (Exception e)
             {
@@ -237,51 +256,6 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 return;
             }
         }
-    }
-
-    private void importPreferenceNode(JSEntityPreference preference, MutablePortletEntity entity, Map settings, Log log)
-    {
-
-        String child = preference.getName();
-
-        String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + entity.getId() + "/" + child + "/"
-                + PrefsPreference.PORTLET_PREFERENCES_ROOT;
-        Preferences prefNode = Preferences.userRoot().node(prefNodePath);
-
-        if (prefNode == null)
-            return;
-
-        JSNVPElements prefList = preference.getPreferences();
-        try
-        {
-            PrefsPreferenceSetImpl preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-
-            Iterator it = prefList.getMyMap().keySet().iterator();
-
-            while (it.hasNext())
-            {
-                String key = (String) it.next();
-                String value = (String) prefList.getMyMap().get(key);
-                Preference p = preferenceSet.get(key);
-                if ((p == null) || isSettingSet(settings, JetspeedSerializer.KEY_OVERWRITE_EXISTING))
-                {
-
-                    Vector v = new Vector();
-                    v.add(value);
-                    preferenceSet.add(key, v);
-                    log.debug("Entity " + entity.getId() + " updated with preference " + key + "=" + value);
-                }
-            }
-            preferenceSet.flush();
-            return;
-        }
-        catch (Exception e)
-        {
-            log.error(e);
-            return;
-
-        }
-
     }
 
     private void exportEntities(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
@@ -417,83 +391,40 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
-            String rootForEntity = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + entity.getId();
-            try
+            JSEntityPreferences entityPreferences = new JSEntityPreferences();
+            Iterator<String> userNames = prefsProvider.getUserNames(entity);
+            while (userNames.hasNext())
             {
-                if (Preferences.userRoot().nodeExists(rootForEntity))
+                String userName = userNames.next();
+                PreferenceSetComposite preferenceSet = prefsProvider.getPreferenceSet(entity, userNames.next());
+                JSEntityPreference userPreference = new JSEntityPreference();
+                userPreference.setName(userName);
+                Iterator<Preference> preferences = preferenceSet.iterator();
+                JSNVPElements v = new JSNVPElements();
+                while (preferences.hasNext())
                 {
-                    Preferences prefNode = Preferences.userRoot().node(rootForEntity);
-                    String[] children = prefNode.childrenNames();
-                    if ((children != null) && (children.length > 0))
+                    Preference p = preferences.next();
+                    Iterator<String> values = p.getValues();
+                    while (values.hasNext())
                     {
-                        JSEntityPreferences preferences = new JSEntityPreferences();
-
-                        for (int i = 0; i < children.length; i++)
-                        {
-                            JSEntityPreference preference = exportPreferenceNode(entity, children[i], settings, log);
-                            if (preference != null)
-                            {
-                                preferences.add(preference);
-                            }
-                        }
-                        if (!preferences.isEmpty())
-                        {
-                            log.debug("processed preferences for entity=" + entity.getId());
-                            jsEntity.setEntityPreferences(preferences);
-                        }
+                        JSNVPElement element = new JSNVPElement();
+                        element.setKey(p.getName());
+                        element.setValue(values.next());
+                        v.add(element);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                log.error(e);
-                jsEntity = null;
+                if (v.size() > 0)
+                {
+                    userPreference.setPreferences(v);
+                    entityPreferences.add(userPreference);
+                }
+                if (!entityPreferences.isEmpty())
+                {
+                    log.debug("processed preferences for entity=" + entity.getId());
+                    jsEntity.setEntityPreferences(entityPreferences);
+                }
             }
         }
         return jsEntity;
-    }
-
-    JSEntityPreference exportPreferenceNode(MutablePortletEntity entity, String child, Map settings, Log log)
-    {
-        String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + entity.getId() + "/" + child + "/"
-                + PrefsPreference.PORTLET_PREFERENCES_ROOT;
-        Preferences prefNode = Preferences.userRoot().node(prefNodePath);
-
-        if (prefNode == null)
-            return null;
-        JSEntityPreference preference = new JSEntityPreference();
-        preference.setName(child);
-
-        try
-        {
-            PrefsPreferenceSetImpl preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-            if (preferenceSet.size() == 0)
-                return null;
-            Iterator it = preferenceSet.iterator();
-            JSNVPElements v = new JSNVPElements();
-
-            while (it.hasNext())
-            {
-                Preference pref = (Preference) it.next();
-                String name = pref.getName();
-                Iterator ii = pref.getValues();
-                while (ii.hasNext())
-                {
-                    Object o = ii.next();
-                    v.add(name, o.toString());
-                }
-            }
-            if (v.size() > 0)
-            {
-                preference.setPreferences(v);
-                return preference;
-            }
-            return null;
-        }
-        catch (Exception e)
-        {
-            log.error(e);
-            return null;
-        }
     }
 }

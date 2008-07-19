@@ -125,8 +125,14 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
 
     void setPortletApplicationDefinition(PortletApplicationDefinition pad);
 
+    /**
+     * @obsolete use #getPreferenceSet.add(String, String[])
+     */
     PreferenceComposite addPreference(String name, String[] values);
 
+    /**
+     * @obsolete use #getPreferenceSet.add(String, String[])
+     */
     void addPreference(Preference preference);
 
     void setPortletIdentifier(String portletIndentifier);
@@ -241,4 +247,20 @@ public interface PortletDefinitionComposite extends PortletDefinition, PortletDe
      *                  the Jetspeed Security Constraints 
      */
     void setJetspeedSecurityConstraint(String constraint);
+    
+    /**
+     * <p>
+     * Persistence callback to allow a PortletDefinition instance to persist children
+     * objects (like portlet preferences) <em>within</em> the same transaction.
+     * </p>
+     * <p>
+     * This method must be called <em>always</em> from the #store() method. Using a callback from
+     * the persistence manager might not be reliable when the PortletDefinition <em>itself</em>
+     * isn't changed but children might.
+     * </p>
+     * <p>
+     * Notably condition when this might happen is the Pluto 1.0.1 preferences handling calling
+     * the portletDefinition store() method
+     * */
+    void storeChildren();
 }

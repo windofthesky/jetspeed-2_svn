@@ -1115,8 +1115,6 @@
    </class-descriptor>
 
 
-
-
  <!--
    - P O R T L E T  E N T I T Y
  -->
@@ -1138,12 +1136,14 @@
          name="appName"
          column="APP_NAME"
          jdbc-type="VARCHAR"
+         length="80"
       />
 
       <field-descriptor
          name="portletName"
          column="PORTLET_NAME"
          jdbc-type="VARCHAR"
+         length="80"
       />
 
       <field-descriptor
@@ -1152,9 +1152,135 @@
          jdbc-type="VARCHAR"
          autoincrement="true"
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion"
+         length="80"
       />
 
   </class-descriptor>
+
+   <!--
+   - P O R T L E T   P R E F E R E N C E S
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
+      table="PORTLET_PREFERENCE"
+  >
+      <documentation>Represents a Portlet Preference definition.</documentation>
+      <field-descriptor
+          name="id"
+          column="ID"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          autoincrement="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="applicationName"
+          column="APPLICATION_NAME"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="80"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="portletName"
+          column="PORTLET_NAME"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="80"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="name"
+          column="NAME"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="254"
+      >
+      </field-descriptor>
+  </class-descriptor>
+
+  <class-descriptor
+      class="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
+      table="PORTLET_PREFERENCE_VALUE"
+  >
+      <documentation>Represents a Portlet Preference value.</documentation>
+      <field-descriptor
+          name="prefId"
+          column="PREF_ID"
+          jdbc-type="BIGINT"
+          primarykey="true"
+      >
+      </field-descriptor>
+      <reference-descriptor
+          name="preference"
+          class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+          <foreignkey field-ref="prefId"/>
+      </reference-descriptor>
+      
+      <field-descriptor
+          name="index"
+          column="INDEX"
+          jdbc-type="SMALLINT"
+          nullable="false"
+          primarykey="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="entityOid"
+          column="ENTITY_OID"
+          jdbc-type="BIGINT"
+          nullable="false"
+          primarykey="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="userName"
+          column="USER_NAME"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          primarykey="true"
+          length="80"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="entityId"
+          column="ENTITY_ID"
+          jdbc-type="VARCHAR"
+          nullable="true"
+          length="80"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="readOnly"
+          column="READONLY"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="nullValue"
+          column="NULL_VALUE"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="value"
+          column="VALUE"
+          jdbc-type="VARCHAR"
+          nullable="true"
+          length="4000"
+      >
+      </field-descriptor>      
+
+  </class-descriptor>
+
 
   <!--
    - S E C U R T I T Y   R O L E   R E F

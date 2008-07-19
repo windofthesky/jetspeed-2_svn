@@ -142,8 +142,6 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         { "value 1", "value 2" }));
         pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
 
-        assertNotNull(pc.getValueAt(0));
-
         portlet.addLanguage(portletRegistry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1",
                 "This is Portlet 1", null));
 

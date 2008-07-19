@@ -25,11 +25,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import javax.portlet.PreferencesValidator;
 
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.factory.PortletFactory;
@@ -54,8 +54,6 @@ import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
-import org.apache.jetspeed.om.preference.impl.PrefsPreference;
-import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.common.Description;
@@ -86,14 +84,9 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  */
 public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support
 {
-    /**
-     * This is a static instance of the PortletREgistry that can be used by
-     * all instances of the PortletDefinitionImpl to support the 
-     * PortletDefintionCtrl.store() method.
-     * 
-     */
-    protected static PortletRegistry registry;
-    protected static PortletFactory  portletFactory;
+    private static PortletRegistry registry;
+    private static PortletFactory  portletFactory;
+    private static PortletPreferencesProvider portletPreferencesProvider;
     
     private Long id;
     private JetspeedLongObjectID oid;
@@ -130,7 +123,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
 
     /** Metadata property */
     private Collection metadataFields = null;
-    private PrefsPreferenceSetImpl preferenceSet;
+    private PreferenceSetComposite preferenceSet;
 
     private String jetspeedSecurityConstraint = null;
     
@@ -218,28 +211,16 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public PreferenceSet getPreferenceSet()
     {
-        try
+        if (preferenceSet == null)
         {
-            if (preferenceSet == null)
+           
+            if(app == null)
             {
-               
-                if(app == null)
-                {
-                    throw new IllegalStateException("Portlet Application must be defined before preferences can be accessed");
-                }
-                
-                Preferences prefNode = PrefsPreference.createPrefenceNode(this);
-                preferenceSet = new PrefsPreferenceSetImpl(prefNode, this);
+                throw new IllegalStateException("Portlet Application must be defined before preferences can be accessed");
             }
+            retrievePortletPreferencesProvider();
+            preferenceSet = portletPreferencesProvider.getPreferenceSet(this);
         }
-        catch (BackingStoreException e)
-        {
-            String msg = "Preference backing store failed: " + e.toString();
-            IllegalStateException ise = new IllegalStateException(msg);
-            ise.initCause(e);
-            throw ise;
-        }
-
         return preferenceSet;
     }
 
@@ -248,7 +229,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void setPreferenceSet( PreferenceSet preferences )
     {
-        this.preferenceSet = (PrefsPreferenceSetImpl) preferences;
+        this.preferenceSet = (PreferenceSetComposite) preferences;
     }
 
     /**
@@ -290,11 +271,8 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public ClassLoader getPortletClassLoader()
     {
-        if ( portletFactory != null )
-        {
-            return portletFactory.getPortletApplicationClassLoader(app);
-        }
-        return null;
+        retrievePortletFactory();
+        return portletFactory.getPortletApplicationClassLoader(app);
     }
 
     /**
@@ -503,7 +481,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public PreferenceComposite addPreference( String name, String[] values )
     {
-        return (PreferenceComposite) ((PrefsPreferenceSetImpl) getPreferenceSet()).add(name, Arrays.asList(values));
+        return (PreferenceComposite) ((PreferenceSetComposite) getPreferenceSet()).add(name, Arrays.asList(values));
     }
 
     public void setPortletIdentifier( String portletIdentifier )
@@ -723,7 +701,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
         }
         return DNListWrapper;
     }
-
+    
     /**
      * <p>
      * store will attempt to perform an atomic persistence call against this
@@ -735,22 +713,24 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void store() throws IOException
     {
-        if(registry != null)
+        retrievePortletRegistry();
+        try
         {
-            try
-            {
-                registry.savePortletDefinition(this);
-            }
-            catch (RegistryException e)
-            {
-                IOException ioe = new IOException("Failed to store portlet definition: "+e.getMessage());
-                ioe.initCause(e);
-            }
+            registry.savePortletDefinition(this);
         }
-        else
+        catch (RegistryException e)
         {
-            throw new IllegalStateException("The portlet registry for PortletDefinitionImpl has not been set.  "+
-                                             "Please invoke PortletDefinitionImpl.setPortletRegistry before invoking the store() method.");
+            IOException ioe = new IOException("Failed to store portlet definition: "+e.getMessage());
+            ioe.initCause(e);
+        }
+    }
+
+    public void storeChildren()
+    {
+        if (preferenceSet != null)
+        {
+            retrievePortletPreferencesProvider();
+            portletPreferencesProvider.savePreferenceSet(this, preferenceSet);
         }
     }
 
@@ -794,7 +774,9 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
 
         PreferenceComposite newPref = (PreferenceComposite) ((PreferenceSetComposite) getPreferenceSet()).add(
                 preference.getName(), list);
+        newPref.setReadOnly(Boolean.toString(preference.isReadOnly()));
 
+        // TODO: remove? (not really used/implemented in Jetspeed)
         Iterator descItr = newPref.getDescriptions();
         while (descItr.hasNext())
         {
@@ -932,23 +914,10 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
         }
     }
     
-    public static void setPortletRegistry(PortletRegistry registry)
-    {
-        PortletDefinitionImpl.registry = registry;
-    }
-
-    public static void setPortletFactory(PortletFactory portletFactory)
-    {
-        PortletDefinitionImpl.portletFactory = portletFactory;
-    }
-
     public PreferencesValidator getPreferencesValidator()
     {
-        if ( portletFactory != null )
-        {
-            return portletFactory.getPreferencesValidator(this);
-        }
-        return null;
+        retrievePortletFactory();
+        return portletFactory.getPreferencesValidator(this);
     }
 
     /* (non-Javadoc)
@@ -965,5 +934,29 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     public void setJetspeedSecurityConstraint(String constraint)
     {
         this.jetspeedSecurityConstraint = constraint;
+    }
+
+    private void retrievePortletRegistry()
+    {
+        if (registry == null)
+        {
+            registry = (PortletRegistry)Jetspeed.getComponentManager().getComponent("portletRegistry");
+        }
+    }
+
+    private void retrievePortletFactory()
+    {
+        if (portletFactory == null)
+        {
+            portletFactory = (PortletFactory)Jetspeed.getComponentManager().getComponent("portletFactory");
+        }
+    }
+
+    private void retrievePortletPreferencesProvider()
+    {
+        if (portletPreferencesProvider == null)
+        {
+            portletPreferencesProvider = (PortletPreferencesProvider)Jetspeed.getComponentManager().getComponent("portletPreferencesProvider");
+        }
     }
 }

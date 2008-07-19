@@ -28,7 +28,12 @@ public class JSUserAttributes extends JSNVPElements
 	 */
 	public JSUserAttributes(Preferences preferences)
 	{
-		super(preferences);
+        // TODO: the JSNVPElements class doesn't support/use Preferences anymore
+        //       because of its dual usage for PortletPreferences as well
+        //       goto break these two usages apart and provide separate implementations
+        // NOTE: JSVNPElements is't very well implemented anyway (doesn't seem to be able to handle multi-value elements...)
+//		super(preferences);
+	    super();
 	}
     public JSUserAttributes()
     {

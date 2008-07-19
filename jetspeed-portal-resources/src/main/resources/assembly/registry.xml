@@ -46,18 +46,15 @@
       <value>JETSPEED-INF/ojb/registry_repository.xml</value>
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="portletFactory" />
-    </constructor-arg>
-    <constructor-arg index="2">
       <ref bean="portletApplicationOidCache" />
     </constructor-arg>
-    <constructor-arg index="3">
+    <constructor-arg index="2">
       <ref bean="portletDefinitionOidCache" />
     </constructor-arg>
-    <constructor-arg index="4">
+    <constructor-arg index="3">
       <ref bean="portletApplicationNameCache" />
     </constructor-arg>
-    <constructor-arg index="5">
+    <constructor-arg index="4">
       <ref bean="portletDefinitionNameCache" />
     </constructor-arg>
   </bean>
@@ -89,6 +86,34 @@
     </property>
   </bean>
 
+  <!-- Portlet Preferences Implementation -->
+  <bean id="PortletPreferencesProviderImpl" class="org.apache.jetspeed.components.portletpreferences.PersistenceBrokerPortletPreferencesProvider"
+    init-method="init" destroy-method="destroy">
+    <meta key="j2:cat" value="default,registry" />
+    <constructor-arg index="0">
+      <ref bean="preferencesCache" />
+    </constructor-arg>
+  </bean>
+
+  <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" parent="baseTransactionProxy" name="portletPreferencesProvider"
+    destroy-method="destroy">
+    <meta key="j2:cat" value="default,registry" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider</value>
+    </property>
+
+    <property name="target">
+      <ref bean="PortletPreferencesProviderImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="save*">PROPAGATION_REQUIRED</prop>
+        <prop key="delete*">PROPAGATION_REQUIRED</prop>
+        <prop key="*">PROPAGATION_SUPPORTS</prop>
+      </props>
+    </property>
+  </bean>
+
   <!--
     - PortletEntity business object: OJB implementation, as an inner bean wrapped
     - by an outer transactional proxy. The two bean definitions could have been separate,
@@ -101,9 +126,6 @@
     <constructor-arg>
       <ref bean="portletRegistry" />
     </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.request.RequestContextComponent" />
-    </constructor-arg>
     <!-- 
       All preferences were shared. With JS2-449, preferences are now
       stored 'per user'. The username is stored in the preferences FULL_PATH
@@ -112,9 +134,6 @@
       but instead merge with them, where user prefs override.
       boolean
     -->
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.page.PageManager" />
-    </constructor-arg>
     <constructor-arg type="boolean">
       <value>false</value>
     </constructor-arg>
@@ -145,22 +164,6 @@
         </prop>
         <prop key="*">PROPAGATION_SUPPORTS</prop>
       </props>
-    </property>
-  </bean>
-
-  <!-- Inject Portlet Entity Proxy into Portlet Entity impl -->
-  <bean id="injectEntityAccessProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="targetObject">
-      <ref bean="portletEntityAccessImpl" />
-    </property>
-    <property name="targetMethod">
-      <value>setEntityAccessProxy</value>
-    </property>
-    <property name="arguments">
-      <list>
-        <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
-      </list>
     </property>
   </bean>
 

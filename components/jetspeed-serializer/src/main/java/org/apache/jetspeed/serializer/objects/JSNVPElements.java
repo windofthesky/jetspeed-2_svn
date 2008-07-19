@@ -24,21 +24,19 @@ package org.apache.jetspeed.serializer.objects;
  * @author <a href="mailto:hajo@bluesunrsie.com">Hajo Birthelmer</a>
  * @version $Id: $
  */
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.prefs.Preferences;
+import java.util.ArrayList;
+import java.util.List;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
 public class JSNVPElements
 {
-
-    private HashMap myMap = new HashMap();
+    private List<JSNVPElement> values = new ArrayList<JSNVPElement>();
 
     public int size()
     {
-    	return myMap.size();
+    	return values.size();
     	
     }
     public JSNVPElements()
@@ -46,35 +44,14 @@ public class JSNVPElements
     }
     
  
-    public HashMap getMyMap()
+    public List<JSNVPElement> getValues()
 	{
-		return myMap;
+		return values;
 	}
 
-    public void add(String key, String value)
+    public void add(JSNVPElement element)
     {
-    	myMap.put(key,value);
-    }
-
-	/**
-     * @param arg0
-     */
-    public JSNVPElements(Preferences preferences)
-    {
-        try
-        {
-            String[] strings = preferences.keys();
-            if ((strings != null) && (strings.length > 0))
-            {
-                int i = strings.length;
-                for (int j = 0; j < i; j++)
-                    myMap.put(strings[j], preferences.get(strings[j], "?????"));
-            }
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+    	values.add(element);
     }
 
     /***************************************************************************
@@ -89,12 +66,9 @@ public class JSNVPElements
             try
             {
                 JSNVPElements g = (JSNVPElements) o;
-                Iterator _it = g.myMap.keySet().iterator();
-                while (_it.hasNext())
+                for (JSNVPElement element : g.values)
                 {
-                    String _key = (String) _it.next();
-                    JSNVPElement elem = new JSNVPElement(_key,(String)g.myMap.get(_key));
-                    xml.add(elem,"preference",JSNVPElement.class);
+                    xml.add(element,"preference", JSNVPElement.class);
                 }
             } catch (Exception e)
             {
@@ -111,7 +85,7 @@ public class JSNVPElements
                 while (xml.hasNext())
 				{
 					JSNVPElement elem = (JSNVPElement)xml.get("preference",JSNVPElement.class);
-                    g.myMap.put(elem.getKey(), elem.getValue());
+					g.add(elem);
 				}
             } catch (Exception e)
             {
@@ -123,7 +97,4 @@ public class JSNVPElements
             }
         }
     };
-
-    
-    
 }

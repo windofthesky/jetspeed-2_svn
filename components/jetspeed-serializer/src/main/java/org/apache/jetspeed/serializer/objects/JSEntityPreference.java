@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
-import java.util.prefs.Preferences;
-
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
@@ -63,16 +61,6 @@ public class JSEntityPreference
     {
         return preferences;
     }
-
-    /**
-     * @param preferences
-     *            The preferences to set.
-     */
-    public void setPreferences(Preferences preferences)
-    {
-        this.preferences = new JSNVPElements(preferences);
-    }
-
 
     /**
      * @param preferences

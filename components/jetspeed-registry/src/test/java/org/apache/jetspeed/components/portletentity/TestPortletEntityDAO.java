@@ -19,11 +19,14 @@ package org.apache.jetspeed.components.portletentity;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
@@ -57,13 +60,17 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 
     private static final String TEST_ENTITY = "user5/entity-9";
 
+    private static MockJetspeedEngine mockEngine = new MockJetspeedEngine();
+
     private PersistenceBrokerPortletEntityAccess entityAccess = null;
 
     private PortletRegistry registry;
-
+    
     protected void setUp() throws Exception
     {
         super.setUp();
+        mockEngine.setComponentManager(scm);
+        Jetspeed.setEngine(mockEngine);
         this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
         this.entityAccess = (PersistenceBrokerPortletEntityAccess) scm.getComponent("portletEntityAccessImpl");
 
@@ -74,6 +81,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     protected void tearDown() throws Exception
     {
         teardownTestData();
+        Jetspeed.setEngine(null);
         super.tearDown();
     }
 
@@ -130,66 +138,92 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         prefs = (PreferenceSetComposite) entity.getPreferenceSet();
 
         assertNotNull(prefs.get("pref1"));
-
+        
         PreferenceComposite pref = (PreferenceComposite) prefs.get("pref1");
+        
+        List<String> prefValues = pref.getValuesList();
+        
+        assertEquals("1", prefValues.size());
+               
+        prefValues.set(0, "2");
+        pref.setValues(prefValues);
 
-        assertEquals("1", pref.getValueAt(0));
+        prefValues = pref.getValuesList();
+        assertEquals("2", prefValues.get(0));
 
-        pref.setValueAt(0, "2");
-
-        assertEquals("2", pref.getValueAt(0));
-
-        prefs.add("pref2", Arrays.asList(new String[]
-        { "2", "3" }));
+        prefValues.add("3");
+        prefs.add("pref2", prefValues);
 
         entity.store();
 
+        prefs = (PreferenceSetComposite)entity.getPreferenceSet();
         PreferenceComposite pref2 = (PreferenceComposite) prefs.get("pref2");
 
         assertNotNull(pref2);
 
-        Iterator prefsValues = pref2.getValues();
-        int count = 0;
-        while (prefsValues.hasNext())
-        {
-            prefsValues.next();
-            count++;
-        }
-
-        assertEquals(2, count);
+        prefValues = pref2.getValuesList();
+        assertEquals(2, prefValues.size());
 
         pref2.addValue("4");
-        prefsValues = pref2.getValues();
-        count = 0;
-        while (prefsValues.hasNext())
-        {
-            assertEquals(String.valueOf(count + 2), prefsValues.next());
-            count++;
-        }
-        assertEquals(3, count);
+        prefValues = pref2.getValuesList();
+        assertEquals(3, prefValues.size());
+        assertEquals("2", prefValues.get(0));
+        assertEquals("3", prefValues.get(1));
+        assertEquals("4", prefValues.get(2));
 
         // testing preferences null values assignments fix, issue JS2-607
-        pref2.setValueAt(0, null);        
-        assertNull("pref2.value[0] should be null", pref2.getValueAt(0));        
-        String[] values = pref2.getValueArray();
-        assertEquals(3, values.length);
-        assertNull("pref2.value[0] should be null", values[0]);
-        assertEquals("3", values[1]);
-        pref2.setValues(new String[]{"2",null,"3"});
-        assertNull("pref2.value[1] should be null", pref2.getValueAt(1));
-        values = pref2.getValueArray();
-        assertEquals(3, values.length);
-        assertEquals("2", values[0]);
-        assertNull("pref2.value[1] should be null", values[1]);
-        assertEquals("3", values[2]);
-        assertTrue(pref2.isValueSet());
-        pref2.setValues((String[])null);
-        assertFalse(pref2.isValueSet());
-        assertTrue(pref2.getValueArray().length == 0);
-        pref2.setValues(new String[]{});
-        assertFalse(pref2.isValueSet());
-        assertTrue(pref2.getValueArray().length == 0);
+        prefValues.set(0,null);
+        pref2.setValues(prefValues);
+        entity.store();
+        
+        prefs = (PreferenceSetComposite)entity.getPreferenceSet();
+        pref2 = (PreferenceComposite) prefs.get("pref2");
+        
+        prefValues = pref2.getValuesList();
+        assertNull("pref2.value[0] should be null", prefValues.get(0));
+        
+        assertEquals(3, prefValues.size());
+        assertEquals("3", prefValues.get(1));
+        prefValues.set(0, "2");
+        prefValues.set(1, null);
+        prefValues.set(2, "3");
+        pref2.setValues(prefValues);
+        
+        entity.store();
 
+        prefs = (PreferenceSetComposite)entity.getPreferenceSet();
+        pref2 = (PreferenceComposite) prefs.get("pref2");
+        
+        prefValues = pref2.getValuesList();
+        assertNull("pref2.value[1] should be null", prefValues.get(1));
+        
+        assertTrue(pref2.isValueSet());
+        pref2.setValues(null);        
+        assertFalse(pref2.isValueSet());
+        
+        entity.store();
+
+        prefs = (PreferenceSetComposite)entity.getPreferenceSet();
+        pref2 = (PreferenceComposite) prefs.get("pref2");
+
+        assertFalse(pref2.isValueSet());
+        prefValues = pref2.getValuesList();
+        
+        assertTrue(prefValues.size() == 0);
+        
+        pref2.setValues(prefValues);
+        assertFalse(pref2.isValueSet());
+
+        entity.store();
+
+        prefs = (PreferenceSetComposite)entity.getPreferenceSet();
+        pref2 = (PreferenceComposite) prefs.get("pref2");
+
+        assertFalse(pref2.isValueSet());
+        prefValues = pref2.getValuesList();
+        
+        assertTrue(prefValues.size() == 0);
+        
         MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
         assertNotNull("entity's portlet ", entity2.getPortletDefinition());
@@ -212,7 +246,6 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         System.out.println("reget : " + entity6.getId());
 
         entityAccess.removePortletEntity(entity6);
-
     }
 
     private void teardownTestData() throws Exception

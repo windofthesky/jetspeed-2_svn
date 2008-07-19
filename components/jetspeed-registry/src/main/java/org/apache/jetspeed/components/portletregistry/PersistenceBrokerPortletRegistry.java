@@ -29,7 +29,6 @@ import java.util.prefs.Preferences;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
-import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -77,19 +76,17 @@ public class PersistenceBrokerPortletRegistry
     // for testing purposes only: no need for the portletFactory then
     public PersistenceBrokerPortletRegistry(String repositoryPath)
     {
-        this(repositoryPath, null, null, null, null, null);
+        this(repositoryPath, null, null, null, null);
     }
     
     /**
      *  
      */
-    public PersistenceBrokerPortletRegistry(String repositoryPath, PortletFactory portletFactory, 
+    public PersistenceBrokerPortletRegistry(String repositoryPath,
             JetspeedCache applicationOidCache, JetspeedCache portletOidCache, 
             JetspeedCache applicationNameCache, JetspeedCache portletNameCache)
     {
         super(repositoryPath);
-        PortletDefinitionImpl.setPortletRegistry(this);
-        PortletDefinitionImpl.setPortletFactory(portletFactory);
         this.applicationOidCache = applicationOidCache;
         this.portletOidCache = portletOidCache;
         this.applicationNameCache = applicationNameCache;
@@ -315,13 +312,13 @@ public class PersistenceBrokerPortletRegistry
         try
         {
             getPersistenceBrokerTemplate().store(portlet);
+            ((PortletDefinitionComposite)portlet).storeChildren();
         }
         catch (DataAccessException e)
         {
             
            throw new FailedToStorePortletDefinitionException(portlet, e);
         }
-
     }
 
     public PortletDefinitionComposite getPortletDefinition(ObjectID id)

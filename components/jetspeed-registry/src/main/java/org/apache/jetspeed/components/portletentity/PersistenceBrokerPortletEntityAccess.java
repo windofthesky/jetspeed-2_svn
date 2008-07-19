@@ -16,11 +16,9 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import java.io.IOException;
 import java.rmi.server.UID;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.prefs.BackingStoreException;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
@@ -29,15 +27,11 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.common.PreferenceSet;
 import org.apache.pluto.om.entity.PortletEntity;
 import org.apache.pluto.om.entity.PortletEntityCtrl;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -77,45 +71,12 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     public PersistenceBrokerPortletEntityAccess( PortletRegistry registry )
     {
         super();
-        this.registry = registry;        
-        PortletEntityImpl.registry = registry;
+        this.registry = registry;
     }
 
-    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc)
+    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, boolean mergeSharedPreferences)
     {
-        super();
-        this.registry = registry;        
-        PortletEntityImpl.registry = registry;
-        PortletEntityImpl.rcc = rcc;
-    }
-
-    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc, PageManager pageManager)
-    {
-        super();
-        this.registry = registry;        
-        PortletEntityImpl.registry = registry;
-        PortletEntityImpl.rcc = rcc;
-        PortletEntityImpl.pm = pageManager;
-    }
-    
-    public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, RequestContextComponent rcc, PageManager pageManager, boolean mergeSharedPreferences)
-    {
-        super();
-        this.registry = registry;        
-        PortletEntityImpl.registry = registry;
-        PortletEntityImpl.rcc = rcc;
-        PortletEntityImpl.pm = pageManager;
         this.mergeSharedPreferences = mergeSharedPreferences;
-    }
-    
-    public void setEntityAccessProxy(PortletEntityAccessComponent proxy)
-    {
-        PortletEntityImpl.pac = proxy;
-    }
-    
-    public void setPageManager(PageManager pageManager)
-    {
-        PortletEntityImpl.pm = pageManager;
     }
     
     /**
@@ -331,21 +292,8 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
 
     public void removePortletEntity( PortletEntity portletEntity ) throws PortletEntityNotDeletedException
     {
-        PreferenceSet prefsSet  = portletEntity.getPreferenceSet();
         getPersistenceBrokerTemplate().delete(portletEntity);
-        
-        if(prefsSet instanceof PrefsPreferenceSetImpl)
-        {
-            try
-            {
-                ((PrefsPreferenceSetImpl)prefsSet).clear();
-                removeFromCache(portletEntity);
-            }
-            catch (BackingStoreException e)
-            {
-                throw new PortletEntityNotDeletedException("Failed to remove preferences for portlet entity "+portletEntity.getId()+".  "+e.getMessage(), e);
-            }
-        }
+        removeFromCache(portletEntity);
     }
 
     /**
@@ -384,45 +332,16 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     {
         try
         {
-            ((PortletEntityCtrl) portletEntity).store();
+            getPersistenceBrokerTemplate().store(portletEntity);
+            ((MutablePortletEntity)portletEntity).storeChildren();
         }
         catch (Exception e)
         {
-            throw new PortletEntityNotStoredException(e.toString(), e);
+            throw new PortletEntityNotStoredException("Failed to store portlet Entity: "+e.toString(), e);
         }
 
     }
 
-    /**
-     * <p>
-     * storePreferenceSet
-     * </p>
-     * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#storePreferenceSet(org.apache.pluto.om.common.PreferenceSet)
-     * @param prefSet
-     * @throws IOException
-     */
-    public void storePreferenceSet( PreferenceSet prefSet, PortletEntity entity ) throws IOException
-    {
-        try
-        {            
-            getPersistenceBrokerTemplate().store(entity);
-            if (prefSet != null && prefSet instanceof PrefsPreferenceSetImpl)
-            {
-                ((PrefsPreferenceSetImpl)prefSet).flush();
-            }            
-
-        }
-        catch (Exception e)
-        {
-            String msg = "Failed to store portlet entity:" + e.toString();
-            IOException ioe = new IOException(msg);
-            ioe.initCause(e);            
-            throw ioe;
-        }
-
-    }
-    
     protected String autoGenerateID(PortletDefinition pd)
     {
         String appName = ((MutablePortletApplication)pd.getPortletApplicationDefinition()).getName();

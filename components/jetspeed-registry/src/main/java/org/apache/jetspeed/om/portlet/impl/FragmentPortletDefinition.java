@@ -339,6 +339,11 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
     {
         portletDefinition.store();
     }
+
+    public void storeChildren()
+    {
+        portletDefinition.storeChildren();
+    }
     
     public String getJetspeedSecurityConstraint()
     {
@@ -349,5 +354,4 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
     {
         portletDefinition.setJetspeedSecurityConstraint(constraint);
     }
-    
 }

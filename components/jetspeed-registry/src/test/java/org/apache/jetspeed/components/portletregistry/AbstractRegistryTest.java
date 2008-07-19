@@ -20,7 +20,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -55,7 +57,9 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
     public static final String APP_1_NAME = "RegistryTestPortlet";
 
-    protected PortletRegistry registry;
+    private static MockJetspeedEngine mockEngine = new MockJetspeedEngine();
+
+   protected PortletRegistry registry;
 
     private static int testPasses = 0;
 
@@ -70,9 +74,17 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
     protected void setUp() throws Exception
     {
         super.setUp();
+        mockEngine.setComponentManager(scm);
+        Jetspeed.setEngine(mockEngine);
         this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
 
         testPasses++;
+    }
+    
+    protected void tearDown() throws Exception
+    {
+        Jetspeed.setEngine(null);
+        super.tearDown();
     }
 
     protected void validateDublinCore(GenericMetadata metadata)

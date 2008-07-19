@@ -18,34 +18,30 @@ package org.apache.jetspeed.components.portletentity;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import javax.portlet.PortletMode;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.RenderTrackable;
-import org.apache.jetspeed.components.persistence.store.PersistenceStore;
-import org.apache.jetspeed.components.persistence.store.PersistenceStoreRuntimeExcpetion;
-import org.apache.jetspeed.components.persistence.store.RemovalAware;
+import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.om.preference.impl.PrefsPreference;
-import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
+import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
@@ -68,16 +64,17 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PortletEntityImpl.java,v 1.9 2005/04/29 13:59:08 weaver Exp $
  */
-public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, RemovalAware, RenderTrackable
+public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, RenderTrackable
 {   
-    private long oid;
+    private Long oid;
     private JetspeedObjectID id;
-    protected static PortletEntityAccessComponent pac;    
-    protected static PortletRegistry registry;
-    protected static RequestContextComponent rcc;
-    protected static PageManager pm;
+    private static PortletPreferencesProvider portletPreferencesProvider;
+    private static PortletEntityAccessComponent portletEntityAccess;    
+    private static PortletRegistry registry;
+    private static RequestContextComponent requestContextComponent;
+    private static PageManager pageManager;
     
-    protected PrefsPreferenceSetImpl pagePreferenceSet;
+    protected PreferenceSetComposite pagePreferenceSet;
     protected Map perPrincipalPrefs = new HashMap();
     private PortletApplicationEntity applicationEntity = null;
     private PortletWindowList portletWindows = new PortletWindowListImpl();
@@ -102,13 +99,13 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public static final String NO_PRINCIPAL = "no-principal";
     public static final String ENTITY_DEFAULT_PRINCIPAL = "entity-default";
-
+    
     public ObjectID getId()
     {
         return id;
     }
 
-    public long getOid()
+    public Long getOid()
     {
         return oid;
     }
@@ -142,72 +139,53 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public PreferenceSet getPreferenceSet(Principal principal)
     {
-        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) perPrincipalPrefs.get(principal);
-        try
+        PreferenceSet preferenceSet = (PreferenceSet)perPrincipalPrefs.get(principal);
+//        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) perPrincipalPrefs.get(principal);
+        if (preferenceSet == null || !dirty)
         {
-            if (preferenceSet == null || !dirty)
+            retrievePortletPreferencesProvider();
+            preferenceSet = portletPreferencesProvider.getPreferenceSet(this, principal.getName());
+            perPrincipalPrefs.put(principal, preferenceSet);
+            /*
+             * TODO:  MergeSharedPreferences is broken AFAIK, this features needs to be reevaluated now that we also have edit_defaults!
+            if (pac.isMergeSharedPreferences())
             {
-                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId() +"/"+ principal.getName() +"/"
-                        + PrefsPreference.PORTLET_PREFERENCES_ROOT;
-                Preferences prefNode = Preferences.userRoot().node(prefNodePath);               
-                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-                perPrincipalPrefs.put(principal, preferenceSet);
-                if (pac.isMergeSharedPreferences())
-                {
-                    mergePreferencesSet(preferenceSet);
-                }
-                dirty = true;
+                mergePreferencesSet(preferenceSet);
             }
-        }
-        catch (BackingStoreException e)
-        {
-            String msg = "Preference backing store failed: " + e.toString();
-            IllegalStateException ise = new IllegalStateException(msg);
-            ise.initCause(e);
-            throw ise;
+            */
+            dirty = true;
         }
         return preferenceSet;
     }
     
     private PreferenceSet getPreferenceSetFromPage()
     {
-        PrefsPreferenceSetImpl preferenceSet = this.pagePreferenceSet;
+        PreferenceSetComposite preferenceSet = this.pagePreferenceSet;
         
-        try
+        if (preferenceSet == null || !dirty)
         {
-            if (preferenceSet == null || !dirty)
+            preferenceSet = new PreferenceSetImpl();
+            this.pagePreferenceSet = preferenceSet;
+            
+            List fragmentPreferences = this.fragment.getPreferences();
+            
+            if (fragmentPreferences != null)
             {
-                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + 
-                                            getId() +"/"+ PrefsPreference.PORTLET_PREFERENCES_ROOT;
-
-                Preferences prefNode = Preferences.systemRoot().node(prefNodePath);
-                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-                this.pagePreferenceSet = preferenceSet;
-                
-                List fragmentPreferences = this.fragment.getPreferences();
-                
-                if (fragmentPreferences != null)
+                for (Iterator it = fragmentPreferences.iterator(); it.hasNext(); )
                 {
-                    for (Iterator it = fragmentPreferences.iterator(); it.hasNext(); )
-                    {
-                        FragmentPreference preference = (FragmentPreference) it.next();
-                        List preferenceValues = preference.getValueList();
-                        preferenceSet.add(preference.getName(), preferenceValues);
-                    }
+                    FragmentPreference preference = (FragmentPreference) it.next();
+                    List preferenceValues = preference.getValueList();
+                    PreferenceComposite pref = (PreferenceComposite)preferenceSet.add(preference.getName(), preferenceValues);
+                    pref.setReadOnly(Boolean.toString(preference.isReadOnly()));
                 }
-                dirty = true;
             }
-        }
-        catch (BackingStoreException e)
-        {
-            String msg = "Preference backing store failed: " + e.toString();
-            IllegalStateException ise = new IllegalStateException(msg);
-            ise.initCause(e);
-            throw ise;
+            dirty = true;
         }
         return preferenceSet;
     }
     
+/*    
+ * TODO:  MergeSharedPreferences is broken AFAIK, this features needs to be reevaluated now that we also have edit_defaults!
     private void mergePreferencesSet(PrefsPreferenceSetImpl userPrefSet)
     throws BackingStoreException
     {
@@ -232,7 +210,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             index++;
         }        
     }
-
+*/
     public PortletDefinition getPortletDefinition()
     {
         // there are cases when jetspeed gets initialized before
@@ -242,6 +220,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         // (becuase the PortletApplication has yet to be registered).
         if(this.portletDefinition == null)
         {
+            retrievePortletRegistry();
             PortletDefinition pd = registry.getPortletDefinitionByIdentifier(getPortletUniqueName());
             if ( pd != null )
             {
@@ -257,7 +236,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         
         // Wrap the portlet defintion every request thread
         // JS2-852: don't use thread local
-        RequestContext rc = rcc.getRequestContext();
+        retrieveRequestContextComponent();
+        RequestContext rc = requestContextComponent.getRequestContext();
         String entityFragmentKey = getEntityFragmentKey();
         PortletDefinition fpd = null;
         if (rc != null)
@@ -294,6 +274,21 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public void store() throws IOException
     {
+        retrievePortletEntityAccess();
+        try
+        {
+            portletEntityAccess.storePortletEntity(this);
+        }
+        catch (PortletEntityNotStoredException e)
+        {
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);            
+            throw ioe;
+        }
+    }
+    
+    public void storeChildren()
+    {
         if (isEditDefaultsMode())
         {
             storeToPage();
@@ -305,26 +300,22 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         }
     }
     
-    public void store(Principal principal) throws IOException
+    private void store(Principal principal)
     {
-        if (pac == null)
+        PreferenceSetComposite preferenceSet = (PreferenceSetComposite)perPrincipalPrefs.get(principal);
+        
+        if (preferenceSet != null)
         {
-            throw new IllegalStateException("You must call PortletEntityImpl.setPorteltEntityDao() before "
-                    + "invoking PortletEntityImpl.store().");
+            retrievePortletPreferencesProvider();
+            portletPreferencesProvider.savePreferenceSet(this, principal.getName(), preferenceSet);
         }
-
-        PreferenceSet preferenceSet = (PreferenceSet)perPrincipalPrefs.get(principal);
-        pac.storePreferenceSet(preferenceSet, this);
         dirty = false;
     }
     
-    private void storeToPage() throws IOException
+    private void storeToPage()
     {
-        if (pm == null)
-        {
-            throw new IllegalStateException("You must set pageManager before "
-                    + "invoking PortletEntityImpl.store().");
-        }
+        retrievePageManager();
+        retrieveRequestContextComponent();
         
         PreferenceSet preferenceSet = this.pagePreferenceSet;
         List preferences = new ArrayList();
@@ -333,7 +324,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         {
             Preference pref = (Preference) it.next();
             
-            FragmentPreference preference = pm.newFragmentPreference();
+            FragmentPreference preference = pageManager.newFragmentPreference();
             preference.setName(pref.getName());
             List preferenceValues = new ArrayList();
             
@@ -350,7 +341,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         
         try
         {
-            pm.updatePage(rcc.getRequestContext().getPage());
+            pageManager.updatePage(requestContextComponent.getRequestContext().getPage());
         }
         catch (Exception e)
         {
@@ -434,7 +425,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         {
             portletDefinition = (PortletDefinitionComposite) composite;
             // if the portletDefinition is modified, clear threadlocal fragmentPortletDefinition cache
-            RequestContext rc = rcc.getRequestContext();
+            retrieveRequestContextComponent();
+            RequestContext rc = requestContextComponent.getRequestContext();
             if (rc != null)
             {
                 rc.getRequest().removeAttribute(getEntityFragmentKey());
@@ -453,11 +445,13 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public Principal getPrincipal()
     {
-        if (rcc == null)
+        retrieveRequestContextComponent();
+        if (requestContextComponent == null)
         {
+            // TODO: shouldn't be possible anymore
             return new PortletEntityUserPrincipal(NO_PRINCIPAL);
         }            
-        RequestContext rc = rcc.getRequestContext();
+        RequestContext rc = requestContextComponent.getRequestContext();
         if (rc == null)
         {
             return new PortletEntityUserPrincipal(NO_PRINCIPAL);
@@ -547,46 +541,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             return name;
         }
     }
-    /**
-     * <p>
-     * postRemoval
-     * </p>
-     *
-     * @see org.apache.jetspeed.components.persistence.store.RemovalAware#postRemoval(org.apache.jetspeed.components.persistence.store.PersistenceStore)
-     * @param store
-     * @throws {@link org.apache.jetspeed.persistence.store.PersistenceStoreRuntimeExcpetion}
-     * if the removal of the {@link java.util.prefs.Preference} related to this entity fails
-     */
-    public void postRemoval( PersistenceStore store )
-    {
-      
-
-    }
-    /**
-     * <p>
-     * preRemoval
-     * </p>
-     *	not implemented.
-     *
-     * @see org.apache.jetspeed.components.persistence.store.RemovalAware#preRemoval(org.apache.jetspeed.components.persistence.store.PersistenceStore)
-     * @param store
-     */
-    public void preRemoval( PersistenceStore store )
-    {
-        String rootForEntity = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + getId();
-        try
-        {
-            if(Preferences.userRoot().nodeExists(rootForEntity))
-            {
-                Preferences.userRoot().node(rootForEntity).removeNode();
-            }
-        }
-        catch (BackingStoreException e)
-        {           
-            throw new PersistenceStoreRuntimeExcpetion(e.toString(), e);
-        }        
-
-    }
+    
     public String getPortletUniqueName()
     {
         if(this.appName != null && this.portletName != null)
@@ -607,7 +562,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     {
         this.fragment = fragment;
         // if the fragment is set, clear threadlocal fragmentPortletDefinition cache
-        RequestContext rc = rcc.getRequestContext();
+        retrieveRequestContextComponent();
+        RequestContext rc = requestContextComponent.getRequestContext();
         if (rc != null)
         {
             rc.getRequest().removeAttribute(getEntityFragmentKey());
@@ -660,20 +616,17 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             {
             }
         }
+        retrieveRequestContextComponent();
+        RequestContext context = requestContextComponent.getRequestContext();
         
-        if (rcc != null)
+        try
         {
-            RequestContext context = rcc.getRequestContext();
-            
-            try
-            {
-                PortletMode curMode = context.getPortalURL().getNavigationalState().getMode(curWindow);
-                editDefaultsMode = (JetspeedActions.EDIT_DEFAULTS_MODE.equals(curMode));
-            }
-            catch (Exception e)
-            {
-            }
-        }       
+            PortletMode curMode = context.getPortalURL().getNavigationalState().getMode(curWindow);
+            editDefaultsMode = (JetspeedActions.EDIT_DEFAULTS_MODE.equals(curMode));
+        }
+        catch (Exception e)
+        {
+        }
         return editDefaultsMode;
     }
 
@@ -683,4 +636,43 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         return "org.apache.jetspeed" + entityId ;
     }
     
+    private void retrievePortletRegistry()
+    {
+        if (registry == null)
+        {
+            registry = (PortletRegistry)Jetspeed.getComponentManager().getComponent("portletRegistry");
+        }
+    }
+
+    private void retrieveRequestContextComponent()
+    {
+        if (requestContextComponent == null)
+        {
+            requestContextComponent = (RequestContextComponent)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
+        }
+    }
+
+    private void retrievePortletEntityAccess()
+    {
+        if (portletEntityAccess == null)
+        {
+            portletEntityAccess = (PortletEntityAccessComponent)Jetspeed.getComponentManager().getComponent("portletEntityAccess");
+        }
+    }
+
+    private void retrievePortletPreferencesProvider()
+    {
+        if (portletPreferencesProvider == null)
+        {
+            portletPreferencesProvider = (PortletPreferencesProvider)Jetspeed.getComponentManager().getComponent("portletPreferencesProvider");
+        }
+    }
+
+    private void retrievePageManager()
+    {
+        if (pageManager == null)
+        {
+            pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
+        }
+    }
 }

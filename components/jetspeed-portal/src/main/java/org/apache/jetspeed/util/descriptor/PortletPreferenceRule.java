@@ -21,7 +21,8 @@ import java.util.List;
 
 import org.apache.commons.digester.Rule;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.preference.impl.PrefsPreference;
+import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.xml.sax.Attributes;
 
@@ -36,7 +37,7 @@ public class PortletPreferenceRule extends Rule
     
     protected String name;
     protected boolean readOnly;
-    protected List values; 
+    protected List<String> values; 
  
     /**
      * <p>
@@ -57,7 +58,7 @@ public class PortletPreferenceRule extends Rule
         
         // reset properties to default values
         // as the same instance of this rule can be used multiple times
-        values = new ArrayList();        
+        values = new ArrayList<String>();        
         readOnly = false;
         
         TempValueObject temp = new TempValueObject();
@@ -75,9 +76,8 @@ public class PortletPreferenceRule extends Rule
      */
     public void end( String arg0, String arg1 ) throws Exception
     {       
-        PrefsPreference pref = new PrefsPreference(portlet, name);
-        pref.setValues(values);
-        pref.setReadOnly(readOnly);
+        PreferenceComposite pref = (PreferenceComposite)((PreferenceSetComposite)portlet.getPreferenceSet()).add(name,values);
+        pref.setReadOnly(Boolean.toString(readOnly));
         digester.pop();
     }
     
