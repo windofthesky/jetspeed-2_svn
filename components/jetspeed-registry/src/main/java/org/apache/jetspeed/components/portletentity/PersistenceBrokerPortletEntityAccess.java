@@ -70,12 +70,12 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      */
     public PersistenceBrokerPortletEntityAccess( PortletRegistry registry )
     {
-        super();
-        this.registry = registry;
+        this(registry, false);
     }
 
     public PersistenceBrokerPortletEntityAccess(PortletRegistry registry, boolean mergeSharedPreferences)
     {
+        super();
         this.registry = registry;
         this.mergeSharedPreferences = mergeSharedPreferences;
     }
