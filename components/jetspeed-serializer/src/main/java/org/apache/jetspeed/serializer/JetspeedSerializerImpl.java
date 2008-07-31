@@ -110,7 +110,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     public void importData(String filename, Map settings) throws SerializerException
     {
         Map processSettings = getProcessSettings(settings);
-        JSSnapshot snapshot = readSnapshot(filename, binding);
+        JSSnapshot snapshot = readSnapshot(filename);
 
         if (snapshot == null)
             throw new SerializerException(SerializerException.FILE_PROCESSING_ERROR.create(new String[] { filename,
@@ -216,7 +216,6 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setAlias(JSEntities.class, "Entities");
         binding.setAlias(JSEntityPreference.class, "Principal");
         binding.setAlias(JSEntityPreferences.class, "Settings");
-        binding.setAlias(JSNVPElements.class, "preferences");
 
         binding.setAlias(String.class, "String");
         binding.setAlias(Integer.class, "int");
@@ -224,13 +223,17 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setClassAttribute(null);
     }
 
-    protected JSSnapshot readSnapshot(String importFileName, XMLBinding binding) throws SerializerException
+    protected JSSnapshot readSnapshot(String importFileName) throws SerializerException
     {
         XMLObjectReader reader = null;
         JSSnapshot snap = null;
         try
         {
-            reader = XMLObjectReader.newInstance(new FileInputStream(importFileName));
+        	File exists = new File(importFileName);
+        	if (exists.exists())
+        		reader = XMLObjectReader.newInstance(new FileInputStream(importFileName));
+        	else
+        		reader = XMLObjectReader.newInstance(this.getClass().getClassLoader().getResourceAsStream(importFileName));
         }
         catch (Exception e)
         {
@@ -239,8 +242,8 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         }
         try
         {
-            if (binding != null)
-                reader.setBinding(binding);
+            if (this.binding != null)
+                reader.setBinding(this.binding);
             snap = (JSSnapshot) reader.read(TAG_SNAPSHOT, JSSnapshot.class);
         }
         catch (Exception e)

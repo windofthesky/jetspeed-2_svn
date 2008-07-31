@@ -81,5 +81,21 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
         return new JetspeedBeanDefinitionFilter(getBeanDefinitionFilterCategories());
     }
     
+    /**
+     * Have your test provide its spring-filter categories with a comma separated list of categories
+     * @return a list of one or more filter categories
+     */
     protected abstract String getBeanDefinitionFilterCategories();
+
+    /**
+     * Have your test provide its spring-filter categories with a single category key. Keys are usually configured 
+     * in the spring-filter.properties file as a list of one or more categories.
+     * 
+     * @return a single category key string
+     */    
+    protected String getBeanDefinitionFilterCategoryKey()
+    {
+        return null;
+    }
+    
 }
