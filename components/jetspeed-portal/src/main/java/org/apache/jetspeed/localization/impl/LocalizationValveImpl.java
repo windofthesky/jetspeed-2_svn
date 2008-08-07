@@ -19,7 +19,7 @@ package org.apache.jetspeed.localization.impl;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.prefs.Preferences;
+import java.util.Map;
 
 import javax.security.auth.Subject;
 
@@ -38,6 +38,8 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.attributes.SecurityAttribute;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
@@ -116,12 +118,15 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
                                 && userMgr.userExists(userPrincipal.getName()))
                         {
                             User user = userMgr.getUser(userPrincipal.getName());
-                            // TODO if preferred lang or locale is defined in PLT.D, it's better to use it
-                            Preferences prefs = user.getPreferences();
-                            String localeString = prefs.get(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, null);
-                            if (localeString != null)
+                            Map<String, SecurityAttribute> sa = user.getAttributes().getAttributes(SecurityAttributes.SECURITY_ATTRIBUTE);
+                            SecurityAttribute attrib = sa.get(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
+                            if (attrib != null)
                             {
-                                locale = JetspeedLocale.convertStringToLocale(localeString);
+                                String localeString = attrib.getValue();
+                                if (localeString != null)
+                                {
+                                    locale = JetspeedLocale.convertStringToLocale(localeString);
+                                }
                             }
                         }
                     }

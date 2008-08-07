@@ -129,6 +129,9 @@
         <entry key="JetspeedSerializer">
           <ref bean="org.apache.jetspeed.serializer.JetspeedSerializer" />
         </entry>
+        <entry key="SecurityAttributesProvider">
+        	<ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
+        </entry>
         <!-- first uncomment the below service bean in security-spi-atn.xml
           <entry key="PasswordEncodingService">
           <ref bean="org.apache.jetspeed.security.PasswordEncodingService" />

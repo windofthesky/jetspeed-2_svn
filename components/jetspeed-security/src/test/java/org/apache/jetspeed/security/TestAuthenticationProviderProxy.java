@@ -76,9 +76,9 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
 
         // Need to override the AbstractSecurityTestcase behavior.
         securityProvider = new SecurityProviderImpl(atnProviderProxy, rsh, gsh, smh);
-        ums = new UserManagerImpl(securityProvider);
-        gms = new GroupManagerImpl(securityProvider);
-        rms = new RoleManagerImpl(securityProvider);
+        ums = new UserManagerImpl(securityProvider, sap);
+        gms = new GroupManagerImpl(securityProvider, sap);
+        rms = new RoleManagerImpl(securityProvider, sap);
 
         // Login module.
         new LoginModuleProxyImpl(ums);
@@ -133,7 +133,7 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
             assertFalse(ums.authenticate("anonuser3", "pword"));
 
             // Get all users. 5 rdbms users + 3 ldap users.
-            Iterator users = ums.getUsers("");
+            Iterator users = ums.getUsers("").iterator();
             int count = 0;
             while (users.hasNext())
             {
@@ -266,7 +266,7 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
         //before we adding users make sure we know how mnay we have
         try
         {
-	        Iterator it = ums.getUsers("");
+	        Iterator it = ums.getUsers("").iterator();
 	        userCount = 0;
 	        while (it.hasNext())
 	        {
@@ -327,7 +327,7 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
     {
         try
         {
-            Iterator userIter = ums.getUsers("");
+            Iterator userIter = ums.getUsers("").iterator();
             User user;
             String userName;
             while (userIter.hasNext())

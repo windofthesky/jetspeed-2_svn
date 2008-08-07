@@ -88,10 +88,8 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
             try
             {
                 String anonymousUser = userManager.getAnonymousUser();
-                Iterator _itUsers = userManager.getUsers("");
-                while (_itUsers.hasNext())
+                for (User _user : userManager.getUsers(""))    
                 {
-                    User _user = (User) _itUsers.next();                    
                     Principal principal = SecurityHelper.getPrincipal(_user.getSubject(), UserPrincipal.class);
                     if (principal != null)
                     {
@@ -193,7 +191,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
             try
             {
                 User user = userManager.getUser(_user.getName());
-                Principal principal = getUserPrincipal(user);
+                Principal principal = user.getUserPrincipal();
                 if (jsRules != null)
                 {
                     Iterator _itRoles = jsRules.iterator();
@@ -314,22 +312,6 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
         }
         return rule;
 
-    }
-
-    private Principal getUserPrincipal(User user)
-    {
-        Subject subject = user.getSubject();
-        // get the user principal
-        Set principals = subject.getPrincipals();
-        Iterator list = principals.iterator();
-        while (list.hasNext())
-        {
-            BasePrincipal principal = (BasePrincipal) list.next();
-            String path = principal.getFullPath();
-            if (path.startsWith("/user/"))
-                return principal;
-        }
-        return null;
     }
 
     /**

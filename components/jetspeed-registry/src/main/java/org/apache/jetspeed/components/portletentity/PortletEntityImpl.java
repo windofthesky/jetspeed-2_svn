@@ -664,7 +664,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     {
         if (portletPreferencesProvider == null)
         {
-            portletPreferencesProvider = (PortletPreferencesProvider)Jetspeed.getComponentManager().getComponent("portletPreferencesProvider");
+            portletPreferencesProvider = (PortletPreferencesProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
         }
     }
 

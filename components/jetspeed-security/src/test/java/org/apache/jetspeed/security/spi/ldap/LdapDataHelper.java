@@ -58,13 +58,13 @@ public class LdapDataHelper
     public static void seedGroupData(String gpUid) throws Exception
     {
         GroupPrincipal gp = new GroupPrincipalImpl(gpUid);
-        grHandler.setGroupPrincipal(gp);
+        grHandler.storeGroupPrincipal(gp);
     }
     
     public static void seedRoleData(String roleUid) throws Exception
     {
         RolePrincipal rp = new RolePrincipalImpl(roleUid);
-        roleHandler.setRolePrincipal(rp);
+        roleHandler.storeRolePrincipal(rp);
     }
     
     public static void removeUserData(String uid) throws Exception

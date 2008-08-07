@@ -26,4 +26,5 @@ import java.util.ArrayList;
  */
 public class JSUsers extends ArrayList<JSUser>
 {
+    private static final long serialVersionUID = -5698435742048612881L;
 }

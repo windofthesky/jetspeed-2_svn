@@ -44,20 +44,20 @@ public interface GroupSecurityHandler
      * Gets the group principal for the group full path name {principal}.{subprincipal}.
      * </p>
      * 
-     * @param groupFullPathName The group full path name.
+     * @param groupName The group full path name.
      * @return The <code>Principal</p>
      */
-    GroupPrincipal getGroupPrincipal(String groupFullPathName);
+    GroupPrincipal getGroupPrincipal(String groupName);
     
     /**
      * <p>
-     * Sets the group principal in the backing store.
+     * Stores the group principal in the backing store.
      * </p>
      * 
      * @param groupPrincipal The <code>GroupPrincipal</code>.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException;
+    void storeGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException;
     
     /**
      * <p>
@@ -77,6 +77,6 @@ public interface GroupSecurityHandler
      * @param filter The filter.
      * @return The list of <code>Principal</code>
      */
-    List getGroupPrincipals(String filter);
+    List<GroupPrincipal> getGroupPrincipals(String filter);
    
 }

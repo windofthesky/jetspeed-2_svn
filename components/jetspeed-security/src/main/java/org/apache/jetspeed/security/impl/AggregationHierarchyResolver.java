@@ -16,14 +16,19 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.prefs.Preferences;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.HierarchyResolver;
-import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 
 /**
  * <p>
- * Implementation for "part of" hierarchy. For Example: There're roles:
+ * Implementation for "part of" hierarchy. For Example: given roles:
  * <ul>
  * <li>roleA</li>
  * <li>roleA.roleB</li>
@@ -40,19 +45,73 @@ import org.apache.jetspeed.util.ArgUtil;
  * </p>
  * 
  * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
- * @version $Id: AggregationHierarchyResolver.java,v 1.2 2004/09/18 19:33:58
- *          dlestrat Exp $
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
 public class AggregationHierarchyResolver extends BaseHierarchyResolver implements HierarchyResolver
 {
-    /**
-     * @see org.apache.jetspeed.security.HierarchyResolver#resolve(Preferences)
-     */
-    public String[] resolve(Preferences prefs)
+    public AggregationHierarchyResolver(RoleSecurityHandler roleHandler, GroupSecurityHandler groupHandler)
     {
-        ArgUtil.notNull(new Object[] { prefs }, new String[] { "preferences" }, "resolve(java.util.prefs.Preferences)");
-
-        return resolveChildren(prefs);
+        super(roleHandler, groupHandler);
     }
-
+    
+    /**
+     * Resolve roles by aggregation of children of the given role path
+     */
+    public Set<RolePrincipal> resolveRoles(String rolePath)
+    {
+        Set<RolePrincipal> resultSet = new HashSet<RolePrincipal>();
+        StringTokenizer tokenizer = new StringTokenizer(this.getHierarchySeparator());
+        if (tokenizer.hasMoreTokens())
+        {    
+            String current = tokenizer.nextToken();
+            RolePrincipal rp = this.roleHandler.getRolePrincipal(current);
+            if (rp != null)
+                resultSet.add(rp);
+            while (tokenizer.hasMoreTokens())
+            { 
+                current = current + this.getHierarchySeparator() + tokenizer.nextToken();
+                rp = this.roleHandler.getRolePrincipal(current);
+                if (rp != null)
+                    resultSet.add(rp);
+            }
+        }
+        else
+        {
+            RolePrincipal rp = this.roleHandler.getRolePrincipal(rolePath);
+            if (rp != null)
+                resultSet.add(rp);
+        }
+        return resultSet;
+    }
+    
+    /**
+     * Resolve groups by aggregation of children of the given group path
+     */
+    public Set<GroupPrincipal> resolveGroups(String groupPath)
+    {
+        Set<GroupPrincipal> resultSet = new HashSet<GroupPrincipal>();
+        StringTokenizer tokenizer = new StringTokenizer(this.getHierarchySeparator());
+        if (tokenizer.hasMoreTokens())
+        {    
+            String current = tokenizer.nextToken();
+            GroupPrincipal gp = this.groupHandler.getGroupPrincipal(current);
+            if (gp != null)
+                resultSet.add(gp);
+            while (tokenizer.hasMoreTokens())
+            { 
+                current = current + this.getHierarchySeparator() + tokenizer.nextToken();
+                gp = this.groupHandler.getGroupPrincipal(current);
+                if (gp != null)
+                    resultSet.add(gp);
+            }
+        }
+        else
+        {
+            GroupPrincipal gp = this.groupHandler.getGroupPrincipal(groupPath);
+            if (gp != null)
+                resultSet.add(gp);
+        }
+        return resultSet;
+    }
 }

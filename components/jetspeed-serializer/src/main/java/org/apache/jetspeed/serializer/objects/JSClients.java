@@ -28,6 +28,7 @@ import java.util.ArrayList;
 * @version $Id: $
 */
 
-public class JSClients extends ArrayList
+public class JSClients extends ArrayList<JSClient>
 {
+    private static final long serialVersionUID = -4112833259762462264L;
 }

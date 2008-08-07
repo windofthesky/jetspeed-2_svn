@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
+import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.InvalidNewPasswordException;
 import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.PasswordAlreadyUsedException;
@@ -34,8 +35,8 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
-import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
+import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor;
 import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
 import org.apache.jetspeed.security.spi.SecurityAccess;
@@ -65,9 +66,9 @@ public class DefaultCredentialHandler implements CredentialHandler
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPrivateCredentials(java.lang.String)
      */
-    public Set getPrivateCredentials(String username)
+    public Set<Credential> getPrivateCredentials(String username)
     {
-        Set credentials = new HashSet();
+        Set<Credential> credentials = new HashSet<Credential>();
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(username, false);
         if (null != internalUser)
         {
@@ -91,23 +92,21 @@ public class DefaultCredentialHandler implements CredentialHandler
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPublicCredentials(java.lang.String)
      */
-    public Set getPublicCredentials(String username)
+    public Set<Credential> getPublicCredentials(String username)
     {
-        return new HashSet();
+        return new HashSet<Credential>();
     }
     
     private InternalCredential getPasswordCredential(InternalUserPrincipal internalUser, String username)
     {
-        InternalCredential credential = null;
-        
-        Collection internalCredentials = internalUser.getCredentials();
+        InternalCredential credential = null;        
+        Collection<InternalCredential> internalCredentials = internalUser.getCredentials();
         if ( internalCredentials != null )
         {
-            Iterator iter = internalCredentials.iterator();
-            
+            Iterator<InternalCredential> iter = internalCredentials.iterator();            
             while (iter.hasNext())
             {
-                credential = (InternalCredential) iter.next();
+                credential = iter.next();
                 if (credential.getType() == InternalCredential.PRIVATE )
                 {
                     if ((null != credential.getClassname())
@@ -118,7 +117,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                             if ( ipcInterceptor != null && ipcInterceptor.afterLoad(pcProvider, username, credential) )
                             {
                                 // update InternalUserPrincipal to save post processed data 
-                                securityAccess.setInternalUserPrincipal(internalUser,internalUser.isMappingOnly());
+                                securityAccess.storeInternalUserPrincipal(internalUser, internalUser.isMappingOnly());
                             }
                             break;
                         }
@@ -160,16 +159,13 @@ public class DefaultCredentialHandler implements CredentialHandler
         if (null == internalUser)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(userName));
-        }
-        
-        Collection credentials = internalUser.getCredentials();
+        }        
+        Collection<InternalCredential> credentials = internalUser.getCredentials();
         if (null == credentials)
         {
-            credentials = new ArrayList();
+            credentials = new ArrayList<InternalCredential>();
         }
-
-        InternalCredential credential = getPasswordCredential(internalUser, userName );
-        
+        InternalCredential credential = getPasswordCredential(internalUser, userName );        
         if (null != oldPassword)
         {
             if ( credential != null && 
@@ -282,7 +278,7 @@ public class DefaultCredentialHandler implements CredentialHandler
         internalUser.setModifiedDate(new Timestamp(time));
         internalUser.setCredentials(credentials);
         // Set the user with the new credentials.
-        securityAccess.setInternalUserPrincipal(internalUser, false);
+        securityAccess.storeInternalUserPrincipal(internalUser, false);
     }
     
     
@@ -302,7 +298,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                 credential.setAuthenticationFailures(0);
                 credential.setModifiedDate(new Timestamp(time));
                 internalUser.setModifiedDate(new Timestamp(time));
-                securityAccess.setInternalUserPrincipal(internalUser, false);
+                securityAccess.storeInternalUserPrincipal(internalUser, false);
             }
         }
         else
@@ -337,7 +333,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                 credential.setPreviousAuthenticationDate(new Timestamp(time));
                 credential.setModifiedDate(new Timestamp(time));
                 internalUser.setModifiedDate(new Timestamp(time));
-                securityAccess.setInternalUserPrincipal(internalUser, false);
+                securityAccess.storeInternalUserPrincipal(internalUser, false);
             }
         }
         else
@@ -370,7 +366,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                 
                 credential.setModifiedDate(new Timestamp(time));
                 internalUser.setModifiedDate(new Timestamp(time));
-                securityAccess.setInternalUserPrincipal(internalUser, false);
+                securityAccess.storeInternalUserPrincipal(internalUser, false);
             }
         }
         else
@@ -435,7 +431,7 @@ public class DefaultCredentialHandler implements CredentialHandler
                 {
                     credential.setModifiedDate(new Timestamp(time));
                     internalUser.setModifiedDate(new Timestamp(time));
-                    securityAccess.setInternalUserPrincipal(internalUser, false);
+                    securityAccess.storeInternalUserPrincipal(internalUser, false);
                 }
             }
         }

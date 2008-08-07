@@ -53,11 +53,19 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
-	        name="fullPath"
-	        column="full_path"
+	        name="type"
+	        column="sp_type"
 	        jdbc-type="VARCHAR"
 	        nullable="false"
-	        length="254"
+	        length="20"
+	    >
+	    </field-descriptor>	    
+	    <field-descriptor
+	        name="name"
+	        column="sp_name"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="200"
 	    >
 	    </field-descriptor>
 	    <field-descriptor
@@ -80,7 +88,7 @@ limitations under the License.
           jdbc-type="INTEGER"
           conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
-      >
+      > 
       </field-descriptor>      
 	    <collection-descriptor
 	        name="credentials"
@@ -295,13 +303,21 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
-	        name="fullPath"
-	        column="full_path"
+	        name="type"
+	        column="sp_type"
 	        jdbc-type="VARCHAR"
 	        nullable="false"
-	        length="254"
+	        length="20"
 	    >
-	    </field-descriptor>
+	    </field-descriptor>	    
+	    <field-descriptor
+	        name="name"
+	        column="sp_name"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="200"
+	    >
+	    </field-descriptor>	    	    
 	    <field-descriptor
 	        name="creationDate"
 	        column="creation_date"
@@ -401,15 +417,23 @@ limitations under the License.
 	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
 	        nullable="false"
 	    >
-	    </field-descriptor>
+	    </field-descriptor>	    
 	    <field-descriptor
-	        name="fullPath"
-	        column="full_path"
+	        name="type"
+	        column="sp_type"
 	        jdbc-type="VARCHAR"
 	        nullable="false"
-	        length="254"
+	        length="20"
 	    >
-	    </field-descriptor>
+	    </field-descriptor>	    
+	    <field-descriptor
+	        name="name"
+	        column="sp_name"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="200"
+	    >
+	    </field-descriptor>	    
 	    <field-descriptor
 	        name="creationDate"
 	        column="creation_date"
@@ -511,11 +535,19 @@ limitations under the License.
 	    >
 	    </field-descriptor>
 	    <field-descriptor
-	        name="fullPath"
-	        column="full_path"
+	        name="type"
+	        column="sp_type"
 	        jdbc-type="VARCHAR"
 	        nullable="false"
-	        length="254"
+	        length="20"
+	    >
+	    </field-descriptor>	    
+	    <field-descriptor
+	        name="name"
+	        column="sp_name"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="200"
 	    >
 	    </field-descriptor>
 	    <field-descriptor
@@ -627,5 +659,57 @@ limitations under the License.
 	        <fk-pointing-to-element-class column="PRINCIPAL_ID"/>
 	    </collection-descriptor>
 	</class-descriptor>
+
+
+   <!--
+   - S E C U R I T Y   A T T R I B U T E S
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.security.attributes.SecurityAttributeImpl"
+      table="security_attributes"
+  >
+      <documentation>Represents a Security Principal Attribute definition.</documentation>
+      <field-descriptor
+          name="attributeId"
+          column="attr_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          autoincrement="true"
+      />
+      <field-descriptor
+          name="principalId"
+          column="principal_id"
+          jdbc-type="BIGINT"
+          nullable="false"
+      />
+      <field-descriptor
+          name="name"
+          column="attr_name"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="200"
+      />
+      <field-descriptor
+          name="type"
+          column="attr_type"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="20"
+      />
+      <field-descriptor
+          name="principalType"
+          column="principal_type"
+          jdbc-type="VARCHAR"
+          nullable="true"
+          length="4"
+      />      
+      <field-descriptor
+          name="value"
+          column="attr_value"
+          jdbc-type="VARCHAR"
+          nullable="true"
+          length="1000"
+      />      
+  </class-descriptor>
 
 </descriptor-repository>

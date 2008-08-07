@@ -81,90 +81,79 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implements PermissionManager 
 {
     private static final Log log = LogFactory.getLog(PermissionManagerImpl.class);
-    private static ThreadLocal permissionsCache = new ThreadLocal();
+    private static ThreadLocal<HashMap<String, HashSet<Permission>>> permissionsCache 
+        = new ThreadLocal<HashMap<String, HashSet<Permission>>>();
     
     /**
      * @see org.apache.jetspeed.security.PermissionManager#getPermissions(java.security.Principal)
      */
     public Permissions getPermissions(Principal principal)
     {        
-        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" },
-                "removePermission(java.security.Principal)");
-
-        HashMap permissionsMap = (HashMap)permissionsCache.get();
+        HashMap<String, HashSet<Permission>> permissionsMap = permissionsCache.get();
         if ( permissionsMap == null )
         {
-            permissionsMap = new HashMap();
+            permissionsMap = new HashMap<String, HashSet<Permission>>();
             permissionsCache.set(permissionsMap);
         }
-        HashSet principalPermissions = (HashSet)permissionsMap.get(fullPath);
+        HashSet<Permission> principalPermissions = permissionsMap.get(principal.getName());
         if ( principalPermissions == null )
         {
-            InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+            InternalPrincipal internalPrincipal = getInternalPrincipal(principal.getName());
             if (null != internalPrincipal)
             {
                 principalPermissions = getSecurityPermissions(internalPrincipal.getPermissions());
             }
             if ( principalPermissions == null)
             {
-                principalPermissions = new HashSet();
+                principalPermissions = new HashSet<Permission>();
             }
-            permissionsMap.put(fullPath, principalPermissions);
+            permissionsMap.put(principal.getName(), principalPermissions);
         }
         
         Permissions permissions = new Permissions();
-        Iterator iter =principalPermissions.iterator();
-        while (iter.hasNext())
+        for (Permission p : principalPermissions)
         {
-            permissions.add((Permission)iter.next());
+            permissions.add(p);
         }
-        
         return permissions;
     }
 
     /**
      * @see org.apache.jetspeed.security.PermissionManager#getPermissions(java.util.Collection)
      */
-    public Permissions getPermissions(Collection principals)
+    public Permissions getPermissions(Collection<Principal> principals)
     {
-        ArgUtil.notNull(new Object[] { principals }, new String[] { "principals" },
-                "getPermissions(java.util.Collection)");
-
         Permissions permissions = new Permissions();
-        Collection principalsFullPath = getPrincipalsFullPath(principals);
-        if ((null != principalsFullPath) && principalsFullPath.size() > 0)
+        if ((null != principals) && principals.size() > 0)
         {
-            HashSet permissionsSet = new HashSet();
-            HashMap permissionsMap = (HashMap)permissionsCache.get();
+            HashSet<Permission> permissionsSet = new HashSet<Permission>();
+            HashMap<String, HashSet<Permission>> permissionsMap = permissionsCache.get();
             if (permissionsMap == null)
             {
-                permissionsMap = new HashMap();
+                permissionsMap = new HashMap<String, HashSet<Permission>>();
                 permissionsCache.set(permissionsMap);
-            }
-            
-            Iterator iter = principalsFullPath.iterator();
-            HashSet principalPermissions;
-            while ( iter.hasNext())
+            }            
+            Iterator<Principal> iter = principals.iterator();
+            HashSet<Permission> principalPermissions;
+            while (iter.hasNext())
+            for (Principal p : principals)
             {
-                principalPermissions = (HashSet)permissionsMap.get(iter.next());
+                principalPermissions = permissionsMap.get(iter.next());
                 if ( principalPermissions != null )
                 {
                     iter.remove();
                     permissionsSet.addAll(principalPermissions);
                 }
             }
-            if ( principalsFullPath.size() > 0)
+            if ( principals.size() > 0)
             {
                 Criteria filter = new Criteria();
-                filter.addIn("fullPath", principalsFullPath);
+                filter.addIn("name", principals);
                 Query query = QueryFactory.newQuery(InternalPrincipalImpl.class, filter);
-                Collection internalPrincipals = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-                Iterator internalPrincipalsIter = internalPrincipals.iterator();
-                while (internalPrincipalsIter.hasNext())
+                Collection<InternalPrincipal> internalPrincipals = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+                for (InternalPrincipal internalPrincipal : internalPrincipals)
                 {
-                    InternalPrincipal internalPrincipal = (InternalPrincipal) internalPrincipalsIter.next();
-                    Collection internalPermissions = internalPrincipal.getPermissions();
+                    Collection<InternalPermission> internalPermissions = internalPrincipal.getPermissions();
                     if (null != internalPermissions)
                     {
                         principalPermissions = getSecurityPermissions(internalPermissions);
@@ -172,42 +161,17 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
                     }
                     else
                     {
-                        principalPermissions = new HashSet();
+                        principalPermissions = new HashSet<Permission>();
                     }
-                    permissionsMap.put(internalPrincipal.getFullPath(),principalPermissions);
+                    permissionsMap.put(internalPrincipal.getName(), principalPermissions);
                 }
             }
-            iter = permissionsSet.iterator();
-            while (iter.hasNext())
+            for (Permission permission : permissionsSet)
             {
-                permissions.add((Permission)iter.next());
+                permissions.add(permission);
             }
         }
         return permissions;
-    }
-
-    /**
-     * <p>
-     * Get the full path for the {@link Principal}in the collection.
-     * </p>
-     * 
-     * @param principals The collection of principals.
-     * @return The collection of principals names.
-     */
-    private Collection getPrincipalsFullPath(Collection principals)
-    {
-        Collection principalsFullPath = new ArrayList();
-        Iterator principalsIterator = principals.iterator();
-        while (principalsIterator.hasNext())
-        {
-            Principal principal = (Principal) principalsIterator.next();
-            String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-            if (null != fullPath)
-            {
-                principalsFullPath.add(fullPath);
-            }
-        }
-        return principalsFullPath;
     }
 
     /**
@@ -218,13 +182,12 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      * 
      * @param omPermissions The collection of {@link InternalPermission}.
      */
-    private HashSet getSecurityPermissions(Collection omPermissions)
+    @SuppressWarnings("unchecked")
+    private HashSet<Permission> getSecurityPermissions(Collection<InternalPermission> omPermissions)
     {     
-        HashSet permissions = new HashSet();
-        Iterator internalPermissionsIter = omPermissions.iterator();
-        while (internalPermissionsIter.hasNext())
+        HashSet<Permission> permissions = new HashSet<Permission>();
+        for (InternalPermission internalPermission : omPermissions)
         {
-            InternalPermission internalPermission = (InternalPermission) internalPermissionsIter.next();
             Permission permission = null;
             try
             {
@@ -255,9 +218,6 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      */
     public void addPermission(Permission permission) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { permission }, new String[] { "permission" },
-                "addPermission(java.security.Permission)");
-
         InternalPermission internalPermission = new InternalPermissionImpl(permission.getClass().getName(), permission
                 .getName(), permission.getActions());
         try
@@ -278,9 +238,6 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      */
     public void removePermission(Permission permission) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { permission }, new String[] { "permission" },
-                "removePermission(java.security.Permission)");
-
         InternalPermission internalPermission = getInternalPermission(permission);
         if (null != internalPermission)
         {
@@ -306,15 +263,11 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      */
     public void removePermissions(Principal principal) throws SecurityException
     {
-        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(new Object[] { fullPath }, new String[] { "fullPath" },
-                "removePermission(java.security.Principal)");
-
         // Remove permissions on principal.
-        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        InternalPrincipal internalPrincipal = getInternalPrincipal(principal.getName());
         if (null != internalPrincipal)
         {
-            Collection internalPermissions = internalPrincipal.getPermissions();
+            Collection<InternalPermission> internalPermissions = internalPrincipal.getPermissions();
             if (null != internalPermissions)
             {
                 internalPermissions.clear();
@@ -344,13 +297,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      */
     public void grantPermission(Principal principal, Permission permission) throws SecurityException
     {
-        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(new Object[] { fullPath, permission }, new String[] { "fullPath", "permission" },
-                "grantPermission(java.security.Principal, java.security.Permission)");
-
-        Collection internalPermissions = new ArrayList();
-
-        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        Collection<InternalPermission> internalPermissions = new ArrayList<InternalPermission>();
+        InternalPrincipal internalPrincipal = getInternalPrincipal(principal.getName());
         if (null == internalPrincipal)
         {
             if ( principal instanceof UserPrincipal )
@@ -416,23 +364,17 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      */
     public void revokePermission(Principal principal, Permission permission) throws SecurityException
     {
-        String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-        ArgUtil.notNull(new Object[] { fullPath, permission }, new String[] { "fullPath", "permission" },
-                "revokePermission(java.security.Principal, java.security.Permission)");
-
         // Remove permissions on principal.
-        InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+        InternalPrincipal internalPrincipal = getInternalPrincipal(principal.getName());
         if (null != internalPrincipal)
         {
-            Collection internalPermissions = internalPrincipal.getPermissions();
+            Collection<InternalPermission> internalPermissions = internalPrincipal.getPermissions();
             if (null != internalPermissions)
             {
                 boolean revokePermission = false;
-                ArrayList newInternalPermissions = new ArrayList();
-                Iterator internalPermissionsIter = internalPermissions.iterator();
-                while (internalPermissionsIter.hasNext())
+                ArrayList<InternalPermission> newInternalPermissions = new ArrayList<InternalPermission>();
+                for (InternalPermission internalPermission : internalPermissions)
                 {
-                    InternalPermission internalPermission = (InternalPermission) internalPermissionsIter.next();
                     if (!((internalPermission.getClassname().equals(permission.getClass().getName()))
                             && (internalPermission.getName().equals(permission.getName())) && (internalPermission.getActions()
                             .equals(permission.getActions()))))
@@ -472,13 +414,13 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
      * Returns the {@link InternalPrincipal}from the full path.
      * </p>
      * 
-     * @param fullPath The full path.
+     * @param name The full path.
      * @return The {@link InternalPrincipal}.
      */
-    InternalPrincipal getInternalPrincipal(String fullPath)
+    InternalPrincipal getInternalPrincipal(String name)
     {
         Criteria filter = new Criteria();
-        filter.addEqualTo("fullPath", fullPath);
+        filter.addEqualTo("name", name);
         Query query = QueryFactory.newQuery(InternalPrincipalImpl.class, filter);
         InternalPrincipal internalPrincipal = (InternalPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalPrincipal;
@@ -524,29 +466,29 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         return true;         
     }
     
-    public Collection getPermissions()
+    @SuppressWarnings("unchecked")
+    public Collection<InternalPermission> getInternalPermissions()
     {
         QueryByCriteria query = QueryFactory.newQuery(InternalPermissionImpl.class, new Criteria());
         query.addOrderByAscending("classname");
         query.addOrderByAscending("name");
-        Collection internalPermissions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        Collection<InternalPermission> internalPermissions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
         return internalPermissions;
     }
     
+    @SuppressWarnings("unchecked")
     public Permissions getPermissions(String classname, String resource)
     {
         Criteria filter = new Criteria();
         filter.addEqualTo("classname", classname);
         filter.addEqualTo("name", resource);
         Query query = QueryFactory.newQuery(InternalPermissionImpl.class, filter);
-        Collection internalPermissions = getPersistenceBrokerTemplate().getCollectionByQuery(query);        
+        Collection<InternalPermission> internalPermissions = getPersistenceBrokerTemplate().getCollectionByQuery(query);        
         Permissions permissions = new Permissions();
-        Iterator iter = internalPermissions.iterator();
         try
         {
-            while (iter.hasNext())
+            for (InternalPermission internalPermission : internalPermissions)
             {
-                InternalPermission internalPermission = (InternalPermission)iter.next();
                 Class permissionClass = Class.forName(internalPermission.getClassname());
                 Class[] parameterTypes = { String.class, String.class };
                 Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
@@ -562,18 +504,15 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
         return permissions;        
     }    
     
-    public int updatePermission(Permission permission, Collection principals)
+    public int updatePermission(Permission permission, Collection<Principal> principals)
     throws SecurityException
     {
         int count = 0;
         InternalPermission internal = getInternalPermission(permission);
-        Iterator iter = principals.iterator();
-        Collection newPrincipals = new LinkedList();
-        while (iter.hasNext())
+        Collection<InternalPrincipal> newPrincipals = new LinkedList<InternalPrincipal>();
+        for (Principal principal : principals)
         {
-            Principal principal = (Principal)iter.next();
-            String fullPath = SecurityHelper.getPreferencesFullPath(principal);
-            InternalPrincipal internalPrincipal = getInternalPrincipal(fullPath);
+            InternalPrincipal internalPrincipal = getInternalPrincipal(principal.getName());
             newPrincipals.add(internalPrincipal);            
         }
         internal.setPrincipals(newPrincipals);
@@ -589,28 +528,22 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
             logger.error(msg, e);            
             throw new SecurityException(msg, e);
         }
-
         return count;
     }
     
-    public Collection getPrincipals(Permission permission)
+    public Collection<Principal> getPrincipals(Permission permission)
     {
-        Collection result = new LinkedList();        
+        Collection<Principal> result = new LinkedList<Principal>();        
         InternalPermission internalPermission = this.getInternalPermission(permission);
         if (internalPermission == null)
         {
             return result;
         }
-        Iterator principals = internalPermission.getPrincipals().iterator();
-        while (principals.hasNext())
+        for (InternalPrincipal internalPrincipal : internalPermission.getPrincipals())
         {
-            InternalPrincipal internalPrincipal = (InternalPrincipal)principals.next();            
-            Principal principal = 
-                SecurityHelper.createPrincipalFromFullPath(internalPrincipal.getFullPath());
+            Principal principal = SecurityHelper.createPrincipalFromInternal(internalPrincipal); 
             result.add(principal);
         }
         return  result;
     }
-    
-    
 }

@@ -58,5 +58,5 @@ public interface UserInfoManager
      * @param context The request context.
      * @return The {@link PortletRequest.USER_INFO} map.
      */
-    Map getUserInfoMap(ObjectID oid, RequestContext context);
+    Map<String, String> getUserInfoMap(ObjectID oid, RequestContext context);
 }

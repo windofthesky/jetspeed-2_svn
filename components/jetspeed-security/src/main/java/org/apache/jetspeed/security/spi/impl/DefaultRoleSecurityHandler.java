@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,17 +52,14 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#getRolePrincipal(java.lang.String)
      */
-    public RolePrincipal getRolePrincipal(String roleFullPathName)
+    public RolePrincipal getRolePrincipal(String roleName)
     {
         RolePrincipal rolePrincipal = null;
-        InternalRolePrincipal internalRole = commonQueries
-                .getInternalRolePrincipal(RolePrincipalImpl
-                        .getFullPathFromPrincipalName(roleFullPathName));
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);        
         if (null != internalRole)
         {
-            rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl
-                    .getPrincipalNameFromFullPath(internalRole.getFullPath()), 
-                    internalRole.isEnabled(), internalRole.isMappingOnly());
+            rolePrincipal = new RolePrincipalImpl(internalRole.getPrincipalId(), internalRole.getName(),
+                                            internalRole.isEnabled(), internalRole.isMappingOnly());
         }
         return rolePrincipal;
     }
@@ -70,23 +67,22 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#setRolePrincipal(org.apache.jetspeed.security.RolePrincipal)
      */
-    public void setRolePrincipal(RolePrincipal rolePrincipal)
+    public void storeRolePrincipal(RolePrincipal rolePrincipal)
             throws SecurityException
-    {
-        String fullPath = rolePrincipal.getFullPath();
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(fullPath);
+    {        
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(rolePrincipal.getName());
         if ( null == internalRole )
         {
-            internalRole = new InternalRolePrincipalImpl(fullPath);
+            internalRole = new InternalRolePrincipalImpl(rolePrincipal.getName());
             internalRole.setEnabled(rolePrincipal.isEnabled());
-            commonQueries.setInternalRolePrincipal(internalRole, false);
+            commonQueries.storeInternalRolePrincipal(internalRole, false);
         }
         else if ( !internalRole.isMappingOnly() )
         {
             if ( internalRole.isEnabled() != rolePrincipal.isEnabled() )
             {
                 internalRole.setEnabled(rolePrincipal.isEnabled());
-                commonQueries.setInternalRolePrincipal(internalRole, false);
+                commonQueries.storeInternalRolePrincipal(internalRole, false);
             }
         }
         else
@@ -102,7 +98,7 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
             throws SecurityException
     {
         InternalRolePrincipal internalRole = commonQueries
-                .getInternalRolePrincipal(rolePrincipal.getFullPath());
+                .getInternalRolePrincipal(rolePrincipal.getName());
         if (null != internalRole)
         {
             commonQueries.removeInternalRolePrincipal(internalRole);
@@ -112,23 +108,15 @@ public class DefaultRoleSecurityHandler implements RoleSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.RoleSecurityHandler#getRolePrincipals(java.lang.String)
      */
-    public List getRolePrincipals(String filter)
+    public List<RolePrincipal> getRolePrincipals(String filter)
     {
-        List rolePrincipals = new LinkedList();
-        Iterator result = commonQueries.getInternalRolePrincipals(filter);
-        while (result.hasNext())
+        List<RolePrincipal> rolePrincipals = new LinkedList<RolePrincipal>();
+        Collection<InternalRolePrincipal> internalRolePrincipals = commonQueries.getInternalRolePrincipals(filter);
+        for (InternalRolePrincipal internalRole : internalRolePrincipals)
         {
-            InternalRolePrincipal internalRole = (InternalRolePrincipal) result
-                    .next();
-            String path = internalRole.getFullPath();
-            if (path == null)
-            {
-                continue;
-            }
-            rolePrincipals.add(new RolePrincipalImpl(RolePrincipalImpl
-                    .getPrincipalNameFromFullPath(internalRole.getFullPath())));
+            rolePrincipals.add(new RolePrincipalImpl(internalRole.getPrincipalId(), internalRole.getName(), 
+                                internalRole.isEnabled(), internalRole.isMappingOnly()));
         }
         return rolePrincipals;
-    }
-        
+    }        
 }

@@ -17,16 +17,19 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.util.prefs.Preferences;
-
 import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
- * <p>A group made of a {@link org.apache.jetspeed.security.GroupPrincipal} and the user {@link Preferences}.</p>
+ * <p>Represents a security 'group' made of a {@link org.apache.jetspeed.security.GroupPrincipal} and security attributes.</p>
+ * <p>Modified 2008-08-05 - DST - decoupled java preferences</p> 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class GroupImpl implements Group
 {
+    private Principal groupPrincipal;
+    private SecurityAttributes attributes;
+    
     /**
      * <p>Default constructor.</p>
      */
@@ -35,17 +38,15 @@ public class GroupImpl implements Group
     }
 
     /**
-     * <p>{@link Group} constructor given a group principal and preferences.</p>
+     * <p>{@link Group} constructor given a group principal and security attributes.</p>
      * @param groupPrincipal The group principal.
-     * @param preferences The preferences.
+     * @param attributes The security attributes.
      */
-    public GroupImpl(Principal groupPrincipal, Preferences preferences)
+    public GroupImpl(Principal groupPrincipal, SecurityAttributes attributes)
     {
         this.groupPrincipal = groupPrincipal;
-        this.preferences = preferences;
+        this.attributes = attributes;
     }
-
-    private Principal groupPrincipal;
 
     /**
      * @see org.apache.jetspeed.security.Group#getPrincipal()
@@ -63,22 +64,15 @@ public class GroupImpl implements Group
         this.groupPrincipal = groupPrincipal;
     }
 
-    private Preferences preferences;
 
-    /**
-     * @see org.apache.jetspeed.security.Group#getPreferences()
-     */
-    public Preferences getPreferences()
+    public SecurityAttributes getAttributes()
     {
-        return this.preferences;
+        return this.attributes;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.Group#setPreferences(java.util.prefs.Preferences)
-     */
-    public void setPreferences(Preferences preferences)
+    public void setAttributes(SecurityAttributes attributes)
     {
-        this.preferences = preferences;
+        this.attributes = attributes; 
     }
 
 }

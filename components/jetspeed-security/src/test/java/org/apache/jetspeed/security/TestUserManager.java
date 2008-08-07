@@ -139,13 +139,7 @@ public class TestUserManager extends AbstractSecurityTestcase
         // Asset user principal.
         Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
         assertNotNull("user principal is null", userPrincipal);
-        assertEquals("expected user principal full path == /user/test", "/user/test", SecurityHelper
-                .getPreferencesFullPath(userPrincipal));
         assertEquals("expected user principal name == test", "test", userPrincipal.getName());
-
-        // Test the User Preferences.
-        Preferences preferences = user.getPreferences();
-        assertEquals("expected user node == /user/test", "/user/test", preferences.absolutePath());
         
         // Test if roles are inheritable to a user via groups
         try
@@ -359,7 +353,7 @@ public class TestUserManager extends AbstractSecurityTestcase
         ums.addUser("two", "two-pw");
         ums.addUser("three", "three-pw");
         int count = 0;
-        Iterator it = ums.getUsers("");
+        Iterator it = ums.getUsers("").iterator();
         while (it.hasNext())
         {
             User user = (User) it.next();

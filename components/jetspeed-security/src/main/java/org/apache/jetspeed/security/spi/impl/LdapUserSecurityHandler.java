@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.spi.impl;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NamingException;
@@ -81,7 +82,7 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
-    public Principal getUserPrincipal(String uid)
+    public UserPrincipal getUserPrincipal(String uid)
     {
         verifyUid(uid);
         try
@@ -131,18 +132,25 @@ public class LdapUserSecurityHandler implements UserSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipals(java.lang.String)
      */
-    public List getUserPrincipals(String filter)
+    public List<UserPrincipal> getUserPrincipals(String filter)
     {
         try
         {
-            return Arrays.asList(ldap.find(filter, UserPrincipal.PREFS_USER_ROOT));
+            List<UserPrincipal> principals = new LinkedList<UserPrincipal>();            
+            List<Principal> result = Arrays.asList(ldap.find(filter, UserPrincipal.PREFS_USER_ROOT));
+            for (Principal p : result)
+            {
+                if (p instanceof UserPrincipal)
+                    principals.add((UserPrincipal)p);
+            }
+            return principals;            
         }
         catch (SecurityException e)
         {
             logSecurityException(e, filter);
         }
 
-        return new ArrayList();
+        return new ArrayList<UserPrincipal>();
     }
 
     /**

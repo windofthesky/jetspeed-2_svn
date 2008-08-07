@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.sql.Timestamp;
 
 /**
- * <p>Interface representing a {@link java.util.prefs.Preferences}
+ * <p>Interface representing a single preference
  * node.</p>
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>

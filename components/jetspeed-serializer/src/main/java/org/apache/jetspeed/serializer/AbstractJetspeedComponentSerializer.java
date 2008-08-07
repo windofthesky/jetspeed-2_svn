@@ -17,6 +17,7 @@
 package org.apache.jetspeed.serializer;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -80,13 +81,13 @@ public abstract class AbstractJetspeedComponentSerializer implements JetspeedCom
      *            Strinbg containing one or more elements seperated by ','
      * @return list of elements of null
      */
-    protected static final ArrayList getTokens(String _line)
+    protected static final List<String> getTokens(String _line)
     {
         if ((_line == null) || (_line.length() == 0))
             return null;
 
         StringTokenizer st = new StringTokenizer(_line, ",");
-        ArrayList list = new ArrayList();
+        List<String> list = new ArrayList<String>();
 
         while (st.hasMoreTokens())
             list.add(st.nextToken());

@@ -14,12 +14,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/*
- * Created on Jul 27, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package org.apache.jetspeed.aggregator;
 
 import org.apache.jetspeed.exception.JetspeedException;

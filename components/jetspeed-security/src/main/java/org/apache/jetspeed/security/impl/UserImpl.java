@@ -16,20 +16,26 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.prefs.Preferences;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.attributes.SecurityAttribute;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
- * <p>A user made of a {@link Subject} and the user {@link Preferences}.</p>
+ * <p>Represents a security 'user' made of a {@link org.apache.jetspeed.security.RolePrincipal} and security attributes.</p>
+ * <p>Modified 2008-08-05 - DST - decoupled java preferences</p> 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class UserImpl implements User
 {
     private Subject subject;
-    private Preferences preferences;
+    private SecurityAttributes attributes;
 
     /**
      * <p>Default constructor.</p>
@@ -39,14 +45,14 @@ public class UserImpl implements User
     }
     
     /**
-     * <p>{@link User} constructor given a subject and preferences.</p>
+     * <p>{@link User} constructor given a subject and security attributes.</p>
      * @param subject The subject.
-     * @param preferences The preferences.
+     * @param attributes The security attributes
      */
-    public UserImpl(Subject subject, Preferences preferences)
+    public UserImpl(Subject subject, SecurityAttributes attributes)
     {
         this.subject = subject;
-        this.preferences = preferences;
+        this.attributes = attributes;
     }
 
     /**
@@ -65,28 +71,30 @@ public class UserImpl implements User
         this.subject = subject;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.User#getPreferences()
-     */
-    public Preferences getPreferences()
+    public SecurityAttributes getAttributes()
     {
-        return preferences;
+        return this.attributes;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.User#setPreferences(java.util.prefs.Preferences)
-     */
-    public void setPreferences(Preferences preferences)
+    public void setAttributes(SecurityAttributes attributes)
     {
-        this.preferences = preferences;
+        this.attributes = attributes;        
     }
 
-    public Preferences getUserAttributes()
+    public Map<String, String> getUserAttributes()
     {
-        if (preferences != null)
+        Map<String, String> userInfo = new HashMap<String, String>();
+        for (String key : this.attributes.getAttributes().keySet())
         {
-            return preferences.node(USER_INFO_PROPERTY_SET);
+            SecurityAttribute attr = this.attributes.getAttributes().get(key);
+            if (attr.getType().equals(SecurityAttributes.USER_INFORMATION))
+                userInfo.put(attr.getName(), attr.getValue());
         }
-        return null;
+        return userInfo;
+    }
+
+    public UserPrincipal getUserPrincipal()
+    {
+        return (UserPrincipal) SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
     }
 }

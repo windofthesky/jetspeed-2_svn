@@ -14,12 +14,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/*
- * Created on Jan 11, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package org.apache.jetspeed.aggregator;
 
 import java.io.PrintWriter;
@@ -29,9 +23,6 @@ import org.apache.jetspeed.cache.ContentCacheKey;
 /**
  * <p>
  * PortletContent
- * </p>
- * <p>
- *
  * </p>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @author <a href="mailto:taylor@apache.org">David S. Taylor</a>  

@@ -23,5 +23,5 @@
  */
 public interface RolePrincipal extends BasePrincipal
 {
-
+    final String PRINCIPAL_TYPE = "role"; 
 }

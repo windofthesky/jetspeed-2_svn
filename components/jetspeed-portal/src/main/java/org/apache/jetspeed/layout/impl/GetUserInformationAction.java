@@ -17,12 +17,10 @@
 package org.apache.jetspeed.layout.impl;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.security.auth.Subject;
 
@@ -82,14 +80,8 @@ public class GetUserInformationAction
                 User user = userManager.getUser(principal.getName());
                 if(user != null)
                 {
-                	Preferences prefs = user.getUserAttributes();
-                	String[] prefKeys = prefs.keys();
-                	Map prefsSet = new HashMap();
-                	for(int i = 0; i<prefKeys.length; i++)
-                	{
-                		prefsSet.put(prefKeys[i], prefs.get(prefKeys[i], "No value"));                		
-                	}
-                	resultMap.put(USERINFO, prefsSet);
+                    Map<String, String> userInfo = user.getUserAttributes();
+                	resultMap.put(USERINFO, userInfo);
 
                 	List roles = new ArrayList();
                 	Subject userSubject = user.getSubject();

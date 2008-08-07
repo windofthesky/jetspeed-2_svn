@@ -26,18 +26,20 @@ package org.apache.jetspeed.serializer.objects;
  */
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.prefs.Preferences;
+import java.util.Map;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.sax.Attributes;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.jetspeed.security.attributes.SecurityAttribute;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 public class JSNameValuePairs
 {
 
-    private HashMap myMap = new HashMap();
+    private Map<String, String> myMap = new HashMap<String, String>();
 
     public int size()
     {
@@ -49,7 +51,7 @@ public class JSNameValuePairs
     }
     
  
-    public HashMap getMyMap()
+    public Map<String, String> getMyMap()
 	{
 		return myMap;
 	}
@@ -62,19 +64,17 @@ public class JSNameValuePairs
 	/**
      * @param arg0
      */
-    public JSNameValuePairs(Preferences preferences)
+    public JSNameValuePairs(SecurityAttributes attributes)
     {
         try
         {
-            String[] strings = preferences.keys();
-            if ((strings != null) && (strings.length > 0))
+            for (String key : attributes.getAttributes().keySet())
             {
-                int i = strings.length;
-                for (int j = 0; j < i; j++)
-                    myMap.put(strings[j], preferences.get(strings[j], "?????"));
+                SecurityAttribute attr = attributes.getAttributes().get(key);
+                myMap.put(key, attr.getValue());
             }
-
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             e.printStackTrace();
         }

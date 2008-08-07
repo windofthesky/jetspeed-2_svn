@@ -16,16 +16,15 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.HierarchyResolver;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.impl.GeneralizationHierarchyResolver;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -40,15 +39,13 @@ import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 /**
  * @see org.apache.jetspeed.security.spi.SecurityMappingHandler
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  */
 public class DefaultSecurityMappingHandler implements SecurityMappingHandler
 {
 
-    /** The role hierarchy resolver. */
-    HierarchyResolver roleHierarchyResolver = new GeneralizationHierarchyResolver();
-
-    /** The group hierarchy resolver. */
-    HierarchyResolver groupHierarchyResolver = new GeneralizationHierarchyResolver();
+    /** The hierarchy resolver. */
+    HierarchyResolver hierarchyResolver = null;
 
     /** Common queries. */
     private SecurityAccess commonQueries = null;
@@ -69,78 +66,52 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
      * resolvers.
      * </p>
      */
-    public DefaultSecurityMappingHandler(SecurityAccess commonQueries, HierarchyResolver roleHierarchyResolver,
-            HierarchyResolver groupHierarchyResolver)
+    public DefaultSecurityMappingHandler(SecurityAccess commonQueries, HierarchyResolver hierarchyResolver)
     {
         this.commonQueries = commonQueries;
-        if (null != roleHierarchyResolver)
-        {
-            this.roleHierarchyResolver = roleHierarchyResolver;
-        }
-        if (null != groupHierarchyResolver)
-        {
-            this.groupHierarchyResolver = groupHierarchyResolver;
-        }
+        this.hierarchyResolver = hierarchyResolver;
     }
 
     /**
-     * @return Returns the roleHierarchyResolver.
+     * @return Returns the HierarchyResolver.
      */
-    public HierarchyResolver getRoleHierarchyResolver()
+    public HierarchyResolver getHierarchyResolver()
     {
-        return roleHierarchyResolver;
+        return hierarchyResolver;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRoleHierarchyResolver(org.apache.jetspeed.security.HierarchyResolver)
-     */
-    public void setRoleHierarchyResolver(HierarchyResolver roleHierarchyResolver)
+    public void setHierarchyResolver(HierarchyResolver hierarchyResolver)
     {
-        this.roleHierarchyResolver = roleHierarchyResolver;
-    }
-
-    /**
-     * @return Returns the groupHierarchyResolver.
-     */
-    public HierarchyResolver getGroupHierarchyResolver()
-    {
-        return groupHierarchyResolver;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setGroupHierarchyResolver(org.apache.jetspeed.security.HierarchyResolver)
-     */
-    public void setGroupHierarchyResolver(HierarchyResolver groupHierarchyResolver)
-    {
-        this.groupHierarchyResolver = groupHierarchyResolver;
+        this.hierarchyResolver = hierarchyResolver;
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRolePrincipals(java.lang.String)
      */
-    public Set getRolePrincipals(String username)
+    public Set<RolePrincipal> getRolePrincipals(String username)
     {
-        Set rolePrincipals = new HashSet();
+        Set<RolePrincipal> rolePrincipals = new HashSet<RolePrincipal>();
         InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
         if (null != internalUser)
         {
-            Collection internalRoles = internalUser.getRolePrincipals();
+            Collection<InternalRolePrincipal> internalRoles = internalUser.getRolePrincipals();
             if (null != internalRoles)
             {
-                Iterator internalRolesIter = internalRoles.iterator();
-                while (internalRolesIter.hasNext())
+                for (InternalRolePrincipal internalRole : internalRoles)    
                 {
-                    InternalRolePrincipal internalRole = (InternalRolePrincipal) internalRolesIter.next();
-                    Preferences preferences = Preferences.userRoot().node(internalRole.getFullPath());
-                    String[] fullPaths = roleHierarchyResolver.resolve(preferences);
-                    for (int i = 0; i < fullPaths.length; i++)
+                    if (this.hierarchyResolver != null)
                     {
-                        Principal rolePrincipal = new RolePrincipalImpl(RolePrincipalImpl
-                                .getPrincipalNameFromFullPath(fullPaths[i]));
-                        if (!rolePrincipals.contains(rolePrincipal))
+                        Set<RolePrincipal> subset = hierarchyResolver.resolveRoles(internalRole.getName());
+                        for (RolePrincipal rp : subset)
                         {
-                            rolePrincipals.add(rolePrincipal);
+                            if (!rolePrincipals.contains(rp))
+                                rolePrincipals.add(rp);
                         }
+                    }
+                    else
+                    {
+                        rolePrincipals.add(new RolePrincipalImpl(internalRole.getPrincipalId(), internalRole.getName(),
+                                internalRole.isEnabled(), internalRole.isMappingOnly()));
                     }
                 }
             }
@@ -152,7 +123,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setUserPrincipalInRole(java.lang.String,
      *      java.lang.String)
      */
-    public void setUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException
+    public void setUserPrincipalInRole(String username, String roleName) throws SecurityException
     {
         InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
         boolean isMappingOnly = false;
@@ -160,27 +131,26 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         {
             // This is a record for mapping only.
             isMappingOnly = true;
-            internalUser = new InternalUserPrincipalImpl(UserPrincipalImpl.getFullPathFromPrincipalName(username));
+            internalUser = new InternalUserPrincipalImpl(username);
         }
-        Collection internalRoles = internalUser.getRolePrincipals();
+        Collection<InternalRolePrincipal> internalRoles = internalUser.getRolePrincipals();
         // This should not be null. Check for null should be made by the caller.
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
-                .getFullPathFromPrincipalName(roleFullPathName));
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);
         // Check anyway.
         if (null == internalRole)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
         }
         internalRoles.add(internalRole);
         internalUser.setRolePrincipals(internalRoles);
-        commonQueries.setInternalUserPrincipal(internalUser, isMappingOnly);
+        commonQueries.storeInternalUserPrincipal(internalUser, isMappingOnly);
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeUserPrincipalInRole(java.lang.String,
      *      java.lang.String)
      */
-    public void removeUserPrincipalInRole(String username, String roleFullPathName) throws SecurityException
+    public void removeUserPrincipalInRole(String username, String roleName) throws SecurityException
     {
         boolean isMappingOnly = false;
         // Check is the record is used for mapping only.
@@ -192,14 +162,12 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         }
         if (null != internalUser)
         {
-            Collection internalRoles = internalUser.getRolePrincipals();
+            Collection<InternalRolePrincipal> internalRoles = internalUser.getRolePrincipals();
             // This should not be null. Check for null should be made by the caller.
-            InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
-                    .getFullPathFromPrincipalName(roleFullPathName));
-            // Check anyway.
+            InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);
             if (null == internalRole)
             {
-                throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+                throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
             }
             internalRoles.remove(internalRole);
             // Remove dead mapping records. I.e. No mapping is associated with the specific record.
@@ -211,7 +179,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             else
             {
                 internalUser.setRolePrincipals(internalRoles);
-                commonQueries.setInternalUserPrincipal(internalUser, isMappingOnly);
+                commonQueries.storeInternalUserPrincipal(internalUser, isMappingOnly);
             }
         }
         else
@@ -223,32 +191,35 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRolePrincipalsInGroup(java.lang.String)
      */
-    public Set getRolePrincipalsInGroup(String groupFullPathName)
+    public Set<RolePrincipal> getRolePrincipalsInGroup(String groupName)
     {
-        Set rolePrincipals = new HashSet();
-
-        Preferences preferences = Preferences.userRoot().node(
-                GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
-        String[] fullPaths = groupHierarchyResolver.resolve(preferences);
-        for (int i = 0; i < fullPaths.length; i++)
+        Set<RolePrincipal> rolePrincipals = new HashSet<RolePrincipal>();
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);
+        if (internalGroup != null)
         {
-            InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(fullPaths[i]);
-            if (null != internalGroup)
+            if (this.hierarchyResolver != null)
             {
-                Collection internalRoles = internalGroup.getRolePrincipals();
-                if (null != internalRoles)
+                Collection<InternalRolePrincipal> internalRoles = internalGroup.getRolePrincipals();
+                for (InternalRolePrincipal internalRole: internalRoles)
                 {
-                    Iterator internalRolesIter = internalRoles.iterator();
-                    while (internalRolesIter.hasNext())
-                    {
-                        InternalRolePrincipal internalRole = (InternalRolePrincipal) internalRolesIter.next();
-                        Principal rolePrincipal = new RolePrincipalImpl(UserPrincipalImpl
-                                .getPrincipalNameFromFullPath(internalRole.getFullPath()));
-                        if (!rolePrincipals.contains(rolePrincipal))
+                    Set<RolePrincipal> resolvedRoles = hierarchyResolver.resolveRoles(internalRole.getName());            
+                    for (RolePrincipal rp : resolvedRoles)
+                    {    
+                        if (!rolePrincipals.contains(rp))
                         {
-                            rolePrincipals.add(rolePrincipal);
+                            rolePrincipals.add(new RolePrincipalImpl(internalRole.getPrincipalId(), internalRole.getName(),
+                                    internalRole.isEnabled(), internalRole.isMappingOnly()));                
                         }
                     }
+                }
+            }
+            else
+            {
+                Collection<InternalRolePrincipal> internalRoles = internalGroup.getRolePrincipals();
+                for (InternalRolePrincipal internalRole: internalRoles)
+                {
+                    rolePrincipals.add(new RolePrincipalImpl(internalRole.getPrincipalId(), internalRole.getName(),
+                            internalRole.isEnabled(), internalRole.isMappingOnly()));                
                 }
             }
         }
@@ -259,74 +230,75 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipalInGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void setRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
+    public void setRolePrincipalInGroup(String groupName, String roleName) throws SecurityException
     {
-        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl
-                .getFullPathFromPrincipalName(groupFullPathName));
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);
         boolean isMappingOnly = false;
         if (null == internalGroup)
         {
             // This is a record for mapping only.
             isMappingOnly = true;
-            internalGroup = new InternalGroupPrincipalImpl(groupFullPathName);
+            internalGroup = new InternalGroupPrincipalImpl(groupName);
         }        
-        Collection internalRoles = internalGroup.getRolePrincipals();
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
-                .getFullPathFromPrincipalName(roleFullPathName));
+        Collection<InternalRolePrincipal> internalRoles = internalGroup.getRolePrincipals();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);
         internalRoles.add(internalRole);
         internalGroup.setRolePrincipals(internalRoles);
-        commonQueries.setInternalGroupPrincipal(internalGroup, isMappingOnly);
+        commonQueries.storeInternalGroupPrincipal(internalGroup, isMappingOnly);
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeRolePrincipalInGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void removeRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
+    public void removeRolePrincipalInGroup(String groupName, String roleName) throws SecurityException
     {
-        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl
-                .getFullPathFromPrincipalName(groupFullPathName));
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);
         boolean isMappingOnly = false;
         if (null == internalGroup)
         {
             // This is a record for mapping only.
             isMappingOnly = true;
-            internalGroup = new InternalGroupPrincipalImpl(groupFullPathName);
+            internalGroup = new InternalGroupPrincipalImpl(groupName);
         }                
         if (null == internalGroup)
         {
             throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(internalGroup));
         }
-        Collection internalRoles = internalGroup.getRolePrincipals();
-        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(RolePrincipalImpl
-                .getFullPathFromPrincipalName(roleFullPathName));
+        Collection<InternalRolePrincipal> internalRoles = internalGroup.getRolePrincipals();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);
         internalRoles.remove(internalRole);
         internalGroup.setRolePrincipals(internalRoles);
-        commonQueries.setInternalGroupPrincipal(internalGroup, isMappingOnly);
+        commonQueries.storeInternalGroupPrincipal(internalGroup, isMappingOnly);
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getGroupPrincipals(java.lang.String)
      */
-    public Set getGroupPrincipals(String username)
+    public Set<GroupPrincipal> getGroupPrincipals(String username)
     {
-        Set groupPrincipals = new HashSet();
+        Set<GroupPrincipal> groupPrincipals = new HashSet<GroupPrincipal>();
         InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
         if (null != internalUser)
         {
-            Collection internalGroups = internalUser.getGroupPrincipals();
+            Collection<InternalGroupPrincipal> internalGroups = internalUser.getGroupPrincipals();
             if (null != internalGroups)
             {
-                Iterator internalGroupsIter = internalGroups.iterator();
-                while (internalGroupsIter.hasNext())
+                for (InternalGroupPrincipal internalGroup : internalGroups)
                 {
-                    InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) internalGroupsIter.next();
-                    Preferences preferences = Preferences.userRoot().node(internalGroup.getFullPath());
-                    String[] fullPaths = groupHierarchyResolver.resolve(preferences);
-                    for (int i = 0; i < fullPaths.length; i++)
+                    if (hierarchyResolver != null)
                     {
-                        groupPrincipals.add(new GroupPrincipalImpl(GroupPrincipalImpl
-                                .getPrincipalNameFromFullPath(fullPaths[i])));
+                        Set<GroupPrincipal> resolvedGroups = hierarchyResolver.resolveGroups(internalGroup.getName());                    
+                        for (GroupPrincipal gp : resolvedGroups)
+                        {
+                            if (!groupPrincipals.contains(gp))
+                                groupPrincipals.add(gp);
+                        }
+                    }
+                    else
+                    {
+                        groupPrincipals.add(new GroupPrincipalImpl(internalGroup.getPrincipalId(), internalGroup.getName(),
+                                internalGroup.isEnabled(), internalGroup.isMappingOnly()));                                        
                     }
                 }
             }
@@ -337,32 +309,35 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getGroupPrincipalsInRole(java.lang.String)
      */
-    public Set getGroupPrincipalsInRole(String roleFullPathName)
+    public Set<GroupPrincipal> getGroupPrincipalsInRole(String roleName)
     {
-        Set groupPrincipals = new HashSet();
-
-        Preferences preferences = Preferences.userRoot().node(
-                RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName));
-        String[] fullPaths = roleHierarchyResolver.resolve(preferences);
-        for (int i = 0; i < fullPaths.length; i++)
+        Set<GroupPrincipal> groupPrincipals = new HashSet<GroupPrincipal>();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);
+        if (internalRole != null)
         {
-            InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(fullPaths[i]);
-            if (null != internalRole)
+            if (this.hierarchyResolver != null)
             {
-                Collection internalGroups = internalRole.getGroupPrincipals();
-                if (null != internalGroups)
+                Collection<InternalGroupPrincipal> internalGroups = internalRole.getGroupPrincipals();
+                for (InternalGroupPrincipal internalGroup: internalGroups)
                 {
-                    Iterator internalGroupsIter = internalGroups.iterator();
-                    while (internalGroupsIter.hasNext())
-                    {
-                        InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) internalGroupsIter.next();
-                        Principal groupPrincipal = new GroupPrincipalImpl(GroupPrincipalImpl
-                                .getPrincipalNameFromFullPath(internalGroup.getFullPath()));
-                        if (!groupPrincipals.contains(groupPrincipal))
+                    Set<GroupPrincipal> resolvedGroups = hierarchyResolver.resolveGroups(internalGroup.getName());            
+                    for (GroupPrincipal gp : resolvedGroups)
+                    {    
+                        if (!groupPrincipals.contains(gp))
                         {
-                            groupPrincipals.add(groupPrincipal);
+                            groupPrincipals.add(new GroupPrincipalImpl(internalGroup.getPrincipalId(), internalGroup.getName(),
+                                    internalGroup.isEnabled(), internalGroup.isMappingOnly()));                
                         }
                     }
+                }
+            }
+            else
+            {
+                Collection<InternalGroupPrincipal> internalGroups = internalRole.getGroupPrincipals();
+                for (InternalGroupPrincipal internalGroup: internalGroups)
+                {
+                    groupPrincipals.add(new GroupPrincipalImpl(internalGroup.getPrincipalId(), internalGroup.getName(),
+                            internalGroup.isEnabled(), internalGroup.isMappingOnly()));                
                 }
             }
         }
@@ -372,33 +347,17 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getUserPrincipalsInRole(java.lang.String)
      */
-    public Set getUserPrincipalsInRole(String roleFullPathName)
+    public Set<UserPrincipal> getUserPrincipalsInRole(String roleName)
     {
-        Set userPrincipals = new HashSet();
-
-        Preferences preferences = Preferences.userRoot().node(
-                RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName));
-        String[] fullPaths = roleHierarchyResolver.resolve(preferences);
-        for (int i = 0; i < fullPaths.length; i++)
+        Set<UserPrincipal> userPrincipals = new HashSet<UserPrincipal>();
+        InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(roleName);
+        if (internalRole != null)
         {
-            InternalRolePrincipal internalRole = commonQueries.getInternalRolePrincipal(fullPaths[i]);
-            if (null != internalRole)
+            Collection<InternalUserPrincipal> internalUsers = internalRole.getUserPrincipals();
+            for (InternalUserPrincipal internalUser: internalUsers)
             {
-                Collection internalUsers = internalRole.getUserPrincipals();
-                if (null != internalUsers)
-                {
-                    Iterator internalUsersIter = internalUsers.iterator();
-                    while (internalUsersIter.hasNext())
-                    {
-                        InternalUserPrincipal internalUser = (InternalUserPrincipal) internalUsersIter.next();
-                        Principal userPrincipal = new UserPrincipalImpl(UserPrincipalImpl
-                                .getPrincipalNameFromFullPath(internalUser.getFullPath()));
-                        if (!userPrincipals.contains(userPrincipal))
-                        {
-                            userPrincipals.add(userPrincipal);
-                        }
-                    }
-                }
+                userPrincipals.add(new UserPrincipalImpl(internalUser.getPrincipalId(), internalUser.getName(),
+                        internalUser.isEnabled(), internalUser.isMappingOnly()));                
             }
         }
         return userPrincipals;
@@ -407,33 +366,17 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getUserPrincipalsInGroup(java.lang.String)
      */
-    public Set getUserPrincipalsInGroup(String groupFullPathName)
+    public Set<UserPrincipal> getUserPrincipalsInGroup(String groupName)
     {
-        Set userPrincipals = new HashSet();
-
-        Preferences preferences = Preferences.userRoot().node(
-                GroupPrincipalImpl.getFullPathFromPrincipalName(groupFullPathName));
-        String[] fullPaths = groupHierarchyResolver.resolve(preferences);
-        for (int i = 0; i < fullPaths.length; i++)
+        Set<UserPrincipal> userPrincipals = new HashSet<UserPrincipal>();
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);
+        if (internalGroup != null)
         {
-            InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(fullPaths[i]);
-            if (null != internalGroup)
+            Collection<InternalUserPrincipal> internalUsers = internalGroup.getUserPrincipals();
+            for (InternalUserPrincipal internalUser: internalUsers)
             {
-                Collection internalUsers = internalGroup.getUserPrincipals();
-                if (null != internalUsers)
-                {
-                    Iterator internalUsersIter = internalUsers.iterator();
-                    while (internalUsersIter.hasNext())
-                    {
-                        InternalUserPrincipal internalUser = (InternalUserPrincipal) internalUsersIter.next();
-                        Principal userPrincipal = new UserPrincipalImpl(UserPrincipalImpl
-                                .getPrincipalNameFromFullPath(internalUser.getFullPath()));
-                        if (!userPrincipals.contains(userPrincipal))
-                        {
-                            userPrincipals.add(userPrincipal);
-                        }
-                    }
-                }
+                userPrincipals.add(new UserPrincipalImpl(internalUser.getPrincipalId(), internalUser.getName(),
+                        internalUser.isEnabled(), internalUser.isMappingOnly()));                
             }
         }
         return userPrincipals;
@@ -443,7 +386,7 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setUserPrincipalInGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void setUserPrincipalInGroup(String username, String groupFullPathName) throws SecurityException
+    public void setUserPrincipalInGroup(String username, String groupName) throws SecurityException
     {
         InternalUserPrincipal internalUser = commonQueries.getInternalUserPrincipal(username);
         boolean isMappingOnly = false;
@@ -451,27 +394,26 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         {
             // This is a record for mapping only.
             isMappingOnly = true;
-            internalUser = new InternalUserPrincipalImpl(UserPrincipalImpl.getFullPathFromPrincipalName(username));
+            internalUser = new InternalUserPrincipalImpl(username);
         }
-        Collection internalGroups = internalUser.getGroupPrincipals();
+        Collection<InternalGroupPrincipal> internalGroups = internalUser.getGroupPrincipals();
         // This should not be null. Check for null should be made by the caller.
-        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl
-                .getFullPathFromPrincipalName(groupFullPathName));
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);
         // Check anyway.
         if (null == internalGroup)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupName));
         }
         internalGroups.add(internalGroup);
         internalUser.setGroupPrincipals(internalGroups);
-        commonQueries.setInternalUserPrincipal(internalUser, isMappingOnly);
+        commonQueries.storeInternalUserPrincipal(internalUser, isMappingOnly);
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeUserPrincipalInGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void removeUserPrincipalInGroup(String username, String groupFullPathName) throws SecurityException
+    public void removeUserPrincipalInGroup(String username, String groupName) throws SecurityException
     {
         boolean isMappingOnly = false;
         // Check is the record is used for mapping only.
@@ -483,14 +425,12 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
         }
         if (null != internalUser)
         {
-            Collection internalGroups = internalUser.getGroupPrincipals();
+            Collection<InternalGroupPrincipal> internalGroups = internalUser.getGroupPrincipals();
             // This should not be null. Check for null should be made by the caller.
-            InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(GroupPrincipalImpl
-                    .getFullPathFromPrincipalName(groupFullPathName));
-            // Check anyway.
+            InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);
             if (null == internalGroup)
             {
-                throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
+                throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupName));
             }
             internalGroups.remove(internalGroup);
             // Remove dead mapping records. I.e. No mapping is associated with the specific record.
@@ -501,8 +441,8 @@ public class DefaultSecurityMappingHandler implements SecurityMappingHandler
             }
             else
             {
-            internalUser.setGroupPrincipals(internalGroups);
-            commonQueries.setInternalUserPrincipal(internalUser, isMappingOnly);
+                internalUser.setGroupPrincipals(internalGroups);
+                commonQueries.storeInternalUserPrincipal(internalUser, isMappingOnly);
             }
         }
         else

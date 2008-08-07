@@ -45,8 +45,7 @@ public class TestAggregationHierarchy extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
-        ums = new UserManagerImpl(securityProvider, new AggregationHierarchyResolver(),
-                new AggregationHierarchyResolver());
+        ums = new UserManagerImpl(securityProvider, sap, new AggregationHierarchyResolver(rsh, gsh));               
     }
 
     /**

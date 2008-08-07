@@ -86,6 +86,8 @@ public class SecurityException extends JetspeedException
     /** <p>The dn is invalid.</p> */
     public static final KeyedMessage INVALID_DN = new KeyedMessage("The dn cannot be null or empty.");
     
+    public static final KeyedMessage UNKNOWN_PRINCIPAL_TYPE = new KeyedMessage("Unknown Principal Type provided: {0}");
+    
     /**
      * <p>Default Constructor.</p>
      */

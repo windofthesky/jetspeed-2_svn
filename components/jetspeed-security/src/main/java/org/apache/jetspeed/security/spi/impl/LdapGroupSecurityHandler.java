@@ -16,8 +16,10 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NamingException;
@@ -29,8 +31,8 @@ import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapGroupDaoImpl;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
 
 /**
  * @see org.apache.jetspeed.security.spi.GroupSecurityHandler
@@ -123,17 +125,14 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#setGroupPrincipal(org.apache.jetspeed.security.GroupPrincipal)
      */
-    public void setGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException
+    public void storeGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException
     {
         verifyGroupPrincipal(groupPrincipal);
-
-        String fullPath = groupPrincipal.getFullPath();
-        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(fullPath);
+        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(groupPrincipal.getName());
         if (getGroupPrincipal(groupUidWithoutSlashes) == null)
         {
             ldap.create(groupUidWithoutSlashes);
         }
-
     }
 
     /**
@@ -157,26 +156,30 @@ public class LdapGroupSecurityHandler implements GroupSecurityHandler
     public void removeGroupPrincipal(GroupPrincipal groupPrincipal) throws SecurityException
     {
         verifyGroupPrincipal(groupPrincipal);
-
-        String fullPath = groupPrincipal.getFullPath();
-        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(fullPath);
-
+        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(groupPrincipal.getName());
         ldap.delete(groupUidWithoutSlashes);
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#getGroupPrincipals(java.lang.String)
      */
-    public List getGroupPrincipals(String filter)
+    public List<GroupPrincipal> getGroupPrincipals(String filter)
     {
         try
         {
-            return Arrays.asList(ldap.find(filter, GroupPrincipal.PREFS_GROUP_ROOT));
+            List<GroupPrincipal> principals = new LinkedList<GroupPrincipal>();
+            List<Principal> result = Arrays.asList(ldap.find(filter, GroupPrincipal.PREFS_GROUP_ROOT));
+            for (Principal p : result)
+            {
+                if (p instanceof GroupPrincipal)
+                    principals.add((GroupPrincipal)p);
+            }
+            return principals;
         }
         catch (SecurityException e)
         {
             logSecurityException(e, filter);
         }
-        return new ArrayList();
+        return new ArrayList<GroupPrincipal>();
     }
 }

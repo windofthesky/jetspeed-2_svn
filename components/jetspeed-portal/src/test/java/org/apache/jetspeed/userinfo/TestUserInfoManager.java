@@ -36,6 +36,8 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
@@ -49,18 +51,10 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  */
 public class TestUserInfoManager extends AbstractSecurityTestcase
 {
-
-    /** The test MutablePortletApplication. */
     private MutablePortletApplication portletApp;
-
-    /** The user info manager. */
     private UserInfoManager single;
-
     private PortletRegistry portletRegistry;
-
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
+    
     public void setUp() throws Exception
     {
         super.setUp();
@@ -69,9 +63,6 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
     }
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
     public void tearDown() throws Exception
     {
         cleanUp();
@@ -118,7 +109,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
 
         // Without linked attributes
         // There are no preferences associated to the user profile.
-        Map userInfo = uim.getUserInfoMap(portletApp.getId(), request);
+        Map<String, String> userInfo = uim.getUserInfoMap(portletApp.getId(), request);
         assertNull(PortletRequest.USER_INFO + " is null", userInfo);
 
         // The user has preferences associated to the user profile.
@@ -187,9 +178,10 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         {
             assertTrue("user exists. should not have thrown an exception.", false);
         }
-        Preferences userInfoPrefs = user.getPreferences().node("userinfo");
-        userInfoPrefs.put("user.name.given", "Test Dude");
-        userInfoPrefs.put("user.name.family", "Dudley");
+        SecurityAttributes attributes = user.getAttributes();
+        attributes.getAttributes(SecurityAttributes.USER_INFORMATION).put("user.name.given", attributes.createAttribute("user.name.given", "Test Dude"));
+        attributes.getAttributes(SecurityAttributes.USER_INFORMATION).put("user.name.given", attributes.createAttribute("user.name.family", "Dudley"));
+        ums.updateUser(user);
     }
 
     /**

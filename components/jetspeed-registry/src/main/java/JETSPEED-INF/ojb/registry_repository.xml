@@ -1223,7 +1223,7 @@
       
       <field-descriptor
           name="index"
-          column="INDEX"
+          column="IDX"
           jdbc-type="SMALLINT"
           nullable="false"
           primarykey="true"
@@ -1272,7 +1272,7 @@
       </field-descriptor>      
       <field-descriptor
           name="value"
-          column="VALUE"
+          column="PREF_VALUE"
           jdbc-type="VARCHAR"
           nullable="true"
           length="4000"

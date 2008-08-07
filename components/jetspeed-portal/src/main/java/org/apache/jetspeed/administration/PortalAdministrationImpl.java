@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
@@ -42,8 +41,6 @@ import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.prefs.PreferencesProvider;
-import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
@@ -51,9 +48,13 @@ import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.attributes.SecurityAttribute;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.MailException;
@@ -83,7 +84,6 @@ public class PortalAdministrationImpl implements PortalAdministration
     protected RoleManager roleManager;
     protected GroupManager groupManager;
     protected PageManager pageManager;
-    private PreferencesProvider preferences;    
     protected Profiler profiler;
     protected JavaMailSender mailSender;
     protected VelocityEngine velocityEngine;
@@ -104,7 +104,6 @@ public class PortalAdministrationImpl implements PortalAdministration
                                      RoleManager roleManager,
                                      GroupManager groupManager, 
                                      PageManager pageManager,
-                                     PreferencesProvider preferences,
                                      Profiler profiler,
                                      JavaMailSender mailSender,
                                      VelocityEngine velocityEngine)
@@ -113,7 +112,6 @@ public class PortalAdministrationImpl implements PortalAdministration
         this.roleManager = roleManager;
         this.groupManager = groupManager;
         this.pageManager = pageManager;
-        this.preferences = preferences;
         this.profiler = profiler;
         this.mailSender = mailSender;
         this.velocityEngine = velocityEngine;
@@ -281,8 +279,9 @@ public class PortalAdministrationImpl implements PortalAdministration
                         {
                              if (innerSubsite != null)
                              {
-                                 Preferences attributes = innerUser.getUserAttributes();
-                                 attributes.put(User.USER_INFO_SUBSITE, innerSubsite);                                    
+                                 Map<String, SecurityAttribute> attributes = innerUser.getAttributes().getAttributes(SecurityAttributes.USER_INFORMATION);
+                                 attributes.put(User.USER_INFO_SUBSITE, innerUser.getAttributes().createAttribute(User.USER_INFO_SUBSITE, innerSubsite));
+                                 userManager.updateUser(innerUser);
                              }                                         
                              // create user's home folder                        
                              // deep copy from the default folder template tree, creating a deep-copy of the template
@@ -297,11 +296,18 @@ public class PortalAdministrationImpl implements PortalAdministration
                              
                             return null;
                         }
-                         catch (FolderNotFoundException e1) {
+                         catch (SecurityException s1)
+                         {
+                             return s1;
+                         }
+                         catch (FolderNotFoundException e1) 
+                         {
                              return e1;
-                         } catch (InvalidFolderException e1){
+                         } catch (InvalidFolderException e1)
+                         {
                              return e1;
-                         } catch (NodeException e1){
+                         } catch (NodeException e1)
+                         {
                              return e1;
                          }
                     }
@@ -424,32 +430,20 @@ public class PortalAdministrationImpl implements PortalAdministration
     public User lookupUserFromEmail(String email)
         throws AdministrationEmailException    
     {
-        Collection result = preferences.lookupPreference("userinfo", "user.business-info.online.email", email);
-        if (result.size() == 0)
-        {
-            throw new AdministrationEmailException(USER_NOT_FOUND_FROM_EMAIL + email);
-        }
-        Iterator nodes = result.iterator();
-        Node node = (Node)nodes.next();
-        String nodePath = node.getFullPath();
-        if (nodePath == null)
-        {
-            throw new AdministrationEmailException(USER_NOT_FOUND_FROM_EMAIL + email);
-        }
-        String[] paths = nodePath.split("/");
-        if (paths == null || paths.length != 4)
-        {
-            throw new AdministrationEmailException(USER_NOT_FOUND_FROM_EMAIL + email);
-        }
-        String userName = paths[2];
+        Collection<User> users;
         try
         {
-            return userManager.getUser(userName);
+            users = userManager.lookupUsers("user.business-info.online.email", email);
+        } 
+        catch (SecurityException e)
+        {
+            throw new AdministrationEmailException(e);        
         }
-        catch (Exception e)
+        if (users.isEmpty())
         {
             throw new AdministrationEmailException(USER_NOT_FOUND_FROM_EMAIL + email);
         }
+        return users.iterator().next(); // return the first one and hopefully the only (FIXME: need unique constraints)
     }
 
     /**

@@ -16,8 +16,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.Iterator;
-
+import java.util.Collection;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
@@ -75,18 +74,18 @@ public interface SecurityAccess
      * @param filter The filter.
      * @return Collection of {@link InternalUserPrincipal}.
      */
-    Iterator getInternalUserPrincipals( String filter );
+    Collection<InternalUserPrincipal> getInternalUserPrincipals( String filter );
 
     /**
      * <p>
-     * Sets the given {@link InternalUserPrincipal}.
+     * Store the given {@link InternalUserPrincipal}.
      * </p>
      * 
      * @param internalUser The {@link InternalUserPrincipal}.
      * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setInternalUserPrincipal( InternalUserPrincipal internalUser, boolean isMappingOnly ) throws SecurityException;
+    void storeInternalUserPrincipal( InternalUserPrincipal internalUser, boolean isMappingOnly ) throws SecurityException;
 
     /**
      * <p>
@@ -110,14 +109,14 @@ public interface SecurityAccess
 
     /**
      * <p>
-     * Sets the given {@link InternalRolePrincipal}.
+     * Stores the given {@link InternalRolePrincipal}.
      * </p>
      * 
      * @param internalRole The {@link InternalRolePrincipal}.
      * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setInternalRolePrincipal( InternalRolePrincipal internalRole, boolean isMappingOnly ) throws SecurityException;
+    void storeInternalRolePrincipal( InternalRolePrincipal internalRole, boolean isMappingOnly ) throws SecurityException;
 
     /**
      * <p>
@@ -141,14 +140,14 @@ public interface SecurityAccess
 
     /**
      * <p>
-     * Sets the given {@link InternalGroupPrincipal}.
+     * Stores the given {@link InternalGroupPrincipal}.
      * </p>
      * 
      * @param internalGroup The {@link InternalGroupPrincipal}.
      * @param isMappingOnly Whether a principal's purpose is for security mappping only.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setInternalGroupPrincipal( InternalGroupPrincipal internalGroup, boolean isMappingOnly )
+    void storeInternalGroupPrincipal( InternalGroupPrincipal internalGroup, boolean isMappingOnly )
             throws SecurityException;
 
     /**
@@ -169,7 +168,7 @@ public interface SecurityAccess
      * @param filter The filter.
      * @return Collection of {@link InternalRolePrincipal}.
      */    
-    Iterator getInternalRolePrincipals(String filter);
+    Collection<InternalRolePrincipal> getInternalRolePrincipals(String filter);
     
     /**
      * <p>
@@ -179,6 +178,6 @@ public interface SecurityAccess
      * @param filter The filter.
      * @return Collection of {@link InternalGroupPrincipal}.
      */    
-    Iterator getInternalGroupPrincipals(String filter);
+    Collection<InternalGroupPrincipal> getInternalGroupPrincipals(String filter);
 
 }

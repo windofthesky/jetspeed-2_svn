@@ -271,11 +271,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
         assertNotNull("role principal is null", rolePrincipal);
         assertEquals("expected role principal full path name == testgetrole", "testgetrole", rolePrincipal.getName());
 
-        // Test the Role Preferences.
-        Preferences preferences = role.getPreferences();
-        assertEquals("expected role node == /role/testgetrole", SecurityHelper.getPreferencesFullPath(rolePrincipal),
-                preferences.absolutePath());
-
         // Cleanup test.
         try
         {
@@ -607,7 +602,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
     {
     	int roleCount = 0;
     	int rolesAdded = 0;
-        Iterator it = rms.getRoles("");
+        Iterator it = rms.getRoles("").iterator();
         while (it.hasNext())
         {
             it.next();
@@ -622,7 +617,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
 
         int count = 0;
         
-        it = rms.getRoles("");
+        it = rms.getRoles("").iterator();
         while (it.hasNext())
         {
             it.next();

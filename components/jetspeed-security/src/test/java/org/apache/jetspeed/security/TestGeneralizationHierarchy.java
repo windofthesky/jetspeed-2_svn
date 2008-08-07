@@ -43,7 +43,7 @@ public class TestGeneralizationHierarchy extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
-        ums = new UserManagerImpl(securityProvider, new GeneralizationHierarchyResolver(), new GeneralizationHierarchyResolver());
+        ums = new UserManagerImpl(securityProvider, sap, new GeneralizationHierarchyResolver(rsh, gsh));
     }
    
     /**

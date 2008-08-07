@@ -81,7 +81,7 @@ public class TestCredentialPasswordEncoder extends AbstractSecurityTestcase
                     "password", 0, DefaultPasswordCredentialImpl.class.getName());
         credentials.add(credential);
         internalUser.setCredentials(credentials);
-        securityAccess.setInternalUserPrincipal(internalUser,false);
+        securityAccess.storeInternalUserPrincipal(internalUser,false);
     }
 
     protected void destroyUser() throws Exception

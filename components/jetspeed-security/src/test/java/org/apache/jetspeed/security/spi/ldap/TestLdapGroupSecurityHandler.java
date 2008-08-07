@@ -51,12 +51,12 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
      */
     public void testGetGroupPrincipal() throws Exception
     {
-        String fullPath = (new GroupPrincipalImpl(gpUid1)).getFullPath();
+        String fullPath = (new GroupPrincipalImpl(gpUid1)).getName();
         //GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(fullPath);
         GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(gpUid1);
         assertNotNull("Group was not found.", groupPrincipal);
         assertEquals(gpUid1,groupPrincipal.getName());
-        assertEquals(fullPath,groupPrincipal.getFullPath());
+        assertEquals(fullPath,groupPrincipal.getName());
     }
 
     /**
@@ -64,7 +64,7 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
      */
     public void testAddDuplicateGroupPrincipal() throws Exception
     {
-        grHandler.setGroupPrincipal(new GroupPrincipalImpl(gpUid1));
+        grHandler.storeGroupPrincipal(new GroupPrincipalImpl(gpUid1));
         List groups = grHandler.getGroupPrincipals("");
         assertEquals(1,groups.size());
     }
@@ -85,7 +85,7 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
     {
         GroupPrincipal gp = new GroupPrincipalImpl(gpUid1);
         grHandler.removeGroupPrincipal(gp);
-        GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(gp.getFullPath());
+        GroupPrincipal groupPrincipal = grHandler.getGroupPrincipal(gp.getName());
         assertNull("Group was found and should have been removed.", groupPrincipal);
         List groups = grHandler.getGroupPrincipals("");
         assertEquals(0,groups.size());        
@@ -114,14 +114,14 @@ public class TestLdapGroupSecurityHandler extends AbstractLdapTest
             assertTrue("getUserPrincipals should have returned more than one user.", grHandler.getGroupPrincipals("*")
                     .size() > 1);
 
-            String fullPath = (new GroupPrincipalImpl(gpUid1)).getFullPath();
+            String fullPath = (new GroupPrincipalImpl(gpUid1)).getName();
             List groups = grHandler.getGroupPrincipals(fullPath);
             assertTrue("getGroupPrincipals should have returned one group.", groups.size() == 1);
             assertTrue("List should have consisted of GroupPrincipal objects.", groups.get(0) instanceof GroupPrincipal);
 
             String localUid = Integer.toString(rand.nextInt()).toString();
             assertTrue("getGroupPrincipals should not have found any groups with the specified filter.", grHandler
-                    .getGroupPrincipals(new GroupPrincipalImpl(localUid).getFullPath()).isEmpty());
+                    .getGroupPrincipals(new GroupPrincipalImpl(localUid).getName()).isEmpty());
         }
         finally
         {

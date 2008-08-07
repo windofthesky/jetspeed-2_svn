@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * <p>
@@ -108,7 +107,7 @@ public interface GroupManager
      * @return A collection of {@link Group}.
      * @throws Throws security exception if the user does not exist.
      */
-    Collection getGroupsForUser(String username) throws SecurityException;
+    Collection<Group> getGroupsForUser(String username) throws SecurityException;
 
     /**
      * <p>
@@ -120,7 +119,7 @@ public interface GroupManager
      * @return A Collection of {@link Group}.
      * @throws Throws a security exception if the role does not exist.
      */
-    Collection getGroupsInRole(String roleFullPathName) throws SecurityException;
+    Collection<Group> getGroupsInRole(String roleFullPathName) throws SecurityException;
 
     /**
      * <p>
@@ -163,15 +162,15 @@ public interface GroupManager
      * Get all groups available from all group handlers
      * 
      * @param filter The filter used to retrieve matching groups.
-     * @return all groups available as {@link Principal} 
+     * @return all groups available as Group 
      */
-   Iterator getGroups(String filter) throws SecurityException;
+   Collection<Group> getGroups(String filter) throws SecurityException;
     
    /**
     * Enable or disable a group.
-    * @param groupFullPathName The group name full path 
+    * @param groupName The group name full path 
      *            theGroupName.theGroupChildName).
     * @param enabled enabled flag for the group
     */
-   void setGroupEnabled(String groupFullPathName, boolean enabled) throws SecurityException;
+   void setGroupEnabled(String groupName, boolean enabled) throws SecurityException;
 }

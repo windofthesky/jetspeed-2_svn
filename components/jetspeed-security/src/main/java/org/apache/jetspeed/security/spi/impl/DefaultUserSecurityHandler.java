@@ -16,8 +16,7 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.security.Principal;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,14 +56,14 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
-    public Principal getUserPrincipal(String username)
+    public UserPrincipal getUserPrincipal(String username)
     {
         UserPrincipal userPrincipal = null;
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(username, false);
         if (null != internalUser)
         {
-            userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()), true, internalUser.isMappingOnly());
-            userPrincipal.setEnabled(internalUser.isEnabled());
+            userPrincipal = new UserPrincipalImpl(internalUser.getPrincipalId(), internalUser.getName(),
+                    internalUser.isEnabled(), internalUser.isMappingOnly());
         }
         return userPrincipal;
     }
@@ -72,20 +71,14 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipals(java.lang.String)
      */
-    public List getUserPrincipals(String filter)
+    public List<UserPrincipal> getUserPrincipals(String filter)
     {
-        List userPrincipals = new LinkedList();
-        Iterator result = securityAccess.getInternalUserPrincipals(filter);
-        while (result.hasNext())
+        List<UserPrincipal> userPrincipals = new LinkedList<UserPrincipal>();
+        Collection<InternalUserPrincipal> internalPrincipals = securityAccess.getInternalUserPrincipals(filter);
+        for (InternalUserPrincipal internalUser : internalPrincipals)
         {
-            InternalUserPrincipal internalUser = (InternalUserPrincipal) result.next();
-            String path = internalUser.getFullPath();
-            if (path == null)
-            {
-                continue;
-            }
-            UserPrincipal userPrincipal = new UserPrincipalImpl(UserPrincipalImpl.getPrincipalNameFromFullPath(internalUser.getFullPath()));
-            userPrincipal.setEnabled(internalUser.isEnabled());
+            UserPrincipal userPrincipal = new UserPrincipalImpl(internalUser.getPrincipalId(), internalUser.getName(), 
+                    internalUser.isEnabled(), internalUser.isMappingOnly());
             userPrincipals.add(userPrincipal);
         }
         return userPrincipals;
@@ -98,7 +91,7 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     {
         if ( null == securityAccess.getInternalUserPrincipal(userPrincipal.getName(), false) )
         {
-            securityAccess.setInternalUserPrincipal(new InternalUserPrincipalImpl(userPrincipal.getFullPath()), false);        
+            securityAccess.storeInternalUserPrincipal(new InternalUserPrincipalImpl(userPrincipal.getName()), false);        
         }
         else
         {
@@ -112,12 +105,12 @@ public class DefaultUserSecurityHandler implements UserSecurityHandler
     public void updateUserPrincipal(UserPrincipal userPrincipal) throws SecurityException
     {
         InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal(userPrincipal.getName(), false);
-        if ( null != internalUser )
+        if (null != internalUser)
         {
             if ( internalUser.isEnabled() != userPrincipal.isEnabled())
             {
                 internalUser.setEnabled(userPrincipal.isEnabled());
-                securityAccess.setInternalUserPrincipal(internalUser, false);        
+                securityAccess.storeInternalUserPrincipal(internalUser, false);        
             }
         }
         else

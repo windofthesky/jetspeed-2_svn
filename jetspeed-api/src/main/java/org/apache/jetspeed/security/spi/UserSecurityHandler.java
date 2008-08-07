@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.apache.jetspeed.security.SecurityException;
@@ -56,7 +55,7 @@ public interface UserSecurityHandler
      * @param username The user name.
      * @return The <code>Principal</p>
      */
-    Principal getUserPrincipal(String username);
+    UserPrincipal getUserPrincipal(String username);
     
     /**
      * <p>
@@ -66,7 +65,7 @@ public interface UserSecurityHandler
      * @param filter The filter.
      * @return The list of <code>Principal</code>
      */
-    List getUserPrincipals(String filter);
+    List<UserPrincipal> getUserPrincipals(String filter);
     
     /**
      * <p>

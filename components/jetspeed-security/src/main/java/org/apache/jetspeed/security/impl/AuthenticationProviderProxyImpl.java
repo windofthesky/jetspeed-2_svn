@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +25,7 @@ import java.util.Set;
 
 import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
+import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
 
@@ -38,7 +38,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
 {
 
     /** The list of {@link AuthenticationProvider}. */
-    private List authenticationProviders = new ArrayList();
+    private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
 
     /** The default authentication provider name. */
     private String defaultAuthenticationProvider = null;
@@ -52,7 +52,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
      * @param authenticationProviders The list of {@link AuthenticationProvider}.
      * @param defaultAuthenticationProvider The default authentication provider name.
      */
-    public AuthenticationProviderProxyImpl(List authenticationProviders, String defaultAuthenticationProvider)
+    public AuthenticationProviderProxyImpl(List<AuthenticationProvider> authenticationProviders, String defaultAuthenticationProvider)
     {
         this.authenticationProviders = authenticationProviders;
         this.defaultAuthenticationProvider = defaultAuthenticationProvider;
@@ -64,7 +64,7 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
         
         for (int i = 0; i < authenticationProviders.size(); i++)
         {
-            provider = (AuthenticationProvider) authenticationProviders.get(i);
+            provider = authenticationProviders.get(i);
             if (providerName.equals(provider.getProviderName()))
             {
                 break;
@@ -129,9 +129,9 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipal(java.lang.String)
      */
-    public Principal getUserPrincipal(String username)
+    public UserPrincipal getUserPrincipal(String username)
     {
-        Principal userPrincipal = null;
+        UserPrincipal userPrincipal = null;
         for (int i = 0; i < authenticationProviders.size(); i++)
         {
             userPrincipal = ((AuthenticationProvider)authenticationProviders.get(i)).getUserSecurityHandler().getUserPrincipal(username);
@@ -146,9 +146,9 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     /**
      * @see org.apache.jetspeed.security.spi.UserSecurityHandler#getUserPrincipals(java.lang.String)
      */
-    public List getUserPrincipals(String filter)
+    public List<UserPrincipal> getUserPrincipals(String filter)
     {
-        List userPrincipals = new LinkedList();
+        List<UserPrincipal> userPrincipals = new LinkedList<UserPrincipal>();
         for (int i = 0; i < authenticationProviders.size(); i++)
         {
             userPrincipals.addAll(((AuthenticationProvider)authenticationProviders.get(i)).getUserSecurityHandler().getUserPrincipals(filter));
@@ -254,9 +254,9 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPublicCredentials(java.lang.String)
      */
-    public Set getPublicCredentials(String username)
+    public Set<Credential> getPublicCredentials(String username)
     {
-        Set publicCredentials = new HashSet();
+        Set<Credential> publicCredentials = new HashSet<Credential>();
         String providerName = getAuthenticationProvider(username);
         if ( providerName != null )
         {
@@ -335,9 +335,9 @@ public class AuthenticationProviderProxyImpl implements AuthenticationProviderPr
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPrivateCredentials(java.lang.String)
      */
-    public Set getPrivateCredentials(String username)
+    public Set<Credential> getPrivateCredentials(String username)
     {
-        Set privateCredentials = new HashSet();
+        Set<Credential> privateCredentials = new HashSet<Credential>();
         String providerName = getAuthenticationProvider(username);
         if ( providerName != null )
         {

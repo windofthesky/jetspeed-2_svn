@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -255,10 +255,10 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
                         try
                         {
                             _line = _c.getMimeTypesString().toString();
-                            ArrayList list = getTokens(_line);
+                            List<String> list = getTokens(_line);
                             if ((list != null) && (list.size() > 0))
                             {
-                                Iterator _it1 = list.iterator();
+                                Iterator<String> _it1 = list.iterator();
                                 int added = 0;
                                 while (_it1.hasNext())
                                 {
@@ -276,10 +276,10 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
                         try
                         {
                             _line = _c.getCapabilitiesString().toString();
-                            ArrayList list = getTokens(_line);
+                            List<String> list = getTokens(_line);
                             if ((list != null) && (list.size() > 0))
                             {
-                                Iterator _it1 = list.iterator();
+                                Iterator<String> _it1 = list.iterator();
                                 if ((list != null) && (list.size() > 0))
                                 {
                                     int added = 0;
@@ -346,10 +346,10 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
                         try
                         {
                             _line = _c.getMimeTypesString().toString();
-                            ArrayList list = getTokens(_line);
+                            List<String> list = getTokens(_line);
                             if ((list != null) && (list.size() > 0))
                             {
-                                Iterator _it1 = list.iterator();
+                                Iterator<String> _it1 = list.iterator();
                                 int added = 0;
                                 while (_it1.hasNext())
                                 {
@@ -376,10 +376,10 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
                         try
                         {
                             _line = _c.getCapabilitiesString().toString();
-                            ArrayList list = getTokens(_line);
+                            List<String> list = getTokens(_line);
                             if ((list != null) && (list.size() > 0))
                             {
-                                Iterator _it1 = list.iterator();
+                                Iterator<String> _it1 = list.iterator();
                                 if ((list != null) && (list.size() > 0))
                                 {
                                     int added = 0;

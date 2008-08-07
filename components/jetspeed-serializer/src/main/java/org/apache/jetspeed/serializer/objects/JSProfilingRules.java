@@ -27,6 +27,7 @@ import java.util.ArrayList;
 * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
 * @version $Id: $
 */
-public class JSProfilingRules extends ArrayList
+public class JSProfilingRules extends ArrayList<JSProfilingRule>
 {
+    private static final long serialVersionUID = -3452575197134401194L;
 }

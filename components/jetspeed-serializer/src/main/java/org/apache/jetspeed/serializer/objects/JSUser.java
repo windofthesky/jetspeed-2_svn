@@ -18,14 +18,18 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.sql.Date;
 import java.util.Iterator;
-import java.util.prefs.Preferences;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.jetspeed.security.Credential;
+import org.apache.jetspeed.security.attributes.SecurityAttribute;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
  * Jetspeed Serialized (JS) User
@@ -41,17 +45,17 @@ public class JSUser
 
     private JSPWAttributes pwData = null;
 
-    private ArrayList roles = null;
+    private List<JSRole> roles = null;
 
-    private ArrayList groups = null;
+    private List<JSGroup> groups = null;
 
     private JSUserAttributes userInfo = null;
 
-    private JSNVPElements preferences = null;
+    private JSNVPElements attributes = null;
 
-    private ArrayList publicCredentials = null;
+    private List<Credential> publicCredentials = null;
 
-    private ArrayList privateCredentials = null;
+    private List<Credential> privateCredentials = null;
 
     private JSUserRoles roleString;
 
@@ -68,36 +72,40 @@ public class JSUser
     {
     }
 
-    public void addPublicCredential(Object o)
+    public void addPublicCredential(Credential o)
     {
-        if (publicCredentials == null) publicCredentials = new ArrayList();
+        if (publicCredentials == null) 
+            publicCredentials = new ArrayList<Credential>();
         publicCredentials.add(o);
     }
 
-    public void addPrivateCredential(Object o)
+    public void addPrivateCredential(Credential o)
     {
-        if (privateCredentials == null) privateCredentials = new ArrayList();
+        if (privateCredentials == null) 
+            privateCredentials = new ArrayList<Credential>();
         privateCredentials.add(o);
     }
 
     public void addGroup(JSGroup group)
     {
-        if (groups == null) groups = new ArrayList();
+        if (groups == null) 
+            groups = new ArrayList<JSGroup>();
         groups.add(group);
     }
 
     public void addRole(JSRole role)
     {
-        if (roles == null) roles = new ArrayList();
+        if (roles == null) 
+            roles = new ArrayList<JSRole>();
         roles.add(role);
     }
 
-    public ArrayList getGroups()
+    public List<JSGroup> getGroups()
     {
         return groups;
     }
 
-    public void setGroups(ArrayList groups)
+    public void setGroups(List<JSGroup> groups)
     {
         this.groups = groups;
     }
@@ -203,12 +211,12 @@ public class JSUser
         this.name = name;
     }
 
-    public ArrayList getRoles()
+    public List<JSRole> getRoles()
     {
         return roles;
     }
 
-    public void setRoles(ArrayList roles)
+    public void setRoles(List<JSRole> roles)
     {
         this.roles = roles;
     }
@@ -218,44 +226,43 @@ public class JSUser
         return name;
     }
 
-    /*
-     * private void initUser() throws Exception { User user = null; try {
-     * ums.addUser("test", "password01"); user = ums.getUser("test"); } catch
-     * (SecurityException sex) { assertTrue("user exists. should not have thrown
-     * an exception.", false); }
-     * 
-     * Preferences userInfoPrefs = user.getPreferences().node("userinfo");
-     * userInfoPrefs.put("user.name.given", "Test Dude");
-     * userInfoPrefs.put("user.name.family", "Dudley"); }
-     * 
-     */
-
-    /**
-     * @return Returns the preferences.
-     */
-    public JSNVPElements getPreferences()
+    public JSNVPElements getSecurityAttributes()
     {
-        return preferences;
+        return attributes;
     }
 
-    /**
-     * @param preferences
-     *            The preferences to set.
-     */
-    public void setPreferences(Preferences preferences)
+    public void setSecurityAttributes(Map<String, SecurityAttribute> sa)
     {
-        // TODO: the JSNVPElements class doesn't support/use Preferences anymore
-        //       because of its dual usage for PortletPreferences as well
-        //       goto break these two usages apart and provide separate implementations
-        // NOTE: JSVNPElements is't very well implemented anyway (doesn't seem to be able to handle multi-value elements...)
-//        this.preferences = new JSNVPElements(preferences);
-        this.preferences = new JSNVPElements();
+        this.attributes = new JSNVPElements();
+        for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
+        {
+            SecurityAttribute attrib = e.getValue();
+            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getValue());
+            this.attributes.add(element);
+        }
     }
+    
+    public JSUserAttributes getUserInfo()
+    {
+        return userInfo;
+    }
+
+    public void setUserInfo(Map<String, SecurityAttribute> sa)
+    {
+        this.userInfo = new JSUserAttributes(); 
+        for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
+        {
+            SecurityAttribute attrib = e.getValue();
+            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getValue());
+            this.userInfo.add(element);
+        }
+    }
+    
 
     /**
      * @return Returns the privateCredentials.
      */
-    public ArrayList getPrivateCredentials()
+    public List<Credential> getPrivateCredentials()
     {
         return privateCredentials;
     }
@@ -264,7 +271,7 @@ public class JSUser
      * @param privateCredentials
      *            The privateCredentials to set.
      */
-    public void setPrivateCredentials(ArrayList privateCredentials)
+    public void setPrivateCredentials(List<Credential> privateCredentials)
     {
         this.privateCredentials = privateCredentials;
     }
@@ -272,7 +279,7 @@ public class JSUser
     /**
      * @return Returns the publicCredentials.
      */
-    public ArrayList getPublicCredentials()
+    public List<Credential> getPublicCredentials()
     {
         return publicCredentials;
     }
@@ -281,28 +288,12 @@ public class JSUser
      * @param publicCredentials
      *            The publicCredentials to set.
      */
-    public void setPublicCredentials(ArrayList publicCredentials)
+    public void setPublicCredentials(List<Credential> publicCredentials)
     {
         this.publicCredentials = publicCredentials;
     }
 
-    /**
-     * @param userInfo
-     *            The userInfo to set.
-     */
-    public void setUserInfo(Preferences userInfo)
-    {
-        this.userInfo = new JSUserAttributes(userInfo);
-    }
-
-    /**
-     * @return Returns the userInfo.
-     */
-    public JSUserAttributes getUserInfo()
-    {
-        return userInfo;
-    }
-
+    
     /***************************************************************************
      * SERIALIZER
      */
@@ -341,7 +332,7 @@ public class JSUser
 
                 xml.add(g.roleString);
                 xml.add(g.groupString);
-                xml.add(g.preferences);
+                xml.add(g.attributes);
                 xml.add(g.userInfo);
                 xml.add(g.rules);
 
@@ -382,7 +373,7 @@ public class JSUser
 	                else if (o1 instanceof JSUserAttributes)
 	                    g.userInfo  = (JSUserAttributes) o1;
 	                else if (o1 instanceof JSNVPElements)
-		                g.preferences  = (JSNVPElements) o1;
+		                g.attributes  = (JSNVPElements) o1;
                     else if (o1 instanceof JSPrincipalRules)
 	                    g.rules  = (JSPrincipalRules) o1;
                 }
@@ -414,7 +405,7 @@ public class JSUser
         return s.toString();
     }
 
-    private String putTokens(ArrayList _list)
+    private String putTokens(List _list)
     {
         if ((_list == null) || (_list.size() == 0)) return "";
         boolean _start = true;

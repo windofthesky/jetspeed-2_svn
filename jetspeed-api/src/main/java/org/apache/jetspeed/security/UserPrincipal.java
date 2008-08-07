@@ -23,5 +23,5 @@ package org.apache.jetspeed.security;
  */
 public interface UserPrincipal extends BasePrincipal
 {
-
+    final String PRINCIPAL_TYPE = "user"; 
 }

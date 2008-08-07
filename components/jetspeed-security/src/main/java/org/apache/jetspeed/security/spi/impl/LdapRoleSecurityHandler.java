@@ -16,8 +16,10 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NamingException;
@@ -29,8 +31,8 @@ import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapRoleDaoImpl;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapRoleDaoImpl;
 
 public class LdapRoleSecurityHandler implements RoleSecurityHandler {
 
@@ -61,7 +63,8 @@ public class LdapRoleSecurityHandler implements RoleSecurityHandler {
         this(new LdapRoleDaoImpl());
     }
 	
-	public RolePrincipal getRolePrincipal(String roleFullPathName) {
+	public RolePrincipal getRolePrincipal(String roleFullPathName) 
+	{
         String roleUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(roleFullPathName);
         verifyRoleId(roleUidWithoutSlashes);
         try
@@ -80,36 +83,41 @@ public class LdapRoleSecurityHandler implements RoleSecurityHandler {
         return null;
 	}
 
-	public void setRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException {
+	public void storeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException 
+	{
         verifyRolePrincipal(rolePrincipal);
-
-        String fullPath = rolePrincipal.getFullPath();
-        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(fullPath);
+        String groupUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(rolePrincipal.getName());
         if (getRolePrincipal(groupUidWithoutSlashes) == null)
         {
             ldap.create(groupUidWithoutSlashes);
         }
 	}
 
-	public void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException {
+	public void removeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException 
+	{
         verifyRolePrincipal(rolePrincipal);
-
-        String fullPath = rolePrincipal.getFullPath();
-        String roleUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(fullPath);
-
+        String roleUidWithoutSlashes = ldap.convertUidToLdapAcceptableName(rolePrincipal.getName());
         ldap.delete(roleUidWithoutSlashes);
 	}
 
-	public List getRolePrincipals(String filter) {
+	public List<RolePrincipal> getRolePrincipals(String filter) 
+	{
         try
         {
-            return Arrays.asList(ldap.find(filter, RolePrincipal.PREFS_ROLE_ROOT));
+            List<RolePrincipal> principals = new LinkedList<RolePrincipal>();            
+            List<Principal> result = Arrays.asList(ldap.find(filter, RolePrincipal.PREFS_ROLE_ROOT));
+            for (Principal p : result)
+            {
+                if (p instanceof RolePrincipal)
+                    principals.add((RolePrincipal)p);
+            }
+            return principals;
         }
         catch (SecurityException e)
         {
             logSecurityException(e, filter);
         }
-        return new ArrayList();
+        return new ArrayList<RolePrincipal>();
 	}
 	
     /**

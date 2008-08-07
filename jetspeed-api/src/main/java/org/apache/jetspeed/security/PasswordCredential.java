@@ -27,7 +27,7 @@ import java.sql.Timestamp;
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public interface PasswordCredential
+public interface PasswordCredential extends Credential
 {
     String PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY = PasswordCredential.class.getName() + ".check";
 

@@ -45,10 +45,10 @@ public interface RoleSecurityHandler
      * Gets the role principal for the role full path name {principal}.{subprincipal}.
      * </p>
      * 
-     * @param roleFullPathName The role full path name.
+     * @param roleName The role full path name.
      * @return The <code>Principal</p>
      */
-    RolePrincipal getRolePrincipal(String roleFullPathName);
+    RolePrincipal getRolePrincipal(String roleName);
     
     /**
      * <p>
@@ -58,7 +58,7 @@ public interface RoleSecurityHandler
      * @param rolePrincipal The <code>RolePrincipal</code>.
      * @throws SecurityException Throws a {@link SecurityException}.
      */
-    void setRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException;
+    void storeRolePrincipal(RolePrincipal rolePrincipal) throws SecurityException;
     
     /**
      * <p>
@@ -78,6 +78,6 @@ public interface RoleSecurityHandler
      * @param filter The filter.
      * @return The list of <code>Principal</code>
      */
-    List getRolePrincipals(String filter);
+    List<RolePrincipal> getRolePrincipals(String filter);
    
 }  

@@ -18,8 +18,11 @@ package org.apache.jetspeed.security.spi;
 
 import java.util.Set;
 
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.HierarchyResolver;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * <p>
@@ -37,40 +40,22 @@ public interface SecurityMappingHandler
     
     /**
      * <p>
-     * Gets the {@link HierarchyResolver} to be used for resolving role hierarchy.
+     * Gets the {@link HierarchyResolver} to be used for resolving all hierarchies.
      * </p>
      * 
      * @return The role {@link HierarchyResolver}.
      */
-    HierarchyResolver getRoleHierarchyResolver();
+    HierarchyResolver getHierarchyResolver();
     
     /**
      * <p>
-     * Sets the {@link HierarchyResolver} to be used for resolving role hierachy.
+     * Sets the {@link HierarchyResolver} to be used for resolving roles and groups
      * </p>
      * 
      * @param roleHierarchyResolver The role {@link HierarchyResolver}.
      */
-    void setRoleHierarchyResolver(HierarchyResolver roleHierarchyResolver);
-    
-    /**
-     * <p>
-     * Gets the {@link HierarchyResolver} to be used for resolving group hierarchy.
-     * </p>
-     * 
-     * @return The role {@link HierarchyResolver}.
-     */
-    HierarchyResolver getGroupHierarchyResolver();
-    
-    /**
-     * <p>
-     * Sets the {@link HierarchyResolver} used for resolving group hierarchy.
-     * </p>
-     * 
-     * @param groupHierarchyResolver The group {@link HierarchyResolver}.
-     */
-    void setGroupHierarchyResolver(HierarchyResolver groupHierarchyResolver);
-    
+    void setHierarchyResolver(HierarchyResolver hierarchyResolver);
+        
     /**
      * <p>
      * Gets the role principals for the given user according to the relevant hierarchy
@@ -80,7 +65,7 @@ public interface SecurityMappingHandler
      * @param username The user name.
      * @return A set of <code>Principal</p>
      */
-    Set getRolePrincipals(String username);
+    Set<RolePrincipal> getRolePrincipals(String username);
     
     /**
      * <p>
@@ -122,7 +107,7 @@ public interface SecurityMappingHandler
      * @param groupFullPathName The group full path name.
      * @return A set of <code>Principal</p>
      */
-    Set getRolePrincipalsInGroup(String groupFullPathName);
+    Set<RolePrincipal> getRolePrincipalsInGroup(String groupFullPathName);
     
     /**
      * <p>
@@ -157,7 +142,7 @@ public interface SecurityMappingHandler
      * @param username The user name.
      * @return A set of <code>GroupPrincipal</p>
      */
-    Set getGroupPrincipals(String username);
+    Set<GroupPrincipal> getGroupPrincipals(String username);
     
     /**
      * <p>
@@ -168,7 +153,7 @@ public interface SecurityMappingHandler
      * @param roleFullPathName The role full path name.
      * @return A set of <code>Principal</p>
      */
-    Set getGroupPrincipalsInRole(String roleFullPathName);
+    Set<GroupPrincipal> getGroupPrincipalsInRole(String roleFullPathName);
     
     /**
      * <p>
@@ -179,7 +164,7 @@ public interface SecurityMappingHandler
      * @param roleFullPathName The role full path name.
      * @return A set of <code>Principal</p>
      */   
-    Set getUserPrincipalsInRole(String roleFullPathName);
+    Set<UserPrincipal> getUserPrincipalsInRole(String roleFullPathName);
     
     /**
      * <p>
@@ -190,7 +175,7 @@ public interface SecurityMappingHandler
      * @param groupFullPathName The group full path name.
      * @return A set of <code>Principal</p>
      */   
-    Set getUserPrincipalsInGroup(String groupFullPathName);
+    Set<UserPrincipal> getUserPrincipalsInGroup(String groupFullPathName);
     
     /**
      * <p>

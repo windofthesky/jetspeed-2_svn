@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -33,6 +34,6 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface UserAttributeSource 
 {	
-	Map getUserAttributeMap(Subject subject, Collection userAttributeRefs, RequestContext context) 
+	Map<String, String> getUserAttributeMap(Subject subject, Collection<UserAttributeRef> userAttributeRefs, RequestContext context) 
         throws UserAttributeRetrievalException;
 }

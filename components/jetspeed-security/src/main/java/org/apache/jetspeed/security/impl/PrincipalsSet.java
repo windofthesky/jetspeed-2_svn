@@ -16,6 +16,7 @@
 */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,10 +33,10 @@ import java.util.Set;
  * @version $Id: $
  */
 
-public class PrincipalsSet implements Set
+public class PrincipalsSet implements Set<Principal>
 {
-    List principals = new LinkedList();
-    Set set = new HashSet();
+    List<Principal> principals = new LinkedList<Principal>();
+    Set<Principal> set = new HashSet<Principal>();
 
     public PrincipalsSet()
     {}
@@ -65,18 +66,20 @@ public class PrincipalsSet implements Set
         return principals.isEmpty();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Collection#toArray()
-     */
+    public <T> T[] toArray(T[] a)
+    {
+        return principals.toArray(a);
+    }
+
     public Object[] toArray()
     {
         return principals.toArray();
     }
-
+    
     /* (non-Javadoc)
      * @see java.util.Collection#add(java.lang.Object)
      */
-    public boolean add(Object o)
+    public boolean add(Principal o)
     {
         if (set.add(o))
         {
@@ -93,7 +96,7 @@ public class PrincipalsSet implements Set
     {
         return set.contains(o);
     }
-
+    
     /* (non-Javadoc)
      * @see java.util.Collection#remove(java.lang.Object)
      */
@@ -102,20 +105,11 @@ public class PrincipalsSet implements Set
         set.remove(o);
         return principals.remove(o);
     }
-
-    /* (non-Javadoc)
-     * @see java.util.Collection#addAll(java.util.Collection)
-     */
-    public boolean addAll(Collection c)
-    {
-        set.addAll(c);
-        return principals.addAll(c);
-    }
-
+    
     /* (non-Javadoc)
      * @see java.util.Collection#containsAll(java.util.Collection)
      */
-    public boolean containsAll(Collection c)
+    public boolean containsAll(Collection<?> c)
     {
         return set.containsAll(c);
     }
@@ -123,7 +117,7 @@ public class PrincipalsSet implements Set
     /* (non-Javadoc)
      * @see java.util.Collection#removeAll(java.util.Collection)
      */
-    public boolean removeAll(Collection c)
+    public boolean removeAll(Collection<?> c)
     {
         set.removeAll(c);
         return principals.removeAll(c);
@@ -132,7 +126,7 @@ public class PrincipalsSet implements Set
     /* (non-Javadoc)
      * @see java.util.Collection#retainAll(java.util.Collection)
      */
-    public boolean retainAll(Collection c)
+    public boolean retainAll(Collection<?> c)
     {
         set.retainAll(c);
         return principals.retainAll(c);
@@ -141,17 +135,15 @@ public class PrincipalsSet implements Set
     /* (non-Javadoc)
      * @see java.util.Collection#iterator()
      */
-    public Iterator iterator()
+    public Iterator<Principal> iterator()
     {
         return principals.iterator();
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Collection#toArray(java.lang.Object[])
-     */
-    public Object[] toArray(Object[] a)
+    public boolean addAll(Collection<? extends Principal> c)
     {
-        return principals.toArray(a);
+        set.addAll(c);
+        return principals.addAll(c);
     }
 
 }

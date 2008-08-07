@@ -19,9 +19,7 @@ package org.apache.jetspeed.userinfo.impl;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
 
@@ -67,11 +65,11 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
      * 
      * @see org.jetspeed.userinfo.UserAttributeSource#getUserAttributeMap(javax.security.auth.Subject, java.util.Set)
      */
-    public Map getUserAttributeMap(Subject subject, Collection userAttributeRefs, RequestContext context)
+    public Map<String, String> getUserAttributeMap(Subject subject, Collection<UserAttributeRef> userAttributeRefs, RequestContext context)
             throws UserAttributeRetrievalException
     {
 
-        Map userAttributeMap = new HashMap();
+        Map<String,String> userAttributeMap = new HashMap<String,String>();
         Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
         if (null != userPrincipal)
         {
@@ -81,11 +79,10 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
                 if (userManager.userExists(userPrincipal.getName()))
                 {
                     User user = userManager.getUser(userPrincipal.getName());
-                    Preferences userInfoPrefs = user.getPreferences();
-                    for (Iterator iter = userAttributeRefs.iterator(); iter.hasNext();)
+                    Map<String, String> userInfo = user.getUserAttributes();
+                    for (UserAttributeRef currentAttributeRef : userAttributeRefs)
                     {
-                        UserAttributeRef currentAttributeRef = (UserAttributeRef) iter.next();
-                        Object value = userInfoPrefs.get(currentAttributeRef.getName(), null);
+                        String value = userInfo.get(currentAttributeRef.getName());
                         if (value != null)
                         {
                             userAttributeMap.put(currentAttributeRef.getName(), value);

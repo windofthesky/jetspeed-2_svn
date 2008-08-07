@@ -46,7 +46,6 @@ import java.sql.Timestamp;
  */
 public interface InternalPrincipal extends Serializable, Cloneable
 {
-
     /**
      * <p>
      * Getter for the principal id.
@@ -103,29 +102,35 @@ public interface InternalPrincipal extends Serializable, Cloneable
 
     /**
      * <p>
-     * Getter for the principal full path.
+     * Getter for the principal type, usually user | group |  role
      * </p>
-     * <p>
-     * The full path allows to retrieve the principal preferences from the
-     * preferences services.
-     * </p>
-     * 
-     * @return The principal full path.
+     * @return The principal type
      */
-    String getFullPath();
+    String getType();
 
+    /**
+     * <p>
+     * Getter for the principal name such as a user name
+     * </p>
+     * @return The principal name
+     */    
+    String getName();
+
+    /**
+     * <p>
+     * Setter for the principal type.
+     * </p>
+     * @param name The principal type, usually role | group | user
+     */
+    void setType(String type);
+    
     /**
      * <p>
      * Setter for the principal name.
      * </p>
-     * <p>
-     * The full path allows to retrieve the principal preferences from the
-     * preferences services.
-     * </p>
-     * 
-     * @param fullPath The principal full path.
+     * @param name The principal name such as a user name
      */
-    void setFullPath(String fullPath);
+    void setName(String name);
 
     /**
      * <p>
@@ -134,7 +139,7 @@ public interface InternalPrincipal extends Serializable, Cloneable
      * 
      * @return The principal permissions.
      */
-    Collection getPermissions();
+    Collection<InternalPermission> getPermissions();
 
     /**
      * <p>
@@ -143,7 +148,7 @@ public interface InternalPrincipal extends Serializable, Cloneable
      * 
      * @param permissions The principal permissions.
      */
-    void setPermissions(Collection permissions);
+    void setPermissions(Collection<InternalPermission> permissions);
 
     /**
      * <p>
@@ -191,5 +196,5 @@ public interface InternalPrincipal extends Serializable, Cloneable
      * Setter for the enabled state</p>
      * @param enabled The enabled state
      */
-    void setEnabled(boolean enabled);    
+    void setEnabled(boolean enabled);
 }

@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,16 +52,14 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#getGroupPrincipal(java.lang.String)
      */
-    public GroupPrincipal getGroupPrincipal(String groupFullPathName)
+    public GroupPrincipal getGroupPrincipal(String groupName)
     {
         GroupPrincipal groupPrincipal = null;
-        InternalGroupPrincipal internalGroup = commonQueries
-                .getInternalGroupPrincipal(GroupPrincipalImpl
-                        .getFullPathFromPrincipalName(groupFullPathName));
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupName);        
         if (null != internalGroup)
         {
-            groupPrincipal = new GroupPrincipalImpl(GroupPrincipalImpl
-                    .getPrincipalNameFromFullPath(internalGroup.getFullPath()), internalGroup.isEnabled(), internalGroup.isMappingOnly());
+            groupPrincipal = new GroupPrincipalImpl(internalGroup.getPrincipalId(), internalGroup.getName(),
+                                            internalGroup.isEnabled(), internalGroup.isMappingOnly());
         }
         return groupPrincipal;
     }
@@ -69,23 +67,22 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#setGroupPrincipal(org.apache.jetspeed.security.GroupPrincipal)
      */
-    public void setGroupPrincipal(GroupPrincipal groupPrincipal)
+    public void storeGroupPrincipal(GroupPrincipal groupPrincipal)
             throws SecurityException
     {
-        String fullPath = groupPrincipal.getFullPath();
-        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(fullPath);
-        if ( null == internalGroup )
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupPrincipal.getName());
+        if (null == internalGroup)
         {
-            internalGroup = new InternalGroupPrincipalImpl(fullPath);
+            internalGroup = new InternalGroupPrincipalImpl(groupPrincipal.getName());
             internalGroup.setEnabled(groupPrincipal.isEnabled());
-            commonQueries.setInternalGroupPrincipal(internalGroup, false);
+            commonQueries.storeInternalGroupPrincipal(internalGroup, false);            
         }
         else if ( !internalGroup.isMappingOnly() )
         {
             if ( internalGroup.isEnabled() != groupPrincipal.isEnabled() )
             {
                 internalGroup.setEnabled(groupPrincipal.isEnabled());
-                commonQueries.setInternalGroupPrincipal(internalGroup, false);
+                commonQueries.storeInternalGroupPrincipal(internalGroup, false);
             }
         }
         else
@@ -100,8 +97,7 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
     public void removeGroupPrincipal(GroupPrincipal groupPrincipal)
             throws SecurityException
     {
-        InternalGroupPrincipal internalGroup = commonQueries
-                .getInternalGroupPrincipal(groupPrincipal.getFullPath());
+        InternalGroupPrincipal internalGroup = commonQueries.getInternalGroupPrincipal(groupPrincipal.getName());
         if (null != internalGroup)
         {
             commonQueries.removeInternalGroupPrincipal(internalGroup);
@@ -111,21 +107,14 @@ public class DefaultGroupSecurityHandler implements GroupSecurityHandler
     /**
      * @see org.apache.jetspeed.security.spi.GroupSecurityHandler#getGroupPrincipals(java.lang.String)
      */
-    public List getGroupPrincipals(String filter)
+    public List<GroupPrincipal> getGroupPrincipals(String filter)
     {
-        List groupPrincipals = new LinkedList();
-        Iterator result = commonQueries.getInternalGroupPrincipals(filter);
-        while (result.hasNext())
+        List<GroupPrincipal> groupPrincipals = new LinkedList<GroupPrincipal>();
+        Collection<InternalGroupPrincipal> internalGroups = commonQueries.getInternalGroupPrincipals(filter);
+        for (InternalGroupPrincipal internalGroup : internalGroups)
         {
-            InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) result
-                    .next();
-            String path = internalGroup.getFullPath();
-            if (path == null)
-            {
-                continue;
-            }
             groupPrincipals
-                    .add(new GroupPrincipalImpl(GroupPrincipalImpl.getPrincipalNameFromFullPath(internalGroup.getFullPath()),
+                    .add(new GroupPrincipalImpl(internalGroup.getPrincipalId(), internalGroup.getName(),
                                 internalGroup.isEnabled(), internalGroup.isMappingOnly()) 
                             );
         }

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
 * @version $Id: $
 */
-public class JSMimeTypes extends ArrayList
+public class JSMimeTypes extends ArrayList<JSMimeType>
 {
+    private static final long serialVersionUID = -3255090433022941285L;
 }

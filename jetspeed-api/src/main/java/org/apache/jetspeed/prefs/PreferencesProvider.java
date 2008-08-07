@@ -17,7 +17,6 @@
 package org.apache.jetspeed.prefs;
 
 import java.util.Collection;
-import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;

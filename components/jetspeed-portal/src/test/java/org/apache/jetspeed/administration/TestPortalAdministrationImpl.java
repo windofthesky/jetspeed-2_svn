@@ -55,7 +55,7 @@ public class TestPortalAdministrationImpl extends  TestCase
 
     public void testPasswordGen() throws Exception
     {
-        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
+        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null);
         String newPassword = pai.generatePassword();
         assertNotNull("new password was NULL!!!",newPassword);
         assertTrue("password is not long enough",(newPassword.length() > 4) );
@@ -63,7 +63,7 @@ public class TestPortalAdministrationImpl extends  TestCase
     }
     
     public void xtestSendEmail() throws Exception {
-        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
+        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null);
         pai.sendEmail("chris@bluesunrise.com","this is a unittest","chris@bluesunrise.com","this is the content of the message");
         
     }
@@ -71,7 +71,7 @@ public class TestPortalAdministrationImpl extends  TestCase
     // this needs too much init to test easily right now
     public void xtestRegUser() throws Exception
     {
-        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
+        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null);
         String user = "user"+(Math.abs(new Date().getTime()));
         String password = "password";
         List emptyList = new ArrayList();

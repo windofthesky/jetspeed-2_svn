@@ -19,6 +19,9 @@ package org.apache.jetspeed.security.om.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.jetspeed.security.om.InternalCredential;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
+import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
 
 /**
@@ -35,14 +38,14 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     static String USER_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalUserPrincipalImpl";
     
     /** The credentials. */
-    private Collection credentials;
+    private Collection<InternalCredential> credentials;
     
     /** The role principals. */
-    private Collection rolePrincipals;
+    private Collection<InternalRolePrincipal> rolePrincipals;
     
     /** The group principals. */
-    private Collection groupPrincipals;
-
+    private Collection<InternalGroupPrincipal> groupPrincipals;
+    
     /**
      * <p>InternalUserPrincipal implementation default constructor.</p>
      */
@@ -58,15 +61,15 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
      */
     public InternalUserPrincipalImpl(String username)
     {
-        super(USER_PRINCIPAL_CLASSNAME, username);
-        this.rolePrincipals = new ArrayList();
-        this.groupPrincipals = new ArrayList();
+        super(USER_PRINCIPAL_CLASSNAME, USER_TYPE, username);
+        this.rolePrincipals = new ArrayList<InternalRolePrincipal>();
+        this.groupPrincipals = new ArrayList<InternalGroupPrincipal>();
     }
 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getCredentials()
      */
-    public Collection getCredentials()
+    public Collection<InternalCredential> getCredentials()
     {
         return this.credentials;
     }
@@ -74,7 +77,7 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#setCredentials(java.util.Collection)
      */
-    public void setCredentials(Collection credentials)
+    public void setCredentials(Collection<InternalCredential> credentials)
     {
         this.credentials = credentials;
     }
@@ -82,7 +85,7 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getRolePrincipals()
      */
-    public Collection getRolePrincipals()
+    public Collection<InternalRolePrincipal> getRolePrincipals()
     {
         return this.rolePrincipals;
     }
@@ -90,7 +93,7 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#setRolePrincipals(java.util.Collection)
      */
-    public void setRolePrincipals(Collection rolePrincipals)
+    public void setRolePrincipals(Collection<InternalRolePrincipal> rolePrincipals)
     {
         this.rolePrincipals = rolePrincipals;
     }
@@ -98,7 +101,7 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#getGroupPrincipals()
      */
-    public Collection getGroupPrincipals()
+    public Collection<InternalGroupPrincipal> getGroupPrincipals()
     {
         return this.groupPrincipals;
     }
@@ -106,7 +109,7 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalUserPrincipal#setGroupPrincipals(java.util.Collection)
      */
-    public void setGroupPrincipals(Collection groupPrincipals)
+    public void setGroupPrincipals(Collection<InternalGroupPrincipal> groupPrincipals)
     {
         this.groupPrincipals = groupPrincipals;
     }
@@ -122,7 +125,7 @@ public class InternalUserPrincipalImpl extends InternalPrincipalImpl implements 
             return false;
 
         InternalUserPrincipal r = (InternalUserPrincipal) object;
-        boolean isEqual = (r.getFullPath().equals(this.getFullPath()));
+        boolean isEqual = (r.getName().equals(this.getName()) && r.getType().equals(this.getType()));
         return isEqual;
     }
 

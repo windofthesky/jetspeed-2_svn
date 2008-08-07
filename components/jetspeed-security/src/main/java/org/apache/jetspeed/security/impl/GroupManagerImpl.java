@@ -19,29 +19,26 @@ package org.apache.jetspeed.security.impl;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * <p>
- * Describes the service interface for managing groups.
+ * Implements the service interface for managing Jetsped Security Groups.
  * </p>
  * <p>
  * Group hierarchy elements are being returned as a {@link Group}collection.
@@ -49,11 +46,9 @@ import org.apache.jetspeed.util.ArgUtil;
  * preferences sub-tree.
  * </p>
  * <p>
- * The convention {principal}.{subprincipal} has been chosen to name groups
- * hierachies. Implementation follow the conventions enforced by the
- * {@link Preferences}API.
+ * The convention {principal}.{subprincipal} has been chosen to name groups hierarchies. 
  * </p>
- * 
+ * <p>Modified 2008-08-05 - DST - decoupled java preferences</p> 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  */
@@ -72,120 +67,60 @@ public class GroupManagerImpl implements GroupManager
     /** The security mapping handler. */
     private SecurityMappingHandler securityMappingHandler = null;
 
+    private SecurityAttributesProvider attributesProvider;
+    
     /**
      * @param securityProvider
      *            The security provider.
      */
-    public GroupManagerImpl(SecurityProvider securityProvider)
+    public GroupManagerImpl(SecurityProvider securityProvider, SecurityAttributesProvider attributesProvider)
     {
-        this.atnProviderProxy = securityProvider
-                .getAuthenticationProviderProxy();
+        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
         this.groupSecurityHandler = securityProvider.getGroupSecurityHandler();
-        this.securityMappingHandler = securityProvider
-                .getSecurityMappingHandler();
+        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
+        this.attributesProvider = attributesProvider;
     }
 
     /**
      * @see org.apache.jetspeed.security.GroupManager#addGroup(java.lang.String)
      */
-    public void addGroup(String groupFullPathName) throws SecurityException
+    public void addGroup(String groupName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { groupFullPathName}, new String[]
-        { "groupFullPathName"}, "addGroup(java.lang.String)");
-
-        // Check if group already exists.
-        if (groupExists(groupFullPathName)) {  
-            throw new SecurityException(SecurityException.GROUP_ALREADY_EXISTS.create(groupFullPathName)); 
+        if (groupExists(groupName)) 
+        {  
+            throw new SecurityException(SecurityException.GROUP_ALREADY_EXISTS.create(groupName)); 
         }
-
-        GroupPrincipal groupPrincipal = new GroupPrincipalImpl(
-                groupFullPathName);
-        String fullPath = groupPrincipal.getFullPath();
-        // Add the preferences.
-        Preferences preferences = Preferences.userRoot().node(fullPath);
+        GroupPrincipal groupPrincipal = new GroupPrincipalImpl(groupName);        
+        groupSecurityHandler.storeGroupPrincipal(groupPrincipal);
+        SecurityAttributes sa = attributesProvider.createSecurityAttributes(groupPrincipal);
+        attributesProvider.saveAttributes(sa);
         if (log.isDebugEnabled())
-        {
-            log.debug("Added group preferences node: " + fullPath);
-        }
-        try
-        {
-            if ((null != preferences)
-                    && preferences.absolutePath().equals(fullPath))
-            {
-                // Add role principal.
-                groupSecurityHandler.setGroupPrincipal(groupPrincipal);
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Added group: " + fullPath);
-                }
-            }
-        } catch (SecurityException se)
-        {
-            String msg = "Unable to create the role.";
-            log.error(msg, se);
-
-            // Remove the preferences node.
-            try
-            {
-                preferences.removeNode();
-            } catch (BackingStoreException bse)
-            {
-                bse.printStackTrace();
-            }
-            throw se;
-        }
+            log.debug("Added group: " + groupName);
     }
 
     /**
      * @see org.apache.jetspeed.security.GroupManager#removeGroup(java.lang.String)
      */
-    public void removeGroup(String groupFullPathName) throws SecurityException
+    public void removeGroup(String groupName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { groupFullPathName}, new String[]
-        { "groupFullPathName"}, "removeGroup(java.lang.String)");
-
-        // Resolve the group hierarchy.
-        Preferences prefs = Preferences.userRoot().node(
-                GroupPrincipalImpl
-                        .getFullPathFromPrincipalName(groupFullPathName));
-        String[] groups = securityMappingHandler.getGroupHierarchyResolver()
-                .resolveChildren(prefs);
-        for (int i = 0; i < groups.length; i++)
+        if (securityMappingHandler.getHierarchyResolver() != null)
         {
-            try
+            Set<GroupPrincipal> groups = securityMappingHandler.getHierarchyResolver().resolveGroups(groupName);
+            for (GroupPrincipal gp : groups)
             {
-                groupSecurityHandler
-                        .removeGroupPrincipal(new GroupPrincipalImpl(
-                                GroupPrincipalImpl
-                                        .getPrincipalNameFromFullPath(groups[i])));
-            } catch (SecurityException se)
-            {
-                throw se;
-            } catch (Exception e)
-            {
-                KeyedMessage msg = 
-                    SecurityException.UNEXPECTED.create("GroupManager.removeGroup",
-                                                        "GroupSecurityHandler.removeGroupPrincipal("+
-                        GroupPrincipalImpl.getPrincipalNameFromFullPath(groups[i])+")", 
-                        e.getMessage());
-                log.error(msg, e);
-                throw new SecurityException(msg, e);
+                groupSecurityHandler.removeGroupPrincipal(gp);
+//                TODO: should we use cascading deletes?
+                attributesProvider.deleteAttributes(gp);
             }
-            // Remove preferences
-            Preferences groupPref = Preferences.userRoot().node(
-                    groups[i]);
-            try
+        }
+        else
+        {
+            GroupPrincipal gp = groupSecurityHandler.getGroupPrincipal(groupName);
+            if (gp != null)
             {
-                groupPref.removeNode();
-            } catch (BackingStoreException bse)
-            {
-                KeyedMessage msg =
-                    SecurityException.UNEXPECTED.create("Preferences.removeNode("+groups[i]+")", 
-                                                        bse.getMessage());
-                log.error(msg, bse);
-                throw new SecurityException(msg, bse);
+                groupSecurityHandler.removeGroupPrincipal(new GroupPrincipalImpl(groupName));
+//              TODO: should we use cascading deletes?
+                attributesProvider.deleteAttributes(gp);
             }
         }
     }
@@ -193,69 +128,41 @@ public class GroupManagerImpl implements GroupManager
     /**
      * @see org.apache.jetspeed.security.GroupManager#groupExists(java.lang.String)
      */
-    public boolean groupExists(String groupFullPathName)
+    public boolean groupExists(String groupName)
     {
-        ArgUtil.notNull(new Object[]
-        { groupFullPathName}, new String[]
-        { "groupFullPathName"}, "groupExists(java.lang.String)");
-
-        Principal principal = groupSecurityHandler
-                .getGroupPrincipal(groupFullPathName);
+        Principal principal = groupSecurityHandler.getGroupPrincipal(groupName);
         boolean groupExists = (null != principal);
-        if (log.isDebugEnabled())
-        {
-            log.debug("Role exists: " + groupExists);
-            log.debug("Role: " + groupFullPathName);
-        }
         return groupExists;
     }
 
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroup(java.lang.String)
      */
-    public Group getGroup(String groupFullPathName) throws SecurityException
+    public Group getGroup(String groupName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { groupFullPathName}, new String[]
-        { "groupFullPathName"}, "getGroup(java.lang.String)");
-
-        String fullPath = GroupPrincipalImpl
-                .getFullPathFromPrincipalName(groupFullPathName);
-
-        Principal groupPrincipal = groupSecurityHandler
-                .getGroupPrincipal(groupFullPathName);
-        if (null == groupPrincipal) { 
+        Principal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupName);
+        if (null == groupPrincipal) 
+        { 
             throw new SecurityException(
-                SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName)); 
+                SecurityException.GROUP_DOES_NOT_EXIST.create(groupName)); 
         }
-        Preferences preferences = Preferences.userRoot().node(fullPath);
-        Group group = new GroupImpl(groupPrincipal, preferences);
+        SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(groupPrincipal);
+        Group group = new GroupImpl(groupPrincipal, attributes);
         return group;
     }
 
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroupsForUser(java.lang.String)
      */
-    public Collection getGroupsForUser(String username)
+    public Collection<Group> getGroupsForUser(String userName)
             throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { username}, new String[]
-        { "username"}, "getGroupsForUser(java.lang.String)");
-
-        Collection groups = new ArrayList();
-
-        Set groupPrincipals = securityMappingHandler
-                .getGroupPrincipals(username);
-        Iterator groupPrincipalsIter = groupPrincipals.iterator();
-        while (groupPrincipalsIter.hasNext())
+        Collection<Group> groups = new ArrayList<Group>();
+        Set<GroupPrincipal> groupPrincipals = securityMappingHandler.getGroupPrincipals(userName);
+        for (GroupPrincipal groupPrincipal : groupPrincipals)
         {
-            Principal groupPrincipal = (Principal) groupPrincipalsIter.next();
-            Preferences preferences = Preferences.userRoot().node(
-                    GroupPrincipalImpl
-                            .getFullPathFromPrincipalName(groupPrincipal
-                                    .getName()));
-            groups.add(new GroupImpl(groupPrincipal, preferences));
+            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(groupPrincipal);
+            groups.add(new GroupImpl(groupPrincipal, attributes));
         }
         return groups;
     }
@@ -263,26 +170,15 @@ public class GroupManagerImpl implements GroupManager
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroupsInRole(java.lang.String)
      */
-    public Collection getGroupsInRole(String roleFullPathName)
+    public Collection<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { roleFullPathName}, new String[]
-        { "roleFullPathName"}, "getGroupsInRole(java.lang.String)");
-
-        Collection groups = new ArrayList();
-
-        Set groupPrincipals = securityMappingHandler
-                .getGroupPrincipalsInRole(roleFullPathName);
-        Iterator groupPrincipalsIter = groupPrincipals.iterator();
-        while (groupPrincipalsIter.hasNext())
+        Collection<Group> groups = new ArrayList<Group>();
+        Set<GroupPrincipal> groupPrincipals = securityMappingHandler.getGroupPrincipalsInRole(roleName);
+        for (GroupPrincipal groupPrincipal : groupPrincipals)
         {
-            Principal groupPrincipal = (Principal) groupPrincipalsIter.next();
-            Preferences preferences = Preferences.userRoot().node(
-                    GroupPrincipalImpl
-                            .getFullPathFromPrincipalName(groupPrincipal
-                                    .getName()));
-            groups.add(new GroupImpl(groupPrincipal, preferences));
+            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(groupPrincipal);
+            groups.add(new GroupImpl(groupPrincipal, attributes));
         }
         return groups;
     }
@@ -291,30 +187,23 @@ public class GroupManagerImpl implements GroupManager
      * @see org.apache.jetspeed.security.GroupManager#addUserToGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void addUserToGroup(String username, String groupFullPathName)
+    public void addUserToGroup(String username, String groupName)
             throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { username, groupFullPathName}, new String[]
-        { "username", "groupFullPathName"},
-                "addUserToGroup(java.lang.String, java.lang.String)");
-
-        // Get the group principal to add to user.
-        GroupPrincipal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupFullPathName);
-        if (null == groupPrincipal) { 
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName)); 
+        GroupPrincipal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupName);
+        if (null == groupPrincipal) 
+        { 
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupName)); 
         }
-        // Check that user exists.
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
-        if (null == userPrincipal) { 
+        if (null == userPrincipal) 
+        { 
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
-        // Get the user groups.
-        Set groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
-        // Add group to user.
+        Set<GroupPrincipal> groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
         if (!groupPrincipals.contains(groupPrincipal))
         {
-            securityMappingHandler.setUserPrincipalInGroup(username,groupFullPathName);
+            securityMappingHandler.setUserPrincipalInGroup(username, groupName);
         }
     }
 
@@ -322,26 +211,18 @@ public class GroupManagerImpl implements GroupManager
      * @see org.apache.jetspeed.security.GroupManager#removeUserFromGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void removeUserFromGroup(String username, String groupFullPathName)
+    public void removeUserFromGroup(String username, String groupName)
             throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { username, groupFullPathName}, new String[]
-        { "username", "groupFullPathName"},
-                "removeUserFromGroup(java.lang.String, java.lang.String)");
-
-        // Check that user exists.
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
-        if (null == userPrincipal) { 
+        if (null == userPrincipal) 
+        { 
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
-        // Get the group principal to remove.
-        Principal groupPrincipal = groupSecurityHandler
-                .getGroupPrincipal(groupFullPathName);
+        Principal groupPrincipal = groupSecurityHandler.getGroupPrincipal(groupName);
         if (null != groupPrincipal)
         {
-            securityMappingHandler.removeUserPrincipalInGroup(username,
-                    groupFullPathName);
+            securityMappingHandler.removeUserPrincipalInGroup(username, groupName);
         }
     }
 
@@ -349,19 +230,12 @@ public class GroupManagerImpl implements GroupManager
      * @see org.apache.jetspeed.security.GroupManager#isUserInGroup(java.lang.String,
      *      java.lang.String)
      */
-    public boolean isUserInGroup(String username, String groupFullPathName)
+    public boolean isUserInGroup(String username, String groupName)
             throws SecurityException
     {
-        ArgUtil.notNull(new Object[]
-        { username, groupFullPathName}, new String[]
-        { "username", "groupFullPathName"},
-                "isUserInGroup(java.lang.String, java.lang.String)");
-
         boolean isUserInGroup = false;
-
-        Set groupPrincipals = securityMappingHandler
-                .getGroupPrincipals(username);
-        Principal groupPrincipal = new GroupPrincipalImpl(groupFullPathName);
+        Set<GroupPrincipal> groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
+        Principal groupPrincipal = new GroupPrincipalImpl(groupName);
         if (groupPrincipals.contains(groupPrincipal))
         {
             isUserInGroup = true;
@@ -372,36 +246,33 @@ public class GroupManagerImpl implements GroupManager
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroups(java.lang.String)
      */
-    public Iterator getGroups(String filter) throws SecurityException
+    public Collection<Group> getGroups(String filter) throws SecurityException
     {
-        List groups = new LinkedList();
-        Iterator groupPrincipals = groupSecurityHandler.getGroupPrincipals(filter).iterator();
-        while (groupPrincipals.hasNext())
+        List<Group> groups = new LinkedList<Group>();
+        Collection<GroupPrincipal> groupPrincipals = groupSecurityHandler.getGroupPrincipals(filter);
+        for (GroupPrincipal principal : groupPrincipals)
         {
-            String groupName = ((Principal) groupPrincipals.next()).getName();
-            Group group = getGroup(groupName);
+            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(principal);
+            Group group = new GroupImpl(principal, attributes);
             groups.add(group);
         }
-        return groups.iterator();
+        return groups;
     }
     
     /**
      * @see org.apache.jetspeed.security.GroupManager#setGroupEnabled(java.lang.String, boolean)
      */
-    public void setGroupEnabled(String groupFullPathName, boolean enabled) throws SecurityException
+    public void setGroupEnabled(String groupName, boolean enabled) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
-                "setGroupEnabled(java.lang.String,boolean)");
-
-        GroupPrincipalImpl groupPrincipal = (GroupPrincipalImpl)groupSecurityHandler.getGroupPrincipal(groupFullPathName);
+        GroupPrincipalImpl groupPrincipal = (GroupPrincipalImpl)groupSecurityHandler.getGroupPrincipal(groupName);
         if (null == groupPrincipal)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupFullPathName));
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupName));
         }
         if ( enabled != groupPrincipal.isEnabled() )
         {
             groupPrincipal.setEnabled(enabled);
-            groupSecurityHandler.setGroupPrincipal(groupPrincipal);
+            groupSecurityHandler.storeGroupPrincipal(groupPrincipal);
         }
     }
 }

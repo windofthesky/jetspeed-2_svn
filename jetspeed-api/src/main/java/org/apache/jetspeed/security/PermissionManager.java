@@ -22,6 +22,8 @@ import java.security.Principal;
 import java.util.Collection;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.om.InternalPermission;
+
 /**
  * <p>
  * Describe the interface for managing {@link Permission}and permission
@@ -67,7 +69,7 @@ public interface PermissionManager
      * @param principals A collection of principal.
      * @return The permissions.
      */
-    Permissions getPermissions(Collection principals);
+    Permissions getPermissions(Collection<Principal> principals);
 
     /**
      * <p>
@@ -148,7 +150,7 @@ public interface PermissionManager
      * 
      * @return A Java Security collection of <code>InternalPrincipal</code>
      */
-    Collection getPermissions();    
+    Collection<InternalPermission> getInternalPermissions();    
     
     /**
      * Retrieve a list of all Permissions in the system for a given resource
@@ -169,7 +171,7 @@ public interface PermissionManager
      * @return
      * @throws SecurityException
      */
-    int updatePermission(Permission permission, Collection principals)
+    int updatePermission(Permission permission, Collection<Principal> principals)
     throws SecurityException;
     
     /**
@@ -178,5 +180,5 @@ public interface PermissionManager
      * @param permission 
      * @return A collection of Java Security Permission objects
      */
-    public Collection getPrincipals(Permission permission);
+    public Collection<Principal> getPrincipals(Permission permission);
 }

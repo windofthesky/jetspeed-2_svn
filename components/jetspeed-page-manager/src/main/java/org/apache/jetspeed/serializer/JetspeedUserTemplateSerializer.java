@@ -18,7 +18,6 @@ package org.apache.jetspeed.serializer;
 
 import java.security.PrivilegedAction;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +34,8 @@ import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.attributes.SecurityAttribute;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 
@@ -149,8 +150,9 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                     if (innerSubsite != null)
                     {
                         User innerUser = userManager.getUser(innerUserName);                   
-                        Preferences attributes = innerUser.getUserAttributes();
-                        attributes.put(User.USER_INFO_SUBSITE, innerSubsite);
+                        Map<String, SecurityAttribute> attributes = innerUser.getAttributes().getAttributes(SecurityAttributes.USER_INFORMATION);
+                        attributes.put(User.USER_INFO_SUBSITE, innerUser.getAttributes().createAttribute(User.USER_INFO_SUBSITE, innerSubsite));
+                        userManager.updateUser(innerUser);
                     }
                     Folder source = innerPageManager.getFolder(innerFolderTemplate);
                     innerPageManager.deepMergeFolder(source, templateFolder, innerUserName);

@@ -17,17 +17,19 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.util.prefs.Preferences;
-
 import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
- * <p>A role made of a {@link Principal} and the user {@link Preferences}.</p>
+ * <p>Represents a security 'role' made of a {@link org.apache.jetspeed.security.RolePrincipal} and security attributes.</p>
+ * <p>Modified 2008-08-05 - DST - decoupled java preferences</p> 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public class RoleImpl implements Role
 {
-
+    private Principal rolePrincipal;
+    private SecurityAttributes attributes;
+    
     /**
      * <p>Default constructor.</p>
      */
@@ -36,17 +38,16 @@ public class RoleImpl implements Role
     }
 
     /**
-     * <p>{@link Role} constructor given a role principal and preferences.</p>
+     * <p>{@link Role} constructor given a role principal and its security attributes.</p>
      * @param rolePrincipal The role principal.
-     * @param preferences The preferences.
+     * @param attributes The security attributes.
      */
-    public RoleImpl(Principal rolePrincipal, Preferences preferences)
+    public RoleImpl(Principal rolePrincipal, SecurityAttributes attributes)
     {
         this.rolePrincipal = rolePrincipal;
-        this.preferences = preferences;
+        this.attributes = attributes;
     }
 
-    private Principal rolePrincipal;
     
     /**
      * @see org.apache.jetspeed.security.Role#getPrincipal()
@@ -64,22 +65,14 @@ public class RoleImpl implements Role
         this.rolePrincipal = rolePrincipal;
     }
 
-    private Preferences preferences;
-
-    /**
-     * @see org.apache.jetspeed.security.Role#getPreferences()
-     */
-    public Preferences getPreferences()
+    public SecurityAttributes getAttributes()
     {
-        return this.preferences;
+        return this.attributes;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.Role#setPreferences(java.util.prefs.Preferences)
-     */
-    public void setPreferences(Preferences preferences)
+    public void setAttributes(SecurityAttributes attributes)
     {
-        this.preferences = preferences;
+        this.attributes = attributes;
     }
 
 }

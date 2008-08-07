@@ -51,11 +51,11 @@ public class TestLdapRoleSecurityHandler extends AbstractLdapTest
      */
     public void testGetRolePrincipal() throws Exception
     {
-        String fullPath = (new RolePrincipalImpl(roleUid1)).getFullPath();
+        String fullPath = (new RolePrincipalImpl(roleUid1)).getName();
         RolePrincipal rolePrincipal = roleHandler.getRolePrincipal(roleUid1);
         assertNotNull("Role was not found.", rolePrincipal);
         assertEquals(roleUid1,rolePrincipal.getName());
-        assertEquals(fullPath,rolePrincipal.getFullPath());
+        assertEquals(fullPath,rolePrincipal.getName());
     }
 
     /**
@@ -63,7 +63,7 @@ public class TestLdapRoleSecurityHandler extends AbstractLdapTest
      */
     public void testAddDuplicateRolePrincipal() throws Exception
     {
-    	roleHandler.setRolePrincipal(new RolePrincipalImpl(roleUid1));
+    	roleHandler.storeRolePrincipal(new RolePrincipalImpl(roleUid1));
         List roles = roleHandler.getRolePrincipals("");
         assertEquals(1,roles.size());
     }
@@ -84,7 +84,7 @@ public class TestLdapRoleSecurityHandler extends AbstractLdapTest
     {
         RolePrincipal gp = new RolePrincipalImpl(roleUid1);
         roleHandler.removeRolePrincipal(gp);
-        RolePrincipal rolePrincipal = roleHandler.getRolePrincipal(gp.getFullPath());
+        RolePrincipal rolePrincipal = roleHandler.getRolePrincipal(gp.getName());
         assertNull("Role was found and should have been removed.", rolePrincipal);
         List roles = roleHandler.getRolePrincipals("");
         assertEquals(0,roles.size());        
@@ -113,14 +113,14 @@ public class TestLdapRoleSecurityHandler extends AbstractLdapTest
             assertTrue("getUserPrincipals should have returned more than one user.", roleHandler.getRolePrincipals("*")
                     .size() > 1);
 
-            String fullPath = (new RolePrincipalImpl(roleUid1)).getFullPath();
+            String fullPath = (new RolePrincipalImpl(roleUid1)).getName();
             List roles = roleHandler.getRolePrincipals(fullPath);
             assertTrue("getRolePrincipals should have returned one role.", roles.size() == 1);
             assertTrue("List should have consisted of RolePrincipal objects.", roles.get(0) instanceof RolePrincipal);
 
             String localUid = Integer.toString(rand.nextInt()).toString();
             assertTrue("getRolePrincipals should not have found any roles with the specified filter.", roleHandler
-                    .getRolePrincipals(new RolePrincipalImpl(localUid).getFullPath()).isEmpty());
+                    .getRolePrincipals(new RolePrincipalImpl(localUid).getName()).isEmpty());
         }
         finally
         {

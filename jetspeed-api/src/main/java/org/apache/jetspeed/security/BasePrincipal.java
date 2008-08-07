@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security;
 
 import java.io.Serializable;
-
 import java.security.Principal;
 
 /**
@@ -25,21 +24,21 @@ import java.security.Principal;
 * @author <a href="mailto:taylor@apache.org">David Taylor</a>, <a href="mailto:dlestrat@apache.org">David Le Strat</a>
 */
 public interface BasePrincipal extends Principal, Serializable
-{
+{  
     /** <p>The Preferences user root node</p> */
     final static String  PREFS_USER_ROOT = "/user/";
-    
     /** <p>The Preferences group root node</p> */
     final static String PREFS_GROUP_ROOT = "/group/";
-    
     /** <p>The Preferences role root node</p> */
     final static String  PREFS_ROLE_ROOT = "/role/";
-    
+    /** <p>The Preferences role root node</p> */
+    final static String  PREFS_REMOTE_ROOT = "/sso/";
+
     /**
-     * <p>Provides the principal full path prepending PREFS_{PRINCPAL}_ROOT if not prepended.</p>
-     * @return The principal full path.
+     * <p>Provides the principal name.</p>
+     * @return The principal name.
      */
-    String getFullPath();
+    String getName();
 
     /**
      * <p>Getter for the enabled state</p>
@@ -58,5 +57,11 @@ public interface BasePrincipal extends Principal, Serializable
      * @return true if is a mapping
      */
     boolean isMapping();
+    
+    /**
+     * Optional ID used for OR systems, this is used by Jetspeed default impll
+     * @return
+     */
+    long getId();      
     
 }

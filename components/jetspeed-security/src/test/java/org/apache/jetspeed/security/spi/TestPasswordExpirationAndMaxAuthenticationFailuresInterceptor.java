@@ -92,7 +92,7 @@ public class TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor exten
     
     protected void updateCredential() throws Exception
     {
-        securityAccess.setInternalUserPrincipal(internalUser,false);
+        securityAccess.storeInternalUserPrincipal(internalUser,false);
     }
 
     protected void destroyUser() throws Exception

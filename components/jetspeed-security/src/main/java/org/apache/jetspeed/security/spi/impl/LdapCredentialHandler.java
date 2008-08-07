@@ -25,6 +25,7 @@ import javax.naming.NamingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.CredentialHandler;
@@ -71,18 +72,17 @@ public class LdapCredentialHandler implements CredentialHandler
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPublicCredentials(java.lang.String)
      */
-    public Set getPublicCredentials(String username)
+    public Set<Credential> getPublicCredentials(String username)
     {
-        return new HashSet();
+        return new HashSet<Credential>();
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.CredentialHandler#getPrivateCredentials(java.lang.String)
      */
-    public Set getPrivateCredentials(String uid)
+    public Set<Credential> getPrivateCredentials(String uid)
     {
-        Set privateCredentials = new HashSet();
-
+        Set<Credential> privateCredentials = new HashSet<Credential>();
         try
         {
             privateCredentials.add(new DefaultPasswordCredentialImpl(uid, ldap.getPassword(uid)));

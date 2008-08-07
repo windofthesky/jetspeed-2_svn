@@ -19,7 +19,6 @@ package org.apache.jetspeed.security.spi.impl;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
 import javax.naming.NamingException;
 
@@ -30,7 +29,6 @@ import org.apache.jetspeed.security.HierarchyResolver;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.GeneralizationHierarchyResolver;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -59,10 +57,7 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
     private static final Log LOG = LogFactory.getLog(LdapSecurityMappingHandler.class);
 
     /** The role hierarchy resolver. */
-    private HierarchyResolver roleHierarchyResolver = new GeneralizationHierarchyResolver();
-
-    /** The group hierarchy resolver. */
-    private HierarchyResolver groupHierarchyResolver = new GeneralizationHierarchyResolver();
+    private HierarchyResolver hierarchyResolver = null;
 
     /**
      * @param userDao
@@ -86,44 +81,19 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
         this.roleDao = new LdapRoleDaoImpl();
     }
 
-    /** 
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRoleHierarchyResolver()
-     */
-    public HierarchyResolver getRoleHierarchyResolver()
+    public HierarchyResolver getHierarchyResolver()
     {
-        return roleHierarchyResolver;
+        return hierarchyResolver;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRoleHierarchyResolver(org.apache.jetspeed.security.HierarchyResolver)
-     */
-    public void setRoleHierarchyResolver(HierarchyResolver roleHierarchyResolver)
+    public void setHierarchyResolver(HierarchyResolver hierarchyResolver)
     {
-        this.roleHierarchyResolver = roleHierarchyResolver;
+        this.hierarchyResolver = hierarchyResolver;
     }
 
-    /**
-     * @return Returns the groupHierarchyResolver.
-     */
-    public HierarchyResolver getGroupHierarchyResolver()
+    public Set<RolePrincipal> getRolePrincipals(String username)
     {
-        return groupHierarchyResolver;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setGroupHierarchyResolver(org.apache.jetspeed.security.HierarchyResolver)
-     */
-    public void setGroupHierarchyResolver(HierarchyResolver groupHierarchyResolver)
-    {
-        this.groupHierarchyResolver = groupHierarchyResolver;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRolePrincipals(java.lang.String)
-     */
-    public Set getRolePrincipals(String username)
-    {
-        Set rolePrincipals = new HashSet();
+        Set<RolePrincipal> rolePrincipals = new HashSet<RolePrincipal>();
         String[] roles;
         try
         {
@@ -164,9 +134,9 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getRolePrincipalsInGroup(java.lang.String)
      */
-    public Set getRolePrincipalsInGroup(String groupFullPathName)
+    public Set<RolePrincipal> getRolePrincipalsInGroup(String groupFullPathName)
     {
-        Set rolePrincipalsInGroup = new HashSet();
+        Set<RolePrincipal> rolePrincipalsInGroup = new HashSet<RolePrincipal>();
         String[] roles;
         try
         {
@@ -184,36 +154,26 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
         return rolePrincipalsInGroup;        
     }
 
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#setRolePrincipalInGroup(java.lang.String,
-     *      java.lang.String)
-     */
     public void setRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
     {
         verifyGroupAndRoleExist(groupFullPathName, roleFullPathName);
         addRoleToGroup(groupFullPathName, roleFullPathName);    	
     }
 
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#removeRolePrincipalInGroup(java.lang.String,
-     *      java.lang.String)
-     */
     public void removeRolePrincipalInGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
     {
         verifyGroupAndRoleExist(groupFullPathName, roleFullPathName);
         removeRoleFromGroup(groupFullPathName, roleFullPathName);    	
     }
 
-
 	/**
      * This method returns the set of group principals associated with a user.
      * 
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getGroupPrincipals(java.lang.String)
      */
-    public Set getGroupPrincipals(String userPrincipalUid)
+    public Set<GroupPrincipal> getGroupPrincipals(String userPrincipalUid)
     {
-    	Set groupPrincipals = new HashSet();
-
+    	Set<GroupPrincipal> groupPrincipals = new HashSet<GroupPrincipal>();
         String[] groups;
         try
         {
@@ -230,22 +190,19 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
         return groupPrincipals;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getGroupPrincipalsInRole(java.lang.String)
-     */
-    public Set getGroupPrincipalsInRole(String roleFullPathName)
+    public Set<GroupPrincipal> getGroupPrincipalsInRole(String roleFullPathName)
     {
-        Set groupPrincipals = new HashSet();
+        Set<GroupPrincipal> groupPrincipals = new HashSet<GroupPrincipal>();
         return groupPrincipals;
     }
 
     /**
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getUserPrincipalsInRole(java.lang.String)
      */
-    public Set getUserPrincipalsInRole(String roleFullPathName)
+    public Set<UserPrincipal> getUserPrincipalsInRole(String roleFullPathName)
     {
     	//TODO: Check that this is correct
-    	Set userPrincipals = new HashSet();
+    	Set<UserPrincipal> userPrincipals = new HashSet<UserPrincipal>();
         String[] fullPaths = {roleFullPathName};
         try
         {
@@ -266,16 +223,14 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      * 
      * @see org.apache.jetspeed.security.spi.SecurityMappingHandler#getUserPrincipalsInGroup(java.lang.String)
      */
-    public Set getUserPrincipalsInGroup(String groupFullPathName)
+    public Set<UserPrincipal> getUserPrincipalsInGroup(String groupFullPathName)
     {
-    	Set userPrincipals = new HashSet();
-
+    	Set<UserPrincipal> userPrincipals = new HashSet<UserPrincipal>();
     	//TODO: Check that this is correct
     	String[] fullPaths = {groupFullPathName};
-
         try
         {
-           getUserPrincipalsInGroup(userPrincipals, fullPaths);
+            getUserPrincipalsInGroup(userPrincipals, fullPaths);
         }
         catch (SecurityException e)
         {
@@ -293,14 +248,14 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      * @param fullPaths
      * @throws SecurityException A {@link SecurityException}.
      */
-    private void getUserPrincipalsInGroup(Set userPrincipals, String[] fullPaths) throws SecurityException
+    private void getUserPrincipalsInGroup(Set<UserPrincipal> userPrincipals, String[] fullPaths) throws SecurityException
     {
         for (int i = 0; i < fullPaths.length; i++)
         {
             String[] usersInGroup = userDao.getUserUidsForGroup(fullPaths[i]);
             for (int y = 0; y < usersInGroup.length; y++)
             {
-                Principal userPrincipal = new UserPrincipalImpl(usersInGroup[y]);
+                UserPrincipal userPrincipal = new UserPrincipalImpl(usersInGroup[y]);
                 userPrincipals.add(userPrincipal);
             }
         }
@@ -315,14 +270,14 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      * @param fullPaths
      * @throws SecurityException A {@link SecurityException}.
      */
-    private void getUserPrincipalsInRole(Set userPrincipals, String[] fullPaths) throws SecurityException
+    private void getUserPrincipalsInRole(Set<UserPrincipal> userPrincipals, String[] fullPaths) throws SecurityException
     {
         for (int i = 0; i < fullPaths.length; i++)
         {
             String[] usersInRole = userDao.getUserUidsForRole(fullPaths[i]);
             for (int y = 0; y < usersInRole.length; y++)
             {
-                Principal userPrincipal = new UserPrincipalImpl(usersInRole[y]);
+                UserPrincipal userPrincipal = new UserPrincipalImpl(usersInRole[y]);
                 userPrincipals.add(userPrincipal);
             }
         }
@@ -398,19 +353,15 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      * @param groups
      * @param i
      */
-    private void createResolvedGroupPrincipalSet(String username, Set groupPrincipals, String[] groups, int i)
+    private void createResolvedGroupPrincipalSet(String username, Set<GroupPrincipal> groupPrincipals, String[] groups, int i)
     {
         LOG.debug("Group [" + i + "] for user[" + username + "] is [" + groups[i] + "]");
-
         GroupPrincipal group = new GroupPrincipalImpl(groups[i]);
-        Preferences preferences = Preferences.userRoot().node(group.getFullPath());
-        LOG.debug("Group name:" + group.getName());
-        String[] fullPaths = groupHierarchyResolver.resolve(preferences);
-        for (int n = 0; n < fullPaths.length; n++)
+        Set<GroupPrincipal> x = hierarchyResolver.resolveGroups(group.getName());
+        for (GroupPrincipal groupPrincipal : x)
         {
-            LOG.debug("Group [" + i + "] for user[" + username + "] is ["
-                    + GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPaths[n]) + "]");
-            groupPrincipals.add(new GroupPrincipalImpl(GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPaths[n])));
+            LOG.debug("Group [" + i + "] for user[" + username + "] is [" + groupPrincipal.getName() + "]");
+            groupPrincipals.add(groupPrincipal);
         }
     }
 
@@ -420,31 +371,27 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
      * @param groups
      * @param i
      */
-    private void createResolvedRolePrincipalSet(String username, Set rolePrincipals, String[] roles, int i)
+    private void createResolvedRolePrincipalSet(String username, Set<RolePrincipal> rolePrincipals, String[] roles, int i)
     {
-        LOG.debug("Group [" + i + "] for user[" + username + "] is [" + roles[i] + "]");
-
+        LOG.debug("Role [" + i + "] for user[" + username + "] is [" + roles[i] + "]");
         RolePrincipal role = new RolePrincipalImpl(roles[i]);
-        Preferences preferences = Preferences.userRoot().node(role.getFullPath());
-        LOG.debug("Group name:" + role.getName());
-        String[] fullPaths = roleHierarchyResolver.resolve(preferences);
-        for (int n = 0; n < fullPaths.length; n++)
+        Set<RolePrincipal> x = hierarchyResolver.resolveRoles(role.getName());
+        for (RolePrincipal rolePrincipal : x)
         {
-            LOG.debug("Group [" + i + "] for user[" + username + "] is ["
-                    + RolePrincipalImpl.getPrincipalNameFromFullPath(fullPaths[n]) + "]");
-            rolePrincipals.add(new RolePrincipalImpl(RolePrincipalImpl.getPrincipalNameFromFullPath(fullPaths[n])));
+            LOG.debug("Role [" + i + "] for user[" + username + "] is [" + rolePrincipal.getName() + "]");
+            rolePrincipals.add(rolePrincipal);
         }
     }
 
     
     /**
      * @param username
-     * @param groupFullPathName
+     * @param groupName
      * @throws SecurityException
      */
-    private void removeUserFromGroup(String username, String groupFullPathName) throws SecurityException
+    private void removeUserFromGroup(String username, String groupName) throws SecurityException
     {
-        userDao.removeGroup(username, groupFullPathName);
+        userDao.removeGroup(username, groupName);
     }
     
     /**
@@ -547,7 +494,6 @@ public class LdapSecurityMappingHandler implements SecurityMappingHandler
     private void addRoleToGroup(String groupFullPathName, String roleFullPathName) throws SecurityException
     {
         userDao.addRoleToGroup(groupFullPathName, roleFullPathName);
-    }    
-
+    }
 
 }

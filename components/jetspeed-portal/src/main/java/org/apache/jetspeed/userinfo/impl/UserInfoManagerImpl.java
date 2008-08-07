@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
@@ -62,9 +60,6 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     /** Map used to cache user info maps for each mapped portlet application. */
     private static Map userInfoMapCache;
 
-    /** The user information property set. */
-    String userInfoPropertySet;
-
     /** The user manager */
     UserManager userMgr;
 
@@ -86,7 +81,6 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     {
         this.userMgr = userMgr;
         this.registry = registry;
-        this.userInfoPropertySet = User.USER_INFO_PROPERTY_SET;
         initUserInfoMapCache();
     }
 
@@ -105,7 +99,6 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     {
         this.userMgr = userMgr;
         this.registry = registry;
-        this.userInfoPropertySet = userInfoPropertySet;
         initUserInfoMapCache();
     }
 
@@ -124,8 +117,8 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             return (Map) userInfoMapCache.get(oid);
         }
         // Not in cache, map user info.
-        Preferences userPrefs = getUserPreferences(context);
-        if (null == userPrefs)
+        Map<String, String> userInfo = getUserInformation(context);
+        if (null == userInfo)
         {
             log.debug(PortletRequest.USER_INFO + " is set to null");
             return null;
@@ -137,50 +130,32 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             log.debug(PortletRequest.USER_INFO + " is set to null");
             return null;
         }
-        Preferences userInfoPrefs = userPrefs.node(userInfoPropertySet);
         Collection userAttributes = pa.getUserAttributes();
         Collection userAttributeRefs = pa.getUserAttributeRefs();
-        Map userInfoMap = mapUserInfo(userInfoPrefs, userAttributes, userAttributeRefs);
+        Map userInfoMap = mapUserInfo(userInfo, userAttributes, userAttributeRefs);
 
         return userInfoMap;
     }
 
     /**
      * <p>
-     * Maps the user info properties retrieved from the user preferences to the
+     * Maps the user info properties retrieved from the user information to the
      * user info attribute declared in the portlet.xml descriptor.
      * </p>
      * 
-     * @param userInfoPrefs The user info preferences.
+     * @param userInfo The user info attributes.
      * @param userAttributes The declarative portlet user attributes.
      * @param userAttributeRefs The declarative jetspeed portlet extension user
      *            attributes reference.
      * @return The user info map.
      */
-    private Map mapUserInfo(Preferences userInfoPrefs, Collection userAttributes, Collection userAttributeRefs)
+    private Map<String, String> mapUserInfo(Map<String, String> userInfo, Collection userAttributes, Collection userAttributeRefs)
     {
+        Map<String, String>userInfoMap = new HashMap<String, String>();
         if ((null == userAttributes) || (userAttributes.size() == 0))
         {
             return null;
         }
-
-        Map userInfoMap = new HashMap();
-        String[] propertyKeys = null;
-        try
-        {
-            propertyKeys = userInfoPrefs.keys();
-            if ((null != propertyKeys) && log.isDebugEnabled())
-                log.debug("Found " + propertyKeys.length + " children for " + userInfoPrefs.absolutePath());
-        }
-        catch (BackingStoreException bse)
-        {
-            log.error("BackingStoreException: " + bse.toString());
-        }
-        if (null == propertyKeys)
-        {
-            return null;
-        }
-
         Collection linkedUserAttributes = mapLinkedUserAttributes(userAttributes, userAttributeRefs);
         Iterator iter = linkedUserAttributes.iterator();
         while (iter.hasNext())
@@ -188,45 +163,43 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             UserAttributeRef currentAttributeRef = (UserAttributeRef) iter.next();
             if (null != currentAttributeRef)
             {
-                for (int i = 0; i < propertyKeys.length; i++)
+                for (String key : userInfo.keySet())
                 {
                     if (null != currentAttributeRef.getNameLink())
                     {
-                        if ((currentAttributeRef.getNameLink()).equals(propertyKeys[i]))
+                        if ((currentAttributeRef.getNameLink()).equals(key))
                         {
-                            userInfoMap.put(currentAttributeRef.getName(), userInfoPrefs.get(propertyKeys[i], null));
+                            userInfoMap.put(currentAttributeRef.getName(), userInfo.get(key));
                         }
                     }
                     else
                     {
-                        if ((currentAttributeRef.getName()).equals(propertyKeys[i]))
+                        if ((currentAttributeRef.getName()).equals(key))
                         {
-                            userInfoMap.put(currentAttributeRef.getName(), userInfoPrefs.get(propertyKeys[i], null));
+                            userInfoMap.put(currentAttributeRef.getName(), userInfo.get(key));
                         }
                     }
                 }
             }
         }
-
         userInfoMapCache.put(oid, userInfoMap);
-
         return userInfoMap;
     }
 
     /**
      * <p>
-     * Gets the user preferences from the user's request.
+     * Gets the user info from the user's request.
      * </p>
      * <p>
      * If no user is logged in, return null.
      * </p>
      * 
      * @param context The request context.
-     * @return The user preferences.
+     * @return The user info.
      */
-    private Preferences getUserPreferences(RequestContext context)
+    private Map<String, String> getUserInformation(RequestContext context)
     {
-        Preferences userPrefs = null;
+        Map<String, String> userInfo = new HashMap<String, String>();
         Subject subject = context.getSubject();
         if (null != subject)
         {
@@ -239,7 +212,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
                     if (userMgr.userExists(userPrincipal.getName()))
                     {
                         User user = userMgr.getUser(userPrincipal.getName());
-                        userPrefs = user.getPreferences();
+                        userInfo = user.getUserAttributes();
                     }
                 }
                 catch (SecurityException sex)
@@ -248,7 +221,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
                 }
             }
         }
-        return userPrefs;
+        return userInfo;
     }
 
     private void initUserInfoMapCache()

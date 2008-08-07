@@ -25,6 +25,7 @@ import java.util.List;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
@@ -33,6 +34,7 @@ import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
 import org.apache.jetspeed.security.spi.CredentialHandler;
 import org.apache.jetspeed.security.spi.GroupSecurityHandler;
@@ -47,7 +49,7 @@ import org.apache.jetspeed.security.spi.UserSecurityHandler;
  * @version $Id$
  *  
  */
-public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
+public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //AbstractPrefsSupportedTestCase
 {
     /** SPI Common Queries. */
     protected SecurityAccess securityAccess;
@@ -82,6 +84,8 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
     /** The permission manager. */
     protected PermissionManager pms;
 
+    protected SecurityAttributesProvider sap;
+    
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -116,6 +120,8 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
         // Authorization.
         pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
         
+        sap = (SecurityAttributesProvider) scm.getComponent("org.apache.jetspeed.security.attributes.SecurityAttributesProvider");
+        
         new JetspeedActions(new String[] {"secure"}, new String[] {});
     }
 
@@ -141,8 +147,8 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
 
     protected String[] getConfigurations()
     {
-        String[] confs = super.getConfigurations();
-        List confList = new ArrayList(Arrays.asList(confs));
+        //String[] confs = super.getConfigurations();
+        List confList = new ArrayList(); //Arrays.asList(confs));
         confList.add("security-atn.xml");
         confList.add("security-atz.xml");
         confList.add("security-managers.xml");
@@ -150,6 +156,9 @@ public class AbstractSecurityTestcase extends AbstractPrefsSupportedTestCase
         confList.add("security-spi.xml");
         confList.add("security-spi-atn.xml");
         confList.add("security-spi-atz.xml");
+        confList.add("security-attributes.xml");
+        confList.add("transaction.xml");
+        confList.add("cache.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 

@@ -16,12 +16,15 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.prefs.Preferences;
+import java.util.Set;
 
+import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.HierarchyResolver;
-import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.spi.GroupSecurityHandler;
+import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 
 /**
  * <p>
@@ -37,27 +40,42 @@ import org.apache.jetspeed.util.ArgUtil;
  * </p>
  * 
  * @author <a href="mailto:Artem.Grinshtein@t-systems.com">Artem Grinshtein </a>
- * @version $Id: GeneralizationHierarchyResolver.java,v 1.2 2004/09/18 19:33:58
- *          dlestrat Exp $
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
 public class GeneralizationHierarchyResolver extends BaseHierarchyResolver implements HierarchyResolver
-{
-
-    /**
-     * @see org.apache.jetspeed.security.HierarchyResolver#resolve(Preferences)
-     */
-    public String[] resolve(Preferences prefs)
+{    
+    public GeneralizationHierarchyResolver(RoleSecurityHandler roleHandler, GroupSecurityHandler groupHandler)
     {
-        ArgUtil.notNull(new Object[] { prefs }, new String[] { "preferences" }, "resolve(java.util.prefs.Preferences)");
-
-        List list = new ArrayList();
-        Preferences preferences = prefs;
-        while ((preferences.parent() != null) && (preferences.parent().parent() != null))
-        {
-            list.add(preferences.absolutePath());
-            preferences = preferences.parent();
-        }
-        return (String[]) list.toArray(new String[0]);
+        super(roleHandler, groupHandler);
     }
 
+    /**
+     * Resolve roles by aggregation of children of the given role path
+     */
+    public Set<RolePrincipal> resolveRoles(String rolePath)
+    {
+        List<RolePrincipal> query = this.roleHandler.getRolePrincipals(rolePath);
+        Set<RolePrincipal> resultSet = new HashSet<RolePrincipal>();
+        for (RolePrincipal rp : query)
+        {
+            resultSet.add(rp);
+        }
+        return resultSet;
+    }
+    
+    /**
+     * Resolve groups by aggregation of children of the given group path
+     */
+    public Set<GroupPrincipal> resolveGroups(String groupPath)
+    {
+        List<GroupPrincipal> query = this.groupHandler.getGroupPrincipals(groupPath);
+        Set<GroupPrincipal> resultSet = new HashSet<GroupPrincipal>();
+        for (GroupPrincipal gp : query)
+        {
+            resultSet.add(gp);
+        }
+        return resultSet;
+    }
+    
 }

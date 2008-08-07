@@ -14,12 +14,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/*
- * Created on Oct 22, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package org.apache.jetspeed.components.portletregistry;
 
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -37,6 +31,11 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class FailedToStorePortletDefinitionException extends RegistryException
 {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4999734419792110127L;
 
     /**
      * 

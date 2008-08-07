@@ -74,15 +74,12 @@
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
     <constructor-arg index='4'>
-      <ref bean="org.apache.jetspeed.prefs.PreferencesProvider" />
-    </constructor-arg>
-    <constructor-arg index='5'>
       <ref bean="org.apache.jetspeed.profiler.Profiler" />
     </constructor-arg>
-    <constructor-arg index='6'>
+    <constructor-arg index='5'>
       <ref bean="mailSender" />
     </constructor-arg>
-    <constructor-arg index='7'>
+    <constructor-arg index='6'>
       <ref bean="adminVelocityEngine" />
     </constructor-arg>
   </bean>

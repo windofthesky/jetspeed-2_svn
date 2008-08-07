@@ -24,27 +24,29 @@ import java.util.Collection;
  */
 public interface InternalGroupPrincipal extends InternalPrincipal
 {
+    final static String GROUP_TYPE = "group";
+        
     /**
      * <p>Getter for the user principals.</p>
      * @return The user principals.
      */
-    Collection getUserPrincipals();
+    Collection<InternalUserPrincipal> getUserPrincipals();
 
     /**
      * <p>Setter for the user principals.</p>
      * @param userPrincipals The user principals.
      */
-    void setUserPrincipals(Collection userPrincipals);
+    void setUserPrincipals(Collection<InternalUserPrincipal> userPrincipals);
 
     /**
      * <p>Getter for the role principals.</p>
      * @return The role principals.
      */
-    Collection getRolePrincipals();
+    Collection<InternalRolePrincipal> getRolePrincipals();
 
     /**
      * <p>Setter for the role principals.</p>
      * @param rolePrincipals The role principals.
      */
-    void setRolePrincipals(Collection rolePrincipals);
+    void setRolePrincipals(Collection<InternalRolePrincipal> rolePrincipals);
 }

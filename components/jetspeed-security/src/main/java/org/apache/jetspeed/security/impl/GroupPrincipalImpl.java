@@ -25,30 +25,22 @@ import org.apache.jetspeed.security.GroupPrincipal;
  */
 public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrincipal
 {
-
     /** The serial version uid. */
     private static final long serialVersionUID = 6061115481776568899L;
 
-    private static boolean hiearchicalNames = true;
-
-    public static final Object useHierarchicalNames(boolean hierarchicalNames)
+    public GroupPrincipalImpl(String name)
     {
-        GroupPrincipalImpl.hiearchicalNames = hierarchicalNames;
-        return null;
+        super(name);
     }
     
-    /**
-     * <p>The group principal constructor.</p>
-     * @param groupName The group principal name.
-     */
-    public GroupPrincipalImpl(String groupName)
+    public GroupPrincipalImpl(long id, String groupName)
     {
-        super(groupName, PREFS_GROUP_ROOT, hiearchicalNames);
+        this(id, groupName, true, false);
     }
 
-    public GroupPrincipalImpl(String groupName, boolean isEnabled, boolean isMapping)
+    public GroupPrincipalImpl(long id, String groupName, boolean isEnabled, boolean isMapping)
     {
-        super(groupName, PREFS_GROUP_ROOT, hiearchicalNames, isEnabled, isMapping);
+        super(id, groupName, isEnabled, isMapping);
     }
     
     /**
@@ -66,33 +58,6 @@ public class GroupPrincipalImpl extends BasePrincipalImpl implements GroupPrinci
             return false;
         GroupPrincipalImpl principal = (GroupPrincipalImpl)another;
         return this.getName().equals(principal.getName());
-    }
-
-    /**
-     * <p>Gets the principal implementation full path from the principal name.</p>
-     * <p>Prepends PREFS_GROUP_ROOT if not prepended.</p>        
-     * @param name The principal name.
-     * @return The preferences full path / principal name.
-     */
-    public static String getFullPathFromPrincipalName(String name)
-    {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_GROUP_ROOT, hiearchicalNames);
-    }
-
-    /**
-     * <p>Gets the principal name from the principal implementation full path.</p>
-     * <p>Remove prepended PREFS_GROUP_ROOT if present.</p>        
-     * @param fullPath The principal full path.
-     * @return The principal name.
-     */
-    public static String getPrincipalNameFromFullPath(String fullPath)
-    {
-        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_GROUP_ROOT, hiearchicalNames);
-    }
-
-    public static String getFullPathFromPrincipalName(String name, String prefsRoot)    
-    {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
     }
     
 }

@@ -30,10 +30,14 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
+import org.apache.jetspeed.security.om.InternalPrincipal;
+import org.apache.jetspeed.security.om.InternalRolePrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
 
 /**
  * <p>
@@ -146,36 +150,6 @@ public class SecurityHelper
 
     /**
      * <p>
-     * Utility method used to retrieve the Preferences API absolute/full path from a given
-     * principal.
-     * </p>
-     * 
-     * @param principal The principal.
-     * @return The Preferences absolute/full path.
-     */
-    public static String getPreferencesFullPath(Principal principal)
-    {
-
-        if ((UserPrincipal.class).isInstance(principal))
-        {
-            return UserPrincipalImpl.getFullPathFromPrincipalName(principal.getName());
-        }
-        else if ((RolePrincipal.class).isInstance(principal))
-        {
-            return RolePrincipalImpl.getFullPathFromPrincipalName(principal.getName());
-        }
-        else if ((GroupPrincipal.class).isInstance(principal))
-        {
-            return GroupPrincipalImpl.getFullPathFromPrincipalName(principal.getName());
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /**
-     * <p>
      * Utility method to create a subject.
      * </p>
      * 
@@ -269,25 +243,16 @@ public class SecurityHelper
         }
     }
     
-    public static Principal createPrincipalFromFullPath(String fullPath)
+    
+    public static Principal createPrincipalFromInternal(InternalPrincipal internal)
     {
-        Principal principal = null;
-        if (fullPath.startsWith(BasePrincipal.PREFS_ROLE_ROOT))
-        {
-            String name = RolePrincipalImpl.getPrincipalNameFromFullPath(fullPath);            
-            principal = new RolePrincipalImpl(name);
-        }
-        else if (fullPath.startsWith(BasePrincipal.PREFS_USER_ROOT))
-        {
-            String name = UserPrincipalImpl.getPrincipalNameFromFullPath(fullPath);
-            principal = new UserPrincipalImpl(name);
-        }
-        else if (fullPath.startsWith(BasePrincipal.PREFS_GROUP_ROOT))
-        {
-            String name = GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPath);            
-            principal = new GroupPrincipalImpl(name);
-            
-        }
-        return principal;
+        if (internal instanceof InternalUserPrincipal)
+            return new UserPrincipalImpl(internal.getName());
+        else if (internal instanceof InternalRolePrincipal)
+            return new RolePrincipalImpl(internal.getName());
+        else if (internal instanceof InternalGroupPrincipal)
+            return new GroupPrincipalImpl(internal.getName());
+        else
+            return null;
     }
 }

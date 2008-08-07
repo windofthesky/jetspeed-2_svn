@@ -25,36 +25,22 @@ import org.apache.jetspeed.security.UserPrincipal;
  */
 public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipal
 {
-
     /** The serial version uid. */
     private static final long serialVersionUID = 4134905654850335230L;
-    
-    private static boolean hiearchicalNames = true;
 
-    
-    public static final Object useHierarchicalNames(boolean hierarchicalNames)
-    {
-        UserPrincipalImpl.hiearchicalNames = hierarchicalNames;
-        return null;
-    }
-    
-    /**
-     * <p>The user principal constructor.</p>
-     * @param userName The user principal name.
-     */
     public UserPrincipalImpl(String userName)
     {
-        this(userName, true, false);   
-    }
-
-    public UserPrincipalImpl(String userName, boolean isMapping)
-    {
-        this(userName, true, isMapping);   
+        super(userName);
     }
     
-    public UserPrincipalImpl(String userName, boolean isEnabled, boolean isMapping)
+    public UserPrincipalImpl(long id, String userName)
     {
-        super(userName, PREFS_USER_ROOT, hiearchicalNames, isEnabled, isMapping);
+        this(id, userName, true, false);
+    }
+        
+    public UserPrincipalImpl(long id, String userName, boolean isEnabled, boolean isMapping)
+    {
+        super(id, userName, isEnabled, isMapping);
     }
     
     /**
@@ -74,31 +60,4 @@ public class UserPrincipalImpl extends BasePrincipalImpl implements UserPrincipa
         return this.getName().equals(principal.getName());
     }
 
-    /**
-     * <p>Gets the principal implementation full path from the principal name.</p>
-     * <p>Prepends PREFS_USER_ROOT if not prepended.</p>        
-     * @param name The principal name.
-     * @return The preferences full path / principal name.
-     */
-    public static String getFullPathFromPrincipalName(String name)
-    {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, PREFS_USER_ROOT, hiearchicalNames);
-    }
-
-    /**
-     * <p>Gets the principal name from the principal implementation full path.</p>
-     * <p>Remove prepended PREFS_GROUP_ROOT if present.</p>        
-     * @param fullPath The principal full path.
-     * @return The principal name.
-     */
-    public static String getPrincipalNameFromFullPath(String fullPath)
-    {
-        return BasePrincipalImpl.getPrincipalNameFromFullPath(fullPath, PREFS_USER_ROOT, hiearchicalNames);
-    }
-
-    public static String getFullPathFromPrincipalName(String name, String prefsRoot)    
-    {
-        return BasePrincipalImpl.getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
-    }
-    
 }

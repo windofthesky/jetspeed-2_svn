@@ -18,7 +18,7 @@ package org.apache.jetspeed.security;
 
 import java.sql.Date;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p>
@@ -100,8 +100,7 @@ public interface UserManager
     
     /**
      * <p>
-     * Remove a user. If there is a {@link java.util.prefs.Preferences}node for
-     * profile properties associated to this user, it will be removed as well.
+     * Remove a user. If there user attributes associated with this user, they will be removed as well.
      * </p>
      * <p>
      * {@link java.security.Permission}for this user will be removed as well.
@@ -141,9 +140,9 @@ public interface UserManager
      * TODO Complete filter implementation.
      * 
      * @param filter The filter used to retrieve matching users.
-     * @return The Iterator of {@link User}.
+     * @return a collection of {@link User}.
      */
-    Iterator getUsers(String filter) throws SecurityException;
+    Collection<User> getUsers(String filter) throws SecurityException;
 
     /**
      * <p>
@@ -153,9 +152,9 @@ public interface UserManager
      * TODO Complete filter implementation.
      * 
      * @param filter The filter used to retrieve matching users.
-     * @return The Iterator of {@link User}.
+     * @return A list of user name strings
      */
-    Iterator getUserNames(String filter) throws SecurityException;
+    List<String> getUserNames(String filter) throws SecurityException;
 
     /**
      * <p>
@@ -167,7 +166,7 @@ public interface UserManager
      * @return A Collection of {@link User}.
      * @throws Throws a security exception if the role does not exist.
      */
-    Collection getUsersInRole(String roleFullPathName) throws SecurityException;
+    Collection<User> getUsersInRole(String roleFullPathName) throws SecurityException;
     
     /**
      * <p>A collection of {@link User} for a specific group.</p>
@@ -176,7 +175,7 @@ public interface UserManager
      * @return A collection of {@link User}.
      * @throws Throws security exception if the group does not exist.
      */
-    Collection getUsersInGroup(String groupFullPathName) throws SecurityException;
+    Collection<User> getUsersInGroup(String groupFullPathName) throws SecurityException;
     
     /**
      * <p>
@@ -231,4 +230,20 @@ public interface UserManager
      * @throws Throws a security exception.
      */
     void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException;
+    
+    /**
+     * Updates a user and all attributes and associations
+     * @param user
+     * @throws SecurityException
+     */
+    void updateUser(User user) throws SecurityException;
+    
+    /**
+     * Given any attribute name and value, lookup a set of users that match the name value pairs
+     * @param attributeName
+     * @param attributeValue
+     * @return a collection of users
+     * @throws SecurityException
+     */
+    Collection<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException;
 }

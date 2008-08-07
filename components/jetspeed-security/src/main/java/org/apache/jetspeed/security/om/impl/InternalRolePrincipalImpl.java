@@ -18,7 +18,9 @@ package org.apache.jetspeed.security.om.impl;
 
 import java.util.Collection;
 
+import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
 
 /**
  * <p>{@link InternalRolePrincipal} interface implementation.</p>
@@ -28,10 +30,12 @@ import org.apache.jetspeed.security.om.InternalRolePrincipal;
 public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements InternalRolePrincipal
 {
     /** The serial version uid. */
-    private static final long serialVersionUID = 4422827842052325846L;
-    
+    private static final long serialVersionUID = 4422827842052325846L;   
     /** <p>Role principal security class.</p> */
     static String ROLE_PRINCIPAL_CLASSNAME = "org.apache.jetspeed.security.InternalRolePrincipalImpl";
+
+    private Collection<InternalGroupPrincipal> groupPrincipals;
+    private Collection<InternalUserPrincipal> userPrincipals;
 
     /**
      * <p>Role principal implementation default constructor.</p>
@@ -43,19 +47,17 @@ public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements 
 
     /**
      * <p>Constructor to create a new role principal.</p>
-     * @param fullPath The role full path.
+     * @param name The role principal name
      */
-    public InternalRolePrincipalImpl(String fullPath)
+    public InternalRolePrincipalImpl(String name)
     {
-        super(ROLE_PRINCIPAL_CLASSNAME, fullPath);
+        super(ROLE_PRINCIPAL_CLASSNAME, ROLE_TYPE, name);
     }
-
-    private Collection userPrincipals;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalRolePrincipal#getUserPrincipals()
      */
-    public Collection getUserPrincipals()
+    public Collection<InternalUserPrincipal> getUserPrincipals()
     {
         return this.userPrincipals;
     }
@@ -63,17 +65,16 @@ public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalRolePrincipal#setUserPrincipals(java.util.Collection)
      */
-    public void setUserPrincipals(Collection userPrincipals)
+    public void setUserPrincipals(Collection<InternalUserPrincipal> userPrincipals)
     {
         this.userPrincipals = userPrincipals;
     }
 
-    private Collection groupPrincipals;
 
     /**
      * @see org.apache.jetspeed.security.om.InternalRolePrincipal#getGroupPrincipals()
      */
-    public Collection getGroupPrincipals()
+    public Collection<InternalGroupPrincipal> getGroupPrincipals()
     {
         return this.groupPrincipals;
     }
@@ -81,7 +82,7 @@ public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements 
     /**
      * @see org.apache.jetspeed.security.om.InternalRolePrincipal#setGroupPrincipals(java.util.Collection)
      */
-    public void setGroupPrincipals(Collection groupPrincipals)
+    public void setGroupPrincipals(Collection<InternalGroupPrincipal> groupPrincipals)
     {
         this.groupPrincipals = groupPrincipals;
     }
@@ -97,7 +98,7 @@ public class InternalRolePrincipalImpl extends InternalPrincipalImpl implements 
             return false;
 
         InternalRolePrincipal r = (InternalRolePrincipal) object;
-        boolean isEqual = (r.getFullPath().equals(this.getFullPath()));
+        boolean isEqual = (r.getName().equals(this.getName()) && r.getType().equals(this.getType()));
         return isEqual;
     }
 

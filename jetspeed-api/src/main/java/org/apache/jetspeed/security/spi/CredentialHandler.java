@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.spi;
 import java.sql.Date;
 import java.util.Set;
 
+import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.SecurityException;
 
 /**
@@ -46,7 +47,7 @@ public interface CredentialHandler
      * @param username The username.
      * @return The set of public credentials.
      */
-    Set getPublicCredentials(String username);
+    Set<Credential> getPublicCredentials(String username);
     
     /**
      * <p>
@@ -56,7 +57,7 @@ public interface CredentialHandler
      * @param username The username.
      * @return The set of private credentials.
      */
-    Set getPrivateCredentials(String username);
+    Set<Credential> getPrivateCredentials(String username);
     
     /**
      * <p>

@@ -19,25 +19,23 @@ package org.apache.jetspeed.security.impl;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * <p>
@@ -71,113 +69,59 @@ public class RoleManagerImpl implements RoleManager
     /** The security mapping handler. */
     private SecurityMappingHandler securityMappingHandler = null;
 
+    private SecurityAttributesProvider attributesProvider;
+    
     /**
      * @param securityProvider The security provider.
      */
-    public RoleManagerImpl(SecurityProvider securityProvider)
+    public RoleManagerImpl(SecurityProvider securityProvider, SecurityAttributesProvider attributesProvider)
     {
         this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
         this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
         this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
+        this.attributesProvider = attributesProvider;        
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#addRole(java.lang.String)
      */
-    public void addRole(String roleFullPathName) throws SecurityException
+    public void addRole(String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
-                "addRole(java.lang.String)");
-
-        // Check if role already exists.
-        if (roleExists(roleFullPathName))
-        {
-            throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS.create(roleFullPathName));
+        if (roleExists(roleName)) 
+        {  
+            throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS.create(roleName)); 
         }
-
-        RolePrincipal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
-        String fullPath = rolePrincipal.getFullPath();
-        // Add the preferences.
-        Preferences preferences = Preferences.userRoot().node(fullPath);
+        RolePrincipal rolePrincipal = new RolePrincipalImpl(roleName);        
+        roleSecurityHandler.storeRolePrincipal(rolePrincipal);
+        SecurityAttributes sa = attributesProvider.createSecurityAttributes(rolePrincipal);
+        attributesProvider.saveAttributes(sa);
         if (log.isDebugEnabled())
-        {
-            log.debug("Added role preferences node: " + fullPath);
-        }
-        try
-        {
-            if ((null != preferences) && preferences.absolutePath().equals(fullPath))
-            {
-                // Add role principal.
-                roleSecurityHandler.setRolePrincipal(rolePrincipal);
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Added role: " + fullPath);
-                }
-            }
-        }
-        catch (SecurityException se)
-        {
-            KeyedMessage msg = 
-                SecurityException.UNEXPECTED.create("RoleManager.addRole",
-                                                    "RoleSecurityHandler.setRolePrincipal("+rolePrincipal.getName()+")",
-                                                    se.getMessage());
-            log.error(msg, se);
-
-            // Remove the preferences node.
-            try
-            {
-                preferences.removeNode();
-            }
-            catch (BackingStoreException bse)
-            {
-                bse.printStackTrace();
-            }
-            throw new SecurityException(msg, se);
-        }
+            log.debug("Added role: " + roleName);
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#removeRole(java.lang.String)
      */
-    public void removeRole(String roleFullPathName) throws SecurityException
+    public void removeRole(String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
-                "removeRole(java.lang.String)");
-
-        // Resolve the role hierarchy.
-        Preferences prefs = Preferences.userRoot().node(
-                RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName));
-        String[] roles = securityMappingHandler.getRoleHierarchyResolver().resolveChildren(prefs);
-        for (int i = 0; i < roles.length; i++)
+        if (securityMappingHandler.getHierarchyResolver() != null)
         {
-            try
+            Set<RolePrincipal> roles = securityMappingHandler.getHierarchyResolver().resolveRoles(roleName);
+            for (RolePrincipal gp : roles)
             {
-                roleSecurityHandler.removeRolePrincipal(new RolePrincipalImpl(RolePrincipalImpl
-                        .getPrincipalNameFromFullPath(roles[i])));
+                roleSecurityHandler.removeRolePrincipal(gp);
+//                TODO: should we use cascading deletes?
+                attributesProvider.deleteAttributes(gp);
             }
-            catch (Exception e)
+        }
+        else
+        {
+            RolePrincipal rp = roleSecurityHandler.getRolePrincipal(roleName);
+            if (rp != null)
             {
-                KeyedMessage msg = 
-                    SecurityException.UNEXPECTED.create("RoleManager.removeRole",
-                                                        "RoleSecurityHandler.removeRolePrincipal("+RolePrincipalImpl.getPrincipalNameFromFullPath(roles[i])+")",
-                                                        e.getMessage());
-                log.error(msg, e);
-                throw new SecurityException(msg, e);
-            }
-            // Remove preferences
-            Preferences rolePref = Preferences.userRoot().node(roles[i]);
-            try
-            {
-                rolePref.removeNode();
-            }
-            catch (BackingStoreException bse)
-            {
-                KeyedMessage msg = 
-                    SecurityException.UNEXPECTED.create("RoleManager.removeRole",
-                                                        "Preferences.removeNode("+roles[i]+")",
-                                                        bse.getMessage());
-                log.error(msg, bse);
-                throw new SecurityException(msg, bse);
+                roleSecurityHandler.removeRolePrincipal(new RolePrincipalImpl(roleName));
+//              TODO: should we use cascading deletes?
+                attributesProvider.deleteAttributes(rp);
             }
         }
     }
@@ -185,58 +129,41 @@ public class RoleManagerImpl implements RoleManager
     /**
      * @see org.apache.jetspeed.security.RoleManager#roleExists(java.lang.String)
      */
-    public boolean roleExists(String roleFullPathName)
+    public boolean roleExists(String roleName)
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
-                "roleExists(java.lang.String)");
-
-        Principal principal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        Principal principal = roleSecurityHandler.getRolePrincipal(roleName);
         boolean roleExists = (null != principal);
-        if (log.isDebugEnabled())
-        {
-            log.debug("Role exists: " + roleExists);
-            log.debug("Role: " + roleFullPathName);
-        }
         return roleExists;
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRole(java.lang.String)
      */
-    public Role getRole(String roleFullPathName) throws SecurityException
+    public Role getRole(String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
-                "getRole(java.lang.String)");
-
-        String fullPath = RolePrincipalImpl.getFullPathFromPrincipalName(roleFullPathName);
-
-        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
-        if (null == rolePrincipal)
-        {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleName);
+        if (null == rolePrincipal) 
+        { 
+            throw new SecurityException(
+                SecurityException.ROLE_DOES_NOT_EXIST.create(roleName)); 
         }
-        Preferences preferences = Preferences.userRoot().node(fullPath);
-        Role role = new RoleImpl(rolePrincipal, preferences);
+        SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(rolePrincipal);
+        Role role = new RoleImpl(rolePrincipal, attributes);
         return role;
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRolesForUser(java.lang.String)
      */
-    public Collection getRolesForUser(String username) throws SecurityException
+    public Collection<Role> getRolesForUser(String username) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username }, new String[] { "username" }, "getRolesForUser(java.lang.String)");
+        Collection<Role> roles = new ArrayList<Role>();
 
-        Collection roles = new ArrayList();
-
-        Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
-        Iterator rolePrincipalsIter = rolePrincipals.iterator();
-        while (rolePrincipalsIter.hasNext())
+        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipals(username);
+        for (RolePrincipal rolePrincipal : rolePrincipals)
         {
-            Principal rolePrincipal = (Principal) rolePrincipalsIter.next();
-            Preferences preferences = Preferences.userRoot().node(
-                    RolePrincipalImpl.getFullPathFromPrincipalName(rolePrincipal.getName()));
-            roles.add(new RoleImpl(rolePrincipal, preferences));
+            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(rolePrincipal);
+            roles.add(new RoleImpl(rolePrincipal, attributes));
         }
         return roles;
     }
@@ -244,21 +171,14 @@ public class RoleManagerImpl implements RoleManager
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRolesInGroup(java.lang.String)
      */
-    public Collection getRolesInGroup(String groupFullPathName) throws SecurityException
+    public Collection<Role> getRolesInGroup(String groupName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { groupFullPathName }, new String[] { "groupFullPathName" },
-                "getRolesInGroup(java.lang.String)");
-
-        Collection roles = new ArrayList();
-
-        Set rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupFullPathName);
-        Iterator rolePrincipalsIter = rolePrincipals.iterator();
-        while (rolePrincipalsIter.hasNext())
+        Collection<Role> roles = new ArrayList<Role>();
+        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupName);
+        for (RolePrincipal rolePrincipal : rolePrincipals)
         {
-            Principal rolePrincipal = (Principal) rolePrincipalsIter.next();
-            Preferences preferences = Preferences.userRoot().node(
-                    RolePrincipalImpl.getFullPathFromPrincipalName(rolePrincipal.getName()));
-            roles.add(new RoleImpl(rolePrincipal, preferences));
+            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(rolePrincipal);
+            roles.add(new RoleImpl(rolePrincipal, attributes));
         }
         return roles;
     }
@@ -267,29 +187,22 @@ public class RoleManagerImpl implements RoleManager
      * @see org.apache.jetspeed.security.RoleManager#addRoleToUser(java.lang.String,
      *      java.lang.String)
      */
-    public void addRoleToUser(String username, String roleFullPathName) throws SecurityException
+    public void addRoleToUser(String username, String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
-                "addUserToRole(java.lang.String, java.lang.String)");
-
-        // Get the role principal to add to user.
-        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleName);
         if (null == rolePrincipal)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
         }
-        // Check that user exists.
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
         if (null == userPrincipal)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
-        // Get the user roles.
-        Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
-        // Add role to user.
+        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipals(username);
         if (!rolePrincipals.contains(rolePrincipal))
         {
-            securityMappingHandler.setUserPrincipalInRole(username, roleFullPathName);
+            securityMappingHandler.setUserPrincipalInRole(username, roleName);
         }
     }
 
@@ -297,22 +210,17 @@ public class RoleManagerImpl implements RoleManager
      * @see org.apache.jetspeed.security.RoleManager#removeRoleFromUser(java.lang.String,
      *      java.lang.String)
      */
-    public void removeRoleFromUser(String username, String roleFullPathName) throws SecurityException
+    public void removeRoleFromUser(String username, String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
-                "removeRoleFromUser(java.lang.String, java.lang.String)");
-
-        // Check that user exists.
         Principal userPrincipal = atnProviderProxy.getUserPrincipal(username);
         if (null == userPrincipal)
         {
             throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
         }
-        // Get the role principal to remove.
-        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleName);
         if (null != rolePrincipal)
         {
-            securityMappingHandler.removeUserPrincipalInRole(username, roleFullPathName);
+            securityMappingHandler.removeUserPrincipalInRole(username, roleName);
         }
     }
 
@@ -320,15 +228,11 @@ public class RoleManagerImpl implements RoleManager
      * @see org.apache.jetspeed.security.RoleManager#isUserInRole(java.lang.String,
      *      java.lang.String)
      */
-    public boolean isUserInRole(String username, String roleFullPathName) throws SecurityException
+    public boolean isUserInRole(String username, String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { username, roleFullPathName }, new String[] { "username", "roleFullPathName" },
-                "isUserInRole(java.lang.String, java.lang.String)");
-
         boolean isUserInRole = false;
-
-        Set rolePrincipals = securityMappingHandler.getRolePrincipals(username);
-        Principal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
+        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipals(username);
+        Principal rolePrincipal = new RolePrincipalImpl(roleName);
         if (rolePrincipals.contains(rolePrincipal))
         {
             isUserInRole = true;
@@ -340,34 +244,26 @@ public class RoleManagerImpl implements RoleManager
      * @see org.apache.jetspeed.security.RoleManager#addRoleToGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void addRoleToGroup(String roleFullPathName, String groupFullPathName) throws SecurityException
+    public void addRoleToGroup(String roleName, String groupName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
-                "groupFullPathName" }, "addRoleToGroup(java.lang.String, java.lang.String)");
-
-        // Get the role principal to add to group.
-        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleName);
         if (null == rolePrincipal)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
         }
-        securityMappingHandler.setRolePrincipalInGroup(groupFullPathName, roleFullPathName);
+        securityMappingHandler.setRolePrincipalInGroup(groupName, roleName);
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#removeRoleFromGroup(java.lang.String,
      *      java.lang.String)
      */
-    public void removeRoleFromGroup(String roleFullPathName, String groupFullPathName) throws SecurityException
+    public void removeRoleFromGroup(String roleName, String groupName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
-                "groupFullPathName" }, "removeRoleFromGroup(java.lang.String, java.lang.String)");
-        
-        // Get the role principal to remove.
-        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleName);
         if (null != rolePrincipal)
         {
-            securityMappingHandler.removeRolePrincipalInGroup(groupFullPathName, roleFullPathName);
+            securityMappingHandler.removeRolePrincipalInGroup(groupName, roleName);
         }
     }
 
@@ -375,56 +271,48 @@ public class RoleManagerImpl implements RoleManager
      * @see org.apache.jetspeed.security.RoleManager#isGroupInRole(java.lang.String,
      *      java.lang.String)
      */
-    public boolean isGroupInRole(String groupFullPathName, String roleFullPathName) throws SecurityException
+    public boolean isGroupInRole(String groupName, String roleName) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName, groupFullPathName }, new String[] { "roleFullPathName",
-                "groupFullPathName" }, "isGroupInRole(java.lang.String, java.lang.String)");
-
         boolean isGroupInRole = false;
-
-        Set rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupFullPathName);
-        Principal rolePrincipal = new RolePrincipalImpl(roleFullPathName);
+        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupName);
+        Principal rolePrincipal = new RolePrincipalImpl(roleName);
         if (rolePrincipals.contains(rolePrincipal))
         {
             isGroupInRole = true;
         }
-
         return isGroupInRole;
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRoles(java.lang.String)
      */
-    public Iterator getRoles(String filter) throws SecurityException
+    public Collection<Role> getRoles(String filter) throws SecurityException
     {
-        List roles = new LinkedList();
-        Iterator rolePrincipals = roleSecurityHandler.getRolePrincipals(filter).iterator();
-        while (rolePrincipals.hasNext())
+        List<Role> roles = new LinkedList<Role>();
+        Collection<RolePrincipal> rolePrincipals = roleSecurityHandler.getRolePrincipals(filter);
+        for (RolePrincipal principal : rolePrincipals)
         {
-            String roleName = ((Principal) rolePrincipals.next()).getName();
-            Role role = getRole(roleName);
+            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(principal);
+            Role role = new RoleImpl(principal, attributes);
             roles.add(role);
         }
-        return roles.iterator();
+        return roles;
     }
 
     /** 
      * @see org.apache.jetspeed.security.RoleManager#setRoleEnabled(java.lang.String, boolean)
      */
-    public void setRoleEnabled(String roleFullPathName, boolean enabled) throws SecurityException
+    public void setRoleEnabled(String roleName, boolean enabled) throws SecurityException
     {
-        ArgUtil.notNull(new Object[] { roleFullPathName }, new String[] { "roleFullPathName" },
-        "setRoleEnabled(java.lang.String,boolean)");
-
-        RolePrincipalImpl rolePrincipal = (RolePrincipalImpl)roleSecurityHandler.getRolePrincipal(roleFullPathName);
+        RolePrincipalImpl rolePrincipal = (RolePrincipalImpl)roleSecurityHandler.getRolePrincipal(roleName);
         if (null == rolePrincipal)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleFullPathName));
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
         }
         if ( enabled != rolePrincipal.isEnabled() )
         {
             rolePrincipal.setEnabled(enabled);
-            roleSecurityHandler.setRolePrincipal(rolePrincipal);
+            roleSecurityHandler.storeRolePrincipal(rolePrincipal);
         }
     }
 }

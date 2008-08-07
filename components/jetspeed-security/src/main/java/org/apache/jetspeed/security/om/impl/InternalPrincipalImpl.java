@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.om.InternalPrincipal;
 
 /**
@@ -43,11 +44,14 @@ public class InternalPrincipalImpl implements InternalPrincipal
     /** The is mapping only. */
     private boolean isMappingOnly = false;
 
-    /** The full path. */
-    private String fullPath;
+    /** The principal type such as user | group | role */
+    private String type;
+    
+    /** The name of the principal */
+    private String name;
 
     /** The collection of permissions. */
-    private Collection permissions;
+    private Collection<InternalPermission> permissions;
 
     /** The creation date. */
     private Timestamp creationDate;
@@ -85,12 +89,13 @@ public class InternalPrincipalImpl implements InternalPrincipal
      * @param classname The classname.
      * @param fullPath The full path.
      */
-    public InternalPrincipalImpl(String classname, String fullPath)
+    public InternalPrincipalImpl(String classname, String type, String name)
     {
         this.ojbConcreteClass = classname;
         this.classname = classname;
-        this.fullPath = fullPath;
-        this.permissions = new ArrayList();
+        this.type = type;
+        this.name = name;
+        this.permissions = new ArrayList<InternalPermission>();
         this.creationDate = new Timestamp(System.currentTimeMillis());
         this.modifiedDate = this.creationDate;
     }
@@ -145,25 +150,41 @@ public class InternalPrincipalImpl implements InternalPrincipal
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.InternalPrincipal#getFullPath()
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getType()
      */
-    public String getFullPath()
+    public String getType()
     {
-        return this.fullPath;
+        return this.type;
     }
 
     /**
-     * @see org.apache.jetspeed.security.om.InternalPrincipal#setFullPath(java.lang.String)
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setType(java.lang.String)
      */
-    public void setFullPath(String fullPath)
+    public void setType(String type)
     {
-        this.fullPath = fullPath;
+        this.type = type;
     }
 
+    /**
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#getName()
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.om.InternalPrincipal#setName(java.lang.String)
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#getPermissions()
      */
-    public Collection getPermissions()
+    public Collection<InternalPermission> getPermissions()
     {
         return this.permissions;
     }
@@ -171,7 +192,7 @@ public class InternalPrincipalImpl implements InternalPrincipal
     /**
      * @see org.apache.jetspeed.security.om.InternalPrincipal#setPermissions(java.util.Collection)
      */
-    public void setPermissions(Collection permissions)
+    public void setPermissions(Collection<InternalPermission> permissions)
     {
         this.permissions = permissions;
     }
@@ -222,5 +243,10 @@ public class InternalPrincipalImpl implements InternalPrincipal
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
-    }    
+    }
+    
+    public String getFullPath() // TODO: remove this
+    {
+        return "";    
+    }
 }

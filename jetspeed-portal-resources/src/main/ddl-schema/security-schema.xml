@@ -27,18 +27,28 @@ limitations under the License.
        Create Site to Principals association Table
     -->
     <!--
-       Create Security Principal Table
+       Create Security Principal Table - modified in version 2.2 
+       		dropped the PATH column (/user/david) 
+       normalized to 
+       		add column SP_TYPE (user)
+            add column SP_NAME (david)
+      Example 
+      	SP_TYPE = user | role | group (not limited to)
+      	SP_NAME = (a user | role | group) name such as 'admin'
+       
     -->
     <table name="SECURITY_PRINCIPAL">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
         <column name="IS_MAPPING_ONLY" required="true" type="BOOLEANINT"/>
         <column name="IS_ENABLED" required="true" type="BOOLEANINT"/>
-        <column name="FULL_PATH" required="true" size="254" type="VARCHAR"/>
+        <column name="SP_TYPE" required="true" size="20" type="VARCHAR"/>
+        <column name="SP_NAME" required="true" size="200" type="VARCHAR"/>        
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
         <unique name="UIX_SECURITY_PRINCIPAL">
-          <unique-column name="FULL_PATH" />
+          <unique-column name="SP_TYPE" />
+          <unique-column name="SP_NAME" />
         </unique>        
     </table>
 
@@ -211,6 +221,36 @@ limitations under the License.
         </foreign-key>
     </table>
 
+   <!-- 
+      Create principal-security attributes for both Portlet API User Attributes and generic principal preferences
+      Example 
+		ATTR_ID = unique primary key
+		PID = the primary key of the owning principal
+      	ATTR_NAME = a portlet api user info value such as 'user.name.given'
+       	ATTR_TYPE = USER_INFO | PREF (not limited to)      	
+   -->
+   
+    <table name="SECURITY_ATTRIBUTES">
+        <column name="ATTR_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PRINCIPAL_ID" required="true" type="INTEGER"/>
+        <column name="ATTR_NAME" required="true" size="200" type="VARCHAR"/>
+        <column name="ATTR_TYPE" required="true" size="20" type="VARCHAR"/>
+        <column name="PRINCIPAL_TYPE" size="10" type="VARCHAR"/>
+        <column name="ATTR_VALUE" size="1000" type="VARCHAR"/>
+        <index name="IX_PRINCIPAL_ID">
+            <index-column name="PRINCIPAL_ID"/>
+        </index>
+		<index name="IX_NAMEVALUE_LOOKUP">
+			<index-column name="ATTR_NAME"/>
+			<index-column name="ATTR_VALUE"/>
+		</index>
+		                
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
+        </foreign-key>        
+		
+    </table>
+
         
-    
+            
 </database>

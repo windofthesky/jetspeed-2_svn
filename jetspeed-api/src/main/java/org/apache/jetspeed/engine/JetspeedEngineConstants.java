@@ -94,8 +94,7 @@ public interface JetspeedEngineConstants
     public static final String PIPELINE_DIRECTORY = "pipeline.directory";
 
     /**
-     * This specifies the factory to use the Jetspeed java.util.prefs.Preferences
-     * implementation.
+     * This specifies the factory to use the Jetspeed Prefernces implementation
      */
     public static final String PREFERENCES_FACTORY = "preferences.factory";
     public static final String PREFERENCES_FACTORY_DEFAULT =

@@ -17,7 +17,8 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
-import java.util.prefs.Preferences;
+
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
  * <p>A group made of a {@link GroupPrincipal} and the group {@link Preferences}.</p>
@@ -38,16 +39,16 @@ public interface Group
     void setPrincipal(Principal groupPrincipal);
 
     /**
-     * <p>Getter for the group {@link Preferences} node, providing access to the
-     * group preferences properties.</p>
-     * @return The {@link Preferences}.
+     * <p>Getter providing access to the
+     * group security attributes.</p>
+     * @return The security attributes for a group
      */
-    Preferences getPreferences();
+    SecurityAttributes getAttributes();
 
     /**
-     * <p>Setter for the group {@link Preferences} node, providing access to the
-     * group preferences properties.</p>
-     * @param preferences The {@link Preferences}.
+     * <p>Setter providing access to the
+     * group security attributes.</p>
+     * @param attributes The security attributes for a group
      */
-    void setPreferences(Preferences preferences);
+    void setAttributes(SecurityAttributes attributes);
 }

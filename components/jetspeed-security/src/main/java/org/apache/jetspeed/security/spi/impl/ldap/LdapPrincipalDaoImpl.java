@@ -34,9 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
 /**
  * @see org.apache.jetspeed.security.spi.impl.ldap.LdapPrincipalDao
@@ -182,15 +179,15 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
         }
         else if (fullPath.indexOf(UserPrincipal.PREFS_USER_ROOT) >= 0)
         {
-            ldapAcceptableName = convertUidWithoutSlashes(UserPrincipalImpl.getPrincipalNameFromFullPath(fullPath));
+            ldapAcceptableName = convertUidWithoutSlashes(getPrincipalNameFromFullPath(fullPath, UserPrincipal.PREFS_USER_ROOT, false));
         }
         else if (fullPath.indexOf(GroupPrincipal.PREFS_GROUP_ROOT) >= 0)
         {
-            ldapAcceptableName = convertUidWithoutSlashes(GroupPrincipalImpl.getPrincipalNameFromFullPath(fullPath));
+            ldapAcceptableName = convertUidWithoutSlashes(getPrincipalNameFromFullPath(fullPath, GroupPrincipal.PREFS_GROUP_ROOT, false));
         }
         else if (fullPath.indexOf(GroupPrincipal.PREFS_ROLE_ROOT) >= 0)
         {
-            ldapAcceptableName = convertUidWithoutSlashes(RolePrincipalImpl.getPrincipalNameFromFullPath(fullPath));
+            ldapAcceptableName = convertUidWithoutSlashes(getPrincipalNameFromFullPath(fullPath, GroupPrincipal.PREFS_ROLE_ROOT, false));
         }        
         if (logger.isErrorEnabled())
         {
@@ -199,7 +196,22 @@ public abstract class LdapPrincipalDaoImpl extends AbstractLdapDao implements Ld
 
         return ldapAcceptableName;
     }
-
+    
+    public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot, boolean hiearchicalNames)
+    {
+        String name = fullPath;
+        if (null != name)
+        {
+            name = name.substring(prefsRoot.length(), name.length());
+            if ( hiearchicalNames )
+            {
+                name = name.replace('/', '.');
+            }
+        }
+        return name;
+    }
+    
+    
     /**
      * <p>
      * Returns a well formed uid for LDAP.

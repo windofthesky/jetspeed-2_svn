@@ -17,24 +17,9 @@
 
 package org.apache.jetspeed.serializer.objects;
 
-import java.util.prefs.*;
 
 public class JSUserAttributes extends JSNVPElements
 {
-
-
-	/**
-	 * @param preferences
-	 */
-	public JSUserAttributes(Preferences preferences)
-	{
-        // TODO: the JSNVPElements class doesn't support/use Preferences anymore
-        //       because of its dual usage for PortletPreferences as well
-        //       goto break these two usages apart and provide separate implementations
-        // NOTE: JSVNPElements is't very well implemented anyway (doesn't seem to be able to handle multi-value elements...)
-//		super(preferences);
-	    super();
-	}
     public JSUserAttributes()
     {
         super();

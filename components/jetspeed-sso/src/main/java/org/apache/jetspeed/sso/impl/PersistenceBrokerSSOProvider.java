@@ -85,9 +85,7 @@ public class PersistenceBrokerSSOProvider extends
 
     /**
      * PersitenceBrokerSSOProvider()
-     * @param repository Location of repository mapping file.  Must be available within the classpath.
-     * @param prefsFactoryImpl <code>java.util.prefs.PreferencesFactory</code> implementation to use.
-     * @param enablePropertyManager  Whether or not we chould be suing the property manager.
+     * @param repositoryPath Location of repository mapping file.  Must be available within the classpath.
      * @throws ClassNotFoundException if the <code>prefsFactoryImpl</code> argument does not reperesent
      * a Class that exists in the current classPath.
      */
@@ -105,7 +103,7 @@ public class PersistenceBrokerSSOProvider extends
     {
         // Get the principal from the subject
         BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
-        String fullPath = principal.getFullPath();
+        String fullPath = principal.getName();
         
         /* ProxyID is used for the cache. The http client object will be cached for a
          * given user site url combination
@@ -140,7 +138,7 @@ public class PersistenceBrokerSSOProvider extends
     {
         // Get the principal from the subject
         BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
-        String fullPath = principal.getFullPath();
+        String fullPath = principal.getName();
 
         
         /* ProxyID is used for the cache. The http client object will be cached for a
@@ -195,7 +193,7 @@ public class PersistenceBrokerSSOProvider extends
             InternalUserPrincipal rp  = (InternalUserPrincipal)itRemotePrincipal.next();
             if (rp != null)
             {
-                temp.add(rp.getFullPath());
+                temp.add(rp.getName());
             }
         }
         
@@ -224,7 +222,7 @@ public class PersistenceBrokerSSOProvider extends
     {
         // Get the principal from the subject
         BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(user, UserPrincipal.class);
-        String fullPath = principal.getFullPath();
+        String fullPath = principal.getName();
         
         // Call into API
         return this.getCookiesForUser(fullPath);
@@ -395,7 +393,7 @@ public class PersistenceBrokerSSOProvider extends
         
         // Get the principal from the subject
         BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
-        String fullPath = principal.getFullPath();
+        String fullPath = principal.getName();
         
                 
         // Get remotePrincipals for Site and match them with the Remote Principal for the Principal attached to site
@@ -436,7 +434,7 @@ public class PersistenceBrokerSSOProvider extends
         
         // Get the principal from the subject
         BasePrincipal principal = (BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
-        String fullPath = principal.getFullPath();
+        String fullPath = principal.getName();
         
         // Filter the credentials for the given principals
         SSOContext context = getCredential(ssoSite, fullPath);  
@@ -481,7 +479,7 @@ public class PersistenceBrokerSSOProvider extends
         }
         
         // Get the Principal information (logged in user)
-        String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+        String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
         String principalName = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
         
         // Add an entry for the principal to the site if it doesn't exist
@@ -524,9 +522,9 @@ public class PersistenceBrokerSSOProvider extends
          * The convention for the path is the following: /sso/SiteID/{user|group}/{user name | group name}/remote user name
          */
         if ( fullPath.indexOf("/group/") > -1)
-            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/group/"+  principalName + "/" + remoteUser);
+            remotePrincipal.setName("/sso/" + ssoSite.getSiteId() + "/group/"+  principalName + "/" + remoteUser); // FIXME:
         else
-            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/user/"+ principalName + "/" + remoteUser);
+            remotePrincipal.setName("/sso/" + ssoSite.getSiteId() + "/user/"+ principalName + "/" + remoteUser); // FIXME:
         
         // New credential object for remote principal
          InternalCredentialImpl credential = 
@@ -579,7 +577,7 @@ public class PersistenceBrokerSSOProvider extends
         }
         
         // Get the Principal information
-        String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+        String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
         
         try
         {
@@ -669,7 +667,7 @@ public class PersistenceBrokerSSOProvider extends
             }
             
             // Get the Principal information
-            String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+            String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
             
             //  Get remotePrincipals for Site and match them with the Remote Principal for the Principal attached to site
             Collection principalsForSite    = ssoSite.getPrincipals();
@@ -801,13 +799,13 @@ public class PersistenceBrokerSSOProvider extends
             // Error checking  -- should have a credential at this point
             if ( credential == null)
             {
-//              System.out.println("Warning: Remote User " + remotePrincipal.getFullPath() + " doesn't have a credential");
+//              System.out.println("Warning: Remote User " + remotePrincipal.getName() + " doesn't have a credential");
                 return null; 
             }
         }
         
         //  Create new context
-        String name = stripPrincipalName(remotePrincipal.getFullPath());
+        String name = stripPrincipalName(remotePrincipal.getName());
         
         SSOContext context = new SSOContextImpl(credential.getPrincipalId(), name, this.unscramble(credential.getValue()));
         
@@ -842,7 +840,7 @@ public class PersistenceBrokerSSOProvider extends
         {
             SSOPrincipal principal = (SSOPrincipal)ixPrincipals.next();
             if (         principal != null 
-                    && principal.getFullPath().compareToIgnoreCase(fullPath) == 0 )
+                    && principal.getName().compareToIgnoreCase(fullPath) == 0 )
             {
                 // Found Principal -- extract remote principals 
                 return principal.getRemotePrincipals();
@@ -920,7 +918,7 @@ public class PersistenceBrokerSSOProvider extends
             while (itPrincipals.hasNext())
             {
                 SSOPrincipal tmp = (SSOPrincipal)itPrincipals.next();
-                if (tmp.getFullPath().compareToIgnoreCase(fullPath) == 0)
+                if (tmp.getName().compareToIgnoreCase(fullPath) == 0)
                 {
                     // Found -- get the remotePrincipal
                     Collection collRemotePrincipals = tmp.getRemotePrincipals() ;
@@ -1016,7 +1014,7 @@ public class PersistenceBrokerSSOProvider extends
                         while (itUsers.hasNext())
                         {
                             InternalUserPrincipal user = (InternalUserPrincipal)itUsers.next();
-                            if (user.getFullPath().compareToIgnoreCase(fullPath) == 0)
+                            if (user.getName().compareToIgnoreCase(fullPath) == 0)
                             {
                                 // User is member of the group
                                 return principal.getRemotePrincipals();
@@ -1171,9 +1169,9 @@ public class PersistenceBrokerSSOProvider extends
             {
                 InternalCredential cred = (InternalCredential) creds.next();
                 SSOContext context = new SSOContextImpl(remotePrincipal.getPrincipalId(), 
-                                                stripPrincipalName(remotePrincipal.getFullPath()), 
+                                                stripPrincipalName(remotePrincipal.getName()), 
                                                 cred.getValue(), 
-                                                stripPortalPrincipalName(remotePrincipal.getFullPath()));
+                                                stripPortalPrincipalName(remotePrincipal.getName()));
                 list.add(context);
             }
         }
@@ -1277,12 +1275,12 @@ public class PersistenceBrokerSSOProvider extends
                             if (credential != null)
                             {
                                 if (log.isInfoEnabled())
-                                    log.info("SSOComponent -- Remote Principal ["+stripPrincipalName(remotePrincipal.getFullPath())+"] has credential ["+this.unscramble(credential.getValue())+ "]");
+                                    log.info("SSOComponent -- Remote Principal ["+stripPrincipalName(remotePrincipal.getName())+"] has credential ["+this.unscramble(credential.getValue())+ "]");
                                 
                                 client.getState().setCredentials(
                                         site.getRealm(),
                                         urlObj.getHost(),
-                                        new UsernamePasswordCredentials(stripPrincipalName(remotePrincipal.getFullPath()),  this.unscramble(credential.getValue()))
+                                        new UsernamePasswordCredentials(stripPrincipalName(remotePrincipal.getName()),  this.unscramble(credential.getValue()))
                                     );
                                 
                                 // Build URL if it's Form authentication
@@ -1291,7 +1289,7 @@ public class PersistenceBrokerSSOProvider extends
                                 // Check if it's form based or ChallengeResponse
                                 if (site.isFormAuthentication())
                                 {
-                                    siteURL.append("?").append(site.getFormUserField()).append("=").append(stripPrincipalName(remotePrincipal.getFullPath())).append("&").append(site.getFormPwdField()).append("=").append(this.unscramble(credential.getValue()));
+                                    siteURL.append("?").append(site.getFormUserField()).append("=").append(stripPrincipalName(remotePrincipal.getName())).append("&").append(site.getFormPwdField()).append("=").append(this.unscramble(credential.getValue()));
                                 }
                                 
                                 get = new GetMethod(siteURL.toString());
@@ -1441,7 +1439,7 @@ public class PersistenceBrokerSSOProvider extends
     throws SSOException 
     {
         String fullPath = ((BasePrincipal) SecurityHelper.getBestPrincipal(
-                subject, UserPrincipal.class)).getFullPath();
+                subject, UserPrincipal.class)).getName();
         String principalName = ((BasePrincipal) SecurityHelper
                 .getBestPrincipal(subject, UserPrincipal.class)).getName();
 
@@ -1492,10 +1490,10 @@ public class PersistenceBrokerSSOProvider extends
          * name}/remote user name
          */
         if (fullPath.indexOf("/group/") > -1)
-            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId()
+            remotePrincipal.setName("/sso/" + ssoSite.getSiteId() // FIXME:
                     + "/group/" + principalName + "/" + remoteUser);
         else
-            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId()
+            remotePrincipal.setName("/sso/" + ssoSite.getSiteId() // FIXME:
                     + "/user/" + principalName + "/" + remoteUser);
 
         // New credential object for remote principal

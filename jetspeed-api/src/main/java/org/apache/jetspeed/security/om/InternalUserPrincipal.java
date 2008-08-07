@@ -24,39 +24,41 @@ import java.util.Collection;
  */
 public interface InternalUserPrincipal extends InternalPrincipal
 {
+    final static String USER_TYPE = "user";
+    
     /**
      * <p>Getter for the security credentials.</p>
      * @return The credentials.
      */
-    Collection getCredentials();
+    Collection<InternalCredential> getCredentials();
 
     /**
      * <p>Setter for the security credentials.</p>
      * @param credentials The credentials.
      */
-    void setCredentials(Collection credentials);
+    void setCredentials(Collection<InternalCredential> credentials);
 
     /**
      * <p>Getter for the role principals.</p>
      * @return The role principals.
      */
-    Collection getRolePrincipals();
+    Collection<InternalRolePrincipal> getRolePrincipals();
 
     /**
      * <p>Setter for the role principals.</p>
      * @param rolePrincipals The role principals.
      */
-    void setRolePrincipals(Collection rolePrincipals);
+    void setRolePrincipals(Collection<InternalRolePrincipal> rolePrincipals);
 
     /**
      * <p>Getter for the group principals.</p>
      * @return The group principals.
      */
-    Collection getGroupPrincipals();
+    Collection<InternalGroupPrincipal> getGroupPrincipals();
 
     /**
      * <p>Setter for the group principals.</p>
      * @param groupPrincipals The group principals.
      */
-    void setGroupPrincipals(Collection groupPrincipals);
+    void setGroupPrincipals(Collection<InternalGroupPrincipal> groupPrincipals);
 }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
  * @author hajo
  *
  */
-public class JSApplications extends ArrayList
+public class JSApplications extends ArrayList<JSApplication>
 {
+    private static final long serialVersionUID = 6703801953798849348L;
 }

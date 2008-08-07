@@ -23,5 +23,5 @@ package org.apache.jetspeed.security;
  */
 public interface GroupPrincipal extends BasePrincipal
 {
-
+    final String PRINCIPAL_TYPE = "group"; 
 }

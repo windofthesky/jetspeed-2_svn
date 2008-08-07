@@ -92,13 +92,13 @@ public interface InternalPermission extends Serializable, Cloneable
      * <p>Getter for the permission principals.</p>
      * @return The permission principals.
      */
-    Collection getPrincipals();
+    Collection<InternalPrincipal> getPrincipals();
 
     /**
      * <p>Setter for the permission principals.</p>
      * @param principals The permission principals.
      */
-    void setPrincipals(Collection principals);
+    void setPrincipals(Collection<InternalPrincipal> principals);
 
     /**
      * <p>Getter for creation date.</p>

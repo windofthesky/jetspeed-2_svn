@@ -17,10 +17,11 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
-import java.util.prefs.Preferences;
+
+import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
- * <p>A role made of a {@link RolePrincipal} and the role {@link Preferences}.</p>
+ * <p>A role made of a {@link RolePrincipal} and the role security attributes</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public interface Role
@@ -38,16 +39,16 @@ public interface Role
     void setPrincipal(Principal rolePrincipal);
 
     /**
-     * <p>Getter for the role {@link Preferences} node, providing access to the
-     * role preferences properties.</p>
-     * @return The {@link Preferences}.
+     * <p>Getter providing access to the
+     * group security attributes.</p>
+     * @return The security attributes for a group
      */
-    Preferences getPreferences();
+    SecurityAttributes getAttributes();
 
     /**
-     * <p>Setter for the role {@link Preferences} node, providing access to the
-     * role preferences properties.</p>
-     * @param preferences The {@link Preferences}.
+     * <p>Setter providing access to the
+     * group security attributes.</p>
+     * @param attributes The security attributes for a group
      */
-    void setPreferences(Preferences preferences);
+    void setAttributes(SecurityAttributes attributes);
 }

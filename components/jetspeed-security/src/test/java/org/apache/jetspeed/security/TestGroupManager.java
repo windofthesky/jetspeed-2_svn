@@ -19,7 +19,6 @@ package org.apache.jetspeed.security;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.prefs.Preferences;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -269,11 +268,6 @@ public class TestGroupManager extends AbstractSecurityTestcase
         assertNotNull("group principal is null", groupPrincipal);
         assertEquals("expected group principal full path == testgetgroup", "testgetgroup", groupPrincipal.getName());
 
-        // Test the Group Preferences.
-        Preferences preferences = group.getPreferences();
-        assertEquals("expected group node == /group/testgetgroup", SecurityHelper
-                .getPreferencesFullPath(groupPrincipal), preferences.absolutePath());
-
         // Cleanup test.
         try
         {
@@ -475,7 +469,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
     {
     	int groupCount = 0;
     	int groupAdded = 0;
-        Iterator it = gms.getGroups("");
+        Iterator it = gms.getGroups("").iterator();
         while (it.hasNext())
         {
             Group group = (Group) it.next();
@@ -489,7 +483,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         gms.addGroup("g3");
         groupAdded = 3;
         int count = 0;
-        it = gms.getGroups("");
+        it = gms.getGroups("").iterator();
         while (it.hasNext())
         {
             Group group = (Group) it.next();

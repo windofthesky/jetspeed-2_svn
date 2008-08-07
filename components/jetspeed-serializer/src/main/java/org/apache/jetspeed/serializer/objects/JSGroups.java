@@ -28,6 +28,7 @@ import java.util.ArrayList;
 * @version $Id: $
 */
 
-public class JSGroups extends ArrayList
+public class JSGroups extends ArrayList<JSGroup>
 {
+    private static final long serialVersionUID = -6568194951545408326L;
 }

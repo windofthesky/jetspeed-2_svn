@@ -27,6 +27,7 @@ import java.util.ArrayList;
 * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
 * @version $Id: $
 */
-public class JSPermissions extends ArrayList
+public class JSPermissions extends ArrayList<JSPermission>
 {
+    private static final long serialVersionUID = -5989542652543681219L;
 }

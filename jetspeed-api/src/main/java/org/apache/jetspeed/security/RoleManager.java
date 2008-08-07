@@ -157,9 +157,9 @@ public interface RoleManager
      * Get all roles available from all role handlers
      * 
      * @param filter The filter used to retrieve matching roles.
-     * @return all roles available as {@link Principal} 
+     * @return all roles available as Role 
      */
-    Iterator getRoles(String filter) throws SecurityException;
+    Collection<Role> getRoles(String filter) throws SecurityException;
     
     /**
      * Enable or disable a role.

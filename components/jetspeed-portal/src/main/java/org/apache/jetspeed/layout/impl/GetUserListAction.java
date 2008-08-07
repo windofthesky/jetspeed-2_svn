@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -235,10 +234,8 @@ public class GetUserListAction
         		// Check whether we should iterate through all of the users or just logged in ones
     			if(includeOffline)
     			{
-    				Iterator allUusers = userManager.getUsers("");
-    				while(allUusers.hasNext())
+    				for (User user : userManager.getUsers(""))
         			{
-        				User user = (User)allUusers.next();
         				Principal userPrincipal = SecurityHelper.getPrincipal(user.getSubject(), UserPrincipal.class);
         				if(userPrincipal != null)
         				{
@@ -298,22 +295,14 @@ public class GetUserListAction
      * @throws SecurityException
      * @throws BackingStoreException
      */
-    private Map getUserInfo(String username) throws SecurityException, BackingStoreException
+    private Map<String, String> getUserInfo(String username) throws SecurityException, BackingStoreException
     {
-    	Map userInfo = new HashMap();
     	User user =  userManager.getUser(username);
 		if(user != null)
 		{
-        	Preferences userPrefs = user.getUserAttributes();
-        	String[] userPrefKeys = userPrefs.keys();
-        
-        	for(int i = 0; i<userPrefKeys.length; i++)
-        	{
-        		userInfo.put(userPrefKeys[i], userPrefs.get(userPrefKeys[i], "No value"));                		
-        	}
+            return user.getUserAttributes();
 		}
-		
-		return userInfo;
+		return new HashMap<String, String>();
     }
     
 }

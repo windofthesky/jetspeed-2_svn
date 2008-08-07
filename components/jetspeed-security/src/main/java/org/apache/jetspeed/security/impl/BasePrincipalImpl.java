@@ -26,50 +26,32 @@ import org.apache.jetspeed.security.BasePrincipal;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
 public abstract class BasePrincipalImpl implements BasePrincipal
-{
-    
+{   
     /** The version uid. */
     private static final long serialVersionUID = 5687385387290144541L;
 
     /** The principal name. */
-    private final String name;
-
-    /** The full path. */
-    private final String fullPath;
+    protected final String name;
 
     /** is this principal enabled **/
-    private boolean enabled = true;
+    protected boolean enabled = true;
     
     /** is this principal a mapping **/
-    private boolean isMapping = false;
+    protected boolean isMapping = false;
+
+    protected long id;
     
-    /**
-     * <p>
-     * Principal constructor given a name and preferences root.
-     * </p>
-     * 
-     * @param name The principal name.
-     * @param prefsRoot The preferences root node.
-     */
-    public BasePrincipalImpl(String name, String prefsRoot, boolean hiearchicalNames)
-    {
-        this(name, prefsRoot, hiearchicalNames, true, false);
-    }
-    
-    public BasePrincipalImpl(String name, String prefsRoot, boolean hiearchicalNames, boolean isEnabled, boolean isMapping)
+    public BasePrincipalImpl(String name)
     {
         this.name = name;
-        this.fullPath = getFullPathFromPrincipalName(name, prefsRoot, hiearchicalNames);
+    }
+    
+    public BasePrincipalImpl(long id, String name, boolean isEnabled, boolean isMapping)
+    {
+        this.id = id;
+        this.name = name;
         this.enabled = isEnabled;
         this.isMapping = isMapping;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.BasePrincipal#getFullPath()
-     */
-    public String getFullPath()
-    {
-        return this.fullPath;
     }
 
     /**
@@ -101,103 +83,6 @@ public abstract class BasePrincipalImpl implements BasePrincipal
     }
 
     /**
-     * <p>
-     * Gets the principal implementation full path from the principal name.
-     * </p>
-     * <p>
-     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
-     * separator for hierarchical elements.
-     * </p>
-     * <p>
-     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
-     * </p>
-     * 
-     * @param name The principal name.
-     * @param prefsRoot The preferences root node.
-     * @param hiearchicalNames indicator if hierarchy encoding (replacing '.' with '/') should be done
-     * @return The preferences full path / principal name.
-     */
-    public static String getFullPathFromPrincipalName(String name, String prefsRoot, boolean hiearchicalNames)
-    {
-        String fullPath = name;
-        if (null != name )
-        {
-            fullPath = prefsRoot + (hiearchicalNames ? name.replace('.','/') : name );
-        }
-        return fullPath;
-    }
-
-    /**
-     * <p>
-     * Gets the principal implementation full path from the principal name.
-     * </p>
-     * <p>
-     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
-     * separator for hierarchical elements.
-     * </p>
-     * <p>
-     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
-     * </p>
-     * 
-     * @param name The principal name.
-     * @param prefsRoot The preferences root node.
-     * @return The preferences full path / principal name.
-     */        
-
-    /**
-     * <p>
-     * Gets the principal name from the principal implementation full path.
-     * </p>
-     * <p>
-     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
-     * separator for hierarchical elements.
-     * </p>
-     * <p>
-     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
-     * </p>
-     * 
-     * @param fullPath The principal full path.
-     * @param prefsRoot The preferences root node.
-     * @param hiearchicalNames indicator if hierarchical decoding (replacing '/' with '.') should be done
-     * @return The principal name.
-     */
-    public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot, boolean hiearchicalNames)
-    {
-        String name = fullPath;
-        if (null != name)
-        {
-            name = name.substring(prefsRoot.length(), name.length());
-            if ( hiearchicalNames )
-            {
-                name = name.replace('/', '.');
-            }
-        }
-        return name;
-    }
-
-    /**
-     * <p>
-     * Gets the principal name from the principal implementation full path.
-     * </p>
-     * <p>
-     * Hierarchical principal names should follow: {principal}.{subprincipal}. "." is used as the
-     * separator for hierarchical elements.
-     * </p>
-     * <p>
-     * The implementation path follow /PREFS_{PRINCIPAL}_ROOT/{principal}/{subprincipal}.
-     * </p>
-     * 
-     * @param fullPath The principal full path.
-     * @param prefsRoot The preferences root node.
-     * @return The principal name.
-     */
-// MOVED TO DERVICED CLASSES    
-//    public static String getPrincipalNameFromFullPath(String fullPath, String prefsRoot)
-//    {
-//        return getPrincipalNameFromFullPath(fullPath, prefsRoot, true);
-//    }
-
-    /**
      * @see org.apache.jetspeed.security.BasePrincipal#isEnabled()
      */
     public boolean isEnabled()
@@ -217,5 +102,9 @@ public abstract class BasePrincipalImpl implements BasePrincipal
     {
         return isMapping;
     }
-    
+
+    public long getId()
+    {
+        return id;
+    }
 }
