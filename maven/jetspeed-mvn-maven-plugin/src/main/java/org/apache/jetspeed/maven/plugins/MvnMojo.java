@@ -331,6 +331,10 @@ public class MvnMojo extends AbstractMojo
         request.setShowErrors(getLog().isErrorEnabled());
         request.setDebug(getLog().isDebugEnabled());
         request.setOffline(settings.isOffline());
+        if (settings.getLocalRepository() != null)
+        {
+            request.setLocalRepositoryDirectory(new File(settings.getLocalRepository()));
+        }
         String mavenOpts = props.getProperty("jetspeed.mvn.mavenOpts", null);
         if (StringUtils.isEmpty(mavenOpts) && !StringUtils.isEmpty(target.mavenOpts))
         {
