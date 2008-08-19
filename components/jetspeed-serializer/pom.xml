@@ -152,6 +152,10 @@
             <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
             <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>${pom.groupId}</groupId>
+        	<artifactId>jetspeed-cm</artifactId>
         </dependency>      
         
     </dependencies>
