@@ -151,10 +151,19 @@ limitations under the License.
         <column name="PORTLET_NAME" required="true" size="80" type="VARCHAR"/>
         <column name="NAME" required="true" size="254" type="VARCHAR"/>
         
+      <!-- non-unique index on APPLICATION_NAME,PORTLET_NAME shouldn't be needed as its already
+           "covered" by unique index on APPLICATION_NAME,PORTLET_NAME,NAME
         <index name="IX_PORTLET_PREFERENCE">
             <index-column name="APPLICATION_NAME"/>
             <index-column name="PORTLET_NAME"/>
         </index>        
+      -->
+        <unique name="UIX_PORTLET_PREFERENCE">
+          <unique-column name="APPLICATION_NAME"/>
+          <unique-column name="PORTLET_NAME"/>
+          <unique-column name="NAME"/>
+        </unique>        
+
     </table>
 
     <table name="PORTLET_PREFERENCE_VALUE">
