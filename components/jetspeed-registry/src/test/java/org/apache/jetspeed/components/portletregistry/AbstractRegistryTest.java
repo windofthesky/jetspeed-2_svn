@@ -201,7 +201,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "prefs.xml", "registry-test.xml", "cache.xml" };
+        { "transaction.xml", "registry-test.xml", "cache.xml" };
     }
 
 }

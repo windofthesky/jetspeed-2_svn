@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -62,7 +61,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 
     private static MockJetspeedEngine mockEngine = new MockJetspeedEngine();
 
-    private PersistenceBrokerPortletEntityAccess entityAccess = null;
+    private PortletEntityAccessComponent entityAccess = null;
 
     private PortletRegistry registry;
     
@@ -72,7 +71,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         mockEngine.setComponentManager(scm);
         Jetspeed.setEngine(mockEngine);
         this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
-        this.entityAccess = (PersistenceBrokerPortletEntityAccess) scm.getComponent("portletEntityAccessImpl");
+        this.entityAccess = (PortletEntityAccessComponent) scm.getComponent("portletEntityAccess");
 
         teardownTestData();
         setupTestData();
@@ -143,7 +142,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         
         List<String> prefValues = pref.getValuesList();
         
-        assertEquals("1", prefValues.size());
+        assertEquals(1, prefValues.size());
                
         prefValues.set(0, "2");
         pref.setValues(prefValues);
@@ -266,22 +265,8 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         {
             registry.removeApplication(pa);
         }
-
-        if (Preferences.systemRoot().nodeExists(MutablePortletApplication.PREFS_ROOT))
-        {
-            Preferences.systemRoot().node(MutablePortletApplication.PREFS_ROOT).removeNode();
-        }
-
-        if (Preferences.userRoot().nodeExists(PortletDefinitionComposite.PORTLETS_PREFS_ROOT))
-        {
-            Preferences.userRoot().node(PortletDefinitionComposite.PORTLETS_PREFS_ROOT).removeNode();
-        }
-
-        if (Preferences.userRoot().nodeExists(MutablePortletEntity.PORTLET_ENTITY_ROOT))
-        {
-            Preferences.userRoot().node(MutablePortletEntity.PORTLET_ENTITY_ROOT).removeNode();
-        }
-
+        
+        // TODO: remove portletPreferences...
     }
 
     private void setupTestData() throws Exception
@@ -318,6 +303,6 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "registry-test.xml", "prefs.xml", "cache.xml" };
+        { "transaction.xml", "registry-test.xml", "cache.xml" };
     }
 }

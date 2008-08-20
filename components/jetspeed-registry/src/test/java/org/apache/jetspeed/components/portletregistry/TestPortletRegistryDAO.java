@@ -23,8 +23,10 @@ import java.util.Locale;
 
 import javax.portlet.PortletMode;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
@@ -78,12 +80,16 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
     protected PortletRegistry portletRegistry;
 
+    private static MockJetspeedEngine mockEngine = new MockJetspeedEngine();
+
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception
     {
         super.setUp();
+        mockEngine.setComponentManager(scm);
+        Jetspeed.setEngine(mockEngine);
         this.portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
 
         buildTestData();
@@ -100,6 +106,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         {
             portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
         }
+        Jetspeed.setEngine(null);
         super.tearDown();
     }
 
@@ -320,6 +327,6 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "registry-test.xml", "prefs.xml", "cache.xml" };
+        { "transaction.xml", "registry-test.xml", "cache.xml" };
     }
 }

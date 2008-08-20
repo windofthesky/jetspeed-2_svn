@@ -66,6 +66,9 @@
   <!-- Portlet Preferences Implementation -->
   <bean id="PortletPreferencesProviderImpl" class="org.apache.jetspeed.components.portletpreferences.PersistenceBrokerPortletPreferencesProvider"
     init-method="init" destroy-method="destroy">
+    <constructor-arg index="0">
+      <ref bean="preferencesCache" />
+    </constructor-arg>
   </bean>
 
   <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" parent="baseTransactionProxy" name="portletPreferencesProvider"
