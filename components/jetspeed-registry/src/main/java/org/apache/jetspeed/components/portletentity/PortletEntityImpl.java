@@ -68,11 +68,11 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 {   
     private Long oid;
     private JetspeedObjectID id;
-    private static PortletPreferencesProvider portletPreferencesProvider;
-    private static PortletEntityAccessComponent portletEntityAccess;    
-    private static PortletRegistry registry;
-    private static RequestContextComponent requestContextComponent;
-    private static PageManager pageManager;
+    private PortletPreferencesProvider portletPreferencesProvider;
+    private PortletEntityAccessComponent portletEntityAccess;    
+    private PortletRegistry registry;
+    private RequestContextComponent requestContextComponent;
+    private PageManager pageManager;
     
     protected PreferenceSetComposite pagePreferenceSet;
     protected Map perPrincipalPrefs = new HashMap();

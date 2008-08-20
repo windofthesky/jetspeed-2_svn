@@ -84,9 +84,9 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  */
 public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support
 {
-    private static PortletRegistry registry;
-    private static PortletFactory  portletFactory;
-    private static PortletPreferencesProvider portletPreferencesProvider;
+    private PortletRegistry registry;
+    private PortletFactory  portletFactory;
+    private PortletPreferencesProvider portletPreferencesProvider;
     
     private Long id;
     private JetspeedLongObjectID oid;
