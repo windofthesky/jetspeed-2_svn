@@ -19,7 +19,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <!-- Security: User Manager -->
-  <bean id="org.apache.jetspeed.security.UserManager" class="org.apache.jetspeed.security.impl.UserManagerImpl">
+  <bean id="org.apache.jetspeed.security.impl.UserManagerImpl" class="org.apache.jetspeed.security.impl.UserManagerImpl">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.security.SecurityProvider" />
@@ -29,8 +29,26 @@
     </constructor-arg>    
   </bean>
 
+  <bean id="org.apache.jetspeed.security.UserManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,security" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.security.UserManager</value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.impl.UserManagerImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="get*">PROPAGATION_SUPPORTS</prop>
+        <prop key="lookup*">PROPAGATION_SUPPORTS</prop>
+        <prop key="userExists">PROPAGATION_SUPPORTS</prop>
+        <prop key="*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+
   <!-- Security: Group Manager -->
-  <bean id="org.apache.jetspeed.security.GroupManager" class="org.apache.jetspeed.security.impl.GroupManagerImpl">
+  <bean id="org.apache.jetspeed.security.impl.GroupManagerImpl" class="org.apache.jetspeed.security.impl.GroupManagerImpl">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.SecurityProvider" />
@@ -40,8 +58,26 @@
     </constructor-arg>
   </bean>
 
+  <bean id="org.apache.jetspeed.security.GroupManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,security" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.security.GroupManager</value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.impl.GroupManagerImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="get*">PROPAGATION_SUPPORTS</prop>
+        <prop key="is*">PROPAGATION_SUPPORTS</prop>
+        <prop key="groupExists">PROPAGATION_SUPPORTS</prop>
+        <prop key="*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+
   <!-- Security: Role Manager -->
-  <bean id="org.apache.jetspeed.security.RoleManager" class="org.apache.jetspeed.security.impl.RoleManagerImpl">
+  <bean id="org.apache.jetspeed.security.impl.RoleManagerImpl" class="org.apache.jetspeed.security.impl.RoleManagerImpl">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index='0'>
       <ref bean="org.apache.jetspeed.security.SecurityProvider" />
@@ -49,6 +85,24 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
     </constructor-arg>    
+  </bean>
+
+  <bean id="org.apache.jetspeed.security.RoleManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,security" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.security.RoleManager</value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.impl.RoleManagerImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="get*">PROPAGATION_SUPPORTS</prop>
+        <prop key="is*">PROPAGATION_SUPPORTS</prop>
+        <prop key="roleExists">PROPAGATION_SUPPORTS</prop>
+        <prop key="*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
   </bean>
 
   <!-- Security: Permission Manager -->
