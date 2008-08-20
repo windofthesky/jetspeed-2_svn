@@ -55,7 +55,7 @@ public class PersistenceBrokerSecurityAttributesProvider
         
     public SecurityAttributes retrieveAttributes(Principal principal)  throws SecurityException
     {
-        if (!(principal instanceof UserPrincipal))
+        if (!(principal instanceof BasePrincipal))
             throw new SecurityException(
                     SecurityException.UNKNOWN_PRINCIPAL_TYPE.create(principal.getClass().toString())); 
         BasePrincipal bp = (BasePrincipal)principal;
@@ -73,7 +73,7 @@ public class PersistenceBrokerSecurityAttributesProvider
     
     public SecurityAttributes createSecurityAttributes(Principal principal) throws SecurityException
     {
-        if (!(principal instanceof UserPrincipal))
+        if (!(principal instanceof BasePrincipal))
             throw new SecurityException(
                     SecurityException.UNKNOWN_PRINCIPAL_TYPE.create(principal.getClass().toString())); 
         return new SecurityAttributesImpl(principal, new HashMap<String, SecurityAttribute>());
