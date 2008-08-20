@@ -1305,6 +1305,12 @@
                 </properties>
               </target>
               <target>
+                <id>test</id>
+                <dir>.</dir>
+                <goals>test</goals>
+                <profiles>test</profiles>
+              </target>
+              <target>
                 <id>test-install</id>
                 <depends>testdb</depends>
                 <dir>@rootdir@</dir>
