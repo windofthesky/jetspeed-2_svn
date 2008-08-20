@@ -115,8 +115,9 @@
                 <configuration>
                     <excludes>
                         <exclude>**/spi/ldap/**.java</exclude>
-                        <!-- workaround for still not fixed SUREFIRE-288: Surefire tries to instantiate nested TestCase classes -->
-                        <exclude>**/*$*</exclude>
+                        <exclude>**/TestSecurityMappingHandler.java</exclude>
+                        <exclude>**/TestGeneralizationHierarchy.java</exclude>
+                        <exclude>**/TestAggregationHierarchy.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

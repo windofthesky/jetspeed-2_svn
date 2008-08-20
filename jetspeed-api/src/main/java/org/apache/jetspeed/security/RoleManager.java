@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.prefs.Preferences;
 
 /**
  * <p>Describes the service interface for managing roles.</p>
@@ -82,7 +82,7 @@ public interface RoleManager
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the user does not exist.
      */
-    Collection getRolesForUser(String username) throws SecurityException;
+    Collection<Role> getRolesForUser(String username) throws SecurityException;
 
     /**
      * <p>A collection of {@link Role} for all the roles
@@ -92,7 +92,7 @@ public interface RoleManager
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the group does not exist.
      */
-    Collection getRolesInGroup(String groupFullPathName) throws SecurityException;
+    Collection<Role> getRolesInGroup(String groupFullPathName) throws SecurityException;
     
     /**
      * <p>Add a role to a user.</p>

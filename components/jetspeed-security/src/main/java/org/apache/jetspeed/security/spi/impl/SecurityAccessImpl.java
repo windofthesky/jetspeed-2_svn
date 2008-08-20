@@ -21,7 +21,10 @@ import java.util.Collection;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.i18n.KeyedMessage;
+import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalRolePrincipal;
 import org.apache.jetspeed.security.om.InternalUserPrincipal;
@@ -84,6 +87,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria filter = new Criteria();
         filter.addEqualTo("name", username);
+        filter.addEqualTo("type", UserPrincipal.PRINCIPAL_TYPE);        
         Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, filter);
         InternalUserPrincipal internalUser = (InternalUserPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalUser;
@@ -102,6 +106,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria filter = new Criteria();
         filter.addEqualTo("name", username);
+        filter.addEqualTo("type", UserPrincipal.PRINCIPAL_TYPE);        
         filter.addEqualTo("isMappingOnly", new Boolean(isMappingOnly));
         Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, filter);
         InternalUserPrincipal internalUser = (InternalUserPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
@@ -122,6 +127,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
         queryCriteria.addLike("name", filter + "%");
+        queryCriteria.addEqualTo("type", UserPrincipal.PRINCIPAL_TYPE);                
         Query query = QueryFactory.newQuery(InternalUserPrincipalImpl.class, queryCriteria);
         return getPersistenceBrokerTemplate().getCollectionByQuery(query);
     }
@@ -197,6 +203,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria filter = new Criteria();
         filter.addEqualTo("name", roleName);
+        filter.addEqualTo("type", RolePrincipal.PRINCIPAL_TYPE);
         Query query = QueryFactory.newQuery(InternalRolePrincipalImpl.class, filter);
         InternalRolePrincipal internalRole = (InternalRolePrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalRole;
@@ -275,6 +282,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         Criteria filter = new Criteria();
         filter.addEqualTo("name", groupName);
+        filter.addEqualTo("type", GroupPrincipal.PRINCIPAL_TYPE);        
         Query query = QueryFactory.newQuery(InternalGroupPrincipalImpl.class, filter);
         InternalGroupPrincipal internalGroup = (InternalGroupPrincipal) getPersistenceBrokerTemplate().getObjectByQuery(query);
         return internalGroup;
@@ -292,8 +300,7 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     public void storeInternalGroupPrincipal(InternalGroupPrincipal internalGroup, boolean isMappingOnly) throws SecurityException
     {
         try
-        {
-            
+        {            
             if (isMappingOnly)
             {
                 internalGroup.setMappingOnly(isMappingOnly);
@@ -322,14 +329,11 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
     {
         try
         {
-            // Remove role.           
-            getPersistenceBrokerTemplate().delete(internalGroup);
-       
+            getPersistenceBrokerTemplate().delete(internalGroup);       
             if (logger.isDebugEnabled())
             {
                 logger.debug("Deleted group: " + internalGroup.getName());
             }
-
         }
         catch (Exception e)
         {
@@ -348,17 +352,18 @@ public class SecurityAccessImpl extends InitablePersistenceBrokerDaoSupport impl
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
         queryCriteria.addLike("name", filter + "%");
+        queryCriteria.addEqualTo("type", RolePrincipal.PRINCIPAL_TYPE);
         Query query = QueryFactory.newQuery(InternalRolePrincipalImpl.class, queryCriteria);
         return getPersistenceBrokerTemplate().getCollectionByQuery(query);
     }
 
     @SuppressWarnings("unchecked")    
     public Collection<InternalGroupPrincipal> getInternalGroupPrincipals(String filter)
-    {
-      
+    {      
         Criteria queryCriteria = new Criteria();
         queryCriteria.addEqualTo("isMappingOnly", new Boolean(false));
-        queryCriteria.addLike("name", filter + "%");        
+        queryCriteria.addLike("name", filter + "%");
+        queryCriteria.addEqualTo("type", GroupPrincipal.PRINCIPAL_TYPE);        
         Query query = QueryFactory.newQuery(InternalGroupPrincipalImpl.class, queryCriteria);
         return getPersistenceBrokerTemplate().getCollectionByQuery(query);
     }

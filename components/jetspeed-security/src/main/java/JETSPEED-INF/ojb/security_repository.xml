@@ -697,13 +697,6 @@ limitations under the License.
           length="20"
       />
       <field-descriptor
-          name="principalType"
-          column="principal_type"
-          jdbc-type="VARCHAR"
-          nullable="true"
-          length="4"
-      />      
-      <field-descriptor
           name="value"
           column="attr_value"
           jdbc-type="VARCHAR"

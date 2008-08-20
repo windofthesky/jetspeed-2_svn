@@ -18,8 +18,6 @@ package org.apache.jetspeed.security;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.prefs.Preferences;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -43,7 +41,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
-        destroyRoles();
+        destroyPrincipals();
     }
 
     /**
@@ -51,7 +49,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
-        destroyRoles();
+        destroyPrincipals();
         super.tearDown();
     }
 
@@ -210,15 +208,13 @@ public class TestRoleManager extends AbstractSecurityTestcase
             rms.removeRole("testrole1.role1");
             Collection principals = ums.getUser("anonuser2").getSubject().getPrincipals();
             // because of hierarchical roles with generalization strategy.
-            assertEquals("principal size should be == 5 after removing testrole1.role1, for principals: "
-                    + principals.toString(), 5, principals.size());
+            assertEquals("principal size should be == 3 after removing testrole1.role1, for principals: "
+                    + principals.toString(), 3, principals.size());
             assertFalse("anonuser2 should not contain testrole1.role1", principals.contains(new RolePrincipalImpl(
                     "testrole1.role1")));
             // Make sure that the children are removed as well.
             rms.removeRole("testrole2");
-            boolean roleExists = rms.roleExists("testrole2.role1");
-            assertFalse(roleExists);
-            roleExists = rms.roleExists("testrole2.role2");
+            boolean roleExists = rms.roleExists("testrole2");
             assertFalse(roleExists);
         }
         catch (SecurityException sex)
@@ -308,7 +304,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         try
         {
             Collection roles = rms.getRolesForUser("anonuser3");
-            assertEquals("roles size should be == 4", 4, roles.size());
+            assertEquals("roles size should be == 3", 3, roles.size());
         }
         catch (SecurityException sex)
         {
@@ -544,55 +540,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
 
     /**
      * <p>
-     * Destroy role test objects.
-     * </p>
-     */
-    protected void destroyRoles()
-    {
-        final String[] users = new String[] { "anonuser1", "anonuser2", "anonuser3", "anonuser4", "anonuser5", };
-        final String[] roles = new String[] { "testrole", "testrole1", "testrole2", "testrole3", "testgetrole",
-                "testusertorole1", "testuserrolemapping.role1", "testuserrolemapping2.role2", "testuserrolemapping","testuserrolemapping2" };
-        final String[] groups = new String[] { "testusertorole1" };
-
-        for (int i = 0; i < users.length; i++)
-        {
-            try
-            {
-                ums.removeUser(users[i]);
-            }
-            catch (SecurityException e)
-            {
-                System.err.println(e.toString());
-            }
-        }
-
-        for (int i = 0; i < roles.length; i++)
-        {
-            try
-            {
-                rms.removeRole(roles[i]);
-            }
-            catch (SecurityException e)
-            {
-                System.err.println(e.toString());
-            }
-        }
-
-        for (int i = 0; i < groups.length; i++)
-        {
-            try
-            {
-                gms.removeGroup(groups[i]);
-            }
-            catch (SecurityException e)
-            {
-                System.err.println(e.toString());
-            }
-        }
-    }
-
-    /**
-     * <p>
      * Test get roles.
      * </p>
      * 
@@ -602,10 +549,10 @@ public class TestRoleManager extends AbstractSecurityTestcase
     {
     	int roleCount = 0;
     	int rolesAdded = 0;
-        Iterator it = rms.getRoles("").iterator();
-        while (it.hasNext())
-        {
-            it.next();
+        Collection<Role> roles = rms.getRoles("");
+        for (Role role : roles)
+        {            
+            System.out.println("Role = " + role.getPrincipal().getName());
             roleCount++;
         }
         ums.addUser("notme", "one-pw");
@@ -617,10 +564,10 @@ public class TestRoleManager extends AbstractSecurityTestcase
 
         int count = 0;
         
-        it = rms.getRoles("").iterator();
-        while (it.hasNext())
+        roles = rms.getRoles("");
+        for (Role role : roles)
         {
-            it.next();
+            System.out.println("* Role = " + role.getPrincipal().getName());
             count++;
         }
         ums.removeUser("notme");

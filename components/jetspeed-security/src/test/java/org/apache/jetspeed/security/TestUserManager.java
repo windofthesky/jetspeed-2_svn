@@ -17,11 +17,10 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
@@ -49,7 +48,7 @@ public class TestUserManager extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
-        destroyUserObject();
+        destroyPrincipals();
     }
 
     /**
@@ -57,7 +56,7 @@ public class TestUserManager extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
-        destroyUserObject();
+        destroyPrincipals();
         super.tearDown();
     }
 
@@ -154,7 +153,7 @@ public class TestUserManager extends AbstractSecurityTestcase
             rms.addRoleToGroup("assignedRole", "inheritingGroup");
             User testUser = ums.getUser("inheritedUser");
 
-            List principalNames = new ArrayList();
+            List<String> principalNames = new ArrayList<String>();
             for (Iterator it = testUser.getSubject().getPrincipals().iterator(); it.hasNext(); )
             {
                 Principal p = (Principal) it.next();
@@ -169,10 +168,10 @@ public class TestUserManager extends AbstractSecurityTestcase
             // because the role 'assignedRole' is not directly assigned to user 'inheritedUser'.
             // For example, the Users Admin portlet uses RoleManager to retrieve roles directly assigned to a user.
             
-            List userRoleNames = new ArrayList();
-            for (Iterator it = rms.getRolesForUser("inheritedUser").iterator(); it.hasNext(); )
+            List<String> userRoleNames = new ArrayList<String>();
+            Collection<Role> roles = rms.getRolesForUser("inheritedUser");
+            for (Role role : roles)
             {
-                Role role = (Role) it.next();
                 userRoleNames.add(role.getPrincipal().getName());
             }
             
@@ -239,7 +238,7 @@ public class TestUserManager extends AbstractSecurityTestcase
 
         try
         {
-            Collection users = ums.getUsersInRole("testuserrolemapping");
+            Collection<User> users = ums.getUsersInRole("testuserrolemapping");
             assertEquals("users size should be == 2", 2, users.size());
         }
         catch (SecurityException sex)
@@ -286,7 +285,7 @@ public class TestUserManager extends AbstractSecurityTestcase
 
         try
         {
-            Collection users = ums.getUsersInGroup("testgroup1.group1");
+            Collection<User> users = ums.getUsersInGroup("testgroup1.group1");
             assertEquals("users size should be == 3", 3, users.size());
         }
         catch (SecurityException sex)
@@ -353,10 +352,9 @@ public class TestUserManager extends AbstractSecurityTestcase
         ums.addUser("two", "two-pw");
         ums.addUser("three", "three-pw");
         int count = 0;
-        Iterator it = ums.getUsers("").iterator();
-        while (it.hasNext())
+        Collection<User> users = ums.getUsers("");
+        for (User user : users)
         {
-            User user = (User) it.next();
             Iterator principals = user.getSubject().getPrincipals().iterator();
             while (principals.hasNext())
             {
@@ -382,24 +380,5 @@ public class TestUserManager extends AbstractSecurityTestcase
         ums.removeUser("three");
     }
 
-    /**
-     * <p>
-     * Destroy user test object.
-     * </p>
-     */
-    protected void destroyUserObject()
-    {
-        try
-        {
-            if (ums.userExists("anon"))
-                ums.removeUser("anon");
-            if (ums.userExists("test"))
-                ums.removeUser("test");
-        }
-        catch (SecurityException sex)
-        {
-            System.out.println("could not remove test users. exception caught: " + sex);
-        }
-    }
 
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.security.Permissions;
@@ -39,6 +40,7 @@ import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -50,10 +52,9 @@ public class TestPermissionManager extends AbstractSecurityTestcase
 {
     private static final Comparator principalComparator = new Comparator()
     {
-
         public int compare(Object arg0, Object arg1)
         {
-            return ((Principal)arg0).getName().compareTo(((Principal)arg1).getName());
+            return (((Principal)arg0).getName().compareTo(((Principal)arg1).getName()));
         }
     };
 
@@ -63,6 +64,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp();
+        destroyPermissions();
     }
     
     /**
@@ -115,12 +117,12 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         //////////////////////////////////////////////////////////////////////////
         // Run Test
         ////////////        
-        Set adminPrincipals = new PrincipalsSet();
-        Set adminPublicCredentials = new HashSet();
-        Set adminPrivateCredentials = new HashSet();
-        Set userPrincipals = new PrincipalsSet();
-        Set userPublicCredentials = new HashSet();
-        Set userPrivateCredentials = new HashSet();
+        Set<Principal> adminPrincipals = new PrincipalsSet();
+        Set<Credential> adminPublicCredentials = new HashSet<Credential>();
+        Set<Credential> adminPrivateCredentials = new HashSet<Credential>();
+        Set<Principal> userPrincipals = new PrincipalsSet();
+        Set<Credential> userPublicCredentials = new HashSet<Credential>();
+        Set<Credential> userPrivateCredentials = new HashSet<Credential>();
         
         adminPrincipals.add(adminUser);
         adminPrincipals.add(adminRole);
@@ -212,9 +214,9 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         //////////////////////////////////////////////////////////////////////////
         // Run Test
         ////////////        
-        Set principals = new PrincipalsSet();
-        Set publicCredentials = new HashSet();
-        Set privateCredentials = new HashSet();
+        Set<Principal> principals = new PrincipalsSet();
+        Set<Credential> publicCredentials = new HashSet<Credential>();
+        Set<Credential> privateCredentials = new HashSet<Credential>();
         principals.add(user);
         principals.add(role1);
         principals.add(role2);
@@ -570,7 +572,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
             assertTrue("failed to init testGetPrincipalPermissions(), " + sex, false);
         }
 
-        ArrayList principals = new ArrayList();
+        ArrayList<Principal> principals = new ArrayList<Principal>();
         principals.add(user);
         principals.add(role1);
         principals.add(role2);
@@ -686,7 +688,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
      */
     private boolean validatePermissions(Permissions permissions, Permission permission, int size)
     {
-        Enumeration permissionEnums = permissions.elements();
+        Enumeration<Permission> permissionEnums = permissions.elements();
         boolean hasPermission = false;
         int count = 0;
         while (permissionEnums.hasMoreElements())
@@ -705,54 +707,18 @@ public class TestPermissionManager extends AbstractSecurityTestcase
     /**
      * <p>Destroy permission test objects.</p>
      */
-    protected void destroyPermissions()
+    protected void destroyPermissions() throws Exception
     {
-        try
+        this.destroyPrincipals();
+        for (InternalPermission ip : pms.getInternalPermissions())
         {
-            // Remove users.
-            ums.removeUser("anon");
-            ums.removeUser("test");
-            ums.removeUser("removepermission");
-            ums.removeUser("revokepermission");
-            ums.removeUser("testgrantpermission2");
-            // Remove roles.
-            rms.removeRole("anonrole1");
-            rms.removeRole("anonrole2");
-            rms.removeRole("removepermissionrole");
-            // Remove groups.
-            gms.removeGroup("anongroup1");
-            gms.removeGroup("anongroup2");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user, role and group. exception caught: " + sex, false);
-        }
-        // Remove permissions.
-        PortletPermission perm1 = new PortletPermission("anontestportlet", "view");
-        PortletPermission perm2 = new PortletPermission("anontestportlet", "view, edit");
-        PortletPermission perm3 = new PortletPermission("anontestportlet", "view, edit, secure");
-        PortletPermission perm4 = new PortletPermission("anontestportlet", "view, edit, secure, minimized");
-        PortletPermission perm5 = new PortletPermission("removepermission1", "view, edit, secure, minimized, maximized");
-        PortletPermission perm6 = new PortletPermission("removepermission2", "view, edit, minimized, maximized");
-        PortletPermission perm7 = new PortletPermission("revokepermission1", "view, edit, minimized, maximized");
-        PortletPermission perm8 = new PortletPermission("revokepermission2", "view, edit, minimized, maximized");
-        PortletPermission perm9 = new PortletPermission("testportlet", "view, minimized, secure");
-        try
-        {
-            pms.removePermission(perm1);
-            pms.removePermission(perm2);
-            pms.removePermission(perm3);
-            pms.removePermission(perm4);
-            pms.removePermission(perm5);
-            pms.removePermission(perm6);
-            pms.removePermission(perm7);
-            pms.removePermission(perm8);
-            pms.removePermission(perm9);
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove permissions. exception caught: " + sex, false);
-        }
+            Class permissionClass = Class.forName(ip.getClassname());
+            Class[] parameterTypes = { String.class, String.class };
+            Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
+            Object[] initArgs = { ip.getName(), ip.getActions() };
+            Permission permission = (Permission) permissionConstructor.newInstance(initArgs);            
+            pms.removePermission(permission);
+        }                
     }
     
     public void testUpdatePermission()
@@ -787,9 +753,9 @@ public class TestPermissionManager extends AbstractSecurityTestcase
             assertTrue("failed to grant on testUpdatePermission. caught exception, " + sex, false);
         }
 
-        Collection principals = pms.getPrincipals(perm1);        
+        Collection<Principal> principals = pms.getPrincipals(perm1);        
         assertTrue("principal count should be 2 ", principals.size() == 2);        
-        Object [] array = (Object[])principals.toArray();
+        Object [] array = principals.toArray();
         Arrays.sort(array, principalComparator);
         assertTrue("element is Principal ", array[0] instanceof Principal);
         assertTrue("first element not found ", ((Principal)array[0]).getName().equals("role1"));
@@ -799,7 +765,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         // Try to update collection
         try
         {
-            Collection roles = new Vector();
+            Collection<Principal> roles = new Vector<Principal>();
             roles.add(role1);
             roles.add(role3);
             roles.add(role4);
@@ -811,7 +777,7 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         }
         principals = pms.getPrincipals(perm1);
         assertTrue("principal count should be 3 ", principals.size() == 3);
-        array = (Object[])principals.toArray();
+        array = principals.toArray();
         Arrays.sort(array, principalComparator);
         assertTrue("first element should be [role1] but found ["+((Principal)array[0]).getName()+"]", ((Principal)array[0]).getName().equals("role1"));
         assertTrue("second element not found ", ((Principal)array[1]).getName().equals("role3"));

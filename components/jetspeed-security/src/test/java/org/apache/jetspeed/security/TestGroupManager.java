@@ -18,7 +18,6 @@ package org.apache.jetspeed.security;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -50,7 +49,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
      */
     public void tearDown() throws Exception
     {
-        destroyGroups();
+        destroyPrincipals();
         super.tearDown();
 
     }
@@ -211,8 +210,8 @@ public class TestGroupManager extends AbstractSecurityTestcase
             // because of hierarchical groups with generalization strategy as default. Was 5 groups + 1 user, should now be 5
             // (4 groups + 1 user).
             assertEquals(
-                "principal size should be == 5 after removing testgroup1.group1, for principals: " + principals.toString(),
-                5,
+                "principal size should be == 3 after removing testgroup1.group1, for principals: " + principals.toString(),
+                3,
                 principals.size());
             assertFalse("anonuser2 should not contain testgroup1.group1", principals.contains(new GroupPrincipalImpl(
                     "testgroup1.group1")));
@@ -308,7 +307,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         {
             Collection groups = gms.getGroupsForUser("anonuser2");
             // Default hierarchy used in by generalization.
-            assertEquals("groups size should be == 5", 5, groups.size());
+            assertEquals("groups size should be == 3", 3, groups.size());
         }
         catch (SecurityException sex)
         {
@@ -469,10 +468,9 @@ public class TestGroupManager extends AbstractSecurityTestcase
     {
     	int groupCount = 0;
     	int groupAdded = 0;
-        Iterator it = gms.getGroups("").iterator();
-        while (it.hasNext())
+        Collection<Group> groups = gms.getGroups("");
+        for (Group group : groups)
         {
-            Group group = (Group) it.next();
             System.out.println("Group is " + group);
             groupCount++;
         }
@@ -483,10 +481,9 @@ public class TestGroupManager extends AbstractSecurityTestcase
         gms.addGroup("g3");
         groupAdded = 3;
         int count = 0;
-        it = gms.getGroups("").iterator();
-        while (it.hasNext())
+        groups = gms.getGroups("");
+        for (Group group : groups)
         {
-            Group group = (Group) it.next();
             System.out.println("Group is " + group);
             count++;
         }
@@ -498,21 +495,5 @@ public class TestGroupManager extends AbstractSecurityTestcase
                
     }
     
-    /**
-     * <p>
-     * Destroy group test objects.
-     * </p>
-     */
-    protected void destroyGroups() throws Exception
-    {
-        ums.removeUser("anonuser1");
-        ums.removeUser("anonuser2");
-        ums.removeUser("anonuser3");
-        ums.removeUser("anonuser4");
-        gms.removeGroup("testgroup1");
-        gms.removeGroup("testgroup2");
-        gms.removeGroup("testusertogroup1");
-        gms.removeGroup("testgetgroup");
-    }
-
+   
 }

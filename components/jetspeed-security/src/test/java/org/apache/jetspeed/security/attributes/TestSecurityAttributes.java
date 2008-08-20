@@ -5,8 +5,8 @@ import java.util.Map;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 
@@ -25,18 +25,14 @@ public class TestSecurityAttributes extends AbstractSecurityTestcase
     
     public void testAdding() throws Exception
     {
-// ADD THIS BACK IN once the User stuff is sorted out (removing path)         
-//        System.out.println("test adding stuff");
-//        if (!ums.userExists("david"))
-//        {        
-//            ums.addUser("david", "secret");
-//        }
-//        User david = ums.getUser("david");        
+        if (!ums.userExists("david"))
+        {        
+            ums.addUser("david", "secret");
+        }
+        User david = ums.getUser("david");        
         SecurityAttributesProvider sap = (SecurityAttributesProvider)scm.getComponent("SecurityAttributesProvider");
         assertNotNull(sap);
-
-        UserPrincipal user = new UserPrincipalImpl(1, "david");
-        
+        UserPrincipal user = david.getUserPrincipal();        
         // create 3 attributes
         SecurityAttributes sa = sap.createSecurityAttributes(user);
         Map<String,SecurityAttribute> attributes = sa.getAttributes();

@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
+import org.apache.jetspeed.security.impl.RemotePrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
@@ -174,13 +175,13 @@ public class SecurityHelper
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return A List of all principals of type Principal matching a principal classe parameter.
      */
-    public static List getPrincipals(Subject subject, Class classe)
+    public static List<Principal> getPrincipals(Subject subject, Class classe)
     {
-        List result = new LinkedList();
-        Iterator principals = subject.getPrincipals().iterator();
+        List<Principal> result = new LinkedList<Principal>();
+        Iterator<Principal> principals = subject.getPrincipals().iterator();
         while (principals.hasNext())
         {
-            Principal p = (Principal) principals.next();
+            Principal p = principals.next();
             if (classe.isInstance(p))
             {
                 result.add(p);
@@ -224,11 +225,11 @@ public class SecurityHelper
         int permsAdded = 0;
         if (null != permsToAdd)
         {
-            Enumeration permsToAddEnum = permsToAdd.elements();
+            Enumeration<Permission> permsToAddEnum = permsToAdd.elements();
             while (permsToAddEnum.hasMoreElements())
             {
                 permsAdded++;
-                Permission currPerm = (Permission) permsToAddEnum.nextElement();
+                Permission currPerm = permsToAddEnum.nextElement();
                 perms.add(currPerm);
                 if (log.isDebugEnabled())
                 {
@@ -246,13 +247,14 @@ public class SecurityHelper
     
     public static Principal createPrincipalFromInternal(InternalPrincipal internal)
     {
-        if (internal instanceof InternalUserPrincipal)
+        if (internal.getType().equals(UserPrincipal.PRINCIPAL_TYPE))
             return new UserPrincipalImpl(internal.getName());
-        else if (internal instanceof InternalRolePrincipal)
+        if (internal.getType().equals(RolePrincipal.PRINCIPAL_TYPE))
             return new RolePrincipalImpl(internal.getName());
-        else if (internal instanceof InternalGroupPrincipal)
+        if (internal.getType().equals(GroupPrincipal.PRINCIPAL_TYPE))
             return new GroupPrincipalImpl(internal.getName());
-        else
-            return null;
+        if (internal.getType().equals(RemotePrincipal.PRINCIPAL_TYPE))
+            return new RemotePrincipalImpl(internal.getName());
+        return null;
     }
 }

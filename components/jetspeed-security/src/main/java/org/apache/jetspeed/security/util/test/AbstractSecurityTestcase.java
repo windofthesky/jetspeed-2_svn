@@ -29,10 +29,13 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
+import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityProvider;
+import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.impl.SecurityProviderImpl;
@@ -162,4 +165,28 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //
         return (String[]) confList.toArray(new String[1]);
     }
 
+    /**
+     * <p>
+     * Destroy group test objects.
+     * </p>
+     */
+    protected void destroyPrincipals() throws Exception
+    {
+        Collection<User> users = this.ums.getUsers("");
+        for (User user : users)
+        {
+            ums.removeUser(user.getUserPrincipal().getName());
+        }
+        Collection<Role> roles = this.rms.getRoles("");
+        for (Role role : roles)
+        {
+            rms.removeRole(role.getPrincipal().getName());
+        }
+        Collection<Group> groups = this.gms.getGroups("");
+        for (Group group : groups)
+        {
+            gms.removeGroup(group.getPrincipal().getName());
+        }
+    }
+     
 }
