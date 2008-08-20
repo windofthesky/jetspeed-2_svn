@@ -19,6 +19,7 @@ package org.apache.jetspeed.components.portletpreferences;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
@@ -159,14 +160,22 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
                 if (prefId == null || prefId.longValue() != value.getPrefId())
                 {
                     prefId = new Long(value.getPrefId());
-                    preference = prefs.add(prefsMap.get(prefId), null);
+                    preference = prefs.add(value.getPrefId(), prefsMap.get(prefId), null);
                     preference.setReadOnly(Boolean.toString(value.isReadOnly()));
                 }
                 if (preference != null)
                 {
                     preference.addValue(value.getValue());
                 }
-            }        
+            }
+            for (Map.Entry<Long,String> entry : prefsMap.entrySet())
+            {
+                if (prefs.get(entry.getValue()) == null)
+                {
+                    // ensure preferences without *any* value are still loaded
+                    prefs.add(entry.getKey().longValue(), entry.getValue(),null);
+                }
+            }
             preferenceCache.put(preferenceCache.createElement(cacheKey, prefs));
         }
         return new PreferenceSetImpl(prefs);

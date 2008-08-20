@@ -163,7 +163,7 @@ public class PreferenceSetImpl implements PreferenceSetComposite, DistributedCac
         
         public boolean equals(PreferenceImpl other)
         {
-            if (other == null && name.equals(other.name) && readOnly == other.readOnly && values.size() == other.values.size() )
+            if (other != null && name.equals(other.name) && readOnly == other.readOnly && values.size() == other.values.size() )
             {
                 String a;
                 String b;
@@ -234,7 +234,7 @@ public class PreferenceSetImpl implements PreferenceSetComposite, DistributedCac
         return add(-1, name, values);
     }
 
-    PreferenceImpl add(long id, String name, List values)
+    public PreferenceImpl add(long id, String name, List values)
     {
         PreferenceImpl pref = new PreferenceImpl(id, name, values);
         prefs.put(name, pref);
