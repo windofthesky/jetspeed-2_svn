@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
@@ -230,21 +228,7 @@ public class PersistenceBrokerPortletRegistry
     {
         getPersistenceBrokerTemplate().delete(app);
         
-        String appNodePath = MutablePortletApplication.PREFS_ROOT + "/" +((MutablePortletApplication)app).getName();
-        try
-        {
-            if(Preferences.systemRoot().nodeExists(appNodePath))
-            {                   
-                Preferences node = Preferences.systemRoot().node(appNodePath);
-               // log.info("Removing Application preference node "+node.absolutePath());
-                node.removeNode();
-            }
-        }
-        catch (BackingStoreException e)
-        {
-           throw new RegistryException(e.toString(), e);
-        }
-
+        // TODO: remove PortletPreferences and then what scope: everything (default, global and entity prefs) or only default (portlet scope)?
     }
 
     public void updatePortletApplication( PortletApplicationDefinition app ) throws RegistryException
