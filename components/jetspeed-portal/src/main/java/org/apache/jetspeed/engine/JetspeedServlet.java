@@ -148,6 +148,10 @@ implements JetspeedEngineConstants, HttpSessionListener
                     applicationRoot = webappRoot;
                 }
 
+                // Using \ characters will corrupt the path when used as (Spring expanded) variables
+                // making sure default (Java) path separators are used which somehow always work, even on Windows platform.
+                applicationRoot = applicationRoot.replace('\\', '/');
+                
                 // load jetspeed.properties, override.properties and spring-filter-key.properties separately
                 // and "merge" them by hand instead of relaying on Commons Configuration "include" functionality...
                 // Commons Configuration performs property value *appending* if keys are encountered multiple times,
