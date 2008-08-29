@@ -95,6 +95,9 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
             permissionsMap = new HashMap<String, HashSet<Permission>>();
             permissionsCache.set(permissionsMap);
         }
+        // TODO Ate: broken!
+        // principal.getName() is not a valid key replacement here for old getFullPath():
+        // this needs to include the JetspeedPrincipal.getType() or its ClassName
         HashSet<Permission> principalPermissions = permissionsMap.get(principal.getName());
         if ( principalPermissions == null )
         {
@@ -135,6 +138,8 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
             }            
             Iterator<Principal> iter = principals.iterator();
             HashSet<Permission> principalPermissions;
+            
+            // TODO Ate: the following seems to be rather broken...
             while (iter.hasNext())
             for (Principal p : principals)
             {
@@ -163,6 +168,9 @@ public class PermissionManagerImpl extends PersistenceBrokerDaoSupport implement
                     {
                         principalPermissions = new HashSet<Permission>();
                     }
+                    // TODO Ate: broken!
+                    // principal.getName() is not a valid key replacement here for old getFullPath():
+                    // this needs to include the JetspeedPrincipal.getType() or its ClassName
                     permissionsMap.put(internalPrincipal.getName(), principalPermissions);
                 }
             }
