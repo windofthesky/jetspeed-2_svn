@@ -24,26 +24,29 @@ import org.apache.jetspeed.security.SecurityAttributeTypes;
  */
 public class JetspeedPrincipalTypeImpl implements JetspeedPrincipalType
 {
-    private String typeName;
-    private String typeClassName;
+    private String name;
+    private String className;
+    private SecurityAttributeTypes attributeTypes;
 
-    public JetspeedPrincipalTypeImpl()
+    public JetspeedPrincipalTypeImpl(String name, String className, SecurityAttributeTypes attributeTypes)
     {
+        this.name = name;
+        this.className = className;
+        this.attributeTypes = attributeTypes;
     }
 
     public SecurityAttributeTypes getAttributeTypes()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return attributeTypes;
     }
 
     public String getClassName()
     {
-        return typeClassName;
+        return className;
     }
 
     public String getName()
     {
-        return typeName;
+        return name;
     }
 }
