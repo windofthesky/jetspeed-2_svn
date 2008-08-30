@@ -16,9 +16,16 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedPrincipalAssociationType {
-	  String getAssociationName();
-	  JetspeedPrincipalType getFromPrincipalType();
-	  JetspeedPrincipalType getToPrincipalType();
-	  boolean isReadonlyMapping(); // mapped associations cannot be added or removed other then by removal of the Principal(s) itself
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalAssociationType
+{
+    String getAssociationName();
+
+    JetspeedPrincipalType getFromPrincipalType();
+
+    JetspeedPrincipalType getToPrincipalType();
+
+    boolean isReadonlyMapping(); // mapped associations cannot be added or removed other then by removal of the Principal(s) itself
 }

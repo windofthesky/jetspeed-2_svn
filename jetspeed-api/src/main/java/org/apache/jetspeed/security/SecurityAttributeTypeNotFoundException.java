@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import org.apache.jetspeed.exception.JetspeedException;
 
-public class SecurityAttributeTypeNotFoundException extends JetspeedException {
-
+/**
+ * @version $Id$
+ */
+public class SecurityAttributeTypeNotFoundException extends JetspeedException
+{
+    private static final long serialVersionUID = 8489109575962501156L;
 }

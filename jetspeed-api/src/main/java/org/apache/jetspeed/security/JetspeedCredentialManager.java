@@ -18,11 +18,17 @@ package org.apache.jetspeed.security;
 
 import java.util.List;
 
+/**
+ * @version $Id$
+ */
 public interface JetspeedCredentialManager extends JetspeedCredentialStorageManager
 {
     JetspeedPrincipalType getPrincipalType();
-    //void setCredentialStorageManager(CredentialStorageManager sm);
+
+    void setCredentialStorageManager(JetspeedCredentialStorageManager sm);
     JetspeedCredential newCredential();
+
     List<JetspeedCredential> getCredentials(String principalName);
+
     List<JetspeedCredential> getCredentials(JetspeedPrincipal principal);
 }

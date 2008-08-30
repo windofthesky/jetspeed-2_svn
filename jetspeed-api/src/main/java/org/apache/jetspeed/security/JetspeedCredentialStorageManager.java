@@ -16,8 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedCredentialStorageManager {
+/**
+ * @version $Id$
+ */
+public interface JetspeedCredentialStorageManager
+{
     void addCredential(JetspeedCredential credential, JetspeedPrincipal principal);
+
     void updateCredential(JetspeedCredential credential);
+
     void removeCredential(JetspeedCredential credential);
 }

@@ -16,8 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedPrincipalPermissionStorageManager {
-	  void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission);
-	  void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission);
-	  void revokeAll(JetspeedPrincipal principal);
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalPermissionStorageManager
+{
+    void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission);
+
+    void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission);
+
+    void revokeAll(JetspeedPrincipal principal);
 }

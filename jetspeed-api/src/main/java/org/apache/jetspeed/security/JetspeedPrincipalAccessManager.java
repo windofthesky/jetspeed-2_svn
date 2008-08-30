@@ -18,20 +18,38 @@ package org.apache.jetspeed.security;
 
 import java.util.List;
 
-public interface JetspeedPrincipalAccessManager {
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalAccessManager
+{
     boolean principalExists(String principalName, JetspeedPrincipalType type);
+
     JetspeedPrincipal getPrincipal(Long id);
+
     JetspeedPrincipal getPrincipal(String principalName, JetspeedPrincipalType type);
+
     List<JetspeedPrincipal> getPrincipals(String nameFilter, List<SecurityAttributes> attributes, JetspeedPrincipalType type);
+
     List<String> getPrincipalNames(String nameFilter, List<SecurityAttributes> attributes, JetspeedPrincipalType type);
+
     List<JetspeedPrincipal> getAssociatedFrom(String principalName, JetspeedPrincipalType type, String associationName);
+
     List<JetspeedPrincipal> getAssociatedFrom(Long principalId, JetspeedPrincipalType type, String associationName);
+
     List<JetspeedPrincipal> getAssociatedTo(String principalName, JetspeedPrincipalType type, String associationName);
+
     List<JetspeedPrincipal> getAssociatedTo(Long principalId, JetspeedPrincipalType type, String associationName);
+
     List<String> getAssociatedNamesFrom(String principalName, JetspeedPrincipalType type, String associationName);
+
     List<String> getAssociatedNamesFrom(Long principalId, JetspeedPrincipalType type, String associationName);
+
     List<String> getAssociatedNamesTo(String principalName, JetspeedPrincipalType type, String associationName);
+
     List<String> getAssociatedNamesTo(Long principalId, JetspeedPrincipalType type, String associationName);
+
     List<String> getPrincipals(JetspeedPermission permission);
+
     List<String> getPrincipals(JetspeedPermission permission, JetspeedPrincipalType type);
 }

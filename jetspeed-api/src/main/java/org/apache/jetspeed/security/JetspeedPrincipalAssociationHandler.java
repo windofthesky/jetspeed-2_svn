@@ -16,14 +16,26 @@
  */
 package org.apache.jetspeed.security;
 
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalAssociationHandler
+{
+    JetspeedPrincipalAssociationType getAssociationType();
 
-public interface JetspeedPrincipalAssociationHandler {
-	JetspeedPrincipalAssociationType getAssociationType();
-	  void setManagerFrom(JetspeedPrincipalManager pm);
-	  void setManagerTo(JetspeedPrincipalManager pm);
-	  void setStorageManager(JetspeedPrincipalAssociationStorageManager sm);
-	  void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException;
-	  void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, RequiredPrincipalAssociationException;
-	  void removeAllFrom(JetspeedPrincipal from) throws PrincipalNotFoundException, PrincipalNotRemovableException; // may only be called when removing the principal itself
-	  void removeAllTo(JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalNotRemovableException; // may only be called when removing the principal itself
+    void setManagerFrom(JetspeedPrincipalManager pm);
+
+    void setManagerTo(JetspeedPrincipalManager pm);
+
+    void setStorageManager(JetspeedPrincipalAssociationStorageManager sm);
+
+    void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException;
+
+    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, RequiredPrincipalAssociationException;
+
+    // may only be called when removing the principal itself
+    void removeAllFrom(JetspeedPrincipal from) throws PrincipalNotFoundException, PrincipalNotRemovableException; 
+
+    // may only be called when removing the principal itself
+    void removeAllTo(JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalNotRemovableException;
 }

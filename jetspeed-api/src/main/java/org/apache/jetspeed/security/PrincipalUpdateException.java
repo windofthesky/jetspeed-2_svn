@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import org.apache.jetspeed.exception.JetspeedException;
 
-public class PrincipalUpdateException extends JetspeedException {
-
+/**
+ * @version $Id$
+ */
+public class PrincipalUpdateException extends JetspeedException
+{
+    private static final long serialVersionUID = -4817114380244599699L;
 }

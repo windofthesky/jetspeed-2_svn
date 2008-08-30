@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import org.apache.jetspeed.exception.JetspeedException;
 
-public class PrincipalAlreadyExistsException extends JetspeedException {
-
+/**
+ * @version $Id$
+ */
+public class PrincipalAlreadyExistsException extends JetspeedException
+{
+    private static final long serialVersionUID = -3552439810936276496L;
 }

@@ -18,9 +18,16 @@ package org.apache.jetspeed.security;
 
 import java.util.Set;
 
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalStorageManager
+{
+    void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
+        throws PrincipalAlreadyExistsException, RequiredPrincipalAssociationException;
 
-public interface JetspeedPrincipalStorageManager {
-	   void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationRef> associations) throws PrincipalAlreadyExistsException, RequiredPrincipalAssociationException;
-	    void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException;
-	    void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
+    void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException;
+
+    void removePrincipal(JetspeedPrincipal principal)
+        throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 }

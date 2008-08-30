@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import org.apache.jetspeed.exception.JetspeedException;
 
-public class PrincipalNotRemovableException extends JetspeedException {
-
+/**
+ * @version $Id$
+ */
+public class PrincipalNotRemovableException extends JetspeedException
+{
+    private static final long serialVersionUID = 3762441341037857918L;
 }

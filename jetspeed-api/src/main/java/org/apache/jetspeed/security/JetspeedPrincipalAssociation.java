@@ -16,10 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedPrincipalAssociation {
-	String getAssociationName();
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalAssociation
+{
+    String getAssociationName();
 
-	JetspeedPrincipal getPrincipalFrom();
+    JetspeedPrincipal getPrincipalFrom();
 
-	JetspeedPrincipal getPrincipalTo();
+    JetspeedPrincipal getPrincipalTo();
 }

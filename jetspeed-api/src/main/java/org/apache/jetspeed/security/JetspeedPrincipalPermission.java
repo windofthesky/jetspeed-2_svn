@@ -16,7 +16,12 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedPrincipalPermission {
-	  JetspeedPrincipal principal = null;;
-	  JetspeedPermission permmission = null;
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalPermission
+{
+    JetspeedPrincipal getPrincipal();
+    
+    JetspeedPermission getPermmission();
 }

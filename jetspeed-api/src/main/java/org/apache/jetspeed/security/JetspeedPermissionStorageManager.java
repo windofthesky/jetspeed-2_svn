@@ -16,8 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedPermissionStorageManager {
-	  void addPermission(PortalResourcePermission p);
-	  void removePermission(JetspeedPermission p);
-	  void updatePermission(JetspeedPermission p);
+/**
+ * @version $Id$
+ */
+public interface JetspeedPermissionStorageManager
+{
+    void addPermission(PortalResourcePermission p);
+
+    void removePermission(JetspeedPermission p);
+
+    void updatePermission(JetspeedPermission p);
 }

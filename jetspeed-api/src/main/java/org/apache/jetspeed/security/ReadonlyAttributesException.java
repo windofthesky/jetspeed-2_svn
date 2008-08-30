@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import org.apache.jetspeed.exception.JetspeedException;
 
-public class ReadonlyAttributesException extends JetspeedException {
-
+/**
+ * @version $Id$
+ */
+public class ReadonlyAttributesException extends JetspeedException
+{
+    private static final long serialVersionUID = 5331466107561705454L;
 }

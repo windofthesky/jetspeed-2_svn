@@ -16,26 +16,33 @@
  */
 package org.apache.jetspeed.security;
 
-public final class JetspeedPrincipalAssociationReference {
-	 public enum Type { FROM, TO };
-	  
-	  public final Type type;
-	  public final JetspeedPrincipal ref;
-	  public final String associationName;  
-	  
-	  public JetspeedPrincipalAssociationReference(Type type, JetspeedPrincipal ref, String associationName)
-	  {
-	    this.type = type;
-	    this.ref = ref;
-	    this. associationName = associationName;
-	    if (type == null || ref.getId() == null || ref.getName() == null || associationName == null )
-	    {
-	      throw new NullPointerException();
-	    }
-	  }
-	  
-	  public boolean equals(JetspeedPrincipalAssociationReference jar)
-	  {
-	    return (jar != null && jar.type == this.type && jar.ref.getClass() == ref.getClass() && jar.ref.getName() == ref.getName());
-	  }
+/**
+ * @version $Id$
+ */
+public final class JetspeedPrincipalAssociationReference
+{
+    public enum Type
+    {
+        FROM, TO
+    };
+
+    public final Type type;
+    public final JetspeedPrincipal ref;
+    public final String associationName;
+
+    public JetspeedPrincipalAssociationReference(Type type, JetspeedPrincipal ref, String associationName)
+    {
+        this.type = type;
+        this.ref = ref;
+        this.associationName = associationName;
+        if (type == null || ref.getId() == null || ref.getName() == null || associationName == null)
+        {
+            throw new NullPointerException();
+        }
+    }
+
+    public boolean equals(JetspeedPrincipalAssociationReference jar)
+    {
+        return (jar != null && jar.type == this.type && jar.ref.getClass() == ref.getClass() && jar.ref.getName() == ref.getName());
+    }
 }

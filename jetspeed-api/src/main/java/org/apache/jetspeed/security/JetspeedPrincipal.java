@@ -14,31 +14,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
-
-import org.apache.jetspeed.attribute.GenericAttributes;
+import java.sql.Timestamp;
 
 /**
- * Base interface for User/Group/Role security entities providing access to the GenericAttributes for a Principal
  * @version $Id$
- *
  */
 public interface JetspeedPrincipal
 {
-    /**
-     * <p>Getter for the {@link Principal}.</p>
-     * @return The {@link Principal}.
-     */
-    Principal getPrincipal();
+    Long getId();
 
-    /**
-     * <p>Setter for the {@link Principal}.</p>
-     * @param principal The {@link Principal}.
-     */
-    void setPrincipal(Principal principal);
+    String getName();
 
-    GenericAttributes getAttribute();
+    JetspeedPrincipalType getType();
+
+    void setName(String name);
+
+    Timestamp getCreationDate();
+
+    void setCreationDate(Timestamp creationDate);
+
+    Timestamp getModifiedDate();
+
+    void setModifiedDate(Timestamp modifiedDate);
+
+    boolean isEnabled();
+
+    void setEnable(boolean enabled);
+
+    boolean isMapped(); // true if managed (mapped) through an external authorization provider (e.g. LDAP)
+
+    void setMapped(boolean mapped);
+
+    boolean isReadonly(); // true if enabled may not be modified, nor mapped associations, permissions and attributes
+
+    void setReadonly(boolean readonly);
+
+    boolean isRemovable();
+
+    void setRemovable(boolean removable);
+
+    boolean isExtendable(); // true if adding associations, permissions and attributes is allowed
+
+    void setExtendable(boolean extendable);
+
+    SecurityAttributes getSecurityAttributes();
 }

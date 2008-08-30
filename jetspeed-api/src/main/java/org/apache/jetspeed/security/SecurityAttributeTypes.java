@@ -18,10 +18,16 @@ package org.apache.jetspeed.security;
 
 import java.util.Set;
 
-
-public interface SecurityAttributeTypes {
+/**
+ * @version $Id$
+ */
+public interface SecurityAttributeTypes
+{
     Set<SecurityAttributeType> getAttributeTypes();
+
     Set<SecurityAttributeType> getAttributeTypes(String category);
+
     boolean isReadonly();
+
     boolean isExtendable();
 }

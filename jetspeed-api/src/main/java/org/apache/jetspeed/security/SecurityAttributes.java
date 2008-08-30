@@ -18,21 +18,38 @@ package org.apache.jetspeed.security;
 
 import java.util.Set;
 
-
-public interface SecurityAttributes {
+/**
+ * @version $Id$
+ */
+public interface SecurityAttributes
+{
     String USER_INFO_CATEGORY = "user_info";
-    
+
     JetspeedPrincipal getPrincipal();
+
     int size();
+
     boolean isReadonly();
+
     Set<SecurityAttributeType> getAttributeTypes();
+
     Set<SecurityAttributeType> getAttributeTypes(String category);
+
     Set<String> getAttributeNames();
+
     Set<String> getAttributeNames(String category);
+
     Set<SecurityAttribute> getAttributes();
+
     Set<SecurityAttribute> getAttributes(String category);
+
     SecurityAttribute getAttribute(String name);
-    SecurityAttribute newAttribute(String name) throws ReadonlyAttributesException, SecurityAttributeTypeNotFoundException, AttributeAlreadyExistsException;
-    SecurityAttribute newAttribute(String name, String category, SecurityAttributeType.TYPE type) throws ReadonlyAttributesException, AttributeAlreadyExistsException;
+
+    SecurityAttribute newAttribute(String name)
+        throws ReadonlyAttributesException, SecurityAttributeTypeNotFoundException, AttributeAlreadyExistsException;
+
+    SecurityAttribute newAttribute(String name, String category, SecurityAttributeType.DataType type)
+        throws ReadonlyAttributesException, AttributeAlreadyExistsException;
+
     void removeAttribute(String name) throws ReadonlyAttributesException, RequiredAttributeException;
 }

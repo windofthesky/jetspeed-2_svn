@@ -16,11 +16,20 @@
  */
 package org.apache.jetspeed.security;
 
-public interface SecurityAttributeType {
-    enum TYPE { STRING };
+/**
+ * @version $Id$
+ */
+public interface SecurityAttributeType
+{
+    enum DataType { STRING };
+
     String getName();
+
     String getCategory();
-    TYPE getType();
+
+    DataType getType();
+
     boolean isReadOnly();
+
     boolean isRequired();
 }

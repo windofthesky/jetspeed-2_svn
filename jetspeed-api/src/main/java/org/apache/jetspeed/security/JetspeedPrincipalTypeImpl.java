@@ -16,29 +16,31 @@
  */
 package org.apache.jetspeed.security;
 
+/**
+ * @version $Id$
+ */
+public class JetspeedPrincipalTypeImpl implements JetspeedPrincipalType
+{
+    private String typeName;
+    private String typeClassName;
 
-public class JetspeedPrincipalTypeImpl implements JetspeedPrincipalType{
+    public JetspeedPrincipalTypeImpl()
+    {
+    }
 
-	private String typeName;
-	private String typeClassName;
+    public SecurityAttributeTypes getAttributeTypes()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public JetspeedPrincipalTypeImpl() {
-	}
+    public String getClassName()
+    {
+        return typeClassName;
+    }
 
-
-	public SecurityAttributeTypes getAttributeTypes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	public String getClassName() {
-		return typeClassName;
-	}
-
-	
-	public String getName() {
-		return typeName;
-	}
-
+    public String getName()
+    {
+        return typeName;
+    }
 }

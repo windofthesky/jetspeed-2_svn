@@ -16,6 +16,9 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedCredential {
-
+/**
+ * @version $Id$
+ */
+public interface JetspeedCredential
+{
 }

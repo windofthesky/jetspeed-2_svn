@@ -16,8 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
-public interface JetspeedPermission {
+/**
+ * @version $Id$
+ */
+public interface JetspeedPermission
+{
     Long getId();
+
     String getName();
+
     String getActions();
 }

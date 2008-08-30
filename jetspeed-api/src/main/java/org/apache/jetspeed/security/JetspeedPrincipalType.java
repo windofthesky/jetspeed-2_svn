@@ -17,11 +17,16 @@
 package org.apache.jetspeed.security;
 
 /**
-* <p>The base JetspeedPrincipal type.</p>
-* @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
-**/
-public interface JetspeedPrincipalType {
-	  String getName();
-	  String getClassName();
-	  SecurityAttributeTypes getAttributeTypes();
+ * <p>The base JetspeedPrincipal type.</p>
+ * 
+ * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
+ * @version $Id$
+ */
+public interface JetspeedPrincipalType
+{
+    String getName();
+
+    String getClassName();
+
+    SecurityAttributeTypes getAttributeTypes();
 }

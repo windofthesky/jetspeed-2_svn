@@ -16,8 +16,12 @@
  */
 package org.apache.jetspeed.security;
 
-public interface SecurityAttribute  extends SecurityAttributeType
+/**
+ * @version $Id$
+ */
+public interface SecurityAttribute extends SecurityAttributeType
 {
     String getStringValue();
-    void   setStringValue(String value);  
+
+    void setStringValue(String value);
 }

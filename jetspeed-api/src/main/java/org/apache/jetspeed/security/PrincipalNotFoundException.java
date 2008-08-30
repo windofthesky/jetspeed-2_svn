@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import org.apache.jetspeed.exception.JetspeedException;
 
-public class PrincipalNotFoundException extends JetspeedException {
-
+/**
+ * @version $Id$
+ */
+public class PrincipalNotFoundException extends JetspeedException
+{
+    private static final long serialVersionUID = -661535792541815354L;
 }

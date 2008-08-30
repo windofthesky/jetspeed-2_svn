@@ -18,9 +18,16 @@ package org.apache.jetspeed.security;
 
 import java.util.Set;
 
-public interface JetspeedPrincipalManagerProvider {
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalManagerProvider
+{
     Set<JetspeedPrincipalType> getPrincipalTypes();
+
     JetspeedPrincipalType getPrincipalType(String name);
+
     JetspeedPrincipalType getPrincipalTypeByClassName(String className);
+
     JetspeedPrincipalManager getManager(JetspeedPrincipalType type);
 }

@@ -19,11 +19,18 @@ package org.apache.jetspeed.security;
 import java.security.Permission;
 import java.security.Permissions;
 
+/**
+ * @version $Id$
+ */
 public interface JetspeedPermissionManager extends JetspeedPermissionStorageManager
 {
-	  Permissions getPermissions(JetspeedPrincipal principal);
-	  Permissions getPermissions(Permission[] permissions);
-	  void addPermission(PortalResourcePermission p);
-	  void removePermission(JetspeedPermission p);
-	  void updatePermission(JetspeedPermission p);  
-	}
+    Permissions getPermissions(JetspeedPrincipal principal);
+
+    Permissions getPermissions(Permission[] permissions);
+
+    void addPermission(PortalResourcePermission p);
+
+    void removePermission(JetspeedPermission p);
+
+    void updatePermission(JetspeedPermission p);
+}

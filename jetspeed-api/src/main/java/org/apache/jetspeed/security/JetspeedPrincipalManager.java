@@ -18,22 +18,40 @@ package org.apache.jetspeed.security;
 
 import java.util.List;
 
-
-public interface JetspeedPrincipalManager {
+/**
+ * @version $Id$
+ */
+public interface JetspeedPrincipalManager
+{
     JetspeedPrincipalType getPrincipalType();
+
     void setAccessManager(JetspeedPrincipalAccessManager pm);
+
     void setStorageManager(JetspeedPrincipalStorageManager sm);
+
     void setPermissionStorageManager(JetspeedPrincipalPermissionStorageManager sm);
+
     JetspeedCredentialManager getCredentialManager();
+
     void addAssociationHandler(JetspeedPrincipalAssociationHandler ah);
+
     JetspeedPrincipal newPrincipal(String name);
+
     boolean principalExists(String name);
+
     JetspeedPrincipal getPrincipal(String name);
+
     List<String> getPrincipalNames(String nameFilter, List<SecurityAttributes> attributes);
+
     List<JetspeedPrincipal> getPrincipals(String nameFilter, List<SecurityAttributes> attributes);
+
     void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
-    List <JetspeedPrincipal> getAssociatedFrom(String principalName, String associationName);
-    List <JetspeedPrincipal> getAssociatedTo(String principalName, String associationName);
-    List <String> getAssociatedNamesFrom(String principalName, String associationName);
-    List <String> getAssociatedNamesTo(String principalName, String associationName);
+
+    List<JetspeedPrincipal> getAssociatedFrom(String principalName, String associationName);
+
+    List<JetspeedPrincipal> getAssociatedTo(String principalName, String associationName);
+
+    List<String> getAssociatedNamesFrom(String principalName, String associationName);
+
+    List<String> getAssociatedNamesTo(String principalName, String associationName);
 }
