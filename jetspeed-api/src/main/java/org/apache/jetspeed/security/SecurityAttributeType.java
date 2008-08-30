@@ -27,7 +27,7 @@ public interface SecurityAttributeType
 
     String getCategory();
 
-    DataType getType();
+    DataType getDataType();
 
     boolean isReadOnly();
 
