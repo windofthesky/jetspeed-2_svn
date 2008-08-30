@@ -19,6 +19,8 @@ package org.apache.jetspeed.security;
 import java.security.Permission;
 import java.security.Permissions;
 
+import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
+
 /**
  * @version $Id$
  */

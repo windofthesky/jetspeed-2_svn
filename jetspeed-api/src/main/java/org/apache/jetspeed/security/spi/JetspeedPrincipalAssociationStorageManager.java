@@ -14,7 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi;
+
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
+import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.RequiredPrincipalAssociationException;
+import org.apache.jetspeed.security.UnsupportedPrincipalAssociationException;
 
 /**
  * @version $Id$

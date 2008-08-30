@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi;
+
+import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPrincipal;
 
 /**
  * @version $Id$
  */
-public interface JetspeedCredentialStorageManager
+public interface JetspeedPrincipalPermissionStorageManager
 {
-    void addCredential(JetspeedCredential credential, JetspeedPrincipal principal);
+    void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission);
 
-    void updateCredential(JetspeedCredential credential);
+    void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission);
 
-    void removeCredential(JetspeedCredential credential);
+    void revokeAll(JetspeedPrincipal principal);
 }

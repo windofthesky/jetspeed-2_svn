@@ -18,6 +18,10 @@ package org.apache.jetspeed.security;
 
 import java.util.List;
 
+import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
+
 /**
  * @version $Id$
  */

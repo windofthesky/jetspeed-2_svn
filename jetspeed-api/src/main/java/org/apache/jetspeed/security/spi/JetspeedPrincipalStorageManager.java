@@ -14,9 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi;
 
 import java.util.Set;
+
+import org.apache.jetspeed.security.DependentPrincipalException;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
+import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
+import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.PrincipalNotRemovableException;
+import org.apache.jetspeed.security.PrincipalUpdateException;
+import org.apache.jetspeed.security.RequiredPrincipalAssociationException;
 
 /**
  * @version $Id$

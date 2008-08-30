@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.security;
 
+import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
+
 /**
  * @version $Id$
  */

@@ -18,6 +18,8 @@ package org.apache.jetspeed.security;
 
 import java.util.List;
 
+import org.apache.jetspeed.security.spi.JetspeedCredentialStorageManager;
+
 /**
  * @version $Id$
  */
