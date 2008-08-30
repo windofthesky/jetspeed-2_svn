@@ -14,7 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.impl;
+
+import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.SecurityAttributeTypes;
 
 /**
  * @version $Id$
