@@ -41,6 +41,8 @@ public interface JetspeedPrincipalManager
 
     JetspeedPrincipal newPrincipal(String name);
 
+    JetspeedPrincipal newPrincipal(String name, boolean mapped);
+
     boolean principalExists(String name);
 
     JetspeedPrincipal getPrincipal(String name);

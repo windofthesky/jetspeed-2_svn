@@ -98,42 +98,7 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
         return false;
     }
 
-    public void setCreationDate(Timestamp creationDate)
-    {
-        // TODO Auto-generated method stub
-    }
-
     public void setEnable(boolean enabled)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void setExtendable(boolean extendable)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void setMapped(boolean mapped)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void setModifiedDate(Timestamp modifiedDate)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void setName(String name)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void setReadonly(boolean readonly)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void setRemovable(boolean removable)
     {
         // TODO Auto-generated method stub
     }

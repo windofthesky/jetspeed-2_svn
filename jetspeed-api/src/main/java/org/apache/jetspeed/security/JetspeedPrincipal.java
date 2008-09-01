@@ -29,15 +29,9 @@ public interface JetspeedPrincipal
 
     JetspeedPrincipalType getType();
 
-    void setName(String name);
-
     Timestamp getCreationDate();
 
-    void setCreationDate(Timestamp creationDate);
-
     Timestamp getModifiedDate();
-
-    void setModifiedDate(Timestamp modifiedDate);
 
     boolean isEnabled();
 
@@ -45,19 +39,11 @@ public interface JetspeedPrincipal
 
     boolean isMapped(); // true if managed (mapped) through an external authorization provider (e.g. LDAP)
 
-    void setMapped(boolean mapped);
-
     boolean isReadOnly(); // true if enabled may not be modified, nor mapped associations, permissions and attributes
-
-    void setReadonly(boolean readonly);
 
     boolean isRemovable();
 
-    void setRemovable(boolean removable);
-
     boolean isExtendable(); // true if adding associations, permissions and attributes is allowed
-
-    void setExtendable(boolean extendable);
 
     SecurityAttributes getSecurityAttributes();
 }
