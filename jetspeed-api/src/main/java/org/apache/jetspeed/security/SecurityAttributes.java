@@ -44,6 +44,8 @@ public interface SecurityAttributes
 
     Map<String, SecurityAttribute> getAttributeMap(String category);
     
+    Map<String, SecurityAttribute> getInfoAttributeMap();
+
     SecurityAttribute getAttribute(String name);
 
     SecurityAttribute addAttribute(String name)

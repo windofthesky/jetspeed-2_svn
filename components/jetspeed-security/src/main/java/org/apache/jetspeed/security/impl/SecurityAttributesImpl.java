@@ -132,6 +132,11 @@ public class SecurityAttributesImpl implements SecurityAttributes
         }
         return Collections.unmodifiableMap(map);
     }
+    
+    public Map<String, SecurityAttribute> getInfoAttributeMap()
+    {
+        return getAttributeMap(INFO_CATEGORY);
+    }
 
     public SecurityAttribute getAttribute(String name)
     {
