@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.impl;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
@@ -26,12 +27,15 @@ import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * @version $Id$
  *
  */
-public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
+public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, PersistenceBrokerAware, Serializable
 {
     private static final long serialVersionUID = 5484179899807809619L;
     
@@ -41,13 +45,13 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
     private String name;    
     private Timestamp creationDate;
     private Timestamp modifiedDate;
-    private boolean enabled;
+    private boolean enabled = true;
     private boolean mapped;
     private boolean readOnly;
-    private boolean removable;
-    private boolean extendable;
+    private boolean removable = true;
+    private boolean extendable = true;
     @SuppressWarnings("unchecked")
-    private Collection avColl;
+    private Collection attributeValues;
     
     private transient JetspeedPrincipalType jpt;
     private transient SecurityAttributes attributes;
@@ -55,6 +59,10 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
     public static void setJetspeedPrincipalManagerProvider(JetspeedPrincipalManagerProvider jpmp)
     {
         BaseJetspeedPrincipal.jpmp = jpmp;
+    }
+    
+    public BaseJetspeedPrincipal()
+    {   
     }
     
     public Long getId()
@@ -65,6 +73,11 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
     public String getName()
     {
         return name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     public synchronized JetspeedPrincipalType getType()
@@ -80,12 +93,12 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
     {
         return creationDate;
     }
-
+    
     public Timestamp getModifiedDate()
     {
         return modifiedDate;
     }
-
+    
     public boolean isEnabled()
     {
         return enabled;
@@ -104,15 +117,30 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
     {
         return mapped;
     }
+    
+    public void setMapped(boolean mapped)
+    {
+        this.mapped = mapped;
+    }
 
     public boolean isReadOnly()
     {
         return readOnly;
     }
+    
+    public void setReadOnly(boolean readOnly)
+    {
+        this.readOnly = readOnly;
+    }
 
     public boolean isRemovable()
     {
         return removable;
+    }
+    
+    public void setRemovable(boolean removable)
+    {
+        this.removable = removable;
     }
 
     public boolean isExtendable()
@@ -120,12 +148,61 @@ public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
         return extendable;
     }
     
+    public void setExtendable(boolean extendable)
+    {
+        this.extendable = extendable;
+    }
+    
+    public synchronized void setAttributeValues(Collection<SecurityAttributeValue> attributeValues)
+    {
+        this.attributeValues = attributeValues;
+        this.attributes = null;
+    }
+    
     public synchronized SecurityAttributes getSecurityAttributes()
     {
         if (attributes == null)
         {
-            attributes = new SecurityAttributesImpl(this, avColl, isReadOnly(), isExtendable());
+            if (attributeValues == null)
+            {
+                attributeValues = new ArrayList<SecurityAttributeValue>();
+            }
+            attributes = new SecurityAttributesImpl(this, attributeValues, isReadOnly(), isExtendable());
         }
         return attributes;
+    }
+    
+    /// OJB PersistenceBrokerAware interface implementation
+
+    public void afterDelete(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+    }
+
+    public synchronized void afterInsert(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+        this.attributes = null;
+    }
+
+    public void afterLookup(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterUpdate(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeDelete(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeInsert(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+        this.creationDate = new Timestamp(System.currentTimeMillis());
+        this.modifiedDate = this.creationDate;
+    }
+
+    public void beforeUpdate(PersistenceBroker pb) throws PersistenceBrokerException
+    {
+        this.modifiedDate = new Timestamp(System.currentTimeMillis());
     }
 }
