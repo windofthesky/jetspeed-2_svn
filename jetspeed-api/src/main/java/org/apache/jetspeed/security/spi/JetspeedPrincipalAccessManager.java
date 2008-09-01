@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.SecurityAttributes;
 
 /**
  * @version $Id$
@@ -34,9 +33,9 @@ public interface JetspeedPrincipalAccessManager
 
     JetspeedPrincipal getPrincipal(String principalName, JetspeedPrincipalType type);
 
-    List<JetspeedPrincipal> getPrincipals(String nameFilter, List<SecurityAttributes> attributes, JetspeedPrincipalType type);
+    List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type);
 
-    List<String> getPrincipalNames(String nameFilter, List<SecurityAttributes> attributes, JetspeedPrincipalType type);
+    List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type);
 
     List<JetspeedPrincipal> getAssociatedFrom(String principalName, JetspeedPrincipalType type, String associationName);
 
