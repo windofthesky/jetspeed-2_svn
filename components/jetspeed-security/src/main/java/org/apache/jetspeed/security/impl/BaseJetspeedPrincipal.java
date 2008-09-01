@@ -19,9 +19,12 @@ package org.apache.jetspeed.security.impl;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
 
 /**
@@ -31,75 +34,98 @@ import org.apache.jetspeed.security.SecurityAttributes;
 public class BaseJetspeedPrincipal implements JetspeedPrincipal, Serializable
 {
     private static final long serialVersionUID = 5484179899807809619L;
-
-    public Timestamp getCreationDate()
+    
+    private static JetspeedPrincipalManagerProvider jpmp;
+    
+    private Long id;
+    private String name;    
+    private Timestamp creationDate;
+    private Timestamp modifiedDate;
+    private boolean enabled;
+    private boolean mapped;
+    private boolean readOnly;
+    private boolean removable;
+    private boolean extendable;
+    @SuppressWarnings("unchecked")
+    private Collection avColl;
+    
+    private transient JetspeedPrincipalType jpt;
+    private transient SecurityAttributes attributes;
+    
+    public static void setJetspeedPrincipalManagerProvider(JetspeedPrincipalManagerProvider jpmp)
     {
-        // TODO Auto-generated method stub
-        return null;
+        BaseJetspeedPrincipal.jpmp = jpmp;
     }
-
+    
     public Long getId()
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Timestamp getModifiedDate()
-    {
-        // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return name;
     }
 
-    public SecurityAttributes getSecurityAttributes()
+    public synchronized JetspeedPrincipalType getType()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (jpt == null)
+        {
+            jpt = jpmp.getPrincipalTypeByClassName(getClass().getName());
+        }
+        return jpt;
     }
 
-    public JetspeedPrincipalType getType()
+    public Timestamp getCreationDate()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return creationDate;
+    }
+
+    public Timestamp getModifiedDate()
+    {
+        return modifiedDate;
     }
 
     public boolean isEnabled()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return enabled;
     }
 
-    public boolean isExtendable()
+    public void setEnabled(boolean enabled) throws PrincipalReadOnlyException
     {
-        // TODO Auto-generated method stub
-        return false;
+        if (isReadOnly())
+        {
+            throw new PrincipalReadOnlyException();
+        }
+        this.enabled = enabled;
     }
-
+    
     public boolean isMapped()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return mapped;
     }
 
     public boolean isReadOnly()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return readOnly;
     }
 
     public boolean isRemovable()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return removable;
     }
 
-    public void setEnable(boolean enabled)
+    public boolean isExtendable()
     {
-        // TODO Auto-generated method stub
+        return extendable;
+    }
+    
+    public synchronized SecurityAttributes getSecurityAttributes()
+    {
+        if (attributes == null)
+        {
+            attributes = new SecurityAttributesImpl(this, avColl, isReadOnly(), isExtendable());
+        }
+        return attributes;
     }
 }
