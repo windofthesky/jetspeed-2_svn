@@ -16,63 +16,20 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
 import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
- * <p>Represents a security 'group' made of a {@link org.apache.jetspeed.security.GroupPrincipal} and security attributes.</p>
- * <p>Modified 2008-08-05 - DST - decoupled java preferences</p> 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>Represents a security 'group' extending BaseJetspeedPrincipal.</p>
+ * @version $Id
  */
-public class GroupImpl implements Group
+public class GroupImpl extends BaseJetspeedPrincipal implements Group
 {
-    private Principal groupPrincipal;
-    private SecurityAttributes attributes;
-    
+    private static final long serialVersionUID = 5484179899807809619L;
+
     /**
      * <p>Default constructor.</p>
      */
     public GroupImpl()
     {
     }
-
-    /**
-     * <p>{@link Group} constructor given a group principal and security attributes.</p>
-     * @param groupPrincipal The group principal.
-     * @param attributes The security attributes.
-     */
-    public GroupImpl(Principal groupPrincipal, SecurityAttributes attributes)
-    {
-        this.groupPrincipal = groupPrincipal;
-        this.attributes = attributes;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.Group#getPrincipal()
-     */
-    public Principal getPrincipal()
-    {
-        return this.groupPrincipal;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.Group#setPrincipal(java.security.Principal)
-     */
-    public void setPrincipal(Principal groupPrincipal)
-    {
-        this.groupPrincipal = groupPrincipal;
-    }
-
-
-    public SecurityAttributes getAttributes()
-    {
-        return this.attributes;
-    }
-
-    public void setAttributes(SecurityAttributes attributes)
-    {
-        this.attributes = attributes; 
-    }
-
 }

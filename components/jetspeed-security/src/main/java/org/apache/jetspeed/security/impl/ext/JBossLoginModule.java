@@ -97,8 +97,8 @@ public class JBossLoginModule extends DefaultLoginModule
     protected void commitPrincipals(Subject subject, User user)
     {
         // add UserPrincipal to subject
-        subject.getPrincipals().add(getUserPrincipal(user));
-        JBossGroup roles = new JBossGroup("Roles", getUserRoles(user));
+        subject.getPrincipals().add((Principal) user);
+        JBossGroup roles = new JBossGroup("Roles", getUserRoles(subject));
         roles.addMember(new RolePrincipalImpl(portalUserRole));
         subject.getPrincipals().add(roles);        
     }

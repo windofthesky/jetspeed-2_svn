@@ -263,15 +263,9 @@ public class DefaultLoginModule implements LoginModule
         }
     }
 
-    
-    protected Principal getUserPrincipal(User user)
+    protected List getUserRoles(Subject subject)
     {
-        return SecurityHelper.getPrincipal(user.getSubject(),UserPrincipal.class);
-    }
-    
-    protected List getUserRoles(User user)
-    {
-        return SecurityHelper.getPrincipals(user.getSubject(),RolePrincipal.class);
+        return SecurityHelper.getPrincipals(subject,RolePrincipal.class);
     }
     
     /**
@@ -282,8 +276,8 @@ public class DefaultLoginModule implements LoginModule
     protected void commitPrincipals(Subject subject, User user)
     {
         // add user specific portal user name and roles
-        subject.getPrincipals().add(getUserPrincipal(user));
-        subject.getPrincipals().addAll(getUserRoles(user));
+        subject.getPrincipals().add((Principal) user);
+        subject.getPrincipals().addAll(getUserRoles(subject));
 
         // add portal user role: used in web.xml authorization to
         // detect authenticated portal users

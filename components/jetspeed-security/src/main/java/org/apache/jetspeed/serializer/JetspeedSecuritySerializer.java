@@ -172,11 +172,11 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                 }                
                 for (Group group : groupManager.getGroups(""))
                 {
-                    groupManager.removeGroup(group.getPrincipal().getName());
+                    groupManager.removeGroup(group.getName());
                 }
                 for (Role role : roleManager.getRoles(""))
                 {
-                    roleManager.removeRole(role.getPrincipal().getName());
+                    roleManager.removeRole(role.getName());
                 }
             }
             catch (Exception e)
@@ -203,7 +203,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                 if (!(groupManager.groupExists(name)))
                     groupManager.addGroup(name);
                 Group group = groupManager.getGroup(name);
-                refs.groupMap.put(name, group.getPrincipal());
+                refs.groupMap.put(name, (Principal) group);
             }
             catch (Exception e)
             {
@@ -222,7 +222,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                 if (!(roleManager.roleExists(name)))
                     roleManager.addRole(name);
                 Role role = roleManager.getRole(name);
-                refs.roleMap.put(name, role.getPrincipal());
+                refs.roleMap.put(name, (Principal) role);
             }
             catch (Exception e)
             {

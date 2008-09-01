@@ -16,63 +16,21 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
 
 /**
- * <p>Represents a security 'role' made of a {@link org.apache.jetspeed.security.RolePrincipal} and security attributes.</p>
- * <p>Modified 2008-08-05 - DST - decoupled java preferences</p> 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>Represents a security 'role' extending BaseJetspeedPrincipal.</p>
+ * @version $Id
  */
-public class RoleImpl implements Role
+public class RoleImpl extends BaseJetspeedPrincipal implements Role
 {
-    private Principal rolePrincipal;
-    private SecurityAttributes attributes;
-    
+    private static final long serialVersionUID = 5484179899807809619L;
+
     /**
      * <p>Default constructor.</p>
      */
     public RoleImpl()
     {
-    }
-
-    /**
-     * <p>{@link Role} constructor given a role principal and its security attributes.</p>
-     * @param rolePrincipal The role principal.
-     * @param attributes The security attributes.
-     */
-    public RoleImpl(Principal rolePrincipal, SecurityAttributes attributes)
-    {
-        this.rolePrincipal = rolePrincipal;
-        this.attributes = attributes;
-    }
-
-    
-    /**
-     * @see org.apache.jetspeed.security.Role#getPrincipal()
-     */
-    public Principal getPrincipal()
-    {
-        return this.rolePrincipal;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.Role#setPrincipal(java.security.Principal)
-     */
-    public void setPrincipal(Principal rolePrincipal)
-    {
-        this.rolePrincipal = rolePrincipal;
-    }
-
-    public SecurityAttributes getAttributes()
-    {
-        return this.attributes;
-    }
-
-    public void setAttributes(SecurityAttributes attributes)
-    {
-        this.attributes = attributes;
     }
 
 }

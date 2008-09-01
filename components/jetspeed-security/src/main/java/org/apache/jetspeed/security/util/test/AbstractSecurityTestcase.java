@@ -175,17 +175,17 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //
         Collection<User> users = this.ums.getUsers("");
         for (User user : users)
         {
-            ums.removeUser(user.getUserPrincipal().getName());
+            ums.removeUser(user.getName());
         }
         Collection<Role> roles = this.rms.getRoles("");
         for (Role role : roles)
         {
-            rms.removeRole(role.getPrincipal().getName());
+            rms.removeRole(role.getName());
         }
         Collection<Group> groups = this.gms.getGroups("");
         for (Group group : groups)
         {
-            gms.removeGroup(group.getPrincipal().getName());
+            gms.removeGroup(group.getName());
         }
     }
      

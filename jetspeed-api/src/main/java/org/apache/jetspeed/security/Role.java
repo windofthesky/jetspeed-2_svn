@@ -16,39 +16,10 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
-
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
-
 /**
- * <p>A role made of a {@link RolePrincipal} and the role security attributes</p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>Role simply extending JetspeedPrincipal interface.</p>
+ * @version $Id
  */
-public interface Role
+public interface Role extends JetspeedPrincipal
 {
-    /**
-     * <p>Getter for the role {@link Principal}.</p>
-     * @return The {@link Principal}.
-     */
-    Principal getPrincipal();
-
-    /**
-     * <p>Setter for the role {@link RolePrincipal}.</p>
-     * @param rolePrincipal The {@link Principal}.
-     */
-    void setPrincipal(Principal rolePrincipal);
-
-    /**
-     * <p>Getter providing access to the
-     * group security attributes.</p>
-     * @return The security attributes for a group
-     */
-    SecurityAttributes getAttributes();
-
-    /**
-     * <p>Setter providing access to the
-     * group security attributes.</p>
-     * @param attributes The security attributes for a group
-     */
-    void setAttributes(SecurityAttributes attributes);
 }

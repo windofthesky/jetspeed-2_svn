@@ -23,7 +23,7 @@ import javax.security.auth.Subject;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: UserPrincipal.java 187022 2004-07-16 19:31:24Z weaver $
  */
-public interface UserSubjectPrincipal extends UserPrincipal
+public interface UserSubjectPrincipal extends User
 {
     Subject getSubject();
 }

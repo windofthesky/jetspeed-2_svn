@@ -16,39 +16,10 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
-
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
-
 /**
- * <p>A group made of a {@link GroupPrincipal} and the group {@link Preferences}.</p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * <p>Group simply extending JetspeedPrincipal interface.</p>
+ * @version $Id
  */
-public interface Group
+public interface Group extends JetspeedPrincipal
 {
-    /**
-     * <p>Getter for the group {@link Principal}.</p>
-     * @return The {@link GroupPrincipal}.
-     */
-    Principal getPrincipal();
-
-    /**
-     * <p>Setter for the group {@link Principal}.</p>
-     * @param groupPrincipal The {@link Principal}.
-     */
-    void setPrincipal(Principal groupPrincipal);
-
-    /**
-     * <p>Getter providing access to the
-     * group security attributes.</p>
-     * @return The security attributes for a group
-     */
-    SecurityAttributes getAttributes();
-
-    /**
-     * <p>Setter providing access to the
-     * group security attributes.</p>
-     * @param attributes The security attributes for a group
-     */
-    void setAttributes(SecurityAttributes attributes);
 }
