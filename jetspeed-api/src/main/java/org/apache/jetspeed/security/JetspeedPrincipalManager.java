@@ -25,7 +25,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 /**
  * @version $Id$
  */
-public interface JetspeedPrincipalManager
+public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManager, JetspeedPrincipalPermissionStorageManager
 {
     JetspeedPrincipalType getPrincipalType();
 
@@ -40,8 +40,6 @@ public interface JetspeedPrincipalManager
     void addAssociationHandler(JetspeedPrincipalAssociationHandler ah);
 
     JetspeedPrincipal newPrincipal(String name);
-
-    JetspeedPrincipal newPrincipal(String name, boolean mapped);
 
     boolean principalExists(String name);
 
