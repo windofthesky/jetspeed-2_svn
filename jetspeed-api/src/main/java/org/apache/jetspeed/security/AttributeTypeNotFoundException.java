@@ -21,7 +21,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 /**
  * @version $Id$
  */
-public class UnsupportedPrincipalAssociationException extends JetspeedException
+public class AttributeTypeNotFoundException extends JetspeedException
 {
-    private static final long serialVersionUID = -7974095505573133535L;
+    private static final long serialVersionUID = 8489109575962501156L;
 }

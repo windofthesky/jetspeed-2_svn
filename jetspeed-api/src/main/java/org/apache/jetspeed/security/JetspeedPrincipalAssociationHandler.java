@@ -33,7 +33,7 @@ public interface JetspeedPrincipalAssociationHandler
 
     void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException;
 
-    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, RequiredPrincipalAssociationException;
+    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationRequiredException;
 
     // may only be called when removing the principal itself
     void removeAllFrom(JetspeedPrincipal from) throws PrincipalNotFoundException, PrincipalNotRemovableException; 

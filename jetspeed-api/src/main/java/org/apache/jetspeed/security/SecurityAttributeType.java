@@ -32,4 +32,6 @@ public interface SecurityAttributeType
     boolean isReadOnly();
 
     boolean isRequired();
+
+    boolean isRegistered();
 }

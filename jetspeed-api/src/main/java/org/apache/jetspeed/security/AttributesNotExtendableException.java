@@ -21,7 +21,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 /**
  * @version $Id$
  */
-public class ReadonlyAttributesException extends JetspeedException
+public class AttributesNotExtendableException extends JetspeedException
 {
-    private static final long serialVersionUID = 5331466107561705454L;
+    private static final long serialVersionUID = -6078545521650063319L;
 }

@@ -25,7 +25,7 @@ import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
-import org.apache.jetspeed.security.RequiredPrincipalAssociationException;
+import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 
 /**
  * @version $Id$
@@ -33,7 +33,7 @@ import org.apache.jetspeed.security.RequiredPrincipalAssociationException;
 public interface JetspeedPrincipalStorageManager
 {
     void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-        throws PrincipalAlreadyExistsException, RequiredPrincipalAssociationException;
+        throws PrincipalAlreadyExistsException, PrincipalAssociationRequiredException;
 
     void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException;
 

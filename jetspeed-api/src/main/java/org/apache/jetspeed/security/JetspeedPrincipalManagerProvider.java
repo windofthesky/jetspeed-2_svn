@@ -16,14 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
  * @version $Id$
  */
 public interface JetspeedPrincipalManagerProvider
 {
-    Set<JetspeedPrincipalType> getPrincipalTypes();
+    Map<String, JetspeedPrincipalType> getPrincipalTypeMap();
 
     JetspeedPrincipalType getPrincipalType(String name);
 

@@ -21,7 +21,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 /**
  * @version $Id$
  */
-public class RequiredAttributeException extends JetspeedException
+public class PrincipalAssociationUnsupportedException extends JetspeedException
 {
-    private static final long serialVersionUID = -7652890285446916215L;
+    private static final long serialVersionUID = -7974095505573133535L;
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,33 +24,33 @@ import java.util.Set;
  */
 public interface SecurityAttributes
 {
-    String USER_INFO_CATEGORY = "user_info";
+    String INFO_CATEGORY = "info";
 
     JetspeedPrincipal getPrincipal();
 
     int size();
 
-    boolean isReadonly();
-
-    Set<SecurityAttributeType> getAttributeTypes();
-
-    Set<SecurityAttributeType> getAttributeTypes(String category);
+    boolean isReadOnly();
+    
+    boolean isExtendable();
+    
+    SecurityAttributeTypes getSecurityAttributeTypes();
 
     Set<String> getAttributeNames();
 
     Set<String> getAttributeNames(String category);
 
-    Set<SecurityAttribute> getAttributes();
+    Map<String, SecurityAttribute> getAttributeMap();
 
-    Set<SecurityAttribute> getAttributes(String category);
-
+    Map<String, SecurityAttribute> getAttributeMap(String category);
+    
     SecurityAttribute getAttribute(String name);
 
-    SecurityAttribute newAttribute(String name)
-        throws ReadonlyAttributesException, SecurityAttributeTypeNotFoundException, AttributeAlreadyExistsException;
+    SecurityAttribute addAttribute(String name)
+        throws AttributesReadOnlyException, AttributeTypeNotFoundException, AttributeAlreadyExistsException;
 
-    SecurityAttribute newAttribute(String name, String category, SecurityAttributeType.DataType type)
-        throws ReadonlyAttributesException, AttributeAlreadyExistsException;
+    SecurityAttribute addNewInfoAttribute(String name, SecurityAttributeType.DataType type)
+        throws AttributesReadOnlyException, AttributeTypeAlreadyDefinedException, AttributeAlreadyExistsException, AttributesNotExtendableException;
 
-    void removeAttribute(String name) throws ReadonlyAttributesException, RequiredAttributeException;
+    void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException;
 }

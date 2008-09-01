@@ -16,18 +16,12 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Map;
+import org.apache.jetspeed.exception.JetspeedException;
 
 /**
  * @version $Id$
  */
-public interface SecurityAttributeTypes
+public class AttributeTypeAlreadyDefinedException extends JetspeedException
 {
-    Map<String, SecurityAttributeType> getAttributeTypeMap();
-
-    Map<String, SecurityAttributeType> getAttributeTypeMap(String category);
-
-    boolean isReadOnly();
-
-    boolean isExtendable();
+    private static final long serialVersionUID = 8489109575962501156L;
 }
