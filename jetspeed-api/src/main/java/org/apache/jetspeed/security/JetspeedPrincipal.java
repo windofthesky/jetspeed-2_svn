@@ -47,7 +47,7 @@ public interface JetspeedPrincipal
 
     void setMapped(boolean mapped);
 
-    boolean isReadonly(); // true if enabled may not be modified, nor mapped associations, permissions and attributes
+    boolean isReadOnly(); // true if enabled may not be modified, nor mapped associations, permissions and attributes
 
     void setReadonly(boolean readonly);
 
