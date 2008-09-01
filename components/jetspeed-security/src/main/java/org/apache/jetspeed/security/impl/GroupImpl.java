@@ -20,7 +20,7 @@ import org.apache.jetspeed.security.Group;
 
 /**
  * <p>Represents a security 'group' extending BaseJetspeedPrincipal.</p>
- * @version $Id
+ * @version $Id$
  */
 public class GroupImpl extends BaseJetspeedPrincipal implements Group
 {

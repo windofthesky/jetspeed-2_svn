@@ -23,7 +23,7 @@ import org.apache.jetspeed.security.UserSubjectPrincipal;
 
 /**
  * <p>Represents a security 'user' extending BaseJetspeedPrincipal.</p>
- * @version $Id
+ * @version $Id$
  */
 public class UserImpl extends BaseJetspeedPrincipal implements User, UserSubjectPrincipal
 {

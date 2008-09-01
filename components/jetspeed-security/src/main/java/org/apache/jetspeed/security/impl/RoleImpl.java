@@ -20,7 +20,7 @@ import org.apache.jetspeed.security.Role;
 
 /**
  * <p>Represents a security 'role' extending BaseJetspeedPrincipal.</p>
- * @version $Id
+ * @version $Id$
  */
 public class RoleImpl extends BaseJetspeedPrincipal implements Role
 {
