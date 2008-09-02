@@ -38,8 +38,8 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.attributes.SecurityAttribute;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
@@ -118,11 +118,11 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
                                 && userMgr.userExists(userPrincipal.getName()))
                         {
                             User user = userMgr.getUser(userPrincipal.getName());
-                            Map<String, SecurityAttribute> sa = user.getAttributes().getAttributes(SecurityAttributes.SECURITY_ATTRIBUTE);
+                            Map<String, SecurityAttribute> sa = user.getSecurityAttributes().getInfoAttributeMap();
                             SecurityAttribute attrib = sa.get(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
                             if (attrib != null)
                             {
-                                String localeString = attrib.getValue();
+                                String localeString = attrib.getStringValue();
                                 if (localeString != null)
                                 {
                                     locale = JetspeedLocale.convertStringToLocale(localeString);

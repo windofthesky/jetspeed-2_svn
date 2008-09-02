@@ -300,7 +300,7 @@ public class GetUserListAction
     	User user =  userManager.getUser(username);
 		if(user != null)
 		{
-            return user.getUserAttributes();
+            return user.getUserInfo();
 		}
 		return new HashMap<String, String>();
     }

@@ -80,7 +80,7 @@ public class GetUserInformationAction
                 User user = userManager.getUser(principal.getName());
                 if(user != null)
                 {
-                    Map<String, String> userInfo = user.getUserAttributes();
+                    Map<String, String> userInfo = user.getUserInfo();
                 	resultMap.put(USERINFO, userInfo);
 
                 	List roles = new ArrayList();

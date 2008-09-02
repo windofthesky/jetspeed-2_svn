@@ -262,10 +262,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
             assertTrue("role exists. should not have thrown an exception.", false);
         }
         assertNotNull("role is null", role);
-        // Test the Principal.
-        Principal rolePrincipal = role.getPrincipal();
-        assertNotNull("role principal is null", rolePrincipal);
-        assertEquals("expected role principal full path name == testgetrole", "testgetrole", rolePrincipal.getName());
+        assertEquals("expected role principal full path name == testgetrole", "testgetrole", role.getName());
 
         // Cleanup test.
         try
@@ -552,7 +549,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         Collection<Role> roles = rms.getRoles("");
         for (Role role : roles)
         {            
-            System.out.println("Role = " + role.getPrincipal().getName());
+            System.out.println("Role = " + role.getName());
             roleCount++;
         }
         ums.addUser("notme", "one-pw");
@@ -567,7 +564,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         roles = rms.getRoles("");
         for (Role role : roles)
         {
-            System.out.println("* Role = " + role.getPrincipal().getName());
+            System.out.println("* Role = " + role.getName());
             count++;
         }
         ums.removeUser("notme");

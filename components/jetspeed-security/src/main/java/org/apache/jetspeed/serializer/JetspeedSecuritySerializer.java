@@ -46,8 +46,8 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.attributes.SecurityAttribute;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.om.InternalGroupPrincipal;
 import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.om.InternalPrincipal;
@@ -318,7 +318,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                     JSUserAttributes attributes = jsuser.getUserInfo();
                     if (attributes != null)
                     {
-                        Map <String, SecurityAttribute> userInfo = user.getAttributes().getAttributes(SecurityAttributes.USER_INFORMATION);
+                        Map <String, SecurityAttribute> userInfo = user.getSecurityAttributes().getInfoAttributeMap();
                         List<JSNVPElement> values = attributes.getValues();
                         if (values != null)
                         {
@@ -341,7 +341,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                             }
                         }                        
                     }
-                    refs.userMap.put(jsuser.getName(), user.getUserPrincipal());
+                    refs.userMap.put(jsuser.getName(), (Principal) user);
                     userManager.updateUser(user);
                 }
             }
@@ -530,7 +530,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             try
             {
                 JSRole _tempRole = (JSRole) getObjectBehindPrinicpal(refs.roleMap,
-                        (BasePrincipal) (role.getPrincipal()));
+                        (BasePrincipal) role);
                 if (_tempRole == null)
                 {
                     _tempRole = createJSRole(role);
@@ -550,8 +550,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
 
             try
             {
-                JSGroup _tempGroup = (JSGroup) getObjectBehindPrinicpal(refs.groupMap, (BasePrincipal) (group
-                        .getPrincipal()));
+                JSGroup _tempGroup = (JSGroup) getObjectBehindPrinicpal(refs.groupMap, (BasePrincipal) group);
                 if (_tempGroup == null)
                 {
                     _tempGroup = createJSGroup(group);
@@ -686,7 +685,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     private JSRole createJSRole(Role role)
     {
         JSRole _role = new JSRole();
-        _role.setName(role.getPrincipal().getName());
+        _role.setName(role.getName());
         return _role;
     }
 
@@ -696,7 +695,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     private JSGroup createJSGroup(Group group)
     {
         JSGroup _group = new JSGroup();
-        _group.setName(group.getPrincipal().getName());
+        _group.setName(group.getName());
         return _group;
     }
 

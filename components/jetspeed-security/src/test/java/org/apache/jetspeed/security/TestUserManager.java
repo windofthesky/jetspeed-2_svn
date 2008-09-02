@@ -172,7 +172,7 @@ public class TestUserManager extends AbstractSecurityTestcase
             Collection<Role> roles = rms.getRolesForUser("inheritedUser");
             for (Role role : roles)
             {
-                userRoleNames.add(role.getPrincipal().getName());
+                userRoleNames.add(role.getName());
             }
             
             assertFalse("role 'assignedRole' is not expected to be retrieved because the role 'assignedRole' is not directly assigned to user 'inheritedUser'.", userRoleNames.contains("assignedRole"));

@@ -191,7 +191,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
             try
             {
                 User user = userManager.getUser(_user.getName());
-                Principal principal = user.getUserPrincipal();
+
                 if (jsRules != null)
                 {
                     Iterator _itRoles = jsRules.iterator();
@@ -205,7 +205,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                             PrincipalRule p1 = pm.createPrincipalRule();
                             p1.setLocatorName(pr.getLocator());
                             p1.setProfilingRule(pRule);
-                            p1.setPrincipalName(principal.getName());
+                            p1.setPrincipalName(user.getName());
                             pm.storePrincipalRule(p1);
                         }
                         catch (Exception eRole)

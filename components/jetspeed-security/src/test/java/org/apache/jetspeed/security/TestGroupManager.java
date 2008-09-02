@@ -262,10 +262,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
             assertTrue("group exists. should not have thrown an exception.", false);
         }
         assertNotNull("group is null", group);
-        // Test the Principal.
-        Principal groupPrincipal = group.getPrincipal();
-        assertNotNull("group principal is null", groupPrincipal);
-        assertEquals("expected group principal full path == testgetgroup", "testgetgroup", groupPrincipal.getName());
+        assertEquals("expected group principal full path == testgetgroup", "testgetgroup", group.getName());
 
         // Cleanup test.
         try

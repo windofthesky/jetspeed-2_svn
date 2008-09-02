@@ -29,10 +29,9 @@ public class TestSecurityAttributes extends AbstractSecurityTestcase
         {        
             ums.addUser("david", "secret");
         }
-        User david = ums.getUser("david");        
+        User user = ums.getUser("david");        
         SecurityAttributesProvider sap = (SecurityAttributesProvider)scm.getComponent("SecurityAttributesProvider");
         assertNotNull(sap);
-        UserPrincipal user = david.getUserPrincipal();        
         // create 3 attributes
         SecurityAttributes sa = sap.createSecurityAttributes(user);
         Map<String,SecurityAttribute> attributes = sa.getAttributes();

@@ -16,16 +16,21 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserSubjectPrincipal;
 
 /**
  * <p>Represents a security 'user' extending BaseJetspeedPrincipal.</p>
  * @version $Id$
  */
-public class UserImpl extends BaseJetspeedPrincipal implements User, UserSubjectPrincipal
+public class UserImpl extends BaseJetspeedPrincipal implements User
 {
     private static final long serialVersionUID = 5484179899807809619L;
 
@@ -46,6 +51,19 @@ public class UserImpl extends BaseJetspeedPrincipal implements User, UserSubject
     public void setSubject(Subject subject)
     {
         this.subject = subject;
+    }
+
+    public Map<String, String> getUserInfo()
+    {
+        Map<String, String> userInfo = new HashMap<String, String>();
+        Map<String, SecurityAttribute> infoAttrMap = super.getSecurityAttributes().getInfoAttributeMap();
+        
+        for (SecurityAttribute attr : infoAttrMap.values())
+        {
+            userInfo.put(attr.getName(), attr.getStringValue());
+        }
+            
+        return userInfo;
     }
     
 }
