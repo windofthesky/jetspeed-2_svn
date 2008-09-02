@@ -19,6 +19,7 @@ package org.apache.jetspeed.tools.pamanager;
 import java.io.File;
 import java.io.IOException;
 import java.security.Permission;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -793,7 +794,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                     if (!permissionManager.permissionExists(permission))
                     {
                         permissionManager.addPermission(permission);
-                        permissionManager.grantPermission(userRole.getPrincipal(), permission);
+                        permissionManager.grantPermission((Principal) userRole, permission);
                     }                    
                 }
             }

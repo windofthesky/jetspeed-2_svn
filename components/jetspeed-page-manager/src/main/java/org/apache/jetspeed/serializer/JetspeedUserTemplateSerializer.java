@@ -30,12 +30,15 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.security.AttributeAlreadyExistsException;
+import org.apache.jetspeed.security.AttributeTypeNotFoundException;
+import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.attributes.SecurityAttribute;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 
@@ -149,9 +152,12 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 {
                     if (innerSubsite != null)
                     {
-                        User innerUser = userManager.getUser(innerUserName);                   
-                        Map<String, SecurityAttribute> attributes = innerUser.getAttributes().getAttributes(SecurityAttributes.USER_INFORMATION);
-                        attributes.put(User.USER_INFO_SUBSITE, innerUser.getAttributes().createAttribute(User.USER_INFO_SUBSITE, innerSubsite));
+                        User innerUser = userManager.getUser(innerUserName);
+                        SecurityAttributes userAttrs = innerUser.getSecurityAttributes();
+                        Map<String, SecurityAttribute> attributes = userAttrs.getInfoAttributeMap();
+                        SecurityAttribute userAttr = userAttrs.addAttribute(User.USER_INFO_SUBSITE);
+                        userAttr.setStringValue(innerSubsite);
+                        attributes.put(User.USER_INFO_SUBSITE, userAttr);
                         userManager.updateUser(innerUser);
                     }
                     Folder source = innerPageManager.getFolder(innerFolderTemplate);
@@ -178,6 +184,18 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 {
                     se.printStackTrace();
                     return se;                    
+                } 
+                catch (AttributesReadOnlyException ae)
+                {
+                    return ae;
+                } 
+                catch (AttributeTypeNotFoundException ae)
+                {
+                    return ae;
+                } 
+                catch (AttributeAlreadyExistsException ae)
+                {
+                    return ae;
                 }
             }
         }, null);

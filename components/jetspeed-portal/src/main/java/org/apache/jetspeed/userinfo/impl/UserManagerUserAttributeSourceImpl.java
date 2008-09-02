@@ -79,7 +79,7 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
                 if (userManager.userExists(userPrincipal.getName()))
                 {
                     User user = userManager.getUser(userPrincipal.getName());
-                    Map<String, String> userInfo = user.getUserAttributes();
+                    Map<String, String> userInfo = user.getUserInfo();
                     for (UserAttributeRef currentAttributeRef : userAttributeRefs)
                     {
                         String value = userInfo.get(currentAttributeRef.getName());

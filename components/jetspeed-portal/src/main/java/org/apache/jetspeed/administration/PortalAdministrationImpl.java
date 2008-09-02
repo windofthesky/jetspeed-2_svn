@@ -44,6 +44,9 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.AttributeAlreadyExistsException;
+import org.apache.jetspeed.security.AttributeTypeNotFoundException;
+import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.RoleManager;
@@ -52,9 +55,8 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.attributes.SecurityAttribute;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
-import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.MailException;
@@ -219,11 +221,13 @@ public class PortalAdministrationImpl implements PortalAdministration
             // assign user attributes to user
             if (userInfo != null)
             {
+                SecurityAttributes userAttrs = user.getSecurityAttributes();
                 Iterator info = userInfo.entrySet().iterator();
                 while (info.hasNext())
                 {           
                     Map.Entry entry = (Map.Entry)info.next();
-                    user.getUserAttributes().put((String)entry.getKey(), (String)entry.getValue());
+                    SecurityAttribute userAttr = userAttrs.addAttribute((String)entry.getKey());
+                    userAttr.setStringValue((String) entry.getValue());
                 }
             }
             
@@ -275,12 +279,13 @@ public class PortalAdministrationImpl implements PortalAdministration
                 {
                     public Object run() 
                     {
-                         try
+                        try
                         {
                              if (innerSubsite != null)
                              {
-                                 Map<String, SecurityAttribute> attributes = innerUser.getAttributes().getAttributes(SecurityAttributes.USER_INFORMATION);
-                                 attributes.put(User.USER_INFO_SUBSITE, innerUser.getAttributes().createAttribute(User.USER_INFO_SUBSITE, innerSubsite));
+                                 SecurityAttributes userAttrs = innerUser.getSecurityAttributes();
+                                 SecurityAttribute userAttr = userAttrs.addAttribute(User.USER_INFO_SUBSITE);
+                                 userAttr.setStringValue(innerSubsite);
                                  userManager.updateUser(innerUser);
                              }                                         
                              // create user's home folder                        
@@ -296,20 +301,34 @@ public class PortalAdministrationImpl implements PortalAdministration
                              
                             return null;
                         }
-                         catch (SecurityException s1)
-                         {
-                             return s1;
-                         }
-                         catch (FolderNotFoundException e1) 
-                         {
-                             return e1;
-                         } catch (InvalidFolderException e1)
-                         {
-                             return e1;
-                         } catch (NodeException e1)
-                         {
-                             return e1;
-                         }
+                        catch (SecurityException s1)
+                        {
+                            return s1;
+                        }
+                        catch (FolderNotFoundException e1) 
+                        {
+                            return e1;
+                        }
+                        catch (InvalidFolderException e1)
+                        {
+                            return e1;
+                        }
+                        catch (NodeException e1)
+                        {
+                            return e1;
+                        } 
+                        catch (AttributesReadOnlyException e1)
+                        {
+                            return e1;
+                        } 
+                        catch (AttributeTypeNotFoundException e1)
+                        {
+                            return e1;
+                        } 
+                        catch (AttributeAlreadyExistsException e1)
+                        {
+                            return e1;
+                        }
                     }
                 }, null);
                 

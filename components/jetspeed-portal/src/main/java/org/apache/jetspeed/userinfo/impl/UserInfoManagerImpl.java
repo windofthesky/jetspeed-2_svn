@@ -212,7 +212,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
                     if (userMgr.userExists(userPrincipal.getName()))
                     {
                         User user = userMgr.getUser(userPrincipal.getName());
-                        userInfo = user.getUserAttributes();
+                        userInfo = user.getUserInfo();
                     }
                 }
                 catch (SecurityException sex)

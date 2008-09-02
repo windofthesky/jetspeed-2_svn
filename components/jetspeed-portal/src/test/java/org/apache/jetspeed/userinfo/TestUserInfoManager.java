@@ -33,11 +33,11 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
-import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
@@ -178,9 +178,13 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         {
             assertTrue("user exists. should not have thrown an exception.", false);
         }
-        SecurityAttributes attributes = user.getAttributes();
-        attributes.getAttributes(SecurityAttributes.USER_INFORMATION).put("user.name.given", attributes.createAttribute("user.name.given", "Test Dude"));
-        attributes.getAttributes(SecurityAttributes.USER_INFORMATION).put("user.name.given", attributes.createAttribute("user.name.family", "Dudley"));
+        SecurityAttributes attributes = user.getSecurityAttributes();
+        SecurityAttribute userAttr = attributes.addAttribute("user.name.given");
+        userAttr.setStringValue("Test Dude");
+        attributes.getInfoAttributeMap().put("user.name.given", userAttr);
+        userAttr = attributes.addAttribute("user.name.family");
+        userAttr.setStringValue("Dudley");
+        attributes.getInfoAttributeMap().put("user.name.family", userAttr);
         ums.updateUser(user);
     }
 
