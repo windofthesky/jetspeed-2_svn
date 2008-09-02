@@ -39,9 +39,12 @@ limitations under the License.
     -->
     <table name="SECURITY_PRINCIPAL">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <!--  column "CLASSNAME" is deprecated: will be dropped once all InternalPrincipal usages are removed -->
         <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
         <column name="IS_MAPPING_ONLY" required="true" type="BOOLEANINT"/>
-        <column name="IS_ENABLED" required="true" type="BOOLEANINT"/>
+        <column name="IS_ENABLED"  required="true" type="BOOLEANINT"/>
+        <column name="IS_READONLY" required="true" type="BOOLEANINT"/>
+        <column name="IS_REMOVABLE" required="true" type="BOOLEANINT"/>
         <column name="SP_TYPE" required="true" size="20" type="VARCHAR"/>
         <column name="SP_NAME" required="true" size="200" type="VARCHAR"/>        
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
@@ -231,19 +234,17 @@ limitations under the License.
    -->
    
     <table name="SECURITY_ATTRIBUTES">
+        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="ATTR_NAME" primaryKey="true" required="true" size="200" type="VARCHAR"/>
         <column name="ATTR_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PRINCIPAL_ID" required="true" type="INTEGER"/>
-        <column name="ATTR_NAME" required="true" size="200" type="VARCHAR"/>
+        <!--  column "ATTR_TYPE" is deprecated: will be dropped with transition to new SecurityAttributes implementation is complete -->
         <column name="ATTR_TYPE" required="true" size="20" type="VARCHAR"/>
-        <column name="PRINCIPAL_TYPE" size="10" type="VARCHAR"/>
         <column name="ATTR_VALUE" size="1000" type="VARCHAR"/>
-        <index name="IX_PRINCIPAL_ID">
-            <index-column name="PRINCIPAL_ID"/>
-        </index>
 		<index name="IX_NAMEVALUE_LOOKUP">
 			<index-column name="ATTR_NAME"/>
 			<index-column name="ATTR_VALUE"/>
 		</index>
+    <
 		                
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>

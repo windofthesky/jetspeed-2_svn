@@ -662,7 +662,7 @@ limitations under the License.
 
 
    <!--
-   - S E C U R I T Y   A T T R I B U T E S
+   - S E C U R I T Y   A T T R I B U T E S ( D E P R E C A T E D )
    -->
   <class-descriptor
       class="org.apache.jetspeed.security.attributes.SecurityAttributeImpl"
@@ -695,6 +695,137 @@ limitations under the License.
           jdbc-type="VARCHAR"
           nullable="false"
           length="20"
+      />
+      <field-descriptor
+          name="value"
+          column="attr_value"
+          jdbc-type="VARCHAR"
+          nullable="true"
+          length="1000"
+      />      
+  </class-descriptor>
+
+
+  <!--
+     - J E T S P E E D   P R I N C I P A L
+  --> 
+  <class-descriptor
+      class="org.apache.jetspeed.security.impl.BaseJetspeedPrincipal"
+      table="SECURITY_PRINCIPAL"
+  >
+      <documentation>Represents a security principal in the security policy.</documentation>
+      <field-descriptor
+          name="id"
+          column="principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          indexed="true"
+          autoincrement="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="ojbConcreteClass"
+          column="sp_type"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          conversion="org.apache.jetspeed.security.util.ojb.JetspeedPrincipalTypeFieldConversion"
+          length="20"
+      >
+      </field-descriptor>     
+      <field-descriptor
+          name="mapped"
+          column="is_mapping_only"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="readOnly"
+          column="is_readonly"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="removable"
+          column="is_removable"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="name"
+          column="sp_name"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="200"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="creationDate"
+          column="creation_date"
+          jdbc-type="TIMESTAMP"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="modifiedDate"
+          column="modified_date"
+          jdbc-type="TIMESTAMP"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <collection-descriptor
+          name="attributeValues"
+          element-class-ref="org.apache.jetspeed.security.impl.SecurityAttributeValue"
+          refresh="true"
+          auto-retrieve="true"
+          auto-update="true"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="principalId"/>
+      </collection-descriptor>
+  </class-descriptor>
+  
+   <!--
+   - S E C U R I T Y   A T T R I B U T E S
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.security.SecurityAttributeValue"
+      table="security_attributes"
+  >
+      <documentation>Represents a Security Principal Attribute definition.</documentation>
+      <field-descriptor
+          name="id"
+          column="attr_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          autoincrement="true"
+      />
+      <field-descriptor
+          name="principalId"
+          column="principal_id"
+          jdbc-type="BIGINT"
+          nullable="false"
+          access="anonymous"
+      />
+      <field-descriptor
+          name="name"
+          column="attr_name"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="200"
       />
       <field-descriptor
           name="value"

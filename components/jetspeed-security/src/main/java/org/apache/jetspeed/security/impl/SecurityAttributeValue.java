@@ -27,6 +27,9 @@ public class SecurityAttributeValue implements Serializable
 {
     private static final long serialVersionUID = -5305625934872996140L;
 
+    @SuppressWarnings("unused")
+    private long id;
+    
     private String name;
     private String stringValue;
     
