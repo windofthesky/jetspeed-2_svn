@@ -56,7 +56,7 @@ public class UserImpl extends BaseJetspeedPrincipal implements User
     public Map<String, String> getUserInfo()
     {
         Map<String, String> userInfo = new HashMap<String, String>();
-        Map<String, SecurityAttribute> infoAttrMap = super.getSecurityAttributes().getInfoAttributeMap();
+        Map<String, SecurityAttribute> infoAttrMap = getSecurityAttributes().getInfoAttributeMap();
         
         for (Map.Entry entry : infoAttrMap.entrySet())
         {

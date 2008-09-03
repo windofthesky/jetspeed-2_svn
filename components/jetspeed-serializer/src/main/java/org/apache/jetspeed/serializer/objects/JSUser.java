@@ -28,8 +28,8 @@ import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.security.Credential;
-import org.apache.jetspeed.security.attributes.SecurityAttribute;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 
 /**
  * Jetspeed Serialized (JS) User
@@ -237,7 +237,7 @@ public class JSUser
         for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
         {
             SecurityAttribute attrib = e.getValue();
-            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getValue());
+            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getStringValue());
             this.attributes.add(element);
         }
     }
@@ -253,7 +253,7 @@ public class JSUser
         for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
         {
             SecurityAttribute attrib = e.getValue();
-            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getValue());
+            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getStringValue());
             this.userInfo.add(element);
         }
     }

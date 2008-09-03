@@ -281,16 +281,16 @@ public class PortalAdministrationImpl implements PortalAdministration
                     {
                         try
                         {
-                             if (innerSubsite != null)
-                             {
-                                 SecurityAttributes userAttrs = innerUser.getSecurityAttributes();
-                                 SecurityAttribute userAttr = userAttrs.addAttribute(User.USER_INFO_SUBSITE);
-                                 userAttr.setStringValue(innerSubsite);
-                                 userManager.updateUser(innerUser);
-                             }                                         
-                             // create user's home folder                        
-                             // deep copy from the default folder template tree, creating a deep-copy of the template
-                             // in the new user's folder tree
+                            if (innerSubsite != null)
+                            {
+                                SecurityAttributes userAttrs = innerUser.getSecurityAttributes();
+                                SecurityAttribute userAttr = userAttrs.addAttribute(User.USER_INFO_SUBSITE);
+                                userAttr.setStringValue(innerSubsite);
+                                userManager.updateUser(innerUser);
+                            }                                         
+                            // create user's home folder                        
+                            // deep copy from the default folder template tree, creating a deep-copy of the template
+                            // in the new user's folder tree
                             Folder source = innerPageManager.getFolder(innerFolderTemplate);
                             
                             

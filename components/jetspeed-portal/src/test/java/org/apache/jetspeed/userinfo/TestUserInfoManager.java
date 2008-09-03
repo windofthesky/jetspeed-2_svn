@@ -179,12 +179,8 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         SecurityAttributes attributes = user.getSecurityAttributes();
-        SecurityAttribute userAttr = attributes.addAttribute("user.name.given");
-        userAttr.setStringValue("Test Dude");
-        attributes.getInfoAttributeMap().put("user.name.given", userAttr);
-        userAttr = attributes.addAttribute("user.name.family");
-        userAttr.setStringValue("Dudley");
-        attributes.getInfoAttributeMap().put("user.name.family", userAttr);
+        attributes.addAttribute("user.name.given").setStringValue("Test Dude");
+        attributes.addAttribute("user.name.family").setStringValue("Dudley");
         ums.updateUser(user);
     }
 
