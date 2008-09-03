@@ -244,8 +244,6 @@ limitations under the License.
 			<index-column name="ATTR_NAME"/>
 			<index-column name="ATTR_VALUE"/>
 		</index>
-    <
-		                
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>        
