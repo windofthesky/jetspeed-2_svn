@@ -42,7 +42,9 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
     List<String> getPrincipalNames(String nameFilter);
 
     List<JetspeedPrincipal> getPrincipals(String nameFilter);
-
+    
+    JetspeedPrincipal newPrincipal(String name,boolean mapped);
+    
     void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 
     List<JetspeedPrincipal> getAssociatedFrom(String principalName, String associationName);

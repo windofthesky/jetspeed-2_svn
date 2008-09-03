@@ -32,7 +32,8 @@ import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
  */
 public interface JetspeedPrincipalStorageManager
 {
-    JetspeedPrincipal newPrincipal(String name, boolean mapped);
+    boolean isMapped();
+    
     void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
         throws PrincipalAlreadyExistsException, PrincipalAssociationRequiredException;
 
