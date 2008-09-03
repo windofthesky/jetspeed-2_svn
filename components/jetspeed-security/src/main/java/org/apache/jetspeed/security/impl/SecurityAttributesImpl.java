@@ -143,22 +143,32 @@ public class SecurityAttributesImpl implements SecurityAttributes
         return saMap.get(name);
     }
 
-    public SecurityAttribute addAttribute(String name)
-        throws AttributesReadOnlyException, AttributeTypeNotFoundException, AttributeAlreadyExistsException
+    public SecurityAttribute getAttribute(String name, boolean create)
+        throws AttributesReadOnlyException, AttributeTypeNotFoundException
     {
         if (isReadOnly())
         {
             throw new AttributesReadOnlyException();
-        }        
+        }
+        
         SecurityAttributeType sat = getSecurityAttributeTypes().getAttributeTypeMap().get(name);
+        
         if (sat == null)
         {
             throw new AttributeTypeNotFoundException();
         }
-        if (saMap.containsKey(name))
+        
+        SecurityAttribute sa = saMap.get(name);
+        
+        if (sa != null)
         {
-            throw new AttributeAlreadyExistsException();
+            return sa;
         }
+        else if ( create == false )
+        {
+            return null;
+        }
+        
         SecurityAttributeValue value = new SecurityAttributeValue(name);
         avColl.add(value);
         return saMap.put(name, new SecurityAttributeImpl(sat, value));

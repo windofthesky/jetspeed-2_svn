@@ -153,8 +153,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                     if (innerSubsite != null)
                     {
                         User innerUser = userManager.getUser(innerUserName);
-                        SecurityAttribute userAttr = innerUser.getSecurityAttributes().addAttribute(User.USER_INFO_SUBSITE);
-                        userAttr.setStringValue(innerSubsite);
+                        innerUser.getSecurityAttributes().getAttribute(User.USER_INFO_SUBSITE, true).setStringValue(innerSubsite);
                         userManager.updateUser(innerUser);
                     }
                     Folder source = innerPageManager.getFolder(innerFolderTemplate);
@@ -190,10 +189,6 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 {
                     return ae;
                 } 
-                catch (AttributeAlreadyExistsException ae)
-                {
-                    return ae;
-                }
             }
         }, null);
 

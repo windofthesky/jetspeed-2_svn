@@ -34,6 +34,7 @@ import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
@@ -178,9 +179,27 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         {
             assertTrue("user exists. should not have thrown an exception.", false);
         }
+        
         SecurityAttributes attributes = user.getSecurityAttributes();
-        attributes.addAttribute("user.name.given").setStringValue("Test Dude");
-        attributes.addAttribute("user.name.family").setStringValue("Dudley");
+        
+        if (attributes.getSecurityAttributeTypes().getAttributeTypeMap().containsKey("user.name.given"))
+        {
+            attributes.getAttribute("user.name.given", true).setStringValue("Test Dude");
+        }
+        else
+        {
+            attributes.addNewInfoAttribute("user.name.given", SecurityAttributeType.DataType.STRING).setStringValue("Test Dude");
+        }
+        
+        if (attributes.getSecurityAttributeTypes().getAttributeTypeMap().containsKey("user.name.family"))
+        {
+            attributes.getAttribute("user.name.family", true).setStringValue("Dudley");
+        }
+        else
+        {
+            attributes.addNewInfoAttribute("user.name.family", SecurityAttributeType.DataType.STRING).setStringValue("Dudley");
+        }
+        
         ums.updateUser(user);
     }
 

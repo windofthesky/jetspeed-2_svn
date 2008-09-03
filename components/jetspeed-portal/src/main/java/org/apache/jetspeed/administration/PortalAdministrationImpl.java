@@ -223,11 +223,11 @@ public class PortalAdministrationImpl implements PortalAdministration
             {
                 SecurityAttributes userAttrs = user.getSecurityAttributes();
                 Iterator info = userInfo.entrySet().iterator();
+                
                 while (info.hasNext())
                 {           
-                    Map.Entry entry = (Map.Entry)info.next();
-                    SecurityAttribute userAttr = userAttrs.addAttribute((String)entry.getKey());
-                    userAttr.setStringValue((String) entry.getValue());
+                    Map.Entry entry = (Map.Entry) info.next();
+                    userAttrs.getAttribute((String) entry.getKey(), true).setStringValue((String) entry.getValue());
                 }
             }
             
@@ -283,9 +283,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                         {
                             if (innerSubsite != null)
                             {
-                                SecurityAttributes userAttrs = innerUser.getSecurityAttributes();
-                                SecurityAttribute userAttr = userAttrs.addAttribute(User.USER_INFO_SUBSITE);
-                                userAttr.setStringValue(innerSubsite);
+                                innerUser.getSecurityAttributes().getAttribute(User.USER_INFO_SUBSITE, true).setStringValue(innerSubsite);
                                 userManager.updateUser(innerUser);
                             }                                         
                             // create user's home folder                        
@@ -325,10 +323,6 @@ public class PortalAdministrationImpl implements PortalAdministration
                         {
                             return e1;
                         } 
-                        catch (AttributeAlreadyExistsException e1)
-                        {
-                            return e1;
-                        }
                     }
                 }, null);
                 

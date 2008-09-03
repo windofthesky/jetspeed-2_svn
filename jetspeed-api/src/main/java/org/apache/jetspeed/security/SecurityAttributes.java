@@ -48,8 +48,22 @@ public interface SecurityAttributes
 
     SecurityAttribute getAttribute(String name);
 
-    SecurityAttribute addAttribute(String name)
-        throws AttributesReadOnlyException, AttributeTypeNotFoundException, AttributeAlreadyExistsException;
+    /**
+     * Returns an existing (predefined typed) attribute.
+     * If parameter create is true and it doesn't exist yet it will be created (based
+     * upon its SecurityAttributeType) first, but only if the SecurityAttributes itself
+     * isn't readOnly (then a AttributesReadOnlyException will be thrown).
+     * If parameter create is false and it doesn't exist yet a NULL value will be
+     * returned.
+     * If there is no SecurityAttributeType defined for the attribute (name), an
+     * AttributeTypeNotFoundException will be thrown.
+     * and parameter create is true will add it before returning it.
+     * @param name name of a predefined SecurityAttributeType (for this JetspeedPrincipal type)
+     * @param create add the attribute when it doesn't exist yet
+     * @return an existing attribute or one created on the fly (if parameter create is true)
+     */
+    SecurityAttribute getAttribute(String name, boolean create)
+        throws AttributesReadOnlyException, AttributeTypeNotFoundException;
 
     SecurityAttribute addNewInfoAttribute(String name, SecurityAttributeType.DataType type)
         throws AttributesReadOnlyException, AttributeTypeAlreadyDefinedException, AttributeAlreadyExistsException, AttributesNotExtendableException;
