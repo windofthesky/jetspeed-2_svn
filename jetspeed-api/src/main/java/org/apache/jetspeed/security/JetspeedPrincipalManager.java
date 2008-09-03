@@ -31,15 +31,9 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
 
     void setAccessManager(JetspeedPrincipalAccessManager pm);
 
-    void setStorageManager(JetspeedPrincipalStorageManager sm);
-
-    void setPermissionStorageManager(JetspeedPrincipalPermissionStorageManager sm);
-
     JetspeedCredentialManager getCredentialManager();
 
     void addAssociationHandler(JetspeedPrincipalAssociationHandler ah);
-
-    JetspeedPrincipal newPrincipal(String name);
 
     boolean principalExists(String name);
 
