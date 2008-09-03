@@ -31,6 +31,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.GroupPrincipal;
 import org.apache.jetspeed.security.HierarchyResolver;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
+import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
@@ -52,6 +56,10 @@ import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 public class UserManagerImpl implements UserManager
 {
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
+    
+    /** The Jetspeed user principal manager */
+    private JetspeedPrincipalManager userPrincipalManager;
+    
     /** The authentication provider proxy. */
     private AuthenticationProviderProxy atnProviderProxy = null;
     /** The security mapping handler. */
@@ -264,48 +272,8 @@ public class UserManagerImpl implements UserManager
             // TODO: need to handle caching issues            
             return guest;
         }        
-        UserPrincipal userPrincipal = atnProviderProxy.getUserPrincipal(username);
-        if (null == userPrincipal) 
-        { 
-            throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
-        }
-        return constructUser(userPrincipal);
-    }
-    
-    private User constructUser(UserPrincipal userPrincipal) throws SecurityException
-    {
-        String username = userPrincipal.getName();
-        PrincipalsSet principals = new PrincipalsSet();
-        principals.add(userPrincipal);
-        principals.addAll(securityMappingHandler.getRolePrincipals(username));
-        Set<GroupPrincipal> groupPrincipals = securityMappingHandler.getGroupPrincipals(username);
-        principals.addAll(groupPrincipals);        
-        if (this.rolesInheritableViaGroups)
-        {
-            for (GroupPrincipal groupPrincipal : groupPrincipals)
-            {
-                Set<RolePrincipal> rolePrincipalsInGroup = securityMappingHandler.getRolePrincipalsInGroup(groupPrincipal.getName());
-                principals.addAll(rolePrincipalsInGroup);
-            }
-        }
-        Subject subject = null;
-        if (getAnonymousUser().equals(username))
-        {
-            subject = new Subject(true, principals, new HashSet(), new HashSet());
-        } 
-        else
-        {
-            subject = new Subject(true, principals, 
-                    atnProviderProxy.getPublicCredentials(username), 
-                    atnProviderProxy.getPrivateCredentials(username));
-        }
-        SecurityAttributes attributes = attributesProvider.retrieveAttributes(userPrincipal);
-        User user = new UserImpl(subject, attributes);
-        if (getAnonymousUser().equals(username))
-        {
-            guest = user;
-        }
-        return user;
+        
+        return (User) userPrincipalManager.getPrincipal(username);
     }
 
     /**
@@ -314,10 +282,9 @@ public class UserManagerImpl implements UserManager
     public Collection<User> getUsers(String filter) throws SecurityException
     {
         List<User> users = new LinkedList<User>();
-        for (UserPrincipal userPrincipal : atnProviderProxy.getUserPrincipals(filter))
+        for (JetspeedPrincipal principal : userPrincipalManager.getPrincipals(filter))
         {
-            User user = constructUser(userPrincipal);
-            users.add(user);
+            users.add((User) principal);
         }
         return users;
     }
@@ -342,10 +309,14 @@ public class UserManagerImpl implements UserManager
             throws SecurityException
     {
         Collection<User> users = new ArrayList<User>();
-        for (UserPrincipal userPrincipal : securityMappingHandler.getUserPrincipalsInRole(roleName))
-        {
-            users.add(constructUser(userPrincipal));
-        }
+        //
+        //for (UserPrincipal userPrincipal : securityMappingHandler.getUserPrincipalsInRole(roleName))
+        //{
+        //    users.add(constructUser(userPrincipal));
+        //}
+        
+        // TODO: need to invoke JPM's getAssociatedFrom() or getAssociatedTo() method here? 
+        
         return users;
     }
 
@@ -356,10 +327,13 @@ public class UserManagerImpl implements UserManager
             throws SecurityException
     {
         Collection<User> users = new ArrayList<User>();
-        for (UserPrincipal userPrincipal : securityMappingHandler.getUserPrincipalsInGroup(groupFullPathName))
-        {
-            users.add(constructUser(userPrincipal));
-        }
+        //for (UserPrincipal userPrincipal : securityMappingHandler.getUserPrincipalsInGroup(groupFullPathName))
+        //{
+        //    users.add(constructUser(userPrincipal));
+        //}
+        
+        // TODO: need to invoke JPM's getAssociatedFrom() or getAssociatedTo() method here? 
+        
         return users;
     }
 
@@ -446,9 +420,18 @@ public class UserManagerImpl implements UserManager
     
     public void updateUser(User user) throws SecurityException
     {
-        UserPrincipal userPrincipal = user.getUserPrincipal();
-        atnProviderProxy.updateUserPrincipal(userPrincipal);
-        this.attributesProvider.saveAttributes(user.getAttributes());
+        try
+        {
+            userPrincipalManager.updatePrincipal(user);
+        } 
+        catch (PrincipalUpdateException e)
+        {
+            throw new SecurityException(e);
+        } 
+        catch (PrincipalNotFoundException e)
+        {
+            throw new SecurityException(e);
+        }
     }
 
     public Collection<User> lookupUsers(String name, String value) throws SecurityException
