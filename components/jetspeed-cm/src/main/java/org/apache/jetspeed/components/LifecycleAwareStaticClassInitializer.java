@@ -20,6 +20,9 @@ package org.apache.jetspeed.components;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
 /**
  * Utility bean which can be used to initialize a static class member with a Spring managed (singleton) bean on context initialization and removing it
  * automatically again when the context is destroyed.
@@ -27,12 +30,12 @@ import java.lang.reflect.Method;
  * The target class needs a public static (void) method with one single object argument. This bean needs to be configured with the target class name,
  * the target static method name, the class name of the target value and finally the value (e.g. a bean reference) itself.
  * 
- * The value will be "injected" into the target class when the init() method is called.
+ * The value will be "injected" into the target class when the afterPropertiesSet() method is called.
  * When the destroy() method is called, the same method will be called again with a null value.
  * @version $Id$
  *
  */
-public class LifecycleAwareStaticClassInitializer
+public class LifecycleAwareStaticClassInitializer implements InitializingBean, DisposableBean
 {
     private String className;
     private String methodName;
@@ -61,7 +64,7 @@ public class LifecycleAwareStaticClassInitializer
     }
     
     @SuppressWarnings("unchecked")
-    public void init() throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    public void afterPropertiesSet() throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
     {
         Class clazz = Class.forName(className);
         Class type = Class.forName(typeName);
