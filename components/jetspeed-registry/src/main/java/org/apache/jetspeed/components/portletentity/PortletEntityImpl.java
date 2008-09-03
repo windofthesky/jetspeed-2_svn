@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
@@ -68,11 +67,11 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 {   
     private Long oid;
     private JetspeedObjectID id;
-    private PortletPreferencesProvider portletPreferencesProvider;
-    private PortletEntityAccessComponent portletEntityAccess;    
-    private PortletRegistry registry;
-    private RequestContextComponent requestContextComponent;
-    private PageManager pageManager;
+    private static PortletPreferencesProvider portletPreferencesProvider;
+    private static PortletEntityAccessComponent portletEntityAccess;    
+    private static PortletRegistry registry;
+    private static RequestContextComponent requestContextComponent;
+    private static PageManager pageManager;
     
     protected PreferenceSetComposite pagePreferenceSet;
     protected Map perPrincipalPrefs = new HashMap();
@@ -143,7 +142,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 //        PrefsPreferenceSetImpl preferenceSet = (PrefsPreferenceSetImpl) perPrincipalPrefs.get(principal);
         if (preferenceSet == null || !dirty)
         {
-            retrievePortletPreferencesProvider();
             preferenceSet = portletPreferencesProvider.getPreferenceSet(this, principal.getName());
             perPrincipalPrefs.put(principal, preferenceSet);
             /*
@@ -220,7 +218,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         // (becuase the PortletApplication has yet to be registered).
         if(this.portletDefinition == null)
         {
-            retrievePortletRegistry();
             PortletDefinition pd = registry.getPortletDefinitionByIdentifier(getPortletUniqueName());
             if ( pd != null )
             {
@@ -236,7 +233,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         
         // Wrap the portlet defintion every request thread
         // JS2-852: don't use thread local
-        retrieveRequestContextComponent();
         RequestContext rc = requestContextComponent.getRequestContext();
         String entityFragmentKey = getEntityFragmentKey();
         PortletDefinition fpd = null;
@@ -274,7 +270,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public void store() throws IOException
     {
-        retrievePortletEntityAccess();
         try
         {
             portletEntityAccess.storePortletEntity(this);
@@ -306,7 +301,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         
         if (preferenceSet != null)
         {
-            retrievePortletPreferencesProvider();
             portletPreferencesProvider.savePreferenceSet(this, principal.getName(), preferenceSet);
         }
         dirty = false;
@@ -314,9 +308,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     private void storeToPage()
     {
-        retrievePageManager();
-        retrieveRequestContextComponent();
-        
         PreferenceSet preferenceSet = this.pagePreferenceSet;
         List preferences = new ArrayList();
         
@@ -425,7 +416,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         {
             portletDefinition = (PortletDefinitionComposite) composite;
             // if the portletDefinition is modified, clear threadlocal fragmentPortletDefinition cache
-            retrieveRequestContextComponent();
             RequestContext rc = requestContextComponent.getRequestContext();
             if (rc != null)
             {
@@ -445,7 +435,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      */
     public Principal getPrincipal()
     {
-        retrieveRequestContextComponent();
         if (requestContextComponent == null)
         {
             // TODO: shouldn't be possible anymore
@@ -562,7 +551,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     {
         this.fragment = fragment;
         // if the fragment is set, clear threadlocal fragmentPortletDefinition cache
-        retrieveRequestContextComponent();
         RequestContext rc = requestContextComponent.getRequestContext();
         if (rc != null)
         {
@@ -616,7 +604,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             {
             }
         }
-        retrieveRequestContextComponent();
         RequestContext context = requestContextComponent.getRequestContext();
         
         try
@@ -636,43 +623,28 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         return "org.apache.jetspeed" + entityId ;
     }
     
-    private void retrievePortletRegistry()
+    public void setPortletRegistry(PortletRegistry registry)
     {
-        if (registry == null)
-        {
-            registry = (PortletRegistry)Jetspeed.getComponentManager().getComponent("portletRegistry");
-        }
+        PortletEntityImpl.registry = registry;
     }
 
-    private void retrieveRequestContextComponent()
+    public void setRequestContextComponent(RequestContextComponent requestContextComponent)
     {
-        if (requestContextComponent == null)
-        {
-            requestContextComponent = (RequestContextComponent)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
-        }
+        PortletEntityImpl.requestContextComponent = requestContextComponent;
+    }
+    
+    public static void setPortletPreferencesProvider(PortletPreferencesProvider portletPreferencesProvider)
+    {
+        PortletEntityImpl.portletPreferencesProvider = portletPreferencesProvider;
     }
 
-    private void retrievePortletEntityAccess()
+    public static void setPortletEntityAccess(PortletEntityAccessComponent portletEntityAccess)
     {
-        if (portletEntityAccess == null)
-        {
-            portletEntityAccess = (PortletEntityAccessComponent)Jetspeed.getComponentManager().getComponent("portletEntityAccess");
-        }
+        PortletEntityImpl.portletEntityAccess = portletEntityAccess;
     }
 
-    private void retrievePortletPreferencesProvider()
+    public static void setPageManager(PageManager pageManager)
     {
-        if (portletPreferencesProvider == null)
-        {
-            portletPreferencesProvider = (PortletPreferencesProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
-        }
-    }
-
-    private void retrievePageManager()
-    {
-        if (pageManager == null)
-        {
-            pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
-        }
+        PortletEntityImpl.pageManager = pageManager;
     }
 }
