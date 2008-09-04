@@ -1896,7 +1896,53 @@ limitations under the License.
       <keywords>admin,config,custom</keywords>
     </portlet-info>
   </portlet>
-  
+  <portlet>
+        <description>Content Viewer displays the content of an HTML, PDF, or other file types from any where on the file system, or relative to the portlet application.</description>
+        <portlet-name>ContentViewer</portlet-name>
+        <display-name>Content Viewer</display-name>
+        <portlet-class>org.apache.portals.gems.file.FilePortlet</portlet-class>
+        <init-param>
+            <name>portlet-icon</name>
+            <value>folder-remote.png</value>
+        </init-param>   
+        <init-param>
+        	<name>use-language</name>
+        	<value>true</value>
+        </init-param>                                     
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supports>
+            <mime-type>application/pdf</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supports>
+            <mime-type>application/zip</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+         <supports>
+            <mime-type>text/xml</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>	       
+        <supports>
+            <mime-type>text/csv</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>Content Viewer</title>
+            <short-title>Content</short-title>
+            <keywords>tools,CMS,content,viewer,file</keywords>
+        </portlet-info>
+        <portlet-preferences>
+            <preference>
+                <name>file</name>
+                <value>/_content/menu.html</value>
+            </preference>
+        </portlet-preferences>
+   </portlet>  
+
    <custom-portlet-mode>
         <description>a Custom Edit_defaults Mode</description>            
         <portlet-mode>edit_defaults</portlet-mode>
