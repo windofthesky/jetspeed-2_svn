@@ -18,7 +18,6 @@ package org.apache.jetspeed.security;
 
 import java.util.List;
 
-import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 
@@ -29,11 +28,7 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
 {
     JetspeedPrincipalType getPrincipalType();
 
-    void setAccessManager(JetspeedPrincipalAccessManager pm);
-
-    void addAssociationHandler(JetspeedPrincipalAssociationHandler ah);
-
-    boolean principalExists(String name);
+     boolean principalExists(String name);
 
     JetspeedPrincipal getPrincipal(String name);
 

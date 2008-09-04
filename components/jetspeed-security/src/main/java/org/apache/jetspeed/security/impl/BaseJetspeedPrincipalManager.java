@@ -19,23 +19,28 @@ package org.apache.jetspeed.security.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
-import org.apache.jetspeed.security.JetspeedPrincipalManager;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
+import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
+import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 
 /**
  * @version $Id$
  */
-public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalManager
+public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalManagerSPI
 {
     private static class AssociationHandlerKey
     {
@@ -71,18 +76,30 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
     private JetspeedPrincipalType principalType;
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationHandler> assHandlers = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationHandler>();
-    private JetspeedPrincipalAccessManager jetspeedPrincipalAccessManager;
-    private JetspeedPrincipalStorageManager jetspeedPrincipalStorageManager;
-    private JetspeedPrincipalPermissionStorageManager jetspeedPrincipalPermissionStorageManager;
+    private JetspeedPrincipalAccessManager jpam;
+    private JetspeedPrincipalStorageManager jpsm;
+    private JetspeedPrincipalPermissionStorageManager jppsm;
 
-    public BaseJetspeedPrincipalManager(
-                                        JetspeedPrincipalType principalType,
-                                        JetspeedPrincipalStorageManager jetspeedPrincipalStorageManager,
-                                        JetspeedPrincipalPermissionStorageManager jetspeedPrincipalPermissionStorageManager)
+    public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
+                                        JetspeedPrincipalStorageManager jpsm,
+                                        JetspeedPrincipalPermissionStorageManager jppsm)
     {
         this.principalType = principalType;
-        this.jetspeedPrincipalStorageManager = jetspeedPrincipalStorageManager;
-        this.jetspeedPrincipalPermissionStorageManager = jetspeedPrincipalPermissionStorageManager;
+        this.jpam = jpam;
+        this.jpsm = jpsm;
+        this.jppsm = jppsm;
+    }
+    
+    protected void validatePrincipal(JetspeedPrincipal principal)
+    {
+        if (!principal.getType().getName().equals(principalType.getName()))
+        {
+            throw new IllegalArgumentException("Principal is not of type "+principalType.getName());
+        }
+        if (principal.isTransient())
+        {
+            throw new IllegalArgumentException("Principal is transient");
+        }
     }
 
     public JetspeedPrincipalType getPrincipalType()
@@ -90,91 +107,126 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return principalType;
     }
 
-    public void addAssociationHandler(JetspeedPrincipalAssociationHandler jpah)
+    public boolean principalExists(String name)
     {
-	    if (jpah.getAssociationType().getFromPrincipalType().getName().equals(principalType.getName()) ||
-	                    jpah.getAssociationType().getToPrincipalType().getName().equals(principalType.getName()))
-	    {
-	        AssociationHandlerKey key = new AssociationHandlerKey(jpah);
-	        if (assHandlers.containsKey(key))
-	        {
-	            throw new IllegalStateException("An AssociationHandler for "+jpah.getAssociationType().getAssociationName()+" already defined");
-	        }
-	        assHandlers.put(key, jpah);	        
-	    }
-	    else
-	    {
-	        throw new IllegalArgumentException("AssociationHandler is not handling a "+principalType.getName()+ " JetspeedPrincipal");
-	    }
-	}
-
-    public void setAccessManager(JetspeedPrincipalAccessManager pam)
-    {
-        this.jetspeedPrincipalAccessManager = pam;
-    }
-
-    public List<JetspeedPrincipal> getAssociatedFrom(String principalName, String associationName)
-    {
-        return jetspeedPrincipalAccessManager.getAssociatedFrom(principalName, getPrincipalType(), associationName);
-    }
-
-    public List<String> getAssociatedNamesFrom(String principalName, String associationName)
-    {
-        return jetspeedPrincipalAccessManager
-                                             .getAssociatedNamesFrom(principalName, getPrincipalType(), associationName);
-    }
-
-    public List<String> getAssociatedNamesTo(String principalName, String associationName)
-    {
-        return jetspeedPrincipalAccessManager.getAssociatedNamesTo(principalName, getPrincipalType(), associationName);
-    }
-
-    public List<JetspeedPrincipal> getAssociatedTo(String principalName, String associationName)
-    {
-        return jetspeedPrincipalAccessManager.getAssociatedTo(principalName, getPrincipalType(), associationName);
+        return jpam.principalExists(name, principalType);
     }
 
     public JetspeedPrincipal getPrincipal(String name)
     {
-        return jetspeedPrincipalAccessManager.getPrincipal(name, getPrincipalType());
+        return jpam.getPrincipal(name, principalType);
     }
 
     public List<String> getPrincipalNames(String nameFilter)
     {
-        return jetspeedPrincipalAccessManager.getPrincipalNames(nameFilter, getPrincipalType());
+        return jpam.getPrincipalNames(nameFilter, principalType);
     }
 
     public List<JetspeedPrincipal> getPrincipals(String nameFilter)
     {
-        return jetspeedPrincipalAccessManager.getPrincipals(nameFilter, getPrincipalType());
-    }
-
-    public boolean principalExists(String name)
-    {
-        return false;
-    }
-
-    public void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission)
-    {
-        jetspeedPrincipalPermissionStorageManager.grantPermission(principal, permission);
-    }
-
-    public void revokeAll(JetspeedPrincipal principal)
-    {
-        jetspeedPrincipalPermissionStorageManager.revokeAll(principal);
-    }
-
-    public void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission)
-    {
-        jetspeedPrincipalPermissionStorageManager.revokePermission(principal, permission);
+        return jpam.getPrincipals(nameFilter, principalType);
     }
 
     public void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException,
                                             DependentPrincipalException
     {
-        JetspeedPrincipal principal = jetspeedPrincipalAccessManager.getPrincipal(name, getPrincipalType());
+        JetspeedPrincipal principal = jpam.getPrincipal(name, principalType);
         if (principal == null)
             throw new PrincipalNotFoundException();
-        jetspeedPrincipalStorageManager.removePrincipal(principal);
+        jpsm.removePrincipal(principal);
+    }
+
+    public List<JetspeedPrincipal> getAssociatedFrom(String principalName, String associationName)
+    {
+        return jpam.getAssociatedFrom(principalName, principalType, associationName);
+    }
+
+    public List<String> getAssociatedNamesFrom(String principalName, String associationName)
+    {
+        return jpam.getAssociatedNamesFrom(principalName, principalType, associationName);
+    }
+
+    public List<String> getAssociatedNamesTo(String principalName, String associationName)
+    {
+        return jpam.getAssociatedNamesTo(principalName, principalType, associationName);
+    }
+
+    public List<JetspeedPrincipal> getAssociatedTo(String principalName, String associationName)
+    {
+        return jpam.getAssociatedTo(principalName, principalType, associationName);
+    }
+
+    //
+    // JetspeedPrincipalManagerSPI interface implementation
+    //
+    public void addAssociationHandler(JetspeedPrincipalAssociationHandler jpah)
+    {
+        if (jpah.getAssociationType().getFromPrincipalType().getName().equals(principalType.getName()) ||
+            jpah.getAssociationType().getToPrincipalType().getName().equals(principalType.getName()))
+        {
+            AssociationHandlerKey key = new AssociationHandlerKey(jpah);
+            if (assHandlers.containsKey(key))
+            {
+                throw new IllegalStateException("An AssociationHandler for " +
+                                                jpah.getAssociationType().getAssociationName() + " already defined");
+            }
+            assHandlers.put(key, jpah);
+        }
+        else
+        {
+            throw new IllegalArgumentException("AssociationHandler is not handling a " + principalType.getName() +
+                                               " JetspeedPrincipal");
+        }
+    }
+
+    //
+    // JetspeedPrincipalStorageManager interface implementation
+    //
+    public boolean isMapped()
+    {
+        return jpsm.isMapped();
+    }
+
+    public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
+                                                                                                                  throws PrincipalAlreadyExistsException,
+                                                                                                                  PrincipalAssociationRequiredException
+    {
+        validatePrincipal(principal);
+        jpsm.addPrincipal(principal, associations);
+    }
+
+    public void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException,
+                                                            PrincipalNotRemovableException, DependentPrincipalException
+    {
+        validatePrincipal(principal);
+        jpsm.removePrincipal(principal);
+    }
+
+    public void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException,
+                                                            PrincipalNotFoundException
+    {
+        validatePrincipal(principal);
+        jpsm.updatePrincipal(principal);
+    }
+
+    //
+    // JetspeedPrincipalPermissionStorageManager interface implementation
+    //
+    public void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission)
+    {
+        validatePrincipal(principal);
+        jppsm.grantPermission(principal, permission);
+    }
+
+    public void revokeAll(JetspeedPrincipal principal)
+    {
+        jppsm.revokeAll(principal);
+        validatePrincipal(principal);
+    }
+
+    public void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission)
+    {
+        validatePrincipal(principal);
+        jppsm.revokePermission(principal, permission);
     }
 }
