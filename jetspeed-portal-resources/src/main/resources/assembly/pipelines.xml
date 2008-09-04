@@ -261,12 +261,13 @@
   <bean id="fileServerValve" class="org.apache.jetspeed.aggregator.FileServerValve" init-method="initialize">
     <meta key="j2:cat" value="default" />
     <!-- portlet -->
+    <!-- moving portlet from demo to J2-admin -- vkumar>
     <constructor-arg index="0">
-      <value>demo::ContentViewer</value>
+      <value>j2-admin::ContentViewer</value>
     </constructor-arg>
     <!-- entity -->
     <constructor-arg index="1">
-      <value>public.content.21</value>
+      <value>public.content.212</value>
     </constructor-arg>
   </bean>
 
