@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Map;
-
 import javax.security.auth.Subject;
 
 /**
@@ -45,11 +43,4 @@ public interface User extends JetspeedPrincipal
      * @param subject The {@link Subject}.
      */
     void setSubject(Subject subject);
-
-    /**
-     * Get the Portlet API User Attributes for a given user
-     * @return a READ ONLY set of user attributes for a given user
-     */
-    Map<String, String> getUserInfo();
-    
 }

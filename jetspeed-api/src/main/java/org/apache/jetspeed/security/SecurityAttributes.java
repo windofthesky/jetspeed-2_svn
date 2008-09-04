@@ -46,6 +46,11 @@ public interface SecurityAttributes
     
     Map<String, SecurityAttribute> getInfoAttributeMap();
 
+    /**
+     * @return an unmodifiable Map<String,String> of the SecurityAttributes.INFO_CATEGORY SecurityAttributes
+     */
+    Map<String, String> getInfoMap();
+
     SecurityAttribute getAttribute(String name);
 
     /**

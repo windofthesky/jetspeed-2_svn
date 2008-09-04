@@ -137,6 +137,19 @@ public class SecurityAttributesImpl implements SecurityAttributes
     {
         return getAttributeMap(INFO_CATEGORY);
     }
+    
+    public Map<String, String> getInfoMap()
+    {
+        HashMap<String, String> map = new HashMap<String,String>(saMap.size());
+        for (SecurityAttribute sa : saMap.values())
+        {
+            if (sa.getCategory().equals(INFO_CATEGORY))
+            {
+                map.put(sa.getName(), sa.getStringValue());
+            }
+        }
+        return Collections.unmodifiableMap(map);
+    }
 
     public SecurityAttribute getAttribute(String name)
     {

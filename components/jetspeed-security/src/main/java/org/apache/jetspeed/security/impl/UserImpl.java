@@ -16,14 +16,13 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.User;
 
 /**
@@ -52,18 +51,4 @@ public class UserImpl extends BaseJetspeedPrincipal implements User
     {
         this.subject = subject;
     }
-
-    public Map<String, String> getUserInfo()
-    {
-        Map<String, String> userInfo = new HashMap<String, String>();
-        Map<String, SecurityAttribute> infoAttrMap = getSecurityAttributes().getInfoAttributeMap();
-        
-        for (Map.Entry entry : infoAttrMap.entrySet())
-        {
-            userInfo.put((String) entry.getKey(), ((SecurityAttribute) entry.getValue()).getStringValue());
-        }
-            
-        return userInfo;
-    }
-    
 }

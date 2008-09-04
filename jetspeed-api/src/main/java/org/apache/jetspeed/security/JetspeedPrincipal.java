@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security;
 
 import java.sql.Timestamp;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -46,4 +47,9 @@ public interface JetspeedPrincipal
     boolean isExtendable(); // true if adding associations, permissions and attributes is allowed
 
     SecurityAttributes getSecurityAttributes();
+    
+    /**
+     * @return an unmodifiable Map<String,String> of the SecurityAttributes.INFO_CATEGORY SecurityAttributes
+     */
+    Map<String, String> getInfoMap();
 }

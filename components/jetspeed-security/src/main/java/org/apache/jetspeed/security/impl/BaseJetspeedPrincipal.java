@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
@@ -170,6 +171,11 @@ public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, Persis
             attributes = new SecurityAttributesImpl(this, attributeValues, isReadOnly(), isExtendable());
         }
         return attributes;
+    }
+    
+    public Map<String, String> getInfoMap()
+    {
+        return getSecurityAttributes().getInfoMap();
     }
     
     /// OJB PersistenceBrokerAware interface implementation
