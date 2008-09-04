@@ -19,7 +19,6 @@ package org.apache.jetspeed.security.impl;
 import java.util.List;
 
 import org.apache.jetspeed.security.DependentPrincipalException;
-import org.apache.jetspeed.security.JetspeedCredentialManager;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
@@ -74,10 +73,6 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
 	public List<JetspeedPrincipal> getAssociatedTo(String principalName, String associationName) {
 		return jetspeedPrincipalAccessManager.getAssociatedTo(principalName, getPrincipalType(), associationName);
-	}
-
-	public JetspeedCredentialManager getCredentialManager() {
-		return null;
 	}
 
 	public JetspeedPrincipal getPrincipal(String name) {

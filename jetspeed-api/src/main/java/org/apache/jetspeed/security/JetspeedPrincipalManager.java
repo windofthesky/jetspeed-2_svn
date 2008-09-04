@@ -31,8 +31,6 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
 
     void setAccessManager(JetspeedPrincipalAccessManager pm);
 
-    JetspeedCredentialManager getCredentialManager();
-
     void addAssociationHandler(JetspeedPrincipalAssociationHandler ah);
 
     boolean principalExists(String name);

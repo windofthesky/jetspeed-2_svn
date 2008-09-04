@@ -32,34 +32,52 @@ public interface PasswordCredential extends Credential
     String PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY = PasswordCredential.class.getName() + ".check";
 
     /**
+     * @return The user this PasswordCredential belongs to
+     */
+    User getUser();
+    /**
      * @return The username.
      */
-    String getUserName();
-
+    String getName();
+    
+    void setUserName(String name);
+    
+    boolean isReadOnly();
+   
     /**
      * @return The password.
      */
     char[] getPassword();
+    
+    void setPassword(char[] password);
 
     /**
      * @return true if update required.
      */
     boolean isUpdateRequired();
     
+    void setUpdateRequired(boolean updateRequired);
+    
     /**
      * @return true if enabled.
      */
     boolean isEnabled();
+    
+    void setEnabled(boolean enabled);
     
     /**
      * @return true if expired.
      */
     boolean isExpired();
     
+    void setExpired(boolean expired);
+    
     /**
      * @return when the password is (going to be) expired.
      */
     Date getExpirationDate();
+    
+    void setExpirationDate(Date expirationDate);
     
     /**
      * @return the previous time the user logged in 
@@ -81,4 +99,6 @@ public interface PasswordCredential extends Credential
      * @return The number of authentication failures
      */
     int getAuthenticationFailures();
+    
+    void resetAuthenticationFailured();
 }

@@ -14,23 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi;
 
-import java.util.List;
-
-import org.apache.jetspeed.security.spi.JetspeedCredentialStorageManager;
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.User;
 
 /**
  * @version $Id$
  */
-public interface JetspeedCredentialManager extends JetspeedCredentialStorageManager
+public interface UserPasswordCredentialStorageManager
 {
-    JetspeedPrincipalType getPrincipalType();
+    void addCredential(PasswordCredential credential, User user);
 
-    void setCredentialStorageManager(JetspeedCredentialStorageManager sm);
-    JetspeedCredential newCredential();
+    void updateCredential(PasswordCredential credential);
 
-    List<JetspeedCredential> getCredentials(String principalName);
-
-    List<JetspeedCredential> getCredentials(JetspeedPrincipal principal);
+    void removeCredential(PasswordCredential credential);
 }

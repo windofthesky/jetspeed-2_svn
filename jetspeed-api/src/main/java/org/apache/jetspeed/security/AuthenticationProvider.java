@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.security;
 
-import org.apache.jetspeed.security.spi.CredentialHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
-
 /**
  * <p>
  * Configures an authentication provider.
@@ -49,39 +46,12 @@ public interface AuthenticationProvider
     
     /**
      * <p>
-     * Gets the {@link UserSecurityHandler}.
+     * Authenticate a user.
      * </p>
      * 
-     * @return The {@link UserSecurityHandler}.
+     * @param userName The user name.
+     * @param password The user password.
+     * @return Whether or not a user is authenticated.
      */
-    UserSecurityHandler getUserSecurityHandler();
-    
-    
-    /**
-     * <p>
-     * Sets the {@link UserSecurityHandler}.
-     * </p>
-     * 
-     * @param userSecurityHandler The {@link UserSecurityHandler}.
-     */
-    void setUserSecurityHandler(UserSecurityHandler userSecurityHandler);
-    
-    /**
-     * <p>
-     * Gets the {@link CredentialHandler}.
-     * </p>
-     * 
-     * @return The {@link CredentialHandler}.
-     */
-    CredentialHandler getCredentialHandler();
-    
-    /**
-     * <p>
-     * Sets the {@link CredentialHandler}.
-     * </p>
-     * 
-     * @param credHandler The {@link CredentialHandler}.
-     */
-    void setCredentialHandler(CredentialHandler credHandler);
-
+    boolean authenticate(String userName, String password) throws SecurityException;
 }

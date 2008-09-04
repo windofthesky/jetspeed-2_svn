@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security;
 
-import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,6 +37,12 @@ public interface UserManager
      * @return the name of the anonymous user
      */
     String getAnonymousUser();
+    
+    User newUser(String name);
+    
+    User newUser(String name, boolean mapped);
+    
+    User newTransientUser(String name);
     
     /**
      * <p>
@@ -181,59 +186,12 @@ public interface UserManager
     Collection<User> getUsersInGroup(String groupFullPathName) throws SecurityException;
     
     /**
-     * <p>
-     * Set the user password.
-     * </p>
-     * 
-     * @param username The user name.
-     * @param oldPassword The old password.
-     * @param newPassword The new password.
-     * @throws Throws a security exception.
-     */
-    void setPassword(String username, String oldPassword, String newPassword) throws SecurityException;
-
-    /**
-     * <p>
-     * Set the update required state of the user password credential.
-     * </p>
-     * 
-     * @param userName The user name.
-     * @param updateRequired The update required state.
-     * @throws Throws a security exception.
-     */
-    void setPasswordUpdateRequired(String userName, boolean updateRequired) throws SecurityException;
-
-    /**
-     * <p>
-     * Set the enabled state of the user password credential.
-     * </p>
-     * 
-     * @param userName The user name.
-     * @param enabled The enabled state.
-     * @throws Throws a security exception.
-     */
-    void setPasswordEnabled(String userName, boolean enabled) throws SecurityException;
-
-    /**
      * Enable or disable a user.
      * @param userName The user name
      * @param enabled enabled flag for the user
      */
     void setUserEnabled(String userName, boolean enabled) throws SecurityException;
 
-    /**
-     * <p>
-     * Set the expiration date and the expired flag of the password credential.</p>
-     * <p>
-     * If a date equal or before the current date is provided, the expired flag will be set to true,
-     * otherwise to false.</p>
-     * 
-     * @param userName The user name.
-     * @param expirationDate The expiration date to set.
-     * @throws Throws a security exception.
-     */
-    void setPasswordExpiration(String userName, Date expirationDate) throws SecurityException;
-    
     /**
      * Updates a user and all attributes and associations
      * @param user
@@ -249,4 +207,15 @@ public interface UserManager
      * @throws SecurityException
      */
     Collection<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException;
+    
+    /**
+     * Returns the current PasswordCredential for a User or a new one if the doesn't have one yet
+     * @param user the user
+     * @return null if the UserManager doesn't support PasswordCredentials
+     */
+    PasswordCredential getPasswordCredential(User user);
+    
+    void setPassword(User user, String oldPassword, String newPassword) throws SecurityException;
+    
+    void savePasswordCredential(PasswordCredential credential) throws SecurityException;
 }
