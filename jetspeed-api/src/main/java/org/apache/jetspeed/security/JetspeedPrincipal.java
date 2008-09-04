@@ -38,6 +38,8 @@ public interface JetspeedPrincipal
 
     void setEnabled(boolean enabled) throws PrincipalReadOnlyException;
 
+    boolean isTransient();
+
     boolean isMapped(); // true if managed (mapped) through an external authorization provider (e.g. LDAP)
 
     boolean isReadOnly(); // true if enabled may not be modified, nor mapped associations, permissions and attributes

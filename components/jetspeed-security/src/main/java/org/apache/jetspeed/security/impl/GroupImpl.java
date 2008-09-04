@@ -22,7 +22,7 @@ import org.apache.jetspeed.security.Group;
  * <p>Represents a security 'group' extending BaseJetspeedPrincipal.</p>
  * @version $Id$
  */
-public class GroupImpl extends BaseJetspeedPrincipal implements Group
+public class GroupImpl extends PersistentJetspeedPrincipal implements Group
 {
     private static final long serialVersionUID = 5484179899807809619L;
 

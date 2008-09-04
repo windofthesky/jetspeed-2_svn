@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
-import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.ojb.broker.PersistenceBroker;
@@ -36,14 +33,9 @@ import org.apache.ojb.broker.PersistenceBrokerException;
  * @version $Id$
  *
  */
-public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, PersistenceBrokerAware, Serializable
+public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrincipal implements PersistenceBrokerAware, Serializable
 {
-    private static final long serialVersionUID = 5484179899807809619L;
-    
-    private static JetspeedPrincipalManagerProvider jpmp;
-    
     private Long id;
-    private String name;    
     private Timestamp creationDate;
     private Timestamp modifiedDate;
     private boolean enabled = true;
@@ -51,18 +43,11 @@ public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, Persis
     private boolean readOnly;
     private boolean removable = true;
     private boolean extendable = true;
+
     @SuppressWarnings("unchecked")
-    private Collection attributeValues;
+    protected Collection attributeValues;
     
-    private transient JetspeedPrincipalType jpt;
-    private transient SecurityAttributes attributes;
-    
-    public static void setJetspeedPrincipalManagerProvider(JetspeedPrincipalManagerProvider jpmp)
-    {
-        BaseJetspeedPrincipal.jpmp = jpmp;
-    }
-    
-    public BaseJetspeedPrincipal()
+    public PersistentJetspeedPrincipal()
     {   
     }
     
@@ -71,23 +56,9 @@ public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, Persis
         return id;
     }
 
-    public String getName()
-    {
-        return name;
-    }
-    
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    public synchronized JetspeedPrincipalType getType()
-    {
-        if (jpt == null)
-        {
-            jpt = jpmp.getPrincipalTypeByClassName(getClass().getName());
-        }
-        return jpt;
     }
 
     public Timestamp getCreationDate()
@@ -112,6 +83,11 @@ public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, Persis
             throw new PrincipalReadOnlyException();
         }
         this.enabled = enabled;
+    }
+    
+    public boolean isTransient()
+    {
+        return false;
     }
     
     public boolean isMapped()
@@ -152,12 +128,6 @@ public abstract class BaseJetspeedPrincipal implements JetspeedPrincipal, Persis
     public void setExtendable(boolean extendable)
     {
         this.extendable = extendable;
-    }
-    
-    public synchronized void setAttributeValues(Collection<SecurityAttributeValue> attributeValues)
-    {
-        this.attributeValues = attributeValues;
-        this.attributes = null;
     }
     
     public synchronized SecurityAttributes getSecurityAttributes()

@@ -27,11 +27,13 @@ public class SecurityAttributeImpl implements org.apache.jetspeed.security.Secur
 {
     private SecurityAttributeType type;
     private SecurityAttributeValue value;
+    private boolean persistent;
     
-    public SecurityAttributeImpl(SecurityAttributeType type, SecurityAttributeValue value)
+    public SecurityAttributeImpl(SecurityAttributeType type, SecurityAttributeValue value, boolean persistent)
     {
         this.type = type;
         this.value = value;
+        this.persistent = persistent;
     }
     
     public SecurityAttributeValue getSecurityAttributeValue()
@@ -66,12 +68,12 @@ public class SecurityAttributeImpl implements org.apache.jetspeed.security.Secur
 
     public boolean isReadOnly()
     {
-        return type.isReadOnly();
+        return persistent ? type.isReadOnly() : false;
     }
 
     public boolean isRequired()
     {
-        return type.isRequired();
+        return persistent ? type.isRequired() : false;
     }
 
     public boolean isRegistered()

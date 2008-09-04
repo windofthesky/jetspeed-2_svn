@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.security.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,14 +53,30 @@ public class SecurityAttributesImpl implements SecurityAttributes
     private Collection avColl;
     private boolean readOnly;
     private boolean extendable;
+    private boolean persistent;
     
     private HashMap<String, SecurityAttributeImpl> saMap = new HashMap<String, SecurityAttributeImpl>();
     
+    @SuppressWarnings("unchecked")
+    public SecurityAttributesImpl(JetspeedPrincipal jp)
+    {
+        this.jp = jp;
+        if (!jp.isTransient())
+        {
+            throw new IllegalArgumentException("Provided JetspeedPrincipal is not transient");
+        }
+        this.avColl =  new ArrayList<SecurityAttributeValue>();
+        this.persistent = false;
+        this.readOnly = false;
+        this.extendable = false;
+    }
+
     @SuppressWarnings("unchecked")
     public SecurityAttributesImpl(JetspeedPrincipal jp, Collection avColl, boolean readOnly, boolean extendable)
     {
         this.jp = jp;
         this.avColl = avColl;
+        this.persistent = true;
         this.readOnly = jp.getType().getAttributeTypes().isReadOnly() ? true : readOnly;
         this.extendable = jp.getType().getAttributeTypes().isExtendable() ? true : extendable;
         
@@ -68,7 +85,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
         {
             SecurityAttributeValue av = (SecurityAttributeValue)avObj;
             SecurityAttributeType sat = stMap.get(av.getName());
-            saMap.put(av.getName(), new SecurityAttributeImpl(sat != null ? sat : new SecurityAttributeTypeImpl(av.getName()), av));
+            saMap.put(av.getName(), new SecurityAttributeImpl(sat != null ? sat : new SecurityAttributeTypeImpl(av.getName()), av, true));
         }
     }
 
@@ -184,7 +201,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
         
         SecurityAttributeValue value = new SecurityAttributeValue(name);
         avColl.add(value);
-        return saMap.put(name, new SecurityAttributeImpl(sat, value));
+        return saMap.put(name, new SecurityAttributeImpl(sat, value, persistent));
     }
 
     public SecurityAttribute addNewInfoAttribute(String name, DataType type)
@@ -210,7 +227,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
         // TODO: making use of the DataType parameter (now ignored)
         SecurityAttributeValue value = new SecurityAttributeValue(name);
         avColl.add(value);
-        return saMap.put(name, new SecurityAttributeImpl(new SecurityAttributeTypeImpl(name), value));
+        return saMap.put(name, new SecurityAttributeImpl(new SecurityAttributeTypeImpl(name), value, persistent));
     }
 
     public void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException

@@ -22,7 +22,7 @@ import org.apache.jetspeed.security.Role;
  * <p>Represents a security 'role' extending BaseJetspeedPrincipal.</p>
  * @version $Id$
  */
-public class RoleImpl extends BaseJetspeedPrincipal implements Role
+public class RoleImpl extends PersistentJetspeedPrincipal implements Role
 {
     private static final long serialVersionUID = 5484179899807809619L;
 

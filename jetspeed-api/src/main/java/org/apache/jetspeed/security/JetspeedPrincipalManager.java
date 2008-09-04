@@ -43,7 +43,9 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
 
     List<JetspeedPrincipal> getPrincipals(String nameFilter);
     
-    JetspeedPrincipal newPrincipal(String name,boolean mapped);
+    JetspeedPrincipal newPrincipal(String name, boolean mapped);
+
+    JetspeedPrincipal newTransientPrincipal(String name);
     
     void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 

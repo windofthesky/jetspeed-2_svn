@@ -29,7 +29,7 @@ import org.apache.jetspeed.security.User;
  * <p>Represents a security 'user' extending BaseJetspeedPrincipal.</p>
  * @version $Id$
  */
-public class UserImpl extends BaseJetspeedPrincipal implements User
+public class UserImpl extends PersistentJetspeedPrincipal implements User
 {
     private static final long serialVersionUID = 5484179899807809619L;
 
