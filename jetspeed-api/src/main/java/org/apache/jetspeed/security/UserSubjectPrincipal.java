@@ -16,14 +16,34 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Principal;
+
 import javax.security.auth.Subject;
 
 /**
- * <p>The user principal.</p>
+ * <p>The Principal representing the User of a Subject</p>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: UserPrincipal.java 187022 2004-07-16 19:31:24Z weaver $
+ * @version $Id$
  */
-public interface UserSubjectPrincipal extends User
+public class UserSubjectPrincipal implements Principal
 {
-    Subject getSubject();
+    private final User user;
+    private final Subject subject;
+    public UserSubjectPrincipal(User user, Subject subject)
+    {
+        this.user = user;
+        this.subject = subject;
+    }
+    public String getName()
+    {
+        return user.getName();
+    }
+    public User getUser()
+    {
+        return user;
+    }
+    public Subject getSubject()
+    {
+        return subject;
+    }
 }
