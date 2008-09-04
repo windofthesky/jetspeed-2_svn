@@ -21,6 +21,9 @@ package org.apache.jetspeed.security;
  */
 public interface JetspeedPrincipalAssociationType
 {
+    String IS_A = "is_a"; // FROM node is a TO node.
+    String IS_PART_OF = "part_of"; // FROM node is part of TO node.
+    
     String getAssociationName();
 
     JetspeedPrincipalType getFromPrincipalType();

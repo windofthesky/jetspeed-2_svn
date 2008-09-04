@@ -99,7 +99,7 @@ public class TestAggregationHierarchy extends AbstractSecurityTestcase
             rms.addRoleToUser("test", "rootrole");
 
             user = ums.getUser("test");
-            Subject subject = user.getSubject();
+            Subject subject = ums.getSubject("test");
             assertNotNull("subject is null", subject);
             Collection principals = getPrincipals(subject, RolePrincipal.class);
             assertEquals("should have 3 principals;", 3, principals.size());
@@ -112,7 +112,8 @@ public class TestAggregationHierarchy extends AbstractSecurityTestcase
             rms.removeRoleFromUser("test", "rootrole");
 
             user = ums.getUser("test");
-            principals = getPrincipals(user.getSubject(), RolePrincipal.class);
+            subject = ums.getSubject("test");
+            principals = getPrincipals(subject, RolePrincipal.class);
             assertEquals("should not have any principals;", 0, principals.size());
 
         }
@@ -126,7 +127,7 @@ public class TestAggregationHierarchy extends AbstractSecurityTestcase
             rms.addRoleToUser("test", "rootrole.childrole1");
 
             user = ums.getUser("test");
-            Subject subject = user.getSubject();
+            Subject subject = ums.getSubject("test");
             assertNotNull("subject is null", subject);
             Collection principals = getPrincipals(subject, RolePrincipal.class);
             assertEquals("shoud have 1 principal;", 1, principals.size());
@@ -137,7 +138,8 @@ public class TestAggregationHierarchy extends AbstractSecurityTestcase
             rms.removeRoleFromUser("test", "rootrole.childrole1");
 
             user = ums.getUser("test");
-            principals = getPrincipals(user.getSubject(), RolePrincipal.class);
+            subject = ums.getSubject("test");
+            principals = getPrincipals(subject, RolePrincipal.class);
             assertEquals("should not have any principals;", 0, principals.size());
 
         }

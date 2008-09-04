@@ -27,6 +27,17 @@ import java.util.prefs.Preferences;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
+import org.apache.jetspeed.security.DependentPrincipalException;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
+import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
+import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.PrincipalNotRemovableException;
+import org.apache.jetspeed.security.PrincipalReadOnlyException;
+import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
@@ -34,6 +45,8 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.attributes.SecurityAttributes;
 import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
 import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 
@@ -54,32 +67,24 @@ import org.apache.jetspeed.security.spi.SecurityMappingHandler;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
+ * @version $Id$
  */
-public class RoleManagerImpl implements RoleManager
+public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements RoleManager
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
-
-    /** The authentication provider proxy. */
-    private AuthenticationProviderProxy atnProviderProxy = null;
     
-    /** The role security handler. */
-    private RoleSecurityHandler roleSecurityHandler = null;
+    private JetspeedPrincipalAssociationHandler associationHandler;
 
-    /** The security mapping handler. */
-    private SecurityMappingHandler securityMappingHandler = null;
-
-    private SecurityAttributesProvider attributesProvider;
-    
-    /**
-     * @param securityProvider The security provider.
-     */
-    public RoleManagerImpl(SecurityProvider securityProvider, SecurityAttributesProvider attributesProvider)
+    public RoleManagerImpl() 
     {
-        this.atnProviderProxy = securityProvider.getAuthenticationProviderProxy();
-        this.roleSecurityHandler = securityProvider.getRoleSecurityHandler();
-        this.securityMappingHandler = securityProvider.getSecurityMappingHandler();
-        this.attributesProvider = attributesProvider;        
+        super();        
+    }
+
+    public RoleManagerImpl(JetspeedPrincipalStorageManager jetspeedPrincipalStorageManager, JetspeedPrincipalPermissionStorageManager jetspeedPrincipalPermissionStorageManager, JetspeedPrincipalAssociationHandler associationHandler)
+    {
+        super(jetspeedPrincipalStorageManager, jetspeedPrincipalPermissionStorageManager);
+        this.associationHandler = associationHandler;
     }
 
     /**
@@ -91,6 +96,7 @@ public class RoleManagerImpl implements RoleManager
         {  
             throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS.create(roleName)); 
         }
+        
         RolePrincipal rolePrincipal = new RolePrincipalImpl(roleName);        
         roleSecurityHandler.storeRolePrincipal(rolePrincipal);
         SecurityAttributes sa = attributesProvider.createSecurityAttributes(rolePrincipal);
@@ -104,25 +110,13 @@ public class RoleManagerImpl implements RoleManager
      */
     public void removeRole(String roleName) throws SecurityException
     {
-        if (securityMappingHandler.getHierarchyResolver() != null)
+        try
         {
-            Set<RolePrincipal> roles = securityMappingHandler.getHierarchyResolver().resolveRoles(roleName);
-            for (RolePrincipal gp : roles)
-            {
-                roleSecurityHandler.removeRolePrincipal(gp);
-//                TODO: should we use cascading deletes?
-                attributesProvider.deleteAttributes(gp);
-            }
-        }
-        else
+            super.removePrincipal(roleName);
+        } 
+        catch (Exception e)
         {
-            RolePrincipal rp = roleSecurityHandler.getRolePrincipal(roleName);
-            if (rp != null)
-            {
-                roleSecurityHandler.removeRolePrincipal(new RolePrincipalImpl(roleName));
-//              TODO: should we use cascading deletes?
-                attributesProvider.deleteAttributes(rp);
-            }
+            throw new SecurityException(e);
         }
     }
 
@@ -131,9 +125,7 @@ public class RoleManagerImpl implements RoleManager
      */
     public boolean roleExists(String roleName)
     {
-        Principal principal = roleSecurityHandler.getRolePrincipal(roleName);
-        boolean roleExists = (null != principal);
-        return roleExists;
+        return super.principalExists(roleName);
     }
 
     /**
@@ -141,14 +133,14 @@ public class RoleManagerImpl implements RoleManager
      */
     public Role getRole(String roleName) throws SecurityException
     {
-        Principal rolePrincipal = roleSecurityHandler.getRolePrincipal(roleName);
-        if (null == rolePrincipal) 
+        Role role = (Role) super.getPrincipal(roleName);
+        
+        if (null == role) 
         { 
             throw new SecurityException(
                 SecurityException.ROLE_DOES_NOT_EXIST.create(roleName)); 
         }
-        SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(rolePrincipal);
-        Role role = new RoleImpl(rolePrincipal, attributes);
+
         return role;
     }
 
@@ -158,13 +150,18 @@ public class RoleManagerImpl implements RoleManager
     public Collection<Role> getRolesForUser(String username) throws SecurityException
     {
         Collection<Role> roles = new ArrayList<Role>();
-
-        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipals(username);
-        for (RolePrincipal rolePrincipal : rolePrincipals)
+        // retrieve associated principals of which the user is the part 
+        List<JetspeedPrincipal> principals = super.getAssociatedFrom(username, JetspeedPrincipalAssociationType.IS_PART_OF);
+        
+        for (JetspeedPrincipal principal : principals)
         {
-            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(rolePrincipal);
-            roles.add(new RoleImpl(rolePrincipal, attributes));
+            // TODO: the next literal should be defined as a constant in somewhere. 
+            if ("org.apache.jetspeed.security.role".equals(principal.getType().getName()))
+            {
+                roles.add((Role) principal);
+            }
         }
+
         return roles;
     }
 
@@ -174,12 +171,18 @@ public class RoleManagerImpl implements RoleManager
     public Collection<Role> getRolesInGroup(String groupName) throws SecurityException
     {
         Collection<Role> roles = new ArrayList<Role>();
-        Set<RolePrincipal> rolePrincipals = securityMappingHandler.getRolePrincipalsInGroup(groupName);
-        for (RolePrincipal rolePrincipal : rolePrincipals)
+        // retrieve associated principals which are part of the group
+        List<JetspeedPrincipal> principals = super.getAssociatedTo(groupName, JetspeedPrincipalAssociationType.IS_PART_OF);
+        
+        for (JetspeedPrincipal principal : principals)
         {
-            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(rolePrincipal);
-            roles.add(new RoleImpl(rolePrincipal, attributes));
+            // TODO: the next literal should be defined as a constant in somewhere.
+            if ("org.apache.jetspeed.security.role".equals(principal.getType().getName()))
+            {
+                roles.add((Role) principal);
+            }
         }
+
         return roles;
     }
 
@@ -288,14 +291,14 @@ public class RoleManagerImpl implements RoleManager
      */
     public Collection<Role> getRoles(String filter) throws SecurityException
     {
-        List<Role> roles = new LinkedList<Role>();
-        Collection<RolePrincipal> rolePrincipals = roleSecurityHandler.getRolePrincipals(filter);
-        for (RolePrincipal principal : rolePrincipals)
+        Collection<Role> roles = new ArrayList<Role>();
+        List<JetspeedPrincipal> principals = super.getPrincipals(filter);
+        
+        for (JetspeedPrincipal principal : principals)
         {
-            SecurityAttributes attributes = this.attributesProvider.retrieveAttributes(principal);
-            Role role = new RoleImpl(principal, attributes);
-            roles.add(role);
+            roles.add((Role) principal);
         }
+        
         return roles;
     }
 
@@ -304,15 +307,68 @@ public class RoleManagerImpl implements RoleManager
      */
     public void setRoleEnabled(String roleName, boolean enabled) throws SecurityException
     {
-        RolePrincipalImpl rolePrincipal = (RolePrincipalImpl)roleSecurityHandler.getRolePrincipal(roleName);
-        if (null == rolePrincipal)
+        Role role = (Role) super.getPrincipal(roleName);
+        
+        if (null == role)
         {
             throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
         }
-        if ( enabled != rolePrincipal.isEnabled() )
+        
+        try
         {
-            rolePrincipal.setEnabled(enabled);
-            roleSecurityHandler.storeRolePrincipal(rolePrincipal);
+            if (enabled != role.isEnabled())
+            {
+                role.setEnabled(enabled);
+                // TODO: store this role principal
+            }
+            
+            role.setEnabled(enabled);
         }
+        catch (PrincipalReadOnlyException e)
+        {
+            throw new SecurityException(e);
+        }
+    }
+
+    public JetspeedPrincipal newPrincipal(String name, boolean mapped)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public JetspeedPrincipal newTransientPrincipal(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void addPrincipal(JetspeedPrincipal principal,
+            Set<JetspeedPrincipalAssociationReference> associations)
+            throws PrincipalAlreadyExistsException,
+            PrincipalAssociationRequiredException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public boolean isMapped()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void removePrincipal(JetspeedPrincipal principal)
+            throws PrincipalNotFoundException, PrincipalNotRemovableException,
+            DependentPrincipalException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void updatePrincipal(JetspeedPrincipal principal)
+            throws PrincipalUpdateException, PrincipalNotFoundException
+    {
+        // TODO Auto-generated method stub
+        
     }
 }
