@@ -28,11 +28,11 @@ import javax.security.auth.Subject;
 public class UserSubjectPrincipal implements Principal
 {
     private final User user;
-    private final Subject subject;
-    public UserSubjectPrincipal(User user, Subject subject)
+    private Subject subject;
+    
+    public UserSubjectPrincipal(User user)
     {
         this.user = user;
-        this.subject = subject;
     }
     public String getName()
     {
@@ -45,5 +45,10 @@ public class UserSubjectPrincipal implements Principal
     public Subject getSubject()
     {
         return subject;
+    }
+    
+    public void setSubject(Subject subject)
+    {
+        this.subject = subject;
     }
 }

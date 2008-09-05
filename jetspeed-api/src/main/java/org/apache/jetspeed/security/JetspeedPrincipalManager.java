@@ -36,6 +36,8 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
 
     List<JetspeedPrincipal> getPrincipals(String nameFilter);
     
+    List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue);
+    
     JetspeedPrincipal newPrincipal(String name, boolean mapped);
 
     JetspeedPrincipal newTransientPrincipal(String name);

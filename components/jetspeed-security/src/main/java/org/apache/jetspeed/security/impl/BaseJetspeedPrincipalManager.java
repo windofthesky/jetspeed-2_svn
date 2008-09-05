@@ -128,6 +128,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.getPrincipals(nameFilter, principalType);
     }
 
+    public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue)
+    {
+        return jpam.getPrincipalsByAttribute(attributeName, attributeValue, principalType);
+    }
+
     public void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException,
                                             DependentPrincipalException
     {

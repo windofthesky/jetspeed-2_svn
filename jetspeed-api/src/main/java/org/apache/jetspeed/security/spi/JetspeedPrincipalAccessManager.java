@@ -35,6 +35,8 @@ public interface JetspeedPrincipalAccessManager
 
     List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type);
 
+    List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue, JetspeedPrincipalType type);
+
     List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type);
 
     List<JetspeedPrincipal> getAssociatedFrom(String principalName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName);
