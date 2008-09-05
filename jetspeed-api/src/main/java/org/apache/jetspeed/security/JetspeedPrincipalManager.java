@@ -24,29 +24,29 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 /**
  * @version $Id$
  */
-public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManager, JetspeedPrincipalPermissionStorageManager
+public interface JetspeedPrincipalManager<T extends JetspeedPrincipal> extends JetspeedPrincipalStorageManager, JetspeedPrincipalPermissionStorageManager
 {
     JetspeedPrincipalType getPrincipalType();
 
-     boolean principalExists(String name);
+    boolean principalExists(String name);
 
-    JetspeedPrincipal getPrincipal(String name);
+    T getPrincipal(String name);
 
     List<String> getPrincipalNames(String nameFilter);
 
-    List<JetspeedPrincipal> getPrincipals(String nameFilter);
+    List<T> getPrincipals(String nameFilter);
     
-    List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue);
+    List<T> getPrincipalsByAttribute(String attributeName, String attributeValue);
     
-    JetspeedPrincipal newPrincipal(String name, boolean mapped);
+    T newPrincipal(String name, boolean mapped);
 
-    JetspeedPrincipal newTransientPrincipal(String name);
+    T newTransientPrincipal(String name);
     
     void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 
-    List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
+    List<T> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
 
-    List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName);
+    List<T> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName);
 
     List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
 

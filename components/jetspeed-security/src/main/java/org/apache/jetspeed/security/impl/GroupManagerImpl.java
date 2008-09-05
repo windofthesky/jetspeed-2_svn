@@ -16,16 +16,14 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
@@ -33,6 +31,7 @@ import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -57,7 +56,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements GroupManager
+public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implements GroupManager
 {
 
     /** The logger. */
@@ -67,14 +66,14 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     private JetspeedPrincipalType roleType;
     private UserManager userManager;
     
-    public GroupManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType userType, JetspeedPrincipalType roleType, 
-                           JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
+    public GroupManagerImpl(JetspeedPrincipalType principalType,
+                           JetspeedPrincipalAccessManager<Group> jpam, JetspeedPrincipalStorageManager jpsm,
                            JetspeedPrincipalPermissionStorageManager jppsm,
-                           UserManager userManager)
+                           UserManager userManager, RoleManager roleManager)
     {
         super(principalType, jpam, jpsm, jppsm);
-        this.userType = userType;
-        this.roleType = roleType;
+        this.userType = ((JetspeedPrincipalManager) userManager).getPrincipalType();
+        this.roleType = ((JetspeedPrincipalManager) roleManager).getPrincipalType();
         this.userManager = userManager;
     }
 
@@ -172,12 +171,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public Collection<Group> getGroupsForUser(String username)
             throws SecurityException
     {
-        ArrayList<Group> groups = new ArrayList<Group>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            groups.add((Group)principal);
-        }
-        return groups;
+        return super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -186,12 +180,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public Collection<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
-        ArrayList<Group> groups = new ArrayList<Group>();
-        for (JetspeedPrincipal principal : super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            groups.add((Group)principal);
-        }
-        return groups;
+        return super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -255,15 +244,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
      */
     public Collection<Group> getGroups(String filter) throws SecurityException
     {
-        Collection<Group> groups = new ArrayList<Group>();
-        List<JetspeedPrincipal> principals = super.getPrincipals(filter);
-        
-        for (JetspeedPrincipal principal : principals)
-        {
-            groups.add((Group) principal);
-        }
-        
-        return groups;
+        return super.getPrincipals(filter);
     }
     
     /**
@@ -302,12 +283,12 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         }
     }
 
-    public JetspeedPrincipal newPrincipal(String name, boolean mapped)
+    public Group newPrincipal(String name, boolean mapped)
     {
         return newGroup(name, mapped);
     }
 
-    public JetspeedPrincipal newTransientPrincipal(String name)
+    public Group newTransientPrincipal(String name)
     {
         return newTransientGroup(name);
     }

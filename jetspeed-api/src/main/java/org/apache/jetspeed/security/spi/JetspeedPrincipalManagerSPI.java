@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.security.spi;
 
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 
@@ -24,7 +25,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalManager;
  * @version $Id$
  *
  */
-public interface JetspeedPrincipalManagerSPI extends JetspeedPrincipalManager
+public interface JetspeedPrincipalManagerSPI<T extends JetspeedPrincipal> extends JetspeedPrincipalManager<T>
 {
     void addAssociationHandler(JetspeedPrincipalAssociationHandler ah);
 }

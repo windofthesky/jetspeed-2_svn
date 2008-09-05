@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -25,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -63,7 +61,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements RoleManager
+public class RoleManagerImpl extends BaseJetspeedPrincipalManager<Role> implements RoleManager
 {
     /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
@@ -74,7 +72,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     private GroupManager groupManager;
     
     public RoleManagerImpl(JetspeedPrincipalType principalType, 
-                           JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
+                           JetspeedPrincipalAccessManager<Role> jpam, JetspeedPrincipalStorageManager jpsm,
                            JetspeedPrincipalPermissionStorageManager jppsm,
                            UserManager userManager, GroupManager groupManager)
     {
@@ -179,12 +177,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesForUser(String username) throws SecurityException
     {
-        ArrayList<Role> roles = new ArrayList<Role>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            roles.add((Role)principal);
-        }
-        return roles;
+        return super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -192,12 +185,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
-        ArrayList<Role> roles = new ArrayList<Role>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            roles.add((Role)principal);
-        }
-        return roles;
+        return super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -311,15 +299,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public Collection<Role> getRoles(String filter) throws SecurityException
     {
-        Collection<Role> roles = new ArrayList<Role>();
-        List<JetspeedPrincipal> principals = super.getPrincipals(filter);
-        
-        for (JetspeedPrincipal principal : principals)
-        {
-            roles.add((Role) principal);
-        }
-        
-        return roles;
+        return super.getPrincipals(filter);
     }
 
     /** 
@@ -361,7 +341,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.JetspeedPrincipalManager#newPrincipal(java.lang.String, boolean)
      */
-    public JetspeedPrincipal newPrincipal(String name, boolean mapped)
+    public Role newPrincipal(String name, boolean mapped)
     {
         return newRole(name, mapped);
     }
@@ -369,7 +349,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.JetspeedPrincipalManager#newTransientPrincipal(java.lang.String)
      */
-    public JetspeedPrincipal newTransientPrincipal(String name)
+    public Role newTransientPrincipal(String name)
     {
         return newTransientRole(name);
     }

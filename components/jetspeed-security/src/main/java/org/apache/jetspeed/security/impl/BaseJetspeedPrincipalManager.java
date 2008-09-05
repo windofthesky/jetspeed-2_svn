@@ -43,7 +43,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 /**
  * @version $Id$
  */
-public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalManagerSPI
+public abstract class BaseJetspeedPrincipalManager<T extends JetspeedPrincipal> implements JetspeedPrincipalManagerSPI<T>
 {
     private static class AssociationHandlerKey
     {
@@ -80,11 +80,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     private JetspeedPrincipalType principalType;
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationHandler> assHandlers = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationHandler>();
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAssociations = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>();
-    private JetspeedPrincipalAccessManager jpam;
+    private JetspeedPrincipalAccessManager<T> jpam;
     private JetspeedPrincipalStorageManager jpsm;
     private JetspeedPrincipalPermissionStorageManager jppsm;
 
-    public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
+    public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager<T> jpam,
                                         JetspeedPrincipalStorageManager jpsm,
                                         JetspeedPrincipalPermissionStorageManager jppsm)
     {
@@ -116,7 +116,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.principalExists(name, principalType);
     }
 
-    public JetspeedPrincipal getPrincipal(String name)
+    public T getPrincipal(String name)
     {
         return jpam.getPrincipal(name, principalType);
     }
@@ -126,12 +126,12 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.getPrincipalNames(nameFilter, principalType);
     }
 
-    public List<JetspeedPrincipal> getPrincipals(String nameFilter)
+    public List<T> getPrincipals(String nameFilter)
     {
         return jpam.getPrincipals(nameFilter, principalType);
     }
 
-    public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue)
+    public List<T> getPrincipalsByAttribute(String attributeName, String attributeValue)
     {
         return jpam.getPrincipalsByAttribute(attributeName, attributeValue, principalType);
     }
@@ -145,7 +145,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         jpsm.removePrincipal(principal);
     }
 
-    public final List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName)
+    public final List<T> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName)
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(from.getName(), principalType.getName(), associationName)))
         {
@@ -175,7 +175,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.getAssociatedNamesTo(principalToName, principalType, to, associationName);
     }
 
-    public final List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName)
+    public final List<T> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName)
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
         {
