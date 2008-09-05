@@ -105,6 +105,27 @@
             <scope>provided</scope>
         </dependency>
         
+        <dependency>      
+            <artifactId>spring-ldap</artifactId>
+            <groupId>org.springframework.ldap</groupId>
+        </dependency>
+
+        <dependency>      
+            <artifactId>apacheds-server-unit</artifactId>
+            <groupId>org.apache.directory.server</groupId>
+            <version>1.5.3</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- used by Apache DS -->
+        <dependency>      
+            <artifactId>slf4j-jdk14</artifactId>
+            <groupId>org.slf4j</groupId>
+            <version>1.4.3</version>
+            <scope>test</scope>
+        </dependency>
+        
+        
     </dependencies>
 
     <build>

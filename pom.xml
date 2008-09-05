@@ -319,8 +319,9 @@
     <rome.version>0.8</rome.version>
     <saxpath.version>1.0-FCS</saxpath.version>
     <spring.version>2.5.2</spring.version>
+    <spring.ldap.version>1.2.1</spring.ldap.version>
     <spring.portlet.version>2.0.6</spring.portlet.version>
-    <spring.modules.version>2.0-rc2</spring.modules.version>
+    <spring.modules.version>2.0-rc2</spring.modules.version>    
     <taglibs-random.version>1.0.2</taglibs-random.version>
     <taglibs-request.version>1.0.1</taglibs-request.version>
     <taglibs-standard.version>1.1.2</taglibs-standard.version>
@@ -618,6 +619,11 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring</artifactId>
         <version>${spring.version}</version>
+      </dependency>
+      <dependency>      
+        <artifactId>spring-ldap</artifactId>
+        <groupId>org.springframework.ldap</groupId>
+        <version>${spring.ldap.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
