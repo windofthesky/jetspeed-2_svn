@@ -29,7 +29,7 @@ public interface UserPasswordCredentialManager extends UserPasswordCredentialSto
     boolean isReadOnly();
     
     void setUserPasswordCredentialStorageManager(UserPasswordCredentialStorageManager sm);
-    PasswordCredential newPasswordCredential();
+    PasswordCredential newPasswordCredential(User user);
 
     List<PasswordCredential> getPasswordCredentials(String userName);
 

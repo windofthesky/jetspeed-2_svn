@@ -17,14 +17,13 @@
 package org.apache.jetspeed.security.spi;
 
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.User;
 
 /**
  * @version $Id$
  */
 public interface UserPasswordCredentialStorageManager
 {
-    void addCredential(PasswordCredential credential, User user);
+    void addCredential(PasswordCredential credential);
 
     void updateCredential(PasswordCredential credential);
 
