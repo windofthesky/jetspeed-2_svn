@@ -34,9 +34,12 @@ import java.util.Collection;
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @version $Id$
  */
 public interface GroupManager
 {
+    Group newGroup(String name, boolean mapped);
+    Group newTransientGroup(String name);
 
     /**
      * <p>

@@ -16,48 +16,32 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.AuthenticationProviderProxy;
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
-import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
-import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
-import org.apache.jetspeed.security.spi.RoleSecurityHandler;
-import org.apache.jetspeed.security.spi.SecurityMappingHandler;
 
 /**
  * <p>
@@ -94,6 +78,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
                            UserManager userManager, GroupManager groupManager)
     {
         super(principalType, jpam, jpsm, jppsm);
+        this.userType = userType;
+        this.groupType = groupType;
         this.userManager = userManager;
         this.groupManager = groupManager;
     }
@@ -347,12 +333,20 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
             if (enabled != role.isEnabled())
             {
                 role.setEnabled(enabled);
-                // TODO: store this role principal
+                super.updatePrincipal(role);
             }
             
             role.setEnabled(enabled);
         }
         catch (PrincipalReadOnlyException e)
+        {
+            throw new SecurityException(e);
+        }
+        catch (PrincipalUpdateException e)
+        {
+            throw new SecurityException(e);
+        } 
+        catch (PrincipalNotFoundException e)
         {
             throw new SecurityException(e);
         }
