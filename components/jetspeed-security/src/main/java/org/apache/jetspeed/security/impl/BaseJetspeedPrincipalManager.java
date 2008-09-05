@@ -262,6 +262,17 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                                                             PrincipalNotRemovableException, DependentPrincipalException
     {
         validatePrincipal(principal);
+        for (JetspeedPrincipalAssociationHandler jpah : assHandlers.values())
+        {
+            if (jpah.getAssociationType().getFromPrincipalType().getName().equals(principalType.getName()))
+            {
+                jpah.removeAllFrom(principal);
+            }
+            else
+            {
+                jpah.removeAllTo(principal);
+            }
+        }
         jpsm.removePrincipal(principal);
     }
 
@@ -298,20 +309,20 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     //
     public void addAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException
     {
-        AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getName());
+        AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());        
+        JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
         
-        if (!assHandlers.containsKey(key))
+        if (jpah == null)
         {
             throw new PrincipalAssociationNotAllowedException();
         }
         
-        JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
         jpah.add(from, to);
     }
 
     public void removeAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationRequiredException
     {
-        AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getName());
+        AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());
         JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
         
         if (jpah != null)
