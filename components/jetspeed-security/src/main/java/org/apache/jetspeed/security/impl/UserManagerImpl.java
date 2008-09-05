@@ -78,8 +78,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		try
 		{
 			User user = newUser(username, true);
-			savePasswordCredential(new DefaultPasswordCredentialImpl(username, password.toCharArray()));
 			super.addPrincipal(user, null);
+			PasswordCredential pwc = new DefaultPasswordCredentialImpl(user);
+			pwc.setPassword(password.toCharArray());
+			storePasswordCredential(pwc);
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
@@ -104,8 +106,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		try
 		{
 			User user = newUser(username, mapped);
-			savePasswordCredential(new DefaultPasswordCredentialImpl(username, password.toCharArray()));
 			super.addPrincipal(user, null);
+			PasswordCredential pwc = new DefaultPasswordCredentialImpl(user);
+			pwc.setPassword(password.toCharArray());
+			storePasswordCredential(pwc);			
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
@@ -131,8 +135,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		try
 		{
 			User user = newUser(username, mapped);
-			savePasswordCredential(new DefaultPasswordCredentialImpl(username, password.toCharArray()));
 			super.addPrincipal(user, null);
+			PasswordCredential pwc = new DefaultPasswordCredentialImpl(user);
+			pwc.setPassword(password.toCharArray());
+			storePasswordCredential(pwc);			
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
@@ -159,7 +165,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public PasswordCredential getPasswordCredential(User user)
 	{
-		return new DefaultPasswordCredentialImpl(user.getName(), defaultPassword.toCharArray());
+		return null;		
 	}
 
 	public Subject getSubject(String username) throws SecurityException
@@ -274,15 +280,15 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		}
 		catch (PrincipalNotRemovableException pnre)
 		{
-			throw new SecurityException(SecurityException.USER_UPDATE_FAILED.create(username));
+			throw new SecurityException(SecurityException.UNEXPECTED.create(username));
 		}
 		catch (DependentPrincipalException dpe)
 		{
-			throw new SecurityException(SecurityException.USER_UPDATE_FAILED.create(username));
+			throw new SecurityException(SecurityException.UNEXPECTED.create(username));
 		}
 	}
 
-	public void savePasswordCredential(PasswordCredential credential) throws SecurityException
+	public void storePasswordCredential(PasswordCredential credential) throws SecurityException
 	{
 		//TODO Auto-generated method stub
 	}
@@ -318,7 +324,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		}
 		catch (PrincipalUpdateException pue)
 		{
-			throw new SecurityException(SecurityException.USER_UPDATE_FAILED.create(user.getName()));
+			throw new SecurityException(SecurityException.UNEXPECTED.create(user.getName()));
 		}
 	}
 

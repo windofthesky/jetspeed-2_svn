@@ -217,5 +217,5 @@ public interface UserManager
     
     void setPassword(User user, String oldPassword, String newPassword) throws SecurityException;
     
-    void savePasswordCredential(PasswordCredential credential) throws SecurityException;
+    void storePasswordCredential(PasswordCredential credential) throws SecurityException;
 }
