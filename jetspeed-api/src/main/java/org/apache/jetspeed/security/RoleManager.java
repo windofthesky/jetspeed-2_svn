@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -78,23 +79,23 @@ public interface RoleManager
     Role getRole(String roleFullPathName) throws SecurityException;
 
     /**
-     * <p>A collection of {@link Role} for all the roles
+     * <p>A list of {@link Role} for all the roles
      * associated to a specific user.</p>
      * @param username The user name.
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the user does not exist.
      */
-    Collection<Role> getRolesForUser(String username) throws SecurityException;
+    List<Role> getRolesForUser(String username) throws SecurityException;
 
     /**
-     * <p>A collection of {@link Role} for all the roles
+     * <p>A list of {@link Role} for all the roles
      * associated to a specific group.</p>
      * @param groupFullPathName The group full path
      *                          (e.g. theGroupName.theGroupChildName).
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the group does not exist.
      */
-    Collection<Role> getRolesInGroup(String groupFullPathName) throws SecurityException;
+    List<Role> getRolesInGroup(String groupFullPathName) throws SecurityException;
     
     /**
      * <p>Add a role to a user.</p>

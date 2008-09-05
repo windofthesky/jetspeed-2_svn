@@ -46,6 +46,7 @@ import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.attributes.SecurityAttributes;
 import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
@@ -78,9 +79,12 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
     
-    public RoleManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
-                                        JetspeedPrincipalStorageManager jpsm,
-                                        JetspeedPrincipalPermissionStorageManager jppsm)
+    private JetspeedPrincipalType userType;
+    private JetspeedPrincipalType groupType;
+    
+    public RoleManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType userType, JetspeedPrincipalType groupType, 
+                           JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
+                           JetspeedPrincipalPermissionStorageManager jppsm)
     {
         super(principalType, jpam, jpsm, jppsm);
     }
@@ -172,42 +176,26 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRolesForUser(java.lang.String)
      */
-    public Collection<Role> getRolesForUser(String username) throws SecurityException
+    public List<Role> getRolesForUser(String username) throws SecurityException
     {
-        Collection<Role> roles = new ArrayList<Role>();
-        // retrieve associated principals of which the user is the part 
-        List<JetspeedPrincipal> principals = super.getAssociatedFrom(username, JetspeedPrincipalAssociationType.IS_PART_OF);
-        
-        for (JetspeedPrincipal principal : principals)
+        ArrayList<Role> roles = new ArrayList<Role>();
+        for (JetspeedPrincipal principal : super.getAssociatedTo(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
         {
-            // TODO: the next literal should be defined as a constant in somewhere. 
-            if ("org.apache.jetspeed.security.role".equals(principal.getType().getName()))
-            {
-                roles.add((Role) principal);
-            }
+            roles.add((Role)principal);
         }
-
         return roles;
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRolesInGroup(java.lang.String)
      */
-    public Collection<Role> getRolesInGroup(String groupName) throws SecurityException
+    public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
-        Collection<Role> roles = new ArrayList<Role>();
-        // retrieve associated principals which are part of the group
-        List<JetspeedPrincipal> principals = super.getAssociatedTo(groupName, JetspeedPrincipalAssociationType.IS_PART_OF);
-        
-        for (JetspeedPrincipal principal : principals)
+        ArrayList<Role> roles = new ArrayList<Role>();
+        for (JetspeedPrincipal principal : super.getAssociatedTo(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF))
         {
-            // TODO: the next literal should be defined as a constant in somewhere.
-            if ("org.apache.jetspeed.security.role".equals(principal.getType().getName()))
-            {
-                roles.add((Role) principal);
-            }
+            roles.add((Role)principal);
         }
-
         return roles;
     }
 
