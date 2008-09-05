@@ -17,11 +17,13 @@
 
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.Role;
+
 /**
  * @version $Id$
  *
  */
-public class TransientRole extends TransientJetspeedPrincipal
+public class TransientRole extends TransientJetspeedPrincipal implements Role
 {
     private static final long serialVersionUID = -3622751457840996366L;
 }

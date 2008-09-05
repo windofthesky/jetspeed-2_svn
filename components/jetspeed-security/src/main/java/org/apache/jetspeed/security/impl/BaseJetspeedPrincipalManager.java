@@ -90,7 +90,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         this.jppsm = jppsm;
     }
     
-    protected void validatePrincipal(JetspeedPrincipal principal)
+    protected final void validatePrincipal(JetspeedPrincipal principal)
     {
         if (!principal.getType().getName().equals(principalType.getName()))
         {
@@ -102,7 +102,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         }
     }
 
-    public JetspeedPrincipalType getPrincipalType()
+    public final JetspeedPrincipalType getPrincipalType()
     {
         return principalType;
     }
@@ -182,7 +182,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     //
     // JetspeedPrincipalStorageManager interface implementation
     //
-    public boolean isMapped()
+    public final boolean isMapped()
     {
         return jpsm.isMapped();
     }

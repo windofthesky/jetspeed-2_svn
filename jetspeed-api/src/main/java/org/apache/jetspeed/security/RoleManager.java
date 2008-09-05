@@ -31,7 +31,9 @@ import java.util.prefs.Preferences;
  */
 public interface RoleManager
 {
-
+    Role newRole(String name, boolean mapped);
+    Role newTransientRole(String name);
+    
     /**
      * <p>Add a new role.</p>
      * <p>Role principal names are expressed as {principal}.{subprincipal} where

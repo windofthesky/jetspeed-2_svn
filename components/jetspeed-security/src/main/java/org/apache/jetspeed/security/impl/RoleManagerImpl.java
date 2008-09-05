@@ -28,10 +28,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.DependentPrincipalException;
+import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
@@ -45,6 +48,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.attributes.SecurityAttributes;
 import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.RoleSecurityHandler;
@@ -74,17 +78,33 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /** The logger. */
     private static final Log log = LogFactory.getLog(RoleManagerImpl.class);
     
-    private JetspeedPrincipalAssociationHandler associationHandler;
-
-    public RoleManagerImpl() 
+    public RoleManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
+                                        JetspeedPrincipalStorageManager jpsm,
+                                        JetspeedPrincipalPermissionStorageManager jppsm)
     {
-        super();        
+        super(principalType, jpam, jpsm, jppsm);
     }
 
-    public RoleManagerImpl(JetspeedPrincipalStorageManager jetspeedPrincipalStorageManager, JetspeedPrincipalPermissionStorageManager jetspeedPrincipalPermissionStorageManager, JetspeedPrincipalAssociationHandler associationHandler)
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.RoleManager#newRole(java.lang.String, boolean)
+     */
+    public Role newRole(String name, boolean mapped)
     {
-        super(jetspeedPrincipalStorageManager, jetspeedPrincipalPermissionStorageManager);
-        this.associationHandler = associationHandler;
+        RoleImpl role = new RoleImpl();
+        role.setName(name);
+        role.setMapped(mapped);
+        return role;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.RoleManager#newTransientRole(java.lang.String)
+     */
+    public Role newTransientRole(String name)
+    {
+        TransientRole role = new TransientRole();
+        role.setName(name);
+        return role;
     }
 
     /**
@@ -92,15 +112,20 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public void addRole(String roleName) throws SecurityException
     {
-        if (roleExists(roleName)) 
-        {  
+        Role role = newRole(roleName, true);
+        try
+        {
+            super.addPrincipal(role, null);
+        }
+        catch (PrincipalAlreadyExistsException e)
+        {
             throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS.create(roleName)); 
         }
-        
-        RolePrincipal rolePrincipal = new RolePrincipalImpl(roleName);        
-        roleSecurityHandler.storeRolePrincipal(rolePrincipal);
-        SecurityAttributes sa = attributesProvider.createSecurityAttributes(rolePrincipal);
-        attributesProvider.saveAttributes(sa);
+        catch (PrincipalAssociationRequiredException e)
+        {
+            // TODO: add SecurityException type for this?
+            throw new SecurityException(SecurityException.UNEXPECTED.create("RoleManager.addRole", "add", e.getMessage()));
+        }
         if (log.isDebugEnabled())
             log.debug("Added role: " + roleName);
     }
@@ -330,45 +355,183 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#addAssociationHandler(org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler)
+     */
+    @Override
+    public void addAssociationHandler(JetspeedPrincipalAssociationHandler jpah)
+    {
+        // TODO Auto-generated method stub
+        super.addAssociationHandler(jpah);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#addPrincipal(org.apache.jetspeed.security.JetspeedPrincipal, java.util.Set)
+     */
+    @Override
+    public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
+                                                                                                                  throws PrincipalAlreadyExistsException,
+                                                                                                                  PrincipalAssociationRequiredException
+    {
+        // TODO Auto-generated method stub
+        super.addPrincipal(principal, associations);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getAssociatedFrom(java.lang.String, java.lang.String)
+     */
+    @Override
+    public List<JetspeedPrincipal> getAssociatedFrom(String principalName, String associationName)
+    {
+        // TODO Auto-generated method stub
+        return super.getAssociatedFrom(principalName, associationName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getAssociatedNamesFrom(java.lang.String, java.lang.String)
+     */
+    @Override
+    public List<String> getAssociatedNamesFrom(String principalName, String associationName)
+    {
+        // TODO Auto-generated method stub
+        return super.getAssociatedNamesFrom(principalName, associationName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getAssociatedNamesTo(java.lang.String, java.lang.String)
+     */
+    @Override
+    public List<String> getAssociatedNamesTo(String principalName, String associationName)
+    {
+        // TODO Auto-generated method stub
+        return super.getAssociatedNamesTo(principalName, associationName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getAssociatedTo(java.lang.String, java.lang.String)
+     */
+    @Override
+    public List<JetspeedPrincipal> getAssociatedTo(String principalName, String associationName)
+    {
+        // TODO Auto-generated method stub
+        return super.getAssociatedTo(principalName, associationName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getPrincipal(java.lang.String)
+     */
+    @Override
+    public JetspeedPrincipal getPrincipal(String name)
+    {
+        // TODO Auto-generated method stub
+        return super.getPrincipal(name);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getPrincipalNames(java.lang.String)
+     */
+    @Override
+    public List<String> getPrincipalNames(String nameFilter)
+    {
+        // TODO Auto-generated method stub
+        return super.getPrincipalNames(nameFilter);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#getPrincipals(java.lang.String)
+     */
+    @Override
+    public List<JetspeedPrincipal> getPrincipals(String nameFilter)
+    {
+        // TODO Auto-generated method stub
+        return super.getPrincipals(nameFilter);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#grantPermission(org.apache.jetspeed.security.JetspeedPrincipal, org.apache.jetspeed.security.JetspeedPermission)
+     */
+    @Override
+    public void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission)
+    {
+        // TODO Auto-generated method stub
+        super.grantPermission(principal, permission);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#principalExists(java.lang.String)
+     */
+    @Override
+    public boolean principalExists(String name)
+    {
+        return super.principalExists(name);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#removePrincipal(org.apache.jetspeed.security.JetspeedPrincipal)
+     */
+    @Override
+    public void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException,
+                                                            PrincipalNotRemovableException, DependentPrincipalException
+    {
+        // TODO Auto-generated method stub
+        super.removePrincipal(principal);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#removePrincipal(java.lang.String)
+     */
+    @Override
+    public void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException,
+                                            DependentPrincipalException
+    {
+        // TODO Auto-generated method stub
+        super.removePrincipal(name);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#revokeAll(org.apache.jetspeed.security.JetspeedPrincipal)
+     */
+    @Override
+    public void revokeAll(JetspeedPrincipal principal)
+    {
+        // TODO Auto-generated method stub
+        super.revokeAll(principal);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#revokePermission(org.apache.jetspeed.security.JetspeedPrincipal, org.apache.jetspeed.security.JetspeedPermission)
+     */
+    @Override
+    public void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission)
+    {
+        // TODO Auto-generated method stub
+        super.revokePermission(principal, permission);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager#updatePrincipal(org.apache.jetspeed.security.JetspeedPrincipal)
+     */
+    @Override
+    public void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException,
+                                                            PrincipalNotFoundException
+    {
+        // TODO Auto-generated method stub
+        super.updatePrincipal(principal);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.JetspeedPrincipalManager#newPrincipal(java.lang.String, boolean)
+     */
     public JetspeedPrincipal newPrincipal(String name, boolean mapped)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return newRole(name, mapped);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.JetspeedPrincipalManager#newTransientPrincipal(java.lang.String)
+     */
     public JetspeedPrincipal newTransientPrincipal(String name)
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void addPrincipal(JetspeedPrincipal principal,
-            Set<JetspeedPrincipalAssociationReference> associations)
-            throws PrincipalAlreadyExistsException,
-            PrincipalAssociationRequiredException
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public boolean isMapped()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void removePrincipal(JetspeedPrincipal principal)
-            throws PrincipalNotFoundException, PrincipalNotRemovableException,
-            DependentPrincipalException
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void updatePrincipal(JetspeedPrincipal principal)
-            throws PrincipalUpdateException, PrincipalNotFoundException
-    {
-        // TODO Auto-generated method stub
-        
+        return newTransientRole(name);
     }
 }
