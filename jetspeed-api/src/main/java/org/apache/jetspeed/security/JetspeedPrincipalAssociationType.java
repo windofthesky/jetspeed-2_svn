@@ -30,5 +30,5 @@ public interface JetspeedPrincipalAssociationType
 
     JetspeedPrincipalType getToPrincipalType();
 
-    boolean isReadonlyMapping(); // mapped associations cannot be added or removed other then by removal of the Principal(s) itself
+    boolean isRequired(); // associations cannot be added or removed other then by removal of the Principal(s) itself
 }

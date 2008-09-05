@@ -27,6 +27,7 @@ import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
@@ -78,6 +79,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
     private JetspeedPrincipalType principalType;
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationHandler> assHandlers = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationHandler>();
+    private Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAssociations = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>();
     private JetspeedPrincipalAccessManager jpam;
     private JetspeedPrincipalStorageManager jpsm;
     private JetspeedPrincipalPermissionStorageManager jppsm;
@@ -198,6 +200,10 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                                                 jpah.getAssociationType().getAssociationName() + " already defined");
             }
             assHandlers.put(key, jpah);
+            if (jpah.getAssociationType().isRequired())
+            {
+                reqAssociations.put(key,jpah.getAssociationType());
+            }
         }
         else
         {
@@ -215,10 +221,40 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     }
 
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-                                                                                                                  throws PrincipalAlreadyExistsException,
-                                                                                                                  PrincipalAssociationRequiredException
+        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException
     {
         validatePrincipal(principal);
+        
+        if (associations != null)
+        {
+            AssociationHandlerKey key = null;
+            Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAss = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>(reqAssociations);
+            for (JetspeedPrincipalAssociationReference ref : associations)
+            {
+                if (ref.ref.isTransient())
+                {
+                    throw new IllegalArgumentException("Associated principal of type "+ref.ref.getType().getName() +" is transient");
+                }
+                if (ref.type == JetspeedPrincipalAssociationReference.Type.FROM)
+                {
+                    key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
+                }
+                else
+                {
+                    key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
+                }
+                if (!assHandlers.containsKey(key))
+                {
+                    throw new PrincipalAssociationNotAllowedException();
+                }
+                reqAss.remove(key);
+            }
+            if (!reqAss.isEmpty())
+            {
+                // TODO: proper named message or better replace with SecurityException(KeyedMessage)
+                throw new PrincipalAssociationRequiredException();
+            }
+        }
         jpsm.addPrincipal(principal, associations);
     }
 
@@ -256,7 +292,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         validatePrincipal(principal);
         jppsm.revokePermission(principal, permission);
     }
-    
+
     //
     // JetspeedPrincipalAssociationHandler interface invocations
     //
@@ -283,5 +319,4 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             jpah.remove(from, to);
         }
     }
-    
 }
