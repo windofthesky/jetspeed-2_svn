@@ -327,6 +327,10 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         
         if (jpah != null)
         {
+            if (jpah.getAssociationType().isRequired())
+            {
+                throw new PrincipalAssociationRequiredException();
+            }
             jpah.remove(from, to);
         }
     }
