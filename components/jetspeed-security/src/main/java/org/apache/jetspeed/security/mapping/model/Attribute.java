@@ -20,6 +20,7 @@ import java.util.Collection;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public interface Attribute
 {

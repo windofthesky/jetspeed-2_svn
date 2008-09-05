@@ -41,6 +41,7 @@ import org.apache.jetspeed.security.mapping.model.Entity;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public abstract class AbstractLDAPTest extends TestCase
 {

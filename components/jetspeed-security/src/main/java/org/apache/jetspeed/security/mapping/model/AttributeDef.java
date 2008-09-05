@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.mapping.model;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public interface AttributeDef
 {

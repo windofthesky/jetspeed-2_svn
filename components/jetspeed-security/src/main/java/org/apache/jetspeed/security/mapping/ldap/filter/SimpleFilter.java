@@ -22,6 +22,7 @@ import org.springframework.ldap.filter.Filter;
  * Filter which holds an LDAP query and simply returns it.
  * 
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public class SimpleFilter implements Filter
 {

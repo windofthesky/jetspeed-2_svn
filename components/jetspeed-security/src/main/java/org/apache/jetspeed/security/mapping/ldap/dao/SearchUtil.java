@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.Filter;
@@ -26,6 +25,7 @@ import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public class SearchUtil
 {

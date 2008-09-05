@@ -24,6 +24,7 @@ import org.apache.jetspeed.security.mapping.model.AttributeDef;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public class AttributeImpl implements Attribute
 {

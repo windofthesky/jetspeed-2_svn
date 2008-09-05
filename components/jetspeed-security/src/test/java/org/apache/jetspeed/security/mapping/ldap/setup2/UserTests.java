@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.mapping.ldap.setup2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -26,8 +25,8 @@ import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
-
 public class UserTests extends AbstractSetup2LDAPTest
 {
 

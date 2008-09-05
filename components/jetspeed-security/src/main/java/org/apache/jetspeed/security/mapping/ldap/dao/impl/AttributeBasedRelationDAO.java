@@ -40,6 +40,7 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  * attribute.
  * 
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public class AttributeBasedRelationDAO extends AbstractRelationDAO
 {

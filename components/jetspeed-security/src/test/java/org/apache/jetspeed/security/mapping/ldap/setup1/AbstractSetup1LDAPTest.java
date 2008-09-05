@@ -39,6 +39,7 @@ import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 {

@@ -22,10 +22,10 @@ import org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public abstract class AbstractRelationDAO implements EntityRelationDAO
 {
-
     private LdapTemplate ldapTemplate;
 
     private String relationType, fromEntityType, toEntityType;

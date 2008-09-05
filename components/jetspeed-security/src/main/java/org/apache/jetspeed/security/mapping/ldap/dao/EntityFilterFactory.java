@@ -16,15 +16,13 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.Map;
-
 import org.springframework.ldap.filter.Filter;
 
-import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @version $Id$
  */
 public interface EntityFilterFactory
 {
