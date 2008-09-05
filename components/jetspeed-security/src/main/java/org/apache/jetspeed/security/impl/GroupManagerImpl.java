@@ -16,12 +16,15 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -56,7 +59,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implements GroupManager
+public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements GroupManager
 {
 
     /** The logger. */
@@ -66,8 +69,8 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implem
     private JetspeedPrincipalType roleType;
     private UserManager userManager;
     
-    public GroupManagerImpl(JetspeedPrincipalType principalType,
-                           JetspeedPrincipalAccessManager<Group> jpam, JetspeedPrincipalStorageManager jpsm,
+    public GroupManagerImpl(JetspeedPrincipalType principalType, 
+                           JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
                            JetspeedPrincipalPermissionStorageManager jppsm,
                            UserManager userManager, RoleManager roleManager)
     {
@@ -171,7 +174,12 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implem
     public Collection<Group> getGroupsForUser(String username)
             throws SecurityException
     {
-        return super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
+        ArrayList<Group> groups = new ArrayList<Group>();
+        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
+        {
+            groups.add((Group)principal);
+        }
+        return groups;
     }
 
     /**
@@ -180,7 +188,12 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implem
     public Collection<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
-        return super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF);
+        ArrayList<Group> groups = new ArrayList<Group>();
+        for (JetspeedPrincipal principal : super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF))
+        {
+            groups.add((Group)principal);
+        }
+        return groups;
     }
 
     /**
@@ -244,7 +257,15 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implem
      */
     public Collection<Group> getGroups(String filter) throws SecurityException
     {
-        return super.getPrincipals(filter);
+        Collection<Group> groups = new ArrayList<Group>();
+        List<JetspeedPrincipal> principals = super.getPrincipals(filter);
+        
+        for (JetspeedPrincipal principal : principals)
+        {
+            groups.add((Group) principal);
+        }
+        
+        return groups;
     }
     
     /**
@@ -283,12 +304,12 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager<Group> implem
         }
     }
 
-    public Group newPrincipal(String name, boolean mapped)
+    public JetspeedPrincipal newPrincipal(String name, boolean mapped)
     {
         return newGroup(name, mapped);
     }
 
-    public Group newTransientPrincipal(String name)
+    public JetspeedPrincipal newTransientPrincipal(String name)
     {
         return newTransientGroup(name);
     }

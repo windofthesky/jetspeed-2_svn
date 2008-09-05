@@ -43,96 +43,87 @@ import org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager;
 /**
  * @version $Id$
  */
-public class JetspeedSecurityPersistenceManager<T extends JetspeedPrincipal> implements JetspeedPrincipalAccessManager<T>,
+public class JetspeedSecurityPersistenceManager implements JetspeedPrincipalAccessManager,
                 JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager,
                 JetspeedPrincipalAssociationStorageManager, JetspeedPrincipalPermissionStorageManager,
                 JetspeedPermissionStorageManager
 {
-
-    public List<T> getAssociatedFrom(String principalFromName,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    //
+    // JetspeedPrincipalAccessManager interface implementation
+    //
+    public List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<T> getAssociatedFrom(Long principalFromId,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<String> getAssociatedNamesFrom(String principalFromName,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<String> getAssociatedNamesFrom(Long principalFromId,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<String> getAssociatedNamesTo(String principalToName,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<String> getAssociatedNamesTo(Long principalToId,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<T> getAssociatedTo(String principalToName,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<T> getAssociatedTo(Long principalToId,
-            JetspeedPrincipalType from, JetspeedPrincipalType to,
-            String associationName)
+    public List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public T getPrincipal(Long id)
+    public JetspeedPrincipal getPrincipal(Long id)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public T getPrincipal(String principalName, JetspeedPrincipalType type)
+    public JetspeedPrincipal getPrincipal(String principalName, JetspeedPrincipalType type)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<String> getPrincipalNames(String nameFilter,
-            JetspeedPrincipalType type)
+    public List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<T> getPrincipals(String nameFilter, JetspeedPrincipalType type)
+    public List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue, JetspeedPrincipalType type)
     {
         // TODO Auto-generated method stub
         return null;
@@ -144,35 +135,26 @@ public class JetspeedSecurityPersistenceManager<T extends JetspeedPrincipal> imp
         return null;
     }
 
-    public List<String> getPrincipals(JetspeedPermission permission,
-            JetspeedPrincipalType type)
+    public List<String> getPrincipals(JetspeedPermission permission, JetspeedPrincipalType type)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<T> getPrincipalsByAttribute(String attributeName,
-            String attributeValue, JetspeedPrincipalType type)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean principalExists(String principalName,
-            JetspeedPrincipalType type)
+    public boolean principalExists(String principalName, JetspeedPrincipalType type)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public void addPrincipal(JetspeedPrincipal principal,
-            Set<JetspeedPrincipalAssociationReference> associations)
-            throws PrincipalAssociationNotAllowedException,
-            PrincipalAlreadyExistsException,
-            PrincipalAssociationRequiredException
+    //
+    // JetspeedPrincipalStorageManager interface implementation
+    //
+    public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
+                                                                                                                  throws PrincipalAlreadyExistsException,
+                                                                                                                  PrincipalAssociationRequiredException
     {
         // TODO Auto-generated method stub
-        
     }
 
     public boolean isMapped()
@@ -181,92 +163,88 @@ public class JetspeedSecurityPersistenceManager<T extends JetspeedPrincipal> imp
         return false;
     }
 
-    public void removePrincipal(JetspeedPrincipal principal)
-            throws PrincipalNotFoundException, PrincipalNotRemovableException,
-            DependentPrincipalException
+    public void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException,
+                                                            PrincipalNotRemovableException, DependentPrincipalException
     {
         // TODO Auto-generated method stub
-        
     }
 
-    public void updatePrincipal(JetspeedPrincipal principal)
-            throws PrincipalUpdateException, PrincipalNotFoundException
+    public void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException,
+                                                            PrincipalNotFoundException
     {
         // TODO Auto-generated method stub
-        
     }
 
+    //
+    // JetspeedPrincipalStorageManager interface implementation
+    //
     public void addCredential(PasswordCredential credential)
     {
         // TODO Auto-generated method stub
-        
     }
 
     public void removeCredential(PasswordCredential credential)
     {
         // TODO Auto-generated method stub
-        
     }
 
     public void updateCredential(PasswordCredential credential)
     {
         // TODO Auto-generated method stub
-        
     }
 
-    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to,
-            String associationName) throws PrincipalNotFoundException,
-            PrincipalAssociationUnsupportedException,
-            PrincipalAssociationNotAllowedException
+    //
+    // JetspeedPrincipalAssociationStorageManager interface implementation
+    //
+    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
+                                                                                                    throws PrincipalNotFoundException,
+                                                                                                    PrincipalAssociationUnsupportedException,
+                                                                                                    PrincipalAssociationNotAllowedException
     {
         // TODO Auto-generated method stub
-        
     }
 
-    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to,
-            String associationName) throws PrincipalNotFoundException,
-            PrincipalAssociationUnsupportedException,
-            PrincipalAssociationRequiredException
+    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
+                                                                                                       throws PrincipalNotFoundException,
+                                                                                                       PrincipalAssociationUnsupportedException,
+                                                                                                       PrincipalAssociationRequiredException
     {
         // TODO Auto-generated method stub
-        
     }
 
-    public void grantPermission(JetspeedPrincipal principal,
-            JetspeedPermission permission)
+    //
+    // JetspeedPrincipalPermissionStorageManager interface implementation
+    //
+    public void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission)
     {
         // TODO Auto-generated method stub
-        
     }
 
     public void revokeAll(JetspeedPrincipal principal)
     {
         // TODO Auto-generated method stub
-        
     }
 
-    public void revokePermission(JetspeedPrincipal principal,
-            JetspeedPermission permission)
+    public void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission)
     {
         // TODO Auto-generated method stub
-        
     }
 
+    //
+    // JetspeedPermissionStorageManager interface implementation
+    //
     public void addPermission(PortalResourcePermission p)
     {
         // TODO Auto-generated method stub
-        
     }
 
     public void removePermission(JetspeedPermission p)
     {
         // TODO Auto-generated method stub
-        
     }
 
     public void updatePermission(JetspeedPermission p)
     {
         // TODO Auto-generated method stub
-        
     }
 }
