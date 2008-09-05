@@ -145,44 +145,44 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         jpsm.removePrincipal(principal);
     }
 
-    public final List<JetspeedPrincipal> getAssociatedFrom(String principalName, JetspeedPrincipalType to, String associationName)
-    {
-        if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
-        {
-            // TODO: should we throw an exception here???
-            return Collections.EMPTY_LIST;
-        }
-        return jpam.getAssociatedFrom(principalName, principalType, to, associationName);
-    }
-
-    public final List<String> getAssociatedNamesFrom(String principalName, JetspeedPrincipalType to, String associationName)
-    {
-        if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
-        {
-            // TODO: should we throw an exception here???
-            return Collections.EMPTY_LIST;
-        }
-        return jpam.getAssociatedNamesFrom(principalName, principalType, to, associationName);
-    }
-
-    public final List<String> getAssociatedNamesTo(String principalName, JetspeedPrincipalType from, String associationName)
+    public final List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName)
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(from.getName(), principalType.getName(), associationName)))
         {
             // TODO: should we throw an exception here???
             return Collections.EMPTY_LIST;
         }
-        return jpam.getAssociatedNamesTo(principalName, principalType, from, associationName);
+        return jpam.getAssociatedFrom(principalFromName, from, principalType, associationName);
     }
 
-    public final List<JetspeedPrincipal> getAssociatedTo(String principalName, JetspeedPrincipalType from, String associationName)
+    public final List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType  from, String associationName)
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(from.getName(), principalType.getName(), associationName)))
         {
             // TODO: should we throw an exception here???
             return Collections.EMPTY_LIST;
         }
-        return jpam.getAssociatedTo(principalName, principalType, from, associationName);
+        return jpam.getAssociatedNamesFrom(principalFromName, from, principalType, associationName);
+    }
+
+    public final List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType to, String associationName)
+    {
+        if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
+        {
+            // TODO: should we throw an exception here???
+            return Collections.EMPTY_LIST;
+        }
+        return jpam.getAssociatedNamesTo(principalToName, principalType, to, associationName);
+    }
+
+    public final List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName)
+    {
+        if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
+        {
+            // TODO: should we throw an exception here???
+            return Collections.EMPTY_LIST;
+        }
+        return jpam.getAssociatedTo(principalToName, principalType, to, associationName);
     }
 
     //

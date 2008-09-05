@@ -27,6 +27,7 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
@@ -72,14 +73,14 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     private UserManager userManager;
     private GroupManager groupManager;
     
-    public RoleManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType userType, JetspeedPrincipalType groupType, 
+    public RoleManagerImpl(JetspeedPrincipalType principalType, 
                            JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
                            JetspeedPrincipalPermissionStorageManager jppsm,
                            UserManager userManager, GroupManager groupManager)
     {
         super(principalType, jpam, jpsm, jppsm);
-        this.userType = userType;
-        this.groupType = groupType;
+        this.userType = ((JetspeedPrincipalManager) userManager).getPrincipalType();
+        this.groupType = ((JetspeedPrincipalManager) groupManager).getPrincipalType();;
         this.userManager = userManager;
         this.groupManager = groupManager;
     }
@@ -112,6 +113,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     public void addRole(String roleName) throws SecurityException
     {
         Role role = newRole(roleName, true);
+        
         try
         {
             super.addPrincipal(role, null);
@@ -122,9 +124,13 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         }
         catch (PrincipalAssociationRequiredException e)
         {
-            // TODO: add SecurityException type for this?
             throw new SecurityException(SecurityException.UNEXPECTED.create("RoleManager.addRole", "add", e.getMessage()));
+        } 
+        catch (PrincipalAssociationNotAllowedException e)
+        {
+            throw new SecurityException(e);
         }
+        
         if (log.isDebugEnabled())
             log.debug("Added role: " + roleName);
     }
@@ -174,7 +180,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     public List<Role> getRolesForUser(String username) throws SecurityException
     {
         ArrayList<Role> roles = new ArrayList<Role>();
-        for (JetspeedPrincipal principal : super.getAssociatedTo(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
+        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
         {
             roles.add((Role)principal);
         }
@@ -187,7 +193,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
         ArrayList<Role> roles = new ArrayList<Role>();
-        for (JetspeedPrincipal principal : super.getAssociatedTo(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF))
+        for (JetspeedPrincipal principal : super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF))
         {
             roles.add((Role)principal);
         }

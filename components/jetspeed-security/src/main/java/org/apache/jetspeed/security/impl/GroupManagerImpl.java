@@ -116,8 +116,11 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         }
         catch (PrincipalAssociationRequiredException e)
         {
-            // TODO: add SecurityException type for this?
             throw new SecurityException(SecurityException.UNEXPECTED.create("GroupManager.addGroup", "add", e.getMessage()));
+        } 
+        catch (PrincipalAssociationNotAllowedException e)
+        {
+            throw new SecurityException(e);
         }
         
         if (log.isDebugEnabled())
@@ -170,7 +173,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
             throws SecurityException
     {
         ArrayList<Group> groups = new ArrayList<Group>();
-        for (JetspeedPrincipal principal : super.getAssociatedTo(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
+        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
         {
             groups.add((Group)principal);
         }
@@ -184,7 +187,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
             throws SecurityException
     {
         ArrayList<Group> groups = new ArrayList<Group>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF))
+        for (JetspeedPrincipal principal : super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF))
         {
             groups.add((Group)principal);
         }

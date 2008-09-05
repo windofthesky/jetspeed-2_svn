@@ -44,11 +44,11 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
     
     void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 
-    List<JetspeedPrincipal> getAssociatedFrom(String principalName, JetspeedPrincipalType to, String associationName);
+    List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
 
-    List<JetspeedPrincipal> getAssociatedTo(String principalName, JetspeedPrincipalType from, String associationName);
+    List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName);
 
-    List<String> getAssociatedNamesFrom(String principalName, JetspeedPrincipalType to, String associationName);
+    List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
 
-    List<String> getAssociatedNamesTo(String principalName, JetspeedPrincipalType from, String associationName);
+    List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType to, String associationName);
 }
