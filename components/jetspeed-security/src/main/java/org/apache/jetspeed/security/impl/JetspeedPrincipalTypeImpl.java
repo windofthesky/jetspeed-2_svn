@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityAttributeTypes;
 
@@ -25,13 +26,13 @@ import org.apache.jetspeed.security.SecurityAttributeTypes;
 public class JetspeedPrincipalTypeImpl implements JetspeedPrincipalType
 {
     private String name;
-    private String className;
+    private Class<JetspeedPrincipal> principalClass;
     private SecurityAttributeTypes attributeTypes;
 
-    public JetspeedPrincipalTypeImpl(String name, String className, SecurityAttributeTypes attributeTypes)
+    public JetspeedPrincipalTypeImpl(String name, String className, SecurityAttributeTypes attributeTypes) throws ClassNotFoundException
     {
         this.name = name;
-        this.className = className;
+        this.principalClass = (Class<JetspeedPrincipal>)Class.forName(className);
         this.attributeTypes = attributeTypes;
     }
 
@@ -42,7 +43,12 @@ public class JetspeedPrincipalTypeImpl implements JetspeedPrincipalType
 
     public String getClassName()
     {
-        return className;
+        return principalClass.getName();
+    }
+    
+    public Class<JetspeedPrincipal> getPrincipalClass()
+    {
+        return principalClass;
     }
 
     public String getName()

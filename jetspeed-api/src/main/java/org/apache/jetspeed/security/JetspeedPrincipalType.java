@@ -27,6 +27,8 @@ public interface JetspeedPrincipalType
     String getName();
 
     String getClassName();
+    
+    Class<JetspeedPrincipal> getPrincipalClass();
 
     SecurityAttributeTypes getAttributeTypes();
 }
