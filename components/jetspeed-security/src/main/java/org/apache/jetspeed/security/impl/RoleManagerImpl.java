@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -178,13 +176,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      * @see org.apache.jetspeed.security.RoleManager#getRolesForUser(java.lang.String)
      */
     public List<Role> getRolesForUser(String username) throws SecurityException
-    {
-        ArrayList<Role> roles = new ArrayList<Role>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            roles.add((Role)principal);
-        }
-        return roles;
+    {        
+        return (List<Role>)super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -192,12 +185,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
-        ArrayList<Role> roles = new ArrayList<Role>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            roles.add((Role)principal);
-        }
-        return roles;
+        return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -309,17 +297,9 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRoles(java.lang.String)
      */
-    public Collection<Role> getRoles(String filter) throws SecurityException
+    public List<Role> getRoles(String nameFilter) throws SecurityException
     {
-        Collection<Role> roles = new ArrayList<Role>();
-        List<JetspeedPrincipal> principals = super.getPrincipals(filter);
-        
-        for (JetspeedPrincipal principal : principals)
-        {
-            roles.add((Role) principal);
-        }
-        
-        return roles;
+        return (List<Role>)super.getPrincipals(nameFilter);
     }
 
     /** 

@@ -62,7 +62,6 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
 	private String anonymousUser = "guest";
-	private String defaultPassword = "Guest123";
 	private JetspeedPrincipalType roleType;
 	private JetspeedPrincipalType groupType;
 
@@ -187,49 +186,29 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		return (User) getPrincipal(username);
 	}
 
-	public List<String> getUserNames(String filter) throws SecurityException
+	public List<String> getUserNames(String nameFilter) throws SecurityException
 	{
-		return getPrincipalNames(filter);
+		return getPrincipalNames(nameFilter);
 	}
 
-	public Collection<User> getUsers(String filter) throws SecurityException
+	public List<User> getUsers(String nameFilter) throws SecurityException
 	{
-		Collection<User> users = new ArrayList<User>();
-		for (JetspeedPrincipal principal : getPrincipals(filter))
-		{
-			users.add((User) principal);
-		}
-		return users;
+		return (List<User>)getPrincipals(nameFilter);
 	}
 
-	public Collection<User> getUsersInGroup(String groupFullPathName) throws SecurityException
+	public List<User> getUsersInGroup(String groupFullPathName) throws SecurityException
 	{
-		ArrayList<User> groupUsers = new ArrayList<User>();
-		for (JetspeedPrincipal principal : super.getAssociatedFrom(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF))
-		{
-			groupUsers.add((User) principal);
-		}
-		return groupUsers;
+		return (List<User>) super.getAssociatedFrom(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF);
 	}
 
-	public Collection<User> getUsersInRole(String roleFullPathName) throws SecurityException
+	public List<User> getUsersInRole(String roleFullPathName) throws SecurityException
 	{
-		ArrayList<User> groupUsers = new ArrayList<User>();
-		for (JetspeedPrincipal principal : super.getAssociatedFrom(roleFullPathName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF))
-		{
-			groupUsers.add((User) principal);
-		}
-		return groupUsers;
+		return (List<User>) super.getAssociatedFrom(roleFullPathName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF);
 	}
 
 	public List<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException
 	{
-		List<User> users = new ArrayList<User>();
-		for (JetspeedPrincipal user : super.getPrincipalsByAttribute(attributeName, attributeValue))
-		{
-			users.add((User) user);
-		}
-		return users;
+		return (List<User>) super.getPrincipalsByAttribute(attributeName, attributeValue);
 	}
 
 	/**

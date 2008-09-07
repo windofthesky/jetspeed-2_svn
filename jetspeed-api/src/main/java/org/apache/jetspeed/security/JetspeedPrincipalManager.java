@@ -34,9 +34,9 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
 
     List<String> getPrincipalNames(String nameFilter);
 
-    List<JetspeedPrincipal> getPrincipals(String nameFilter);
+    List<? extends JetspeedPrincipal> getPrincipals(String nameFilter);
     
-    List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue);
+    List<? extends JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue);
     
     JetspeedPrincipal newPrincipal(String name, boolean mapped);
 
@@ -44,9 +44,9 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
     
     void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 
-    List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
+    List<? extends JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
 
-    List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName);
+    List<? extends JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName);
 
     List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
 

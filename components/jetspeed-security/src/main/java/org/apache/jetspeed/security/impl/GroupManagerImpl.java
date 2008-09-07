@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -171,29 +169,19 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroupsForUser(java.lang.String)
      */
-    public Collection<Group> getGroupsForUser(String username)
+    public List<Group> getGroupsForUser(String username)
             throws SecurityException
     {
-        ArrayList<Group> groups = new ArrayList<Group>();
-        for (JetspeedPrincipal principal : super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            groups.add((Group)principal);
-        }
-        return groups;
+        return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroupsInRole(java.lang.String)
      */
-    public Collection<Group> getGroupsInRole(String roleName)
+    public List<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
-        ArrayList<Group> groups = new ArrayList<Group>();
-        for (JetspeedPrincipal principal : super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF))
-        {
-            groups.add((Group)principal);
-        }
-        return groups;
+        return (List<Group>) super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF);
     }
 
     /**
@@ -255,17 +243,9 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroups(java.lang.String)
      */
-    public Collection<Group> getGroups(String filter) throws SecurityException
+    public List<Group> getGroups(String nameFilter) throws SecurityException
     {
-        Collection<Group> groups = new ArrayList<Group>();
-        List<JetspeedPrincipal> principals = super.getPrincipals(filter);
-        
-        for (JetspeedPrincipal principal : principals)
-        {
-            groups.add((Group) principal);
-        }
-        
-        return groups;
+        return (List<Group>) super.getPrincipals(nameFilter);
     }
     
     /**
