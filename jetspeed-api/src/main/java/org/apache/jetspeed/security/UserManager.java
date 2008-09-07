@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.security.auth.Subject;
@@ -30,6 +29,7 @@ import org.apache.jetspeed.security.spi.AuthenticatedUser;
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ * @version $Id$
  */
 public interface UserManager
 {
@@ -142,48 +142,44 @@ public interface UserManager
 
     /**
      * <p>
-     * An iterator of {@link User}finding users matching the corresponding
-     * filter criteria.
+     * Retrieves a {@link User} list matching the corresponding
+     * user name filter.
      * </p>
-     * TODO Complete filter implementation.
      * 
-     * @param filter The filter used to retrieve matching users.
-     * @return a collection of {@link User}.
+     * @param nameFilter The filter used to retrieve matching users.
+     * @return a list of {@link User}.
      */
-    Collection<User> getUsers(String filter) throws SecurityException;
+    List<User> getUsers(String nameFilter) throws SecurityException;
 
     /**
      * <p>
-     * An iterator of user names, finding users matching the corresponding
-     * filter criteria.
+     * Retrieves a List user names, finding users matching the corresponding
+     * user name filter.
      * </p>
-     * TODO Complete filter implementation.
      * 
-     * @param filter The filter used to retrieve matching users.
-     * @return A list of user name strings
+     * @param nameFilter The filter used to retrieve matching users.
+     * @return A list of user names
      */
-    List<String> getUserNames(String filter) throws SecurityException;
+    List<String> getUserNames(String nameFilter) throws SecurityException;
 
     /**
      * <p>
-     * A collection of {@link User}for all the users in a specific role.
+     * Retrieves a {@link User} list of all the users in a specific role.
      * </p>
      * 
-     * @param roleFullPathName The role name full path (e.g.
-     *            theRoleName.theRoleNameChild).
-     * @return A Collection of {@link User}.
+     * @param roleName The role name
+     * @return A List of {@link User}.
      * @throws Throws a security exception if the role does not exist.
      */
-    Collection<User> getUsersInRole(String roleFullPathName) throws SecurityException;
+    List<User> getUsersInRole(String roleName) throws SecurityException;
     
     /**
-     * <p>A collection of {@link User} for a specific group.</p>
-     * @param groupFullPathName The group name full path
-     *                          (e.g. theGroupName.theGroupChildName).
-     * @return A collection of {@link User}.
+     * <p>Retrieves a {@link User} list of all the users in a specific group.</p>
+     * @param groupName The group name
+     * @return A list of {@link User}.
      * @throws Throws security exception if the group does not exist.
      */
-    Collection<User> getUsersInGroup(String groupFullPathName) throws SecurityException;
+    List<User> getUsersInGroup(String groupName) throws SecurityException;
     
     /**
      * Enable or disable a user.
@@ -200,13 +196,13 @@ public interface UserManager
     void updateUser(User user) throws SecurityException;
     
     /**
-     * Given any attribute name and value, lookup a set of users that match the name value pairs
+     * <p>Retrieves a {@link User} list of all the users having a specific value for a specific attribute
      * @param attributeName
      * @param attributeValue
-     * @return a collection of users
+     * @return a List of users
      * @throws SecurityException
      */
-    Collection<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException;
+    List<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException;
     
     /**
      * Returns the current PasswordCredential for a User or a new one if the doesn't have one yet

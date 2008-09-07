@@ -16,21 +16,11 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>
  * Describes the service interface for managing groups.
- * </p>
- * <p>
- * Group hierarchy elements are being returned as a {@link Group}collection.
- * The backing implementation must appropriately map the group hierarchy to a
- * preferences sub-tree.
- * </p>
- * <p>
- * The convention {principal}.{subprincipal} has been chosen to name groups
- * hierachies. Implementation follow the conventions enforced by the Preferences
- * API.
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
@@ -45,84 +35,61 @@ public interface GroupManager
      * <p>
      * Add a new group.
      * </p>
-     * <p>
-     * Group principal names are expressed as {principal}.{subprincipal} where
-     * "." is the separator expressing the hierarchical nature of a group.
-     * </p>
-     * <p>
-     * Group principal path names are stored leveraging the {@link Preferences}
-     * api. Groups will be stored under /group/theGroupName/theGroupNameChild
-     * when given the full path name theGroupName.theGroupNameChild.
-     * 
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupNameChild).
+     * @param groupName The group name
      * @throws Throws a security exception.
      */
-    void addGroup(String groupFullPathName) throws SecurityException;
+    void addGroup(String groupName) throws SecurityException;
 
     /**
      * <p>
      * Remove a group.
      * </p>
-     * <p>
-     * Group principal names are expressed as {principal}.{subprincipal} where
-     * "." is the separator expressing the hierarchical nature of a group.
-     * </p>
-     * <p>
-     * Group principal path names are stored leveraging the {@link Preferences}
-     * api. Groups will be stored under /group/theGroupName/theGroupNameChild
-     * when given the full path name theGroupName.theGroupNameChild.
-     * 
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupNameChild)
+     * @param groupName The group name
      * @throws Throws a security exception.
      */
-    void removeGroup(String groupFullPathName) throws SecurityException;
+    void removeGroup(String groupName) throws SecurityException;
 
     /**
      * <p>
      * Whether or not a group exists.
      * </p>
      * 
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupNameChild)
+     * @param groupName The group name
      * @return Whether or not a group exists.
      */
-    boolean groupExists(String groupFullPathName);
+    boolean groupExists(String groupName);
 
     /**
      * <p>
-     * Get a group {@link Group}for a given group full path name.
+     * Get a group {@link Group}for a given group name.
      * 
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupChildName).
-     * @return The {@link Preferences}node.
+     * @param groupName
+     * @return The {@link Group}
      * @throws Throws security exception if the group does not exist.
      */
-    Group getGroup(String groupFullPathName) throws SecurityException;
+    Group getGroup(String groupName) throws SecurityException;
 
     /**
      * <p>
-     * A collection of {@link Group}for all the groups associated to a specific
+     * Retrieves a {@link Group} list of all the groups associated to a specific
      * user.
      * 
      * @param username The user name.
-     * @return A collection of {@link Group}.
+     * @return A list of {@link Group}.
      * @throws Throws security exception if the user does not exist.
      */
-    Collection<Group> getGroupsForUser(String username) throws SecurityException;
+    List<Group> getGroupsForUser(String username) throws SecurityException;
 
     /**
      * <p>
-     * A collection of {@link Group}for all the groups in a specific role.
+     * Retrieves {@link Group} list of all the groups in a specific role.
      * </p>
      * 
-     * @param roleFullPathName The role full path (e.g.
-     *            theRoleName.theRoleChildName)..
-     * @return A Collection of {@link Group}.
+     * @param roleName The role name
+     * @return A list of {@link Group}.
      * @throws Throws a security exception if the role does not exist.
      */
-    Collection<Group> getGroupsInRole(String roleFullPathName) throws SecurityException;
+    List<Group> getGroupsInRole(String roleName) throws SecurityException;
 
     /**
      * <p>
@@ -130,11 +97,10 @@ public interface GroupManager
      * </p>
      * 
      * @param username The user name.
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupChildName).
+     * @param groupName The group name
      * @throws Throws a security exception.
      */
-    void addUserToGroup(String username, String groupFullPathName) throws SecurityException;
+    void addUserToGroup(String username, String groupName) throws SecurityException;
 
     /**
      * <p>
@@ -142,11 +108,10 @@ public interface GroupManager
      * </p>
      * 
      * @param username The user name.
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupChildName).
+     * @param groupName The group name
      * @throws Throws a security exception.
      */
-    void removeUserFromGroup(String username, String groupFullPathName) throws SecurityException;
+    void removeUserFromGroup(String username, String groupName) throws SecurityException;
 
     /**
      * <p>
@@ -154,25 +119,25 @@ public interface GroupManager
      * </p>
      * 
      * @param username The user name.
-     * @param groupFullPathName The group name full path (e.g.
-     *            theGroupName.theGroupChildName).
+     * @param groupName The group name
      * @return Whether or not a user is in a group.
      * @throws Throws security exception if the user or group does not exist.
      */
-    boolean isUserInGroup(String username, String groupFullPathName) throws SecurityException;
+    boolean isUserInGroup(String username, String groupName) throws SecurityException;
 
     /**
-     * Get all groups available from all group handlers
+     * Retrieves a {@link Group} list matching the corresponding
+     * group name filter.
+     * </p>
      * 
-     * @param filter The filter used to retrieve matching groups.
-     * @return all groups available as Group 
+     * @param nameFilter The filter used to retrieve matching groups.
+     * @return a list of {@link Group} 
      */
-   Collection<Group> getGroups(String filter) throws SecurityException;
+   List<Group> getGroups(String nameFilter) throws SecurityException;
     
    /**
     * Enable or disable a group.
-    * @param groupName The group name full path 
-     *            theGroupName.theGroupChildName).
+    * @param groupName The group name
     * @param enabled enabled flag for the group
     */
    void setGroupEnabled(String groupName, boolean enabled) throws SecurityException;

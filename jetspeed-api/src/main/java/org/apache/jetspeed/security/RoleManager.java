@@ -16,19 +16,12 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * <p>Describes the service interface for managing roles.</p>
- * <p>Role hierarchy elements are being returned as a {@link Role}
- * collection.  The backing implementation must appropriately map 
- * the role hierarchy to a preferences sub-tree.</p> 
- * <p>The convention {principal}.{subprincipal} has been chosen to name
- * roles hierachies in order to support declarative security.  Implementation
- * follow the conventions enforced by the preferences API.</p>
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
+ * @version $Id$
  */
 public interface RoleManager
 {
@@ -37,138 +30,115 @@ public interface RoleManager
     
     /**
      * <p>Add a new role.</p>
-     * <p>Role principal names are expressed as {principal}.{subprincipal} where
-     * "." is the separator expressing the hierarchical nature of a role.</p>
-     * <p>Role principal path names are stored leveraging the {@link Preferences}
-     * api.  Roles will be stored under /role/theGroupName/theGroupNameChild
-     * when given the full path name theRoleName.theRoleNameChild.
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleNameChild).
+     * @param roleName The role name
      * @throws Throws a security exception if the role already exists.
      */
-    void addRole(String roleFullPathName) throws SecurityException;
+    void addRole(String roleName) throws SecurityException;
 
     /**
-     * <p>Remove a given role and all the children of that role.</p>
-     * <p>Role principal names are expressed as {principal}.{subprincipal} where
-     * "." is the separator expressing the hierarchical nature of a role.</p>
-     * <p>Role principal path names are stored leveraging the {@link Preferences}
-     * api.  Roles will be stored under /role/theGroupName/theGroupNameChild
-     * when given the full path name theRoleName.theRoleNameChild.
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleNameChild).
+     * <p>Remove a given role</p>
+     * @param roleName
      * @throws Throws a security exception.
      */
-    void removeRole(String roleFullPathName) throws SecurityException;
+    void removeRole(String roleName) throws SecurityException;
 
     /**
      * <p>Whether or not a role exists.</p>
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleNameChild).
+     * @param roleName 
      * @return Whether or not a role exists.
      */
-    boolean roleExists(String roleFullPathName);
+    boolean roleExists(String roleName);
 
     /**
-     * <p>Get a role {@link Role} for a given role full path name.
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleNameChild).
-     * @return The {@link Preferences} node.
+     * <p>Get a role {@link Role} for a given role name.
+     * @param roleName The role name
+     * @return The {@link Role}.
      * @throws Throws a security exception if the role does not exist.
      */
-    Role getRole(String roleFullPathName) throws SecurityException;
+    Role getRole(String roleName) throws SecurityException;
 
     /**
-     * <p>A list of {@link Role} for all the roles
+     * <p>Retrieves a {@link Role} list of all the roles
      * associated to a specific user.</p>
      * @param username The user name.
-     * @return A Collection of {@link Role}.
+     * @return A List of {@link Role}.
      * @throws Throws a security exception if the user does not exist.
      */
     List<Role> getRolesForUser(String username) throws SecurityException;
 
     /**
-     * <p>A list of {@link Role} for all the roles
+     * <p>Retrieves a {@link Role} list of all the roles
      * associated to a specific group.</p>
-     * @param groupFullPathName The group full path
-     *                          (e.g. theGroupName.theGroupChildName).
+     * @param groupName The group name
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the group does not exist.
      */
-    List<Role> getRolesInGroup(String groupFullPathName) throws SecurityException;
+    List<Role> getRolesInGroup(String groupName) throws SecurityException;
     
     /**
      * <p>Add a role to a user.</p>
-     * @param username The user name.
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleChildName).
+     * @param username The user name
+     * @param roleName The role name
      * @throws Throws a security exception if the role or the user do not exist.
      */
-    void addRoleToUser(String username, String roleFullPathName) throws SecurityException;
+    void addRoleToUser(String username, String roleName) throws SecurityException;
 
     /**
      * <p>Remove a user from a role.</p>
      * @param username The user name.
-     * @param roleFullPathName The role name full path relative to the
-     *                         /role node (e.g. /theRoleName/theRoleChildName).
+     * @param roleName The role name
      * @throws Throws a security exception.
      */
-    void removeRoleFromUser(String username, String roleFullPathName) throws SecurityException;
+    void removeRoleFromUser(String username, String roleName) throws SecurityException;
 
     /**
      * <p>Whether or not a user is in a role.</p>
      * @param username The user name.
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleChildName).
+     * @param roleName The role name 
      * @return Whether or not a user is in a role.
      * @throws Throws a security exception if the role or the user does not exist.
      */
-    boolean isUserInRole(String username, String roleFullPathName) throws SecurityException;
+    boolean isUserInRole(String username, String roleName) throws SecurityException;
 
     /**
      * <p>Add a role to a group.</p>
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleChildName).
-     * @param groupFullPathName The group name full path
-     *                          (e.g. theGroupName.theGroupChildName).
+     * @param roleName The role name
+     * @param groupName The group name 
      * @throws Throws a security exception.
      */
-    void addRoleToGroup(String roleFullPathName, String groupFullPathName) throws SecurityException;
+    void addRoleToGroup(String roleName, String groupName) throws SecurityException;
 
     /**
      * <p>Remove a role from a group.</p>
-     * @param roleFullPathName The role name full path 
-     *                         (e.g. theRoleName.theRoleChildName).
-     * @param groupFullPathName The group name full path
-     *                          (e.g. theGroupName.theGroupChildName).
+     * @param roleName The role name
+     * @param groupName The group name
      * @throws Throws a security exception.
      */
-    void removeRoleFromGroup(String roleFullPathName, String groupFullPathName) throws SecurityException;
+    void removeRoleFromGroup(String roleName, String groupName) throws SecurityException;
 
     /**
      * <p>Whether or not a role is in a group.</p>
-     * @param groupFullPathName The group name full path
-     *                          (e.g. theGroupName.theGroupChildName).
-     * @param roleFullPathName The role name full path
-     *                         (e.g. theRoleName.theRoleChildName).
+     * @param groupName The group name
+     * @param roleName The role name
      * @return Whether or not a role is in a group.
      * @throws Throws a security exception if the role or the group does not exist.
      */
-    boolean isGroupInRole(String groupFullPathName, String roleFullPathName) throws SecurityException;
+    boolean isGroupInRole(String groupName, String roleName) throws SecurityException;
 
     /**
-     * Get all roles available from all role handlers
+     * Retrieves a {@link Role} list matching the corresponding
+     * role name filter.
+     * </p>
      * 
-     * @param filter The filter used to retrieve matching roles.
-     * @return all roles available as Role 
+     * @param nameFilter The filter used to retrieve matching roles.
+     * @return a list of {@link Role} 
      */
-    Collection<Role> getRoles(String filter) throws SecurityException;
+    List<Role> getRoles(String nameFilter) throws SecurityException;
     
     /**
      * Enable or disable a role.
-     * @param roleFullPathName The role name full path 
-     *                         (e.g. theRoleName.theRoleChildName).
+     * @param roleName.
      * @param enabled enabled flag for the role
      */
-    void setRoleEnabled(String roleFullPathName, boolean enabled) throws SecurityException;
+    void setRoleEnabled(String roleName, boolean enabled) throws SecurityException;
 }
