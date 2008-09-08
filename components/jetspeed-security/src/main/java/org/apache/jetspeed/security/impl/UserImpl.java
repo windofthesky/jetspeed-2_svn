@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.security.auth.Subject;
-
-import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.User;
 
 /**
@@ -32,23 +25,4 @@ import org.apache.jetspeed.security.User;
 public class UserImpl extends PersistentJetspeedPrincipal implements User
 {
     private static final long serialVersionUID = 5484179899807809619L;
-
-    private Subject subject;
-    
-    /**
-     * <p>Default constructor.</p>
-     */
-    public UserImpl()
-    {
-    }
-
-    public Subject getSubject()
-    {
-        return this.subject;
-    }
-
-    public void setSubject(Subject subject)
-    {
-        this.subject = subject;
-    }
 }
