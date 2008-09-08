@@ -17,8 +17,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,27 +25,31 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.DependentPrincipalException;
-import org.apache.jetspeed.security.InvalidPasswordException;
+import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
+import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
+import org.apache.jetspeed.security.PrincipalsSet;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserSubjectPrincipal;
-import org.apache.jetspeed.security.spi.AuthenticatedUser;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
-import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
+import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
 
 /**
  * <p>
@@ -58,29 +60,39 @@ import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar </a>
  * @version $Id$
  */
-public class UserManagerImpl extends BaseJetspeedPrincipalManager implements UserManager {
+public class UserManagerImpl extends BaseJetspeedPrincipalManager implements UserManager
+{
 	private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
 	private String anonymousUser = "guest";
 	private JetspeedPrincipalType roleType;
 	private JetspeedPrincipalType groupType;
+	
+	private UserPasswordCredentialManager credentialManager;
+	private RoleManager roleManager;
+	private GroupManager groupManager;
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
-			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, JetspeedPrincipalPermissionStorageManager jppsm) {
+			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, JetspeedPrincipalPermissionStorageManager jppsm,
+			UserPasswordCredentialManager credentialManager, RoleManager roleManager, GroupManager groupManager) 
+	{
 		super(principalType, jpam, jpsm, jppsm);
-		this.roleType = roleType;
-		this.groupType = groupType;
+		this.credentialManager = credentialManager;
+		this.roleType = ((JetspeedPrincipalManager)roleManager).getPrincipalType();
+		this.groupType = ((JetspeedPrincipalManager)roleManager).getPrincipalType();
 	}
 
-	public void addUser(String username, String password) throws SecurityException
+	public User addUser(String username) throws SecurityException
 	{
+	    return addUser(username, true);
+	}
+
+	public User addUser(String username, boolean mapped) throws SecurityException
+	{
+        User user = newUser(username, mapped);
 		try
 		{
-			User user = newUser(username, true);
-			super.addPrincipal(user, null);
-			PasswordCredential pwc = new DefaultPasswordCredentialImpl(user);
-			pwc.setPassword(password.toCharArray());
-			storePasswordCredential(pwc);
+            super.addPrincipal(user, null);
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
@@ -95,66 +107,14 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		{
 			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
 		}		
+        catch (PrincipalNotFoundException e)
+        {
+            // cannot occurr as no associations are provided with addPrincipal
+        }
 		if (log.isDebugEnabled())
 			log.debug("Added user: " + username);
 
-	}
-
-	public void addUser(String username, String password, boolean mapped) throws SecurityException
-	{
-		try
-		{
-			User user = newUser(username, mapped);
-			super.addPrincipal(user, null);
-			PasswordCredential pwc = new DefaultPasswordCredentialImpl(user);
-			pwc.setPassword(password.toCharArray());
-			storePasswordCredential(pwc);			
-		}
-		catch (PrincipalAlreadyExistsException e)
-		{
-			throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(username));
-		}
-		catch (PrincipalAssociationRequiredException e)
-		{
-			// TODO: add SecurityException type for this?
-			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
-		}
-		catch (PrincipalAssociationNotAllowedException e)
-		{
-			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
-		}		
-		if (log.isDebugEnabled())
-			log.debug("Added user: " + username);
-
-	}
-
-	// TODO incomplete
-	public void addUser(String username, String password, boolean mapped, boolean passThrough) throws SecurityException
-	{
-		try
-		{
-			User user = newUser(username, mapped);
-			super.addPrincipal(user, null);
-			PasswordCredential pwc = new DefaultPasswordCredentialImpl(user);
-			pwc.setPassword(password.toCharArray());
-			storePasswordCredential(pwc);			
-		}
-		catch (PrincipalAlreadyExistsException e)
-		{
-			throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(username));
-		}
-		catch (PrincipalAssociationRequiredException e)
-		{
-			// TODO: add SecurityException type for this?
-			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
-		}
-		catch (PrincipalAssociationNotAllowedException e)
-		{
-			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
-		}
-		if (log.isDebugEnabled())
-			log.debug("Added user: " + username);
-
+        return user;
 	}
 
 	public String getAnonymousUser()
@@ -164,23 +124,58 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public PasswordCredential getPasswordCredential(User user)
 	{
-		return null;		
+	    if (credentialManager != null)
+	    {
+	        return credentialManager.getPasswordCredential(user);
+	    }
+        return null;
 	}
 
-	public Subject getSubject(String username) throws SecurityException
+	public Subject getSubject(AuthenticatedUser user) throws SecurityException
 	{
-		UserSubjectPrincipal principal = new UserSubjectPrincipal(getUser(username));
-		Set<Principal> usrPrincipals = new HashSet<Principal>();
-		usrPrincipals.add(principal);
-		return new Subject(true, usrPrincipals, new HashSet(), new HashSet());
+        Set<Principal> principals = new PrincipalsSet();
+        addSubjectPrincipals(user, principals);
+        return JetspeedSubjectFactory.createSubject(user.getUser(), getPublicCredentialsForSubject(user), getPrivateCredentialsForSubject(user), principals);
 	}
-
-	public Subject getSubject(AuthenticatedUser user, boolean mergeCredentials) throws SecurityException
+	
+	protected Set<Object> getPublicCredentialsForSubject(AuthenticatedUser user)
 	{
-		// TODO Auto-generated method stub
-		return null;
+        HashSet<Object> credentials = new HashSet<Object>();
+        if (user.getPublicCredentials() != null)
+        {
+            credentials.addAll(user.getPublicCredentials());
+        }
+        return credentials;
+	}
+	
+    protected Set<Object> getPrivateCredentialsForSubject(AuthenticatedUser user)
+    {
+        HashSet<Object> credentials = new HashSet<Object>();
+        if (user.getPrivateCredentials() != null)
+        {
+            credentials.addAll(user.getPrivateCredentials());
+        }
+        return credentials;
+    }
+    
+	protected void addSubjectPrincipals(AuthenticatedUser user, Set<Principal> principals) throws SecurityException
+	{
+	    addSubjectRolePrincipals(user, principals, roleManager);
+        addSubjectGroupPrincipals(user, principals, groupManager);
+	}
+	
+	protected void addSubjectRolePrincipals(AuthenticatedUser user, Set<Principal> principals, RoleManager roleManager) throws SecurityException
+	{
+        // TODO role hierarchies ...
+        principals.addAll(roleManager.getRolesForUser(user.getUserName()));
 	}
 
+    protected void addSubjectGroupPrincipals(AuthenticatedUser user, Set<Principal> principals, GroupManager groupManager) throws SecurityException
+    {
+        // TODO group hierarchies ...
+        principals.addAll(groupManager.getGroupsForUser(user.getUserName()));
+    }
+	
 	public User getUser(String username) throws SecurityException
 	{
 		return (User) getPrincipal(username);
@@ -211,12 +206,6 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		return (List<User>) super.getPrincipalsByAttribute(attributeName, attributeValue);
 	}
 
-	/**
-	 * Creating New Transient Jetspeed User Object
-	 * 
-	 * @return User
-	 * @see org.apache.jetspeed.security.User
-	 */
 	public User newTransientUser(String name)
 	{
 		TransientUser user = new TransientUser();
@@ -224,12 +213,6 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		return user;
 	}
 
-	/**
-	 * Creating New Jetspeed User Object
-	 * 
-	 * @return User
-	 * @see org.apache.jetspeed.security.User
-	 */
 	public User newUser(String name)
 	{
 		UserImpl user = new UserImpl();
@@ -269,30 +252,15 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public void storePasswordCredential(PasswordCredential credential) throws SecurityException
 	{
-		//TODO Auto-generated method stub
-	}
-
-	public void setPassword(User user, String oldPassword, String newPassword) throws SecurityException
-	{
-		String portalPassword;
-		portalPassword = getPasswordCredential(user).getPassword().toString();
-		if (portalPassword.equals(oldPassword))
-		{
-			getPasswordCredential(user).setPassword(newPassword.toCharArray());
-		}
-		else
-		{
-			throw new InvalidPasswordException();
-		}
-	}
-
-	public void setUserEnabled(String userName, boolean enabled) throws SecurityException
-	{
-		getPasswordCredential(getUser(userName)).setEnabled(enabled);
+	    if (credentialManager == null)
+	    {
+	        throw new UnsupportedOperationException();
+	    }
+	    credentialManager.storePasswordCredential(credential);
 	}
 
 	public void updateUser(User user) throws SecurityException
-	{
+	{	    
 		try
 		{
 			super.updatePrincipal(user);
@@ -305,6 +273,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		{
 			throw new SecurityException(SecurityException.UNEXPECTED.create(user.getName()));
 		}
+        catch (PrincipalReadOnlyException e)
+        {
+            throw new SecurityException(e);
+        }
 	}
 
 	public boolean userExists(String username)

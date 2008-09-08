@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
-import org.apache.jetspeed.security.spi.AuthenticatedUser;
 
 /**
  * <p>
@@ -46,43 +45,30 @@ public interface UserManager
     
     /**
      * <p>
-     * Add a new user provided a username and password.
+     * Add a new user
      * </p>
      * <p>
      * If an external security storage manager is used, the user will be mapped/replicated to it as well.
      * </p>
-     * @param username The user name.
-     * @param password The password.
+     * @param userName The user name.
+     * @return the new {@link User}
      * @throws Throws a security exception.
      */
-    void addUser(String username, String password) throws SecurityException;
+    User addUser(String userName) throws SecurityException;
 
     /**
      * <p>
-     * Add a new user provided a username and password and optionally map/replicate it to an external storage manager (if configured).
+     * Add a new user and optionally map/replicate it to an external storage manager (if configured).
      * </p>
      * 
-     * @param username The user name.
-     * @param password The password.
+     * @param userName The user name.
      * @param mapped if the new User should be mapped/replicated to an external security storage manager (if used) or not.
+     * @return the new {@link User}
      * @throws Throws a security exception.
      */
-    void addUser(String username, String password, boolean mapped) throws SecurityException;
+    User addUser(String userName, boolean mapped) throws SecurityException;
 
     
-    /**
-     * <p>
-     * Import a new user with username and password and allow to bypass the enconding algorithm
-     * </p>
-     * 
-     * @param username The user name.
-     * @param password The password.
-     * @param mapped if the new User should be mapped/replicated to an external security storage manager (if used) or not.
-     * @param passThrough If true the provided password will not be validated/encoded
-     * @throws Throws a security exception.
-     */
-    void addUser(String username, String password, boolean mapped, boolean passThrough) throws SecurityException;
-
     /**
      * <p>
      * Remove a user. If there user attributes associated with this user, they will be removed as well.
@@ -91,54 +77,42 @@ public interface UserManager
      * {@link java.security.Permission}for this user will be removed as well.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @throws Throws a security exception.
      */
-    void removeUser(String username) throws SecurityException;
+    void removeUser(String userName) throws SecurityException;
 
     /**
      * <p>
      * Whether or not a user exists.
      * </p>
      * 
-     * @param username The user name.
+     * @param userName The user name.
      * @return Whether or not a user exists.
      */
-    boolean userExists(String username);
+    boolean userExists(String userName);
 
     /**
      * <p>
-     * Get a {@link User}for a given username.
+     * Get a {@link User}for a given user name.
      * </p>
      * 
-     * @param username The username.
+     * @param userName The user name.
      * @return The {@link User}.
      * @throws Throws a security exception if the user cannot be found.
      */
-    User getUser(String username) throws SecurityException;
+    User getUser(String userName) throws SecurityException;
 
     /**
      * <p>
-     * Get a Subject for a given username.
-     * </p>
-     * 
-     * @param username The username.
-     * @return The Subject.
-     * @throws Throws a security exception if the user cannot be found
-     */
-    Subject getSubject(String username) throws SecurityException;
-
-    /**
-     * <p>
-     * Get a Subject for an (externally) authenticated user with (optionally) already provided credentials.
+     * Get a Subject for an (possibly externally) authenticated user with (optionally) provided credentials.
      * </p>
      * 
      * @param user The authenticated user.
-     * @param mergeCredentials indicate if provided credentials should be merged with the Jetspeed Credentials for the user (if available).
      * @return The Subject.
      * @throws Throws a security exception if the user cannot be found
      */
-    Subject getSubject(AuthenticatedUser user, boolean mergeCredentials) throws SecurityException;
+    Subject getSubject(AuthenticatedUser user) throws SecurityException;
 
     /**
      * <p>
@@ -182,14 +156,7 @@ public interface UserManager
     List<User> getUsersInGroup(String groupName) throws SecurityException;
     
     /**
-     * Enable or disable a user.
-     * @param userName The user name
-     * @param enabled enabled flag for the user
-     */
-    void setUserEnabled(String userName, boolean enabled) throws SecurityException;
-
-    /**
-     * Updates a user and all attributes and associations
+     * Updates a user and all its attributes
      * @param user
      * @throws SecurityException
      */
@@ -210,8 +177,6 @@ public interface UserManager
      * @return null if the UserManager doesn't support PasswordCredentials
      */
     PasswordCredential getPasswordCredential(User user);
-    
-    void setPassword(User user, String oldPassword, String newPassword) throws SecurityException;
     
     void storePasswordCredential(PasswordCredential credential) throws SecurityException;
 }
