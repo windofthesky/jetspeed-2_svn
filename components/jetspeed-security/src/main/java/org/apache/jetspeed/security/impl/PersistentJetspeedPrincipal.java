@@ -47,6 +47,11 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
     @SuppressWarnings("unchecked")
     protected Collection attributes;
        
+    public PersistentJetspeedPrincipal()
+    {   
+    	super();
+    }
+      
     public PersistentJetspeedPrincipal(String name)
     {   
     	super(name);

@@ -45,6 +45,11 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
         TransientJetspeedPrincipal.jpmp = jpmp;
     }
     
+    protected TransientJetspeedPrincipal()
+    {
+    
+    }
+    
     public TransientJetspeedPrincipal(String name)
     {
     	this.name = name;
