@@ -45,8 +45,9 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
         TransientJetspeedPrincipal.jpmp = jpmp;
     }
     
-    public TransientJetspeedPrincipal()
-    {   
+    public TransientJetspeedPrincipal(String name)
+    {
+    	this.name = name;
     }
     
     public Long getId()
@@ -57,12 +58,7 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     public String getName()
     {
         return name;
-    }
-    
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+    }   
 
     public synchronized JetspeedPrincipalType getType()
     {

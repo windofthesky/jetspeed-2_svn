@@ -24,5 +24,9 @@ import org.apache.jetspeed.security.Role;
  */
 public class RoleImpl extends PersistentJetspeedPrincipal implements Role
 {
-    private static final long serialVersionUID = 5484179899807809619L;
+	private static final long serialVersionUID = 5484179899807809619L;
+	public RoleImpl(String name)
+	{
+		super(name);
+	}
 }

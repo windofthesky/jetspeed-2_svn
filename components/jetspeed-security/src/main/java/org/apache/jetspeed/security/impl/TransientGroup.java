@@ -21,9 +21,14 @@ import org.apache.jetspeed.security.Group;
 
 /**
  * @version $Id$
- *
+ * 
  */
 public class TransientGroup extends TransientJetspeedPrincipal implements Group
 {
-    private static final long serialVersionUID = -4347595527204071090L;
+	private static final long serialVersionUID = -4347595527204071090L;
+
+	public TransientGroup(String name)
+	{
+		super(name);
+	}
 }

@@ -24,5 +24,11 @@ import org.apache.jetspeed.security.Group;
  */
 public class GroupImpl extends PersistentJetspeedPrincipal implements Group
 {
-    private static final long serialVersionUID = 5484179899807809619L;
+	private static final long serialVersionUID = 5484179899807809619L;
+
+	public GroupImpl(String name)
+	{
+		super(name);
+	}
+
 }
