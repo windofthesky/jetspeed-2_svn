@@ -37,7 +37,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalPermission;

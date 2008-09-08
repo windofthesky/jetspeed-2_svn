@@ -31,7 +31,6 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RemotePrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;

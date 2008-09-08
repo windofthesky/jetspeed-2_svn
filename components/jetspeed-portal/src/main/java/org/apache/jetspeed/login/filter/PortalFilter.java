@@ -37,12 +37,12 @@ import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.login.LoginConstants;
+import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.UserSubjectPrincipalImpl;
 
 public class PortalFilter implements Filter

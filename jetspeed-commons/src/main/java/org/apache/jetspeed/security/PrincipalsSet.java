@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.security.impl;
+package org.apache.jetspeed.security;
 
 import java.security.Principal;
 import java.util.Collection;
@@ -30,7 +30,7 @@ import java.util.Set;
  * for some profiling rules that are dependent on order of insert.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id$
  */
 
 public class PrincipalsSet implements Set<Principal>

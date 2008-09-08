@@ -66,9 +66,9 @@ import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.FragmentPermission;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
+import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.PrincipalsSet;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 
