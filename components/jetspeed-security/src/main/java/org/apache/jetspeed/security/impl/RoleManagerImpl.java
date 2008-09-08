@@ -89,8 +89,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public Role newRole(String name, boolean mapped)
     {
-        RoleImpl role = new RoleImpl();
-        role.setName(name);
+        RoleImpl role = new RoleImpl(name);
         role.setMapped(mapped);
         return role;
     }
@@ -100,8 +99,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public Role newTransientRole(String name)
     {
-        TransientRole role = new TransientRole();
-        role.setName(name);
+        TransientRole role = new TransientRole(name);
         return role;
     }
 

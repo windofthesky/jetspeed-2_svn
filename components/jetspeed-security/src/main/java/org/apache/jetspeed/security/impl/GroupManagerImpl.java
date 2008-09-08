@@ -83,8 +83,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
      */
     public Group newGroup(String name, boolean mapped)
     {
-        GroupImpl group = new GroupImpl();
-        group.setName(name);
+        GroupImpl group = new GroupImpl(name);
         group.setMapped(mapped);
         return group;
     }
@@ -94,8 +93,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
      */
     public Group newTransientGroup(String name)
     {
-        TransientGroup group = new TransientGroup();
-        group.setName(name);
+        TransientGroup group = new TransientGroup(name);
         return group;
     }
 

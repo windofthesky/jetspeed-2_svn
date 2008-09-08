@@ -224,22 +224,19 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public User newTransientUser(String name)
 	{
-		TransientUser user = new TransientUser();
-		user.setName(name);
+		TransientUser user = new TransientUser(name);
 		return user;
 	}
 
 	public User newUser(String name)
 	{
-		UserImpl user = new UserImpl();
-		user.setName(name);
+		UserImpl user = new UserImpl(name);
 		return user;
 	}
 
 	public User newUser(String name, boolean mapped)
 	{
-		UserImpl user = new UserImpl();
-		user.setName(name);
+		UserImpl user = new UserImpl(name);
 		user.setMapped(mapped);
 		return user;
 	}
