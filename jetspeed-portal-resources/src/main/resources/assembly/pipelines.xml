@@ -262,11 +262,11 @@
     <meta key="j2:cat" value="default" />
     <!-- portlet -->
     <constructor-arg index="0">
-      <value>demo::ContentViewer</value>
+      <value>j2-admin::ContentViewer</value>
     </constructor-arg>
     <!-- entity -->
     <constructor-arg index="1">
-      <value>public.content.21</value>
+      <value>public.content.212</value>
     </constructor-arg>
   </bean>
 
