@@ -16,8 +16,8 @@
 */
 package org.apache.jetspeed.security;
 
+import java.io.Serializable;
 
-public interface Credential
+public interface Credential extends Serializable
 {
-
 }

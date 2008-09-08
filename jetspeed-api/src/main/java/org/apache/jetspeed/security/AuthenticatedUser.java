@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.security;
 
 import java.util.Set;
+
 
 /**
  * @version $Id$
@@ -25,6 +26,7 @@ import java.util.Set;
  */
 public interface AuthenticatedUser
 {
+    User getUser();
     String getUserName();
     Set<Object> getPublicCredentials();
     Set<Object> getPrivateCredentials();

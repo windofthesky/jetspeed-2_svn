@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
+import java.io.Serializable;
 import java.security.Principal;
 
 import javax.security.auth.Subject;
@@ -25,30 +26,9 @@ import javax.security.auth.Subject;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class UserSubjectPrincipal implements Principal
+public interface UserSubjectPrincipal extends Principal, Serializable
 {
-    private final User user;
-    private Subject subject;
-    
-    public UserSubjectPrincipal(User user)
-    {
-        this.user = user;
-    }
-    public String getName()
-    {
-        return user.getName();
-    }
-    public User getUser()
-    {
-        return user;
-    }
-    public Subject getSubject()
-    {
-        return subject;
-    }
-    
-    public void setSubject(Subject subject)
-    {
-        this.subject = subject;
-    }
+    public String getName();
+    public User getUser();
+    public Subject getSubject();
 }

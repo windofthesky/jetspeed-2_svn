@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
+
 /**
  * <p>
  * Configures an authentication provider.
@@ -51,7 +52,7 @@ public interface AuthenticationProvider
      * 
      * @param userName The user name.
      * @param password The user password.
-     * @return Whether or not a user is authenticated.
+     * @return the {@link AuthenticatedUser}
      */
-    boolean authenticate(String userName, String password) throws SecurityException;
+    AuthenticatedUser authenticate(String userName, String password) throws SecurityException;
 }

@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 
 /**
  * <p>
@@ -27,78 +26,58 @@ import java.sql.Timestamp;
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id$
  */
-public interface PasswordCredential extends Credential
+public interface PasswordCredential extends UserCredential
 {
     String PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY = PasswordCredential.class.getName() + ".check";
 
     /**
-     * @return The user this PasswordCredential belongs to
+     * @return The user the PasswordCredential belongs to
      */
-    User getUser();
-    /**
-     * @return The username.
-     */
-    String getName();
+    User getUser();    
     
     void setUserName(String name);
     
-    boolean isReadOnly();
-   
     /**
-     * @return The password.
+     * @return raw (possibly encoded) password.
      */
     char[] getPassword();
     
-    void setPassword(char[] password);
-
     /**
-     * @return true if update required.
+     * @return the temporary old (plain text) password provided when a new password is set
      */
-    boolean isUpdateRequired();
+    String getOldPassword();
+    
+    /**
+     * @return the temporary new (plain text) password provided when a new password is set
+     */
+    String getNewPassword();
+    
+    /**
+     * Set a new raw (possibly encoded) password
+     * @param password
+     */
+    void setPassword(char[] password);
+    
+    /**
+     * Set a new (plain text) password also (optionally) providing the old (plain text) password
+     */
+    void setPassword(String oldPassword, String newPassword);
+    
+    boolean isNewPasswordSet();
+    
+    boolean isPasswordEncoded();
+    
+    boolean setPasswordEncoded(boolean encoded);
     
     void setUpdateRequired(boolean updateRequired);
     
-    /**
-     * @return true if enabled.
-     */
-    boolean isEnabled();
-    
+    boolean isStateReadOnly();
+
     void setEnabled(boolean enabled);
-    
-    /**
-     * @return true if expired.
-     */
-    boolean isExpired();
     
     void setExpired(boolean expired);
     
-    /**
-     * @return when the password is (going to be) expired.
-     */
-    Date getExpirationDate();
-    
     void setExpirationDate(Date expirationDate);
     
-    /**
-     * @return the previous time the user logged in 
-     */
-    Timestamp getPreviousAuthenticationDate();
-
-    /**
-     * @return the last time the user logged in 
-     */
-    Timestamp getLastAuthenticationDate();
-
-    /**
-     * <p>Getter for the current number of authentication failures in a row.</p>
-     * <ul>
-     *   <li>-1: never tried yet</li>
-     *   <li> 0: none, or last attempt was successful</li>
-     *   <li>>0: number of failures</li>
-     * </ul>
-     * @return The number of authentication failures
-     */
-    int getAuthenticationFailures();
-    
-    void resetAuthenticationFailured();
+    void resetAuthenticationFailures();
 }
