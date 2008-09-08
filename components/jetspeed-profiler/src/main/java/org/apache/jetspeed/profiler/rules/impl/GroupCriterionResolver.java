@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.Group;
 
 /**
  * Standard Jetspeed-1 Group resolver.
@@ -60,7 +60,7 @@ public class GroupCriterionResolver
              return null;
          }
 
-         return resolvePrincipals(context, criterion, subject, GroupPrincipal.class);
+         return resolvePrincipals(context, criterion, subject, Group.class);
       }
      
      /* (non-Javadoc)

@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.Role;
 
 /**
  * Standard Jetspeed-1 Role resolver (not role-based fallback).
@@ -60,7 +60,7 @@ public class RoleCriterionResolver
             return null;
         }
             
-        return resolvePrincipals(context, criterion, subject, RolePrincipal.class);
+        return resolvePrincipals(context, criterion, subject, Role.class);
      }
     
     /* (non-Javadoc)

@@ -40,8 +40,8 @@ import org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.springframework.beans.BeansException;
@@ -64,9 +64,13 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     protected final static Log log = LogFactory.getLog(JetspeedProfilerImpl.class);
 
     /**
-     * This is the princapl that is used if there are no principal to rule associations for the current principal
+     * This is the principal that is used if there are no principal to rule associations for the current principal
      */
-    public final static Principal DEFAULT_RULE_PRINCIPAL = new UserPrincipalImpl("*");
+    public final static Principal DEFAULT_RULE_PRINCIPAL = new UserImpl();
+    static
+    {
+        ((UserImpl) DEFAULT_RULE_PRINCIPAL).setName("*");
+    }
 
     /** The default locator class implementation */
     private String locatorBean = "ProfileLocator";
@@ -199,7 +203,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         // get the UserPrincipal, finding the first UserPrincipal, or
         // find the first principal if no UserPrincipal isn't available
         Principal principal = SecurityHelper.getBestPrincipal(subject,
-                UserPrincipal.class);
+                UserSubjectPrincipal.class);
         if (principal == null)
         {
             String msg = "Could not find a principle for subject in request pipeline";

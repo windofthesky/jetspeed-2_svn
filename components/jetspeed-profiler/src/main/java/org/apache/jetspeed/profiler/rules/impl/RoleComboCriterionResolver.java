@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.Role;
 
 /**
  * Role combo resolver 
@@ -59,7 +59,7 @@ public class RoleComboCriterionResolver
             return null;
         }
             
-        return combinePrincipals(context, criterion, subject, RolePrincipal.class);
+        return combinePrincipals(context, criterion, subject, Role.class);
      }
     
     /* (non-Javadoc)

@@ -26,7 +26,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.User;
 
 /**
  * Standard Jetspeed-1 User resolver.
@@ -63,7 +63,7 @@ public class UserCriterionResolver
             return null;
         }
             
-        Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+        Principal principal = SecurityHelper.getPrincipal(subject, User.class);
         if (principal != null)
         {
             return principal.getName();              
