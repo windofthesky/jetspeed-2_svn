@@ -35,8 +35,6 @@ public interface PasswordCredential extends UserCredential
      */
     User getUser();    
     
-    void setUserName(String name);
-    
     /**
      * @return raw (possibly encoded) password.
      */
@@ -55,8 +53,9 @@ public interface PasswordCredential extends UserCredential
     /**
      * Set a new raw (possibly encoded) password
      * @param password
+     * @param encoded
      */
-    void setPassword(char[] password);
+    void setPassword(char[] password, boolean encoded);
     
     /**
      * Set a new (plain text) password also (optionally) providing the old (plain text) password
@@ -65,9 +64,11 @@ public interface PasswordCredential extends UserCredential
     
     boolean isNewPasswordSet();
     
+    void clearNewPasswordSet();
+    
     boolean isPasswordEncoded();
     
-    boolean setPasswordEncoded(boolean encoded);
+    void setPasswordEncoded(boolean passwordEncoded);
     
     void setUpdateRequired(boolean updateRequired);
     
