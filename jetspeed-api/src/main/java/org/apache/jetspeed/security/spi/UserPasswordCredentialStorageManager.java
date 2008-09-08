@@ -17,15 +17,14 @@
 package org.apache.jetspeed.security.spi;
 
 import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.User;
 
 /**
  * @version $Id$
  */
 public interface UserPasswordCredentialStorageManager
 {
-    void addCredential(PasswordCredential credential);
-
-    void updateCredential(PasswordCredential credential);
-
-    void removeCredential(PasswordCredential credential);
+    PasswordCredential getPasswordCredential(User user);
+    void storePasswordCredential(PasswordCredential credential) throws SecurityException;
 }

@@ -16,22 +16,9 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.List;
-
-import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.User;
-
 /**
  * @version $Id$
  */
 public interface UserPasswordCredentialManager extends UserPasswordCredentialStorageManager
 {
-    boolean isReadOnly();
-    
-    void setUserPasswordCredentialStorageManager(UserPasswordCredentialStorageManager sm);
-    PasswordCredential newPasswordCredential(User user);
-
-    List<PasswordCredential> getPasswordCredentials(String userName);
-
-    List<PasswordCredential> getPasswordCredentials(User user);
 }

@@ -25,11 +25,27 @@ public interface JetspeedPrincipalAssociationHandler
 
     void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException;
 
-    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationRequiredException;
+    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException;
 
-    // may only be called when removing the principal itself
-    void removeAllFrom(JetspeedPrincipal from) throws PrincipalNotFoundException, PrincipalNotRemovableException; 
+    /**
+     * <p>
+     * When the from principal is removed, dependent to principals might need updating or removal themselves first.
+     * </p>
+     * <p>
+     * External authorization providers can remove all the associations of the from principal themselves on this message
+     * or do so during the subsequent removal of the principal itself
+     * </p>
+     */
+    void beforeRemoveFrom(JetspeedPrincipal from) throws PrincipalNotRemovableException, DependentPrincipalException; 
 
-    // may only be called when removing the principal itself
-    void removeAllTo(JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalNotRemovableException;
+    /**
+     * <p>
+     * When the to principal is removed, dependent from principals might need updating or removal themselves first
+     * </p>
+     * <p>
+     * External authorization providers can remove all the associations of the to principal themselves on this message
+     * or do so during the subsequent removal of the principal itself
+     * </p>
+     */
+    void beforeRemoveTo(JetspeedPrincipal to) throws PrincipalNotRemovableException, DependentPrincipalException;
 }

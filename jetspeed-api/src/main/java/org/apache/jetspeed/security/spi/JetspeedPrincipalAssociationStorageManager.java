@@ -31,5 +31,5 @@ public interface JetspeedPrincipalAssociationStorageManager
         throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
 
     void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
-        throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationRequiredException;
+        throws PrincipalAssociationUnsupportedException, PrincipalAssociationRequiredException;
 }
