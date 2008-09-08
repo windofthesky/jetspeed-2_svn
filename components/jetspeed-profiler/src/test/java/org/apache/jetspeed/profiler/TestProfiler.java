@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.profiler;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,6 +38,9 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.AuthenticatedUser;
+import org.apache.jetspeed.security.AuthenticatedUserImpl;
+import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.RoleImpl;
@@ -204,19 +208,10 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         Set publicCredentials = new HashSet();
         Set privateCredentials = new HashSet();
         
-        UserImpl user = new UserImpl();
-        user.setName("david");
-        RoleImpl roleATP = new RoleImpl();
-        roleATP.setName("ATP");
-        RoleImpl roleNB = new RoleImpl();
-        roleATP.setName("NB");
-        RoleImpl roleATPNB = new RoleImpl();
-        roleATPNB.setName("ATP-NB");
-        
-        principals.add(user);
-        principals.add(roleATP);
-        principals.add(roleNB);        
-        principals.add(roleATPNB);
+        principals.add(new UserImpl("david"));
+        principals.add(new RoleImpl("ATP"));
+        principals.add(new RoleImpl("NB"));        
+        principals.add(new RoleImpl("ATP-NB"));
         
         Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
         return subject;
@@ -227,17 +222,10 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         Set principals = new PrincipalsSet();
         Set publicCredentials = new HashSet();
         Set privateCredentials = new HashSet();
-        
-        UserImpl user = new UserImpl();
-        user.setName("david");
-        RoleImpl roleATP = new RoleImpl();
-        roleATP.setName("ATP");
-        RoleImpl roleNB = new RoleImpl();
-        roleATP.setName("NB");
 
-        principals.add(user);
-        principals.add(roleATP);
-        principals.add(roleNB);
+        principals.add(new UserImpl("david"));
+        principals.add(new RoleImpl("ATP"));
+        principals.add(new RoleImpl("NB"));
         
         Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
         return subject;
@@ -259,9 +247,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         assertTrue("default rule class not mapped", rule instanceof StandardProfilingRule);
 
         // Test anonymous principal-rule
-        UserImpl user = new UserImpl();
-        user.setName("anon");
-        ProfilingRule anonRule = profiler.getRuleForPrincipal(user,
+        ProfilingRule anonRule = profiler.getRuleForPrincipal(new UserImpl("anon"),
                 ProfileLocator.PAGE_LOCATOR);
         assertNotNull("anonymous rule is null", anonRule);
         assertTrue("anonymous rule is j1", anonRule.getId().equals(DEFAULT_RULE));
@@ -393,8 +379,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         assertNotNull("profiler service is null", profiler);
 
         RequestContext request = new MockRequestContext("default-other");
-
-        request.setSubject(SecurityHelper.createSubject("anon"));
+        request.setSubject(JetspeedSubjectFactory.createSubject(new UserImpl("anon"), null, null, null));
         request.setLocale(new Locale("en", "US"));
         request.setMediaType("HTML");
         request.setMimeType("text/html");
@@ -479,7 +464,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
         RequestContext request = new MockRequestContext();
 
-        request.setSubject(SecurityHelper.createSubject("anon"));
+        request.setSubject(JetspeedSubjectFactory.createSubject(new UserImpl("anon"), null, null, null));
         request.setLocale(new Locale("en", "US"));
         request.setMediaType("HTML");
         request.setMimeType("text/html");
@@ -505,9 +490,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     public void testGetLocatorNames() throws Exception
     {
         assertNotNull("profiler service is null", profiler);
-        UserImpl user = new UserImpl();
-        user.setName("guest");
-        String[] result = profiler.getLocatorNamesForPrincipal(user);
+        String[] result = profiler.getLocatorNamesForPrincipal(new UserImpl("guest"));
         for (int ix = 0; ix < result.length; ix++)
         {
             System.out.println("$$$ result = " + result[ix]);
