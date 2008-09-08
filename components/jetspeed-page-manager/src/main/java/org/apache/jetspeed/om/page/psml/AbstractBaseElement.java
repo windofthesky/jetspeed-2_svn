@@ -40,12 +40,12 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.FolderPermission;
-import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.PortalResourcePermission;
-import org.apache.jetspeed.security.RolePrincipal;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.User;
 
 
 /**
@@ -274,7 +274,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         while (principals.hasNext())
         {
             Principal principal = (Principal) principals.next();
-            if (principal instanceof UserPrincipal)
+            if (principal instanceof User)
             {
                 if (userPrincipals == null)
                 {
@@ -282,7 +282,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
                 }
                 userPrincipals.add(principal.getName());
             }
-            else if (principal instanceof RolePrincipal)
+            else if (principal instanceof Role)
             {
                 if (rolePrincipals == null)
                 {
@@ -290,7 +290,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
                 }
                 rolePrincipals.add(principal.getName());
             }
-            else if (principal instanceof GroupPrincipal)
+            else if (principal instanceof Group)
             {
                 if (groupPrincipals == null)
                 {

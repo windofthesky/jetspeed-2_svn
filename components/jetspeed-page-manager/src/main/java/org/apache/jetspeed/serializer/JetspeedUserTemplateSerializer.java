@@ -19,6 +19,8 @@ package org.apache.jetspeed.serializer;
 import java.security.PrivilegedAction;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
@@ -30,15 +32,12 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.security.AttributeAlreadyExistsException;
 import org.apache.jetspeed.security.AttributeTypeNotFoundException;
 import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 
@@ -142,8 +141,15 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
         final String innerSubsite = subsite;
         final PageManager innerPageManager = pageManager;
         final String innerUserName = userName;
-
-        JetspeedException pe = (JetspeedException) JSSubject.doAsPrivileged(adminUser.getSubject(), new PrivilegedAction()
+        Subject adminSubject;
+        try{
+        	adminSubject = userManager.getSubject(adminUser);
+        }
+        catch (SecurityException se) {
+        	//TODO handle error in much better way
+        	return;
+		}
+        JetspeedException pe = (JetspeedException) JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
         {
 
             public Object run()

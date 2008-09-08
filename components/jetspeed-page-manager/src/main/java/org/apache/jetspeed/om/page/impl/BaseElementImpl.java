@@ -32,12 +32,12 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.FolderPermission;
-import org.apache.jetspeed.security.GroupPrincipal;
+import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.PortalResourcePermission;
-import org.apache.jetspeed.security.RolePrincipal;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.User;
 
 /**
  * BaseElementImpl
@@ -367,7 +367,7 @@ public abstract class BaseElementImpl implements BaseElement
         while (principals.hasNext())
         {
             Principal principal = (Principal) principals.next();
-            if (principal instanceof UserPrincipal)
+            if (principal instanceof User)
             {
                 if (userPrincipals == null)
                 {
@@ -375,7 +375,7 @@ public abstract class BaseElementImpl implements BaseElement
                 }
                 userPrincipals.add(principal.getName());
             }
-            else if (principal instanceof RolePrincipal)
+            else if (principal instanceof Role)
             {
                 if (rolePrincipals == null)
                 {
@@ -383,7 +383,7 @@ public abstract class BaseElementImpl implements BaseElement
                 }
                 rolePrincipals.add(principal.getName());
             }
-            else if (principal instanceof GroupPrincipal)
+            else if (principal instanceof Group)
             {
                 if (groupPrincipals == null)
                 {

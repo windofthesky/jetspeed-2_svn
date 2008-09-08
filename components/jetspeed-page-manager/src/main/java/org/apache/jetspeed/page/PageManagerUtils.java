@@ -29,9 +29,9 @@ import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.User;
 
 
 /**
@@ -55,7 +55,7 @@ public class PageManagerUtils
     public static void createUserHomePagesFromRoles(PageManager pageManager, Subject subject)
     throws NodeException
     {
-        Principal principal = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class); 
+        Principal principal = SecurityHelper.getBestPrincipal(subject, User.class); 
         if (principal == null)
         {
             String errorMessage = "Could not create user home for null principal";
@@ -82,10 +82,10 @@ public class PageManagerUtils
             // for each role for a user, deep copy the folder contents for that role 
             // into the user's home
             // TODO: this algorithm could actually merge pages on dups
-            Iterator roles = SecurityHelper.getPrincipals(subject, RolePrincipal.class).iterator();
+            Iterator roles = SecurityHelper.getPrincipals(subject, Role.class).iterator();
             while (roles.hasNext())
             {                            
-                RolePrincipal role = (RolePrincipal)roles.next();
+                Role role = (Role)roles.next();
                 if (pageManager.folderExists(Folder.ROLE_FOLDER + role.getName()))
                 {
                     Folder roleFolder = pageManager.getFolder(Folder.ROLE_FOLDER + role.getName());                    
