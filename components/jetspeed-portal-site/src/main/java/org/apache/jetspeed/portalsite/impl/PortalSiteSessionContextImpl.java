@@ -48,7 +48,7 @@ import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.User;
 
 /**
  * This class encapsulates managed session state for and
@@ -693,7 +693,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 while (principals.hasNext())
                 {
                     Principal principal = (Principal) principals.next();
-                    if (principal instanceof UserPrincipal)
+                    if (principal instanceof User)
                     {
                         if (currentUserPrincipal == null)
                         {
