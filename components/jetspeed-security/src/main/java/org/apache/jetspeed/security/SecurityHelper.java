@@ -20,7 +20,6 @@ import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.Principal;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,14 +29,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
-import org.apache.jetspeed.security.impl.RemotePrincipalImpl;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.om.InternalGroupPrincipal;
-import org.apache.jetspeed.security.om.InternalPrincipal;
-import org.apache.jetspeed.security.om.InternalRolePrincipal;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
 
 /**
  * <p>
@@ -150,22 +141,6 @@ public class SecurityHelper
 
     /**
      * <p>
-     * Utility method to create a subject.
-     * </p>
-     * 
-     * @param principalName The user principal name.
-     * @return The subject.
-     */
-    public static Subject createSubject(String principalName)
-    {
-        Principal principal = new UserPrincipalImpl(principalName);
-        Set principals = new PrincipalsSet();
-        principals.add(principal);
-        return new Subject(true, principals, new HashSet(), new HashSet());
-    }
-
-    /**
-     * <p>
      * Given a subject, finds all principals of the given classe for that subject. If no principals
      * of the given class is not found, null is returned.
      * </p>
@@ -241,19 +216,5 @@ public class SecurityHelper
         {
             log.debug("No permissions to add...");
         }
-    }
-    
-    
-    public static Principal createPrincipalFromInternal(InternalPrincipal internal)
-    {
-        if (internal.getType().equals(UserPrincipal.PRINCIPAL_TYPE))
-            return new UserPrincipalImpl(internal.getName());
-        if (internal.getType().equals(RolePrincipal.PRINCIPAL_TYPE))
-            return new RolePrincipalImpl(internal.getName());
-        if (internal.getType().equals(GroupPrincipal.PRINCIPAL_TYPE))
-            return new GroupPrincipalImpl(internal.getName());
-        if (internal.getType().equals(RemotePrincipal.PRINCIPAL_TYPE))
-            return new RemotePrincipalImpl(internal.getName());
-        return null;
     }
 }
