@@ -29,11 +29,15 @@ import java.sql.Date;
 public interface PasswordCredential extends UserCredential
 {
     String PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY = PasswordCredential.class.getName() + ".check";
+    public static final Integer TYPE_CURRENT = new Integer(0);
+    public static final Integer TYPE_HISTORICAL = new Integer(1);
 
     /**
      * @return The user the PasswordCredential belongs to
      */
-    User getUser();    
+    User getUser();
+    
+    Integer getType();
     
     /**
      * @return raw (possibly encoded) password.

@@ -19,20 +19,20 @@ limitations under the License.
 <descriptor-repository version="1.0">
 	
 	<!--
-	   - S E C U R I T Y  C R E D E N T I A L
+	   - P A S S W O R D C R E D E N T I A L
 	-->
 	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
+	    class="org.apache.jetspeed.security.spi.impl.PasswordCredentialImpl"
 	    proxy="dynamic"
 	    table="SECURITY_CREDENTIAL"
 	>
 	    <field-descriptor
-	        name="credentialId"
+	        name="id"
 	        column="credential_id"
 	        jdbc-type="BIGINT"
 	        primarykey="true"
-	        indexed="true"
 	        autoincrement="true"
+            access="anonymous"
 	    >
 	    </field-descriptor>
 	    <field-descriptor
@@ -54,14 +54,6 @@ limitations under the License.
 	        column="type"
 	        jdbc-type="SMALLINT"
 	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="classname"
-	        column="classname"
-	        jdbc-type="VARCHAR"
-	        nullable="true"
-	        length="254"
 	    >
 	    </field-descriptor>
 	    <field-descriptor
@@ -138,6 +130,13 @@ limitations under the License.
           nullable="true"
       >
       </field-descriptor>      
+      <reference-descriptor
+         name="user"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
+      >
+         <foreignkey field-ref="principalId"/>
+      </reference-descriptor>
 	</class-descriptor>
 	
 	<!--

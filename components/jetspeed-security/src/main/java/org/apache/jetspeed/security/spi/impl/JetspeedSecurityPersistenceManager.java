@@ -35,6 +35,7 @@ import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserPasswordCredentialAccessManager;
 import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
@@ -56,7 +57,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 public class JetspeedSecurityPersistenceManager
     extends InitablePersistenceBrokerDaoSupport
     implements JetspeedPrincipalAccessManager,
-                JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager,
+                JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager, UserPasswordCredentialAccessManager,
                 JetspeedPrincipalAssociationStorageManager, JetspeedPrincipalPermissionStorageManager,
                 JetspeedPermissionStorageManager
 {
@@ -175,7 +176,7 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("name", principalName);
         Query query = QueryFactory.newQuery(type.getPrincipalClass(),criteria);
-        return (JetspeedPrincipal)getPersistenceBrokerTemplate().getObjectByQuery(query);
+        return (JetspeedPrincipal)getPersistenceBroker(true).getObjectByQuery(query);
     }
 
     public List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type)
@@ -332,18 +333,68 @@ public class JetspeedSecurityPersistenceManager
     }
 
     //
-    // JetspeedPrincipalStorageManager interface implementation
+    // UserPasswordCredentialStorageManager interface implementation
     //
     public PasswordCredential getPasswordCredential(User user)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("principalId", user.getId());
+        criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
+        Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
+        PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBroker(true).getObjectByQuery(query);
+        if (pwc != null)
+        {
+            // store the user by hand as its configured as auto-retrieve="false"
+            pwc.setUser(user);
+        }
+        return pwc;
     }
 
     public void storePasswordCredential(PasswordCredential credential) throws SecurityException
     {
+        if (credential.isNewPasswordSet())
+        {
+            if (credential.getNewPassword() != null)
+            {
+                credential.setPassword(credential.getNewPassword().toCharArray(), credential.isPasswordEncoded());                
+            }
+        }
+        getPersistenceBroker(true).store(credential);
+    }
+
+    //
+    // UserPasswordCredentialAccessManager interface implementation
+    //
+    /**
+     * <p>
+     * Retrieves the current PasswordCredential by userName
+     * </p>
+     * <p>
+     * Warning: the User reference is configured with auto-retrieve="false".
+     * This is intentionally done to allow retrieving the credential for authentication purposes only
+     * so no User is loaded when authentication fails.
+     * The user reference can be materialized by OJB using persistenceBroker.retrieveReference(credential, "user").
+     * </p>
+     */
+    public PasswordCredential getPasswordCredential(String userName)
+    {
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("user.name", userName);
+        criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
+        Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
+        PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBroker(true).getObjectByQuery(query);
+        if (pwc != null)
+        {
+            // store the userName by hand as the user is configured as auto-retrieve="false"
+            pwc.setUserName(userName);
+        }
+        return pwc;
+    }
+
+    public List<PasswordCredential> getHistoricPasswordCredentials(User user)
+    {
         // TODO Auto-generated method stub
-        
+        return null;
     }
 
     //

@@ -34,6 +34,8 @@ public class PasswordCredentialImpl implements PasswordCredential
     private static final long serialVersionUID = -4975305752376365096L;
     
     private User user;
+    
+    private String userName;
 
     /** The "raw" password value */
     private char[] password;
@@ -57,9 +59,9 @@ public class PasswordCredentialImpl implements PasswordCredential
      */
     private boolean passwordEncoded;
     
-    private boolean updateAllowed;
+    private boolean updateAllowed = true;
     
-    private boolean stateReadOnly;
+    private boolean stateReadOnly = false;
 
     /** The update required state */
     private boolean updateRequired;
@@ -81,6 +83,12 @@ public class PasswordCredentialImpl implements PasswordCredential
     
     /** The number of authentication failures */
     private int authenticationFailures;
+    
+    /**
+     * The type mapping field
+     */
+    @SuppressWarnings("unused")
+    private Integer type = TYPE_CURRENT;
 
     public PasswordCredentialImpl()
     {        
@@ -108,17 +116,32 @@ public class PasswordCredentialImpl implements PasswordCredential
         }
     }
     
+    public void setUser(User user)
+    {
+        this.user = user;
+    }
+    
+    public void setUserName(String userName)
+    {
+        this.userName = userName;
+    }
+    
     /**
      * @return The username.
      */
     public String getUserName()
     {
-        return user.getName();
+        return user != null ? user.getName() : userName;
     }
     
     public User getUser()
     {
         return user;
+    }
+    
+    public Integer getType()
+    {
+        return type;
     }
 
     /**
