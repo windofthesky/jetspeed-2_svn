@@ -33,8 +33,8 @@ import javolution.xml.sax.Attributes;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.jetspeed.security.attributes.SecurityAttribute;
-import org.apache.jetspeed.security.attributes.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 
 public class JSNameValuePairs
 {
@@ -68,10 +68,10 @@ public class JSNameValuePairs
     {
         try
         {
-            for (String key : attributes.getAttributes().keySet())
+            for (String key : attributes.getAttributeNames())
             {
-                SecurityAttribute attr = attributes.getAttributes().get(key);
-                myMap.put(key, attr.getValue());
+                SecurityAttribute attr = attributes.getAttribute(key);
+                myMap.put(key, attr.getStringValue());
             }
         } 
         catch (Exception e)

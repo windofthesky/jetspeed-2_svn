@@ -37,8 +37,8 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.impl.RoleImpl;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -255,8 +255,8 @@ public class TestConstraintsAction extends JetspeedTestCase
             new JetspeedRequestContext(request, response, config, null);
         
         Set principals = new HashSet();
-        principals.add(new UserPrincipalImpl("admin"));
-        principals.add(new RolePrincipalImpl("admin"));
+        principals.add(new UserImpl("admin"));
+        principals.add(new RoleImpl("admin"));
         Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
         
         JSSubject.doAsPrivileged(subject, new PrivilegedAction()

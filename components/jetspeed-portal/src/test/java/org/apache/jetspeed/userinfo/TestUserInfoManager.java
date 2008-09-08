@@ -33,12 +33,14 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
@@ -157,8 +159,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     private RequestContext initRequestContext(String username)
     {
         RequestContext request = new MockRequestContext("default-other");
-
-        request.setSubject(SecurityHelper.createSubject(username));
+        request.setSubject(JetspeedSubjectFactory.createSubject(new UserImpl(username), null, null, null));
         return request;
     }
 
@@ -172,7 +173,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         User user = null;
         try
         {
-            ums.addUser("test", "password01");
+            ums.addUser("test");
             user = ums.getUser("test");
         }
         catch (SecurityException sex)

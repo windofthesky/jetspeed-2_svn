@@ -67,10 +67,10 @@ import org.apache.jetspeed.security.FragmentPermission;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.PrincipalsSet;
-import org.apache.jetspeed.security.RolePrincipal;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.impl.RoleImpl;
+import org.apache.jetspeed.security.impl.UserImpl;
 
 /**
  * PageManagerTestShared
@@ -213,28 +213,22 @@ interface PageManagerTestShared
             pageManager.reset();
             
             // setup test subjects
-            Principal userPrincipal = new UserPrincipalImpl("admin");
-            Principal rolePrincipal = new RolePrincipalImpl("admin");
             Set principals = new PrincipalsSet();
-            principals.add(userPrincipal);
-            principals.add(rolePrincipal);
+            principals.add(new UserImpl("admin"));
+            principals.add(new RoleImpl("admin"));
             Subject adminSubject = new Subject(true, principals, new HashSet(), new HashSet());
             
-            userPrincipal = new UserPrincipalImpl("user");
             principals = new PrincipalsSet();
-            principals.add(userPrincipal);
+            principals.add(new UserImpl("user"));
             Subject userSubject = new Subject(true, principals, new HashSet(), new HashSet());
             
-            userPrincipal = new UserPrincipalImpl("manager");
-            rolePrincipal = new RolePrincipalImpl("manager");
             principals = new PrincipalsSet();
-            principals.add(userPrincipal);
-            principals.add(rolePrincipal);
+            principals.add(new UserImpl("manager"));
+            principals.add(new RoleImpl("manager"));
             Subject managerSubject = new Subject(true, principals, new HashSet(), new HashSet());
 
-            userPrincipal = new UserPrincipalImpl("guest");
             principals = new PrincipalsSet();
-            principals.add(userPrincipal);
+            principals.add(new UserImpl("guest"));
             Subject guestSubject = new Subject(true, principals, new HashSet(), new HashSet());
 
             // setup test as admin user
@@ -677,7 +671,7 @@ interface PageManagerTestShared
                 Permissions permissions = new Permissions();
                 for (int i = 0; (i < principals.length); i++)
                 {
-                    if (principals[i] instanceof UserPrincipal)
+                    if (principals[i] instanceof User)
                     {
                         // get permissions for users
                         String user = principals[i].getName();
@@ -703,7 +697,7 @@ interface PageManagerTestShared
                         permissions.add(new PagePermission("/page.security", "view"));
                         permissions.add(new FragmentPermission("security::*", "view"));
                     }
-                    else if (principals[i] instanceof RolePrincipal)
+                    else if (principals[i] instanceof Role)
                     {
                         // get permissions for roles
                         String role = principals[i].getName();

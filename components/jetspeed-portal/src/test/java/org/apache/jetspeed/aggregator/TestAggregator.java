@@ -46,7 +46,9 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
@@ -175,7 +177,7 @@ public class TestAggregator extends JetspeedTestCase
         assertNotNull("request context component is null", rcc);
 
         final RequestContext requestContext = initRequestContext();
-        final Subject subject = SecurityHelper.createSubject("user");
+        final Subject subject = JetspeedSubjectFactory.createSubject(new UserImpl("user"), null, null, null);
         requestContext.getRequest().getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
         requestContext.setSubject(subject);
         

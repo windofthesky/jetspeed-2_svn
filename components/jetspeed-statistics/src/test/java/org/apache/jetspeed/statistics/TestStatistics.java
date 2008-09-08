@@ -32,7 +32,7 @@ import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -294,10 +294,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockHttpSession session = new MockHttpSession();
 
-//        Principal p = new UserPrincipalImpl("anotherFaker");
-        Principal p = new UserPrincipalImpl(USERNAME);
-
-        request.setUserPrincipal(p);
+        request.setUserPrincipal(new UserImpl(USERNAME));
 
         request.setRemoteAddr("123.234.145.156");
         request.setSession(session);

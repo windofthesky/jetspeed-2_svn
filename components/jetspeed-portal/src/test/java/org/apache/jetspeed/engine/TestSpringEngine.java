@@ -41,7 +41,6 @@ import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.userinfo.UserInfoManager;
@@ -66,7 +65,7 @@ public class TestSpringEngine extends AbstractEngineTest
         keysToCheck = new Object[] {"IdGenerator", "DecorationLocator", "TemplateLocator", "IdGenerator", "PageFileCache", PageManager.class, 
                                      PortletRegistry.class, PortletEntityAccessComponent.class, "PortalServices",
                                      Profiler.class, Capabilities.class, PreferencesProvider.class, UserManager.class,
-                                     GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class, SecurityProvider.class,
+                                     GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class,
                                      UserInfoManager.class, RequestContextComponent.class, PortletWindowAccessor.class,
                                      PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
                                      "deploymentManager", "portletFactory", ServletConfig.class, 
