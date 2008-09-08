@@ -88,15 +88,11 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                 String anonymousUser = userManager.getAnonymousUser();
                 for (User _user : userManager.getUsers(""))    
                 {
-                    Principal principal = SecurityHelper.getPrincipal(userManager.getSubject(_user), User.class);
-                    if (principal != null)
+                    Collection col = pm.getRulesForPrincipal(_user);
+                    Iterator _itCol = col.iterator();
+                    while (_itCol.hasNext())
                     {
-                        Collection col = pm.getRulesForPrincipal(principal);
-                        Iterator _itCol = col.iterator();
-                        while (_itCol.hasNext())
-                        {
-                            pm.deletePrincipalRule((PrincipalRule)_itCol.next());
-                        }
+                        pm.deletePrincipalRule((PrincipalRule)_itCol.next());
                     }
                 }
                 Iterator _itRules = pm.getRules().iterator();
