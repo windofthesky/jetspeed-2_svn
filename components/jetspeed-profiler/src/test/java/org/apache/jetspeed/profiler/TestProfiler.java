@@ -39,8 +39,8 @@ import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.impl.RoleImpl;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 
 /**
@@ -204,10 +204,20 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         Set publicCredentials = new HashSet();
         Set privateCredentials = new HashSet();
         
-        principals.add(new UserPrincipalImpl("david"));
-        principals.add(new RolePrincipalImpl("ATP"));
-        principals.add(new RolePrincipalImpl("NB"));        
-        principals.add(new RolePrincipalImpl("ATP-NB"));        
+        UserImpl user = new UserImpl();
+        user.setName("david");
+        RoleImpl roleATP = new RoleImpl();
+        roleATP.setName("ATP");
+        RoleImpl roleNB = new RoleImpl();
+        roleATP.setName("NB");
+        RoleImpl roleATPNB = new RoleImpl();
+        roleATPNB.setName("ATP-NB");
+        
+        principals.add(user);
+        principals.add(roleATP);
+        principals.add(roleNB);        
+        principals.add(roleATPNB);
+        
         Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
         return subject;
     }
@@ -218,9 +228,17 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         Set publicCredentials = new HashSet();
         Set privateCredentials = new HashSet();
         
-        principals.add(new UserPrincipalImpl("david"));
-        principals.add(new RolePrincipalImpl("ATP"));
-        principals.add(new RolePrincipalImpl("NB"));        
+        UserImpl user = new UserImpl();
+        user.setName("david");
+        RoleImpl roleATP = new RoleImpl();
+        roleATP.setName("ATP");
+        RoleImpl roleNB = new RoleImpl();
+        roleATP.setName("NB");
+
+        principals.add(user);
+        principals.add(roleATP);
+        principals.add(roleNB);
+        
         Subject subject = new Subject(true, principals, publicCredentials, privateCredentials);        
         return subject;
     }
@@ -241,7 +259,9 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         assertTrue("default rule class not mapped", rule instanceof StandardProfilingRule);
 
         // Test anonymous principal-rule
-        ProfilingRule anonRule = profiler.getRuleForPrincipal(new UserPrincipalImpl("anon"),
+        UserImpl user = new UserImpl();
+        user.setName("anon");
+        ProfilingRule anonRule = profiler.getRuleForPrincipal(user,
                 ProfileLocator.PAGE_LOCATOR);
         assertNotNull("anonymous rule is null", anonRule);
         assertTrue("anonymous rule is j1", anonRule.getId().equals(DEFAULT_RULE));
@@ -485,7 +505,9 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     public void testGetLocatorNames() throws Exception
     {
         assertNotNull("profiler service is null", profiler);
-        String[] result = profiler.getLocatorNamesForPrincipal(new UserPrincipalImpl("guest"));
+        UserImpl user = new UserImpl();
+        user.setName("guest");
+        String[] result = profiler.getLocatorNamesForPrincipal(user);
         for (int ix = 0; ix < result.length; ix++)
         {
             System.out.println("$$$ result = " + result[ix]);
