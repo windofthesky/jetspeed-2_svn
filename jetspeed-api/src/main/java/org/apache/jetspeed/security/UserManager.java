@@ -105,6 +105,25 @@ public interface UserManager
 
     /**
      * <p>
+     * Get a Subject for an user.
+     * </p>
+     * <p>
+     * The Subject credentials (.e.g. PasswordCredential) will be retrieved
+     * by the Jetspeed security provider itself (if configured).
+     * </p>
+     * <p>
+     * If an external authentication provider is used supplying custom credentials
+     * the method {@link #getSubject(AuthenticatedUser)} should be used instead. 
+     * </p>
+     * 
+     * @param user The user.
+     * @return The Subject.
+     * @throws Throws a security exception if the user cannot be found
+     */
+    Subject getSubject(User user) throws SecurityException;
+
+    /**
+     * <p>
      * Get a Subject for an (possibly externally) authenticated user with (optionally) provided credentials.
      * </p>
      * 
