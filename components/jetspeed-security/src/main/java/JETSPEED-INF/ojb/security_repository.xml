@@ -17,134 +17,6 @@ limitations under the License.
 -->
 
 <descriptor-repository version="1.0">
-
-	<!--
-	   - S E C U R I T Y  U S E R
-	-->	
-	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
-	    proxy="dynamic"
-	    table="SECURITY_PRINCIPAL"
-	>
-	    <documentation>Represents a user principal.</documentation>
-	    <field-descriptor
-	        name="principalId"
-	        column="principal_id"
-	        jdbc-type="BIGINT"
-	        primarykey="true"
-	        indexed="true"
-	        autoincrement="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="classname"
-	        column="classname"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="254"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="isMappingOnly"
-	        column="is_mapping_only"
-	        jdbc-type="INTEGER"
-	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="type"
-	        column="sp_type"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="20"
-	    >
-	    </field-descriptor>	    
-	    <field-descriptor
-	        name="name"
-	        column="sp_name"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="200"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="creationDate"
-	        column="creation_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="modifiedDate"
-	        column="modified_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-      <field-descriptor
-          name="enabled"
-          column="is_enabled"
-          jdbc-type="INTEGER"
-          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-          nullable="false"
-      > 
-      </field-descriptor>      
-	    <collection-descriptor
-	        name="credentials"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalCredentialImpl"
-          proxy="true"
-          refresh="true"          
-	        auto-retrieve="true"
-	        auto-update="object"
-	        auto-delete="object"
-	    >
-	        <documentation>This is the reference to security credentials.</documentation>
-	        <inverse-foreignkey field-ref="principalId"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="rolePrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="SECURITY_USER_ROLE"
-	    >
-	        <documentation>This is the reference to role principals.</documentation>
-	        <fk-pointing-to-this-class column="USER_ID"/>
-	        <fk-pointing-to-element-class column="ROLE_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="groupPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="SECURITY_USER_GROUP"
-	    >
-	        <documentation>This is the reference to group principals.</documentation>
-	        <fk-pointing-to-this-class column="USER_ID"/>
-	        <fk-pointing-to-element-class column="GROUP_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="PRINCIPAL_PERMISSION"
-	    >
-	        <documentation>This is the reference to a policy permission.</documentation>
-	        <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
-	        <fk-pointing-to-element-class column="PERMISSION_ID"/>
-	    </collection-descriptor>
-	</class-descriptor>
 	
 	<!--
 	   - S E C U R I T Y  C R E D E N T I A L
@@ -269,326 +141,6 @@ limitations under the License.
 	</class-descriptor>
 	
 	<!--
-	   - S E C U R I T Y  R O L E
-	-->	
-	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl"
-	    proxy="dynamic"
-	    table="SECURITY_PRINCIPAL"
-	>
-	    <documentation>Represents a role principal.</documentation>
-		<field-descriptor
-	        name="principalId"
-	        column="principal_id"
-	        jdbc-type="BIGINT"
-	        primarykey="true"
-	        indexed="true"
-	        autoincrement="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="classname"
-	        column="classname"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="254"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="isMappingOnly"
-	        column="is_mapping_only"
-	        jdbc-type="INTEGER"
-	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="type"
-	        column="sp_type"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="20"
-	    >
-	    </field-descriptor>	    
-	    <field-descriptor
-	        name="name"
-	        column="sp_name"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="200"
-	    >
-	    </field-descriptor>	    	    
-	    <field-descriptor
-	        name="creationDate"
-	        column="creation_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="modifiedDate"
-	        column="modified_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-      <field-descriptor
-          name="enabled"
-          column="is_enabled"
-          jdbc-type="INTEGER"
-          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-          nullable="false"
-      >
-      </field-descriptor>      
-	    <collection-descriptor
-	        name="userPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="SECURITY_USER_ROLE"
-	    >
-	        <documentation>This is the reference to user principals.</documentation>
-	        <fk-pointing-to-this-class column="ROLE_ID"/>
-	        <fk-pointing-to-element-class column="USER_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="groupPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="SECURITY_GROUP_ROLE"
-	    >
-	        <documentation>This is the reference to group principals.</documentation>
-	        <fk-pointing-to-this-class column="ROLE_ID"/>
-	        <fk-pointing-to-element-class column="GROUP_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
-	        proxy="false"
-	        refresh="false"
-	        auto-retrieve="false"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="PRINCIPAL_PERMISSION"
-	    >
-	        <documentation>This is the reference to a policy permission.</documentation>
-	        <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
-	        <fk-pointing-to-element-class column="PERMISSION_ID"/>
-	    </collection-descriptor>
-	</class-descriptor>
-	
-	<!--
-	   - S E C U R I T Y  G R O U P
-	-->	
-	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.InternalGroupPrincipalImpl"
-	    proxy="dynamic"
-	    table="SECURITY_PRINCIPAL"
-	>
-	    <documentation>Represents a group principal.</documentation>
-		<field-descriptor
-	        name="principalId"
-	        column="principal_id"
-	        jdbc-type="BIGINT"
-	        primarykey="true"
-	        indexed="true"
-	        autoincrement="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="classname"
-	        column="classname"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="254"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="isMappingOnly"
-	        column="is_mapping_only"
-	        jdbc-type="INTEGER"
-	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-	        nullable="false"
-	    >
-	    </field-descriptor>	    
-	    <field-descriptor
-	        name="type"
-	        column="sp_type"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="20"
-	    >
-	    </field-descriptor>	    
-	    <field-descriptor
-	        name="name"
-	        column="sp_name"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="200"
-	    >
-	    </field-descriptor>	    
-	    <field-descriptor
-	        name="creationDate"
-	        column="creation_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="modifiedDate"
-	        column="modified_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-      <field-descriptor
-          name="enabled"
-          column="is_enabled"
-          jdbc-type="INTEGER"
-          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-          nullable="false"
-      >
-      </field-descriptor>      
-	    <collection-descriptor
-	        name="userPrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalUserPrincipalImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="SECURITY_USER_GROUP"
-	    >
-	        <documentation>This is the reference to user principals.</documentation>
-	        <fk-pointing-to-this-class column="GROUP_ID"/>
-	        <fk-pointing-to-element-class column="USER_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="rolePrincipals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalRolePrincipalImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="SECURITY_GROUP_ROLE"
-	    >
-	        <documentation>This is the reference to group principals.</documentation>
-	        <fk-pointing-to-this-class column="GROUP_ID"/>
-	        <fk-pointing-to-element-class column="ROLE_ID"/>
-	    </collection-descriptor>
-	    <collection-descriptor
-	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
-	        proxy="false"
-	        refresh="false"
-	        auto-retrieve="false"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="PRINCIPAL_PERMISSION"
-	    >
-	        <documentation>This is the reference to a policy permission.</documentation>
-	        <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
-	        <fk-pointing-to-element-class column="PERMISSION_ID"/>
-	    </collection-descriptor>
-	</class-descriptor>
-	
-	<!--
-	   - S E C U R I T Y  P R I N C I P A L
-	-->	
-	<class-descriptor
-	    class="org.apache.jetspeed.security.om.impl.InternalPrincipalImpl"
-	    proxy="dynamic"
-	    table="SECURITY_PRINCIPAL"
-	>
-	    <documentation>Represents a security principal in the security policy.</documentation>
-	    <field-descriptor
-	        name="principalId"
-	        column="principal_id"
-	        jdbc-type="BIGINT"
-	        primarykey="true"
-	        indexed="true"
-	        autoincrement="true"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="classname"
-	        column="classname"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="254"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="isMappingOnly"
-	        column="is_mapping_only"
-	        jdbc-type="INTEGER"
-	        conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="type"
-	        column="sp_type"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="20"
-	    >
-	    </field-descriptor>	    
-	    <field-descriptor
-	        name="name"
-	        column="sp_name"
-	        jdbc-type="VARCHAR"
-	        nullable="false"
-	        length="200"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="creationDate"
-	        column="creation_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-	    <field-descriptor
-	        name="modifiedDate"
-	        column="modified_date"
-	        jdbc-type="TIMESTAMP"
-	        nullable="false"
-	    >
-	    </field-descriptor>
-      <field-descriptor
-          name="enabled"
-          column="is_enabled"
-          jdbc-type="INTEGER"
-          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-          nullable="false"
-      >
-      </field-descriptor>      
-	    <collection-descriptor
-	        name="permissions"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPermissionImpl"
-	        proxy="true"
-	        refresh="true"
-	        auto-retrieve="true"
-	        auto-update="link"
-	        auto-delete="link"
-	        indirection-table="PRINCIPAL_PERMISSION"
-	    >
-	        <documentation>This is the reference to a policy permission.</documentation>
-	        <fk-pointing-to-this-class column="PRINCIPAL_ID"/>
-	        <fk-pointing-to-element-class column="PERMISSION_ID"/>
-	    </collection-descriptor>
-	</class-descriptor>
-	
-	<!--
 	   - S E C U R I T Y  P E R M I S S I O N
 	-->	
 	<class-descriptor
@@ -646,7 +198,7 @@ limitations under the License.
 	    </field-descriptor>
 	        <collection-descriptor
 	        name="principals"
-	        element-class-ref="org.apache.jetspeed.security.om.impl.InternalPrincipalImpl"
+	        element-class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
 	        proxy="true"
 	        refresh="true"
 	        auto-retrieve="true"
@@ -661,59 +213,19 @@ limitations under the License.
 	</class-descriptor>
 
 
-   <!--
-   - S E C U R I T Y   A T T R I B U T E S ( D E P R E C A T E D )
-   -->
-  <class-descriptor
-      class="org.apache.jetspeed.security.attributes.SecurityAttributeImpl"
-      table="security_attributes"
-  >
-      <documentation>Represents a Security Principal Attribute definition.</documentation>
-      <field-descriptor
-          name="attributeId"
-          column="attr_id"
-          jdbc-type="BIGINT"
-          primarykey="true"
-          autoincrement="true"
-      />
-      <field-descriptor
-          name="principalId"
-          column="principal_id"
-          jdbc-type="BIGINT"
-          nullable="false"
-      />
-      <field-descriptor
-          name="name"
-          column="attr_name"
-          jdbc-type="VARCHAR"
-          nullable="false"
-          length="200"
-      />
-      <field-descriptor
-          name="type"
-          column="attr_type"
-          jdbc-type="VARCHAR"
-          nullable="false"
-          length="20"
-      />
-      <field-descriptor
-          name="value"
-          column="attr_value"
-          jdbc-type="VARCHAR"
-          nullable="true"
-          length="1000"
-      />      
-  </class-descriptor>
-
-
   <!--
      - J E T S P E E D   P R I N C I P A L
   --> 
   <class-descriptor
-      class="org.apache.jetspeed.security.impl.BaseJetspeedPrincipal"
+      class="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
       table="SECURITY_PRINCIPAL"
-  >
+  >  
       <documentation>Represents a security principal in the security policy.</documentation>
+      
+      <extend-class class-ref="org.apache.jetspeed.security.impl.UserImpl"/>
+      <extend-class class-ref="org.apache.jetspeed.security.impl.RoleImpl"/>
+      <extend-class class-ref="org.apache.jetspeed.security.impl.GroupImpl"/>
+      
       <field-descriptor
           name="id"
           column="principal_id"
@@ -729,7 +241,7 @@ limitations under the License.
           jdbc-type="VARCHAR"
           nullable="false"
           conversion="org.apache.jetspeed.security.util.ojb.JetspeedPrincipalTypeFieldConversion"
-          length="20"
+          length="30"
       >
       </field-descriptor>     
       <field-descriptor
@@ -787,14 +299,31 @@ limitations under the License.
       >
       </field-descriptor>      
       <collection-descriptor
-          name="attributeValues"
+          name="attributes"
           element-class-ref="org.apache.jetspeed.security.impl.SecurityAttributeValue"
-          refresh="true"
           auto-retrieve="true"
           auto-update="true"
           auto-delete="none"
       >
         <inverse-foreignkey field-ref="principalId"/>
+      </collection-descriptor>
+      <collection-descriptor
+          name="associationsFrom"
+          element-class-ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociation"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="fromPrincipalId"/>
+      </collection-descriptor>
+      <collection-descriptor
+          name="associationsTo"
+          element-class-ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociation"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="toPrincipalId"/>
       </collection-descriptor>
   </class-descriptor>
   
@@ -803,7 +332,7 @@ limitations under the License.
    -->
   <class-descriptor
       class="org.apache.jetspeed.security.SecurityAttributeValue"
-      table="security_attributes"
+      table="SECURITY_ATTRIBUTE"
   >
       <documentation>Represents a Security Principal Attribute definition.</documentation>
       <field-descriptor
@@ -834,6 +363,50 @@ limitations under the License.
           nullable="true"
           length="1000"
       />      
+  </class-descriptor>
+
+
+   <!--
+   - J E T S P E E D   P R I N C I P A L   A S S O C I A T I O N
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociation"
+      table="SECURITY_PRINCIPAL_ASSOC"
+  >
+      <documentation>Represents an association between two Security Principals</documentation>
+      <field-descriptor
+          name="fromPrincipalId"
+          column="from_principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          access="anonymous"
+      />
+      <field-descriptor
+          name="toPrincipalId"
+          column="to_principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          access="anonymous"
+      />
+      <field-descriptor
+          name="associationName"
+          column="assoc_name"
+          jdbc-type="VARCHAR"
+          length="30"
+          primarykey="true"
+      />
+      <reference-descriptor
+         name="from"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+      >
+         <foreignkey field-ref="fromPrincipalId"/>
+      </reference-descriptor>
+      <reference-descriptor
+         name="to"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+      >
+         <foreignkey field-ref="toPrincipalId"/>
+      </reference-descriptor>
   </class-descriptor>
 
 </descriptor-repository>
