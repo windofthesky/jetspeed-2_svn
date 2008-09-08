@@ -45,7 +45,7 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
     private boolean extendable = true;
 
     @SuppressWarnings("unchecked")
-    protected Collection attributeValues;
+    protected Collection attributes;
     
     public PersistentJetspeedPrincipal()
     {   
@@ -132,15 +132,15 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
     
     public synchronized SecurityAttributes getSecurityAttributes()
     {
-        if (attributes == null)
+        if (sa == null)
         {
-            if (attributeValues == null)
+            if (attributes == null)
             {
-                attributeValues = new ArrayList<SecurityAttributeValue>();
+                attributes = new ArrayList<SecurityAttributeValue>();
             }
-            attributes = new SecurityAttributesImpl(this, attributeValues, isReadOnly(), isExtendable());
+            sa = new SecurityAttributesImpl(this, attributes, isReadOnly(), isExtendable());
         }
-        return attributes;
+        return sa;
     }
     
     public Map<String, String> getInfoMap()
@@ -156,7 +156,7 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
 
     public synchronized void afterInsert(PersistenceBroker pb) throws PersistenceBrokerException
     {
-        this.attributes = null;
+        this.sa = null;
     }
 
     public void afterLookup(PersistenceBroker pb) throws PersistenceBrokerException

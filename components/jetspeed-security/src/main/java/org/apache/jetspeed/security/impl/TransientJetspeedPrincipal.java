@@ -38,7 +38,7 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     protected String name;    
     
     protected transient JetspeedPrincipalType jpt;
-    protected transient SecurityAttributes attributes;
+    protected transient SecurityAttributes sa;
     
     public static void setJetspeedPrincipalManagerProvider(JetspeedPrincipalManagerProvider jpmp)
     {
@@ -140,11 +140,11 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     
     public synchronized SecurityAttributes getSecurityAttributes()
     {
-        if (attributes == null)
+        if (sa == null)
         {
-            attributes = new SecurityAttributesImpl(this);
+            sa = new SecurityAttributesImpl(this);
         }
-        return attributes;
+        return sa;
     }
     
     public Map<String, String> getInfoMap()
