@@ -102,9 +102,17 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     /**
      * @see org.apache.jetspeed.security.GroupManager#addGroup(java.lang.String)
      */
-    public void addGroup(String groupName) throws SecurityException
+    public Group addGroup(String groupName) throws SecurityException
     {
-        Group group = newGroup(groupName, true);
+        return addGroup(groupName, true);
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.GroupManager#addGroup(java.lang.String, boolean)
+     */
+    public Group addGroup(String groupName, boolean mapped) throws SecurityException
+    {
+        Group group = newGroup(groupName, mapped);
         
         try
         {
@@ -122,9 +130,15 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         {
             throw new SecurityException(e);
         }
+        catch (PrincipalNotFoundException e)
+        {
+            // cannot occurr as no associations are provided with addPrincipal
+        }
         
         if (log.isDebugEnabled())
             log.debug("Added group: " + groupName);
+        
+        return group;
     }
 
     /**
@@ -220,10 +234,6 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
             Group group = getGroup(groupName);
             super.removeAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, user, group);
         } 
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(e);
-        } 
         catch (PrincipalAssociationRequiredException e)
         {
             throw new SecurityException(e);
@@ -249,36 +259,23 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     }
     
     /**
-     * @see org.apache.jetspeed.security.GroupManager#setGroupEnabled(java.lang.String, boolean)
+     * @see org.apache.jetspeed.security.GroupManager#updateGroup(org.apache.jetspeed.security.Group)
      */
-    public void setGroupEnabled(String groupName, boolean enabled) throws SecurityException
+    public void updateGroup(Group group) throws SecurityException
     {
-        Group group = (Group) super.getPrincipal(groupName);
-        
-        if (null == group)
-        {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(groupName));
-        }
-        
         try
         {
-            if (enabled != group.isEnabled())
-            {
-                group.setEnabled(enabled);
-                super.updatePrincipal(group);
-            }
-            
-            group.setEnabled(enabled);
+            super.updatePrincipal(group);
         }
-        catch (PrincipalReadOnlyException e)
+        catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(group.getName()));
         }
         catch (PrincipalUpdateException e)
         {
             throw new SecurityException(e);
-        } 
-        catch (PrincipalNotFoundException e)
+        }
+        catch (PrincipalReadOnlyException e)
         {
             throw new SecurityException(e);
         }

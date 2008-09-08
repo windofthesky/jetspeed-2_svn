@@ -108,9 +108,17 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /**
      * @see org.apache.jetspeed.security.RoleManager#addRole(java.lang.String)
      */
-    public void addRole(String roleName) throws SecurityException
+    public Role addRole(String roleName) throws SecurityException
     {
-        Role role = newRole(roleName, true);
+        return addRole(roleName, true);
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.RoleManager#addRole(java.lang.String, boolean)
+     */
+    public Role addRole(String roleName, boolean mapped) throws SecurityException
+    {
+        Role role = newRole(roleName, mapped);
         
         try
         {
@@ -128,9 +136,15 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         {
             throw new SecurityException(e);
         }
+        catch (PrincipalNotFoundException e)
+        {
+            // cannot occurr as no associations are provided with addPrincipal
+        }
         
         if (log.isDebugEnabled())
             log.debug("Added role: " + roleName);
+        
+        return role;
     }
 
     /**
@@ -222,10 +236,6 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
             Role role = getRole(roleName);
             super.removeAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, user, role);
         } 
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(e);
-        } 
         catch (PrincipalAssociationRequiredException e)
         {
             throw new SecurityException(e);
@@ -275,10 +285,6 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
             Role role = getRole(roleName);
             super.removeAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, group, role);
         } 
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(e);
-        } 
         catch (PrincipalAssociationRequiredException e)
         {
             throw new SecurityException(e);
@@ -303,36 +309,23 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     }
 
     /** 
-     * @see org.apache.jetspeed.security.RoleManager#setRoleEnabled(java.lang.String, boolean)
+     * @see org.apache.jetspeed.security.RoleManager#updateRole(org.apache.jetspeed.security.Role)
      */
-    public void setRoleEnabled(String roleName, boolean enabled) throws SecurityException
+    public void updateRole(Role role) throws SecurityException
     {
-        Role role = (Role) super.getPrincipal(roleName);
-        
-        if (null == role)
-        {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(roleName));
-        }
-        
         try
         {
-            if (enabled != role.isEnabled())
-            {
-                role.setEnabled(enabled);
-                super.updatePrincipal(role);
-            }
-            
-            role.setEnabled(enabled);
+            super.updatePrincipal(role);
         }
-        catch (PrincipalReadOnlyException e)
+        catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(role.getName()));
         }
         catch (PrincipalUpdateException e)
         {
             throw new SecurityException(e);
         } 
-        catch (PrincipalNotFoundException e)
+        catch (PrincipalReadOnlyException e)
         {
             throw new SecurityException(e);
         }

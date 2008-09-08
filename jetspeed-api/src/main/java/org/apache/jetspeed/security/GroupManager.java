@@ -35,10 +35,25 @@ public interface GroupManager
      * <p>
      * Add a new group.
      * </p>
+     * <p>
+     * If an external security storage manager is used, the group will be mapped/replicated to it as well.
+     * </p>
      * @param groupName The group name
+     * @return the new {@link Group}
      * @throws Throws a security exception.
      */
-    void addGroup(String groupName) throws SecurityException;
+    Group addGroup(String groupName) throws SecurityException;
+
+    /**
+     * <p>
+     * Add a new group and optionally map/replicate it to an external storage manager (if configured).
+     * </p>
+     * @param groupName The group name
+     * @param mapped if the new Group should be mapped/replicated to an external security storage manager (if used) or not.
+     * @return the new {@link Group}
+     * @throws Throws a security exception.
+     */
+    Group addGroup(String groupName, boolean mapped) throws SecurityException;
 
     /**
      * <p>
@@ -136,9 +151,9 @@ public interface GroupManager
    List<Group> getGroups(String nameFilter) throws SecurityException;
     
    /**
-    * Enable or disable a group.
-    * @param groupName The group name
-    * @param enabled enabled flag for the group
+    * Updates a group and all its attributes
+    * @param group
+    * @throws SecurityException
     */
-   void setGroupEnabled(String groupName, boolean enabled) throws SecurityException;
+   void updateGroup(Group group) throws SecurityException;
 }

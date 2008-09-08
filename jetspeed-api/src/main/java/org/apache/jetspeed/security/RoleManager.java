@@ -29,11 +29,29 @@ public interface RoleManager
     Role newTransientRole(String name);
     
     /**
-     * <p>Add a new role.</p>
+     * <p>
+     * Add a new role
+     * </p>
+     * <p>
+     * If an external security storage manager is used, the role will be mapped/replicated to it as well.
+     * </p>
      * @param roleName The role name
+     * @return the new {@link Role}
      * @throws Throws a security exception if the role already exists.
      */
-    void addRole(String roleName) throws SecurityException;
+    Role addRole(String roleName) throws SecurityException;
+
+    /**
+     * <p>
+     * Add a new role and optionally map/replicate it to an external storage manager (if configured).
+     * </p>
+     * 
+     * @param roleName The role name.
+     * @param mapped if the new Role should be mapped/replicated to an external security storage manager (if used) or not.
+     * @return the new {@link Role}
+     * @throws Throws a security exception if the role already exists.
+     */
+    Role addRole(String roleName, boolean mapped) throws SecurityException;
 
     /**
      * <p>Remove a given role</p>
@@ -136,9 +154,9 @@ public interface RoleManager
     List<Role> getRoles(String nameFilter) throws SecurityException;
     
     /**
-     * Enable or disable a role.
-     * @param roleName.
-     * @param enabled enabled flag for the role
+     * Updates a role and all its attributes
+     * @param role
+     * @throws SecurityException
      */
-    void setRoleEnabled(String roleName, boolean enabled) throws SecurityException;
+    void updateRole(Role role) throws SecurityException;
 }
