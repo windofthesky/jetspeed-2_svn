@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.security.Principal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
 
 /**
  * LoginValidationValve
@@ -109,14 +109,13 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                             try
                             {
                                 user = um.getUser(userName);
-                                UserPrincipal userPrincipal = (UserPrincipal)SecurityHelper.getPrincipal(user.getSubject(), UserPrincipal.class);
-                                if ( !userPrincipal.isEnabled() )
+                                if ( !user.isEnabled() )
                                 {
                                     request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_USER_DISABLED);
                                 }
                                 else
                                 {
-                                    PasswordCredential pwdCredential = SecurityHelper.getPasswordCredential(user.getSubject());
+                                    PasswordCredential pwdCredential = SecurityHelper.getPasswordCredential(um.getSubject(user));
                                     if ( pwdCredential == null || !pwdCredential.isEnabled() )
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_CREDENTIAL_DISABLED);

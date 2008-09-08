@@ -27,10 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.impl.TransientRole;
 
 /**
  * Abstracted behavior of security checks when used with the
@@ -58,12 +58,12 @@ public class PortletActionSecurityPathMergeBehavior
     public Subject getSubject(RequestContext context)
     {
         Subject currentSubject = context.getSubject();
-        Iterator roles = currentSubject.getPrincipals(RolePrincipalImpl.class).iterator();
+        Iterator roles = currentSubject.getPrincipals(Role.class).iterator();
         StringBuffer combo = new StringBuffer();
         int count = 0;
         while (roles.hasNext())
         {
-            RolePrincipal role = (RolePrincipal)roles.next();
+            Role role = (Role)roles.next();
             if (count > 0)
             {
                 combo.append("-");
@@ -72,8 +72,8 @@ public class PortletActionSecurityPathMergeBehavior
             count++;                        
         }
         Set principals = new HashSet();
-        principals.add(SecurityHelper.getBestPrincipal(currentSubject, UserPrincipal.class));
-        principals.add(new RolePrincipalImpl(combo.toString()));
+        principals.add(SecurityHelper.getBestPrincipal(currentSubject, User.class));
+        principals.add(new TransientRole(combo.toString()));
         Subject subject = 
             new Subject(true, principals, new HashSet(), new HashSet());
         return subject;

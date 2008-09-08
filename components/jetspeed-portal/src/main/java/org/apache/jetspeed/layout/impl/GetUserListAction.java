@@ -37,7 +37,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.statistics.UserStats;
 
@@ -236,7 +235,7 @@ public class GetUserListAction
     			{
     				for (User user : userManager.getUsers(""))
         			{
-        				Principal userPrincipal = SecurityHelper.getPrincipal(user.getSubject(), UserPrincipal.class);
+        				Principal userPrincipal = SecurityHelper.getPrincipal(userManager.getSubject(user), User.class);
         				if(userPrincipal != null)
         				{
         					// Check if this users is already added as online user
@@ -300,7 +299,7 @@ public class GetUserListAction
     	User user =  userManager.getUser(username);
 		if(user != null)
 		{
-            return user.getUserInfo();
+            return user.getInfoMap();
 		}
 		return new HashMap<String, String>();
     }

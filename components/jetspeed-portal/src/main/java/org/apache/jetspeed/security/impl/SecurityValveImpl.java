@@ -30,7 +30,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.statistics.PortalStatistics;
 
 /**
@@ -90,7 +89,7 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
         Subject subject = getSubjectFromSession(request);
         if (subject != null)
         {
-            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, User.class);
             if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(getUserPrincipal(request).getName()))
             {
                 subject = null;
@@ -107,7 +106,7 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
                 User user = userMgr.getUser(userPrincipal.getName());
                 if ( user != null )
                 {
-                    subject = user.getSubject();
+                    subject = userMgr.getSubject(user);                   
                 }
             }
             catch (SecurityException sex)
@@ -150,7 +149,7 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
         Principal userPrincipal = request.getRequest().getUserPrincipal();
         if (userPrincipal == null)
         {
-            userPrincipal = new UserPrincipalImpl(userMgr.getAnonymousUser());
+            userPrincipal = new TransientUser(userMgr.getAnonymousUser());
         }
         return userPrincipal;
     }

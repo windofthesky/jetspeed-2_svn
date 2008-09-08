@@ -34,7 +34,7 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.impl.TransientRole;
 
 /**
  * Security Permission action
@@ -208,7 +208,7 @@ public class SecurityPermissionAction
             while (toke.hasMoreTokens())
             {
                 String roleName = toke.nextToken();
-                Principal role = new RolePrincipalImpl(roleName);
+                Principal role = new TransientRole(roleName);
                 principals.add(role);
             }                
         }

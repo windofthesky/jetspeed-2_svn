@@ -30,9 +30,9 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.AbstractSecurityValve;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.impl.TransientUser;
+import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.statistics.PortalStatistics;
 /**
  * NTLMSecurityValve provides Subject creation based on the
@@ -114,10 +114,11 @@ public class NtlmSecurityValve extends AbstractSecurityValve
         Subject subject = getSubjectFromSession(context);
         if (subject != null)
         {
-            return SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+            return SecurityHelper.getPrincipal(subject, User.class);
         } 
         // otherwise return anonymous principal
-        return new UserPrincipalImpl(userMgr.getAnonymousUser());
+        
+        return  new TransientUser(userMgr.getAnonymousUser());
     }
 
     protected Subject getSubject(RequestContext context) throws Exception 
@@ -141,7 +142,7 @@ public class NtlmSecurityValve extends AbstractSecurityValve
         // check whether principal name stored in session subject equals the remote user name passed by the web container
         if (subject != null)
         {
-            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, User.class);
             if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(userName))
             {
                 subject = null;
@@ -154,7 +155,7 @@ public class NtlmSecurityValve extends AbstractSecurityValve
                     User user = userMgr.getUser(userName);
                     if ( user != null )
                     {
-                        subject = user.getSubject();
+                        subject = userMgr.getSubject(user);
                     }
                 } catch (SecurityException sex)
                 {

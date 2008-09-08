@@ -24,7 +24,7 @@ import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SecurityHelper;
 
 public class PortalRequestWrapper extends HttpServletRequestWrapper
@@ -46,11 +46,11 @@ public class PortalRequestWrapper extends HttpServletRequestWrapper
         {
             return false;
         }
-        List roles = SecurityHelper.getPrincipals(subject, RolePrincipal.class);
+        List roles = SecurityHelper.getPrincipals(subject, Role.class);
         Iterator ir = roles.iterator();
         while (ir.hasNext())
         {
-            RolePrincipal role = (RolePrincipal)ir.next();
+            Role role = (Role)ir.next();
             if (roleName.equals(role.getName()))
                 return true;
         }

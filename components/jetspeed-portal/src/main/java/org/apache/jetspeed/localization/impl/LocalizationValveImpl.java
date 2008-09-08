@@ -33,13 +33,11 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LocalizationValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
@@ -107,7 +105,7 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
             Subject subject = request.getSubject();
             if (null != subject)
             {
-                Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+                Principal userPrincipal = SecurityHelper.getPrincipal(subject, User.class);
                 if (null != userPrincipal)
                 {
                     log.debug("Got user principal: " + userPrincipal.getName());

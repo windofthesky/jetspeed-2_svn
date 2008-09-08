@@ -36,7 +36,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.ObjectID;
 
@@ -203,7 +202,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
         Subject subject = context.getSubject();
         if (null != subject)
         {
-            Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+            Principal userPrincipal = SecurityHelper.getPrincipal(subject, User.class);
             if (null != userPrincipal)
             {
                 log.debug("Got user principal: " + userPrincipal.getName());
@@ -212,7 +211,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
                     if (userMgr.userExists(userPrincipal.getName()))
                     {
                         User user = userMgr.getUser(userPrincipal.getName());
-                        userInfo = user.getUserInfo();
+                        userInfo = user.getInfoMap();
                     }
                 }
                 catch (SecurityException sex)

@@ -37,13 +37,15 @@ import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.login.LoginConstants;
+import org.apache.jetspeed.security.AuthenticatedUser;
+import org.apache.jetspeed.security.AuthenticatedUserImpl;
+import org.apache.jetspeed.security.AuthenticationProvider;
+import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.impl.UserSubjectPrincipalImpl;
 
 public class PortalFilter implements Filter
 {
@@ -68,9 +70,20 @@ public class PortalFilter implements Filter
             if (username != null)
             {
                 UserManager userManager = (UserManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");
-                AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");                
-                boolean success = userManager.authenticate(username, password);
-                if (success)
+                AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");
+                AuthenticationProvider authProvider = (AuthenticationProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.AuthenticationProvider");
+                
+                // Commenting out for the using latest securty API's
+                //boolean success = userManager.authenticate(username, password);
+                //if (success)
+                AuthenticatedUser authUser = null;
+                try{
+                	authUser = authProvider.authenticate(username, password);	
+                }
+                catch (SecurityException e) {
+                		throw new ServletException(e);                		
+				}
+                if (authUser != null)
                 {
                     audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "PortalFilter");
                     PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
@@ -79,29 +92,38 @@ public class PortalFilter implements Filter
                     {
                         request.getSession().invalidate();
                     }
-                    Subject subject = null;
-                    try
+                    if (authUser.getUser() == null)
                     {
-                        // load the user principals (roles, groups, credentials)
-                        User user = userManager.getUser(username);
-                        if ( user != null )
+                        try
                         {
-                            subject = user.getSubject();
+                            // load the user principals (roles, groups, credentials)
+                            User user = userManager.getUser(username);
+                            if ( user != null )
+                            {
+                            	authUser = new AuthenticatedUserImpl(user, authUser.getPublicCredentials(), authUser.getPrivateCredentials() );
+                            }
                         }
+                        catch (SecurityException sex)
+                        {
+                        	// TODO: maybe some better handling required here
+                        	throw new ServletException(sex);
+                        }       
                     }
-                    catch (SecurityException sex)
-                    {
-                    }       
-                    if (subject == null)
-                    {
-                        Set principals = new PrincipalsSet();
-                        UserSubjectPrincipalImpl userPrincipal = new UserSubjectPrincipalImpl(username);
-                        principals.add(userPrincipal);
-                        subject = new Subject(true, principals, new HashSet(), new HashSet());
-                        userPrincipal.setSubject(subject);
-                    }
-                    Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-                    sRequest = wrapperRequest(request, subject, principal);
+                    Subject subject;
+					try
+					{
+						// default solution using the build-in UserManager
+						subject = userManager.getSubject(authUser);
+						
+						// alternate DIY solution not using the build-in UserManager:
+                    	//subject = JetspeedSubjectFactory.createSubject(authUser.getUser(),authUser.getPrivateCredentials(),authUser.getPublicCredentials(),null);
+					}
+					catch (SecurityException e)
+					{
+                    	// TODO: maybe some better handling required here
+                    	throw new ServletException(e);
+					}
+                    sRequest = wrapperRequest(request, subject, authUser.getUser());
                     request.getSession().removeAttribute(LoginConstants.ERRORCODE);
                     HttpSession session = request.getSession(true);
                     session.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
@@ -120,7 +142,7 @@ public class PortalFilter implements Filter
                 Subject subject = (Subject)request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
                 if (subject != null)
                 {
-                    Principal principal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+                    Principal principal = SecurityHelper.getPrincipal(subject, User.class);
                     if (principal != null && principal.getName().equals(this.guest))
                     {                        
                     }

@@ -30,10 +30,9 @@ import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.RolePrincipal;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 
 /**
  * Retrieve user information of the current user
@@ -80,17 +79,17 @@ public class GetUserInformationAction
                 User user = userManager.getUser(principal.getName());
                 if(user != null)
                 {
-                    Map<String, String> userInfo = user.getUserInfo();
+                    Map<String, String> userInfo = user.getInfoMap();
                 	resultMap.put(USERINFO, userInfo);
 
                 	List roles = new ArrayList();
-                	Subject userSubject = user.getSubject();
+                	Subject userSubject = userManager.getSubject(user);
                 	if ( userSubject != null )
                 	{
-                		Iterator rolesIter = userSubject.getPrincipals( RolePrincipalImpl.class ).iterator();
+                		Iterator rolesIter = userSubject.getPrincipals( Role.class ).iterator();
                 		while ( rolesIter.hasNext() )
                         {
-                			RolePrincipal role = (RolePrincipal)rolesIter.next();
+                			Role role = (Role)rolesIter.next();
                             roles.add( role.getName() );
                         }
                 	}

@@ -52,7 +52,7 @@ import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.SecurityHelper;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.statistics.PortalStatistics;
@@ -390,7 +390,7 @@ implements JetspeedEngineConstants, HttpSessionListener
             // as for instance WAS 6.0.2 has a bug invoking this method with a wrong classLoader (not the one for the WebApp)
             return;
         }        
-        Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
+        Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, UserSubjectPrincipal.class);
         PortalStatistics statistics = (PortalStatistics)engine.getComponentManager().getComponent("PortalStatistics");
         long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
         String ipAddress = (String)se.getSession().getAttribute(SecurityValve.IP_ADDRESS);

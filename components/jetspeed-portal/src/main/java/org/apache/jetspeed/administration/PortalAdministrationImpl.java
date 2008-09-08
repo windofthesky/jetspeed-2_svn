@@ -18,7 +18,6 @@ package org.apache.jetspeed.administration;
 
 import java.io.FileReader;
 import java.io.StringWriter;
-import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,19 +43,16 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.AttributeAlreadyExistsException;
 import org.apache.jetspeed.security.AttributeTypeNotFoundException;
 import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.MailException;
@@ -181,9 +177,10 @@ public class PortalAdministrationImpl implements PortalAdministration
         try 
         {
             // create the user
-            userManager.addUser(userName, password);
-            User user = userManager.getUser(userName);
-                        
+            User user =  userManager.addUser(userName);
+            PasswordCredential pwc = userManager.getPasswordCredential(user);
+            pwc.setPassword(null, password);
+                       
             // assign roles to user
             if (roles == null || roles.isEmpty())
             {
@@ -245,8 +242,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                     ProfilingRule rule = profiler.getRule((String)entry.getValue());
                     if (rule != null)
                     {
-                        Principal principal = SecurityHelper.getBestPrincipal(user.getSubject(), UserPrincipal.class);
-                        profiler.setRuleForPrincipal(principal, rule, (String)entry.getKey());
+                        profiler.setRuleForPrincipal(user, rule, (String)entry.getKey());
                     }
                 }
             }
@@ -275,7 +271,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             final String innerUserName = userName;
             final User innerUser = user;
             User powerUser = userManager.getUser(this.adminUser);
-            JetspeedException pe = (JetspeedException) JSSubject.doAsPrivileged(powerUser.getSubject(), new PrivilegedAction()
+            JetspeedException pe = (JetspeedException) JSSubject.doAsPrivileged(userManager.getSubject(powerUser), new PrivilegedAction()
                 {
                     public Object run() 
                     {
