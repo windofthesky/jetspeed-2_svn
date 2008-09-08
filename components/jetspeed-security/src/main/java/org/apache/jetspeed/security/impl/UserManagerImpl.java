@@ -26,6 +26,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticatedUser;
+import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
@@ -92,7 +93,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
         User user = newUser(username, mapped);
 		try
 		{
-            super.addPrincipal(user, null);
+            super.addPrincipal(user, null);           
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
@@ -131,6 +132,21 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
         return null;
 	}
 
+	public Subject getSubject(User user) throws SecurityException
+	{
+		if (credentialManager != null)
+		{
+			PasswordCredential pwc = getPasswordCredential(user);
+			if (pwc != null)
+			{
+				HashSet<Object> privateCred = new HashSet<Object>();
+				privateCred.add(pwc);
+				return getSubject(new AuthenticatedUserImpl(user, null, privateCred));
+			}
+		}
+		return getSubject(new AuthenticatedUserImpl(user, null, null));
+	}
+	
 	public Subject getSubject(AuthenticatedUser user) throws SecurityException
 	{
         Set<Principal> principals = new PrincipalsSet();
