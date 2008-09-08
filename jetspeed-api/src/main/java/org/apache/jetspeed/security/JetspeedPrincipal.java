@@ -16,13 +16,14 @@
  */
 package org.apache.jetspeed.security;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.Map;
 
 /**
  * @version $Id$
  */
-public interface JetspeedPrincipal
+public interface JetspeedPrincipal extends Principal
 {
     Long getId();
 
