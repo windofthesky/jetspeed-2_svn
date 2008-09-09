@@ -23,12 +23,16 @@
   <bean id="org.apache.jetspeed.security.LoginModuleProxy"
     class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl">
     <meta key="j2:cat" value="default,security" />
-    <!-- User Manager to construct JAAS subject/principals returned to container -->
+    <!-- Authentication Provider to authenticate a user -->
     <constructor-arg index="0">
+      <ref bean="org.apache.jetspeed.security.AuthenticationProvider" />
+    </constructor-arg>
+    <!-- User Manager to construct JAAS subject/principals returned to container -->
+    <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.security.UserManager" />
     </constructor-arg>
     <!-- Portal user role name used to identify authenticated users in web.xml security constraints -->
-    <constructor-arg index="1">
+    <constructor-arg index="2">
       <value>portal-user</value>
     </constructor-arg>
   </bean>

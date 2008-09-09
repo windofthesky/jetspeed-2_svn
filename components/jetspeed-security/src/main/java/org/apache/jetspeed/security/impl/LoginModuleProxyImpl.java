@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.LoginModuleProxy;
 import org.apache.jetspeed.security.UserManager;
 
@@ -28,9 +29,12 @@ public class LoginModuleProxyImpl implements LoginModuleProxy
     /** The {@link LoginModuleProxy}instance. */
     static LoginModuleProxy loginModuleProxy;
 
+    /** The {@link AuthenticationProvider}. */
+    protected AuthenticationProvider authProvider;
+
     /** The {@link UserManager}. */
     private UserManager userMgr;
-
+    
     /** The portal user role. */
     private String portalUserRole;
 
@@ -40,17 +44,21 @@ public class LoginModuleProxyImpl implements LoginModuleProxy
      * manager.
      * </p>
      * 
+     * @param authProvider The authentication provider
      * @param userMgr The user manager.
      * @param portalUserRole The portal user role shared by all portal users: used
      *                       in web.xml authorization to detect authenticated portal
      *                       users.
      *  
      */
-    public LoginModuleProxyImpl(UserManager userMgr, String portalUserRole)
+    public LoginModuleProxyImpl(AuthenticationProvider authProvider, UserManager userMgr, String portalUserRole)
     {
+        // The authentication provider
+        this.authProvider = authProvider;
+
         // The user manager.
         this.userMgr = userMgr;
-
+        
         // The portal user role
         this.portalUserRole = (portalUserRole != null ? portalUserRole : DEFAULT_PORTAL_USER_ROLE_NAME);
 
@@ -58,9 +66,9 @@ public class LoginModuleProxyImpl implements LoginModuleProxy
         // TODO Can we fix this?
         LoginModuleProxyImpl.loginModuleProxy = this;
     }
-    public LoginModuleProxyImpl(UserManager userMgr)
+    public LoginModuleProxyImpl(AuthenticationProvider authProvider, UserManager userMgr)
     {
-        this(userMgr, DEFAULT_PORTAL_USER_ROLE_NAME);
+        this(authProvider, userMgr, DEFAULT_PORTAL_USER_ROLE_NAME);
     }
 
     /**
@@ -71,6 +79,14 @@ public class LoginModuleProxyImpl implements LoginModuleProxy
         return this.userMgr;
     }
 
+    /**
+     * @see org.apache.jetspeed.security.LoginModuleProxy#getAuthenticationProvider()
+     */
+    public AuthenticationProvider getAuthenticationProvider()
+    {
+        return this.authProvider;
+    }
+    
     /**
      * @see org.apache.jetspeed.security.LoginModuleProxy#getPortalUserRole()
      */

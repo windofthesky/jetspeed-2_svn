@@ -29,12 +29,13 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.LoginModuleProxy;
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.AuthenticationProvider;
 
 /**
  * <p>LoginModule implementation that authenticates a user
@@ -74,9 +75,12 @@ public class DefaultLoginModule implements LoginModule
     /** <p>Options specified in the login Configuration for this particular LoginModule.</p> */
     protected Map options;
 
+    /** <p>The authentication provider service.</p> */
+    protected AuthenticationProvider authProvider;
+
     /** <p>InternalUserPrincipal manager service.</p> */
     protected UserManager ums;
-
+    
     /** The portal user role. */
     protected String portalUserRole;
 
@@ -92,6 +96,7 @@ public class DefaultLoginModule implements LoginModule
         LoginModuleProxy loginModuleProxy = LoginModuleProxyImpl.loginModuleProxy;
         if (loginModuleProxy != null)
         {
+            this.authProvider = loginModuleProxy.getAuthenticationProvider();
             this.ums = loginModuleProxy.getUserManager();
             this.portalUserRole = loginModuleProxy.getPortalUserRole();
         }
@@ -107,8 +112,9 @@ public class DefaultLoginModule implements LoginModule
      * @param userManager the user manager to use
      * @param portalUserRole the portal user role to use
      */
-    protected DefaultLoginModule (UserManager userManager, String portalUserRole) 
+    protected DefaultLoginModule (AuthenticationProvider authProvider, UserManager userManager, String portalUserRole) 
     {
+        this.authProvider = authProvider;
         this.ums = userManager;
         this.portalUserRole = portalUserRole;
         debug = false;
@@ -116,9 +122,9 @@ public class DefaultLoginModule implements LoginModule
         commitSuccess = false;
         username = null;
     }
-    protected DefaultLoginModule (UserManager userManager) 
+    protected DefaultLoginModule (AuthenticationProvider authProvider, UserManager userManager) 
     {
-        this(userManager, LoginModuleProxy.DEFAULT_PORTAL_USER_ROLE_NAME);
+        this(authProvider, userManager, LoginModuleProxy.DEFAULT_PORTAL_USER_ROLE_NAME);
     }
     
     /**
@@ -145,6 +151,7 @@ public class DefaultLoginModule implements LoginModule
             LoginModuleProxy loginModuleProxy = LoginModuleProxyImpl.loginModuleProxy;
             if (loginModuleProxy != null)
             {
+                this.authProvider = loginModuleProxy.getAuthenticationProvider();
                 this.ums = loginModuleProxy.getUserManager();
             }
         }        
@@ -208,16 +215,23 @@ public class DefaultLoginModule implements LoginModule
 
             ((PasswordCallback) callbacks[1]).clearPassword();
 
-            refreshProxy();            
-            success = ums.authenticate(this.username, password);
+            refreshProxy();
 
-            callbacks[0] = null;
-            callbacks[1] = null;
-            if (!success)
+            success = false;
+            
+            try
+            {
+                AuthenticatedUser authUser = authProvider.authenticate(this.username, password);
+            }
+            catch (SecurityException se)
             {
                 throw new FailedLoginException("Authentication failed: Password does not match");
             }
 
+            success = true;
+            callbacks[0] = null;
+            callbacks[1] = null;
+            
             return (true);
         }
         catch (LoginException ex)
@@ -265,7 +279,7 @@ public class DefaultLoginModule implements LoginModule
 
     protected List getUserRoles(Subject subject)
     {
-        return SecurityHelper.getPrincipals(subject,RolePrincipal.class);
+        return SecurityHelper.getPrincipals(subject, Role.class);
     }
     
     /**
@@ -281,6 +295,6 @@ public class DefaultLoginModule implements LoginModule
 
         // add portal user role: used in web.xml authorization to
         // detect authenticated portal users
-        subject.getPrincipals().add(new RolePrincipalImpl(portalUserRole));        
+        subject.getPrincipals().add(new RoleImpl(portalUserRole));        
     }
 }
