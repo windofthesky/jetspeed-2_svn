@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.security;
 
+import java.sql.Date;
+
 /**
  * <p>User simply extending JetspeedPrincipal interface.</p>
  * @version $Id
@@ -26,4 +28,5 @@ public interface User extends JetspeedPrincipal
      * the subsite path for a given user stored as a user attribute
      */
     final static String USER_INFO_SUBSITE = "subsite";
+    Date MAX_DATE = Date.valueOf("8099-01-01");
 }
