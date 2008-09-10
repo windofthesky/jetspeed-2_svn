@@ -202,6 +202,8 @@ public class KeyedMessage implements Serializable
      * @see #getKey()
      */
     private String               key;
+    
+    private String               scopedKey;
 
     /**
      * Optional message format arguments which can only be set using a derived KeyedMessage using the
@@ -226,9 +228,14 @@ public class KeyedMessage implements Serializable
      * @param source the KeyedMessage to derive this instance from
      * @param arguments this instance specific message format arguments
      */
-    protected KeyedMessage(KeyedMessage source, Object[] arguments)
+    protected KeyedMessage(KeyedMessage source, String scope, Object[] arguments)
     {
         this.key = source.getKey();
+        if (scope != null)
+        {
+            int split = source.containingClass.getName().length()+1;
+            this.scopedKey = key.substring(0,split)+"."+scope+"."+key.substring(split);
+        }
         this.message = source.message;
         this.resolved = source.resolved;
         this.containingClass = source.containingClass;
@@ -365,7 +372,20 @@ public class KeyedMessage implements Serializable
      */
     protected KeyedMessage create(KeyedMessage source, Object[] arguments)
     {
-        return new KeyedMessage(this, arguments);
+        return new KeyedMessage(source, null, arguments);
+    }
+
+    /**
+     * Extendable scoped KeyedMessage factory
+     * 
+     * @param source the source to copy from
+     * @param scope the optional scope key infix between the containing class name and the field name
+     * @param arguments the optional message format arguments
+     * @return copied instance with new arguments set
+     */
+    protected KeyedMessage createScoped(KeyedMessage source, String scope, Object[] arguments)
+    {
+        return new KeyedMessage(source, scope, arguments);
     }
 
     /**
@@ -378,11 +398,28 @@ public class KeyedMessage implements Serializable
      */
     public KeyedMessage create(Object[] arguments)
     {
-        return new KeyedMessage(this, arguments);
+        return new KeyedMessage(this, null, arguments);
     }
 
     /**
-     * Simplied version of {@link #create(Object[])}with only one argument
+     * Creates a derived scoped KeyedMessage from this instance to provide additional message format arguments. <br/>
+     * The new instance will be {@link #equals(Object)}to this instance with only different arguments. <br/><br/>
+     * To allow reusing of the original KeyedMessage message format translatable not only by language but also for 
+     * specific contexts, this method allows providing a "scope" message key infix for lookup of a subset of the
+     * localized message specific for the specified "scope".
+     * Note: the argument objects should be lightweight types and preferably Serializable instances
+     * 
+     * @param scope the optional scope key infix between the containing class name and the field name
+     * @param arguments The derived instance specific message format arguments
+     * @return derived KeyedMessage {@link #equals(Object) equal}to this with its own message format arguments
+     */
+    public KeyedMessage createScoped(String scope, Object[] arguments)
+    {
+        return new KeyedMessage(this, scope, arguments);
+    }
+
+    /**
+     * Simplied version of {@link #create(Object[])}with only one message argument
      * 
      * @param single message format argument
      * @see #create(Object[])
@@ -391,6 +428,19 @@ public class KeyedMessage implements Serializable
     public KeyedMessage create(Object o)
     {
         return create(new Object[] { o });
+    }
+
+    /**
+     * Simplied version of {@link #createScoped(String, Object[])}with only one message argument
+     * 
+     * @param scope the optional scope key infix between the containing class name and the field name
+     * @param single message format argument
+     * @see #createScoped(String,Object[])
+     * @return derived KeyedMessage {@link #equals(Object) equal}to this with its own message format argument
+     */
+    public KeyedMessage createScoped(String scope, Object o)
+    {
+        return createScoped(scope, new Object[] { o });
     }
 
     /**
@@ -406,6 +456,19 @@ public class KeyedMessage implements Serializable
     }
 
     /**
+     * Simplied version of {@link #createScoped(String, Object[])}with only two arguments
+     * 
+     * @param scope the optional scope key infix between the containing class name and the field name
+     * @param single message format argument
+     * @see #createScoped(String,Object[])
+     * @return derived KeyedMessage {@link #equals(Object) equal}to this with its own message format arguments
+     */
+    public KeyedMessage createScoped(String scope, Object o1, Object o2)
+    {
+        return createScoped(scope, new Object[] { o1, o2 });
+    }
+
+    /**
      * Simplied version of {@link #create(Object[])}with only three arguments
      * 
      * @param single message format argument
@@ -415,6 +478,19 @@ public class KeyedMessage implements Serializable
     public KeyedMessage create(Object o1, Object o2, Object o3)
     {
         return create(new Object[] { o1, o2, o3 });
+    }
+
+    /**
+     * Simplied version of {@link #createScoped(String, Object[])}with only three arguments
+     * 
+     * @param scope the optional scope key infix between the containing class name and the field name
+     * @param single message format argument
+     * @see #createScoped(String,Object[])
+     * @return derived KeyedMessage {@link #equals(Object) equal}to this with its own message format arguments
+     */
+    public KeyedMessage createScoped(String scope, Object o1, Object o2, Object o3)
+    {
+        return createScoped(scope, new Object[] { o1, o2, o3 });
     }
 
     /**
@@ -489,6 +565,17 @@ public class KeyedMessage implements Serializable
         String message = this.message;
         if (resolved && bundle != null)
         {
+            if (scopedKey != null)
+            {
+                try
+                {
+                    message = bundle.getString(scopedKey);
+                }
+                catch (RuntimeException e)
+                {
+                    // ignore: fallback to default non-scoped message
+                }
+            }
             try
             {
                 message = bundle.getString(key);
