@@ -194,7 +194,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesForUser(String username) throws SecurityException
     {        
-        return (List<Role>)super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
+        return (List<Role>)super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**
@@ -202,7 +202,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
-        return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF);
+        return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**
@@ -215,7 +215,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         {
             User user = userManager.getUser(username);
             Role role = getRole(roleName);
-            super.addAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, user, role);
+            super.addAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, user, role);
         } 
         catch (PrincipalNotFoundException e)
         {
@@ -241,7 +241,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         {
             User user = userManager.getUser(username);
             Role role = getRole(roleName);
-            super.removeAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, user, role);
+            super.removeAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, user, role);
         } 
         catch (PrincipalAssociationRequiredException e)
         {
@@ -268,7 +268,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         {
             Group group = groupManager.getGroup(groupName);
             Role role = getRole(roleName);
-            super.addAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, group, role);
+            super.addAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, group, role);
         } 
         catch (PrincipalNotFoundException e)
         {
@@ -294,7 +294,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         {
             Group group = groupManager.getGroup(groupName);
             Role role = getRole(roleName);
-            super.removeAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, group, role);
+            super.removeAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, group, role);
         } 
         catch (PrincipalAssociationRequiredException e)
         {

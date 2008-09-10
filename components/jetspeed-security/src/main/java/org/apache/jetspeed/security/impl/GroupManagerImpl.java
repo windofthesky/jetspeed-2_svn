@@ -189,7 +189,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public List<Group> getGroupsForUser(String username)
             throws SecurityException
     {
-        return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_PART_OF);
+        return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**
@@ -198,7 +198,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public List<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
-        return (List<Group>) super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF);
+        return (List<Group>) super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**
@@ -212,7 +212,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         {
             User user = userManager.getUser(username);
             Group group = getGroup(groupName);
-            super.addAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, user, group);
+            super.addAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, user, group);
         } 
         catch (PrincipalNotFoundException e)
         {
@@ -239,7 +239,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         {
             User user = userManager.getUser(username);
             Group group = getGroup(groupName);
-            super.removeAssociation(JetspeedPrincipalAssociationType.IS_PART_OF, user, group);
+            super.removeAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, user, group);
         } 
         catch (PrincipalAssociationRequiredException e)
         {

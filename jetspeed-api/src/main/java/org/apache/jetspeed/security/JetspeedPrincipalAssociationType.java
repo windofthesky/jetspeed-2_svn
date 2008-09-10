@@ -21,8 +21,38 @@ package org.apache.jetspeed.security;
  */
 public interface JetspeedPrincipalAssociationType
 {
-    String IS_A = "is_a"; // FROM node is a TO node.
-    String IS_PART_OF = "part_of"; // FROM node is part of TO node.
+    /**
+     * build-in supported @{link {@link #getAssociationName() associationName} "isMemberOf" 
+     */
+    String IS_MEMBER_OF_ASSOCIATION_TYPE_NAME = "isMemberOf"; // FROM node is member of TO node 
+
+    /**
+     * build-in supported @{link {@link #getAssociationName() associationName} "isChildOf"
+     */
+    String IS_CHILD_OF_ASSOCIATION_TYPE_NAME = "isChildOf"; // FROM node is member of TO node
+
+    /**
+     * build-in supported @{link {@link #getAssociationName() associationName} "isA"
+     * 
+     * This association type (between two equal {@link JetspeedPrincipalType}s) represents
+     * a Generalizing Hierarchical relationship where from <em>implies</em> to.
+     */
+    String IS_A_ASSOCIATION_TYPE_NAME = "isA"; // FROM node is a TO node: FROM node implies TO node
+
+    /**
+     * build-in supported @{link {@link #getAssociationName() associationName} "isPartOf"
+     * 
+     * This association type (between two equal {@link JetspeedPrincipalType}s) represents
+     * a Aggregating Hierarchical relationship where to <em>implies</em> from.
+     */
+    String IS_PART_OF_ASSOCIATION_TYPE_NAME = "isPartOf"; // FROM node is part of TO node: TO node implies FROM node
+
+    /**
+     * build-in supported @{link {@link #getAssociationName() associationName} "belongsTo"
+     * 
+     * This association type represents a (possibly required) constraint where from may only belong to one to
+     */
+    String BELONGS_TO_ASSOCIATION_TYPE_NAME = "belongsTo"; // FROM node is member of TO node: FROM node may only belong to one TO node
     
     String getAssociationName();
 

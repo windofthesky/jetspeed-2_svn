@@ -24,6 +24,13 @@ package org.apache.jetspeed.security;
  */
 public interface JetspeedPrincipalType
 {
+    /** build-in supported JetspeedPrincipalType "group" */
+    String GROUP_TYPE_NAME = "group";
+    /** build-in supported JetspeedPrincipalType "role" */
+    String ROLE_TYPE_NAME = "role";
+    /** build-in supported JetspeedPrincipalType "user" */
+    String USER_TYPE_NAME = "user";
+    
     String getName();
 
     String getClassName();

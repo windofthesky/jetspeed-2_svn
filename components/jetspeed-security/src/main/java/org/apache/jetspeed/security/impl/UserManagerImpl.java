@@ -214,12 +214,12 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public List<User> getUsersInGroup(String groupFullPathName) throws SecurityException
 	{
-		return (List<User>) super.getAssociatedFrom(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_PART_OF);
+		return (List<User>) super.getAssociatedFrom(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
 	}
 
 	public List<User> getUsersInRole(String roleFullPathName) throws SecurityException
 	{
-		return (List<User>) super.getAssociatedFrom(roleFullPathName, roleType, JetspeedPrincipalAssociationType.IS_PART_OF);
+		return (List<User>) super.getAssociatedFrom(roleFullPathName, roleType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
 	}
 
 	public List<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException
