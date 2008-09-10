@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.jetspeed.security.SecurityAttributeType;
@@ -30,16 +32,40 @@ public class SecurityAttributeTypesImpl implements SecurityAttributeTypes
 {
 
     private Map<String,SecurityAttributeType> securityAttributeTypes = new HashMap<String, SecurityAttributeType>();
+    private Map<String,Map<String,SecurityAttributeType>> categoriesMap = new HashMap<String,Map<String,SecurityAttributeType>>();
     private boolean readOnly;
     private boolean extendable;
 	
-	public SecurityAttributeTypesImpl(boolean extendable, boolean readOnly, Map<String, SecurityAttributeType> securityAttributeTypes)
+	public SecurityAttributeTypesImpl(boolean extendable, boolean readOnly, List<SecurityAttributeType> securityAttributeTypes)
 	{
 		this.extendable = extendable;
 		this.readOnly = readOnly;
-		this.securityAttributeTypes = securityAttributeTypes;
+		for (SecurityAttributeType type : securityAttributeTypes)
+		{
+		    if (this.securityAttributeTypes.put(type.getName(), type) != null)
+		    {
+		        throw new IllegalArgumentException("Duplicate SecurityAttributeType name: "+type.getName());
+		    }
+		    Map<String,SecurityAttributeType> categoryMap = categoriesMap.get(type.getCategory());
+		    if (categoryMap == null)
+		    {
+		        categoryMap = new HashMap<String,SecurityAttributeType>();
+		        categoriesMap.put(type.getCategory(), categoryMap);
+		    }
+		    categoryMap.put(type.getName(), type);
+		}
+		for (Map.Entry<String, Map<String, SecurityAttributeType>> entry : categoriesMap.entrySet())
+		{
+		    entry.setValue(Collections.unmodifiableMap(entry.getValue()));
+		}
+        this.securityAttributeTypes = Collections.unmodifiableMap(this.securityAttributeTypes);
 	}
 
+    public SecurityAttributeTypesImpl(List<SecurityAttributeType> securityAttributeTypes)
+    {
+        this(true, false, securityAttributeTypes);
+    }
+    
 	public Map<String, SecurityAttributeType> getAttributeTypeMap()
 	{	
 		return securityAttributeTypes;
@@ -47,8 +73,12 @@ public class SecurityAttributeTypesImpl implements SecurityAttributeTypes
 
 	public Map<String, SecurityAttributeType> getAttributeTypeMap(String category)
 	{
-		// TODO Auto-generated method stub
-		return null;
+	    Map<String, SecurityAttributeType> map = categoriesMap.get(category);
+	    if (map == null)
+	    {
+	        return Collections.EMPTY_MAP;
+	    }
+	    return map;
 	}
 
 	public boolean isExtendable()
