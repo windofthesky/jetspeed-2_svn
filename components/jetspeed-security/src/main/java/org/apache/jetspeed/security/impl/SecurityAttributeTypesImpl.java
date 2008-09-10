@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ import org.apache.jetspeed.security.SecurityAttributeTypes;
 public class SecurityAttributeTypesImpl implements SecurityAttributeTypes
 {
 
-    private Map<String,SecurityAttributeType> securityAttributeTypes = new HashMap<String, SecurityAttributeType>();
+    private Map<String,SecurityAttributeType> securityAttributeTypes = new LinkedHashMap<String, SecurityAttributeType>();
     private Map<String,Map<String,SecurityAttributeType>> categoriesMap = new HashMap<String,Map<String,SecurityAttributeType>>();
     private boolean readOnly;
     private boolean extendable;
@@ -49,7 +50,7 @@ public class SecurityAttributeTypesImpl implements SecurityAttributeTypes
 		    Map<String,SecurityAttributeType> categoryMap = categoriesMap.get(type.getCategory());
 		    if (categoryMap == null)
 		    {
-		        categoryMap = new HashMap<String,SecurityAttributeType>();
+		        categoryMap = new LinkedHashMap<String,SecurityAttributeType>();
 		        categoriesMap.put(type.getCategory(), categoryMap);
 		    }
 		    categoryMap.put(type.getName(), type);
