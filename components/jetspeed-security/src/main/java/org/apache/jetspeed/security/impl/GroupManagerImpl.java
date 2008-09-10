@@ -256,6 +256,11 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         return (List<Group>) super.getPrincipals(nameFilter);
     }
     
+    public List<String> getGroupNames(String nameFilter) throws SecurityException
+    {
+        return getPrincipalNames(nameFilter);
+    }
+
     /**
      * @see org.apache.jetspeed.security.GroupManager#updateGroup(org.apache.jetspeed.security.Group)
      */

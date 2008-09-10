@@ -306,6 +306,11 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         return (List<Role>)super.getPrincipals(nameFilter);
     }
 
+    public List<String> getRoleNames(String nameFilter) throws SecurityException
+    {
+        return getPrincipalNames(nameFilter);
+    }
+
     /** 
      * @see org.apache.jetspeed.security.RoleManager#updateRole(org.apache.jetspeed.security.Role)
      */

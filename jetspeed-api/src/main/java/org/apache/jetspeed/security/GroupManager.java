@@ -86,7 +86,7 @@ public interface GroupManager
 
     /**
      * <p>
-     * Retrieves a {@link Group} list of all the groups associated to a specific
+     * Retrieves a detached and modifiable {@link Group} list of all the groups associated to a specific
      * user.
      * 
      * @param username The user name.
@@ -97,7 +97,7 @@ public interface GroupManager
 
     /**
      * <p>
-     * Retrieves {@link Group} list of all the groups in a specific role.
+     * Retrieves a detached and modifiable {@link Group} list of all the groups in a specific role.
      * </p>
      * 
      * @param roleName The role name
@@ -141,7 +141,7 @@ public interface GroupManager
     boolean isUserInGroup(String username, String groupName) throws SecurityException;
 
     /**
-     * Retrieves a {@link Group} list matching the corresponding
+     * Retrieves a detached and modifiable {@link Group} list matching the corresponding
      * group name filter.
      * </p>
      * 
@@ -150,6 +150,17 @@ public interface GroupManager
      */
    List<Group> getGroups(String nameFilter) throws SecurityException;
     
+   /**
+    * <p>
+    * Retrieves a detached and modifiable List of group names, finding groups matching the corresponding
+    * group name filter.
+    * </p>
+    * 
+    * @param nameFilter The filter used to retrieve matching groups.
+    * @return A list of group names
+    */
+   List<String> getGroupNames(String nameFilter) throws SecurityException;
+
    /**
     * Updates a group and all its attributes
     * @param group

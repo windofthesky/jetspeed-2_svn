@@ -76,7 +76,7 @@ public interface RoleManager
     Role getRole(String roleName) throws SecurityException;
 
     /**
-     * <p>Retrieves a {@link Role} list of all the roles
+     * <p>Retrieves a detached and modifiable {@link Role} list of all the roles
      * associated to a specific user.</p>
      * @param username The user name.
      * @return A List of {@link Role}.
@@ -85,7 +85,7 @@ public interface RoleManager
     List<Role> getRolesForUser(String username) throws SecurityException;
 
     /**
-     * <p>Retrieves a {@link Role} list of all the roles
+     * <p>Retrieves a detached and modifiable {@link Role} list of all the roles
      * associated to a specific group.</p>
      * @param groupName The group name
      * @return A Collection of {@link Role}.
@@ -144,7 +144,7 @@ public interface RoleManager
     boolean isGroupInRole(String groupName, String roleName) throws SecurityException;
 
     /**
-     * Retrieves a {@link Role} list matching the corresponding
+     * Retrieves a detached and modifiable {@link Role} list matching the corresponding
      * role name filter.
      * </p>
      * 
@@ -153,6 +153,17 @@ public interface RoleManager
      */
     List<Role> getRoles(String nameFilter) throws SecurityException;
     
+    /**
+     * <p>
+     * Retrieves a detached and modifiable List of role names, finding roles matching the corresponding
+     * role name filter.
+     * </p>
+     * 
+     * @param nameFilter The filter used to retrieve matching roles.
+     * @return A list of role names
+     */
+    List<String> getRoleNames(String nameFilter) throws SecurityException;
+
     /**
      * Updates a role and all its attributes
      * @param role

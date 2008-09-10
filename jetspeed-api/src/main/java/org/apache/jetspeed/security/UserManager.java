@@ -135,7 +135,7 @@ public interface UserManager
 
     /**
      * <p>
-     * Retrieves a {@link User} list matching the corresponding
+     * Retrieves a detached and modifiable {@link User} list matching the corresponding
      * user name filter.
      * </p>
      * 
@@ -146,7 +146,7 @@ public interface UserManager
 
     /**
      * <p>
-     * Retrieves a List user names, finding users matching the corresponding
+     * Retrieves a a detached and modifiable List user names, finding users matching the corresponding
      * user name filter.
      * </p>
      * 
@@ -157,7 +157,7 @@ public interface UserManager
 
     /**
      * <p>
-     * Retrieves a {@link User} list of all the users in a specific role.
+     * Retrieves a a detached and modifiable {@link User} list of all the users in a specific role.
      * </p>
      * 
      * @param roleName The role name
@@ -167,7 +167,7 @@ public interface UserManager
     List<User> getUsersInRole(String roleName) throws SecurityException;
     
     /**
-     * <p>Retrieves a {@link User} list of all the users in a specific group.</p>
+     * <p>Retrieves a a detached and modifiable {@link User} list of all the users in a specific group.</p>
      * @param groupName The group name
      * @return A list of {@link User}.
      * @throws Throws security exception if the group does not exist.
@@ -182,7 +182,7 @@ public interface UserManager
     void updateUser(User user) throws SecurityException;
     
     /**
-     * <p>Retrieves a {@link User} list of all the users having a specific value for a specific attribute
+     * <p>Retrieves a a detached and modifiable {@link User} list of all the users having a specific value for a specific attribute
      * @param attributeName
      * @param attributeValue
      * @return a List of users
