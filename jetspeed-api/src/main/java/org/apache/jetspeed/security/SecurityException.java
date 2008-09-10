@@ -48,10 +48,10 @@ public class SecurityException extends JetspeedException
     public static final KeyedMessage DEPENDENT_PRINCIPAL_EXISTS = new KeyedMessage("The principal {0} has one or more dependents.");
     
     /** <p>Principal association required exception message.</p> */
-    public static final KeyedMessage PRINCIPAL_ASSOCIATION_REQUIRED = new KeyedMessage("The pricipal association to {0} is required.");
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_REQUIRED = new KeyedMessage("The principal association to {0} is required.");
     
     /** <p>Principal association is not allowed exception message.</p> */
-    public static final KeyedMessage PRINCIPAL_ASSOCIATION_NOT_ALLOWED = new KeyedMessage("The pricipal association to {0} is not allowed.");
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_NOT_ALLOWED = new KeyedMessage("The principal association to {0} is not allowed.");
 
     /** <p>Principal association is not supported exception message.</p> */
     public static final KeyedMessage PRINCIPAL_ASSOCIATION_UNSUPPORTED = new KeyedMessage("The principal association to {0} is not supported.");
