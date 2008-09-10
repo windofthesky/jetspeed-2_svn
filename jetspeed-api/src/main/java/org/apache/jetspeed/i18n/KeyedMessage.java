@@ -173,6 +173,8 @@ import org.apache.jetspeed.security.SecurityException; // for javadoc ref
  */
 public class KeyedMessage implements Serializable
 {
+    private static final long serialVersionUID = -2741118913698034852L;
+
     /**
      * Static String Field name searched for in the class defining a KeyedMessage containing the default resource bundle
      * to use for translation. <br/><em>Note: this Field is looked up using definingClass.getField thus it may also be
@@ -188,7 +190,7 @@ public class KeyedMessage implements Serializable
     /**
      * Map caching default resource bundle names keyed on containingClass
      */
-    private static final HashMap resourceNameMap                 = new HashMap();
+    private static final HashMap<Class<?>, String> resourceNameMap                 = new HashMap<Class<?>, String>();
 
     /**
      * Default message used when key couldn't be looked up in the default or a specified resource bundle
@@ -214,7 +216,7 @@ public class KeyedMessage implements Serializable
     /**
      * The class in which this instance is defined as a static Field.
      */
-    private Class                containingClass;
+    private Class<?>             containingClass;
 
     /**
      * Indicates if this instance could be {@link #resolve() resolved}.
@@ -277,7 +279,7 @@ public class KeyedMessage implements Serializable
     {
         synchronized (resourceNameMap)
         {
-            return (String) resourceNameMap.get(containingClass);
+            return resourceNameMap.get(containingClass);
         }
     }
 
