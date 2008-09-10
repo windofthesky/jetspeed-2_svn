@@ -157,11 +157,13 @@
             <artifactId>jetspeed-search</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Commenting out SSO module for now
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-sso</artifactId>
             <scope>test</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-profiler</artifactId>
