@@ -16,13 +16,12 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
 import java.util.Collection;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.impl.RoleImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -112,7 +111,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser1", "password");
+            ums.addUser("anonuser1");
             rms.addRole("testusertorole1");
             rms.addRole("testusertorole1.role1");
             rms.addRole("testusertorole1.role2");
@@ -126,9 +125,8 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             rms.addRoleToUser("anonuser1", "testusertorole1.role1");
 
-            Collection principals = ums.getUser("anonuser1").getSubject().getPrincipals();
-            assertTrue("anonuser1 should contain testusertorole1.role1", principals.contains(new RolePrincipalImpl(
-                    "testusertorole1.role1")));
+            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
+            assertTrue("anonuser1 should contain testusertorole1.role1", principals.contains(new RoleImpl("testusertorole1.role1")));
         }
         catch (SecurityException sex)
         {
@@ -138,9 +136,8 @@ public class TestRoleManager extends AbstractSecurityTestcase
         try
         {
             rms.addRoleToUser("anonuser1", "testusertorole1.role2");
-            Collection principals = ums.getUser("anonuser1").getSubject().getPrincipals();
-            assertTrue("anonuser1 should contain testusertorole1.role2", principals.contains(new RolePrincipalImpl(
-                    "testusertorole1.role2")));
+            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
+            assertTrue("anonuser1 should contain testusertorole1.role2", principals.contains(new RoleImpl("testusertorole1.role2")));
         }
         catch (SecurityException sex)
         {
@@ -187,7 +184,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser2", "password");
+            ums.addUser("anonuser2");
             rms.addRole("testrole1");
             rms.addRole("testrole1.role1");
             rms.addRole("testrole1.role2");
@@ -206,12 +203,11 @@ public class TestRoleManager extends AbstractSecurityTestcase
         try
         {
             rms.removeRole("testrole1.role1");
-            Collection principals = ums.getUser("anonuser2").getSubject().getPrincipals();
+            Collection principals = ums.getSubject(ums.getUser("anonuser2")).getPrincipals();
             // because of hierarchical roles with generalization strategy.
             assertEquals("principal size should be == 3 after removing testrole1.role1, for principals: "
                     + principals.toString(), 3, principals.size());
-            assertFalse("anonuser2 should not contain testrole1.role1", principals.contains(new RolePrincipalImpl(
-                    "testrole1.role1")));
+            assertFalse("anonuser2 should not contain testrole1.role1", principals.contains(new RoleImpl("testrole1.role1")));
             // Make sure that the children are removed as well.
             rms.removeRole("testrole2");
             boolean roleExists = rms.roleExists("testrole2");
@@ -285,7 +281,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser3", "password");
+            ums.addUser("anonuser3");
             rms.addRole("testuserrolemapping");
             rms.addRole("testuserrolemapping.role1");
             rms.addRole("testuserrolemapping2.role2");
@@ -376,7 +372,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser5", "password");
+            ums.addUser("anonuser5");
             rms.addRole("testrole3");
             rms.addRoleToUser("anonuser5", "testrole3");
         }
@@ -418,7 +414,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser4", "password");
+            ums.addUser("anonuser4");
             rms.addRole("testuserrolemapping");
             rms.addRoleToUser("anonuser4", "testuserrolemapping");
         }
@@ -552,7 +548,7 @@ public class TestRoleManager extends AbstractSecurityTestcase
             System.out.println("Role = " + role.getName());
             roleCount++;
         }
-        ums.addUser("notme", "one-pw");
+        ums.addUser("notme");
         gms.addGroup("g1");
         rms.addRole("r1");
         rms.addRole("r2");

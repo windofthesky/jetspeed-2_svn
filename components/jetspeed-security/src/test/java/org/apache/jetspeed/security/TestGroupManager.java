@@ -22,7 +22,7 @@ import java.util.Collection;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
+import org.apache.jetspeed.security.impl.GroupImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -114,7 +114,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser1", "password");
+            ums.addUser("anonuser1");
             gms.addGroup("testusertogroup1");
             gms.addGroup("testusertogroup1.group1");
             gms.addGroup("testusertogroup1.group2");
@@ -127,9 +127,8 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             gms.addUserToGroup("anonuser1", "testusertogroup1.group1");
-            Collection principals = ums.getUser("anonuser1").getSubject().getPrincipals();
-            assertTrue("anonuser1 should contain testusertogroup1.group1", principals.contains(new GroupPrincipalImpl(
-                    "testusertogroup1.group1")));
+            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
+            assertTrue("anonuser1 should contain testusertogroup1.group1", principals.contains(new GroupImpl("testusertogroup1.group1")));
         }
         catch (SecurityException sex)
         {
@@ -139,9 +138,8 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             gms.addUserToGroup("anonuser1", "testusertogroup1.group2");
-            Collection principals = ums.getUser("anonuser1").getSubject().getPrincipals();
-            assertTrue("anonuser1 should contain testusertogroup1.group2", principals.contains(new GroupPrincipalImpl(
-                    "testusertogroup1.group2")));
+            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
+            assertTrue("anonuser1 should contain testusertogroup1.group2", principals.contains(new GroupImpl("testusertogroup1.group2")));
         }
         catch (SecurityException sex)
         {
@@ -188,7 +186,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser2", "password");
+            ums.addUser("anonuser2");
             gms.addGroup("testgroup1");
             gms.addGroup("testgroup1.group1");
             gms.addGroup("testgroup1.group2");
@@ -206,15 +204,14 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             gms.removeGroup("testgroup1.group1");
-            Collection principals = ums.getUser("anonuser2").getSubject().getPrincipals();
+            Collection principals = ums.getSubject(ums.getUser("anonuser2")).getPrincipals();
             // because of hierarchical groups with generalization strategy as default. Was 5 groups + 1 user, should now be 5
             // (4 groups + 1 user).
             assertEquals(
                 "principal size should be == 3 after removing testgroup1.group1, for principals: " + principals.toString(),
                 3,
                 principals.size());
-            assertFalse("anonuser2 should not contain testgroup1.group1", principals.contains(new GroupPrincipalImpl(
-                    "testgroup1.group1")));
+            assertFalse("anonuser2 should not contain testgroup1.group1", principals.contains(new GroupImpl("testgroup1.group1")));
         }
         catch (SecurityException sex)
         {
@@ -285,7 +282,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser2", "password");
+            ums.addUser("anonuser2");
             gms.addGroup("testgroup1");
             gms.addGroup("testgroup1.group1");
             gms.addGroup("testgroup1.group2");
@@ -379,7 +376,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser4", "password");
+            ums.addUser("anonuser4");
             gms.addGroup("testgroup1");
             gms.addGroup("testgroup1.group1");
             gms.addUserToGroup("anonuser4", "testgroup1.group1");
@@ -422,7 +419,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser3", "password");
+            ums.addUser("anonuser3");
             gms.addGroup("testgroup1");
             gms.addGroup("testgroup1.group1");
             gms.addUserToGroup("anonuser3", "testgroup1.group1");
@@ -472,7 +469,7 @@ public class TestGroupManager extends AbstractSecurityTestcase
             groupCount++;
         }
 
-    	ums.addUser("notme", "one-pw");
+    	ums.addUser("notme");
         gms.addGroup("g1");
         gms.addGroup("g2");
         gms.addGroup("g3");

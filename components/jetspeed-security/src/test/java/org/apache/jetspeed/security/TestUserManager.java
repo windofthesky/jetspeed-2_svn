@@ -19,7 +19,6 @@ package org.apache.jetspeed.security;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.security.auth.Subject;
@@ -74,7 +73,7 @@ public class TestUserManager extends AbstractSecurityTestcase
     {
         try
         {
-            ums.addUser("anon", "password");
+            ums.addUser("anon");
         }
         catch (SecurityException sex)
         {
@@ -83,7 +82,7 @@ public class TestUserManager extends AbstractSecurityTestcase
 
         try
         {
-            ums.addUser("anon", "password");
+            ums.addUser("anon");
             assertTrue("user should already exists. exception not thrown.", false);
         }
         catch (SecurityException sex)
@@ -124,7 +123,7 @@ public class TestUserManager extends AbstractSecurityTestcase
         User user = null;
         try
         {
-            ums.addUser("test", "password");
+            ums.addUser("test");
             user = ums.getUser("test");
         }
         catch (SecurityException sex)
@@ -132,21 +131,22 @@ public class TestUserManager extends AbstractSecurityTestcase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         assertNotNull("user is null", user);
-        // Test the User JSSubject
-        Subject subject = user.getSubject();
-        assertNotNull("subject is null", subject);
-        // Asset user principal.
-        Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-        assertNotNull("user principal is null", userPrincipal);
-        assertEquals("expected user principal name == test", "test", userPrincipal.getName());
         
-        // Test if roles are inheritable to a user via groups
         try
         {
+            // Test the User JSSubject
+            Subject subject = ums.getSubject(user);
+            assertNotNull("subject is null", subject);
+            // Asset user principal.
+            Principal userPrincipal = (Principal) user;
+            assertEquals("expected user principal name == test", "test", userPrincipal.getName());
+
+            // Test if roles are inheritable to a user via groups
+            
             // If user 'inheritedUser' belongs to group 'inheritingGroup' and group 'group' has role 'assignedRole', then
             // the role 'assignedRole' can be inherited to the user 'inheritedUser' via group 'inheritingGroup'.
             
-            ums.addUser("inheritedUser", "password");
+            ums.addUser("inheritedUser");
             gms.addGroup("inheritingGroup");
             gms.addUserToGroup("inheritedUser", "inheritingGroup");
             rms.addRole("assignedRole");
@@ -154,9 +154,8 @@ public class TestUserManager extends AbstractSecurityTestcase
             User testUser = ums.getUser("inheritedUser");
 
             List<String> principalNames = new ArrayList<String>();
-            for (Iterator it = testUser.getSubject().getPrincipals().iterator(); it.hasNext(); )
+            for (Principal p : ums.getSubject(testUser).getPrincipals())
             {
-                Principal p = (Principal) it.next();
                 principalNames.add(p.getName());
             }
             
@@ -221,8 +220,8 @@ public class TestUserManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser3", "password");
-            ums.addUser("anonuser4", "password");
+            ums.addUser("anonuser3");
+            ums.addUser("anonuser4");
             rms.addRole("testuserrolemapping");
             rms.addRole("testuserrolemapping.role1");
             rms.addRole("testuserrolemapping.role2");
@@ -269,9 +268,9 @@ public class TestUserManager extends AbstractSecurityTestcase
         // Init test.
         try
         {
-            ums.addUser("anonuser2", "password");
-            ums.addUser("anonuser3", "password");
-            ums.addUser("anonuser4", "password");
+            ums.addUser("anonuser2");
+            ums.addUser("anonuser3");
+            ums.addUser("anonuser4");
             gms.addGroup("testgroup1");
             gms.addGroup("testgroup1.group1");
             gms.addUserToGroup("anonuser2", "testgroup1.group1");
@@ -316,8 +315,14 @@ public class TestUserManager extends AbstractSecurityTestcase
     {
         try
         {
-            ums.addUser("anon", "password");
-            ums.setPassword("anon", "password", "newpassword");
+            User user = ums.addUser("anon");
+            PasswordCredential pwc = ums.getPasswordCredential(user);
+            pwc.setPassword(null, "password");
+            ums.storePasswordCredential(pwc);
+
+            pwc = ums.getPasswordCredential(user);
+            pwc.setPassword("password", "newpassword");
+            ums.storePasswordCredential(pwc);
 
             LoginContext loginContext = null;
             // Test that the user can log in with the new password.
@@ -348,17 +353,15 @@ public class TestUserManager extends AbstractSecurityTestcase
      */
     public void testGetUsers() throws Exception
     {
-        ums.addUser("one", "one-pw");
-        ums.addUser("two", "two-pw");
-        ums.addUser("three", "three-pw");
+        ums.addUser("one");
+        ums.addUser("two");
+        ums.addUser("three");
         int count = 0;
         Collection<User> users = ums.getUsers("");
         for (User user : users)
         {
-            Iterator principals = user.getSubject().getPrincipals().iterator();
-            while (principals.hasNext())
+            for (Principal principal : ums.getSubject(user).getPrincipals())
             {
-                Principal principal = (Principal) principals.next();
                 System.out.println("principal = " + principal.getName());
                 if (principal.getName().equals("one"))
                 {
