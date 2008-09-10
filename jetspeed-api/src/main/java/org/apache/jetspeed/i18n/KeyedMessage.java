@@ -421,7 +421,7 @@ public class KeyedMessage implements Serializable
     }
 
     /**
-     * Simplied version of {@link #create(Object[])}with only one message argument
+     * Simplified version of {@link #create(Object[])}with only one message argument
      * 
      * @param single message format argument
      * @see #create(Object[])
@@ -433,7 +433,19 @@ public class KeyedMessage implements Serializable
     }
 
     /**
-     * Simplied version of {@link #createScoped(String, Object[])}with only one message argument
+     * Simplified version of {@link #createScoped(String, Object[])} without message arguments
+     * 
+     * @param scope the optional scope key infix between the containing class name and the field name
+     * @see #createScoped(String,Object[])
+     * @return derived KeyedMessage {@link #equals(Object) equal}to this with its own message format argument
+     */
+    public KeyedMessage createScoped(String scope)
+    {
+        return createScoped(scope, (Object []) null);
+    }
+
+    /**
+     * Simplified version of {@link #createScoped(String, Object[])}with only one message argument
      * 
      * @param scope the optional scope key infix between the containing class name and the field name
      * @param single message format argument
@@ -446,7 +458,7 @@ public class KeyedMessage implements Serializable
     }
 
     /**
-     * Simplied version of {@link #create(Object[])}with only two arguments
+     * Simplified version of {@link #create(Object[])}with only two arguments
      * 
      * @param single message format argument
      * @see #create(Object[])
@@ -458,7 +470,7 @@ public class KeyedMessage implements Serializable
     }
 
     /**
-     * Simplied version of {@link #createScoped(String, Object[])}with only two arguments
+     * Simplified version of {@link #createScoped(String, Object[])}with only two arguments
      * 
      * @param scope the optional scope key infix between the containing class name and the field name
      * @param single message format argument
@@ -471,7 +483,7 @@ public class KeyedMessage implements Serializable
     }
 
     /**
-     * Simplied version of {@link #create(Object[])}with only three arguments
+     * Simplified version of {@link #create(Object[])}with only three arguments
      * 
      * @param single message format argument
      * @see #create(Object[])
@@ -483,7 +495,7 @@ public class KeyedMessage implements Serializable
     }
 
     /**
-     * Simplied version of {@link #createScoped(String, Object[])}with only three arguments
+     * Simplified version of {@link #createScoped(String, Object[])}with only three arguments
      * 
      * @param scope the optional scope key infix between the containing class name and the field name
      * @param single message format argument

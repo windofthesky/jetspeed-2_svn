@@ -21,6 +21,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
@@ -32,6 +33,7 @@ import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.Role;
@@ -125,23 +127,23 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         }
         catch (PrincipalAlreadyExistsException e)
         {
-            throw new SecurityException(SecurityException.ROLE_ALREADY_EXISTS.create(roleName)); 
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
         catch (PrincipalAssociationRequiredException e)
         {
-            throw new SecurityException(SecurityException.UNEXPECTED.create("RoleManager.addRole", "add", e.getMessage()));
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         } 
         catch (PrincipalAssociationNotAllowedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
         catch (PrincipalAssociationUnsupportedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
         catch (PrincipalNotFoundException e)
         {
-            // cannot occurr as no associations are provided with addPrincipal
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
         
         if (log.isDebugEnabled())
@@ -158,10 +160,18 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         try
         {
             super.removePrincipal(roleName);
-        } 
-        catch (Exception e)
+        }
+        catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
+        }
+        catch (PrincipalNotRemovableException e)
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
+        }
+        catch (DependentPrincipalException e)
+        {
+            throw new SecurityException(SecurityException.DEPENDENT_PRINCIPAL_EXISTS.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
     }
 
@@ -182,8 +192,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         
         if (null == role) 
         { 
-            throw new SecurityException(
-                SecurityException.ROLE_DOES_NOT_EXIST.create(roleName)); 
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName)); 
         }
 
         return role;
@@ -219,15 +228,15 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         } 
         catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         } 
         catch (PrincipalAssociationNotAllowedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
         catch (PrincipalAssociationUnsupportedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
     }
 
@@ -245,7 +254,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         } 
         catch (PrincipalAssociationRequiredException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
     }
 
@@ -272,15 +281,15 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         } 
         catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         } 
         catch (PrincipalAssociationNotAllowedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
         catch (PrincipalAssociationUnsupportedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
     }
 
@@ -298,7 +307,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         } 
         catch (PrincipalAssociationRequiredException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
         }
     }
 
@@ -335,15 +344,15 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         }
         catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(SecurityException.ROLE_DOES_NOT_EXIST.create(role.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, role.getName()));
         }
         catch (PrincipalUpdateException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, role.getName()), e);
         } 
         catch (PrincipalReadOnlyException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, role.getName()));
         }
     }
 

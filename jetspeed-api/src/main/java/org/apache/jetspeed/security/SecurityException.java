@@ -32,6 +32,30 @@ public class SecurityException extends JetspeedException
     /** <p>Principal does not exist exception message.</p> */
     public static final KeyedMessage PRINCIPAL_DOES_NOT_EXIST = new KeyedMessage("The principal {0} does not exist.");
 
+    /** <p>Principal already exists exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ALREADY_EXISTS = new KeyedMessage("The principal {0} already exists.");
+    
+    /** <p>Principal is read only exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_IS_READ_ONLY = new KeyedMessage("The principal {0} is read-only.");
+
+    /** <p>Principal updating failed exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_UPDATE_FAILURE = new KeyedMessage("Failed to update principal {0}.");
+    
+    /** <p>Principal is not removable exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_NOT_REMOVABLE = new KeyedMessage("The principal {0} cannot be removed.");
+    
+    /** <p>Principal has one or more dependents. */
+    public static final KeyedMessage DEPENDENT_PRINCIPAL_EXISTS = new KeyedMessage("The principal {0} has one or more dependents.");
+    
+    /** <p>Principal association required exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_REQUIRED = new KeyedMessage("The pricipal association to {0} is required.");
+    
+    /** <p>Principal association is not allowed exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_NOT_ALLOWED = new KeyedMessage("The pricipal association to {0} is not allowed.");
+
+    /** <p>Principal association is not supported exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_UNSUPPORTED = new KeyedMessage("The principal association to {0} is not supported.");
+    
     /** <p>Permission does not exist exception message.</p> */
     public static final KeyedMessage PERMISSION_DOES_NOT_EXIST = new KeyedMessage("The permission {0} does not exist.");
     

@@ -98,24 +98,23 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
-			throw new SecurityException(SecurityException.USER_ALREADY_EXISTS.create(username));
+			throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
 		}
 		catch (PrincipalAssociationRequiredException e)
 		{
-			// TODO: add SecurityException type for this?
-			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
+			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
 		}
 		catch (PrincipalAssociationNotAllowedException e)
 		{
-			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
+			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
 		}		
         catch (PrincipalAssociationUnsupportedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
         }
         catch (PrincipalNotFoundException e)
         {
-            // cannot occurr as no associations are provided with addPrincipal
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
         }
 		if (log.isDebugEnabled())
 			log.debug("Added user: " + username);
@@ -256,15 +255,15 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		}
 		catch (PrincipalNotFoundException pnfe)
 		{
-			throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(username));
+			throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
 		}
 		catch (PrincipalNotRemovableException pnre)
 		{
-			throw new SecurityException(SecurityException.UNEXPECTED.create(username));
+			throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
 		}
 		catch (DependentPrincipalException dpe)
 		{
-			throw new SecurityException(SecurityException.UNEXPECTED.create(username));
+			throw new SecurityException(SecurityException.DEPENDENT_PRINCIPAL_EXISTS.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
 		}
 	}
 
@@ -285,15 +284,15 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		}
 		catch (PrincipalNotFoundException pnfe)
 		{
-			throw new SecurityException(SecurityException.USER_DOES_NOT_EXIST.create(user.getName()));
+			throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()));
 		}
 		catch (PrincipalUpdateException pue)
 		{
-			throw new SecurityException(SecurityException.UNEXPECTED.create(user.getName()));
+			throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()), pue);
 		}
         catch (PrincipalReadOnlyException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()));
         }
 	}
 

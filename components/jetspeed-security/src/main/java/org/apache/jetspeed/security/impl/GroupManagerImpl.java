@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
@@ -31,6 +32,7 @@ import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.RoleManager;
@@ -119,23 +121,23 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         }
         catch (PrincipalAlreadyExistsException e)
         {
-            throw new SecurityException(SecurityException.GROUP_ALREADY_EXISTS.create(groupName)); 
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName)); 
         }
         catch (PrincipalAssociationRequiredException e)
         {
-            throw new SecurityException(SecurityException.UNEXPECTED.create("GroupManager.addGroup", "add", e.getMessage()));
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         } 
         catch (PrincipalAssociationNotAllowedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
         catch (PrincipalAssociationUnsupportedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
         catch (PrincipalNotFoundException e)
         {
-            // cannot occurr as no associations are provided with addPrincipal
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
         
         if (log.isDebugEnabled())
@@ -152,10 +154,18 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         try
         {
             super.removePrincipal(groupName);
-        } 
-        catch (Exception e)
+        }
+        catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+        }
+        catch (PrincipalNotRemovableException e)
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+        }
+        catch (DependentPrincipalException e)
+        {
+            throw new SecurityException(SecurityException.DEPENDENT_PRINCIPAL_EXISTS.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
     }
 
@@ -176,8 +186,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         
         if (null == group) 
         { 
-            throw new SecurityException(
-                SecurityException.GROUP_DOES_NOT_EXIST.create(groupName)); 
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
 
         return group;
@@ -216,15 +225,15 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         } 
         catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         } 
         catch (PrincipalAssociationNotAllowedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
         catch (PrincipalAssociationUnsupportedException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
     }
 
@@ -243,7 +252,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         } 
         catch (PrincipalAssociationRequiredException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
         }
     }
 
@@ -281,15 +290,15 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         }
         catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(SecurityException.GROUP_DOES_NOT_EXIST.create(group.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, group.getName()));
         }
         catch (PrincipalUpdateException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, group.getName()), e);
         }
         catch (PrincipalReadOnlyException e)
         {
-            throw new SecurityException(e);
+            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, group.getName()));
         }
     }
 
