@@ -32,6 +32,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
+import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
@@ -223,7 +224,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     }
 
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException
+        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException
     {
         validatePrincipal(principal);
         if (associations != null)
@@ -326,7 +327,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     //
     // JetspeedPrincipalAssociationHandler interface invocations
     //
-    public void addAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException
+    public void addAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException
     {
         AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());        
         JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);

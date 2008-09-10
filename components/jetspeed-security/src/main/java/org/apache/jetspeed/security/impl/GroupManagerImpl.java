@@ -29,6 +29,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
+import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
@@ -128,6 +129,10 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         {
             throw new SecurityException(e);
         }
+        catch (PrincipalAssociationUnsupportedException e)
+        {
+            throw new SecurityException(e);
+        }
         catch (PrincipalNotFoundException e)
         {
             // cannot occurr as no associations are provided with addPrincipal
@@ -214,6 +219,10 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
             throw new SecurityException(e);
         } 
         catch (PrincipalAssociationNotAllowedException e)
+        {
+            throw new SecurityException(e);
+        }
+        catch (PrincipalAssociationUnsupportedException e)
         {
             throw new SecurityException(e);
         }

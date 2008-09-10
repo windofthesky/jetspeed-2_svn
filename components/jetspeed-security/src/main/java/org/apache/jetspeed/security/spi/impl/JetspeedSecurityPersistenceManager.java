@@ -66,6 +66,18 @@ public class JetspeedSecurityPersistenceManager
         super(repositoryPath);
     }
     
+    public boolean principalExists(JetspeedPrincipal principal)
+    {
+        if (principal.getId() == null)
+        {
+            return principalExists(principal.getName(), principal.getType());
+        }
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("id", principal.getId());
+        Query query = QueryFactory.newQuery(principal.getType().getPrincipalClass(),criteria);
+        return getPersistenceBroker(true).getCount(query) == 1;
+    }
+
     //
     // JetspeedPrincipalAccessManager interface implementation
     //
@@ -236,18 +248,6 @@ public class JetspeedSecurityPersistenceManager
         return getPersistenceBroker(true).getCount(query) == 1;
     }
 
-    public boolean principalExists(JetspeedPrincipal principal)
-    {
-        if (principal.getId() == null)
-        {
-            return principalExists(principal.getName(), principal.getType());
-        }
-        Criteria criteria = new Criteria();
-        criteria.addEqualTo("id", principal.getId());
-        Query query = QueryFactory.newQuery(principal.getType().getPrincipalClass(),criteria);
-        return getPersistenceBroker(true).getCount(query) == 1;
-    }
-
     //
     // JetspeedPrincipalStorageManager interface implementation
     //
@@ -393,8 +393,17 @@ public class JetspeedSecurityPersistenceManager
 
     public List<PasswordCredential> getHistoricPasswordCredentials(User user)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("principalId", user.getId());
+        criteria.addEqualTo("type", PasswordCredential.TYPE_HISTORICAL);
+        Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
+        List<PasswordCredential> list = (List<PasswordCredential>)getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
+        for (PasswordCredential pwc : list)
+        {
+            // store the user by hand as its configured as auto-retrieve="false"
+            ((PasswordCredentialImpl)pwc).setUser(user);
+        }
+        return list;
     }
 
     //

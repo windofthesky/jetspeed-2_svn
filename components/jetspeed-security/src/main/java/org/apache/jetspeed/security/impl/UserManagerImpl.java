@@ -38,6 +38,7 @@ import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
+import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
@@ -108,6 +109,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		{
 			throw new SecurityException(SecurityException.UNEXPECTED.create("UserManager.addUser", "add", e.getMessage()));
 		}		
+        catch (PrincipalAssociationUnsupportedException e)
+        {
+            throw new SecurityException(e);
+        }
         catch (PrincipalNotFoundException e)
         {
             // cannot occurr as no associations are provided with addPrincipal

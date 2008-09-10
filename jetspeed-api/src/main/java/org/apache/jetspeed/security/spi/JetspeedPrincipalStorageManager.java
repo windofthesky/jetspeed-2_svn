@@ -23,6 +23,7 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
+import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
@@ -37,7 +38,7 @@ public interface JetspeedPrincipalStorageManager
     boolean isMapped();
     
     void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException;
+        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException;
 
     void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException, PrincipalReadOnlyException;
 

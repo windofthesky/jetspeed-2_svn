@@ -23,7 +23,7 @@ public interface JetspeedPrincipalAssociationHandler
 {
     JetspeedPrincipalAssociationType getAssociationType();
 
-    void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException;
+    void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException;
 
     void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException;
 
