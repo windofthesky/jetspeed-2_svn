@@ -233,15 +233,15 @@ public class KeyedMessage implements Serializable
     protected KeyedMessage(KeyedMessage source, String scope, Object[] arguments)
     {
         this.key = source.getKey();
-        if (scope != null)
-        {
-            int split = source.containingClass.getName().length()+1;
-            this.scopedKey = key.substring(0,split)+"."+scope+"."+key.substring(split);
-        }
         this.message = source.message;
         this.resolved = source.resolved;
         this.containingClass = source.containingClass;
         this.arguments = arguments;
+        if (resolved && scope != null)
+        {
+            int split = source.containingClass.getName().length()+1;
+            this.scopedKey = key.substring(0,split)+"."+scope+"."+key.substring(split);
+        }
     }
 
     /**
