@@ -41,8 +41,10 @@ import java.security.Permission;
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  */
-public class FragmentPermission extends PortalResourcePermission
+public class FragmentPermission extends AbstractJetspeedPermission
 {
+    private static final long serialVersionUID = -7577936466248811111L;
+
     /**
      * <p>Constructor for FragmentPermission.</p>
      *

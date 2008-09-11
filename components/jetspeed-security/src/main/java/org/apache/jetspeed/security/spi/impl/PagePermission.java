@@ -28,8 +28,10 @@ import java.security.Permission;
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
-public class PagePermission extends PortalResourcePermission
+public class PagePermission extends AbstractJetspeedPermission
 {
+    private static final long serialVersionUID = -3374203894346164388L;
+
     /**
      * <p>Constructor for PagePermission.</p>
      *

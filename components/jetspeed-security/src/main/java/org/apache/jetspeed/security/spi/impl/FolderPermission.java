@@ -42,8 +42,9 @@ import java.security.Permission;
  * @author <a href="mailto:christophe.lombart@sword-technologies.com">Christophe Lombart</a>
  * @version $Id$
  */
-public class FolderPermission extends PortalResourcePermission
+public class FolderPermission extends AbstractJetspeedPermission
 {
+    private static final long serialVersionUID = -4005330590344182308L;
     public static final char RECURSIVE_CHAR = '-';
     public static final char WILD_CHAR = '*';
     public static final String WILD_CHAR_STR = new String(new char[]{WILD_CHAR});

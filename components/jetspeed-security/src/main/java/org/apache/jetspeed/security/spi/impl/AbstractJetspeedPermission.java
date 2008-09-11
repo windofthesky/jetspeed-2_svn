@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.security.JetspeedPermission;
 
 import java.security.Permission;
 import java.security.PermissionCollection;
@@ -35,7 +36,7 @@ import java.util.Enumeration;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
-public abstract class PortalResourcePermission extends Permission
+public abstract class AbstractJetspeedPermission extends Permission implements JetspeedPermission
 {
     private static class JetspeedPermissionCollection extends PermissionCollection
     {
@@ -78,7 +79,7 @@ public abstract class PortalResourcePermission extends Permission
      * @param name    The portlet name.
      * @param actions The actions on the portlet.
      */
-    public PortalResourcePermission(String name, String actions)
+    public AbstractJetspeedPermission(String name, String actions)
     {
         super(name);
         mask = parseActions(actions);
@@ -90,7 +91,7 @@ public abstract class PortalResourcePermission extends Permission
      * @param name The portlet name.
      * @param mask The mask representing actions on the portlet.
      */
-    public PortalResourcePermission(String name, int mask)
+    public AbstractJetspeedPermission(String name, int mask)
     {
         super(name);
         this.mask = mask;
