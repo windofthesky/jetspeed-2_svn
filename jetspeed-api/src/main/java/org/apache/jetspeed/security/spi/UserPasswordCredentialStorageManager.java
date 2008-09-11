@@ -25,6 +25,6 @@ import org.apache.jetspeed.security.User;
  */
 public interface UserPasswordCredentialStorageManager
 {
-    PasswordCredential getPasswordCredential(User user);
+    PasswordCredential getPasswordCredential(User user) throws SecurityException;
     void storePasswordCredential(PasswordCredential credential) throws SecurityException;
 }

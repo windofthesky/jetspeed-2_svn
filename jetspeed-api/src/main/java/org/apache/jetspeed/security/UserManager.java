@@ -195,7 +195,7 @@ public interface UserManager
      * @param user the user
      * @return null if the UserManager doesn't support PasswordCredentials
      */
-    PasswordCredential getPasswordCredential(User user);
+    PasswordCredential getPasswordCredential(User user) throws SecurityException;
     
     void storePasswordCredential(PasswordCredential credential) throws SecurityException;
 }

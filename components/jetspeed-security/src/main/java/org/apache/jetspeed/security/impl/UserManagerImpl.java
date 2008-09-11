@@ -31,7 +31,6 @@ import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -137,7 +136,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		return anonymousUser;
 	}
 
-	public PasswordCredential getPasswordCredential(User user)
+	public PasswordCredential getPasswordCredential(User user) throws SecurityException
 	{
 	    if (credentialManager != null)
 	    {

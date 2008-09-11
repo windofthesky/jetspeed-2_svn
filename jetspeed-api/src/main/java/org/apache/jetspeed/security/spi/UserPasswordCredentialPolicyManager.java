@@ -18,13 +18,14 @@
 package org.apache.jetspeed.security.spi;
 
 import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @version $Id$
  *
  */
 public interface UserPasswordCredentialPolicyManager
-{
+{    
     CredentialPasswordEncoder getCredentialPasswordEncoder();
     CredentialPasswordValidator getCredentialPasswordValidator();
     void onLoad(PasswordCredential credential, String userName) throws SecurityException;
