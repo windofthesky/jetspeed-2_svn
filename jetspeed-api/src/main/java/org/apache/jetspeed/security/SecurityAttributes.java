@@ -24,8 +24,6 @@ import java.util.Set;
  */
 public interface SecurityAttributes
 {
-    String INFO_CATEGORY = "info";
-    String PORTAL_CATEGORY = "portal";
     JetspeedPrincipal getPrincipal();
 
     int size();

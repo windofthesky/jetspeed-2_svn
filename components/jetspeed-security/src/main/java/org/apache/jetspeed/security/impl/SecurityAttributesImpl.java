@@ -152,7 +152,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
     
     public Map<String, SecurityAttribute> getInfoAttributeMap()
     {
-        return getAttributeMap(INFO_CATEGORY);
+        return getAttributeMap(SecurityAttributeType.INFO_CATEGORY);
     }
     
     public Map<String, String> getInfoMap()
@@ -160,7 +160,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
         HashMap<String, String> map = new HashMap<String,String>(saMap.size());
         for (SecurityAttribute sa : saMap.values())
         {
-            if (sa.getCategory().equals(INFO_CATEGORY))
+            if (sa.getCategory().equals(SecurityAttributeType.INFO_CATEGORY))
             {
                 map.put(sa.getName(), sa.getStringValue());
             }

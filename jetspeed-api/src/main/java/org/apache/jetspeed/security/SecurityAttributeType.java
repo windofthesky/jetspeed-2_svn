@@ -21,7 +21,19 @@ package org.apache.jetspeed.security;
  */
 public interface SecurityAttributeType
 {
-    enum DataType { STRING };
+    /** 
+     * build-in supported SecurityAttributeType category "info"
+     * This category is also used for custom/extended attributes which are not pre-defined
+     */
+    String INFO_CATEGORY = "info";
+    
+    /** 
+     * build-in supported SecurityAttributeType category "jetspeed"
+     * This category is used for jetspeed internal attributes
+     */
+    String JETSPEED_CATEGORY = "jetspeed";
+
+    enum DataType { STRING }
 
     String getName();
 

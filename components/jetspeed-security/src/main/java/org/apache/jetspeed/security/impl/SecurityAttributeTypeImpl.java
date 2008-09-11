@@ -18,7 +18,6 @@
 package org.apache.jetspeed.security.impl;
 
 import org.apache.jetspeed.security.SecurityAttributeType;
-import org.apache.jetspeed.security.SecurityAttributes;
 
 /**
  * @version $Id$
@@ -36,7 +35,7 @@ public class SecurityAttributeTypeImpl implements SecurityAttributeType
     public SecurityAttributeTypeImpl(String name)
     {
         this.name = name;
-        this.category = SecurityAttributes.INFO_CATEGORY;
+        this.category = SecurityAttributeType.INFO_CATEGORY;
         this.dataType = SecurityAttributeType.DataType.STRING;
         this.readOnly = false;
         this.required = false;
