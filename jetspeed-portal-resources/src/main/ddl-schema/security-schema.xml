@@ -233,7 +233,7 @@ limitations under the License.
        	ATTR_TYPE = USER_INFO | PREF (not limited to)      	
    -->
    
-    <table name="SECURITY_ATTRIBUTES">
+    <table name="SECURITY_ATTRIBUTE">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="ATTR_NAME" primaryKey="true" required="true" size="200" type="VARCHAR"/>
         <column name="ATTR_ID" primaryKey="true" required="true" type="INTEGER"/>

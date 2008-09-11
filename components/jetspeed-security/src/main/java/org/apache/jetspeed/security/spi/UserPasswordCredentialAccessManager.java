@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi;
 
 import java.util.List;
+
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.User;
 
 /**
  * @version $Id$
@@ -25,6 +28,14 @@ import java.util.List;
  */
 public interface UserPasswordCredentialAccessManager
 {
+    /**
+     * Get the PasswordCredential for a User for authentication purposes.
+     * <p>
+     * This method is intended to be used by an AuthenticationProvider.
+     * </p>
+     * @param userName
+     * @return
+     */
     PasswordCredential getPasswordCredential(String userName);
     List<PasswordCredential> getHistoricPasswordCredentials(User user);
 }

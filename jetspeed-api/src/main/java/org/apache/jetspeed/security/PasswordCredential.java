@@ -62,7 +62,17 @@ public interface PasswordCredential extends UserCredential
     void setPassword(char[] password, boolean encoded);
     
     /**
-     * Set a new (plain text) password also (optionally) providing the old (plain text) password
+     * Set a new unencoded password and providing the old (unencoded) password for validation
+     * <p>
+     * Depending on the implementation one or more pluggable validation and processing handlers
+     * might be invoked when the PasswordCredential is stored.
+     * </p>
+     * <p>
+     * A User changing its own password should be required to provide an oldPassword to validate against
+     * and might trigger different processing than when a null value is provided for the oldPassword
+     * </p>
+     * @param oldPassword
+     * @param newPassword
      */
     void setPassword(String oldPassword, String newPassword);
     
