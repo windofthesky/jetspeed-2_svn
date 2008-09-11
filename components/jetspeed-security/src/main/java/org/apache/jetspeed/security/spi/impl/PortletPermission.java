@@ -28,7 +28,7 @@ import java.security.Permission;
  *
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class PortletPermission extends AbstractJetspeedPermission
+public class PortletPermission extends BaseJetspeedPermission
 {
     private static final long serialVersionUID = 3246898917185555596L;
 

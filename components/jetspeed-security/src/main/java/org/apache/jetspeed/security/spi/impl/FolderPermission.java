@@ -42,7 +42,7 @@ import java.security.Permission;
  * @author <a href="mailto:christophe.lombart@sword-technologies.com">Christophe Lombart</a>
  * @version $Id$
  */
-public class FolderPermission extends AbstractJetspeedPermission
+public class FolderPermission extends BaseJetspeedPermission
 {
     private static final long serialVersionUID = -4005330590344182308L;
     public static final char RECURSIVE_CHAR = '-';

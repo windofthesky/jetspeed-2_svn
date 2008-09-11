@@ -36,7 +36,7 @@ import java.util.Enumeration;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  */
-public abstract class AbstractJetspeedPermission extends Permission implements JetspeedPermission
+public abstract class BaseJetspeedPermission extends Permission implements JetspeedPermission
 {
     private static class JetspeedPermissionCollection extends PermissionCollection
     {
@@ -79,7 +79,7 @@ public abstract class AbstractJetspeedPermission extends Permission implements J
      * @param name    The portlet name.
      * @param actions The actions on the portlet.
      */
-    public AbstractJetspeedPermission(String name, String actions)
+    public BaseJetspeedPermission(String name, String actions)
     {
         super(name);
         mask = parseActions(actions);
@@ -91,7 +91,7 @@ public abstract class AbstractJetspeedPermission extends Permission implements J
      * @param name The portlet name.
      * @param mask The mask representing actions on the portlet.
      */
-    public AbstractJetspeedPermission(String name, int mask)
+    public BaseJetspeedPermission(String name, int mask)
     {
         super(name);
         this.mask = mask;
