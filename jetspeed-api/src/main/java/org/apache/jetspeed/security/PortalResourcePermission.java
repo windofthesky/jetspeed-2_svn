@@ -20,6 +20,9 @@ import org.apache.jetspeed.JetspeedActions;
 
 import java.security.Permission;
 import java.security.PermissionCollection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * <p>Generalized Portlet Resoure permission.</p>
@@ -34,6 +37,36 @@ import java.security.PermissionCollection;
  */
 public abstract class PortalResourcePermission extends Permission
 {
+    private static class JetspeedPermissionCollection extends PermissionCollection
+    {
+        private static final long serialVersionUID = -3852518088847803886L;
+        private ArrayList<Permission> permissions = new ArrayList<Permission>();
+
+        @Override
+        public void add(Permission permission)
+        {
+            permissions.add(permission);
+        }
+
+        @Override
+        public Enumeration<Permission> elements()
+        {
+            return Collections.enumeration(permissions);
+        }
+
+        @Override
+        public boolean implies(Permission permission)
+        {
+            for (Permission p : permissions)
+            {
+                if (p.implies(permission))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
     /**
      * <p>Mask used for determining what actions are allowed or requested.</p>
      */
@@ -106,6 +139,6 @@ public abstract class PortalResourcePermission extends Permission
      */
     public PermissionCollection newPermissionCollection()
     {
-        return new PortalResourcePermissionCollection();
+        return new JetspeedPermissionCollection();
     }
 }
