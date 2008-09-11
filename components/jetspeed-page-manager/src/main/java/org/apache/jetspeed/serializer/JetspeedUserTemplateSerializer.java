@@ -159,7 +159,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                     if (innerSubsite != null)
                     {
                         User innerUser = userManager.getUser(innerUserName);
-                        innerUser.getSecurityAttributes().getAttribute(User.USER_INFO_SUBSITE, true).setStringValue(innerSubsite);
+                        innerUser.getSecurityAttributes().getAttribute(User.JETSPEED_USER_SUBSITE_ATTRIBUTE, true).setStringValue(innerSubsite);
                         userManager.updateUser(innerUser);
                     }
                     Folder source = innerPageManager.getFolder(innerFolderTemplate);

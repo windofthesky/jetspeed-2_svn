@@ -279,7 +279,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                         {
                             if (innerSubsite != null)
                             {
-                                innerUser.getSecurityAttributes().getAttribute(User.USER_INFO_SUBSITE, true).setStringValue(innerSubsite);
+                                innerUser.getSecurityAttributes().getAttribute(User.JETSPEED_USER_SUBSITE_ATTRIBUTE, true).setStringValue(innerSubsite);
                                 userManager.updateUser(innerUser);
                             }                                         
                             // create user's home folder                        

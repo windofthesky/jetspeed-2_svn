@@ -27,6 +27,6 @@ public interface User extends JetspeedPrincipal
     /**
      * the subsite path for a given user stored as a user attribute
      */
-    final static String USER_INFO_SUBSITE = "subsite";
+    final static String JETSPEED_USER_SUBSITE_ATTRIBUTE = "org.apache.jetspeed.user.subsite";
     Date MAX_DATE = Date.valueOf("8099-01-01");
 }
