@@ -72,6 +72,9 @@ public class PasswordCredentialImpl implements PasswordCredential
     /** The expired state. */
     private boolean expired;
     
+    /** The creation date. */
+    private Date creationDate;
+    
     /** The expiration date. */
     private Date expirationDate;
     
@@ -265,6 +268,16 @@ public class PasswordCredentialImpl implements PasswordCredential
         this.expired = expired;
     }
 
+    public Date getCreationDate()
+    {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate)
+    {
+        this.creationDate = creationDate;
+    }
+
     public Date getExpirationDate()
     {
         return expirationDate;
@@ -303,12 +316,6 @@ public class PasswordCredentialImpl implements PasswordCredential
         return authenticationFailures;
     }
 
-    public void resetAuthenticationFailures()
-    {
-        checkUpdateState();
-        authenticationFailures = 0;
-    }
-    
     public void setAuthenticationFailures(int authenticationFailures)
     {
         checkUpdateState();

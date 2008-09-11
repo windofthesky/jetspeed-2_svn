@@ -31,12 +31,13 @@ public class UserCredentialImpl implements UserCredential
 {
     private static final long serialVersionUID = 8445207990171015069L;
     private int authenticationFailures;
+    private Date creationDate;
     private Date expirationDate;
     private Timestamp lastAuthenticationDate;
     private String userName;
     private Timestamp previousAuthenticationDate;
     private boolean enabled;
-    private boolean expired;
+    private boolean expired;    
     private boolean updateAllowed;
     private boolean updateRequired;
     
@@ -48,6 +49,7 @@ public class UserCredentialImpl implements UserCredential
     public void synchronize(PasswordCredential pwc)
     {
         this.authenticationFailures = pwc.getAuthenticationFailures();
+        this.creationDate = pwc.getCreationDate();
         this.expirationDate = pwc.getExpirationDate();
         this.lastAuthenticationDate = pwc.getLastAuthenticationDate();
         this.userName = pwc.getUserName();
@@ -61,6 +63,11 @@ public class UserCredentialImpl implements UserCredential
     public int getAuthenticationFailures()
     {
         return authenticationFailures;
+    }
+
+    public Date getCreationDate()
+    {
+        return creationDate;
     }
 
     public Date getExpirationDate()

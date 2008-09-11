@@ -20,13 +20,14 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
+import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
+import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
+import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
 
 /**
  * <p>
- * Encodes (encrypts) an {@link InternalCredential} password using the configured {@link PasswordCredentialProvider#getEncoder() encoder}
+ * Encodes (encrypts) an {@link PasswordCredential} password using the provided {@link PasswordCredentialEncoder encoder}
  * if it is loaded unencoded from the persistent store.</p>
  * <p>
  * This interceptor is useful when credentials need to be preset in the persistent store (like through scripts) or
@@ -35,22 +36,19 @@ import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class EncodePasswordOnFirstLoadInterceptor extends AbstractInternalPasswordCredentialInterceptorImpl
+public class EncodePasswordOnFirstLoadInterceptor extends AbstractPasswordCredentialInterceptorImpl
 {
     /**
      * @return true if now encoded
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#afterLoad(org.apache.jetspeed.security.spi.PasswordCredentialProvider, java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
      */
-    public boolean afterLoad(PasswordCredentialProvider pcProvider, String userName, InternalCredential credential)
-            throws SecurityException
+    public boolean afterLoad(String userName, PasswordCredential credential, CredentialPasswordEncoder encoder, CredentialPasswordValidator validator) throws SecurityException
     {
         boolean updated = false;
-        if (!credential.isEncoded() && pcProvider.getEncoder() != null )
+        if (!credential.isPasswordEncoded() && encoder != null )
         {
-            credential.setValue(pcProvider.getEncoder().encode(userName,credential.getValue()));
-            credential.setEncoded(true);
+            credential.setPassword(encoder.encode(userName,new String(credential.getPassword())).toCharArray(), true);
             
-            if ( pcProvider.getEncoder() instanceof AlgorithmUpgradePasswordEncodingService)
+            if ( encoder instanceof AlgorithmUpgradePasswordEncodingService)
             {
                 // For the AlgorithmUpgradePBEPasswordService to be able to distinguise between
                 // old and new encoded passwords, it evaluates the last and previous authentication timestamps.

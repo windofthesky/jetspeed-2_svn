@@ -16,19 +16,10 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
 
-import org.apache.jetspeed.security.PasswordAlreadyUsedException;
+import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
 
 /**
  * <p>
@@ -36,33 +27,27 @@ import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
  * It also requires a unique password (with regards to the values currently in the stack) when 
  * a password is changed directly by the user itself.</p>
  * <p>
- * The historical passwords are maintained as {@link InternalCredential} instances with as {@link InternalCredential#getClassname() classname}
- *  value {@link #HISTORICAL_PASSWORD_CREDENTIAL} to distinguish them from the current password credential.</p>
+ * The historical passwords are maintained as {@link PasswordCredential} instances with a {@link PasswordCredential#getType() type}
+ *  value {@link PasswordCredential#TYPE_HISTORICAL} to distinguish them from the current password credential.</p>
  * <p>
  * <em>Implementation Note:</em><br>
  * When a new password is about to be saved, a new <em>copy</em> of the current credential is saved as
- * a historic password credential. This means that the current password credential <em>instance</em>,
- * and thus also its {@link InternalCredential#getCredentialId() key}, remains the same.</p>
+ * a historic password credential. This means that the current password credential <em>instance</em> remains the same.</p>
  * <p>
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PasswordHistoryInterceptor extends AbstractInternalPasswordCredentialInterceptorImpl
+public class PasswordHistoryInterceptor extends AbstractPasswordCredentialInterceptorImpl
 {
     private int historySize;
     
-    /**
-     * Value used for {@link InternalCredential#getClassname()} to distinguish from current password credentials
-     */
-    public static final String HISTORICAL_PASSWORD_CREDENTIAL = "org.apache.jetspeed.security.spi.impl.HistoricalPasswordCredentialImpl";
-    
-    private static final Comparator internalCredentialCreationDateComparator =
-        new Comparator()
+    private static final Comparator<PasswordCredential> internalCredentialCreationDateComparator =
+        new Comparator<PasswordCredential>()
         {
-            public int compare(Object obj1, Object obj2)
+            public int compare(PasswordCredential o1, PasswordCredential o2)
             {
-                return ((InternalCredential)obj2).getCreationDate().compareTo(((InternalCredential)obj1).getCreationDate());
+                return o1.getCreationDate().compareTo(o2.getCreationDate());
             }
         };
     
@@ -74,12 +59,9 @@ public class PasswordHistoryInterceptor extends AbstractInternalPasswordCredenti
         this.historySize = historySize;
     }
     
-    /**
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#beforeSetPassword(org.apache.jetspeed.security.om.InternalUserPrincipal, java.util.Collection, java.lang.String, org.apache.jetspeed.security.om.InternalCredential, java.lang.String, boolean)
-     */
-    public void beforeSetPassword(InternalUserPrincipal internalUser, Collection credentials, String userName,
-            InternalCredential credential, String password, boolean authenticated) throws SecurityException
+    public void beforeSetPassword(PasswordCredential credential, String password) throws SecurityException
     {
+/* TODO     
         Collection internalCredentials = internalUser.getCredentials();
         ArrayList historicalPasswordCredentials = new ArrayList();
         if ( internalCredentials != null )
@@ -130,5 +112,6 @@ public class PasswordHistoryInterceptor extends AbstractInternalPasswordCredenti
         
         // fake update to current InternalCredential as being an insert of a new one
         credential.setCreationDate(new Timestamp(new Date().getTime()));
+*/        
     }
 }

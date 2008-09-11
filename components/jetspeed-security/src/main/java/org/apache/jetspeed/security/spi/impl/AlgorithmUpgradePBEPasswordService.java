@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
 import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
 
@@ -59,29 +58,23 @@ public class AlgorithmUpgradePBEPasswordService extends PBEPasswordService imple
         return usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate());
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder#encode(java.lang.String, java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
-     */
-    public String encode(String userName, String clearTextPassword, InternalCredential credential) throws SecurityException
+    public String encode(PasswordCredential credential) throws SecurityException
     {
         if ( usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate()))
         {
-            return oldEncoder.encode(userName, clearTextPassword);
+            return oldEncoder.encode(credential.getUserName(), credential.getNewPassword());
         }
         else
         {
-            return encode(userName, clearTextPassword);
+            return encode(credential.getUserName(), credential.getNewPassword());
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder#recodeIfNeeded(java.lang.String, java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
-     */
-    public void recodeIfNeeded(String userName, String clearTextPassword, InternalCredential credential) throws SecurityException
+    public void recodeIfNeeded(PasswordCredential credential) throws SecurityException
     {
         if ( usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate()))
         {
-            credential.setValue(encode(userName, clearTextPassword));
+            credential.setPassword(encode(credential.getUserName(), credential.getNewPassword()).toCharArray(), true);
         }
     }
     

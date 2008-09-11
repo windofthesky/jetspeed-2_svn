@@ -17,37 +17,33 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.sql.Date;
-import java.util.Collection;
 
+import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.InternalCredential;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
+import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
+import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
 
 /**
  * <p>
  * Enforces a maximum lifespan for a password credential.</p>
- * When {@link #afterAuthenticated(InternalUserPrincipal, String, InternalCredential, boolean) on authentication}
+ * When {@link #afterAuthenticated(PasswordCredential, boolean) on authentication}
  * a password its expiration date is reached, its expired flag is set.
- * The {@link DefaultCredentialHandler} then will fail the authentication and subsequent authentications
- * will fail immediately.</p>
  * <p>
  * To ensure proper expiration handling, an empty (null) expiration date will be automatically
  * filled in when the credential is loaded from the persistent store using the {@link #PasswordExpirationInterceptor(int) configured} 
  * max lifespan in days.</p>
  * <p>
- * When a password credential is {@link #beforeCreate(InternalUserPrincipal, Collection, String, InternalCredential, String) created}
- * or a password is {@link #beforeSetPassword(InternalUserPrincipal, Collection, String, InternalCredential, String, boolean) updated}
+ * When a password credential is {@link #beforeCreate(PasswordCredential) created}
+ * or a password is {@link #beforeSetPassword(PasswordCredential, String) updated}
  * a new future expiration date is calculated.</p>
  * <p>
  * An existing or already provided higher expiration date will be preserved though. 
- * This allows to (pre)set a (very) high expiration date, like with {@link InternalCredential#MAX_DATE},
- * for credentials which shouldn't expire.</p>
+ * This allows to (pre)set a (very) high expiration date for credentials which shouldn't expire.</p>
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PasswordExpirationInterceptor extends AbstractInternalPasswordCredentialInterceptorImpl
+public class PasswordExpirationInterceptor extends AbstractPasswordCredentialInterceptorImpl
 {
     private long maxLifeSpanInMillis;
     
@@ -61,10 +57,8 @@ public class PasswordExpirationInterceptor extends AbstractInternalPasswordCrede
     
     /**
      * @return true when the password credential is now expired
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#afterAuthenticated(org.apache.jetspeed.security.om.InternalUserPrincipal, java.lang.String, org.apache.jetspeed.security.om.InternalCredential, boolean)
      */
-    public boolean afterAuthenticated(InternalUserPrincipal internalUser, String userName,
-            InternalCredential credential, boolean authenticated) throws SecurityException
+    public boolean afterAuthenticated(PasswordCredential credential, boolean authenticated) throws SecurityException
     {
         boolean update = false;
         if ( !credential.isExpired() )
@@ -82,10 +76,8 @@ public class PasswordExpirationInterceptor extends AbstractInternalPasswordCrede
     
     /**
      * @return true when a new default expiration date is set
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#afterLoad(org.apache.jetspeed.security.spi.PasswordCredentialProvider, java.lang.String, org.apache.jetspeed.security.om.InternalCredential)
      */
-    public boolean afterLoad(PasswordCredentialProvider pcProvider, String userName, InternalCredential credential)
-            throws SecurityException
+    public boolean afterLoad(String userName, PasswordCredential credential, CredentialPasswordEncoder encoder, CredentialPasswordValidator validator) throws SecurityException
     {
         boolean update = false;
         if ( credential.getExpirationDate() == null )
@@ -98,25 +90,21 @@ public class PasswordExpirationInterceptor extends AbstractInternalPasswordCrede
     
     /**
      * Calculates and sets the default expiration date and the expired flag to false 
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#beforeCreate(org.apache.jetspeed.security.om.InternalUserPrincipal, java.util.Collection, java.lang.String, InternalCredential, java.lang.String)
      */
-    public void beforeCreate(InternalUserPrincipal internalUser, Collection credentials, String userName,
-            InternalCredential credential, String password) throws SecurityException
+    public void beforeCreate(PasswordCredential credential) throws SecurityException
     {
         setExpiration(credential);
     }
     
     /**
      * Sets a new expiration date if a higher expiration date isn't set already and resets the expired flag
-     * @see org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor#beforeSetPassword(org.apache.jetspeed.security.om.InternalUserPrincipal, java.util.Collection, java.lang.String, org.apache.jetspeed.security.om.InternalCredential, java.lang.String, boolean)
      */
-    public void beforeSetPassword(InternalUserPrincipal internalUser, Collection credentials, String userName,
-            InternalCredential credential, String password, boolean authenticated) throws SecurityException
+    public void beforeSetPassword(PasswordCredential credential, String password) throws SecurityException
     {
         setExpiration(credential);
     }
     
-    protected void setExpiration(InternalCredential credential)
+    protected void setExpiration(PasswordCredential credential)
     {
         Date nextExpirationDate = new Date(new java.util.Date().getTime()+maxLifeSpanInMillis);
         if ( credential.getExpirationDate() == null || credential.getExpirationDate().before(nextExpirationDate))

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * <p>
@@ -94,5 +95,9 @@ public interface PasswordCredential extends UserCredential
     
     void setExpirationDate(Date expirationDate);
     
-    void resetAuthenticationFailures();
+    void setPreviousAuthenticationDate(Timestamp date);
+    
+    void setLastAuthenticationDate(Timestamp date);
+    
+    void setAuthenticationFailures(int authenticationFailures);
 }

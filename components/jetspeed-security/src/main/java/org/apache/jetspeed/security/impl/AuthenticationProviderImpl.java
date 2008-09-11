@@ -23,13 +23,13 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
+import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.spi.CredentialHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @see org.apache.jetspeed.security.AuthenticationProvider
- * @author <a href="mailto:LeStrat_David@emc.com">David Le Strat </a>
+ * @version $Id$
  */
 public class AuthenticationProviderImpl implements AuthenticationProvider
 {
@@ -43,12 +43,6 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
     /** The provider description. */
     private String providerDescription;
 
-    /** The {@link CredentialHandler}. */
-    private CredentialHandler credHandler;
-
-    /** The {@link UserSecurityHandler}. */
-    private UserSecurityHandler userSecurityHandler;
-
     /**
      * <p>
      * Constructor to configure authenticatino user security and credential
@@ -60,18 +54,12 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
      * @param credHandler The credential handler.
      * @param userSecurityHandler The user security handler.
      */
-    public AuthenticationProviderImpl(String providerName, String providerDescription, CredentialHandler credHandler,
-            UserSecurityHandler userSecurityHandler)
+    public AuthenticationProviderImpl(String providerName, String providerDescription)
     {
         // The provider name.
         this.providerName = providerName;
         // The provider description.
         this.providerDescription = providerDescription;
-        
-        // The credential handler.
-        this.credHandler = credHandler;
-        // The user security handler.
-        this.userSecurityHandler = userSecurityHandler;
     }
     
     /**
@@ -83,13 +71,10 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
      * @param providerName The provider name.
      * @param providerDescription The provider description.
      * @param loginConfig The login module config.
-     * @param credHandler The credential handler.
-     * @param userSecurityHandler The user security handler.
      */
-    public AuthenticationProviderImpl(String providerName, String providerDescription, String loginConfig,
-            CredentialHandler credHandler, UserSecurityHandler userSecurityHandler)
+    public AuthenticationProviderImpl(String providerName, String providerDescription, String loginConfig)
     {
-        this(providerName, providerDescription, credHandler, userSecurityHandler);
+        this(providerName, providerDescription);
         
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         SystemResourceUtil resourceUtil = new ClassLoaderSystemResourceUtilImpl(cl);
@@ -143,35 +128,9 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
         this.providerName = providerName;
     }
 
-    /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#getCredentialHandler()
-     */
-    public CredentialHandler getCredentialHandler()
+    public AuthenticatedUser authenticate(String userName, String password) throws SecurityException
     {
-        return this.credHandler;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#getUserSecurityHandler()
-     */
-    public UserSecurityHandler getUserSecurityHandler()
-    {
-        return this.userSecurityHandler;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#setCredentialHandler(CredentialHandler)
-     */
-    public void setCredentialHandler(CredentialHandler credHandler)
-    {
-        this.credHandler = credHandler;
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.AuthenticationProvider#setUserSecurityHandler(UserSecurityHandler)
-     */
-    public void setUserSecurityHandler(UserSecurityHandler userSecurityHandler)
-    {
-        this.userSecurityHandler = userSecurityHandler;
+        // TODO Auto-generated method stub
+        return null;
     }
 }

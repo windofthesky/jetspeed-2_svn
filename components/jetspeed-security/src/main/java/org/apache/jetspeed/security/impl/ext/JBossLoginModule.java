@@ -25,10 +25,11 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.DefaultLoginModule;
-import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.impl.RoleImpl;
 
 /**
  * <p>Configures Subject principals for JBoss JAAS implementation
@@ -90,8 +91,8 @@ public class JBossLoginModule extends DefaultLoginModule
      * @param userManager
      * @see DefaultLoginModule#DefaultLoginModule(UserManager)
      */
-    protected JBossLoginModule (UserManager userManager) {
-        super (userManager);
+    protected JBossLoginModule (AuthenticationProvider authProvider, UserManager userManager) {
+        super (authProvider, userManager);
     }
     
     protected void commitPrincipals(Subject subject, User user)
@@ -99,7 +100,7 @@ public class JBossLoginModule extends DefaultLoginModule
         // add UserPrincipal to subject
         subject.getPrincipals().add((Principal) user);
         JBossGroup roles = new JBossGroup("Roles", getUserRoles(subject));
-        roles.addMember(new RolePrincipalImpl(portalUserRole));
+        roles.addMember(new RoleImpl(portalUserRole));
         subject.getPrincipals().add(roles);        
     }
 }

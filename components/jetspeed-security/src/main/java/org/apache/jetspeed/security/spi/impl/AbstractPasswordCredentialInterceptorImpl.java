@@ -16,8 +16,6 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
@@ -26,40 +24,30 @@ import org.apache.jetspeed.security.spi.PasswordCredentialInterceptor;
 
 /**
  * <p>
- * Checks if a (pre)set password in the persitent store is valid according to the provided
- * {@link PasswordCredentialValidator validator} when loaded from the persistent store.</p>
- * <p>
- * If the password checks out to be invalid, an error is logged and the credential is flagged to be 
- * {@link PasswordCredential#isUpdateRequired() updateRequired}.</p>
+ * Base class providing default empty behavior for a {@link PasswordCredentialInterceptor}
+ * implementation.
+ * </p>
  * 
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class ValidatePasswordOnLoadInterceptor extends AbstractPasswordCredentialInterceptorImpl
+public abstract class AbstractPasswordCredentialInterceptorImpl implements PasswordCredentialInterceptor
 {
-    private static final Log log = LogFactory.getLog(PasswordCredentialInterceptor.class);
-    
-    /**
-     * @return true is the password was invalid and update is required
-     */
     public boolean afterLoad(String userName, PasswordCredential credential, CredentialPasswordEncoder encoder, CredentialPasswordValidator validator) throws SecurityException
     {
-        boolean updated = false;
-        if (!credential.isPasswordEncoded() && validator != null )
-        {
-            try
-            {
-                validator.validate(new String(credential.getPassword()));
-            }
-            catch (SecurityException e)
-            {
-                log.error("Loaded password for user "+userName+" is invalid. The user will be required to change it.");
-                // persitent store contains an invalid password
-                // allow login (assuming the user knows the invalid value) but enforce an update
-                credential.setUpdateRequired(true);
-                updated = true;
-            }
-        }
-        return updated;
+        return false;
+    }
+
+    public boolean afterAuthenticated(PasswordCredential credential, boolean authenticated) throws SecurityException
+    {
+        return false;
+    }
+
+    public void beforeCreate(PasswordCredential credential) throws SecurityException
+    {
+    }
+
+    public void beforeSetPassword(PasswordCredential credential, char[] password) throws SecurityException
+    {
     }
 }

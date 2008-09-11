@@ -50,6 +50,11 @@ public interface UserCredential extends Credential
     boolean isExpired();
     
     /**
+     * @return when the credential is created.
+     */
+    Date getCreationDate();
+    
+    /**
      * @return when the credential is (going to be) expired.
      */
     Date getExpirationDate();

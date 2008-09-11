@@ -18,11 +18,10 @@ package org.apache.jetspeed.security.spi;
 
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.om.InternalCredential;
 
 /**
  * <p>
- * AlgorithmUpgradeCredentialPasswordEncoder which is provided with the InternalCredential as well
+ * AlgorithmUpgradeCredentialPasswordEncoder which is provided with the PasswordCredential as well
  * to allow for migrating between two different encoding schemes.
  * </p>
  * <p>
@@ -38,7 +37,7 @@ import org.apache.jetspeed.security.om.InternalCredential;
  */
 public interface AlgorithmUpgradeCredentialPasswordEncoder extends CredentialPasswordEncoder
 {
-    String encode(String userName, String clearTextPassword, InternalCredential credential) throws SecurityException;
-    void recodeIfNeeded(String userName, String clearTextPassword, InternalCredential credential) throws SecurityException;
+    String encode(PasswordCredential credential) throws SecurityException;
+    void recodeIfNeeded(PasswordCredential credential) throws SecurityException;
     boolean usesOldEncodingAlgorithm(PasswordCredential credential);
 }
