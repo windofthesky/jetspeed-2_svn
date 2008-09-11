@@ -76,14 +76,24 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
 			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, JetspeedPrincipalPermissionStorageManager jppsm,
-			UserPasswordCredentialManager credentialManager, RoleManager roleManager, GroupManager groupManager) 
+			UserPasswordCredentialManager credentialManager) 
 	{
 		super(principalType, jpam, jpsm, jppsm);
 		this.credentialManager = credentialManager;
-		this.roleType = ((JetspeedPrincipalManager)roleManager).getPrincipalType();
-		this.groupType = ((JetspeedPrincipalManager)roleManager).getPrincipalType();
+		this.roleType = roleType;
+		this.groupType = groupType;
 	}
 
+    public void setGroupManager(GroupManager manager)
+    {
+    	this.groupManager = manager;
+    }
+    
+    public void setRoleManager(RoleManager manager)
+    {
+    	this.roleManager = manager;
+    }
+    
 	public User addUser(String username) throws SecurityException
 	{
 	    return addUser(username, true);

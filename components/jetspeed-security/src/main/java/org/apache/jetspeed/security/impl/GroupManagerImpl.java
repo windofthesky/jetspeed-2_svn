@@ -70,17 +70,20 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     private JetspeedPrincipalType roleType;
     private UserManager userManager;
     
-    public GroupManagerImpl(JetspeedPrincipalType principalType, 
+    public GroupManagerImpl(JetspeedPrincipalType principalType,JetspeedPrincipalType userType,JetspeedPrincipalType roleType, 
                            JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
-                           JetspeedPrincipalPermissionStorageManager jppsm,
-                           UserManager userManager, RoleManager roleManager)
+                           JetspeedPrincipalPermissionStorageManager jppsm)
     {
         super(principalType, jpam, jpsm, jppsm);
-        this.userType = ((JetspeedPrincipalManager) userManager).getPrincipalType();
-        this.roleType = ((JetspeedPrincipalManager) roleManager).getPrincipalType();
-        this.userManager = userManager;
+        this.userType = userType;
+        this.roleType = roleType;
     }
-
+    
+    public void setUserManager(UserManager manager)
+    {
+    	this.userManager = manager;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.GroupManager#newGroup(java.lang.String, boolean)
      */

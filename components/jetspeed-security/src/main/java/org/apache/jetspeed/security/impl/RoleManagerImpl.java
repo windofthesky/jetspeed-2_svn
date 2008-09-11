@@ -74,18 +74,24 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     private UserManager userManager;
     private GroupManager groupManager;
     
-    public RoleManagerImpl(JetspeedPrincipalType principalType, 
+    public RoleManagerImpl(JetspeedPrincipalType principalType,JetspeedPrincipalType userType,JetspeedPrincipalType groupType,
                            JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
-                           JetspeedPrincipalPermissionStorageManager jppsm,
-                           UserManager userManager, GroupManager groupManager)
+                           JetspeedPrincipalPermissionStorageManager jppsm)
     {
         super(principalType, jpam, jpsm, jppsm);
-        this.userType = ((JetspeedPrincipalManager) userManager).getPrincipalType();
-        this.groupType = ((JetspeedPrincipalManager) groupManager).getPrincipalType();;
-        this.userManager = userManager;
-        this.groupManager = groupManager;
+        this.userType = userType;
+        this.groupType = groupType;
     }
-
+    
+    public void setUserManager(UserManager manager)
+    {
+    	this.userManager = manager;
+    }
+    
+    public void setGroupManager(GroupManager manager)
+    {
+    	this.groupManager = manager;
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.RoleManager#newRole(java.lang.String, boolean)
