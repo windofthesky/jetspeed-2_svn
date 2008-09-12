@@ -16,23 +16,34 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Permission;
 import java.security.Permissions;
-
-import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
+import java.security.Principal;
+import java.util.List;
 
 /**
  * @version $Id$
  */
-public interface JetspeedPermissionManager extends JetspeedPermissionStorageManager
+public interface JetspeedPermissionManager extends JetspeedPermissionsFactory
 {
+    boolean permissionExists(JetspeedPermission permission);
     Permissions getPermissions(JetspeedPrincipal principal);
 
-    Permissions getPermissions(Permission[] permissions);
+    Permissions getPermissions(Principal[] principals);
+    
+    List<JetspeedPermission> getPermissions();
 
-    void addPermission(PortalResourcePermission p);
+    List<JetspeedPermission> getPermissions(String typeName);
 
-    void removePermission(JetspeedPermission p);
+    List<JetspeedPermission> getPermissions(String typeName, String nameFilter);
 
-    void updatePermission(JetspeedPermission p);
+    List<JetspeedPrincipal> getPrincipals(JetspeedPermission permission);
+    
+    void addPermission(JetspeedPermission permission);
+    void removePermission(JetspeedPermission permission);
+    void updatePermission(JetspeedPermission permission, String actions);
+
+    void grantPermission(JetspeedPermission permission, JetspeedPrincipal principal);
+    void revokePermission(JetspeedPermission permission, JetspeedPrincipal principal);
+    void grantPermissionOnlyTo(JetspeedPermission permission, List<JetspeedPrincipal> principal);
+    void revokeAllPermissions(JetspeedPrincipal principal);
 }
