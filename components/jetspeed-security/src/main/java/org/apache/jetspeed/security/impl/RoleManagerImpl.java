@@ -26,7 +26,6 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
@@ -42,7 +41,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
-import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 
 /**
@@ -75,10 +73,9 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     private GroupManager groupManager;
     
     public RoleManagerImpl(JetspeedPrincipalType principalType,JetspeedPrincipalType userType,JetspeedPrincipalType groupType,
-                           JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm,
-                           JetspeedPrincipalPermissionStorageManager jppsm)
+                           JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm)
     {
-        super(principalType, jpam, jpsm, jppsm);
+        super(principalType, jpam, jpsm);
         this.userType = userType;
         this.groupType = groupType;
     }

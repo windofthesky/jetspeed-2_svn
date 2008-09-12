@@ -18,7 +18,6 @@ package org.apache.jetspeed.security.spi;
 
 import java.util.List;
 
-import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 
@@ -54,8 +53,4 @@ public interface JetspeedPrincipalAccessManager
     List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName);
 
     List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName);
-
-    List<String> getPrincipals(JetspeedPermission permission);
-
-    List<String> getPrincipals(JetspeedPermission permission, JetspeedPrincipalType type);
 }

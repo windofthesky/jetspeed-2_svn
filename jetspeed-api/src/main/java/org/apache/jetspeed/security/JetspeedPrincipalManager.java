@@ -17,14 +17,14 @@
 package org.apache.jetspeed.security;
 
 import java.util.List;
+import java.util.Set;
 
-import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 
 /**
  * @version $Id$
  */
-public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManager, JetspeedPrincipalPermissionStorageManager
+public interface JetspeedPrincipalManager
 {
     JetspeedPrincipalType getPrincipalType();
 
@@ -108,4 +108,12 @@ public interface JetspeedPrincipalManager extends JetspeedPrincipalStorageManage
      * @return The list of the names of the principals in the <em>from</em> side of the provided association for the provided principal name and its type
      */
     List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType to, String associationName);
+
+    void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
+        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException;
+
+    void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException, PrincipalReadOnlyException;
+
+    void removePrincipal(JetspeedPrincipal principal)
+        throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
 }

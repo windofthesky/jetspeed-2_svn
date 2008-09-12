@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.jetspeed.security.DependentPrincipalException;
-import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
@@ -39,7 +38,6 @@ import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
-import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 
 /**
@@ -84,16 +82,13 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAssociations = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>();
     private JetspeedPrincipalAccessManager jpam;
     private JetspeedPrincipalStorageManager jpsm;
-    private JetspeedPrincipalPermissionStorageManager jppsm;
 
     public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
-                                        JetspeedPrincipalStorageManager jpsm,
-                                        JetspeedPrincipalPermissionStorageManager jppsm)
+                                        JetspeedPrincipalStorageManager jpsm)
     {
         this.principalType = principalType;
         this.jpam = jpam;
         this.jpsm = jpsm;
-        this.jppsm = jppsm;
     }
     
     protected final void validatePrincipal(JetspeedPrincipal principal)
@@ -218,11 +213,6 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     //
     // JetspeedPrincipalStorageManager interface implementation
     //
-    public final boolean isMapped()
-    {
-        return jpsm.isMapped();
-    }
-
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
         throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException
     {
@@ -301,27 +291,6 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             throw new PrincipalReadOnlyException();
         }
         jpsm.updatePrincipal(principal);
-    }
-
-    //
-    // JetspeedPrincipalPermissionStorageManager interface implementation
-    //
-    public void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission)
-    {
-        validatePrincipal(principal);
-        jppsm.grantPermission(principal, permission);
-    }
-
-    public void revokeAll(JetspeedPrincipal principal)
-    {
-        jppsm.revokeAll(principal);
-        validatePrincipal(principal);
-    }
-
-    public void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission)
-    {
-        validatePrincipal(principal);
-        jppsm.revokePermission(principal, permission);
     }
 
     //

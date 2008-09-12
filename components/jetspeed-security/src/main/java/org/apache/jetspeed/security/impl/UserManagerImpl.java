@@ -48,7 +48,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
-import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
 
@@ -74,10 +73,9 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	private GroupManager groupManager;
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
-			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, JetspeedPrincipalPermissionStorageManager jppsm,
-			UserPasswordCredentialManager credentialManager) 
+			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager) 
 	{
-		super(principalType, jpam, jpsm, jppsm);
+		super(principalType, jpam, jpsm);
 		this.credentialManager = credentialManager;
 		this.roleType = roleType;
 		this.groupType = groupType;
