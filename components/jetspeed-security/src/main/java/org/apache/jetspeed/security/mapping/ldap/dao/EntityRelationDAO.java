@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.mapping.ldap.dao;
 
 import java.util.Collection;
 
+import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Entity;
 
 /**
@@ -27,14 +28,13 @@ import org.apache.jetspeed.security.mapping.model.Entity;
 public interface EntityRelationDAO
 {
 
-    String getFromEntityType();
+    SecurityEntityRelationType getRelationType();
 
-    String getToEntityType();
+    Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao,
+            EntityDAO toDao, Entity toEntity);
 
-    String getRelationType();
-
-    Collection<Entity> getRelatedEntities(EntityDAO sourceDao,
-            EntityDAO targetDao, Entity sourceEntity);
+    Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao,
+            EntityDAO toDao, Entity fromEntity);
 
     void relate(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
             Entity targetEntity);

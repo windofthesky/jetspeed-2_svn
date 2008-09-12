@@ -66,6 +66,23 @@ public class EntityImpl implements Entity
         return nameToAttributeMap.get(name);
     }
 
+    public Map<String,Attribute> getAttributes()
+    {
+        return Collections.unmodifiableMap(nameToAttributeMap);
+    }
+
+    public Map<String,Attribute> getMappedAttributes()
+    {
+        Map<String,Attribute> mappedAttrs = new HashMap<String,Attribute>();
+        for (Map.Entry<String,Attribute> mappedAttrEntry : nameToAttributeMap.entrySet()){
+            if (mappedAttrEntry.getValue().getDefinition().isMapped()){
+                // it is assumed that mapped names are unique
+                mappedAttrs.put(mappedAttrEntry.getValue().getMappedName(),mappedAttrEntry.getValue());
+            }
+        }
+        return Collections.unmodifiableMap(mappedAttrs);
+    }
+
     public Set<AttributeDef> getAllowedAttributes()
     {
         return allowedAttributes;

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
+import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -61,15 +62,28 @@ public class BasicTestCases
         TestCase.assertEquals(totalNrOfUsers, entities.size());
     }
 
-    public void testFetchRelatedEntities(String fromEntityType,
+    public void testFetchRelatedEntitiesTo(String fromEntityType,
             String toEntityType, String relationType, String fromEntityId,
             Collection<Entity> expectedEntities) throws Exception
     {
-        Entity randomUser = entityManager.getEntity(fromEntityType,
+        Entity randomEntity = entityManager.getEntity(fromEntityType,
                 fromEntityId);
-        TestCase.assertNotNull(randomUser);
-        Collection<Entity> resultEntities = entityManager.getRelatedEntities(
-                randomUser, toEntityType, relationType);
+        TestCase.assertNotNull(randomEntity);
+        Collection<Entity> resultEntities = entityManager.getRelatedEntitiesTo(
+                randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType));
+
+        basicEntityResultSetChecks(expectedEntities, resultEntities);
+    }
+    
+    public void testFetchRelatedEntitiesFrom(String fromEntityType,
+            String toEntityType, String relationType, String toEntityId,
+            Collection<Entity> expectedEntities) throws Exception
+    {
+        Entity randomEntity = entityManager.getEntity(toEntityType,
+                toEntityId);
+        TestCase.assertNotNull(randomEntity);
+        Collection<Entity> resultEntities = entityManager.getRelatedEntitiesFrom(
+                randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType));
 
         basicEntityResultSetChecks(expectedEntities, resultEntities);
     }
@@ -80,8 +94,8 @@ public class BasicTestCases
             Collection<Entity> resultEntities)
     {
         TestCase.assertNotNull(resultEntities);
-        Set expectedSet = new HashSet(expectedEntities);
-        Set resultSet = new HashSet(resultEntities);
+        Set<Entity> expectedSet = new HashSet(expectedEntities);
+        Set<Entity> resultSet = new HashSet(resultEntities);
         TestCase.assertEquals(true, expectedSet.equals(resultSet));
     }
 

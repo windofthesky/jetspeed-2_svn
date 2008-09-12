@@ -16,33 +16,16 @@
  */
 package org.apache.jetspeed.security.mapping;
 
-import java.util.Collection;
-
-import org.apache.jetspeed.security.mapping.model.Entity;
-
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityEntityManager
+public interface SecurityEntityRelationType
 {
+    String getFromEntityType();
 
-    Collection<String> getSupportedEntityTypes();
+    String getToEntityType();
 
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes();
-
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType);
-
-    Entity getEntity(String entityType, String entityId);
-
-    Collection<Entity> getAllEntities(String entityType);
-
-    void update(Entity entity);
-
-    Collection<Entity> getRelatedEntitiesFrom(Entity toEntity, SecurityEntityRelationType relationType);
-
-    Collection<Entity> getRelatedEntitiesTo(Entity fromEntity, SecurityEntityRelationType relationType);
-
-    void addRelatedEntity(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType);
-
+    String getRelationType();
+    
 }

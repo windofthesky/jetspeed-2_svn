@@ -16,11 +16,15 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
+import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
+import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Entity;
 
 /**
@@ -33,7 +37,31 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     // entity type DAOs
     protected Map<String, EntityDAO> entityDAOs;
 
-    protected Map<RelationDefinitionKey, EntityRelationDAO> entityRelationDAOs = new HashMap<RelationDefinitionKey, EntityRelationDAO>();
+    protected Map<SecurityEntityRelationType, EntityRelationDAO> entityRelationDAOs = new HashMap<SecurityEntityRelationType, EntityRelationDAO>();
+
+    public Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes()
+    {        
+        return Collections.unmodifiableCollection(entityRelationDAOs.keySet());
+    }
+
+    public Collection<String> getSupportedEntityTypes()
+    {
+        return Collections.unmodifiableCollection(entityDAOs.keySet());
+    }
+
+    public Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes(
+            String entityType)
+    {
+        Collection<SecurityEntityRelationType> supportedRelationTypes=new ArrayList<SecurityEntityRelationType>();
+        for (SecurityEntityRelationType type : entityRelationDAOs.keySet())
+        {
+            if (type.getFromEntityType().equals(entityType) || type.getToEntityType().equals(entityType)){
+                supportedRelationTypes.add(type);
+            }
+            
+        }
+        return Collections.unmodifiableCollection(supportedRelationTypes);
+    }
 
     private EntityDAO getDAOForEntity(Entity entity)
     {
@@ -44,22 +72,28 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     private EntityRelationDAO getRelationDAO(String relationType,
             String fromEntityType, String targetEntityType)
     {
-        return entityRelationDAOs.get(new RelationDefinitionKey(relationType,
+        return entityRelationDAOs.get(new SecurityEntityRelationTypeImpl(relationType,
                 fromEntityType, targetEntityType));
     }
 
     public void addRelatedEntity(Entity sourceEntity, Entity targetEntity,
-            String relationType)
+            SecurityEntityRelationType relationType)
     {
-        EntityDAO sourceDao = getDAOForEntity(sourceEntity);
-        EntityDAO targetDao = getDAOForEntity(targetEntity);
-        if (sourceDao != null && targetDao != null)
+        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
+        if (relationDAO != null)
         {
-            EntityRelationDAO relationDAO = getRelationDAO(relationType,
-                    sourceEntity.getType(), targetEntity.getType());
+            EntityDAO sourceDAO;
+            EntityDAO targetDAO;
+            if (relationType.getFromEntityType().equals(sourceEntity.getType())){
+                sourceDAO=entityDAOs.get(sourceEntity.getType());
+                targetDAO=entityDAOs.get(relationType.getToEntityType());
+            } else {
+                targetDAO=entityDAOs.get(sourceEntity.getType());
+                sourceDAO=entityDAOs.get(relationType.getToEntityType());
+            }         
             if (relationDAO != null)
             {
-                relationDAO.relate(sourceDao, targetDao, sourceEntity,
+                relationDAO.relate(sourceDAO, targetDAO, sourceEntity,
                         targetEntity);
             }
         }
@@ -77,17 +111,31 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         return dao != null ? dao.getEntity(entityId) : null;
     }
 
-    public Collection<Entity> getRelatedEntities(Entity sourceEntity,
-            String targetEntityType, String relationType)
+    public Collection<Entity> getRelatedEntitiesTo(Entity fromEntity,
+            SecurityEntityRelationType relationType)
     {
-        EntityDAO sourceDAO = getDAOForEntity(sourceEntity);
-        EntityDAO targetDAO = entityDAOs.get(targetEntityType);
-        if (sourceDAO != null && targetDAO != null)
+        EntityDAO fromDAO=entityDAOs.get(relationType.getFromEntityType());
+        EntityDAO toDAO=entityDAOs.get(relationType.getToEntityType());
+        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
+        if (fromDAO != null && toDAO != null && relationDAO != null)
         {
-            EntityRelationDAO relationDAO = getRelationDAO(relationType,
-                    sourceEntity.getType(), targetEntityType);
-            if (relationDAO != null) { return relationDAO.getRelatedEntities(
-                    sourceDAO, targetDAO, sourceEntity); }
+            return relationDAO.getRelatedEntitiesTo(
+                    fromDAO, toDAO, fromEntity); 
+        }
+        return null; // todo : throw exception, since combination of entity
+                     // types and relation type is not configured.
+    }
+
+    public Collection<Entity> getRelatedEntitiesFrom(Entity toEntity,
+            SecurityEntityRelationType relationType)
+    {
+        EntityDAO fromDAO=entityDAOs.get(relationType.getFromEntityType());
+        EntityDAO toDAO=entityDAOs.get(relationType.getToEntityType());
+        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
+        if (fromDAO != null && toDAO != null && relationDAO != null)
+        {
+            return relationDAO.getRelatedEntitiesFrom(
+                    fromDAO, toDAO, toEntity); 
         }
         return null; // todo : throw exception, since combination of entity
                      // types and relation type is not configured.
@@ -113,89 +161,8 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         this.entityRelationDAOs.clear();
         for (EntityRelationDAO dao : entityRelationDAOs)
         {
-            this.entityRelationDAOs.put(new RelationDefinitionKey(dao
-                    .getRelationType(), dao.getFromEntityType(), dao
-                    .getToEntityType()), dao);
+            this.entityRelationDAOs.put( dao.getRelationType(), dao);
         }
     }
-
-    private class RelationDefinitionKey
-    {
-
-        private String sourceEntityType, targetEntityType, relationType;
-
-        public RelationDefinitionKey(String relationType,
-                String sourceEntityType, String targetEntityType)
-        {
-            super();
-            this.relationType = relationType;
-            this.sourceEntityType = sourceEntityType;
-            this.targetEntityType = targetEntityType;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result
-                    + ((relationType == null) ? 0 : relationType.hashCode());
-            result = prime
-                    * result
-                    + ((sourceEntityType == null) ? 0 : sourceEntityType
-                            .hashCode());
-            result = prime
-                    * result
-                    + ((targetEntityType == null) ? 0 : targetEntityType
-                            .hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            RelationDefinitionKey other = (RelationDefinitionKey) obj;
-            if (!getOuterType().equals(other.getOuterType())) return false;
-            if (relationType == null)
-            {
-                if (other.relationType != null) return false;
-            } else if (!relationType.equals(other.relationType)) return false;
-            if (sourceEntityType == null)
-            {
-                if (other.sourceEntityType != null) return false;
-            } else if (!sourceEntityType.equals(other.sourceEntityType))
-                return false;
-            if (targetEntityType == null)
-            {
-                if (other.targetEntityType != null) return false;
-            } else if (!targetEntityType.equals(other.targetEntityType))
-                return false;
-            return true;
-        }
-
-        public String getSourceEntityType()
-        {
-            return sourceEntityType;
-        }
-
-        public String getTargetEntityType()
-        {
-            return targetEntityType;
-        }
-
-        public String getRelationType()
-        {
-            return relationType;
-        }
-
-        private DefaultLDAPEntityManager getOuterType()
-        {
-            return DefaultLDAPEntityManager.this;
-        }
-
-    }
+    
 }

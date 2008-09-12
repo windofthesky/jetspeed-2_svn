@@ -14,35 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.mapping;
-
-import java.util.Collection;
-
-import org.apache.jetspeed.security.mapping.model.Entity;
+package org.apache.jetspeed.security.spi;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityEntityManager
+public interface JetspeedPrincipalSynchronizer
 {
 
-    Collection<String> getSupportedEntityTypes();
-
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes();
-
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType);
-
-    Entity getEntity(String entityType, String entityId);
-
-    Collection<Entity> getAllEntities(String entityType);
-
-    void update(Entity entity);
-
-    Collection<Entity> getRelatedEntitiesFrom(Entity toEntity, SecurityEntityRelationType relationType);
-
-    Collection<Entity> getRelatedEntitiesTo(Entity fromEntity, SecurityEntityRelationType relationType);
-
-    void addRelatedEntity(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType);
-
+    void synchronizeUserPrincipal(String name);
+    
+    void synchronizePrincipalsByType(String principalTypeName);
+    
+    void synchronizeAll();
+    
 }

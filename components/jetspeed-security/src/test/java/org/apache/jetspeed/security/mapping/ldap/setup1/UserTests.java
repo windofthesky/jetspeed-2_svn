@@ -55,7 +55,7 @@ public class UserTests extends AbstractSetup1LDAPTest
         Collection<Entity> resultSet = new ArrayList<Entity>();
         resultSet.add(role1);
         resultSet.add(role3);
-        basicTestCases.testFetchRelatedEntities("user", "role", "hasRole",
+        basicTestCases.testFetchRelatedEntitiesTo("user", "role", "hasRole",
                 "jsmith", resultSet);
     }
 

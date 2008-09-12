@@ -51,32 +51,45 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
 
     private boolean attributeContainsInternalId; // if internal ID ( = DN) is
                                                  // not used, then the attribute
-                                                 // contains the ID9(s).
+                                                 // contains the ID(s).
 
-    public Collection<Entity> getRelatedEntities(EntityDAO sourceDao,
-            EntityDAO targetDao, Entity fromEntity)
+    public Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDAO,
+            EntityDAO toDAO, Entity toEntity)
     {
+       return internalGetRelatedEntities( toDAO, fromDAO, !useFromEntityAttribute, toEntity);               
+    }
+
+    public Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDAO,
+            EntityDAO toDAO, Entity fromEntity)
+    {
+       return internalGetRelatedEntities(fromDAO, toDAO, useFromEntityAttribute, fromEntity);               
+    }
+    
+    private Collection<Entity> internalGetRelatedEntities(EntityDAO fromDAO,
+            EntityDAO toDAO, boolean useFromEntityAttribute, Entity entity)
+    {
+        
         if (useFromEntityAttribute)
         {
-            Attribute relationAttrValue = fromEntity
+            Attribute relationAttrValue = entity
                     .getAttribute(relationAttribute);
             if (relationAttrValue != null)
             {
                 Collection<String> values = relationAttrValue.getValues();
                 if (attributeContainsInternalId)
                 {
-                    return targetDao.getEntitiesByInternalId(values);
+                    return toDAO.getEntitiesByInternalId(values);
                 } else
                 {
-                    return targetDao.getEntitiesById(values);
+                    return toDAO.getEntitiesById(values);
                 }
             }
         } else
         {
             // can be either the id or the internalId of the from entity
             String fromEntityUsedIdValue = attributeContainsInternalId ? getInternalId(
-                    fromEntity, sourceDao)
-                    : fromEntity.getId();
+                    entity, fromDAO)
+                    : entity.getId();
             // TODO : throw exception when no ID / internal ID can be found for
             // the entity
             if (!StringUtils.isEmpty(fromEntityUsedIdValue))
@@ -85,12 +98,12 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
                 // on the member attribute
                 Filter roleMemberAttrFilter = new EqualsFilter(
                         relationAttribute, fromEntityUsedIdValue);
-                return targetDao.getEntities(roleMemberAttrFilter);
+                return toDAO.getEntities(roleMemberAttrFilter);
             }
         }
         return null;
     }
-
+    
     private String getInternalId(Entity entity, EntityDAO entityDao)
     {
         if (StringUtils.isEmpty(entity.getInternalId()))

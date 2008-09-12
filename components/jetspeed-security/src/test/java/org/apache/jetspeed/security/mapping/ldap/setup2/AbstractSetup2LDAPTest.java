@@ -26,6 +26,7 @@ import java.util.Set;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.ldap.AbstractLDAPTest;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
@@ -133,9 +134,7 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         hasRoleDAO.setLdapTemplate(ldapTemplate);
         hasRoleDAO.setRelationAttribute("j2-role");
         hasRoleDAO.setUseFromEntityAttribute(true);
-        hasRoleDAO.setRelationType("hasRole");
-        hasRoleDAO.setFromEntityType("user");
-        hasRoleDAO.setToEntityType("role");
+        hasRoleDAO.setRelationType(new SecurityEntityRelationTypeImpl("hasRole","user","role"));
         hasRoleDAO.setAttributeContainsInternalId(false);
         relationDaos.add(hasRoleDAO);
 

@@ -26,6 +26,8 @@ public interface Attribute
 {
 
     String getName();
+    
+    String getMappedName();
 
     String getValue();
 

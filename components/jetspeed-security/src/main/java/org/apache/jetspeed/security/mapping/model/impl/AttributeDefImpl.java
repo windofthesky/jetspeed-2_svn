@@ -27,28 +27,59 @@ public class AttributeDefImpl implements AttributeDef
 
     private String name;
 
+    private String mappedName;
+
     private boolean multiValue; // default is single-valued
 
+    private boolean mapped=true;
+    
     public AttributeDefImpl(String name)
     {
         super();
         this.name = name;
+        this.mappedName=name; // default mapping
     }
 
     public AttributeDefImpl(String name, boolean multiValue)
     {
-        super();
-        this.name = name;
+        this(name);
         this.multiValue=multiValue;
     }
+
+    public AttributeDefImpl(String name, boolean multiValue, boolean isMapped)
+    {
+        this(name,multiValue);
+        this.mapped=isMapped;
+    }
+
     public String getName()
     {
         return name;
+    }
+    
+    public String getMappedName()
+    {
+        return mappedName;
+    }
+    
+    public void setMappedName(String mappedName)
+    {
+        this.mappedName = mappedName;
     }
 
     public boolean isMultiValue()
     {
         return multiValue;
+    }
+    
+    public boolean isMapped()
+    {
+        return mapped;
+    }
+    
+    public void setMapped(boolean mapped)
+    {
+        this.mapped = mapped;
     }
 
     public void setMultiValue(boolean multiValue)

@@ -48,13 +48,13 @@ public class UserTests extends AbstractSetup2LDAPTest
     public void testFetchRolesForUserByRoleAttribute() throws Exception
     {
         EntityImpl managerRole = new EntityImpl("role", "manager", roleAttrDefs);
-        managerRole.setInternalId("cn=manager,ou=Roles,ou=rootOrg,o=sevenSeas");
+        managerRole.setInternalId("cn=manager, ou=Roles, ou=rootOrg, o=sevenSeas");
         managerRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Manager Role");
         managerRole.setAttribute(CN_DEF.getName(), "manager");
         managerRole.setAttribute(UID_DEF.getName(), "manager");
 
-        EntityImpl userRole = new EntityImpl("role", "Role3", roleAttrDefs);
-        userRole.setInternalId("cn=user,ou=Roles,ou=rootOrg,o=sevenSeas");
+        EntityImpl userRole = new EntityImpl("role", "user", roleAttrDefs);
+        userRole.setInternalId("cn=user, ou=Roles, ou=rootOrg, o=sevenSeas");
         userRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "User Role");
         userRole.setAttribute(CN_DEF.getName(), "user");
         userRole.setAttribute(UID_DEF.getName(), "user");
@@ -62,7 +62,45 @@ public class UserTests extends AbstractSetup2LDAPTest
         Collection<Entity> resultSet = new ArrayList<Entity>();
         resultSet.add(managerRole);
         resultSet.add(userRole);
-        basicTestCases.testFetchRelatedEntities("user", "role", "hasRole",
+        
+        // test fetching roles for a user
+        basicTestCases.testFetchRelatedEntitiesTo("user", "role", "hasRole",
                 "someManager", resultSet);
+
+        // .. next, test fetching users for a role using the same EntityRelationDAO
+        Entity user = createUser("someManager", 
+                "cn=someManager, ou=People, ou=rootOrg, o=sevenSeas",
+                 "Some Manager","someManager","someManager",new String[]{"manager","user"});
+        Entity jetspeed = createUser("jetspeed", 
+                "cn=jetspeed, ou=People, ou=rootOrg, o=sevenSeas",
+                 "jetspeed","jetspeed","jetspeed",new String[]{"manager"});
+        Entity admin = createUser("admin", 
+                "cn=admin, ou=People, ou=rootOrg, o=sevenSeas",
+                 "Admin","admin","admin",new String[]{"admin","manager","user"});
+        
+        
+        resultSet = new ArrayList<Entity>();
+        resultSet.add(user);
+        resultSet.add(jetspeed);
+        resultSet.add(admin);
+        basicTestCases.testFetchRelatedEntitiesFrom("user", "role", "hasRole",
+                "manager", resultSet);
+
     }
+    
+    private Entity createUser(String id, String internalId, String givenName, String cn, String uid, String[] roles){
+        EntityImpl user = new EntityImpl("user", id, userAttrDefs);
+        user.setInternalId(internalId);
+        user.setAttribute(GIVEN_NAME_DEF.getName(), givenName);
+        user.setAttribute(CN_DEF.getName(), cn);
+        user.setAttribute(UID_DEF.getName(), uid);
+        Collection<String> roleValues=new ArrayList<String>();
+        for (int i = 0; i < roles.length; i++)
+        {
+            roleValues.add(roles[i]);
+        }
+        user.setAttribute(J2_ROLE_DEF.getName(), roleValues);
+        return user;
+    }
+
 }

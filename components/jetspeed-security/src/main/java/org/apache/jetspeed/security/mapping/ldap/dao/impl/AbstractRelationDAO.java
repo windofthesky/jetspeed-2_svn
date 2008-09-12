@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 
 import org.springframework.ldap.core.LdapTemplate;
 
+import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO;
 
 /**
@@ -28,39 +29,19 @@ public abstract class AbstractRelationDAO implements EntityRelationDAO
 {
     private LdapTemplate ldapTemplate;
 
-    private String relationType, fromEntityType, toEntityType;
-
-    public String getFromEntityType()
-    {
-        return fromEntityType;
-    }
-
-    public String getRelationType()
-    {
-        return relationType;
-    }
-
-    public String getToEntityType()
-    {
-        return toEntityType;
-    }
-
+    private SecurityEntityRelationType relationType;    
+    
     public void setLdapTemplate(LdapTemplate ldapTemplate)
     {
         this.ldapTemplate = ldapTemplate;
     }
 
-    public void setFromEntityType(String fromEntityType)
+    public SecurityEntityRelationType getRelationType()
     {
-        this.fromEntityType = fromEntityType;
+        return relationType;
     }
 
-    public void setToEntityType(String toEntityType)
-    {
-        this.toEntityType = toEntityType;
-    }
-
-    public void setRelationType(String relationType)
+    public void setRelationType(SecurityEntityRelationType relationType)
     {
         this.relationType = relationType;
     }

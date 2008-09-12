@@ -57,6 +57,11 @@ public class AttributeImpl implements Attribute
         return definition.getName();
     }
 
+    public String getMappedName()
+    {
+        return definition.getMappedName();
+    }
+    
     public Collection<String> getValues()
     {
         return getDefinition().isMultiValue() ? values : null;

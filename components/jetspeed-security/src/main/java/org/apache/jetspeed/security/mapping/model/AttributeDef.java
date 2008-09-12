@@ -26,5 +26,9 @@ public interface AttributeDef
     String getName();
 
     boolean isMultiValue();
+    
+    boolean isMapped();
+    
+    String getMappedName();
 
 }

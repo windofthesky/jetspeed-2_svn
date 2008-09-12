@@ -26,6 +26,7 @@ import java.util.Set;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.ldap.AbstractLDAPTest;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
@@ -131,9 +132,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         // use attribute on target entity (of "role" type); user IDs are stored
         // in a multi-valued attribute on roles.
         hasRoleDAO.setUseFromEntityAttribute(false);
-        hasRoleDAO.setRelationType("hasRole");
-        hasRoleDAO.setFromEntityType("user");
-        hasRoleDAO.setToEntityType("role");
+        hasRoleDAO.setRelationType(new SecurityEntityRelationTypeImpl("hasRole","user","role"));
         hasRoleDAO.setAttributeContainsInternalId(true);
         relationDaos.add(hasRoleDAO);
 
