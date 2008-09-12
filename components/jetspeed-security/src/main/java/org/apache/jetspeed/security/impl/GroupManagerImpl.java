@@ -219,12 +219,21 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         try
         {
             User user = userManager.getUser(username);
+            if (user == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+            }
             Group group = getGroup(groupName);
-            super.addAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, user, group);
+            if (group == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            }
+            super.addAssociation(user, group, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
         } 
         catch (PrincipalNotFoundException e)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            // TODO: determine *which* principal does not exist to provide the correct error message...
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
         } 
         catch (PrincipalAssociationNotAllowedException e)
         {
@@ -246,12 +255,25 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         try
         {
             User user = userManager.getUser(username);
+            if (user == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+            }
             Group group = getGroup(groupName);
-            super.removeAssociation(JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME, user, group);
+            if (group == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            }
+            super.removeAssociation(user, group, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
         } 
         catch (PrincipalAssociationRequiredException e)
         {
             throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+        }
+        catch (PrincipalNotFoundException e)
+        {
+            // TODO: determine *which* principal does not exist to provide the correct error message...
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
         }
     }
 

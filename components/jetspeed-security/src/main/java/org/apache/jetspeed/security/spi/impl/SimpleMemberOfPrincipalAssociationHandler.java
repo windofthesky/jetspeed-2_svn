@@ -20,10 +20,10 @@ package org.apache.jetspeed.security.spi.impl;
 import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.impl.JetspeedPrincipalAssociationTypeImpl;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 
 /**
  * @version $Id$
@@ -31,14 +31,14 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManag
  */
 public class SimpleMemberOfPrincipalAssociationHandler extends BaseJetspeedPrincipalAssociationHandler
 {
-    public SimpleMemberOfPrincipalAssociationHandler(JetspeedPrincipalAssociationType associationType, JetspeedPrincipalAssociationStorageManager jpasm)
+    public SimpleMemberOfPrincipalAssociationHandler(JetspeedPrincipalAssociationType associationType, JetspeedPrincipalManagerSPI from, JetspeedPrincipalManagerSPI to, JetspeedPrincipalAssociationStorageManager jpasm)
     {
-        super(associationType, jpasm);
+        super(associationType, from, to, jpasm);
     }
     
-    public SimpleMemberOfPrincipalAssociationHandler(String associationName, JetspeedPrincipalType fromType,JetspeedPrincipalType toType, boolean required, JetspeedPrincipalAssociationStorageManager jpasm)
+    public SimpleMemberOfPrincipalAssociationHandler(String associationName, JetspeedPrincipalManagerSPI from,JetspeedPrincipalManagerSPI to, boolean required, JetspeedPrincipalAssociationStorageManager jpasm)
     {
-        this(new JetspeedPrincipalAssociationTypeImpl(associationName, fromType, toType, required), jpasm);
+        this(new JetspeedPrincipalAssociationTypeImpl(associationName, from.getPrincipalType(), to.getPrincipalType(), required), from, to, jpasm);
     }
     
     /* (non-Javadoc)

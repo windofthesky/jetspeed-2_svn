@@ -114,4 +114,10 @@ public interface JetspeedPrincipalManager
 
     void removePrincipal(JetspeedPrincipal principal)
         throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
+
+    void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
+        throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
+
+    void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
+        throws PrincipalAssociationRequiredException, PrincipalNotFoundException;
 }

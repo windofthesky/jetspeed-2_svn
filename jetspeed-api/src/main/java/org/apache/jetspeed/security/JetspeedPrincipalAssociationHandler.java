@@ -22,10 +22,12 @@ package org.apache.jetspeed.security;
 public interface JetspeedPrincipalAssociationHandler
 {
     JetspeedPrincipalAssociationType getAssociationType();
+    JetspeedPrincipalManager getManagerFrom();
+    JetspeedPrincipalManager getManagerTo();
 
     void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException;
 
-    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException;
+    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException, PrincipalNotFoundException;
 
     /**
      * <p>

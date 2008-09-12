@@ -20,11 +20,13 @@ package org.apache.jetspeed.security.spi.impl;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 
 /**
  * @version $Id$
@@ -35,13 +37,22 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
     private JetspeedPrincipalAssociationType associationType;
     private JetspeedPrincipalAssociationStorageManager jpasm;
 
+    private JetspeedPrincipalManagerSPI from;
+    private JetspeedPrincipalManagerSPI to;
     
-    
-    public BaseJetspeedPrincipalAssociationHandler(JetspeedPrincipalAssociationType associationType,
-                                                   JetspeedPrincipalAssociationStorageManager jpasm)
+    public BaseJetspeedPrincipalAssociationHandler(JetspeedPrincipalAssociationType associationType, JetspeedPrincipalManagerSPI from, JetspeedPrincipalManagerSPI to, JetspeedPrincipalAssociationStorageManager jpasm)
     {
         this.associationType = associationType;
+        this.from = from;
+        this.to = to;
         this.jpasm = jpasm;
+        if (!associationType.getFromPrincipalType().getName().equals(from.getPrincipalType().getName()) ||
+                        !associationType.getToPrincipalType().getName().equals(to.getPrincipalType().getName()))
+        {
+            throw new IllegalArgumentException("Provided ManagerFrom or ManagerTo PrincipalType do not correspond with the AssociationType");
+        }
+        from.addAssociationHandler(this);
+        to.addAssociationHandler(this);
     }
 
     public void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException,
@@ -57,8 +68,18 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
     {
         return associationType;
     }
+    
+    public JetspeedPrincipalManager getManagerFrom()
+    {
+        return from;
+    }
+    
+    public JetspeedPrincipalManager getManagerTo()
+    {
+        return to;
+    }
 
-    public void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException
+    public void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException, PrincipalNotFoundException
     {
         if (from.getType().equals(associationType.getFromPrincipalType()) && to.getType().equals(associationType.getToPrincipalType()))
         {

@@ -254,11 +254,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             {
                 if (ref.type == JetspeedPrincipalAssociationReference.Type.FROM)
                 {
-                    addAssociation(ref.associationName, ref.ref, principal);
+                    addAssociation(ref.ref, principal, ref.associationName);
                 }
                 else
                 {
-                    addAssociation(ref.associationName, principal, ref.ref);
+                    addAssociation(principal, ref.ref, ref.associationName);
                 }
             }
         }
@@ -296,7 +296,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     //
     // JetspeedPrincipalAssociationHandler interface invocations
     //
-    public void addAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException
+    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException
     {
         AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());        
         JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
@@ -305,11 +305,26 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         {
             throw new PrincipalAssociationNotAllowedException();
         }
-        
+        if (from.isTransient() || from.getId() == null)
+        {
+            from = jpah.getManagerFrom().getPrincipal(from.getName());
+        }
+        if (from == null)
+        {
+            throw new PrincipalNotFoundException();
+        }
+        if (to.isTransient() || to.getId() == null)
+        {
+            to = jpah.getManagerTo().getPrincipal(to.getName());
+        }
+        if (to == null)
+        {
+            throw new PrincipalNotFoundException();
+        }
         jpah.add(from, to);
     }
 
-    public void removeAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException
+    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws PrincipalAssociationRequiredException, PrincipalNotFoundException
     {
         AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());
         JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
@@ -319,6 +334,22 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             if (jpah.getAssociationType().isRequired())
             {
                 throw new PrincipalAssociationRequiredException();
+            }
+            if (from.isTransient() || from.getId() == null)
+            {
+                from = jpah.getManagerFrom().getPrincipal(from.getName());
+            }
+            if (from == null)
+            {
+                throw new PrincipalNotFoundException();
+            }
+            if (to.isTransient() || to.getId() == null)
+            {
+                to = jpah.getManagerTo().getPrincipal(to.getName());
+            }
+            if (to == null)
+            {
+                throw new PrincipalNotFoundException();
             }
             jpah.remove(from, to);
         }
