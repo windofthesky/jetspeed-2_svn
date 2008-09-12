@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.lang.reflect.Constructor;
-import java.security.Permission;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,15 +26,13 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.jetspeed.security.Credential;
-import org.apache.jetspeed.security.FolderPermission;
-import org.apache.jetspeed.security.FragmentPermission;
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.PagePermission;
+import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.PortalResourcePermission;
-import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.JetspeedPermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityAttributeType;
@@ -45,8 +41,6 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
-import org.apache.jetspeed.security.om.InternalPermission;
-import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
 import org.apache.jetspeed.serializer.objects.JSGroup;
 import org.apache.jetspeed.serializer.objects.JSNVPElement;
 import org.apache.jetspeed.serializer.objects.JSNVPElements;
@@ -89,16 +83,16 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     protected GroupManager groupManager;
     protected RoleManager roleManager;
     protected UserManager userManager;
-    protected PasswordCredentialProvider pcp;
-    protected PermissionManager pm;
+    protected CredentialPasswordEncoder cpe;
+    protected JetspeedPermissionManager pm;
 
     public JetspeedSecuritySerializer(GroupManager groupManager, RoleManager roleManager, UserManager userManager,
-            PasswordCredentialProvider pcp, PermissionManager pm)
+            CredentialPasswordEncoder cpe, JetspeedPermissionManager pm)
     {
         this.groupManager = groupManager;
         this.roleManager = roleManager;
         this.userManager = userManager;
-        this.pcp = pcp;
+        this.cpe = cpe;
         this.pm = pm;
     }
 
@@ -147,13 +141,8 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             log.info("deleting users/roles/groups and permissions");
             try
             {
-                for (InternalPermission ip : pm.getInternalPermissions())
+                for (JetspeedPermission permission : pm.getPermissions())
                 {
-                    Class permissionClass = Class.forName(ip.getClassname());
-                    Class[] parameterTypes = { String.class, String.class };
-                    Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
-                    Object[] initArgs = { ip.getName(), ip.getActions() };
-                    Permission permission = (Permission) permissionConstructor.newInstance(initArgs);            
                     pm.removePermission(permission);
                 }                
                 String anonymousUser = userManager.getAnonymousUser();
@@ -379,8 +368,16 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
         for (JSPermission jsPermission : permissionList)
         {
-            PortalResourcePermission perm = getPermissionForType(jsPermission);
-            if ((perm != null) && (perm instanceof PortalResourcePermission) && !pm.permissionExists(perm))
+            JetspeedPermission perm = null;
+            if (jsPermission.getType().equals(JSPermission.TYPE_PORTAL))
+            {
+                perm = pm.newPermission(pm.PORTLET_PERMISSION, jsPermission.getResource(), jsPermission.getActions());
+            }
+            else
+            {
+                perm = pm.newPermission(jsPermission.getType(), jsPermission.getResource(), jsPermission.getActions());
+            }
+            if (perm != null && !pm.permissionExists(perm))
             {
                 try
                 {
@@ -394,9 +391,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         Iterator<String> _itTemp = listTemp.iterator();
                         while (_itTemp.hasNext())
                         {
-                            Principal p = (Principal) refs.groupMap.get((String) _itTemp.next());
+                            JetspeedPrincipal p = (JetspeedPrincipal) refs.groupMap.get((String) _itTemp.next());
                             if (p != null)
-                                pm.grantPermission(p, perm);
+                                pm.grantPermission(perm, p);
                         }
                     }
                     JSUserRoles jsUserRoles = jsPermission.getRoleString();
@@ -409,9 +406,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         Iterator<String> _itTemp = listTemp.iterator();
                         while (_itTemp.hasNext())
                         {
-                            Principal p = (Principal) refs.roleMap.get((String) _itTemp.next());
+                            JetspeedPrincipal p = (JetspeedPrincipal) refs.roleMap.get((String) _itTemp.next());
                             if (p != null)
-                                pm.grantPermission(p, perm);
+                                pm.grantPermission(perm, p);
                         }
                     }
                     JSUserUsers jsUserUsers = jsPermission.getUserString();
@@ -424,9 +421,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         Iterator<String> _itTemp = listTemp.iterator();
                         while (_itTemp.hasNext())
                         {
-                            Principal p = (Principal) refs.userMap.get((String) _itTemp.next());
+                            JetspeedPrincipal p = (JetspeedPrincipal) refs.userMap.get((String) _itTemp.next());
                             if (p != null)
-                                pm.grantPermission(p, perm);
+                                pm.grantPermission(perm, p);
                         }
                     }
 
@@ -441,31 +438,6 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         log.debug("recreatePermissions - done");
     }
 
-    private PortalResourcePermission getPermissionForType(JSPermission _js)
-    {
-        PortalResourcePermission newPermission = null; 
-        if ((_js.getType() == null) || (_js.getType() == JSPermission.TYPE_UNKNOWN))
-            return null;
-        try
-        {
-        if (_js.getType().equals(JSPermission.TYPE_FOLDER))
-            newPermission = new FolderPermission(_js.getResource(),_js.getActions());
-        else if (_js.getType().equals(JSPermission.TYPE_FRAGMENT))
-            newPermission = new FragmentPermission(_js.getResource(),_js.getActions());
-            else if (_js.getType().equals(JSPermission.TYPE_PAGE))
-                newPermission = new PagePermission(_js.getResource(),_js.getActions());
-                else if (_js.getType().equals(JSPermission.TYPE_PORTAL))
-                    newPermission = new PortletPermission(_js.getResource(),_js.getActions());
-                    else return null;
-            return newPermission;
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
     /**
      * Establish whether incoming passwords are "clear" text or whether they are
      * to be decoded. That however depends on whether the passwords were encoded
@@ -488,20 +460,16 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
 
     private String getEncryptionString()
     {
-        if (pcp == null)
+        if (cpe == null)
         {
-            System.err.println("Error!!! PasswordCredentialProvider not available");
+            System.err.println("Error!!! CredentialPasswordEncoder not available");
             return ENCODING_STRING;
         }
         try
         {
-            PasswordCredential credential = pcp.create(JETSPEED, ENCODING_STRING);
-            if ((credential != null) && (credential.getPassword() != null))
-                return new String(credential.getPassword());
-            else
-                return ENCODING_STRING;
+            return cpe.encode(JETSPEED, ENCODING_STRING);
         }
-        catch (Exception e)
+        catch (SecurityException e)
         {
             e.printStackTrace();
             return ENCODING_STRING;

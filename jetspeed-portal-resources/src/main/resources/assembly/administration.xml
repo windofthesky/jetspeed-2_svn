@@ -104,6 +104,9 @@
     class='org.apache.jetspeed.security.impl.SecurityAccessControllerImpl'>
     <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
+      <ref bean="org.apache.jetspeed.security.JetspeedPermissionManager" />
+    </constructor-arg>
+    <constructor-arg index='1'>
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
     <!--
@@ -111,7 +114,7 @@
       1 = Permissions = use Jetspeed Java Security Policy
       2 = Constraints = use Jetspeed (PageManager) Constraint-based Security  
     -->
-    <constructor-arg index="1">
+    <constructor-arg index="2">
       <value>2</value>
     </constructor-arg>
   </bean>

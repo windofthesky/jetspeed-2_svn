@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,11 +40,9 @@ import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
-import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.PagePermission;
-import org.apache.jetspeed.security.PortalResourcePermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
 
@@ -70,6 +69,13 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     
     private DocumentHandlerFactory handlerFactory = null;
 
+    private static JetspeedPermissionsFactory jpf;
+    
+    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    {
+        AbstractBaseElement.jpf = jpf;
+    }
+    
     public String getId()
     {
          return this.id;
@@ -442,14 +448,12 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         try
         {
             // check for granted page permissions
-            PagePermission permission = new PagePermission(path, mask);
-            AccessController.checkPermission(permission);
+            AccessController.checkPermission((Permission)jpf.newPermission(jpf.PAGE_PERMISSION, path, mask));
         }
         catch (SecurityException se)
         {
             // fallback check for granted folder permissions
-            FolderPermission permission = new FolderPermission(path, mask);
-            AccessController.checkPermission(permission);
+            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
         }
     }
 
@@ -493,7 +497,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         // check access permissions and constraints as enabled
         if (getPermissionsEnabled())
         {
-            int mask = PortalResourcePermission.parseActions(actions);
+            int mask = jpf.parseActions(actions);
             checkPermissions(mask);
         }
         if (getConstraintsEnabled())

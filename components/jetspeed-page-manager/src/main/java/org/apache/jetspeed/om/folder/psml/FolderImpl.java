@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.folder.psml;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -51,7 +52,7 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
 import org.apache.jetspeed.page.document.psml.NodeOrderCompartaor;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
-import org.apache.jetspeed.security.FolderPermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 
 /**
  * FolderImpl
@@ -71,6 +72,13 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     
     private static final Log log = LogFactory.getLog(FolderImpl.class);
 
+    private static JetspeedPermissionsFactory jpf;
+    
+    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    {
+        FolderImpl.jpf = jpf;
+    }
+    
     public FolderImpl( String path, FolderMetaDataImpl metadata, DocumentHandlerFactory handlerFactory,
                        FolderHandler folderHandler )
     {
@@ -701,8 +709,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            FolderPermission permission = new FolderPermission(path, mask);
-            AccessController.checkPermission(permission);
+            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
         }
 
         // if not checking node only, recursively check

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.security.Principal;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,11 +32,9 @@ import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
-import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.PagePermission;
-import org.apache.jetspeed.security.PortalResourcePermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
 
@@ -55,6 +54,12 @@ public abstract class BaseElementImpl implements BaseElement
 
     private boolean constraintsEnabled;
     private boolean permissionsEnabled;
+    private static JetspeedPermissionsFactory jpf;
+    
+    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    {
+        BaseElementImpl.jpf = jpf;
+    }
 
     protected BaseElementImpl(SecurityConstraintsImpl constraints)
     {
@@ -217,14 +222,12 @@ public abstract class BaseElementImpl implements BaseElement
         try
         {
             // check for granted page permissions
-            PagePermission permission = new PagePermission(path, mask);
-            AccessController.checkPermission(permission);
+            AccessController.checkPermission((Permission)jpf.newPermission(jpf.PAGE_PERMISSION, path, mask));
         }
         catch (SecurityException se)
         {
             // fallback check for granted folder permissions
-            FolderPermission permission = new FolderPermission(path, mask);
-            AccessController.checkPermission(permission);
+            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
         }
     }
 
@@ -458,7 +461,7 @@ public abstract class BaseElementImpl implements BaseElement
         // check access permissions and constraints as enabled
         if (getPermissionsEnabled())
         {
-            int mask = PortalResourcePermission.parseActions(actions);
+            int mask = jpf.parseActions(actions);
             checkPermissions(mask);
         }
         if (getConstraintsEnabled())

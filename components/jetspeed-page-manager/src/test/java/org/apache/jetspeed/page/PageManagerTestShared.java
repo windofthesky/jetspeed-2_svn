@@ -62,15 +62,15 @@ import org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler;
 import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
 import org.apache.jetspeed.page.document.psml.FileSystemFolderHandler;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
-import org.apache.jetspeed.security.FolderPermission;
-import org.apache.jetspeed.security.FragmentPermission;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.PagePermission;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.RoleImpl;
 import org.apache.jetspeed.security.impl.UserImpl;
+import org.apache.jetspeed.security.spi.impl.FolderPermission;
+import org.apache.jetspeed.security.spi.impl.FragmentPermission;
+import org.apache.jetspeed.security.spi.impl.PagePermission;
 
 /**
  * PageManagerTestShared
@@ -677,25 +677,25 @@ interface PageManagerTestShared
                         String user = principals[i].getName();
                         if (user.equals("admin"))
                         {
-                            // owner permissions
-                            permissions.add(new FolderPermission("/", "view, edit"));
-                            permissions.add(new PagePermission("/default-page.psml", "view, edit"));
+                            // owner permissions                            
+                            permissions.add(new FolderPermission.Factory().newPermission("/", "view, edit"));
+                            permissions.add(new PagePermission.Factory().newPermission("/default-page.psml", "view, edit"));
                         }
                         else if (user.equals("user"))
                         {
                             // owner permissions
-                            permissions.add(new FragmentPermission("/default-page.psml/some-app::SomePortlet", "view, edit"));
+                            permissions.add(new FragmentPermission.Factory().newPermission("/default-page.psml/some-app::SomePortlet", "view, edit"));
                             
                             // granted permissions
-                            permissions.add(new PagePermission("/user-page.psml", "view, edit"));
-                            permissions.add(new FragmentPermission("/user-page.psml/*", "view"));
+                            permissions.add(new PagePermission.Factory().newPermission("/user-page.psml", "view, edit"));
+                            permissions.add(new FragmentPermission.Factory().newPermission("/user-page.psml/*", "view"));
                         }
                         
                         // public view permissions
-                        permissions.add(new FolderPermission("/", "view"));
-                        permissions.add(new PagePermission("/default-page.psml", "view"));
-                        permissions.add(new PagePermission("/page.security", "view"));
-                        permissions.add(new FragmentPermission("security::*", "view"));
+                        permissions.add(new FolderPermission.Factory().newPermission("/", "view"));
+                        permissions.add(new PagePermission.Factory().newPermission("/default-page.psml", "view"));
+                        permissions.add(new PagePermission.Factory().newPermission("/page.security", "view"));
+                        permissions.add(new FragmentPermission.Factory().newPermission("security::*", "view"));
                     }
                     else if (principals[i] instanceof Role)
                     {
@@ -704,14 +704,14 @@ interface PageManagerTestShared
                         if (role.equals("admin"))
                         {
                             // global permissions
-                            permissions.add(new FolderPermission("<<ALL FILES>>", "view, edit"));
-                            permissions.add(new FragmentPermission("<<ALL FRAGMENTS>>", "view, edit"));
+                            permissions.add(new FolderPermission.Factory().newPermission("<<ALL FILES>>", "view, edit"));
+                            permissions.add(new FragmentPermission.Factory().newPermission("<<ALL FRAGMENTS>>", "view, edit"));
                         }
                         else if (role.equals("manager"))
                         {
                             // granted permissions
-                            permissions.add(new PagePermission("/default-page.psml", "edit"));
-                            permissions.add(new PagePermission("/default.link", "edit"));
+                            permissions.add(new PagePermission.Factory().newPermission("/default-page.psml", "edit"));
+                            permissions.add(new PagePermission.Factory().newPermission("/default.link", "edit"));
                         }
                     }
                 }

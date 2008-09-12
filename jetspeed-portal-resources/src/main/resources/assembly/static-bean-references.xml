@@ -58,4 +58,52 @@
       <property name="value"><ref bean="org.apache.jetspeed.request.RequestContextComponent"/></property>
   </bean>
 
+  <bean id="_abstractBaseElementInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="xmlPageManager,pageSerializer" />
+      <property name="className" value="org.apache.jetspeed.om.page.psml.BaseElementImpl"/>
+      <property name="methodName" value="setJetspeedPermissionsFactory"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
+  </bean>
+
+  <bean id="_baseElementImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="dbPageManager,pageSerializer" />
+      <property name="className" value="org.apache.jetspeed.om.page.impl.BaseElementImpl"/>
+      <property name="methodName" value="setJetspeedPermissionsFactory"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
+  </bean>
+
+  <bean id="_dbFolderImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="dbPageManager,pageSerializer" />
+      <property name="className" value="org.apache.jetspeed.om.folder.impl.FolderImpl"/>
+      <property name="methodName" value="setJetspeedPermissionsFactory"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
+  </bean>
+
+  <bean id="_xmlFolderImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="xmlPageManager,pageSerializer" />
+      <property name="className" value="org.apache.jetspeed.om.folder.psml.FolderImpl"/>
+      <property name="methodName" value="setJetspeedPermissionsFactory"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
+  </bean>
+
+  <bean id="_dbFragmentImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="dbPageManager,pageSerializer" />
+      <property name="className" value="org.apache.jetspeed.om.page.impl.FragmentImpl"/>
+      <property name="methodName" value="setJetspeedPermissionsFactory"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
+  </bean>
+
+  <bean id="_xmlFragmentImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="xmlPageManager,pageSerializer" />
+      <property name="className" value="org.apache.jetspeed.om.page.psml.FragmentImpl"/>
+      <property name="methodName" value="setJetspeedPermissionsFactory"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
+  </bean>
+
 </beans>

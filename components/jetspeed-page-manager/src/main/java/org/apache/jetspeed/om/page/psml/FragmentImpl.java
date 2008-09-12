@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.page.psml;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.security.FragmentPermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 
 /**
  * @version $Id$
@@ -63,6 +64,14 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     private PageImpl page;
 
     private boolean dirty = false;
+    
+    private static JetspeedPermissionsFactory jpf;
+    
+    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    {
+        FragmentImpl.jpf = jpf;
+    }
+        
     /**
      * <p>
      * Default Constructor.
@@ -540,8 +549,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // always check for granted fragment permissions
-        FragmentPermission permission = new FragmentPermission(path, mask);
-        AccessController.checkPermission(permission);
+        AccessController.checkPermission((Permission)jpf.newPermission(jpf.FRAGMENT_PERMISSION, path, mask));
     }
 
     /* (non-Javadoc)

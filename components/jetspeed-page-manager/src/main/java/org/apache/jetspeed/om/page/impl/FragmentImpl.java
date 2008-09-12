@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
-import org.apache.jetspeed.security.FragmentPermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 
 /**
  * FragmentImpl
@@ -61,6 +62,13 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     private FragmentPreferenceList fragmentPreferences;
     private PageImpl page;
 
+    private static JetspeedPermissionsFactory jpf;
+    
+    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    {
+        FragmentImpl.jpf = jpf;
+    }
+    
     public FragmentImpl()
     {
         super(new FragmentSecurityConstraintsImpl());
@@ -557,8 +565,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // always check for granted fragment permissions
-        FragmentPermission permission = new FragmentPermission(path, mask);
-        AccessController.checkPermission(permission);
+        AccessController.checkPermission((Permission)jpf.newPermission(jpf.FRAGMENT_PERMISSION,path, mask));
     }
 
     /* (non-Javadoc)

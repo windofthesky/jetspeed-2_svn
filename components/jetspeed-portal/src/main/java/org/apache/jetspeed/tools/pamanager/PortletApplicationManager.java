@@ -18,8 +18,6 @@ package org.apache.jetspeed.tools.pamanager;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.Permission;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,8 +35,8 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -69,7 +67,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PortletWindowAccessor windowAccess;
     protected SearchEngine          searchEngine;
     protected RoleManager           roleManager;
-    protected PermissionManager     permissionManager;
+    protected JetspeedPermissionManager permissionManager;
     protected boolean               autoCreateRoles;
     protected List                  permissionRoles;
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
@@ -88,7 +86,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	 */
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
-        PermissionManager permissionManager, SearchEngine searchEngine,
+        JetspeedPermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List permissionRoles, NodeManager nodeManager, String appRoot)
 	{
 		this.portletFactory     = portletFactory;
@@ -790,11 +788,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 Role userRole = roleManager.getRole(roleName);
                 if (userRole != null)
                 {
-                    Permission permission = new PortletPermission(paName + "::*", "view, edit");
+                    JetspeedPermission permission = permissionManager.newPermission(permissionManager.PORTLET_PERMISSION, paName + "::*", "view, edit");
                     if (!permissionManager.permissionExists(permission))
                     {
                         permissionManager.addPermission(permission);
-                        permissionManager.grantPermission((Principal) userRole, permission);
+                        permissionManager.grantPermission(permission, userRole);
                     }                    
                 }
             }
@@ -816,7 +814,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 Role userRole = roleManager.getRole(roleName);
                 if (userRole != null)
                 {
-                    Permission permission = new PortletPermission(paName + "::*", "view, edit");
+                    JetspeedPermission permission = permissionManager.newPermission(permissionManager.PORTLET_PERMISSION, paName + "::*", "view, edit");
                     if (permissionManager.permissionExists(permission))
                     {
                         permissionManager.removePermission(permission);

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.security.AccessController;
+import java.security.Permission;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.jetspeed.page.document.impl.NodeSetImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
-import org.apache.jetspeed.security.FolderPermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
 /**
@@ -88,6 +89,13 @@ public class FolderImpl extends NodeImpl implements Folder
     private NodeSet allNodeSet;
     private FolderMenuDefinitionList menuDefinitions;
 
+    private static JetspeedPermissionsFactory jpf;
+    
+    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    {
+        FolderImpl.jpf = jpf;
+    }
+    
     public FolderImpl()
     {
         super(new FolderSecurityConstraintsImpl());
@@ -511,8 +519,7 @@ public class FolderImpl extends NodeImpl implements Folder
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            FolderPermission permission = new FolderPermission(path, mask);
-            AccessController.checkPermission(permission);
+            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
         }
 
         // if not checking node only, recursively check

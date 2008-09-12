@@ -19,12 +19,13 @@ package org.apache.jetspeed.security.impl;
 
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.security.Permission;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.security.PortletPermission;
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
 import org.apache.jetspeed.security.SecurityAccessController;
 
 /**
@@ -36,13 +37,16 @@ import org.apache.jetspeed.security.SecurityAccessController;
  */
 public class SecurityAccessControllerImpl implements SecurityAccessController
 {
-    protected PageManager pageManager;
+    protected JetspeedPermissionsFactory jpf;
+    protected PageManager pageManager;    
     protected int securityMode = SecurityAccessController.PERMISSIONS;
     
-    public SecurityAccessControllerImpl(PageManager pageManager, int securityMode)
+    public SecurityAccessControllerImpl(JetspeedPermissionsFactory jpf, PageManager pageManager, int securityMode)
     {
+        this.jpf = jpf;
         this.pageManager = pageManager;
         this.securityMode = securityMode;
+        
     }
     
     public int getSecurityMode()
@@ -72,7 +76,7 @@ public class SecurityAccessControllerImpl implements SecurityAccessController
         {
             try
             {
-                AccessController.checkPermission(new PortletPermission(portlet.getUniqueName(), mask));
+                AccessController.checkPermission((Permission)jpf.newPermission(jpf.PORTLET_PERMISSION,portlet.getUniqueName(), mask));
             }
             catch (AccessControlException ace)
             {
