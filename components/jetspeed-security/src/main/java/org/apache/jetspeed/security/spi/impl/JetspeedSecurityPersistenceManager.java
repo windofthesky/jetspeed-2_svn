@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.i18n.KeyedMessage;
-import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -38,7 +37,6 @@ import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
-import org.apache.jetspeed.security.spi.JetspeedPrincipalPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialAccessManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager;
@@ -224,18 +222,6 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("attributes.value", attributeValue);
         Query query = QueryFactory.newQuery(type.getPrincipalClass(),criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
-    }
-
-    public List<String> getPrincipals(JetspeedPermission permission)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<String> getPrincipals(JetspeedPermission permission, JetspeedPrincipalType type)
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public boolean principalExists(String principalName, JetspeedPrincipalType type)
@@ -461,4 +447,42 @@ public class JetspeedSecurityPersistenceManager
             }
         }
     }
+
+    //
+    // JetspeedPermissionStorageManager interface implementation
+    //
+    public void addPermission(PersistentJetspeedPermission permission)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, List<JetspeedPrincipal> principal)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void removePermission(PersistentJetspeedPermission permission)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void revokeAllPermissions(JetspeedPrincipal principal)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void updatePermission(PersistentJetspeedPermission permission, String actions)
+    {
+        // TODO Auto-generated method stub
+    }    
 }

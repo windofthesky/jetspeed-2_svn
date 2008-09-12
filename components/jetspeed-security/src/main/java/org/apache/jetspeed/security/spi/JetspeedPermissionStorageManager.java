@@ -18,20 +18,20 @@ package org.apache.jetspeed.security.spi;
 
 import java.util.List;
 
-import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermission;
 
 /**
  * @version $Id$
  */
 public interface JetspeedPermissionStorageManager
 {
-    void addPermission(JetspeedPermission permission);
-    void removePermission(JetspeedPermission permission);
-    void updatePermission(JetspeedPermission permission, String actions);
+    void addPermission(PersistentJetspeedPermission permission);
+    void removePermission(PersistentJetspeedPermission permission);
+    void updatePermission(PersistentJetspeedPermission permission, String actions);
 
-    void grantPermission(JetspeedPermission permission, JetspeedPrincipal principal);
-    void revokePermission(JetspeedPermission permission, JetspeedPrincipal principal);
-    void grantPermissionOnlyTo(JetspeedPermission permission, List<JetspeedPrincipal> principal);
+    void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal);
+    void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal);
+    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, List<JetspeedPrincipal> principal);
     void revokeAllPermissions(JetspeedPrincipal principal);
 }
