@@ -24,12 +24,11 @@ import java.security.Permissions;
 import java.security.Policy;
 import java.security.Principal;
 import java.security.ProtectionDomain;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.PermissionManager;
+import org.apache.jetspeed.security.JetspeedPermissionManager;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityPolicies;
 
@@ -55,17 +54,17 @@ public class RdbmsPolicy extends Policy
 
     /**
      * <p>
-     * InternalPermission Manager Service.
+     * JetspeedPermission Manager Service.
      * </p>
      */
-    private PermissionManager pms = null;
+    private JetspeedPermissionManager pms = null;
 
     /**
      * <p>
      * Default constructor.
      * </p>
      */
-    public RdbmsPolicy(PermissionManager pms)
+    public RdbmsPolicy(JetspeedPermissionManager pms)
     {
         if (log.isDebugEnabled())
         {
@@ -124,7 +123,7 @@ public class RdbmsPolicy extends Policy
 //                                + principals[i].getClass() + "]");
 //                    }
 //                }
-                perms = pms.getPermissions(Arrays.asList(principals));
+                perms = pms.getPermissions(principals);
             }
         }
         else

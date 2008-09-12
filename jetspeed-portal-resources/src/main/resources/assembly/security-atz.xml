@@ -22,7 +22,7 @@
   <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" class="org.apache.jetspeed.security.impl.RdbmsPolicy">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.PermissionManager" />
+      <ref bean="org.apache.jetspeed.security.JetspeedPermissionManager" />
     </constructor-arg>
   </bean>
 
