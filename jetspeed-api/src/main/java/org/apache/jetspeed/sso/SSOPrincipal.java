@@ -20,7 +20,7 @@ package org.apache.jetspeed.sso;
 import java.util.Collection;
 import java.sql.Timestamp;
 
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipal;
 
 /**
  */
@@ -31,7 +31,7 @@ public interface SSOPrincipal {
 	 * @param principal
 	 * Adds remote principal to the main (logged in) principal
 	 */
-	public void addRemotePrincipal(InternalUserPrincipal principal);
+	public void addRemotePrincipal(JetspeedPrincipal principal);
    /**
     * <p>
     * Getter for the principal id.
