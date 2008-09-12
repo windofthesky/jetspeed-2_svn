@@ -34,6 +34,7 @@ import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
+import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -74,11 +75,10 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         this.userType = userType;
         this.roleType = roleType;
     }
-    
-    public void setUserManager(UserManager manager)
-    {
-    	this.userManager = manager;
-    }
+    public void init()
+    {    	
+    	userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+    }      
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.GroupManager#newGroup(java.lang.String, boolean)

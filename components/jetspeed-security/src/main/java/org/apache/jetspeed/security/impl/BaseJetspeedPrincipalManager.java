@@ -27,6 +27,7 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
@@ -82,7 +83,8 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAssociations = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>();
     private JetspeedPrincipalAccessManager jpam;
     private JetspeedPrincipalStorageManager jpsm;
-
+    //added for removing circular dependciese
+    protected static JetspeedPrincipalManagerProvider jpmp;
     public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
                                         JetspeedPrincipalStorageManager jpsm)
     {
@@ -102,7 +104,17 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             throw new IllegalArgumentException("Principal is transient");
         }
     }
-
+    
+    public static void setJetspeedPrincipalManagerProvider(JetspeedPrincipalManagerProvider Jpmp)
+    {
+    	jpmp = Jpmp;
+    }
+    
+    protected JetspeedPrincipalManagerProvider getJetspeedPrincipalManagerProvider()
+    {
+    	return jpmp;
+    }
+    
     public final JetspeedPrincipalType getPrincipalType()
     {
         return principalType;

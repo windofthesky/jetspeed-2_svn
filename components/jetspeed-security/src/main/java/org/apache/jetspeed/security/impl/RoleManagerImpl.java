@@ -79,7 +79,11 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         this.userType = userType;
         this.groupType = groupType;
     }
-    
+    public void init()
+    {    	
+    	userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+    	groupManager = (GroupManager)getJetspeedPrincipalManagerProvider().getManager(groupType);
+    }
     public void setUserManager(UserManager manager)
     {
     	this.userManager = manager;

@@ -31,6 +31,7 @@ import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -81,16 +82,12 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		this.groupType = groupType;
 	}
 
-    public void setGroupManager(GroupManager manager)
-    {
-    	this.groupManager = manager;
+    public void init()
+    {    	
+    	groupManager = (GroupManager)getJetspeedPrincipalManagerProvider().getManager(groupType);
+    	roleManager = (RoleManager)getJetspeedPrincipalManagerProvider().getManager(roleType);	
     }
-    
-    public void setRoleManager(RoleManager manager)
-    {
-    	this.roleManager = manager;
-    }
-    
+       
 	public User addUser(String username) throws SecurityException
 	{
 	    return addUser(username, true);
