@@ -22,10 +22,10 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
-import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
 
 /**
  * <p>

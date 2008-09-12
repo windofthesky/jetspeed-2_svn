@@ -19,8 +19,6 @@ package org.apache.jetspeed.security;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
-
 /**
  * @version $Id$
  */

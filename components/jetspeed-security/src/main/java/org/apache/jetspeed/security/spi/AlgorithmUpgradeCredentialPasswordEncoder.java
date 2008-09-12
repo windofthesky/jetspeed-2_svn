@@ -16,6 +16,7 @@
 */
 package org.apache.jetspeed.security.spi;
 
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 

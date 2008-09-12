@@ -22,8 +22,8 @@ import java.security.MessageDigest;
 
 import javax.mail.internet.MimeUtility;
 
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
 
 public class Jetspeed1CredentialPasswordEncoder implements
 		CredentialPasswordEncoder {

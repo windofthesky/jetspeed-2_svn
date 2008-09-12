@@ -19,9 +19,9 @@ package org.apache.jetspeed.security.spi.impl;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
 
 /**
  * <p>
@@ -53,7 +53,7 @@ public class DefaultCredentialPasswordValidator implements CredentialPasswordVal
     }
     
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialPasswordValidator#validate(java.lang.String)
+     * @see org.apache.jetspeed.security.CredentialPasswordValidator#validate(java.lang.String)
      */
     public void validate(String clearTextPassword) throws SecurityException
     {

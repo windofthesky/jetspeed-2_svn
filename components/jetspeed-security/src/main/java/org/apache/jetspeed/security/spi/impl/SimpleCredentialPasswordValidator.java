@@ -16,9 +16,9 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
+import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
 
 /**
  * <p>
@@ -44,7 +44,7 @@ public class SimpleCredentialPasswordValidator implements CredentialPasswordVali
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialPasswordValidator#validate(String)
+     * @see org.apache.jetspeed.security.CredentialPasswordValidator#validate(String)
      */
     public void validate(String clearTextPassword) throws SecurityException
     {

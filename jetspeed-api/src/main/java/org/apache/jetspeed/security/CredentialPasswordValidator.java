@@ -14,19 +14,18 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.security;
 
-import org.apache.jetspeed.security.SecurityException;
 
 /**
  * <p>
- * CredentialPasswordEncoder
+ * CredentialPasswordValidator
  * </p>
  * 
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
- * @version $Id: CredentialPasswordEncoder.java 187914 2004-11-08 22:36:04Z ate $
+ * @version $Id: CredentialPasswordValidator.java 187914 2004-11-08 22:36:04Z ate $
  */
-public interface CredentialPasswordEncoder
+public interface CredentialPasswordValidator
 {
-    String encode(String userName, String clearTextPassword) throws SecurityException;
+    void validate(String clearTextPassword) throws SecurityException;
 }

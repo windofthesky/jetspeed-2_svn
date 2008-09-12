@@ -20,8 +20,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
 
 /**
  * <p>
@@ -64,7 +64,7 @@ public class MessageDigestCredentialPasswordEncoder implements CredentialPasswor
     }
 
     /**
-     * @see org.apache.jetspeed.security.spi.CredentialPasswordEncoder#encode(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.security.CredentialPasswordEncoder#encode(java.lang.String, java.lang.String)
      */
     public String encode(String userName, String clearTextPassword)
             throws SecurityException

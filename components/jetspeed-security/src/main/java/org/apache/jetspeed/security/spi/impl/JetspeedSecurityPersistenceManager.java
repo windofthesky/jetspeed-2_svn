@@ -28,7 +28,6 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PortalResourcePermission;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
@@ -58,8 +57,7 @@ public class JetspeedSecurityPersistenceManager
     extends InitablePersistenceBrokerDaoSupport
     implements JetspeedPrincipalAccessManager,
                 JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager, UserPasswordCredentialAccessManager,
-                JetspeedPrincipalAssociationStorageManager, JetspeedPrincipalPermissionStorageManager,
-                JetspeedPermissionStorageManager
+                JetspeedPrincipalAssociationStorageManager, JetspeedPermissionStorageManager
 {
     public JetspeedSecurityPersistenceManager(String repositoryPath)
     {
@@ -462,41 +460,5 @@ public class JetspeedSecurityPersistenceManager
                 throw new RuntimeException(new SecurityException(msg, pbe));
             }
         }
-    }
-
-    //
-    // JetspeedPrincipalPermissionStorageManager interface implementation
-    //
-    public void grantPermission(JetspeedPrincipal principal, JetspeedPermission permission)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void revokeAll(JetspeedPrincipal principal)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void revokePermission(JetspeedPrincipal principal, JetspeedPermission permission)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    //
-    // JetspeedPermissionStorageManager interface implementation
-    //
-    public void addPermission(PortalResourcePermission p)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void removePermission(JetspeedPermission p)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public void updatePermission(JetspeedPermission p)
-    {
-        // TODO Auto-generated method stub
     }
 }

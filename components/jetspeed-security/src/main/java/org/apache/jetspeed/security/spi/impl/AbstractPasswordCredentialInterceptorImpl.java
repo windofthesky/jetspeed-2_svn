@@ -16,10 +16,10 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
+import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
-import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
 import org.apache.jetspeed.security.spi.PasswordCredentialInterceptor;
 
 /**

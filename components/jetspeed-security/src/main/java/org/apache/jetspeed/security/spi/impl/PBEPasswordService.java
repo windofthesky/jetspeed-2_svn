@@ -19,8 +19,8 @@ package org.apache.jetspeed.security.spi.impl;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.PasswordEncodingService;
-import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.util.PBEPasswordTool;
 
 /**

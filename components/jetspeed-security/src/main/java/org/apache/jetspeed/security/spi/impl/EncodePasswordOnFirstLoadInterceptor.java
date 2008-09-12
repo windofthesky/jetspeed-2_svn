@@ -20,10 +20,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
+import org.apache.jetspeed.security.CredentialPasswordEncoder;
+import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.spi.CredentialPasswordEncoder;
-import org.apache.jetspeed.security.spi.CredentialPasswordValidator;
 
 /**
  * <p>
