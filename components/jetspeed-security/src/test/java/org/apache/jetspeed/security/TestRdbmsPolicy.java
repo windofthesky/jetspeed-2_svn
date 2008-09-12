@@ -29,6 +29,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.spi.impl.PortletPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**

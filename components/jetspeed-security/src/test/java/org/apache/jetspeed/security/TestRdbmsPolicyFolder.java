@@ -26,11 +26,10 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.FolderPermission;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.UserPrincipal;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
+import org.apache.jetspeed.security.spi.impl.BaseJetspeedPermission;
+import org.apache.jetspeed.security.spi.impl.FolderPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -106,7 +105,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/test.xml", "edit");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/test.xml", "edit");                    
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -124,7 +123,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm2 = new FolderPermission("/files/test.xml", "secure");
+                    BaseJetspeedPermission perm2 = new FolderPermission.Factory().newPermission("/files/test.xml", "secure");
                     AccessController.checkPermission(perm2);
                     return null;
                 }
@@ -149,7 +148,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/subfolder1/test.xml", "view");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder1/test.xml", "view");
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -167,7 +166,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/subfolder1/foo", "view");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder1/foo", "view");
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -184,7 +183,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/subfolder1/foo/anotherdoc.xml", "view");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder1/foo/anotherdoc.xml", "view");
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -202,7 +201,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/subfolder2/test.xml", "view");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder2/test.xml", "view");
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -220,7 +219,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/subfolder2/foo", "view");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder2/foo", "view");
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -237,7 +236,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             {
                 public Object run()
                 {
-                    FolderPermission perm1 = new FolderPermission("/files/subfolder2/foo/anotherdoc.xml", "view");
+                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder2/foo/anotherdoc.xml", "view");
                     AccessController.checkPermission(perm1);
                     return null;
                 }
@@ -255,19 +254,22 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
      */
     protected void initUser()
     {
+        User user = null;
         try
         {
-            ums.addUser("anon", "password");
+            user = ums.addUser("anon", false);
+            PasswordCredential pwc = ums.getPasswordCredential(user);
+            pwc.setPassword(null, "password");
+            ums.storePasswordCredential(pwc);
         }
         catch (SecurityException sex)
         {
+            sex.printStackTrace();
         }
         
-        UserPrincipal user = new UserPrincipalImpl("anon");
-
-        FolderPermission perm1 = new FolderPermission("/files/test.xml", "edit");
-        FolderPermission perm2 = new FolderPermission("/files/subfolder1/*", "view");
-        FolderPermission perm3 = new FolderPermission("/files/subfolder2/-", "view");
+        BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/test.xml", "edit");
+        BaseJetspeedPermission perm2 = new FolderPermission.Factory().newPermission("/files/subfolder1/*", "view");
+        BaseJetspeedPermission perm3 = new FolderPermission.Factory().newPermission("/files/subfolder2/-", "view");
         try
         {
             pms.addPermission(perm1);
@@ -291,9 +293,9 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
     {
         ums.removeUser("anon");
 
-        FolderPermission perm1 = new FolderPermission("/files/test.xml", "edit");
-        FolderPermission perm2 = new FolderPermission("/files/subfolder1/*", "view");
-        FolderPermission perm3 = new FolderPermission("/files/subfolder2/-", "view");
+        BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/test.xml", "edit");
+        BaseJetspeedPermission perm2 = new FolderPermission.Factory().newPermission("/files/subfolder1/*", "view");
+        BaseJetspeedPermission perm3 = new FolderPermission.Factory().newPermission("/files/subfolder2/-", "view");
         pms.removePermission(perm1);
         pms.removePermission(perm2);
         pms.removePermission(perm3);

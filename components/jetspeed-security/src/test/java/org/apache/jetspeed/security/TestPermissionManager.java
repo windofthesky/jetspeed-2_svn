@@ -40,6 +40,7 @@ import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.om.InternalPermission;
+import org.apache.jetspeed.security.spi.impl.PortletPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**

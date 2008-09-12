@@ -20,8 +20,8 @@ import java.security.Permission;
 import java.security.Permissions;
 import java.security.Principal;
 
-import org.apache.jetspeed.security.PortletPermission;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
+import org.apache.jetspeed.security.spi.impl.PortletPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 import junit.framework.Test;
