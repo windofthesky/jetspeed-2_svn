@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public interface JetspeedPermissionManager extends JetspeedPermissionsFactory
+public interface PermissionManager extends PermissionFactory
 {
     boolean permissionExists(JetspeedPermission permission);
     Permissions getPermissions(JetspeedPrincipal principal);
@@ -36,14 +36,14 @@ public interface JetspeedPermissionManager extends JetspeedPermissionsFactory
 
     List<JetspeedPermission> getPermissions(String typeName, String nameFilter);
 
-    List<JetspeedPrincipal> getPrincipals(JetspeedPermission permission);
+    List<JetspeedPrincipal> getPrincipals(JetspeedPermission permission) throws SecurityException;
     
-    void addPermission(JetspeedPermission permission);
-    void removePermission(JetspeedPermission permission);
-    void updatePermission(JetspeedPermission permission, String actions);
+    void addPermission(JetspeedPermission permission) throws SecurityException;
+    void removePermission(JetspeedPermission permission) throws SecurityException;
+    void updatePermission(JetspeedPermission permission, String actions) throws SecurityException;
 
-    void grantPermission(JetspeedPermission permission, JetspeedPrincipal principal);
-    void revokePermission(JetspeedPermission permission, JetspeedPrincipal principal);
-    void grantPermissionOnlyTo(JetspeedPermission permission, List<JetspeedPrincipal> principal);
-    void revokeAllPermissions(JetspeedPrincipal principal);
+    void grantPermission(JetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
+    void revokePermission(JetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
+    void grantPermissionOnlyTo(JetspeedPermission permission, List<JetspeedPrincipal> principal) throws SecurityException;
+    void revokeAllPermissions(JetspeedPrincipal principal) throws SecurityException;
 }

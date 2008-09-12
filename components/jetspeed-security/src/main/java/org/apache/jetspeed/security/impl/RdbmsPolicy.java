@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.JetspeedPermissionManager;
+import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityPolicies;
 
@@ -57,14 +57,14 @@ public class RdbmsPolicy extends Policy
      * JetspeedPermission Manager Service.
      * </p>
      */
-    private JetspeedPermissionManager pms = null;
+    private PermissionManager pms = null;
 
     /**
      * <p>
      * Default constructor.
      * </p>
      */
-    public RdbmsPolicy(JetspeedPermissionManager pms)
+    public RdbmsPolicy(PermissionManager pms)
     {
         if (log.isDebugEnabled())
         {

@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.lang.reflect.Constructor;
-import java.security.Permission;
-import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +29,8 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.TransientRole;
@@ -57,17 +56,14 @@ public class SecurityPermissionAction
 {
     protected static final Log log = LogFactory.getLog(SecurityPermissionAction.class);
     protected PermissionManager pm = null;
-    protected Map permissionMap = null;
 
     public SecurityPermissionAction(String template, 
                             String errorTemplate, 
                             PermissionManager pm,
-                            PortletActionSecurityBehavior securityBehavior,
-                            Map permissionMap)
+                            PortletActionSecurityBehavior securityBehavior)
     {
         super(template, errorTemplate, securityBehavior); 
         this.pm = pm;
-        this.permissionMap = permissionMap;
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -141,7 +137,7 @@ public class SecurityPermissionAction
             if (actions == null)
                 throw new AJAXException("Missing 'actions' parameter");
             
-            Permission permission = createPermissionFromClass(type, resource, actions);            
+            JetspeedPermission permission = pm.newPermission(type, resource, actions);            
             if (pm.permissionExists(permission))
             {
                 throw new AJAXException("Permission " + resource + " already exists");
@@ -177,17 +173,17 @@ public class SecurityPermissionAction
                 // assume no change
                 oldActions = actions;
             }
-            Permission permission = null;
+            JetspeedPermission permission = null;
             if (!oldActions.equals(actions))
             {
-                permission = createPermissionFromClass(type, resource, oldActions);
+                permission = pm.newPermission(type, resource, oldActions);
                 pm.removePermission(permission);
-                permission = createPermissionFromClass(type, resource, actions);
+                permission = pm.newPermission(type, resource, actions);
                 pm.addPermission(permission);
             }   
             else
             {
-                permission = createPermissionFromClass(type, resource, actions);
+                permission = pm.newPermission(type, resource, actions);
             }
             String roleNames = getActionParameter(requestContext, "roles");
             return updateRoles(permission, roleNames);
@@ -198,21 +194,22 @@ public class SecurityPermissionAction
         }        
     }
     
-    protected int updateRoles(Permission permission, String roleNames)
+    protected int updateRoles(JetspeedPermission permission, String roleNames)
     throws SecurityException
     {
-        List principals = new LinkedList();
+        int count = 0;
+        List<JetspeedPrincipal> principals = new LinkedList<JetspeedPrincipal>();
         if (roleNames != null)
         {
             StringTokenizer toke = new StringTokenizer(roleNames, ",");
             while (toke.hasMoreTokens())
             {
-                String roleName = toke.nextToken();
-                Principal role = new TransientRole(roleName);
-                principals.add(role);
+                principals.add(new TransientRole(toke.nextToken()));
+                count++;
             }                
         }
-        return pm.updatePermission(permission, principals);                    
+        pm.grantPermissionOnlyTo(permission, principals);
+        return count;
     }
 
     protected int removePermission(RequestContext requestContext, Map resultMap)
@@ -229,7 +226,7 @@ public class SecurityPermissionAction
             String actions = getActionParameter(requestContext, "actions");
             if (actions == null)
                 throw new AJAXException("Missing 'actions' parameter");            
-            Permission permission = createPermissionFromClass(type, resource, actions);            
+            JetspeedPermission permission = pm.newPermission(type, resource, actions);            
             if (pm.permissionExists(permission))
             {
                 pm.removePermission(permission);
@@ -242,32 +239,4 @@ public class SecurityPermissionAction
             throw new AJAXException(e.toString(), e);
         }
     }
-    
-    protected String mapTypeToClassname(String type)
-    throws AJAXException
-    {
-        String classname = (String)this.permissionMap.get(type);
-        if (classname != null)
-            return classname;
-        throw new AJAXException("Bad resource 'type' parameter: " + type);            
-    }
-    
-    protected Permission createPermissionFromClass(String type, String resource, String actions)
-    throws AJAXException
-    {        
-        String classname = this.mapTypeToClassname(type);
-        try
-        {
-            Class permissionClass = Class.forName(classname);
-            Class[] parameterTypes = { String.class, String.class };
-            Constructor permissionConstructor = permissionClass.getConstructor(parameterTypes);
-            Object[] initArgs = { resource, actions };
-            return (Permission)permissionConstructor.newInstance(initArgs);
-        }
-        catch (Exception e)
-        {
-            throw new AJAXException("Failed to create permission: " + type, e);
-        }
-    }
-    
 }

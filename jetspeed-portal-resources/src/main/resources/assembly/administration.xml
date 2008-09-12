@@ -104,7 +104,7 @@
     class='org.apache.jetspeed.security.impl.SecurityAccessControllerImpl'>
     <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
-      <ref bean="org.apache.jetspeed.security.JetspeedPermissionManager" />
+      <ref bean="org.apache.jetspeed.security.PermissionManager" />
     </constructor-arg>
     <constructor-arg index='1'>
       <ref bean="org.apache.jetspeed.page.PageManager" />

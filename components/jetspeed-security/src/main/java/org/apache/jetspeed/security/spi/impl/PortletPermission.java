@@ -18,7 +18,7 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Permission;
 
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 
 /**
  * <p>Portlet permission.</p>
@@ -38,7 +38,7 @@ public class PortletPermission extends BaseJetspeedPermission
     {
         public Factory()
         {
-            super(JetspeedPermissionsFactory.PORTLET_PERMISSION);
+            super(PermissionFactory.PORTLET_PERMISSION);
         }
 
         public PortletPermission newPermission(String name, String actions)

@@ -457,19 +457,6 @@
     <constructor-arg index='3'>
       <ref bean="RolesSecurityBehavior" />
     </constructor-arg>
-    <constructor-arg index='4'>
-      <map>
-        <entry key="portlet">
-          <value>org.apache.jetspeed.security.PortletPermission</value>
-        </entry>
-        <entry key="page">
-          <value>org.apache.jetspeed.security.PagePermission</value>
-        </entry>
-        <entry key="folder">
-          <value>org.apache.jetspeed.security.FolderPermission</value>
-        </entry>
-      </map>
-    </constructor-arg>
   </bean>
 
   <bean id="AjaxSecurityConstraints" class="org.apache.jetspeed.layout.impl.SecurityConstraintsAction">

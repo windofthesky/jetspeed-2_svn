@@ -22,7 +22,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.apache.jetspeed.security.JetspeedPermission;
-import org.apache.jetspeed.security.JetspeedPermissionManager;
+import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
@@ -31,9 +31,9 @@ import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
  * @version $Id$
  *
  */
-public class JetspeedPermissionManagerImpl implements JetspeedPermissionManager
+public class PermissionManagerImpl implements PermissionManager
 {
-    public JetspeedPermissionManagerImpl(List<JetspeedPermissionFactory> factories, JetspeedPermissionStorageManager jpsm)
+    public PermissionManagerImpl(List<JetspeedPermissionFactory> factories, JetspeedPermissionStorageManager jpsm)
     {
     }
     

@@ -34,7 +34,7 @@ import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
 
@@ -54,11 +54,11 @@ public abstract class BaseElementImpl implements BaseElement
 
     private boolean constraintsEnabled;
     private boolean permissionsEnabled;
-    private static JetspeedPermissionsFactory jpf;
+    private static PermissionFactory pf;
     
-    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    public static void setPermissionsFactory(PermissionFactory pf)
     {
-        BaseElementImpl.jpf = jpf;
+        BaseElementImpl.pf = pf;
     }
 
     protected BaseElementImpl(SecurityConstraintsImpl constraints)
@@ -222,12 +222,12 @@ public abstract class BaseElementImpl implements BaseElement
         try
         {
             // check for granted page permissions
-            AccessController.checkPermission((Permission)jpf.newPermission(jpf.PAGE_PERMISSION, path, mask));
+            AccessController.checkPermission((Permission)pf.newPermission(pf.PAGE_PERMISSION, path, mask));
         }
         catch (SecurityException se)
         {
             // fallback check for granted folder permissions
-            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
+            AccessController.checkPermission((Permission)pf.newPermission(pf.FOLDER_PERMISSION, path, mask));
         }
     }
 
@@ -461,7 +461,7 @@ public abstract class BaseElementImpl implements BaseElement
         // check access permissions and constraints as enabled
         if (getPermissionsEnabled())
         {
-            int mask = jpf.parseActions(actions);
+            int mask = pf.parseActions(actions);
             checkPermissions(mask);
         }
         if (getConstraintsEnabled())

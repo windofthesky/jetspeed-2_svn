@@ -18,7 +18,7 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Permission;
 
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 
 /**
  * <p>Folder permission.</p>
@@ -57,7 +57,7 @@ public class FolderPermission extends BaseJetspeedPermission
     {
         public Factory()
         {
-            super(JetspeedPermissionsFactory.FOLDER_PERMISSION);
+            super(PermissionFactory.FOLDER_PERMISSION);
         }
 
         public FolderPermission newPermission(String name, String actions)

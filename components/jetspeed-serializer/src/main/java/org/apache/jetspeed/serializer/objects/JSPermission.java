@@ -70,49 +70,6 @@ public class JSPermission
 
 	public static final String TYPE_UNKNOWN = "unknown".intern();
 
-	public String getClassForType(String type)
-	{
-		if ((type == null) || (type.length() == 0) || (type.equals(TYPE_UNKNOWN)))
-			return "";
-		if (type.equals(TYPE_FOLDER))
-			return "org.apache.jetspeed.security.FolderPermission";
-		if (type.equals(TYPE_FRAGMENT))
-			return "org.apache.jetspeed.security.FragmentPermission";
-		if (type.equals(TYPE_PAGE))
-			return "org.apache.jetspeed.security.PagePermission";
-		if (type.equals(TYPE_PORTALRESOURCE))
-			return "org.apache.jetspeed.security.PortalResourcePermission";
-		if (type.equals(TYPE_PORTALRESOURCECOLLECTION))
-			return "org.apache.jetspeed.security.PortalResourcePermissionCollection";
-		if (type.equals(TYPE_PORTAL))
-			return "org.apache.jetspeed.security.PortletPermission";
-		return "";
-	}
-
-	public String getTypeForClass(String className)
-	{
-		if ((className == null) || (className.length() == 0))
-			return TYPE_UNKNOWN;
-		if (className.equals("org.apache.jetspeed.security.FolderPermission"))
-			return TYPE_FOLDER;
-
-		if (className.equals("org.apache.jetspeed.security.FragmentPermission"))
-			return TYPE_FRAGMENT;
-		if (className.equals("org.apache.jetspeed.security.PagePermission"))
-			return TYPE_PAGE;
-		if (className.equals("org.apache.jetspeed.security.PortletPermission"))
-			return TYPE_PORTAL;
-
-		if (className
-				.equals("org.apache.jetspeed.security.PortalResourcePermission"))
-			return TYPE_PORTALRESOURCE;
-		if (className
-				.equals("org.apache.jetspeed.security.PortalResourcePermissionCollection"))
-			return TYPE_PORTALRESOURCECOLLECTION;
-		return TYPE_UNKNOWN;
-
-	}
-
 	public JSPermission()
 	{
 	}

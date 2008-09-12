@@ -32,7 +32,7 @@ import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.JetspeedPermissionManager;
+import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityAttributeType;
@@ -84,10 +84,10 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     protected RoleManager roleManager;
     protected UserManager userManager;
     protected CredentialPasswordEncoder cpe;
-    protected JetspeedPermissionManager pm;
+    protected PermissionManager pm;
 
     public JetspeedSecuritySerializer(GroupManager groupManager, RoleManager roleManager, UserManager userManager,
-            CredentialPasswordEncoder cpe, JetspeedPermissionManager pm)
+            CredentialPasswordEncoder cpe, PermissionManager pm)
     {
         this.groupManager = groupManager;
         this.roleManager = roleManager;

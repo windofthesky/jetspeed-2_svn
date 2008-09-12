@@ -52,7 +52,7 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
 import org.apache.jetspeed.page.document.psml.NodeOrderCompartaor;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 
 /**
  * FolderImpl
@@ -72,11 +72,11 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     
     private static final Log log = LogFactory.getLog(FolderImpl.class);
 
-    private static JetspeedPermissionsFactory jpf;
+    private static PermissionFactory pf;
     
-    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    public static void setPermissionsFactory(PermissionFactory pf)
     {
-        FolderImpl.jpf = jpf;
+        FolderImpl.pf = pf;
     }
     
     public FolderImpl( String path, FolderMetaDataImpl metadata, DocumentHandlerFactory handlerFactory,
@@ -709,7 +709,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // to be skipped due to explicity granted access
         if (!checkParentsOnly)
         {
-            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
+            AccessController.checkPermission((Permission)pf.newPermission(pf.FOLDER_PERMISSION, path, mask));
         }
 
         // if not checking node only, recursively check

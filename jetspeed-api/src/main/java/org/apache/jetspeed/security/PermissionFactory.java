@@ -21,7 +21,7 @@ package org.apache.jetspeed.security;
  * @version $Id$
  *
  */
-public interface JetspeedPermissionsFactory
+public interface PermissionFactory
 {
     String FOLDER_PERMISSION = "folder";
     String FRAGMENT_PERMISSION = "fragment";

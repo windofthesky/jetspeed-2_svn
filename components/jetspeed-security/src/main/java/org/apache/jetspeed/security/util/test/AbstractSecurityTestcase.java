@@ -31,7 +31,7 @@ import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.JetspeedPermissionManager;
+import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityProvider;
@@ -85,7 +85,7 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //
     protected RoleManager rms;
 
     /** The permission manager. */
-    protected JetspeedPermissionManager pms;
+    protected PermissionManager pms;
 
     protected SecurityAttributesProvider sap;
     
@@ -121,7 +121,7 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //
         rms = (RoleManager) scm.getComponent("org.apache.jetspeed.security.RoleManager");
                 
         // Authorization.
-        pms = (JetspeedPermissionManager) scm.getComponent("org.apache.jetspeed.security.JetspeedPermissionManager");
+        pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
         
         sap = (SecurityAttributesProvider) scm.getComponent("org.apache.jetspeed.security.attributes.SecurityAttributesProvider");
         

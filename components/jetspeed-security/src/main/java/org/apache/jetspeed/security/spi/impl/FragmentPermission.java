@@ -18,7 +18,7 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Permission;
 
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 
 /**
  * <p>Fragment permission.</p>
@@ -51,7 +51,7 @@ public class FragmentPermission extends BaseJetspeedPermission
     {
         public Factory()
         {
-            super(JetspeedPermissionsFactory.FRAGMENT_PERMISSION);
+            super(PermissionFactory.FRAGMENT_PERMISSION);
         }
 
         public FragmentPermission newPermission(String name, String actions)

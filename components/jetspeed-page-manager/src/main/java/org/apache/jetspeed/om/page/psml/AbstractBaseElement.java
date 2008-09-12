@@ -42,7 +42,7 @@ import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
 
@@ -69,11 +69,11 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     
     private DocumentHandlerFactory handlerFactory = null;
 
-    private static JetspeedPermissionsFactory jpf;
+    private static PermissionFactory pf;
     
-    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    public static void setPermissionsFactory(PermissionFactory pf)
     {
-        AbstractBaseElement.jpf = jpf;
+        AbstractBaseElement.pf = pf;
     }
     
     public String getId()
@@ -448,12 +448,12 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         try
         {
             // check for granted page permissions
-            AccessController.checkPermission((Permission)jpf.newPermission(jpf.PAGE_PERMISSION, path, mask));
+            AccessController.checkPermission((Permission)pf.newPermission(pf.PAGE_PERMISSION, path, mask));
         }
         catch (SecurityException se)
         {
             // fallback check for granted folder permissions
-            AccessController.checkPermission((Permission)jpf.newPermission(jpf.FOLDER_PERMISSION, path, mask));
+            AccessController.checkPermission((Permission)pf.newPermission(pf.FOLDER_PERMISSION, path, mask));
         }
     }
 
@@ -497,7 +497,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         // check access permissions and constraints as enabled
         if (getPermissionsEnabled())
         {
-            int mask = jpf.parseActions(actions);
+            int mask = pf.parseActions(actions);
             checkPermissions(mask);
         }
         if (getConstraintsEnabled())

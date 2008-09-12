@@ -36,7 +36,7 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
-import org.apache.jetspeed.security.JetspeedPermissionManager;
+import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -67,7 +67,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PortletWindowAccessor windowAccess;
     protected SearchEngine          searchEngine;
     protected RoleManager           roleManager;
-    protected JetspeedPermissionManager permissionManager;
+    protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
     protected List                  permissionRoles;
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
@@ -86,7 +86,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	 */
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
-        JetspeedPermissionManager permissionManager, SearchEngine searchEngine,
+        PermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List permissionRoles, NodeManager nodeManager, String appRoot)
 	{
 		this.portletFactory     = portletFactory;

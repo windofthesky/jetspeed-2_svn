@@ -29,7 +29,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+import org.apache.jetspeed.security.PermissionFactory;
 
 /**
  * @version $Id$
@@ -65,11 +65,11 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
 
     private boolean dirty = false;
     
-    private static JetspeedPermissionsFactory jpf;
+    private static PermissionFactory pf;
     
-    public static void setJetspeedPermissionsFactory(JetspeedPermissionsFactory jpf)
+    public static void setPermissionsFactory(PermissionFactory pf)
     {
-        FragmentImpl.jpf = jpf;
+        FragmentImpl.pf = pf;
     }
         
     /**
@@ -549,7 +549,7 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // always check for granted fragment permissions
-        AccessController.checkPermission((Permission)jpf.newPermission(jpf.FRAGMENT_PERMISSION, path, mask));
+        AccessController.checkPermission((Permission)pf.newPermission(pf.FRAGMENT_PERMISSION, path, mask));
     }
 
     /* (non-Javadoc)
