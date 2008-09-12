@@ -18,6 +18,8 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Permission;
 
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+
 /**
  * <p>Portlet permission.</p>
  * <p>This code was partially inspired from articles from:</p>
@@ -32,26 +34,46 @@ public class PortletPermission extends BaseJetspeedPermission
 {
     private static final long serialVersionUID = 3246898917185555596L;
 
-    /**
-     * <p>Constructor for PortletPermission.</p>
-     *
-     * @param name    The portlet name.
-     * @param actions The actions on the portlet.
-     */
-    public PortletPermission(String name, String actions)
+    public static class Factory extends JetspeedPermissionFactory
     {
-        super(name, actions);
+        public Factory()
+        {
+            super(JetspeedPermissionsFactory.PORTLET_PERMISSION);
+        }
+
+        public PortletPermission newPermission(String name, String actions)
+        {
+            return new PortletPermission(getType(), name, actions);
+        }
+
+        public PortletPermission newPermission(String name, int mask)
+        {
+            return new PortletPermission(getType(), name, mask);
+        }
+
+        public PortletPermission newPermission(PersistentJetspeedPermission permission)
+        {
+            if (permission.getType().equals(getType()))
+            {
+                return new PortletPermission(permission);
+            }
+            throw new IllegalArgumentException("Permission is not of type "+getType());
+        }
+    }
+    
+    protected PortletPermission(PersistentJetspeedPermission permission)
+    {
+        super(permission);
     }
 
-    /**
-     * <p>Constructor for PortletPermission.</p>
-     *
-     * @param name The portlet name.
-     * @param mask The mask of actions on the portlet.
-     */
-    public PortletPermission(String name, int mask)
+    protected PortletPermission(String type, String name, int mask)
     {
-        super(name, mask);
+        super(type, name, mask);
+    }
+
+    protected PortletPermission(String type, String name, String actions)
+    {
+        super(type, name, actions);
     }
 
     public boolean implies(Permission permission)

@@ -72,29 +72,40 @@ public abstract class BaseJetspeedPermission extends Permission implements Jetsp
      * <p>Mask used for determining what actions are allowed or requested.</p>
      */
     protected final int mask;
+    
+    private final PersistentJetspeedPermission permission;
 
-    /**
-     * <p>Constructor for PortletPermission.</p>
-     *
-     * @param name    The portlet name.
-     * @param actions The actions on the portlet.
-     */
-    public BaseJetspeedPermission(String name, String actions)
+    public BaseJetspeedPermission(String type, String name, int mask)
     {
         super(name);
-        mask = parseActions(actions);
-    }
-
-    /**
-     * <p>Constructor for PortletPermission.</p>
-     *
-     * @param name The portlet name.
-     * @param mask The mask representing actions on the portlet.
-     */
-    public BaseJetspeedPermission(String name, int mask)
-    {
-        super(name);
+        this.permission = new PersistentJetspeedPermission(type, name);
         this.mask = mask;
+    }
+    
+    public BaseJetspeedPermission(String type, String name, String actions)
+    {
+        super(name);
+        this.permission = new PersistentJetspeedPermission(type, name);
+        this.mask = parseActions(actions);
+    }
+    
+    public BaseJetspeedPermission(PersistentJetspeedPermission permission)
+    {
+        super(permission.getName());
+        this.permission = permission;
+        this.mask = parseActions(permission.getActions());
+    }
+    
+    public PersistentJetspeedPermission getPermission()
+    {
+        // ensure actions field is filled
+        getActions();
+        return permission;
+    }
+    
+    public String getType()
+    {
+        return permission.getType();
     }
 
     /**
@@ -102,8 +113,7 @@ public abstract class BaseJetspeedPermission extends Permission implements Jetsp
      */
     public int hashCode()
     {
-        StringBuffer value = new StringBuffer(getName());
-        return value.toString().hashCode() ^ mask;
+        return getName().hashCode() ^ mask;
     }
 
     /**
@@ -111,7 +121,11 @@ public abstract class BaseJetspeedPermission extends Permission implements Jetsp
      */
     public String getActions()
     {
-        return JetspeedActions.getContainerActions(mask);
+        if (permission.getActions() == null)
+        {
+            permission.setActions(JetspeedActions.getContainerActions(mask));
+        }
+        return permission.getActions();        
     }
 
     /* (non-Javadoc)

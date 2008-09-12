@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi.impl;
 
 /**
  * @version $Id$
  *
  */
-public interface JetspeedPermissionsFactory
+public abstract class JetspeedPermissionFactory
 {
-    String FOLDER_PERMISSION = "folder";
-    String FRAGMENT_PERMISSION = "fragment";
-    String PORTLET_PERMISSION = "portlet";
-    String PAGE_PERMISSION = "page";
+    private String type;
 
-    JetspeedPermission newPermission(String type, String name, String actions);
+    public JetspeedPermissionFactory(String type)
+    {
+        this.type = type;
+    }
 
-    JetspeedPermission newPermission(String type, String name, int mask);
+    public String getType()
+    {
+        return type;
+    }
     
-    int parseActions(String actions);
+    public abstract BaseJetspeedPermission newPermission(String name, String actions);    
+
+    public abstract BaseJetspeedPermission newPermission(String name, int mask);    
+
+    public abstract BaseJetspeedPermission newPermission(PersistentJetspeedPermission permission);    
 }

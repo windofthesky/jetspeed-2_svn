@@ -18,6 +18,8 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Permission;
 
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+
 /**
  * <p>Folder permission.</p>
  * <p>This code was partially inspired from articles from:</p>
@@ -32,26 +34,46 @@ public class PagePermission extends BaseJetspeedPermission
 {
     private static final long serialVersionUID = -3374203894346164388L;
 
-    /**
-     * <p>Constructor for PagePermission.</p>
-     *
-     * @param name    The portlet name.
-     * @param actions The actions on the portlet.
-     */
-    public PagePermission(String name, String actions)
+    public static class Factory extends JetspeedPermissionFactory
     {
-        super(name, actions);
+        public Factory()
+        {
+            super(JetspeedPermissionsFactory.PAGE_PERMISSION);
+        }
+
+        public PagePermission newPermission(String name, String actions)
+        {
+            return new PagePermission(getType(), name, actions);
+        }
+
+        public PagePermission newPermission(String name, int mask)
+        {
+            return new PagePermission(getType(), name, mask);
+        }
+
+        public PagePermission newPermission(PersistentJetspeedPermission permission)
+        {
+            if (permission.getType().equals(getType()))
+            {
+                return new PagePermission(permission);
+            }
+            throw new IllegalArgumentException("Permission is not of type "+getType());
+        }
+    }
+    
+    protected PagePermission(PersistentJetspeedPermission permission)
+    {
+        super(permission);
     }
 
-    /**
-     * <p>Constructor for PagePermission.</p>
-     *
-     * @param name The portlet name.
-     * @param mask The mask for actions on the portlet.
-     */
-    public PagePermission(String name, int mask)
+    protected PagePermission(String type, String name, int mask)
     {
-        super(name, mask);
+        super(type, name, mask);
+    }
+
+    protected PagePermission(String type, String name, String actions)
+    {
+        super(type, name, actions);
     }
 
     public boolean implies(Permission permission)

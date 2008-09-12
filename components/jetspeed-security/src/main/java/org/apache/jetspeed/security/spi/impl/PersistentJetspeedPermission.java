@@ -15,22 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi.impl;
+
+import org.apache.jetspeed.security.JetspeedPermission;
 
 /**
  * @version $Id$
  *
  */
-public interface JetspeedPermissionsFactory
+public class PersistentJetspeedPermission implements JetspeedPermission
 {
-    String FOLDER_PERMISSION = "folder";
-    String FRAGMENT_PERMISSION = "fragment";
-    String PORTLET_PERMISSION = "portlet";
-    String PAGE_PERMISSION = "page";
+    private static final long serialVersionUID = 9200223005769593282L;
+    private Long id;
+    private String type;
+    private String name;
+    private String actions;
 
-    JetspeedPermission newPermission(String type, String name, String actions);
+    public PersistentJetspeedPermission(String type, String name)
+    {
+        this.type = type;
+        this.name = name;
+    }
 
-    JetspeedPermission newPermission(String type, String name, int mask);
+    public Long getId()
+    {
+        return id;
+    }
     
-    int parseActions(String actions);
+    public String getType()
+    {
+        return type;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getActions()
+    {
+        return actions;
+    }
+    
+    public void setActions(String actions)
+    {
+        this.actions = actions;
+    }
 }

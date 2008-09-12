@@ -18,6 +18,8 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Permission;
 
+import org.apache.jetspeed.security.JetspeedPermissionsFactory;
+
 /**
  * <p>Folder permission.</p>
  * <p>This code was partially inspired from:</p>
@@ -50,6 +52,33 @@ public class FolderPermission extends BaseJetspeedPermission
     public static final String WILD_CHAR_STR = new String(new char[]{WILD_CHAR});
     public static final char FOLDER_SEPARATOR = '/';
     public static final String FOLDER_SEPARATOR_STR = new String(new char[]{FOLDER_SEPARATOR});
+    
+    public static class Factory extends JetspeedPermissionFactory
+    {
+        public Factory()
+        {
+            super(JetspeedPermissionsFactory.FOLDER_PERMISSION);
+        }
+
+        public FolderPermission newPermission(String name, String actions)
+        {
+            return new FolderPermission(getType(), name, actions);
+        }
+
+        public FolderPermission newPermission(String name, int mask)
+        {
+            return new FolderPermission(getType(), name, mask);
+        }
+
+        public FolderPermission newPermission(PersistentJetspeedPermission permission)
+        {
+            if (permission.getType().equals(getType()))
+            {
+                return new FolderPermission(permission);
+            }
+            throw new IllegalArgumentException("Permission is not of type "+getType());
+        }
+    }
 
     // does path indicate a folder? (wildcard or recursive)
     private boolean folder;
@@ -59,27 +88,21 @@ public class FolderPermission extends BaseJetspeedPermission
 
     private String cpath;
 
-    /**
-     * <p>Constructor for FolderPermission.</p>
-     *
-     * @param name    The portlet name.
-     * @param actions The actions on the portlet.
-     */
-    public FolderPermission(String name, String actions)
+    protected FolderPermission(PersistentJetspeedPermission permission)
     {
-        super(name, actions);
+        super(permission);
         parsePath();
     }
 
-    /**
-     * <p>Constructor for FolderPermission.</p>
-     *
-     * @param name The portlet name.
-     * @param mask The mask of actions on the portlet.
-     */
-    public FolderPermission(String name, int mask)
+    protected FolderPermission(String type, String name, int mask)
     {
-        super(name, mask);
+        super(type, name, mask);
+        parsePath();
+    }
+
+    protected FolderPermission(String type, String name, String actions)
+    {
+        super(type, name, actions);
         parsePath();
     }
 
