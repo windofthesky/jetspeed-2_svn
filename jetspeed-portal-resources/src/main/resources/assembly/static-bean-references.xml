@@ -105,5 +105,11 @@
       <property name="typeName" value="org.apache.jetspeed.security.JetspeedPermissionsFactory"/>
       <property name="value"><ref bean="org.apache.jetspeed.security.JetspeedPermissionManager"/></property>
   </bean>
-
+  <bean id="_TransientJetspeedPrincipal" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="JetspeedPrincipal,TransientJetspeedPrincipal" />
+      <property name="className" value="org.apache.jetspeed.security.impl.TransientJetspeedPrincipal"/>
+      <property name="methodName" value="setJetspeedPrincipalManagerProvider"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPrincipalManagerProvider"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"/></property>
+   </bean>	
 </beans>
