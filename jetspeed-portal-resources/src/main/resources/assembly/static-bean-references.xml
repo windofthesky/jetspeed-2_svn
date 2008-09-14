@@ -18,7 +18,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="_portletEntityImplPortletRegistryInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+  <bean id="_portletEntityImplPortletRegistryInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer" >
     <meta key="j2:cat" value="default,registry"/>
       <property name="className" value="org.apache.jetspeed.components.portletentity.PortletEntityImpl"/>
       <property name="methodName" value="setPortletRegistry"/>
@@ -109,6 +109,13 @@
   <bean id="_TransientJetspeedPrincipal" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,security" />
       <property name="className" value="org.apache.jetspeed.security.impl.TransientJetspeedPrincipal"/>
+      <property name="methodName" value="setJetspeedPrincipalManagerProvider"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPrincipalManagerProvider"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"/></property>
+   </bean>	
+  <bean id="_BaseJetspeedPrincipalManager" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="default,security" />
+      <property name="className" value="org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager"/>
       <property name="methodName" value="setJetspeedPrincipalManagerProvider"/>
       <property name="typeName" value="org.apache.jetspeed.security.JetspeedPrincipalManagerProvider"/>
       <property name="value"><ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"/></property>
