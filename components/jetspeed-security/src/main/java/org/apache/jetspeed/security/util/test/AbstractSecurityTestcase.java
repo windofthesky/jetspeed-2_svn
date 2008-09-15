@@ -26,25 +26,14 @@ import javax.security.auth.Subject;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.AuthenticationProviderProxy;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.SecurityProvider;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.attributes.SecurityAttributesProvider;
-import org.apache.jetspeed.security.impl.SecurityProviderImpl;
-import org.apache.jetspeed.security.spi.CredentialHandler;
-import org.apache.jetspeed.security.spi.GroupSecurityHandler;
-import org.apache.jetspeed.security.spi.RoleSecurityHandler;
-import org.apache.jetspeed.security.spi.SecurityAccess;
-import org.apache.jetspeed.security.spi.SecurityMappingHandler;
-import org.apache.jetspeed.security.spi.UserSecurityHandler;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
@@ -54,27 +43,6 @@ import org.apache.jetspeed.security.spi.UserSecurityHandler;
  */
 public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //AbstractPrefsSupportedTestCase
 {
-    /** SPI Common Queries. */
-    protected SecurityAccess securityAccess;
-    
-    /** SPI Default Credential Handler. */
-    protected CredentialHandler ch;
-    
-    /** SPI Default User Security Handler. */
-    protected UserSecurityHandler ush;
-    
-    /** SPI Default Role Security Handler. */
-    protected RoleSecurityHandler rsh;
-    
-    /** SPI Default Group Security Handler. */
-    protected GroupSecurityHandler gsh;
-    
-    /** SPI Default Security Mapping Handler. */
-    protected SecurityMappingHandler smh;
-    
-    /** The security provider. */
-    protected SecurityProvider securityProvider;
-    
     /** The user manager. */
     protected UserManager ums;
 
@@ -87,8 +55,6 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //
     /** The permission manager. */
     protected PermissionManager pms;
 
-    protected SecurityAttributesProvider sap;
-    
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -97,33 +63,16 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //
 
         super.setUp();
 
-        // SPI Security handlers.
-        securityAccess = (SecurityAccess) scm.getComponent("org.apache.jetspeed.security.spi.SecurityAccess");
-        ch =  (CredentialHandler) scm.getComponent("org.apache.jetspeed.security.spi.CredentialHandler");
-        ush = (UserSecurityHandler) scm.getComponent("org.apache.jetspeed.security.spi.UserSecurityHandler");
-        rsh = (RoleSecurityHandler) scm.getComponent("org.apache.jetspeed.security.spi.RoleSecurityHandler");
-        gsh = (GroupSecurityHandler) scm.getComponent("org.apache.jetspeed.security.spi.GroupSecurityHandler");
-        smh = (SecurityMappingHandler) scm.getComponent("org.apache.jetspeed.security.spi.SecurityMappingHandler");
         
         // Security Providers.        
         AuthenticationProvider atnProvider = (AuthenticationProvider) scm.getComponent("org.apache.jetspeed.security.AuthenticationProvider");
-        List atnProviders = new ArrayList();
-        atnProviders.add(atnProvider);
-        
        
-        AuthenticationProviderProxy atnProviderProxy = (AuthenticationProviderProxy) scm.getComponent("org.apache.jetspeed.security.AuthenticationProviderProxy");
-        securityProvider = new SecurityProviderImpl(atnProviderProxy, rsh, gsh, smh);
-        
-        securityProvider = (SecurityProvider) scm.getComponent("org.apache.jetspeed.security.SecurityProvider");
-        
         ums = (UserManager) scm.getComponent("org.apache.jetspeed.security.UserManager");
         gms = (GroupManager) scm.getComponent("org.apache.jetspeed.security.GroupManager");
         rms = (RoleManager) scm.getComponent("org.apache.jetspeed.security.RoleManager");
                 
         // Authorization.
         pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
-        
-        sap = (SecurityAttributesProvider) scm.getComponent("org.apache.jetspeed.security.attributes.SecurityAttributesProvider");
         
         new JetspeedActions(new String[] {"secure"}, new String[] {});
     }
