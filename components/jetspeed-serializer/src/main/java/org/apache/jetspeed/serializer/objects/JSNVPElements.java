@@ -33,6 +33,7 @@ import javolution.xml.stream.XMLStreamException;
 public class JSNVPElements
 {
     private List<JSNVPElement> values = new ArrayList<JSNVPElement>();
+    private String itemElementName = "preference";
 
     public int size()
     {
@@ -43,6 +44,11 @@ public class JSNVPElements
     {
     }
     
+    public JSNVPElements(String itemElementName)
+    {
+        this();
+        this.itemElementName = itemElementName;
+    }
  
     public List<JSNVPElement> getValues()
 	{
@@ -52,6 +58,11 @@ public class JSNVPElements
     public void add(JSNVPElement element)
     {
     	values.add(element);
+    }
+    
+    public String getItemElementName()
+    {
+        return this.itemElementName;
     }
 
     /***************************************************************************
@@ -68,7 +79,7 @@ public class JSNVPElements
                 JSNVPElements g = (JSNVPElements) o;
                 for (JSNVPElement element : g.values)
                 {
-                    xml.add(element,"preference", JSNVPElement.class);
+                    xml.add(element, g.getItemElementName(), JSNVPElement.class);
                 }
             } catch (Exception e)
             {
@@ -84,7 +95,7 @@ public class JSNVPElements
                 JSNVPElements g = (JSNVPElements) o;
                 while (xml.hasNext())
 				{
-					JSNVPElement elem = (JSNVPElement)xml.get("preference",JSNVPElement.class);
+					JSNVPElement elem = (JSNVPElement)xml.get(g.getItemElementName(), JSNVPElement.class);
 					g.add(elem);
 				}
             } catch (Exception e)

@@ -48,6 +48,8 @@ public class JSSnapshot implements JetspeedSerializedData
     private JSClients clients;
 
     private JSCapabilities capabilities;
+    
+    private JSPrincipals jsPrincipals;
 
     private JSRoles roles;
 
@@ -82,6 +84,7 @@ public class JSSnapshot implements JetspeedSerializedData
         mediaTypes = new JSMediaTypes();
         clients = new JSClients();
         capabilities = new JSCapabilities();
+        jsPrincipals = new JSPrincipals();
         roles = new JSRoles();
         groups = new JSGroups();
         users = new JSUsers();
@@ -195,6 +198,22 @@ public class JSSnapshot implements JetspeedSerializedData
     public void setSavedVersion(int savedVersion)
     {
         this.savedVersion = savedVersion;
+    }
+    
+    /**
+     * @return Returns the Jetspeed principals.
+     */
+    public JSPrincipals getJetspeedPrincipals()
+    {
+        return jsPrincipals;
+    }
+    
+    /**
+     * @param jsPrincipals The Jetspeed principals to set.
+     */
+    public void setJetspeedPrincipals(JSPrincipals jsPrincipals)
+    {
+        this.jsPrincipals = jsPrincipals;
     }
 
     /**
@@ -454,6 +473,10 @@ public class JSSnapshot implements JetspeedSerializedData
                 {
                     xml.add(g.getClients());
                 }
+                if ( !g.getJetspeedPrincipals().isEmpty() )
+                {
+                    xml.add(g.getJetspeedPrincipals());
+                }
                 if ( !g.getRoles().isEmpty() )
                 {
                     xml.add(g.getRoles());
@@ -528,6 +551,8 @@ public class JSSnapshot implements JetspeedSerializedData
                         g.clients = (JSClients) o1;
                     else if (o1 instanceof JSCapabilities)
                         g.capabilities = (JSCapabilities) o1;
+                    else if (o1 instanceof JSPrincipals)
+                        g.jsPrincipals = (JSPrincipals) o1;
                     else if (o1 instanceof JSRoles)
                         g.roles = (JSRoles) o1;
                     else if (o1 instanceof JSGroups)

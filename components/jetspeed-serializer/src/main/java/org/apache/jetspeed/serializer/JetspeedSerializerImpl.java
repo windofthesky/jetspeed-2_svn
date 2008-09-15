@@ -51,14 +51,17 @@ import org.apache.jetspeed.serializer.objects.JSPermission;
 import org.apache.jetspeed.serializer.objects.JSPermissions;
 import org.apache.jetspeed.serializer.objects.JSPortlet;
 import org.apache.jetspeed.serializer.objects.JSPortlets;
+import org.apache.jetspeed.serializer.objects.JSPrincipal;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
+import org.apache.jetspeed.serializer.objects.JSPrincipals;
 import org.apache.jetspeed.serializer.objects.JSProfilingRule;
 import org.apache.jetspeed.serializer.objects.JSProfilingRules;
 import org.apache.jetspeed.serializer.objects.JSRole;
 import org.apache.jetspeed.serializer.objects.JSRoles;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
+import org.apache.jetspeed.serializer.objects.JSSecurityAttributes;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 import org.apache.jetspeed.serializer.objects.JSUserAttributes;
@@ -173,6 +176,10 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
     protected void setupAliases(XMLBinding binding)
     {
+        binding.setAlias(JSPrincipal.class, "Principal");
+        binding.setAlias(JSPrincipals.class, "Principals");
+        binding.setAlias(JSSecurityAttributes.class, "SecurityAttributes");
+        binding.setAlias(JSSecurityAttributes.class, "InfoAttributes");
         binding.setAlias(JSRole.class, "Role");
         binding.setAlias(JSRoles.class, "Roles");
         binding.setAlias(JSGroup.class, "Group");
