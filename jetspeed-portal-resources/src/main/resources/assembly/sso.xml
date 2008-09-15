@@ -19,6 +19,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <!-- SSO Implementation -->
+  <!-- 
   <bean id="PersistenceBrokerSSOProvider" class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider"
     init-method="init">
     <meta key="j2:cat" value="default" />
@@ -49,5 +50,5 @@
       </props>
     </property>
 
-  </bean>
+  </bean>-->
 </beans>
