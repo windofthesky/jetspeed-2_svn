@@ -44,7 +44,7 @@ public class EncodePasswordOnFirstLoadInterceptor extends AbstractPasswordCreden
     public boolean afterLoad(String userName, PasswordCredential credential, CredentialPasswordEncoder encoder, CredentialPasswordValidator validator) throws SecurityException
     {
         boolean updated = false;
-        if (!credential.isPasswordEncoded() && encoder != null )
+        if (!credential.isEncoded() && encoder != null )
         {
             credential.setPassword(encoder.encode(userName,new String(credential.getPassword())).toCharArray(), true);
             

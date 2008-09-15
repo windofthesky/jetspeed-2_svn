@@ -340,7 +340,7 @@ public class JetspeedSecurityPersistenceManager
         {
             if (credential.getNewPassword() != null)
             {
-                credential.setPassword(credential.getNewPassword().toCharArray(), credential.isPasswordEncoded());                
+                credential.setPassword(credential.getNewPassword().toCharArray(), credential.isEncoded());                
             }
         }
         getPersistenceBroker(true).store(credential);

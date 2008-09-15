@@ -81,9 +81,9 @@ public interface PasswordCredential extends UserCredential
     
     void clearNewPasswordSet();
     
-    boolean isPasswordEncoded();
+    boolean isEncoded();
     
-    void setPasswordEncoded(boolean passwordEncoded);
+    void setEncoded(boolean encoded);
     
     void setUpdateRequired(boolean updateRequired);
     

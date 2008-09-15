@@ -57,10 +57,16 @@ public class PasswordCredentialImpl implements PasswordCredential
     /**
      * flag indicating if the current password is encoded
      */
-    private boolean passwordEncoded;
+    private boolean encoded;
     
+    /**
+     * flag (default true) indicating if the credential password is updatable (e.g. by the user itself).
+     */
     private boolean updateAllowed = true;
     
+    /**
+     * flag (default false) indicating if the credential password state is read only.
+     */
     private boolean stateReadOnly = false;
 
     /** The update required state */
@@ -159,7 +165,7 @@ public class PasswordCredentialImpl implements PasswordCredential
     {
         checkUpdatePassword();
         char[] value = password.clone();
-        this.passwordEncoded = encoded;
+        this.encoded = encoded;
         if (!value.equals(password))
         {
             this.password = value;
@@ -177,7 +183,7 @@ public class PasswordCredentialImpl implements PasswordCredential
             this.newPassword = newPassword;
             this.oldPassword = oldPassword;
             password = null;
-            passwordEncoded = false;
+            encoded = false;
             newPasswordSet = true;
         }
     }
@@ -204,15 +210,15 @@ public class PasswordCredentialImpl implements PasswordCredential
         return newPasswordSet;
     }
     
-    public boolean isPasswordEncoded()
+    public boolean isEncoded()
     {
-        return passwordEncoded;
+        return encoded;
     }
     
-    public void setPasswordEncoded(boolean passwordEncoded)
+    public void setEncoded(boolean encoded)
     {
         checkUpdatePassword();
-        this.passwordEncoded = passwordEncoded;
+        this.encoded = encoded;
     }
     
     public boolean isUpdateAllowed()

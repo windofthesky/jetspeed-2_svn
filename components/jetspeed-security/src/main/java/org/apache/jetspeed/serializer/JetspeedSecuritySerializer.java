@@ -237,7 +237,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         user = userManager.addUser(jsuser.getName());
                         PasswordCredential pwc = userManager.getPasswordCredential(user);
                         pwc.setPassword(null, password);
-                        pwc.setPasswordEncoded((passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
+                        pwc.setEncoded((passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
                         userManager.updateUser(user);
                         log.debug("add User done ");
                     }

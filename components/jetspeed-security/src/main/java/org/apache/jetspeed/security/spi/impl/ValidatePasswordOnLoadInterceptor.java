@@ -45,7 +45,7 @@ public class ValidatePasswordOnLoadInterceptor extends AbstractPasswordCredentia
     public boolean afterLoad(String userName, PasswordCredential credential, CredentialPasswordEncoder encoder, CredentialPasswordValidator validator) throws SecurityException
     {
         boolean updated = false;
-        if (!credential.isPasswordEncoded() && validator != null )
+        if (!credential.isEncoded() && validator != null )
         {
             try
             {
