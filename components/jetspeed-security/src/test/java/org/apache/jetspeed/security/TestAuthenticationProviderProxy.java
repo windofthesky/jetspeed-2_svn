@@ -23,7 +23,7 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.impl.AuthenticationProviderImpl;
+import org.apache.jetspeed.security.impl.BaseAuthenticationProvider;
 import org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl;
 import org.apache.jetspeed.security.impl.GroupManagerImpl;
 import org.apache.jetspeed.security.impl.LoginModuleProxyImpl;
@@ -62,7 +62,7 @@ public class TestAuthenticationProviderProxy extends AbstractSecurityTestcase
         // CredentialHandler ldapCh = new LdapCredentialHandler();
 
         // Security Providers.
-        AuthenticationProvider defaultAtnProvider = new AuthenticationProviderImpl("DefaultAuthenticator",
+        AuthenticationProvider defaultAtnProvider = new BaseAuthenticationProvider("DefaultAuthenticator",
                 "The default authenticator", "login.conf", ch, ush);
         // AuthenticationProvider ldapAtnProvider = new
         // AuthenticationProviderImpl("LdapAuthenticator", "The ldap

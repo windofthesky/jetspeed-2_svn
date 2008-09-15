@@ -357,7 +357,7 @@ public class JetspeedSecurityPersistenceManager
      * Warning: the User reference is configured with auto-retrieve="false".
      * This is intentionally done to allow retrieving the credential for authentication purposes only
      * so no User is loaded when authentication fails.
-     * The user reference can be materialized by OJB using persistenceBroker.retrieveReference(credential, "user").
+     * The user reference can be materialized by calling {@link #loadPasswordCredentialUser(PasswordCredential)}.
      * </p>
      */
     public PasswordCredential getPasswordCredential(String userName)
@@ -373,6 +373,14 @@ public class JetspeedSecurityPersistenceManager
             pwc.setUserName(userName);
         }
         return pwc;
+    }
+    
+    public void loadPasswordCredentialUser(PasswordCredential credential)
+    {
+        if (credential.getUser() == null)
+        {
+            getPersistenceBroker(true).retrieveReference(credential, "user");
+        }
     }
 
     public List<PasswordCredential> getHistoricPasswordCredentials(User user)

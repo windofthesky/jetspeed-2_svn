@@ -31,11 +31,11 @@ import org.apache.jetspeed.security.SecurityException;
  * @see org.apache.jetspeed.security.AuthenticationProvider
  * @version $Id$
  */
-public class AuthenticationProviderImpl implements AuthenticationProvider
+public abstract class BaseAuthenticationProvider implements AuthenticationProvider
 {
 
     /** The logger. */
-    private static final Log log = LogFactory.getLog(AuthenticationProviderImpl.class);
+    private static final Log log = LogFactory.getLog(BaseAuthenticationProvider.class);
 
     /** The provider name. */
     private String providerName;
@@ -54,7 +54,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
      * @param credHandler The credential handler.
      * @param userSecurityHandler The user security handler.
      */
-    public AuthenticationProviderImpl(String providerName, String providerDescription)
+    public BaseAuthenticationProvider(String providerName, String providerDescription)
     {
         // The provider name.
         this.providerName = providerName;
@@ -72,7 +72,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
      * @param providerDescription The provider description.
      * @param loginConfig The login module config.
      */
-    public AuthenticationProviderImpl(String providerName, String providerDescription, String loginConfig)
+    public BaseAuthenticationProvider(String providerName, String providerDescription, String loginConfig)
     {
         this(providerName, providerDescription);
         
@@ -126,11 +126,5 @@ public class AuthenticationProviderImpl implements AuthenticationProvider
     public void setProviderName(String providerName)
     {
         this.providerName = providerName;
-    }
-
-    public AuthenticatedUser authenticate(String userName, String password) throws SecurityException
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

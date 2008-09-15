@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.security;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -30,6 +31,12 @@ public class AuthenticatedUserImpl implements AuthenticatedUser
     private Set<Object> publicCredentials;
     private Set<Object> privateCredentials;
     
+    public AuthenticatedUserImpl(User user, UserCredential privateCredential)
+    {
+        this.user = user;
+        this.privateCredentials = new HashSet<Object>(1);
+        this.privateCredentials.add(privateCredential);
+    }
     
     public AuthenticatedUserImpl(User user, Set<Object> publicCredentials, Set<Object> privateCredentials)
     {

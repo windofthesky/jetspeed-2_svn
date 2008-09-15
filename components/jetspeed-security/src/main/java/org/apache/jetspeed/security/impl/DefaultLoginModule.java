@@ -29,6 +29,8 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.LoginModuleProxy;
 import org.apache.jetspeed.security.Role;
@@ -53,7 +55,8 @@ import org.apache.jetspeed.security.AuthenticationProvider;
  */
 public class DefaultLoginModule implements LoginModule
 {
-
+    private static final Log log = LogFactory.getLog(DefaultLoginModule.class);
+    
     /** <p>LoginModule debug mode is turned off by default.</p> */
     protected boolean debug;
 
@@ -70,10 +73,10 @@ public class DefaultLoginModule implements LoginModule
     protected CallbackHandler callbackHandler;
 
     /** <p>State shared with other configured LoginModules.</p> */
-    protected Map sharedState;
+    protected Map<String,?> sharedState;
 
     /** <p>Options specified in the login Configuration for this particular LoginModule.</p> */
-    protected Map options;
+    protected Map<String,?> options;
 
     /** <p>The authentication provider service.</p> */
     protected AuthenticationProvider authProvider;
@@ -86,6 +89,8 @@ public class DefaultLoginModule implements LoginModule
 
     /** <p>The user name.</p> */
     protected String username;
+    
+    protected AuthenticatedUser user;
 
     
     /**
@@ -173,9 +178,10 @@ public class DefaultLoginModule implements LoginModule
                 // TODO We should get the user profile here and had it in cache so that we do not have to retrieve it again.
                 // TODO Ideally the User should be available from the session.  Need discussion around this.
                 refreshProxy();
-                commitPrincipals(subject, ums.getUser(username));
+                commitSubject(subject, user.getUser(), SecurityHelper.getPrincipals(ums.getSubject(user), Role.class));
 
                 username = null;
+                user = null;
                 commitSuccess = true;
 
                 if (callbackHandler instanceof PassiveCallbackHandler)
@@ -186,7 +192,7 @@ public class DefaultLoginModule implements LoginModule
             }
             catch (Exception ex)
             {
-                ex.printStackTrace(System.out);
+                log.error(ex);
                 throw new LoginException(ex.getMessage());
             }
         }
@@ -221,11 +227,19 @@ public class DefaultLoginModule implements LoginModule
             
             try
             {
-                AuthenticatedUser authUser = authProvider.authenticate(this.username, password);
+                user = authProvider.authenticate(this.username, password);
             }
             catch (SecurityException se)
             {
-                throw new FailedLoginException("Authentication failed: Password does not match");
+                if (se.getCause() != null)
+                {
+                    log.error(se.getLocalizedMessage(),se.getCause());
+                }
+                else
+                {
+                    log.warn(se.getLocalizedMessage());
+                }
+                throw new FailedLoginException("Authentication failed");
             }
 
             success = true;
@@ -251,6 +265,7 @@ public class DefaultLoginModule implements LoginModule
     public boolean logout() throws LoginException
     {
         // TODO Can we set subject to null?
+        user = null;
         subject.getPrincipals().clear();
         subject.getPrivateCredentials().clear();
         subject.getPublicCredentials().clear();
@@ -263,7 +278,7 @@ public class DefaultLoginModule implements LoginModule
     /**
      * @see javax.security.auth.spi.LoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)
      */
-    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options)
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String,?> sharedState, Map<String,?> options)
     {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
@@ -277,24 +292,29 @@ public class DefaultLoginModule implements LoginModule
         }
     }
 
-    protected List getUserRoles(Subject subject)
-    {
-        return SecurityHelper.getPrincipals(subject, Role.class);
-    }
-    
     /**
      * Default setup of the logged on Subject Principals for Tomcat
      * @param subject
      * @param user
      */
-    protected void commitPrincipals(Subject subject, User user)
+    protected void commitSubject(Subject containerSubject, User user, List<Principal> rolePrincipals)
     {
         // add user specific portal user name and roles
-        subject.getPrincipals().add((Principal) user);
-        subject.getPrincipals().addAll(getUserRoles(subject));
-
-        // add portal user role: used in web.xml authorization to
-        // detect authenticated portal users
-        subject.getPrincipals().add(new RoleImpl(portalUserRole));        
+        subject.getPrincipals().add(user);
+        boolean hasPortalUserRole = false;
+        for (Principal role : rolePrincipals)
+        {
+            subject.getPrincipals().add(role);
+            if (role.getName().equals(portalUserRole))
+            {
+                hasPortalUserRole = true;
+            }
+        }
+        if (!hasPortalUserRole)
+        {
+            // add portal user role: used in web.xml authorization to
+            // detect authenticated portal users
+            subject.getPrincipals().add(new RoleImpl(portalUserRole));        
+        }
     }
 }

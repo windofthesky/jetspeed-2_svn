@@ -40,12 +40,11 @@ public class JBossLoginModule extends DefaultLoginModule
     private static class JBossGroup implements Group
     {
         private String name;
-        private ArrayList members = new ArrayList();
+        private ArrayList<Principal> members = new ArrayList<Principal>();
         
-        public JBossGroup(String name, List members)
+        public JBossGroup(String name)
         {
             this.name = name;
-            this.members.addAll(members);
         }
 
         public boolean addMember(Principal user)
@@ -68,7 +67,7 @@ public class JBossLoginModule extends DefaultLoginModule
             return members.remove(user);
         }
 
-        public Enumeration members()
+        public Enumeration<Principal> members()
         {
             return Collections.enumeration(members);
         }
@@ -91,16 +90,37 @@ public class JBossLoginModule extends DefaultLoginModule
      * @param userManager
      * @see DefaultLoginModule#DefaultLoginModule(UserManager)
      */
-    protected JBossLoginModule (AuthenticationProvider authProvider, UserManager userManager) {
+    protected JBossLoginModule (AuthenticationProvider authProvider, UserManager userManager)
+    {
         super (authProvider, userManager);
     }
-    
-    protected void commitPrincipals(Subject subject, User user)
+        
+    public JBossLoginModule(AuthenticationProvider authProvider, UserManager userManager, String portalUserRole)
     {
-        // add UserPrincipal to subject
-        subject.getPrincipals().add((Principal) user);
-        JBossGroup roles = new JBossGroup("Roles", getUserRoles(subject));
-        roles.addMember(new RoleImpl(portalUserRole));
-        subject.getPrincipals().add(roles);        
+        super(authProvider, userManager, portalUserRole);
+    }
+
+    protected void commitSubject(Subject containerSubject, User user, List<Principal> rolePrincipals)
+    {
+        // add user specific portal user name and roles
+        subject.getPrincipals().add(user);
+        boolean hasPortalUserRole = false;
+        JBossGroup roles = new JBossGroup("Roles");
+        
+        for (Principal role : rolePrincipals)
+        {
+            roles.addMember(role);
+            if (role.getName().equals(portalUserRole))
+            {
+                hasPortalUserRole = true;
+            }
+        }
+        if (!hasPortalUserRole)
+        {
+            // add portal user role: used in web.xml authorization to
+            // detect authenticated portal users
+            roles.addMember(new RoleImpl(portalUserRole));        
+        }
+        subject.getPrincipals().add(roles);
     }
 }

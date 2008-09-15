@@ -16,20 +16,25 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.Subject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.statistics.PortalStatistics;
 
 /**
@@ -42,8 +47,11 @@ import org.apache.jetspeed.statistics.PortalStatistics;
  */
 public class SecurityValveImpl extends AbstractSecurityValve implements SecurityValve
 {
+    private static Log log = LogFactory.getLog(SecurityValveImpl.class);
+    
     private UserManager userMgr;
     private PortalStatistics statistics;
+    private boolean resolveTomcatPrincipalFailed;
 
     public SecurityValveImpl(Profiler profiler, UserManager userMgr, PortalStatistics statistics, 
                             PortalAuthenticationConfiguration authenticationConfiguration)
@@ -90,10 +98,15 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
         if (subject != null)
         {
             Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, User.class);
-            if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(getUserPrincipal(request).getName()))
+            if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(userPrincipal.getName()))
             {
                 subject = null;
             }
+        }
+        
+        if (subject == null)
+        {
+            subject = resolveSubjectFromContext(request, userPrincipal);
         }
         
         // create new session subject for user principal if required
@@ -111,17 +124,16 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
             }
             catch (SecurityException sex)
             {
-                subject = null;
+                if (userPrincipal.getName().equals(userMgr.getAnonymousUser()))
+                {
+                    throw sex;
+                }
+                else
+                {
+                    log.error("Unknown user Principal "+userPrincipal.getName()+": creating a default subject without any roles", sex);
+                    subject = JetspeedSubjectFactory.createSubject(userMgr.newTransientUser(userPrincipal.getName()), null, null, null);
+                }
             }       
-            
-            // if subject not available, generate default subject using
-            // request or default profiler anonymous user principal
-            if (subject == null)
-            {
-                Set principals = new HashSet();
-                principals.add(userPrincipal);
-                subject = new Subject(true, principals, new HashSet(), new HashSet());
-            } 
             
             // create a new statistics *user* session
             if (statistics != null)
@@ -149,9 +161,45 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
         Principal userPrincipal = request.getRequest().getUserPrincipal();
         if (userPrincipal == null)
         {
-            userPrincipal = new TransientUser(userMgr.getAnonymousUser());
-        }
+            userPrincipal = userMgr.newTransientUser(userMgr.getAnonymousUser());
+        }        
         return userPrincipal;
     }
-
+    
+    protected Subject resolveSubjectFromContext(RequestContext request, Principal userPrincipal)
+    {
+        if (userPrincipal.getName().equals(userMgr.getAnonymousUser()))
+        {
+            return null;
+        }
+        if (userPrincipal instanceof UserSubjectPrincipal)
+        {
+            return ((UserSubjectPrincipal)userPrincipal).getSubject();
+        }
+        return resolveSubjectFromContainerPrincipal(request, userPrincipal);
+    }
+    
+    protected Subject resolveSubjectFromContainerPrincipal(RequestContext request, Principal userPrincipal)
+    {
+        // default handling for Tomcat Realm 
+        if (!resolveTomcatPrincipalFailed && userPrincipal.getClass().getName().equals("org.apache.catalina.realm.GenericPrincipal"))
+        {
+            try
+            {
+                Method m = userPrincipal.getClass().getMethod("getUserPrincipal", (Class[])null);
+                Principal p = (Principal)m.invoke(userPrincipal, (Object[])null);
+                if (p != null && p instanceof UserSubjectPrincipal)
+                {
+                    return ((UserSubjectPrincipal)p).getSubject();
+                }
+            }
+            catch (Exception e)
+            {                
+                // ignore 
+            }
+            // don't try again
+            resolveTomcatPrincipalFailed = true;
+        }
+        return null;
+    }
 }

@@ -31,8 +31,6 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.AbstractSecurityValve;
-import org.apache.jetspeed.security.impl.TransientUser;
-import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.statistics.PortalStatistics;
 /**
  * NTLMSecurityValve provides Subject creation based on the
@@ -118,7 +116,7 @@ public class NtlmSecurityValve extends AbstractSecurityValve
         } 
         // otherwise return anonymous principal
         
-        return  new TransientUser(userMgr.getAnonymousUser());
+        return  userMgr.newTransientUser(userMgr.getAnonymousUser());
     }
 
     protected Subject getSubject(RequestContext context) throws Exception 
