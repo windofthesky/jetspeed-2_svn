@@ -100,7 +100,7 @@
   <bean id="org.apache.jetspeed.security.UserManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.UserManager</value>
+      <value>org.apache.jetspeed.security.UserManager, org.apache.jetspeed.security.JetspeedPrincipalManager</value>
     </property>
     <property name="target">
       <ref bean="org.apache.jetspeed.security.impl.UserManagerImpl" />
@@ -116,7 +116,7 @@
   </bean>
   
   <bean id="org.apache.jetspeed.security.impl.UserManagerImpl"
-  class="org.apache.jetspeed.security.impl.UserManagerImpl" init-method="init">
+  class="org.apache.jetspeed.security.impl.UserManagerImpl">
     <meta key="j2:cat" value="default,security" />
 	<constructor-arg index="0"
 		ref="org.apache.jetspeed.security.JetspeedPrincipalType.user" />
@@ -137,7 +137,7 @@
     <bean id="org.apache.jetspeed.security.GroupManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.GroupManager</value>
+      <value>org.apache.jetspeed.security.GroupManager,org.apache.jetspeed.security.JetspeedPrincipalManager</value>
     </property>
     <property name="target">
       <ref bean="org.apache.jetspeed.security.impl.GroupManagerImpl" />
@@ -153,7 +153,7 @@
   </bean>
   
   <bean id="org.apache.jetspeed.security.impl.GroupManagerImpl"
-  class="org.apache.jetspeed.security.impl.GroupManagerImpl" init-method="init">
+  class="org.apache.jetspeed.security.impl.GroupManagerImpl">
     <meta key="j2:cat" value="default,security" />
 	<constructor-arg index="0"
 		ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
@@ -165,7 +165,6 @@
 		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
 	<constructor-arg index="4"
 		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-	<property name="userManager" ref="org.apache.jetspeed.security.UserManager"/>	
   </bean>
 
   <!-- Security: Role Manager -->
@@ -173,7 +172,7 @@
   <bean id="org.apache.jetspeed.security.RoleManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.RoleManager</value>
+      <value>org.apache.jetspeed.security.RoleManager,org.apache.jetspeed.security.JetspeedPrincipalManager</value>
     </property>
     <property name="target">
       <ref bean="org.apache.jetspeed.security.impl.RoleManagerImpl" />
@@ -189,7 +188,7 @@
   </bean>
   
   <bean id="org.apache.jetspeed.security.impl.RoleManagerImpl" 
-  class="org.apache.jetspeed.security.impl.RoleManagerImpl" init-method="init">
+  class="org.apache.jetspeed.security.impl.RoleManagerImpl">
     <meta key="j2:cat" value="default,security" />
 	<constructor-arg index="0"
 		ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
@@ -201,8 +200,6 @@
 		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
 	<constructor-arg index="4"
 		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />	
-	<property name="userManager" ref="org.apache.jetspeed.security.UserManager"/>	
-	<property name="groupManager" ref="org.apache.jetspeed.security.GroupManager"/>	
   </bean>
 
   <!-- Security: Permission Manager -->
@@ -233,14 +230,14 @@
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       	<list>
-			<bean class="org.apache.jetspeed.security.spi.impl.FolderPermission.Factory" />
-			<bean class="org.apache.jetspeed.security.spi.impl.FragmentPermission.Factory" />
-			<bean class="org.apache.jetspeed.security.spi.impl.PagePermission.Factory" />
-			<bean class="org.apache.jetspeed.security.spi.impl.PortletPermission.Factory" />			
+			<bean class="org.apache.jetspeed.security.spi.impl.FolderPermission$Factory" />
+			<bean class="org.apache.jetspeed.security.spi.impl.FragmentPermission$Factory" />
+			<bean class="org.apache.jetspeed.security.spi.impl.PagePermission$Factory" />
+			<bean class="org.apache.jetspeed.security.spi.impl.PortletPermission$Factory" />			
 		</list>
     </constructor-arg>
     <constructor-arg index="1">
-       <ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
+       <ref bean="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     </constructor-arg>    
   </bean>
   <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" class="org.apache.jetspeed.security.impl.JetspeedPrincipalManagerProviderImpl">

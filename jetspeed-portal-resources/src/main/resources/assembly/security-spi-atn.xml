@@ -50,7 +50,7 @@
     <constructor-arg index="1"><value>base64</value></constructor-arg>
     </bean>       
   -->
-
+<!--
   <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider"
     class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
     <meta key="j2:cat" value="default,security" />
@@ -60,7 +60,7 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" />
     </constructor-arg>
-  </bean>
+  </bean>-->
 
   <!-- A Two-way encoding password service which also implements CredentialPasswordEncoder
     this Service can be used instead of for example the default provided MessageDigestCredentialPasswordEncoder
@@ -101,21 +101,23 @@
   -->
 
   <!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler -->
+  <!--
   <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
     class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <list>
-        <!-- enforce an invalid preset password value in the persisent store is required to be changed -->
+        
         <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor" />
 
-        <!-- ensure preset cleartext passwords in the persistent store  will be encoded on first use -->
+        
         <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor" />
       </list>
     </constructor-arg>
-  </bean>
+  </bean>-->
 
   <!-- Security SPI: CredentialHandler -->
+  <!--
   <bean id="org.apache.jetspeed.security.spi.CredentialHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler">
     <meta key="j2:cat" value="default,security" />
@@ -130,10 +132,11 @@
     </constructor-arg>
   </bean>
 
+  -->
   <!-- Security SPI: UserSecurityHandler -->
   <!-- The DefaultUSerSecurityHandler uses the raw SecurityAccessImpl so that it
     may demarcate its own transactions -->
-  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl"
+  <!--<bean id="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl"
     class="org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg>
@@ -158,5 +161,5 @@
 		<prop key="*">PROPAGATION_SUPPORTS</prop>
 	   </props>
 	 </property>
-  </bean>
+  </bean>-->
 </beans>

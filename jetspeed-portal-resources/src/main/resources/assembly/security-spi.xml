@@ -35,6 +35,8 @@
 	<constructor-arg index="0"
 		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
 	<constructor-arg index="1"
+		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+		<constructor-arg index="2"
 		ref="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" />
   </bean>     	
   

@@ -65,9 +65,7 @@
     name="prefsFactory" init-method="init" destroy-method="destroy">
     <meta key="j2:cat" value="default,prefs" />
     <!-- dummy constructor argument to distinguish it from the default constructor invoked by the Java Preferences itself -->
-    <constructor-arg>
-      <value>1</value>
-    </constructor-arg>
+    <constructor-arg index="0" value="1"/>
     <property name="prefsProvider">
       <ref bean="prefsProvider" />
     </property>

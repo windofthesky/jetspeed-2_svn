@@ -19,6 +19,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <!-- Security: User Manager -->
+  <!--
   <bean id="org.apache.jetspeed.security.attributes.SecurityAttributesProviderImpl" name="SecurityAttributesProviderImpl"
         class="org.apache.jetspeed.security.attributes.PersistenceBrokerSecurityAttributesProvider">
     <meta key="j2:cat" value="default,security" />
@@ -42,5 +43,5 @@
       </props>
     </property>
   </bean>
-  
+  -->
 </beans>

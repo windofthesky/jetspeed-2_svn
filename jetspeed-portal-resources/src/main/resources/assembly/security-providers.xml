@@ -21,7 +21,7 @@
   <!-- ************** Security Providers ************** -->
   <!-- Security: Default Authentication Provider -->
   <bean id="org.apache.jetspeed.security.AuthenticationProvider"
-    class="org.apache.jetspeed.security.impl.AuthenticationProviderImpl">
+    class="org.apache.jetspeed.security.impl.DefaultAuthenticationProvider">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <value>DefaultAuthenticator</value>
@@ -33,43 +33,9 @@
       <value>login.conf</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <ref bean="org.apache.jetspeed.security.spi.CredentialHandler" />
+      <ref bean="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
     </constructor-arg>
-    <constructor-arg index="4">
-      <ref bean="org.apache.jetspeed.security.spi.UserSecurityHandler" />
-    </constructor-arg>
-  </bean>
-
-  <!-- Security: Authentication Provider Proxy -->
-  <bean id="org.apache.jetspeed.security.AuthenticationProviderProxy"
-    class="org.apache.jetspeed.security.impl.AuthenticationProviderProxyImpl">
-    <meta key="j2:cat" value="default,security" />
-    <constructor-arg>
-      <list>
-        <ref bean="org.apache.jetspeed.security.AuthenticationProvider" />
-      </list>
-    </constructor-arg>
-    <constructor-arg>
-      <value>DefaultAuthenticator</value>
-    </constructor-arg>
-  </bean>
-
-  <!-- Security: Security Provider -->
-  <bean id="org.apache.jetspeed.security.SecurityProvider"
-    class="org.apache.jetspeed.security.impl.SecurityProviderImpl">
-    <meta key="j2:cat" value="default,security" />
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.AuthenticationProviderProxy" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.spi.RoleSecurityHandler" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.spi.GroupSecurityHandler" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.spi.SecurityMappingHandler" />
-    </constructor-arg>
+	
   </bean>
 
   <!-- Security: Authorization Provider -->
