@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
@@ -88,6 +89,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     private JetspeedPrincipalStorageManager jpsm;
     //added for removing circular dependciese
     protected static JetspeedPrincipalManagerProvider jpmp;
+    private static boolean loaded = false;
     public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
                                         JetspeedPrincipalStorageManager jpsm)
     {
@@ -115,6 +117,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     
     protected JetspeedPrincipalManagerProvider getJetspeedPrincipalManagerProvider()
     {
+    	if(!loaded  && jpmp==null)
+    	{
+    		jpmp= (JetspeedPrincipalManagerProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider");
+    		loaded = true;
+    	}
     	return jpmp;
     }
     

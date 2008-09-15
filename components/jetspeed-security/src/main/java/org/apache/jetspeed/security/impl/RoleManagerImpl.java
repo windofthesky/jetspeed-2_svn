@@ -79,19 +79,16 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         this.userType = userType;
         this.groupType = groupType;
     }
-    public void init()
+    public void checkInitialized()
     {    	
-    	userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
-    	groupManager = (GroupManager)getJetspeedPrincipalManagerProvider().getManager(groupType);
-    }
-    public void setUserManager(UserManager manager)
-    {
-    	this.userManager = manager;
-    }
-    
-    public void setGroupManager(GroupManager manager)
-    {
-    	this.groupManager = manager;
+    	if (userManager == null)
+    	{
+    		userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+    	}
+    	if (groupManager == null)
+    	{
+    		groupManager = (GroupManager)getJetspeedPrincipalManagerProvider().getManager(groupType);
+    	}
     }
     
     /* (non-Javadoc)
@@ -245,7 +242,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     {
         try
         {
-            User user = userManager.getUser(username);
+            checkInitialized();
+        	User user = userManager.getUser(username);
             if (user == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
@@ -280,7 +278,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     {
         try
         {
-            User user = userManager.getUser(username);
+        	checkInitialized();
+        	User user = userManager.getUser(username);
             if (user == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
@@ -320,7 +319,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     {
         try
         {
-            Group group = groupManager.getGroup(groupName);
+            checkInitialized();
+        	Group group = groupManager.getGroup(groupName);
             if (group == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
@@ -355,7 +355,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     {
         try
         {
-            Group group = groupManager.getGroup(groupName);
+        	checkInitialized();
+        	Group group = groupManager.getGroup(groupName);
             if (group == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));

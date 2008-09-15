@@ -45,7 +45,10 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
     {
         this.encoder = encoder;
         this.validator = validator;
-        this.interceptors = (PasswordCredentialInterceptor[]) interceptors.toArray(new PasswordCredentialInterceptor[interceptors.size()]);
+        //Remove the following comment and check, if interceptors are null or not
+        //if(interceptors !=null){
+        //	this.interceptors = (PasswordCredentialInterceptor[]) interceptors.toArray(new PasswordCredentialInterceptor[interceptors.size()]);
+        //}
     }
 
     public CredentialPasswordEncoder getCredentialPasswordEncoder()

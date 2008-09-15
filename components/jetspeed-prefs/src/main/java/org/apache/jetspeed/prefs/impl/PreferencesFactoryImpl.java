@@ -53,7 +53,7 @@ public class PreferencesFactoryImpl implements PreferencesFactory
      * Spring invoked constructor with a dummy parameter to distinguish it from the default constructor invoked by the Java Preferences
      * @param dummy
      */
-    public PreferencesFactoryImpl(int dummy)
+    public PreferencesFactoryImpl(String dummy)
     {
         System.setProperty("java.util.prefs.PreferencesFactory", getClass().getName());
     }

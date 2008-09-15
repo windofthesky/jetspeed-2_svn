@@ -61,8 +61,14 @@ public class JetspeedSecurityPersistenceManager
     {
         super(repositoryPath);
     }
-    
-    public boolean principalExists(JetspeedPrincipal principal)
+    //Adding for testing purpose only. This would be removed 
+    //TODO remove this method
+	public void init() throws Exception
+	{
+
+	}
+
+	public boolean principalExists(JetspeedPrincipal principal)
     {
         if (principal.getId() == null)
         {

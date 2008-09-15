@@ -39,7 +39,6 @@ public class JetspeedPrincipalManagerProviderImpl implements JetspeedPrincipalMa
     
     public JetspeedPrincipalManagerProviderImpl(Set<JetspeedPrincipalManager> managers)
     {
-        HashSet<JetspeedPrincipalType> types = new HashSet<JetspeedPrincipalType>();
         nameMap = new HashMap<String, JetspeedPrincipalType>();
         classNameMap = new HashMap<String, JetspeedPrincipalType>();
         managersMap = new HashMap<String, JetspeedPrincipalManager>();
@@ -56,7 +55,6 @@ public class JetspeedPrincipalManagerProviderImpl implements JetspeedPrincipalMa
             }
             nameMap.put(type.getName(), type);
             classNameMap.put(type.getClassName(), type);
-            types.add(type);
             managersMap.put(type.getName(), m);
         }
         this.nameMap = Collections.unmodifiableMap(nameMap);

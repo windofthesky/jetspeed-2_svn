@@ -74,9 +74,12 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         this.userType = userType;
         this.roleType = roleType;
     }
-    public void init()
+    public void checkInitialized()
     {    	
-    	userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+    	if (userManager == null)
+    	{
+        	userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+    	}
     }      
     
     /* (non-Javadoc)
@@ -226,7 +229,8 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     {
         try
         {
-            User user = userManager.getUser(username);
+        	checkInitialized();
+        	User user = userManager.getUser(username);
             if (user == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
@@ -262,6 +266,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     {
         try
         {
+        	checkInitialized();
             User user = userManager.getUser(username);
             if (user == null)
             {

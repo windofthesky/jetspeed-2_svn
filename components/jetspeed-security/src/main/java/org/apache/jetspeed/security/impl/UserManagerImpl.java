@@ -51,6 +51,7 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * <p>
@@ -68,13 +69,13 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	private String anonymousUser = "guest";
 	private JetspeedPrincipalType roleType;
 	private JetspeedPrincipalType groupType;
-	
+
 	private UserPasswordCredentialManager credentialManager;
 	private RoleManager roleManager;
 	private GroupManager groupManager;
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
-			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager) 
+			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager)
 	{
 		super(principalType, jpam, jpsm);
 		this.credentialManager = credentialManager;
@@ -82,23 +83,29 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		this.groupType = groupType;
 	}
 
-    public void init()
-    {    	
-    	groupManager = (GroupManager)getJetspeedPrincipalManagerProvider().getManager(groupType);
-    	roleManager = (RoleManager)getJetspeedPrincipalManagerProvider().getManager(roleType);	
-    }
-       
+	public void checkInitialized()
+	{
+		if (groupManager == null)
+		{
+			groupManager = (GroupManager) getJetspeedPrincipalManagerProvider().getManager(groupType);
+		}
+		if (roleManager == null)
+		{
+			roleManager = (RoleManager) getJetspeedPrincipalManagerProvider().getManager(roleType);
+		}
+	}
+
 	public User addUser(String username) throws SecurityException
 	{
-	    return addUser(username, true);
+		return addUser(username, true);
 	}
 
 	public User addUser(String username, boolean mapped) throws SecurityException
 	{
-        User user = newUser(username, mapped);
+		User user = newUser(username, mapped);
 		try
 		{
-            super.addPrincipal(user, null);           
+			super.addPrincipal(user, null);
 		}
 		catch (PrincipalAlreadyExistsException e)
 		{
@@ -111,19 +118,19 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		catch (PrincipalAssociationNotAllowedException e)
 		{
 			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}		
-        catch (PrincipalAssociationUnsupportedException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-        }
+		}
+		catch (PrincipalAssociationUnsupportedException e)
+		{
+			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+		}
+		catch (PrincipalNotFoundException e)
+		{
+			throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+		}
 		if (log.isDebugEnabled())
 			log.debug("Added user: " + username);
 
-        return user;
+		return user;
 	}
 
 	public String getAnonymousUser()
@@ -133,11 +140,11 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public PasswordCredential getPasswordCredential(User user) throws SecurityException
 	{
-	    if (credentialManager != null)
-	    {
-	        return credentialManager.getPasswordCredential(user);
-	    }
-        return null;
+		if (credentialManager != null)
+		{
+			return credentialManager.getPasswordCredential(user);
+		}
+		return null;
 	}
 
 	public Subject getSubject(User user) throws SecurityException
@@ -147,7 +154,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 			PasswordCredential pwc = getPasswordCredential(user);
 			if (pwc != null)
 			{
-			    UserCredential credential = new UserCredentialImpl(pwc);
+				UserCredential credential = new UserCredentialImpl(pwc);
 				HashSet<Object> privateCred = new HashSet<Object>();
 				privateCred.add(credential);
 				return getSubject(new AuthenticatedUserImpl(user, null, privateCred));
@@ -155,51 +162,52 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		}
 		return getSubject(new AuthenticatedUserImpl(user, null, null));
 	}
-	
+
 	public Subject getSubject(AuthenticatedUser user) throws SecurityException
 	{
-        Set<Principal> principals = new PrincipalsSet();
-        addSubjectPrincipals(user, principals);
-        return JetspeedSubjectFactory.createSubject(user.getUser(), getPublicCredentialsForSubject(user), getPrivateCredentialsForSubject(user), principals);
-	}
-	
-	protected Set<Object> getPublicCredentialsForSubject(AuthenticatedUser user)
-	{
-        HashSet<Object> credentials = new HashSet<Object>();
-        if (user.getPublicCredentials() != null)
-        {
-            credentials.addAll(user.getPublicCredentials());
-        }
-        return credentials;
-	}
-	
-    protected Set<Object> getPrivateCredentialsForSubject(AuthenticatedUser user)
-    {
-        HashSet<Object> credentials = new HashSet<Object>();
-        if (user.getPrivateCredentials() != null)
-        {
-            credentials.addAll(user.getPrivateCredentials());
-        }
-        return credentials;
-    }
-    
-	protected void addSubjectPrincipals(AuthenticatedUser user, Set<Principal> principals) throws SecurityException
-	{
-	    addSubjectRolePrincipals(user, principals, roleManager);	    
-        addSubjectGroupPrincipals(user, principals, groupManager);
-        // still TODO: adding roles for groups
-	}
-	
-	protected void addSubjectRolePrincipals(AuthenticatedUser user, Set<Principal> principals, RoleManager roleManager) throws SecurityException
-	{
-        principals.addAll(roleManager.resolveRolesForUser(user.getUserName()));
+		Set<Principal> principals = new PrincipalsSet();
+		addSubjectPrincipals(user, principals);
+		return JetspeedSubjectFactory.createSubject(user.getUser(), getPublicCredentialsForSubject(user), getPrivateCredentialsForSubject(user), principals);
 	}
 
-    protected void addSubjectGroupPrincipals(AuthenticatedUser user, Set<Principal> principals, GroupManager groupManager) throws SecurityException
-    {
-        principals.addAll(groupManager.resolveGroupsForUser(user.getUserName()));
-    }
-	
+	protected Set<Object> getPublicCredentialsForSubject(AuthenticatedUser user)
+	{
+		HashSet<Object> credentials = new HashSet<Object>();
+		if (user.getPublicCredentials() != null)
+		{
+			credentials.addAll(user.getPublicCredentials());
+		}
+		return credentials;
+	}
+
+	protected Set<Object> getPrivateCredentialsForSubject(AuthenticatedUser user)
+	{
+		HashSet<Object> credentials = new HashSet<Object>();
+		if (user.getPrivateCredentials() != null)
+		{
+			credentials.addAll(user.getPrivateCredentials());
+		}
+		return credentials;
+	}
+
+	protected void addSubjectPrincipals(AuthenticatedUser user, Set<Principal> principals) throws SecurityException
+	{
+		checkInitialized();
+		addSubjectRolePrincipals(user, principals, roleManager);
+		addSubjectGroupPrincipals(user, principals, groupManager);
+		// still TODO: adding roles for groups
+	}
+
+	protected void addSubjectRolePrincipals(AuthenticatedUser user, Set<Principal> principals, RoleManager roleManager) throws SecurityException
+	{
+		principals.addAll(roleManager.resolveRolesForUser(user.getUserName()));
+	}
+
+	protected void addSubjectGroupPrincipals(AuthenticatedUser user, Set<Principal> principals, GroupManager groupManager) throws SecurityException
+	{
+		principals.addAll(groupManager.resolveGroupsForUser(user.getUserName()));
+	}
+
 	public User getUser(String username) throws SecurityException
 	{
 		return (User) getPrincipal(username);
@@ -212,7 +220,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public List<User> getUsers(String nameFilter) throws SecurityException
 	{
-		return (List<User>)getPrincipals(nameFilter);
+		return (List<User>) getPrincipals(nameFilter);
 	}
 
 	public List<User> getUsersInGroup(String groupFullPathName) throws SecurityException
@@ -273,15 +281,15 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public void storePasswordCredential(PasswordCredential credential) throws SecurityException
 	{
-	    if (credentialManager == null)
-	    {
-	        throw new UnsupportedOperationException();
-	    }
-	    credentialManager.storePasswordCredential(credential);
+		if (credentialManager == null)
+		{
+			throw new UnsupportedOperationException();
+		}
+		credentialManager.storePasswordCredential(credential);
 	}
 
 	public void updateUser(User user) throws SecurityException
-	{	    
+	{
 		try
 		{
 			super.updatePrincipal(user);
@@ -294,10 +302,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		{
 			throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()), pue);
 		}
-        catch (PrincipalReadOnlyException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()));
-        }
+		catch (PrincipalReadOnlyException e)
+		{
+			throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()));
+		}
 	}
 
 	public boolean userExists(String username)
