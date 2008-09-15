@@ -222,6 +222,22 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     }
 
     /**
+     * @see org.apache.jetspeed.security.RoleManager#resolveRolesForUser(java.lang.String)
+     */
+    public List<Role> resolveRolesForUser(String username) throws SecurityException
+    {        
+        return (List<Role>)super.resolveAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.RoleManager#resolveRolesInGroup(java.lang.String)
+     */
+    public List<Role> resolveRolesInGroup(String groupName) throws SecurityException
+    {
+        return (List<Role>)super.resolveAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+    }
+
+    /**
      * @see org.apache.jetspeed.security.RoleManager#addRoleToUser(java.lang.String,
      *      java.lang.String)
      */

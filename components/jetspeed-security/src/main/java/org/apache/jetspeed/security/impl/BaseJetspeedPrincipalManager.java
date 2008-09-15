@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalHierachyAssocationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
@@ -81,6 +83,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     private JetspeedPrincipalType principalType;
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationHandler> assHandlers = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationHandler>();
     private Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAssociations = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>();
+    private JetspeedPrincipalHierachyAssocationType hierachyAssType;
     private JetspeedPrincipalAccessManager jpam;
     private JetspeedPrincipalStorageManager jpsm;
     //added for removing circular dependciese
@@ -195,6 +198,82 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.getAssociatedTo(principalToName, principalType, to, associationName);
     }
 
+    public final List<? extends JetspeedPrincipal> resolveAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName)
+    {
+        return resolveHierachies((List<JetspeedPrincipal>)getAssociatedFrom(principalFromName, from, associationName));
+    }
+
+    public final List<? extends JetspeedPrincipal> resolveAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName)
+    {
+        return resolveHierachies((List<JetspeedPrincipal>)getAssociatedTo(principalToName, to, associationName));
+    }
+    
+    protected List<? extends JetspeedPrincipal> resolveHierachies(List<JetspeedPrincipal> principals)
+    {
+        if (hierachyAssType != null && !principals.isEmpty())
+        {
+            List<Long> resolved = new ArrayList<Long>();
+            for (JetspeedPrincipal p : principals)
+            {
+                resolved.add(p.getId());
+            }
+            List<Long> ids = new ArrayList<Long>(resolved);
+            if (this.hierachyAssType.getHierachyType().equals(JetspeedPrincipalHierachyAssocationType.HierachyType.PART_OF))
+            {
+                for (Long id : ids)
+                {
+                    resolveChildren(id, principals, resolved);
+                }
+            }
+            else // IS_A or CHILD_OF HierachyType
+            {
+                for (Long id : ids)
+                {
+                    resolveParents(id, principals, resolved);
+                }
+            }
+        }
+        return principals;
+    }
+    
+    protected void resolveParents(Long principalId, List<JetspeedPrincipal> principals, List<Long> resolved)
+    {
+        List<JetspeedPrincipal> parents = jpam.getAssociatedFrom(principalId, principalType, principalType, hierachyAssType.getAssociationName());
+        if (!parents.isEmpty())
+        {
+            JetspeedPrincipal parent = parents.get(0);
+            if (!resolved.contains(parent.getId()))
+            {
+                principals.add(parent);
+                resolved.add(parent.getId());
+                resolveParents(parent.getId(), principals, resolved);
+            }
+        }
+    }
+
+    protected void resolveChildren(Long principalId, List<JetspeedPrincipal> principals, List<Long> resolved)
+    {
+        List<JetspeedPrincipal> children = jpam.getAssociatedTo(principalId, principalType, principalType, hierachyAssType.getAssociationName());
+        if (!children.isEmpty())
+        {
+            List<Long> ids = new ArrayList<Long>();
+            for (JetspeedPrincipal p : principals)
+            {
+                if (!resolved.contains(p.getId()))
+                {
+                    ids.add(p.getId());
+                    resolved.add(p.getId());
+                    principals.add(p);
+                }
+            }
+            for (Long id : ids)
+            {
+                resolveChildren(id, principals, resolved);
+            }
+        }
+    }
+
+    
     //
     // JetspeedPrincipalManagerSPI interface implementation
     //
@@ -208,6 +287,21 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             {
                 throw new IllegalStateException("An AssociationHandler for " +
                                                 jpah.getAssociationType().getAssociationName() + " already defined");
+            }
+            if (jpah.getAssociationType() instanceof JetspeedPrincipalHierachyAssocationType)
+            {
+                if (jpah.getManagerFrom() != this || jpah.getManagerTo() != this)
+                {
+                    throw new IllegalStateException("Invalid HierarchyAssociationType with associationName "+jpah.getAssociationType().getAssociationName()+": not referencing this JetspeedPrincipalManager (only)");
+                }
+                if (hierachyAssType == null)
+                {
+                    hierachyAssType = (JetspeedPrincipalHierachyAssocationType)jpah.getAssociationType();
+                }
+                else
+                {
+                    throw new IllegalStateException("Only one HierachyAssociationType handler can be defined for a JetspeedPrincipal");
+                }
             }
             assHandlers.put(key, jpah);
             if (jpah.getAssociationType().isRequired())

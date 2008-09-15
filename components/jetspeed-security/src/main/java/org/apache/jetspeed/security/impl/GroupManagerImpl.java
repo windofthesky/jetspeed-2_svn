@@ -34,7 +34,6 @@ import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
-import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -198,6 +197,15 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
             throws SecurityException
     {
         return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.security.GroupManager#resolveGroupsForUser(java.lang.String)
+     */
+    public List<Group> resolveGroupsForUser(String username)
+            throws SecurityException
+    {
+        return (List<Group>) super.resolveAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**

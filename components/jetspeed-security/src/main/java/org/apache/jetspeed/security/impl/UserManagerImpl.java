@@ -31,7 +31,6 @@ import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -47,6 +46,7 @@ import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserCredential;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
@@ -147,8 +147,9 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 			PasswordCredential pwc = getPasswordCredential(user);
 			if (pwc != null)
 			{
+			    UserCredential credential = new UserCredentialImpl(pwc);
 				HashSet<Object> privateCred = new HashSet<Object>();
-				privateCred.add(pwc);
+				privateCred.add(credential);
 				return getSubject(new AuthenticatedUserImpl(user, null, privateCred));
 			}
 		}
@@ -184,20 +185,19 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
     
 	protected void addSubjectPrincipals(AuthenticatedUser user, Set<Principal> principals) throws SecurityException
 	{
-	    addSubjectRolePrincipals(user, principals, roleManager);
+	    addSubjectRolePrincipals(user, principals, roleManager);	    
         addSubjectGroupPrincipals(user, principals, groupManager);
+        // still TODO: adding roles for groups
 	}
 	
 	protected void addSubjectRolePrincipals(AuthenticatedUser user, Set<Principal> principals, RoleManager roleManager) throws SecurityException
 	{
-        // TODO role hierarchies ...
-        principals.addAll(roleManager.getRolesForUser(user.getUserName()));
+        principals.addAll(roleManager.resolveRolesForUser(user.getUserName()));
 	}
 
     protected void addSubjectGroupPrincipals(AuthenticatedUser user, Set<Principal> principals, GroupManager groupManager) throws SecurityException
     {
-        // TODO group hierarchies ...
-        principals.addAll(groupManager.getGroupsForUser(user.getUserName()));
+        principals.addAll(groupManager.resolveGroupsForUser(user.getUserName()));
     }
 	
 	public User getUser(String username) throws SecurityException

@@ -97,6 +97,17 @@ public interface GroupManager
 
     /**
      * <p>
+     * Retrieves a detached and modifiable {@link Group} list of all the groups and their hierarchically ones, associated to a specific
+     * user.
+     * 
+     * @param username The user name.
+     * @return A list of {@link Group}.
+     * @throws Throws security exception if the user does not exist.
+     */
+    List<Group> resolveGroupsForUser(String username) throws SecurityException;
+
+    /**
+     * <p>
      * Retrieves a detached and modifiable {@link Group} list of all the groups in a specific role.
      * </p>
      * 

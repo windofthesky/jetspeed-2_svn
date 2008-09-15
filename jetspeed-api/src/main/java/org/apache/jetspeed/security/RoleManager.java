@@ -86,12 +86,30 @@ public interface RoleManager
 
     /**
      * <p>Retrieves a detached and modifiable {@link Role} list of all the roles
+     * and their hierachically associated onces, associated to a specific user.</p>
+     * @param username The user name.
+     * @return A List of {@link Role}.
+     * @throws Throws a security exception if the user does not exist.
+     */
+    List<Role> resolveRolesForUser(String username) throws SecurityException;
+
+    /**
+     * <p>Retrieves a detached and modifiable {@link Role} list of all the roles
      * associated to a specific group.</p>
      * @param groupName The group name
      * @return A Collection of {@link Role}.
      * @throws Throws a security exception if the group does not exist.
      */
     List<Role> getRolesInGroup(String groupName) throws SecurityException;
+    
+    /**
+     * <p>Retrieves a detached and modifiable {@link Role} list of all the roles
+     * and their hierachically associated ones, associated to a specific group.</p>
+     * @param groupName The group name
+     * @return A Collection of {@link Role}.
+     * @throws Throws a security exception if the group does not exist.
+     */
+    List<Role> resolveRolesInGroup(String groupName) throws SecurityException;
     
     /**
      * <p>Add a role to a user.</p>
