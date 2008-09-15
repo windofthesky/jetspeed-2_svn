@@ -47,7 +47,6 @@
         <module>jetspeed-portal</module>
         <module>jetspeed-portal-site</module>
         <module>jetspeed-portlet-factory</module>
-        <module>jetspeed-prefs</module>
         <module>jetspeed-profiler</module>
         <module>jetspeed-rdbms</module>
         <module>jetspeed-registry</module>

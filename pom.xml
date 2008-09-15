@@ -413,11 +413,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>jetspeed-prefs</artifactId>
-        <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-search</artifactId>
         <version>${pom.version}</version>
       </dependency>

@@ -103,7 +103,7 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>prefs.xml,sso.xml,transaction.xml,cache.xml,security-*.xml</include>
+                                        <include>sso.xml,transaction.xml,cache.xml,security-*.xml</include>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>

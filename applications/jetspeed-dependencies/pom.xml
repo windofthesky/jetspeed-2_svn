@@ -53,10 +53,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
-      <artifactId>jetspeed-prefs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-search</artifactId>
     </dependency>
     <dependency>

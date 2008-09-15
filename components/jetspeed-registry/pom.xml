@@ -60,10 +60,6 @@
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-prefs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-search</artifactId>
         </dependency>
         <dependency>

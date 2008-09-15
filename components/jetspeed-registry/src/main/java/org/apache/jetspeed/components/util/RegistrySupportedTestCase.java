@@ -25,17 +25,15 @@ package org.apache.jetspeed.components.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.prefs.util.test.AbstractPrefsSupportedTestCase;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver</a>
  *
  */
-public abstract class RegistrySupportedTestCase extends AbstractPrefsSupportedTestCase
+public abstract class RegistrySupportedTestCase extends TransactionCacheEnabledSpringTestCase
 {
 
     protected PortletRegistry portletRegistry;
