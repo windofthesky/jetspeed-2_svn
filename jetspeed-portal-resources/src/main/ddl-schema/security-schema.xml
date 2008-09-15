@@ -39,32 +39,78 @@ limitations under the License.
     -->
     <table name="SECURITY_PRINCIPAL">
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <!--  column "CLASSNAME" is deprecated: will be dropped once all InternalPrincipal usages are removed -->
-        <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
-        <column name="IS_MAPPING_ONLY" required="true" type="BOOLEANINT"/>
+        <column name="PRINCIPAL_TYPE" required="true" size="20" type="VARCHAR"/>
+        <column name="PRINCIPAL_NAME" required="true" size="200" type="VARCHAR"/>        
+        <column name="IS_MAPPED" required="true" type="BOOLEANINT"/>
+        <column name="PARENT_ID"  required="false" type="INTEGER"/>
         <column name="IS_ENABLED"  required="true" type="BOOLEANINT"/>
         <column name="IS_READONLY" required="true" type="BOOLEANINT"/>
         <column name="IS_REMOVABLE" required="true" type="BOOLEANINT"/>
-        <column name="SP_TYPE" required="true" size="20" type="VARCHAR"/>
-        <column name="SP_NAME" required="true" size="200" type="VARCHAR"/>        
         <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
         <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
         <unique name="UIX_SECURITY_PRINCIPAL">
-          <unique-column name="SP_TYPE" />
-          <unique-column name="SP_NAME" />
+          <unique-column name="PRINCIPAL_TYPE" />
+          <unique-column name="PRINCIPAL_NAME" />
         </unique>        
+        <index name="IX_PARENT_PRINCIPAL">
+          <index-column name="PARENT_ID"/>
+        </index>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PARENT_PRINCIPAL" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="PARENT_ID"/>
+        </foreign-key>        
     </table>
 
+   <!-- 
+      Create principal-security attributes for both Portlet API User Attributes and generic principal preferences
+      Example 
+    ATTR_ID = unique primary key
+    PID = the primary key of the owning principal
+        ATTR_NAME = a portlet api user info value such as 'user.name.given'
+        ATTR_TYPE = USER_INFO | PREF (not limited to)       
+   -->
+   
+    <table name="SECURITY_ATTRIBUTE">
+        <column name="ATTR_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="ATTR_NAME" primaryKey="true" required="true" size="200" type="VARCHAR"/>
+        <column name="ATTR_VALUE" size="1000" type="VARCHAR"/>
+    <index name="IX_NAMEVALUE_LOOKUP">
+      <index-column name="ATTR_NAME"/>
+      <index-column name="ATTR_VALUE"/>
+    </index>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
+        </foreign-key>        
+    
+    </table>
+
+    <!--
+       Create Principal Association Table
+    -->
+    <table name="SECURITY_PRINCIPAL_ASSOC">
+        <column name="ASSOC_NAME" primaryKey="true" required="true" size="30" type="VARCHAR"/>
+        <column name="FROM_PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="TO_PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <index name="IX_TO_PRINCIPAL_ASSOC_LOOKUP">
+          <index-column name="ASSOC_NAME"/>
+          <index-column name="TO_PRINCIPAL_ID"/>
+        </index>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_FROM_PRINCIPAL_ASSOC" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="FROM_PRINCIPAL_ID"/>
+        </foreign-key>
+        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_TO_PRINCIPAL_ASSOC" onDelete="cascade">
+            <reference foreign="PRINCIPAL_ID" local="TO_PRINCIPAL_ID"/>
+        </foreign-key>
+    </table>
+    
     <!--
        Create Security Permission Table
     -->
     <table name="SECURITY_PERMISSION">
         <column name="PERMISSION_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="CLASSNAME" required="true" size="254" type="VARCHAR"/>
+        <column name="PERMISSION_TYPE" required="true" size="30" type="VARCHAR"/>
         <column name="NAME" required="true" size="254" type="VARCHAR"/>
         <column name="ACTIONS" required="true" size="254" type="VARCHAR"/>
-        <column name="CREATION_DATE" required="true" type="TIMESTAMP"/>
-        <column name="MODIFIED_DATE" required="true" type="TIMESTAMP"/>
     </table>
     
     <!--
@@ -87,9 +133,10 @@ limitations under the License.
     <table name="SECURITY_CREDENTIAL">
         <column name="CREDENTIAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PRINCIPAL_ID" required="true" type="INTEGER"/>
-        <column name="COLUMN_VALUE" required="true" size="254" type="VARCHAR"/>
+        <column name="CREDENTIAL_VALUE" required="true" size="254" type="VARCHAR"/>
         <column name="TYPE" required="true" type="SMALLINT"/>
-        <column name="CLASSNAME" size="254" type="VARCHAR"/>
+        <column name="UPDATE_ALLOWED" required="true" type="BOOLEANINT"/>
+        <column name="IS_STATE_READONLY" required="true" type="BOOLEANINT"/>
         <column name="UPDATE_REQUIRED" required="true" type="BOOLEANINT"/>
         <column name="IS_ENCODED" required="true" type="BOOLEANINT"/>
         <column name="IS_ENABLED" required="true" type="BOOLEANINT"/>
@@ -182,74 +229,4 @@ limitations under the License.
         </foreign-key>
     </table>
          
-    <!--
-       Create Security User Role Table
-    -->
-    <table name="SECURITY_USER_ROLE">
-        <column name="USER_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="ROLE_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_SECURITY_USER_ROLE_1" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="ROLE_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_SECURITY_USER_ROLE_2" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="USER_ID"/>
-        </foreign-key>
-    </table>
-    
-    <!-- 
-       Create Security User Group Table
-    -->
-    <table name="SECURITY_USER_GROUP">
-        <column name="USER_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="GROUP_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_SECURITY_USER_GROUP_1" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="GROUP_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_SECURITY_USER_GROUP_2" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="USER_ID"/>
-        </foreign-key>
-    </table>
-    
-    <!--
-       Create Security Group Role Table
-    -->
-    <table name="SECURITY_GROUP_ROLE">
-        <column name="GROUP_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="ROLE_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL"  name="FK_SECURITY_GROUP_ROLE_1" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="GROUP_ID"/>
-        </foreign-key>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL"  name="FK_SECURITY_GROUP_ROLE_2" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="ROLE_ID"/>
-        </foreign-key>
-    </table>
-
-   <!-- 
-      Create principal-security attributes for both Portlet API User Attributes and generic principal preferences
-      Example 
-		ATTR_ID = unique primary key
-		PID = the primary key of the owning principal
-      	ATTR_NAME = a portlet api user info value such as 'user.name.given'
-       	ATTR_TYPE = USER_INFO | PREF (not limited to)      	
-   -->
-   
-    <table name="SECURITY_ATTRIBUTE">
-        <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="ATTR_NAME" primaryKey="true" required="true" size="200" type="VARCHAR"/>
-        <column name="ATTR_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <!--  column "ATTR_TYPE" is deprecated: will be dropped with transition to new SecurityAttributes implementation is complete -->
-        <column name="ATTR_TYPE" required="true" size="20" type="VARCHAR"/>
-        <column name="ATTR_VALUE" size="1000" type="VARCHAR"/>
-		<index name="IX_NAMEVALUE_LOOKUP">
-			<index-column name="ATTR_NAME"/>
-			<index-column name="ATTR_VALUE"/>
-		</index>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
-        </foreign-key>        
-		
-    </table>
-
-        
-            
 </database>
