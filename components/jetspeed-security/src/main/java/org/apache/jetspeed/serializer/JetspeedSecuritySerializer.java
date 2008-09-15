@@ -80,8 +80,8 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         public ImportRefs()
         {
             principalMapByType.put(JetspeedPrincipalType.USER_TYPE_NAME, userMap);
-            principalMapByType.put(JetspeedPrincipalType.GROUP_TYPE_NAME, userMap);
-            principalMapByType.put(JetspeedPrincipalType.ROLE_TYPE_NAME, userMap);
+            principalMapByType.put(JetspeedPrincipalType.GROUP_TYPE_NAME, groupMap);
+            principalMapByType.put(JetspeedPrincipalType.ROLE_TYPE_NAME, roleMap);
         }
         
         public HashMap<String, Principal> getPrincipalMap(String principalTypeName)
