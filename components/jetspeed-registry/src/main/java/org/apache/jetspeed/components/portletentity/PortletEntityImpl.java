@@ -623,12 +623,12 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         return "org.apache.jetspeed" + entityId ;
     }
     
-    public void setPortletRegistry(PortletRegistry registry)
+    public static void setPortletRegistry(PortletRegistry registry)
     {
         PortletEntityImpl.registry = registry;
     }
 
-    public void setRequestContextComponent(RequestContextComponent requestContextComponent)
+    public static void setRequestContextComponent(RequestContextComponent requestContextComponent)
     {
         PortletEntityImpl.requestContextComponent = requestContextComponent;
     }
