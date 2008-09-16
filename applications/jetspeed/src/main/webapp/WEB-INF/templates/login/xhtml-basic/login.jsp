@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">
 <%@ page language="java" import="org.apache.jetspeed.login.LoginConstants" session="true" %>
-<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setBundle basename="org.apache.jetspeed.login.resources.LoginViewResources" />
 
 <html>

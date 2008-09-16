@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --%>
 <%@ page language="java" import="org.apache.jetspeed.login.LoginConstants" session="true" %>
-<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setBundle basename="org.apache.jetspeed.login.resources.LoginViewResources" />
 
 <html>
