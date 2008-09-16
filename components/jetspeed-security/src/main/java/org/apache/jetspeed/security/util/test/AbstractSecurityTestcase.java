@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.util.test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +40,7 @@ import org.apache.jetspeed.security.UserManager;
  * @version $Id$
  *  
  */
-public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase //AbstractPrefsSupportedTestCase
+public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
 {
     /** The user manager. */
     protected UserManager ums;

@@ -41,8 +41,6 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  */
 public interface MutablePortletApplication extends PortletApplication, Serializable
 {
-    public static final String PREFS_ROOT ="portlet_application";
-        
     /**
      * Sets the metadata from the extended jetspeed-portlet.xml
      * 

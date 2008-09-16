@@ -96,9 +96,6 @@
         <entry key="PortalAdministration">
           <ref bean="PortalAdministration" />
         </entry>
-        <entry key="PreferencesProvider">
-          <ref bean="org.apache.jetspeed.prefs.PreferencesProvider" />
-        </entry>
         <entry key="org.apache.jetspeed.container.session.PortalSessionsManager">
           <ref bean="org.apache.jetspeed.container.session.PortalSessionsManager" />
         </entry>

@@ -43,7 +43,6 @@ public interface CommonPortletServices
     public final static String CPS_PERMISSION_MANAGER = "cps:PermissionManager";
     public final static String CPS_PORTAL_STATISTICS = "cps:PortalStatistics";
     public final static String CPS_PORTAL_ADMINISTRATION = "cps:PortalAdministration";
-    public final static String CPS_PREFERENCES_PROVIDER = "cps:PreferencesProvider";
     public final static String CPS_DECORATION_FACTORY = "cps:DecorationFactory";
     public final static String CPS_DESKTOP = "cps:Desktop";
     public final static String CPS_PASSWORD_ENCODER_COMPONENT = "cps:PasswordEncodingService";

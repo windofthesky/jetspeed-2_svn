@@ -49,8 +49,6 @@ import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
  */
 public interface PortletDefinitionComposite extends PortletDefinition, PortletDefinitionCtrl, Serializable
 {
-    public static final String PORTLETS_PREFS_ROOT = "portlets";
-
     GenericMetadata getMetadata();
     
     void setMetadata(GenericMetadata metadata);

@@ -152,7 +152,7 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>prefs.xml,transaction.xml,cache.xml,boot/datasource.xml</include>
+                                        <include>transaction.xml,cache.xml,boot/datasource.xml</include>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>

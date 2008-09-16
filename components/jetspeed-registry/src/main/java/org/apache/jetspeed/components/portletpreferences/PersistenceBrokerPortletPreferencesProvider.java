@@ -31,7 +31,6 @@ import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceValueImpl;
-import org.apache.jetspeed.prefs.NodeDoesNotExistException;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -344,7 +343,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
     {
     }
     
-    public void preloadAllEntities() throws NodeDoesNotExistException
+    public void preloadAllEntities()
     {
     }
 }

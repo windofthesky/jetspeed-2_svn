@@ -355,7 +355,7 @@
           <resources>
             <resource>
               <path>assembly</path>
-              <include>profiler.xml,transaction.xml,prefs.xml,cache.xml,security-*.xml,boot/datasource.xml</include>
+              <include>profiler.xml,transaction.xml,cache.xml,security-*.xml,boot/datasource.xml</include>
             </resource>
             <resource>
               <path>db-ojb</path>

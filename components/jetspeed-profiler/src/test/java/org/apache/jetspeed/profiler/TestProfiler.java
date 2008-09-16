@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.profiler;
 
-import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,11 +37,8 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.RoleFallbackProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.AuthenticatedUser;
-import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.impl.RoleImpl;
 import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
@@ -527,7 +523,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     protected String[] getConfigurations()
     {
-        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "prefs.xml", "cache.xml",
+        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "cache.xml",
                 "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-spi-atz.xml", "security-atz.xml" };
     }
 

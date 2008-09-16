@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -292,9 +291,8 @@ public class GetUserListAction
      * @param username Name of the user of request
      * @return Map containing the user information keyed by the name of the attribute.
      * @throws SecurityException
-     * @throws BackingStoreException
      */
-    private Map<String, String> getUserInfo(String username) throws SecurityException, BackingStoreException
+    private Map<String, String> getUserInfo(String username) throws SecurityException
     {
     	User user =  userManager.getUser(username);
 		if(user != null)
