@@ -16,10 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.lang.reflect.Method;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.security.auth.Subject;
 
@@ -51,7 +48,6 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
     
     private UserManager userMgr;
     private PortalStatistics statistics;
-    private boolean resolveTomcatPrincipalFailed;
 
     public SecurityValveImpl(Profiler profiler, UserManager userMgr, PortalStatistics statistics, 
                             PortalAuthenticationConfiguration authenticationConfiguration)
@@ -181,25 +177,6 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
     
     protected Subject resolveSubjectFromContainerPrincipal(RequestContext request, Principal userPrincipal)
     {
-        // default handling for Tomcat Realm 
-        if (!resolveTomcatPrincipalFailed && userPrincipal.getClass().getName().equals("org.apache.catalina.realm.GenericPrincipal"))
-        {
-            try
-            {
-                Method m = userPrincipal.getClass().getMethod("getUserPrincipal", (Class[])null);
-                Principal p = (Principal)m.invoke(userPrincipal, (Object[])null);
-                if (p != null && p instanceof UserSubjectPrincipal)
-                {
-                    return ((UserSubjectPrincipal)p).getSubject();
-                }
-            }
-            catch (Exception e)
-            {                
-                // ignore 
-            }
-            // don't try again
-            resolveTomcatPrincipalFailed = true;
-        }
         return null;
     }
 }

@@ -24,53 +24,23 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-
 /**
  * @version $Id$
  *
  */
 public class JetspeedSubjectFactory
 {
-    private static class JetspeedUserSubjectPrincipal implements UserSubjectPrincipal
-    {
-        private static final long serialVersionUID = -2269455453318109892L;
-        private final User user;
-        private Subject subject;
-        
-        public JetspeedUserSubjectPrincipal(User user)
-        {
-            this.user = user;
-        }
-        public String getName()
-        {
-            return user.getName();
-        }
-        public User getUser()
-        {
-            return user;
-        }
-        public Subject getSubject()
-        {
-            return subject;
-        }
-        
-        public void setSubject(Subject subject)
-        {
-            this.subject = subject;
-        }
-    }
-    
     public static Subject createSubject(AuthenticatedUser user, Set<Principal> principals)
     {
         return createSubject(user.getUser(), user.getPublicCredentials(), user.getPrivateCredentials(), principals);
     }
     
-    public static Subject createSubject(User user, Set<Object> privateCredentials, Set<Object> publicCredentials, Set<Principal> principals)
+    public static Subject createSubject(User user, Set<Object> publicCredentials, Set<Object> privateCredentials, Set<Principal> principals)
     {
-        JetspeedUserSubjectPrincipal userPrincipal = new JetspeedUserSubjectPrincipal(user);
+        UserSubjectPrincipalImpl userPrincipal = new UserSubjectPrincipalImpl(user);
         Set<Principal> subjectPrincipals = principals == null || principals.isEmpty() ? new HashSet<Principal>() : new PrincipalsSet();
-        subjectPrincipals.add(user);
         subjectPrincipals.add(userPrincipal);
+        subjectPrincipals.add(user);
         if (principals != null)
         {
             subjectPrincipals.addAll(principals);

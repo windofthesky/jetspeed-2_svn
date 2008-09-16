@@ -38,6 +38,7 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.AuthenticationProvider;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 
 /**
  * <p>LoginModule implementation that authenticates a user
@@ -178,7 +179,7 @@ public class DefaultLoginModule implements LoginModule
                 // TODO We should get the user profile here and had it in cache so that we do not have to retrieve it again.
                 // TODO Ideally the User should be available from the session.  Need discussion around this.
                 refreshProxy();
-                commitSubject(subject, user.getUser(), SecurityHelper.getPrincipals(ums.getSubject(user), Role.class));
+                commitSubject(subject, ums.getSubject(user), user);
 
                 username = null;
                 user = null;
@@ -297,12 +298,13 @@ public class DefaultLoginModule implements LoginModule
      * @param subject
      * @param user
      */
-    protected void commitSubject(Subject containerSubject, User user, List<Principal> rolePrincipals)
+    protected void commitSubject(Subject containerSubject, Subject jetspeedSubject, AuthenticatedUser user)
     {
         // add user specific portal user name and roles
-        subject.getPrincipals().add(user);
+        Principal userSubjectPrincipal = SecurityHelper.getPrincipal(jetspeedSubject, UserSubjectPrincipal.class);
+        subject.getPrincipals().add(userSubjectPrincipal);
         boolean hasPortalUserRole = false;
-        for (Principal role : rolePrincipals)
+        for (Principal role : SecurityHelper.getPrincipals(jetspeedSubject, Role.class))
         {
             subject.getPrincipals().add(role);
             if (role.getName().equals(portalUserRole))
