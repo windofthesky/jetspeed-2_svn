@@ -111,7 +111,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         return dao != null ? dao.getEntity(entityId) : null;
     }
 
-    public Collection<Entity> getRelatedEntitiesTo(Entity fromEntity,
+    public Collection<Entity> getRelatedEntitiesTo(Entity toEntity,
             SecurityEntityRelationType relationType)
     {
         EntityDAO fromDAO=entityDAOs.get(relationType.getFromEntityType());
@@ -120,13 +120,13 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         if (fromDAO != null && toDAO != null && relationDAO != null)
         {
             return relationDAO.getRelatedEntitiesTo(
-                    fromDAO, toDAO, fromEntity); 
+                    fromDAO, toDAO, toEntity); 
         }
         return null; // todo : throw exception, since combination of entity
                      // types and relation type is not configured.
     }
 
-    public Collection<Entity> getRelatedEntitiesFrom(Entity toEntity,
+    public Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity,
             SecurityEntityRelationType relationType)
     {
         EntityDAO fromDAO=entityDAOs.get(relationType.getFromEntityType());
@@ -135,7 +135,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         if (fromDAO != null && toDAO != null && relationDAO != null)
         {
             return relationDAO.getRelatedEntitiesFrom(
-                    fromDAO, toDAO, toEntity); 
+                    fromDAO, toDAO, fromEntity); 
         }
         return null; // todo : throw exception, since combination of entity
                      // types and relation type is not configured.

@@ -39,9 +39,9 @@ public interface SecurityEntityManager
 
     void update(Entity entity);
 
-    Collection<Entity> getRelatedEntitiesFrom(Entity toEntity, SecurityEntityRelationType relationType);
+    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType);
 
-    Collection<Entity> getRelatedEntitiesTo(Entity fromEntity, SecurityEntityRelationType relationType);
+    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);
 
     void addRelatedEntity(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType);
 

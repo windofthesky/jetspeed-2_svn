@@ -64,7 +64,7 @@ public class UserTests extends AbstractSetup2LDAPTest
         resultSet.add(userRole);
         
         // test fetching roles for a user
-        basicTestCases.testFetchRelatedEntitiesTo("user", "role", "hasRole",
+        basicTestCases.testFetchRelatedEntitiesFrom("user", "role", "hasRole",
                 "someManager", resultSet);
 
         // .. next, test fetching users for a role using the same EntityRelationDAO
@@ -83,7 +83,7 @@ public class UserTests extends AbstractSetup2LDAPTest
         resultSet.add(user);
         resultSet.add(jetspeed);
         resultSet.add(admin);
-        basicTestCases.testFetchRelatedEntitiesFrom("user", "role", "hasRole",
+        basicTestCases.testFetchRelatedEntitiesTo("user", "role", "hasRole",
                 "manager", resultSet);
 
     }

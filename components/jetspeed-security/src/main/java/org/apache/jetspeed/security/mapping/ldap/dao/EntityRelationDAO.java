@@ -31,10 +31,10 @@ public interface EntityRelationDAO
     SecurityEntityRelationType getRelationType();
 
     Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao,
-            EntityDAO toDao, Entity toEntity);
+            EntityDAO toDao, Entity fromEntity);
 
     Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao,
-            EntityDAO toDao, Entity fromEntity);
+            EntityDAO toDao, Entity toEntity);
 
     void relate(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
             Entity targetEntity);

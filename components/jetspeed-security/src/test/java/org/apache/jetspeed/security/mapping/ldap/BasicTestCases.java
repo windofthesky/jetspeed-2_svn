@@ -63,11 +63,10 @@ public class BasicTestCases
     }
 
     public void testFetchRelatedEntitiesTo(String fromEntityType,
-            String toEntityType, String relationType, String fromEntityId,
+            String toEntityType, String relationType, String toEntityId,
             Collection<Entity> expectedEntities) throws Exception
     {
-        Entity randomEntity = entityManager.getEntity(fromEntityType,
-                fromEntityId);
+        Entity randomEntity = entityManager.getEntity(toEntityType,toEntityId);
         TestCase.assertNotNull(randomEntity);
         Collection<Entity> resultEntities = entityManager.getRelatedEntitiesTo(
                 randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType));
@@ -76,11 +75,10 @@ public class BasicTestCases
     }
     
     public void testFetchRelatedEntitiesFrom(String fromEntityType,
-            String toEntityType, String relationType, String toEntityId,
+            String toEntityType, String relationType, String fromEntityId,
             Collection<Entity> expectedEntities) throws Exception
     {
-        Entity randomEntity = entityManager.getEntity(toEntityType,
-                toEntityId);
+        Entity randomEntity = entityManager.getEntity(fromEntityType,fromEntityId);
         TestCase.assertNotNull(randomEntity);
         Collection<Entity> resultEntities = entityManager.getRelatedEntitiesFrom(
                 randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType));

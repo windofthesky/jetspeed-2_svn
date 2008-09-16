@@ -54,15 +54,15 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
                                                  // contains the ID(s).
 
     public Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDAO,
-            EntityDAO toDAO, Entity toEntity)
+            EntityDAO toDAO, Entity fromEntity)
     {
-       return internalGetRelatedEntities( toDAO, fromDAO, !useFromEntityAttribute, toEntity);               
+       return internalGetRelatedEntities( fromDAO, toDAO, useFromEntityAttribute, fromEntity);               
     }
 
     public Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDAO,
-            EntityDAO toDAO, Entity fromEntity)
+            EntityDAO toDAO, Entity toEntity)
     {
-       return internalGetRelatedEntities(fromDAO, toDAO, useFromEntityAttribute, fromEntity);               
+       return internalGetRelatedEntities(toDAO, fromDAO, !useFromEntityAttribute, toEntity);               
     }
     
     private Collection<Entity> internalGetRelatedEntities(EntityDAO fromDAO,
