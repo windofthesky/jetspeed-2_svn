@@ -172,7 +172,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
     public final List<? extends JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName)
     {
-        if ( !assHandlers.containsKey(new AssociationHandlerKey(from.getName(), principalType.getName(), associationName)))
+        if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, from.getName(), principalType.getName())))
         {
             // TODO: should we throw an exception here???
             return Collections.EMPTY_LIST;
@@ -182,7 +182,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
     public final List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType  from, String associationName)
     {
-        if ( !assHandlers.containsKey(new AssociationHandlerKey(from.getName(), principalType.getName(), associationName)))
+        if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, from.getName(), principalType.getName())))
         {
             // TODO: should we throw an exception here???
             return Collections.EMPTY_LIST;
@@ -192,7 +192,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
     public final List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType to, String associationName)
     {
-        if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
+        if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, principalType.getName(), to.getName())))
         {
             // TODO: should we throw an exception here???
             return Collections.EMPTY_LIST;
@@ -202,7 +202,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
 
     public final List<? extends JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName)
     {
-        if ( !assHandlers.containsKey(new AssociationHandlerKey(principalType.getName(), to.getName(), associationName)))
+        if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, principalType.getName(), to.getName())))
         {
             // TODO: should we throw an exception here???
             return Collections.EMPTY_LIST;
