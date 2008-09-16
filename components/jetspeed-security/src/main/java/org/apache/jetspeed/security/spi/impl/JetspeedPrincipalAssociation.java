@@ -28,9 +28,9 @@ public class JetspeedPrincipalAssociation implements Serializable
     private static final long serialVersionUID = 1L;
     
     @SuppressWarnings("unused")
-    private JetspeedPrincipal from;
+    private Long fromPrincipalId;
     @SuppressWarnings("unused")
-    private JetspeedPrincipal to;
+    private Long toPrincipalId;
     @SuppressWarnings("unused")
     private String associationName;
     
@@ -42,23 +42,8 @@ public class JetspeedPrincipalAssociation implements Serializable
 
     public JetspeedPrincipalAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
     {        
-        this.from = from;
-        this.to = to;
+        this.fromPrincipalId = from.getId();
+        this.toPrincipalId = to.getId();
         this.associationName = associationName;
     }
-
-    public JetspeedPrincipal getFrom()
-    {
-        return from;
-    }
-
-    public JetspeedPrincipal getTo()
-    {
-        return to;
-    }
-
-    public String getAssociationName()
-    {
-        return associationName;
-    }        
 }

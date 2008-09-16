@@ -26,6 +26,11 @@ public class GroupImpl extends PersistentJetspeedPrincipal implements Group
 {
 	private static final long serialVersionUID = 5484179899807809619L;
 
+    public GroupImpl()
+    {
+        super();
+    }
+    
 	public GroupImpl(String name)
 	{
 		super(name);

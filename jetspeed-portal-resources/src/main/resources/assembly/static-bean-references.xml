@@ -106,18 +106,28 @@
       <property name="value"><ref bean="org.apache.jetspeed.security.PermissionManager"/></property>
   </bean>
   
-  <bean id="_TransientJetspeedPrincipal" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+  <bean id="_jetspeedPrincipalConcreteClassRowReaderInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+    <meta key="j2:cat" value="default,security" />
+      <property name="className" value="org.apache.jetspeed.security.util.ojb.JetspeedPrincipalConcreteClassRowReader"/>
+      <property name="methodName" value="setJetspeedPrincipalManagerProvider"/>
+      <property name="typeName" value="org.apache.jetspeed.security.JetspeedPrincipalManagerProvider"/>
+      <property name="value"><ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"/></property>
+   </bean>	
+
+  <bean id="_transientJetspeedPrincipalInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,security" />
       <property name="className" value="org.apache.jetspeed.security.impl.TransientJetspeedPrincipal"/>
       <property name="methodName" value="setJetspeedPrincipalManagerProvider"/>
       <property name="typeName" value="org.apache.jetspeed.security.JetspeedPrincipalManagerProvider"/>
       <property name="value"><ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"/></property>
    </bean>	
-  <bean id="_BaseJetspeedPrincipalManager" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
+
+  <bean id="_baseJetspeedPrincipalManagerInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,security" />
       <property name="className" value="org.apache.jetspeed.security.impl.BaseJetspeedPrincipalManager"/>
       <property name="methodName" value="setJetspeedPrincipalManagerProvider"/>
       <property name="typeName" value="org.apache.jetspeed.security.JetspeedPrincipalManagerProvider"/>
       <property name="value"><ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"/></property>
-   </bean>	
+   </bean>
+   
 </beans>

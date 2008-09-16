@@ -50,11 +50,12 @@
 	<constructor-arg index="2"><value>null</value></constructor-arg>
   </bean>  
 
-  <bean id="org.apache.jetspeed.security.CredentialPasswordEncoder"
-	class="org.apache.jetspeed.security.impl.Jetspeed1CredentialPasswordEncoder">
-	<meta key="j2:cat" value="default,security" />
-  </bean>  
-
+  <bean id="org.apache.jetspeed.security.CredentialPasswordEncoder" 
+       class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
+  <meta key="j2:cat" value="default,security" />
+       <constructor-arg index="0"><value>SHA-1</value></constructor-arg>       
+  </bean>
+  
   <bean id="org.apache.jetspeed.security.CredentialPasswordValidator"
 	class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator">
 	<meta key="j2:cat" value="default,security" />

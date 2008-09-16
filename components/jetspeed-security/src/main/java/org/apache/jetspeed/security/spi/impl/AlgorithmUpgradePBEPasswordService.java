@@ -74,7 +74,7 @@ public class AlgorithmUpgradePBEPasswordService extends PBEPasswordService imple
     {
         if ( usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate()))
         {
-            credential.setPassword(encode(credential.getUserName(), credential.getNewPassword()).toCharArray(), true);
+            credential.setPassword(encode(credential.getUserName(), credential.getNewPassword()), true);
         }
     }
     

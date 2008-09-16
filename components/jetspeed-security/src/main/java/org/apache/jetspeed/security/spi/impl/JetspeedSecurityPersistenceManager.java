@@ -61,13 +61,7 @@ public class JetspeedSecurityPersistenceManager
     {
         super(repositoryPath);
     }
-    //Adding for testing purpose only. This would be removed 
-    //TODO remove this method
-	public void init() throws Exception
-	{
-
-	}
-
+    
 	public boolean principalExists(JetspeedPrincipal principal)
     {
         if (principal.getId() == null)
@@ -76,7 +70,8 @@ public class JetspeedSecurityPersistenceManager
         }
         Criteria criteria = new Criteria();
         criteria.addEqualTo("id", principal.getId());
-        Query query = QueryFactory.newQuery(principal.getType().getPrincipalClass(),criteria);
+        criteria.addEqualTo("type", principal.getType().getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return getPersistenceBroker(true).getCount(query) == 1;
     }
 
@@ -88,7 +83,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.name", principalFromName);
-        Query query = QueryFactory.newQuery(to.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", to.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
     }
 
@@ -97,7 +93,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.name", principalToName);
-        Query query = QueryFactory.newQuery(from.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", from.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
     }
 
@@ -106,7 +103,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.id", principalFromId);
-        Query query = QueryFactory.newQuery(to.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", to.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
     }
 
@@ -115,7 +113,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.id", principalToId);
-        Query query = QueryFactory.newQuery(from.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", from.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
     }
 
@@ -124,7 +123,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.name", principalFromName);
-        ReportQueryByCriteria query = QueryFactory.newReportQuery(to.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", to.getName());
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
         for (Iterator<Object[]> iter = getPersistenceBroker(true).getReportQueryIteratorByQuery(query); iter.hasNext(); )
@@ -139,7 +139,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.id", principalFromId);
-        ReportQueryByCriteria query = QueryFactory.newReportQuery(to.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", to.getName());
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
         for (Iterator<Object[]> iter = getPersistenceBroker(true).getReportQueryIteratorByQuery(query); iter.hasNext(); )
@@ -154,7 +155,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.name", principalToName);
-        ReportQueryByCriteria query = QueryFactory.newReportQuery(from.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", from.getName());
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
         for (Iterator<Object[]> iter = getPersistenceBroker(true).getReportQueryIteratorByQuery(query); iter.hasNext(); )
@@ -169,7 +171,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.id", principalToId);
-        ReportQueryByCriteria query = QueryFactory.newReportQuery(from.getPrincipalClass(), criteria);
+        criteria.addEqualTo("type", from.getName());
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
         for (Iterator<Object[]> iter = getPersistenceBroker(true).getReportQueryIteratorByQuery(query); iter.hasNext(); )
@@ -189,7 +192,8 @@ public class JetspeedSecurityPersistenceManager
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("name", principalName);
-        Query query = QueryFactory.newQuery(type.getPrincipalClass(),criteria);
+        criteria.addEqualTo("type", type.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return (JetspeedPrincipal)getPersistenceBroker(true).getObjectByQuery(query);
     }
 
@@ -200,7 +204,8 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addLike("name", nameFilter+"%");
         }
-        ReportQueryByCriteria query = QueryFactory.newReportQuery(type.getPrincipalClass(),criteria);
+        criteria.addEqualTo("type", type.getName());
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class,criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
         for (Iterator<Object[]> iter = getPersistenceBroker(true).getReportQueryIteratorByQuery(query); iter.hasNext(); )
@@ -217,7 +222,8 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addLike("name", nameFilter+"%");
         }
-        Query query = QueryFactory.newQuery(type.getPrincipalClass(),criteria);
+        criteria.addEqualTo("type", type.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
     }
 
@@ -226,7 +232,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("attributes.name", attributeName);
         criteria.addEqualTo("attributes.value", attributeValue);
-        Query query = QueryFactory.newQuery(type.getPrincipalClass(),criteria);
+        criteria.addEqualTo("type", type.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return (List<JetspeedPrincipal>) getPersistenceBroker(true).getCollectionByQuery(ManageableArrayList.class, query);
     }
 
@@ -234,7 +241,8 @@ public class JetspeedSecurityPersistenceManager
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("name", principalName);
-        Query query = QueryFactory.newQuery(type.getPrincipalClass(),criteria);
+        criteria.addEqualTo("type", type.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return getPersistenceBroker(true).getCount(query) == 1;
     }
 
@@ -332,11 +340,12 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
         Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
         PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBroker(true).getObjectByQuery(query);
-        if (pwc != null)
+        if (pwc == null)
         {
-            // store the user by hand as its configured as auto-retrieve="false"
-            pwc.setUser(user);
+            pwc = new PasswordCredentialImpl();
         }
+        // store the user by hand as its configured as auto-retrieve="false"
+        pwc.setUser(user);
         return pwc;
     }
 
@@ -346,7 +355,7 @@ public class JetspeedSecurityPersistenceManager
         {
             if (credential.getNewPassword() != null)
             {
-                credential.setPassword(credential.getNewPassword().toCharArray(), credential.isEncoded());                
+                credential.setPassword(credential.getNewPassword(), credential.isEncoded());                
             }
         }
         getPersistenceBroker(true).store(credential);
@@ -419,7 +428,7 @@ public class JetspeedSecurityPersistenceManager
         {
             try
             {
-                getPersistenceBrokerTemplate().store(new JetspeedPrincipalAssociation(from, to, associationName));
+                getPersistenceBroker(true).store(new JetspeedPrincipalAssociation(from, to, associationName));
             }
             catch (Exception pbe)
             {

@@ -35,6 +35,10 @@
 								value="org.apache.jetspeed.user.subsite" />
 							<constructor-arg index="1" value="jetspeed" />
 						</bean>
+						<bean class="org.apache.jetspeed.security.impl.SecurityAttributeTypeImpl">
+						  <constructor-arg index="0" value="org.apache.jetspeed.prefered.locale" />
+						  <constructor-arg index="1" value="jetspeed" />
+						</bean>
 						<bean
 							class="org.apache.jetspeed.security.impl.SecurityAttributeTypeImpl">
 							<constructor-arg index="0" value="user.name.given" />
@@ -249,4 +253,25 @@
 			</set>
 		</constructor-arg>
    </bean>
+   
+  <bean id="_userIsMemberOfRoleAssociationHandler"
+	  class="org.apache.jetspeed.security.spi.impl.SimpleMemberOfPrincipalAssociationHandler">
+		<meta key="j2:cat" value="default,security" />
+		<constructor-arg index="0" value="isMemberOf"/>
+		<constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager"/>
+		<constructor-arg index="2" ref="org.apache.jetspeed.security.RoleManager"/>
+		<constructor-arg index="3" type="boolean" value="false"/>
+		<constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager"/>
+  </bean>  
+   
+  <bean id="_userIsMemberOfGroupAssociationHandler"
+	  class="org.apache.jetspeed.security.spi.impl.SimpleMemberOfPrincipalAssociationHandler">
+		<meta key="j2:cat" value="default,security" />
+		<constructor-arg index="0" value="isMemberOf"/>
+		<constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager"/>
+		<constructor-arg index="2" ref="org.apache.jetspeed.security.GroupManager"/>
+		<constructor-arg index="3" type="boolean" value="false"/>
+		<constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager"/>
+  </bean>  
+   
 </beans>

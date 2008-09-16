@@ -35,7 +35,9 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
 {
     protected static JetspeedPrincipalManagerProvider jpmp;
     
-    protected String name;    
+    protected String name;
+    @SuppressWarnings("unused")
+    private String type;
     
     protected transient JetspeedPrincipalType jpt;
     protected transient SecurityAttributes sa;
@@ -47,11 +49,12 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     
     protected TransientJetspeedPrincipal()
     {
-    
+        type = jpmp.getPrincipalTypeByClassName(getClass().getName()).getName();
     }
     
     public TransientJetspeedPrincipal(String name)
     {
+        this();
     	this.name = name;
     }
     

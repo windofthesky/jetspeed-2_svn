@@ -52,7 +52,10 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
             throw new IllegalArgumentException("Provided ManagerFrom or ManagerTo PrincipalType do not correspond with the AssociationType");
         }
         from.addAssociationHandler(this);
-        to.addAssociationHandler(this);
+        if (from != to)
+        {
+            to.addAssociationHandler(this);
+        }
     }
 
     public void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException,

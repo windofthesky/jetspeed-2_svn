@@ -306,7 +306,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             catch (Exception e)
             {
                 throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { "Group",
-                        e.getMessage() }));
+                        e.getMessage() }), e);
             }
         }
         log.debug("recreateGroups - done");
@@ -353,7 +353,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         PasswordCredential pwc = userManager.getPasswordCredential(user);
                         pwc.setPassword(null, password);
                         pwc.setEncoded((passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
-                        userManager.updateUser(user);
+                        userManager.storePasswordCredential(pwc);
                         log.debug("add User done ");
                     }
                     try
@@ -369,7 +369,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                     catch (Exception e)
                     {
                         // most likely caused by protected users (like "guest")
-                        log.debug("setting userinfo for " + jsuser.getName() + " failed because of "
+                        log.error("setting userinfo for " + jsuser.getName() + " failed because of "
                                 + e.getLocalizedMessage());
                     }
                     // credentials
@@ -855,7 +855,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         if (credential instanceof PasswordCredential)
         {
             PasswordCredential pw = (PasswordCredential) credential;
-            newUser.setUserCredential(pw.getUserName(), pw.getPassword(), pw.getExpirationDate(), pw.isEnabled(), pw
+            newUser.setUserCredential(pw.getUserName(), pw.getPassword().toCharArray(), pw.getExpirationDate(), pw.isEnabled(), pw
                     .isExpired(), pw.isUpdateRequired());
             return;
         }

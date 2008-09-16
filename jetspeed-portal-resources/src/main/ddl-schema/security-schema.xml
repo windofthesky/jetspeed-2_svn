@@ -133,7 +133,7 @@ limitations under the License.
     <table name="SECURITY_CREDENTIAL">
         <column name="CREDENTIAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PRINCIPAL_ID" required="true" type="INTEGER"/>
-        <column name="CREDENTIAL_VALUE" required="true" size="254" type="VARCHAR"/>
+        <column name="CREDENTIAL_VALUE" required="false" size="254" type="VARCHAR"/>
         <column name="TYPE" required="true" type="SMALLINT"/>
         <column name="UPDATE_ALLOWED" required="true" type="BOOLEANINT"/>
         <column name="IS_STATE_READONLY" required="true" type="BOOLEANINT"/>

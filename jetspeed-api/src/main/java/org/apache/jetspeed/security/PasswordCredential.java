@@ -30,20 +30,20 @@ import java.sql.Timestamp;
 public interface PasswordCredential extends UserCredential
 {
     String PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY = PasswordCredential.class.getName() + ".check";
-    public static final Integer TYPE_CURRENT = new Integer(0);
-    public static final Integer TYPE_HISTORICAL = new Integer(1);
+    public static final Short TYPE_CURRENT = new Short((short) 0);
+    public static final Short TYPE_HISTORICAL = new Short((short) 1);
 
     /**
      * @return The user the PasswordCredential belongs to
      */
     User getUser();
     
-    Integer getType();
+    Short getType();
     
     /**
      * @return raw (possibly encoded) password.
      */
-    char[] getPassword();
+    String getPassword();
     
     /**
      * @return the temporary old (plain text) password provided when a new password is set
@@ -60,7 +60,7 @@ public interface PasswordCredential extends UserCredential
      * @param password
      * @param encoded
      */
-    void setPassword(char[] password, boolean encoded);
+    void setPassword(String password, boolean encoded);
     
     /**
      * Set a new unencoded password and providing the old (unencoded) password for validation

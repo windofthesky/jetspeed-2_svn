@@ -68,11 +68,16 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             this.fromPrincipalType = fromPrincipalType;
             this.toPrincipalType = toPrincipalType;
         }
-
-        public boolean equals(AssociationHandlerKey other)
+        
+        public boolean equals(Object o)
         {
-            return other.name.equals(name) && other.fromPrincipalType.equals(fromPrincipalType) &&
-                   other.toPrincipalType.equals(toPrincipalType);
+            if (o != null && o instanceof AssociationHandlerKey)
+            {
+                AssociationHandlerKey other = (AssociationHandlerKey)o;
+                return other.name.equals(name) && other.fromPrincipalType.equals(fromPrincipalType) &&
+                other.toPrincipalType.equals(toPrincipalType);
+            }
+            return false;
         }
 
         public int hashCode()

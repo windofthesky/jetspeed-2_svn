@@ -21,6 +21,9 @@ import java.sql.Timestamp;
 
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.User;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  * <p>
@@ -29,16 +32,19 @@ import org.apache.jetspeed.security.User;
  * 
  * @version $Id$
  */
-public class PasswordCredentialImpl implements PasswordCredential
+public class PasswordCredentialImpl implements PasswordCredential, PersistenceBrokerAware
 {
     private static final long serialVersionUID = -4975305752376365096L;
+    
+    @SuppressWarnings("unused")
+    private Long principalId;
     
     private User user;
     
     private String userName;
 
     /** The "raw" password value */
-    private char[] password;
+    private String password;
     
     /**
      * the "old" password for authenticating password change (if set)
@@ -79,7 +85,10 @@ public class PasswordCredentialImpl implements PasswordCredential
     private boolean expired;
     
     /** The creation date. */
-    private Date creationDate;
+    private Timestamp creationDate;
+    
+    /** The modified date. */
+    private Timestamp modifiedDate;
     
     /** The expiration date. */
     private Date expirationDate;
@@ -97,15 +106,15 @@ public class PasswordCredentialImpl implements PasswordCredential
      * The type mapping field
      */
     @SuppressWarnings("unused")
-    private Integer type = TYPE_CURRENT;
+    private Short type = TYPE_CURRENT;
 
     public PasswordCredentialImpl()
     {        
     }
     
-    public PasswordCredentialImpl(User user, char[] password)
+    public PasswordCredentialImpl(User user, String password)
     {
-        this.user = user;
+        setUser(user);
         this.password = password;
     }
     
@@ -128,6 +137,10 @@ public class PasswordCredentialImpl implements PasswordCredential
     public void setUser(User user)
     {
         this.user = user;
+        if (user != null && user.getId() != null)
+        {
+            this.principalId = user.getId();
+        }
     }
     
     public void setUserName(String userName)
@@ -148,7 +161,7 @@ public class PasswordCredentialImpl implements PasswordCredential
         return user;
     }
     
-    public Integer getType()
+    public Short getType()
     {
         return type;
     }
@@ -156,19 +169,18 @@ public class PasswordCredentialImpl implements PasswordCredential
     /**
      * @return The password.
      */
-    public char[] getPassword()
+    public String getPassword()
     {
-        return password != null ? (char[]) password.clone() : null;
+        return password != null ? password : null;
     }
     
-    public void setPassword(char[] password, boolean encoded)
+    public void setPassword(String password, boolean encoded)
     {
         checkUpdatePassword();
-        char[] value = password.clone();
-        this.encoded = encoded;
-        if (!value.equals(password))
+        if (password != null && (this.password == null || encoded != this.encoded || !password.equals(this.password)))
         {
-            this.password = value;
+            this.password = password;
+            this.encoded = encoded;
             oldPassword = null;
             newPassword = null;
             newPasswordSet = true;
@@ -178,7 +190,7 @@ public class PasswordCredentialImpl implements PasswordCredential
     public void setPassword(String oldPassword, String newPassword)
     {
         checkUpdatePassword();
-        if (!newPassword.equals(oldPassword))
+        if (newPassword != null && (oldPassword == null || !newPassword.equals(oldPassword)))
         {
             this.newPassword = newPassword;
             this.oldPassword = oldPassword;
@@ -274,14 +286,14 @@ public class PasswordCredentialImpl implements PasswordCredential
         this.expired = expired;
     }
 
-    public Date getCreationDate()
+    public Timestamp getCreationDate()
     {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate)
+    public Timestamp getModifiedDate()
     {
-        this.creationDate = creationDate;
+        return modifiedDate;
     }
 
     public Date getExpirationDate()
@@ -326,5 +338,39 @@ public class PasswordCredentialImpl implements PasswordCredential
     {
         checkUpdateState();
         this.authenticationFailures = authenticationFailures;
+    }
+
+    //
+    /// OJB PersistenceBrokerAware interface implementation
+    //
+    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        this.creationDate = new Timestamp(System.currentTimeMillis());
+        this.modifiedDate = this.creationDate;
+    }
+
+    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        this.modifiedDate = new Timestamp(System.currentTimeMillis());
     }
 }

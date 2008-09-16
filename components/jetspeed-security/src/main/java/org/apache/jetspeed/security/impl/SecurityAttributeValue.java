@@ -31,7 +31,7 @@ public class SecurityAttributeValue implements Serializable
     private long id;
     
     private String name;
-    private String stringValue;
+    private String value;
     
     /*
      * default constructor required for persistence engine
@@ -51,11 +51,11 @@ public class SecurityAttributeValue implements Serializable
     
     public String getStringValue()
     {
-        return stringValue;
+        return value;
     }
     
     public void setStringValue(String stringValue)
     {
-        this.stringValue = stringValue;
+        this.value = stringValue;
     }
 }

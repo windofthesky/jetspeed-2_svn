@@ -184,7 +184,7 @@ limitations under the License.
             <reference foreign="ID" local="PREF_ID"/>
         </foreign-key>        
         <foreign-key foreignTable="PORTLET_ENTITY" name="FK_PORTLET_ENTITY" onDelete="cascade">
-            <reference foreign="PEID" local="ENTITY_OID"/>
+            <reference foreign="ID" local="ENTITY_ID"/>
         </foreign-key>        
     </table>
 

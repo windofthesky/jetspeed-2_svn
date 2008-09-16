@@ -201,7 +201,9 @@ public class SecurityAttributesImpl implements SecurityAttributes
         
         SecurityAttributeValue value = new SecurityAttributeValue(name);
         avColl.add(value);
-        return saMap.put(name, new SecurityAttributeImpl(sat, value, persistent));
+        SecurityAttributeImpl attr = new SecurityAttributeImpl(sat, value, persistent);
+        saMap.put(name, attr);
+        return attr;
     }
 
     public SecurityAttribute addNewInfoAttribute(String name, DataType type)
@@ -227,7 +229,9 @@ public class SecurityAttributesImpl implements SecurityAttributes
         // TODO: making use of the DataType parameter (now ignored)
         SecurityAttributeValue value = new SecurityAttributeValue(name);
         avColl.add(value);
-        return saMap.put(name, new SecurityAttributeImpl(new SecurityAttributeTypeImpl(name), value, persistent));
+        SecurityAttributeImpl attr = new SecurityAttributeImpl(new SecurityAttributeTypeImpl(name), value, persistent);
+        saMap.put(name, attr);
+        return attr;
     }
 
     public void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException

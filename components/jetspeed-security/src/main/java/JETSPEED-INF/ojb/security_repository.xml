@@ -45,7 +45,7 @@ limitations under the License.
 	        name="password"
 	        column="credential_value"
 	        jdbc-type="VARCHAR"
-	        nullable="false"
+	        nullable="true"
 	        length="150"
 	    >
 	    </field-descriptor>
@@ -205,12 +205,9 @@ limitations under the License.
   <class-descriptor
       class="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
       table="SECURITY_PRINCIPAL"
+      row-reader="org.apache.jetspeed.security.util.ojb.JetspeedPrincipalConcreteClassRowReader"
   >  
       <documentation>Represents a security principal in the security policy.</documentation>
-      
-      <extend-class class-ref="org.apache.jetspeed.security.impl.UserImpl"/>
-      <extend-class class-ref="org.apache.jetspeed.security.impl.RoleImpl"/>
-      <extend-class class-ref="org.apache.jetspeed.security.impl.GroupImpl"/>
       
       <field-descriptor
           name="id"
@@ -222,11 +219,10 @@ limitations under the License.
       >
       </field-descriptor>
       <field-descriptor
-          name="ojbConcreteClass"
+          name="type"
           column="principal_type"
           jdbc-type="VARCHAR"
           nullable="false"
-          conversion="org.apache.jetspeed.security.util.ojb.JetspeedPrincipalTypeFieldConversion"
           length="30"
       >
       </field-descriptor>     
@@ -241,14 +237,6 @@ limitations under the License.
       <field-descriptor
           name="mapped"
           column="is_mapped"
-          jdbc-type="INTEGER"
-          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-          nullable="false"
-      >
-      </field-descriptor>
-      <field-descriptor
-          name="root"
-          column="is_root"
           jdbc-type="INTEGER"
           conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
@@ -303,7 +291,7 @@ limitations under the License.
       </collection-descriptor>
       <collection-descriptor
           name="associationsFrom"
-          element-class-ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociation"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalAssociation"
           auto-retrieve="false"
           auto-update="none"
           auto-delete="none"
@@ -312,7 +300,7 @@ limitations under the License.
       </collection-descriptor>
       <collection-descriptor
           name="associationsTo"
-          element-class-ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociation"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalAssociation"
           auto-retrieve="false"
           auto-update="none"
           auto-delete="none"
@@ -325,7 +313,7 @@ limitations under the License.
    - S E C U R I T Y   A T T R I B U T E S
    -->
   <class-descriptor
-      class="org.apache.jetspeed.security.SecurityAttributeValue"
+      class="org.apache.jetspeed.security.impl.SecurityAttributeValue"
       table="SECURITY_ATTRIBUTE"
   >
       <documentation>Represents a Security Principal Attribute definition.</documentation>
@@ -373,14 +361,12 @@ limitations under the License.
           column="from_principal_id"
           jdbc-type="BIGINT"
           primarykey="true"
-          access="anonymous"
       />
       <field-descriptor
           name="toPrincipalId"
           column="to_principal_id"
           jdbc-type="BIGINT"
           primarykey="true"
-          access="anonymous"
       />
       <field-descriptor
           name="associationName"
@@ -392,12 +378,14 @@ limitations under the License.
       <reference-descriptor
          name="from"
          class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
       >
          <foreignkey field-ref="fromPrincipalId"/>
       </reference-descriptor>
       <reference-descriptor
          name="to"
          class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
       >
          <foreignkey field-ref="toPrincipalId"/>
       </reference-descriptor>

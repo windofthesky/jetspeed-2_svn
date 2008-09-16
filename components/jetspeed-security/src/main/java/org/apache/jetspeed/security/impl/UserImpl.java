@@ -24,14 +24,16 @@ import org.apache.jetspeed.security.User;
  */
 public class UserImpl extends PersistentJetspeedPrincipal implements User
 {
-    /**
-	 * @param name
-	 */
+    private static final long serialVersionUID = 5484179899807809619L;
+    
+    public UserImpl()
+    {
+        super();
+    }
+    
 	public UserImpl(String name)
 	{
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
-	private static final long serialVersionUID = 5484179899807809619L;
 }

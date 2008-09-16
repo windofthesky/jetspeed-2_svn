@@ -46,7 +46,7 @@ public class EncodePasswordOnFirstLoadInterceptor extends AbstractPasswordCreden
         boolean updated = false;
         if (!credential.isEncoded() && encoder != null )
         {
-            credential.setPassword(encoder.encode(userName,new String(credential.getPassword())).toCharArray(), true);
+            credential.setPassword(encoder.encode(userName,new String(credential.getPassword())), true);
             
             if ( encoder instanceof AlgorithmUpgradePasswordEncodingService)
             {

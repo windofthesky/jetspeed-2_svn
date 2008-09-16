@@ -52,7 +52,12 @@ public interface UserCredential extends Credential
     /**
      * @return when the credential is created.
      */
-    Date getCreationDate();
+    Timestamp getCreationDate();
+    
+    /**
+     * @return when the credential was last modified.
+     */
+    Timestamp getModifiedDate();
     
     /**
      * @return when the credential is (going to be) expired.
