@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
