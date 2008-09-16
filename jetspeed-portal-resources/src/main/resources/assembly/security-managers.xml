@@ -104,7 +104,7 @@
   <bean id="org.apache.jetspeed.security.UserManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.UserManager, org.apache.jetspeed.security.JetspeedPrincipalManager</value>
+      <value>org.apache.jetspeed.security.UserManager, org.apache.jetspeed.security.JetspeedPrincipalManager, org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI</value>
     </property>
     <property name="target">
       <ref bean="org.apache.jetspeed.security.impl.UserManagerImpl" />
@@ -141,7 +141,7 @@
     <bean id="org.apache.jetspeed.security.GroupManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.GroupManager,org.apache.jetspeed.security.JetspeedPrincipalManager</value>
+      <value>org.apache.jetspeed.security.GroupManager,org.apache.jetspeed.security.JetspeedPrincipalManager, org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI</value>
     </property>
     <property name="target">
       <ref bean="org.apache.jetspeed.security.impl.GroupManagerImpl" />
@@ -176,7 +176,7 @@
   <bean id="org.apache.jetspeed.security.RoleManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.RoleManager,org.apache.jetspeed.security.JetspeedPrincipalManager</value>
+      <value>org.apache.jetspeed.security.RoleManager,org.apache.jetspeed.security.JetspeedPrincipalManager, org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI</value>
     </property>
     <property name="target">
       <ref bean="org.apache.jetspeed.security.impl.RoleManagerImpl" />

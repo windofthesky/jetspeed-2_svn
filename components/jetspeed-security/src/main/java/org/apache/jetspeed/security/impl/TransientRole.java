@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.Role;
 
 /**
@@ -29,6 +30,6 @@ public class TransientRole extends TransientJetspeedPrincipal implements Role
 
 	public TransientRole(String name)
 	{
-		super(name);
+        super(JetspeedPrincipalType.ROLE_TYPE_NAME, name);
 	}
 }

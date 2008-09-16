@@ -52,6 +52,12 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
         type = jpmp.getPrincipalTypeByClassName(getClass().getName()).getName();
     }
     
+    protected TransientJetspeedPrincipal(String type, String name)
+    {
+        this.name = name;
+        this.type = type;
+    }
+    
     public TransientJetspeedPrincipal(String name)
     {
         this();
@@ -72,7 +78,7 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     {
         if (jpt == null)
         {
-            jpt = jpmp.getPrincipalTypeByClassName(getClass().getName());
+            jpt = jpmp.getPrincipalType(type);
         }
         return jpt;
     }

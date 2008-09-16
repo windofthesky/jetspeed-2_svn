@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.User;
 
 /**
@@ -29,6 +30,6 @@ public class TransientUser extends TransientJetspeedPrincipal implements User
 
 	public TransientUser(String name)
 	{
-		super(name);
+		super(JetspeedPrincipalType.USER_TYPE_NAME, name);
 	}
 }

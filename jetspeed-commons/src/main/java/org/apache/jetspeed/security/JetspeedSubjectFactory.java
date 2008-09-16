@@ -69,6 +69,7 @@ public class JetspeedSubjectFactory
     {
         JetspeedUserSubjectPrincipal userPrincipal = new JetspeedUserSubjectPrincipal(user);
         Set<Principal> subjectPrincipals = principals == null || principals.isEmpty() ? new HashSet<Principal>() : new PrincipalsSet();
+        subjectPrincipals.add(user);
         subjectPrincipals.add(userPrincipal);
         if (principals != null)
         {

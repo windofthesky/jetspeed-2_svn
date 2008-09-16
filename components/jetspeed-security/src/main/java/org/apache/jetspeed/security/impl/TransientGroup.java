@@ -18,6 +18,7 @@
 package org.apache.jetspeed.security.impl;
 
 import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 
 /**
  * @version $Id$
@@ -29,6 +30,6 @@ public class TransientGroup extends TransientJetspeedPrincipal implements Group
 
 	public TransientGroup(String name)
 	{
-		super(name);
+        super(JetspeedPrincipalType.GROUP_TYPE_NAME, name);
 	}
 }
