@@ -161,20 +161,25 @@ public class PreferenceSetImpl implements PreferenceSetComposite, DistributedCac
             }
         }
         
-        public boolean equals(PreferenceImpl other)
+        public boolean equals(Object obj)
         {
-            if (other != null && name.equals(other.name) && readOnly == other.readOnly && values.size() == other.values.size() )
+            if (obj != null && obj instanceof PreferenceImpl)
             {
-                String a;
-                String b;
-                for (int i = 0, size = values.size(); i < size; i++)
+                PreferenceImpl other = (PreferenceImpl)obj;
+                if (other != null && name.equals(other.name) && readOnly == other.readOnly && values.size() == other.values.size() )
                 {
-                    a = values.get(i);
-                    b = other.values.get(i);
-                    if ((a == null && b != null) || (a != null && !a.equals(b)))
+                    String a;
+                    String b;
+                    for (int i = 0, size = values.size(); i < size; i++)
                     {
-                        return false;
+                        a = values.get(i);
+                        b = other.values.get(i);
+                        if ((a == null && b != null) || (a != null && !a.equals(b)))
+                        {
+                            return false;
+                        }
                     }
+                    return true;
                 }
             }
             return false;

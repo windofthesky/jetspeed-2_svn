@@ -88,7 +88,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
 
     public PreferenceSetComposite getPreferenceSet(PortletDefinitionComposite pd)
     {
-        return getPreferenceSet(((MutablePortletApplication)pd.getPortletApplicationDefinition()).getName(), pd.getName(), null, null);
+        return getPreferenceSet(((MutablePortletApplication)pd.getPortletApplicationDefinition()).getName(), pd.getName(), null, null, false);
     }
 
     public PreferenceSetComposite getPreferenceSet(MutablePortletEntity pe)
@@ -99,10 +99,10 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
     public PreferenceSetComposite getPreferenceSet(MutablePortletEntity pe, String userName)
     {
         PortletDefinitionComposite pd = (PortletDefinitionComposite)pe.getPortletDefinition();
-        return getPreferenceSet(((MutablePortletApplication)pd.getPortletApplicationDefinition()).getName(), pd.getName(), pe.getOid(), userName);
+        return getPreferenceSet(((MutablePortletApplication)pd.getPortletApplicationDefinition()).getName(), pd.getName(), pe.getOid(), userName, false);
     }
 
-    private PreferenceSetImpl getPreferenceSet(String applicationName, String portletName, Long entityOid, String userName)
+    private PreferenceSetImpl getPreferenceSet(String applicationName, String portletName, Long entityOid, String userName, boolean forUpdate)
     {
         if (entityOid == null)
         {
@@ -114,9 +114,9 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
             userName = UNDEFINED_USER_NAME;
         }
         
-        String cacheKey = getPreferenceSetKey(applicationName, portletName, entityOid, userName);
+        String cacheKey = forUpdate ? null : getPreferenceSetKey(applicationName, portletName, entityOid, userName);
         PreferenceSetImpl prefs = null;
-        CacheElement cachedElement = preferenceCache.get(cacheKey);        
+        CacheElement cachedElement = forUpdate ? null : preferenceCache.get(cacheKey);        
         if (cachedElement != null)
         {
             prefs = (PreferenceSetImpl)cachedElement.getContent();
@@ -167,15 +167,21 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
                     preference.addValue(value.getValue());
                 }
             }
-            for (Map.Entry<Long,String> entry : prefsMap.entrySet())
+            if (forUpdate)
             {
-                if (prefs.get(entry.getValue()) == null)
+                for (Map.Entry<Long,String> entry : prefsMap.entrySet())
                 {
-                    // ensure preferences without *any* value are still loaded
-                    prefs.add(entry.getKey().longValue(), entry.getValue(),null);
+                    if (prefs.get(entry.getValue()) == null)
+                    {
+                        // ensure preferences without *any* value are still loaded
+                        prefs.add(entry.getKey().longValue(), entry.getValue(),null);
+                    }
                 }
             }
-            preferenceCache.put(preferenceCache.createElement(cacheKey, prefs));
+            else
+            {
+                preferenceCache.put(preferenceCache.createElement(cacheKey, prefs));
+            }
         }
         return new PreferenceSetImpl(prefs);
     }
@@ -235,7 +241,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
         {
             userName = UNDEFINED_USER_NAME;
         }
-        PreferenceSetImpl current = getPreferenceSet(applicationName, portletName, entityOid, userName);
+        PreferenceSetImpl current = getPreferenceSet(applicationName, portletName, entityOid, userName, true);
 
         Criteria c;
         PreferenceSetImpl.PreferenceImpl currentPref;
