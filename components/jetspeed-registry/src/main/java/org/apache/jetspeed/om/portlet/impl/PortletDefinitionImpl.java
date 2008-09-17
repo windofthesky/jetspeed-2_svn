@@ -28,7 +28,6 @@ import java.util.StringTokenizer;
 
 import javax.portlet.PreferencesValidator;
 
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
@@ -56,6 +55,9 @@ import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.pluto.om.common.Description;
 import org.apache.pluto.om.common.DescriptionSet;
 import org.apache.pluto.om.common.DisplayName;
@@ -82,11 +84,11 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  * @version $Id$
  *  
  */
-public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support
+public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support, PersistenceBrokerAware
 {
-    private PortletRegistry registry;
-    private PortletFactory  portletFactory;
-    private PortletPreferencesProvider portletPreferencesProvider;
+    private static PortletRegistry registry;
+    private static PortletFactory  portletFactory;
+    private static PortletPreferencesProvider portletPreferencesProvider;
     
     private Long id;
     private JetspeedLongObjectID oid;
@@ -218,7 +220,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
             {
                 throw new IllegalStateException("Portlet Application must be defined before preferences can be accessed");
             }
-            retrievePortletPreferencesProvider();
             preferenceSet = portletPreferencesProvider.getPreferenceSet(this);
         }
         return preferenceSet;
@@ -271,7 +272,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public ClassLoader getPortletClassLoader()
     {
-        retrievePortletFactory();
         return portletFactory.getPortletApplicationClassLoader(app);
     }
 
@@ -713,7 +713,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void store() throws IOException
     {
-        retrievePortletRegistry();
         try
         {
             registry.savePortletDefinition(this);
@@ -729,7 +728,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     {
         if (preferenceSet != null)
         {
-            retrievePortletPreferencesProvider();
             portletPreferencesProvider.savePreferenceSet(this, preferenceSet);
         }
     }
@@ -916,7 +914,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     
     public PreferencesValidator getPreferencesValidator()
     {
-        retrievePortletFactory();
         return portletFactory.getPreferencesValidator(this);
     }
 
@@ -935,28 +932,52 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     {
         this.jetspeedSecurityConstraint = constraint;
     }
-
-    private void retrievePortletRegistry()
+    
+    //
+    /// PersistenceBrokerAware interface implementation
+    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        if (registry == null)
-        {
-            registry = (PortletRegistry)Jetspeed.getComponentManager().getComponent("portletRegistry");
-        }
     }
 
-    private void retrievePortletFactory()
+    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        if (portletFactory == null)
-        {
-            portletFactory = (PortletFactory)Jetspeed.getComponentManager().getComponent("portletFactory");
-        }
+        storeChildren();
     }
 
-    private void retrievePortletPreferencesProvider()
+    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
     {
-        if (portletPreferencesProvider == null)
-        {
-            portletPreferencesProvider = (PortletPreferencesProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
-        }
+    }
+
+    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        storeChildren();
+    }
+
+    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+    
+
+    public static void setPortletRegistry(PortletRegistry registry)
+    {
+        PortletDefinitionImpl.registry = registry;
+    }
+
+    public static void setPortletFactory(PortletFactory portletFactory)
+    {
+        PortletDefinitionImpl.portletFactory = portletFactory;
+    }
+
+    public static void setPortletPreferencesProvider(PortletPreferencesProvider portletPreferencesProvider)
+    {
+        PortletDefinitionImpl.portletPreferencesProvider = portletPreferencesProvider;
     }
 }
