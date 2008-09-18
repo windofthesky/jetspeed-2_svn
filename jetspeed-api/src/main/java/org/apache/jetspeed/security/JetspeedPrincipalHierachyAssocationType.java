@@ -23,7 +23,7 @@ package org.apache.jetspeed.security;
  */
 public interface JetspeedPrincipalHierachyAssocationType extends JetspeedPrincipalAssociationType
 {
-    enum HierachyType { CHILD_OF, IS_A, PART_OF };
+    enum HierarchyType { CHILD_OF, IS_A, PART_OF };
     
-    HierachyType getHierachyType();
+    HierarchyType getHierachyType();
 }

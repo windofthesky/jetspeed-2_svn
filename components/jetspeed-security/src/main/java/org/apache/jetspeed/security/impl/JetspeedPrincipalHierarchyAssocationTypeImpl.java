@@ -24,15 +24,15 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
  */
 public class JetspeedPrincipalHierarchyAssocationTypeImpl extends JetspeedPrincipalAssociationTypeImpl implements JetspeedPrincipalHierachyAssocationType
 {
-    private HierachyType hierarchyType;
+    private HierarchyType hierarchyType;
     
-    public JetspeedPrincipalHierarchyAssocationTypeImpl(String associationName, JetspeedPrincipalType type, HierachyType hierarchyType, boolean required)
+    public JetspeedPrincipalHierarchyAssocationTypeImpl(String associationName, JetspeedPrincipalType type, HierarchyType hierarchyType, boolean required)
     {
         super(associationName, type, type, required);
         this.hierarchyType = hierarchyType;
     }
 
-    public HierachyType getHierachyType()
+    public HierarchyType getHierachyType()
     {
         return hierarchyType;
     }

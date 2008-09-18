@@ -230,7 +230,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                 resolved.add(p.getId());
             }
             List<Long> ids = new ArrayList<Long>(resolved);
-            if (this.hierachyAssType.getHierachyType().equals(JetspeedPrincipalHierachyAssocationType.HierachyType.PART_OF))
+            if (this.hierachyAssType.getHierachyType().equals(JetspeedPrincipalHierachyAssocationType.HierarchyType.PART_OF))
             {
                 for (Long id : ids)
                 {

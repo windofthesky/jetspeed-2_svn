@@ -16,12 +16,17 @@
  */
 package org.apache.jetspeed.security;
 
+import org.apache.jetspeed.security.JetspeedPrincipalHierachyAssocationType.HierarchyType;
+
 /**
  * @version $Id$
  */
 public interface JetspeedPrincipalAssociationHandler
 {
     JetspeedPrincipalAssociationType getAssociationType();
+    boolean isHierachyAssociationType();
+    HierarchyType getHierarchyType();
+    
     JetspeedPrincipalManager getManagerFrom();
     JetspeedPrincipalManager getManagerTo();
 
