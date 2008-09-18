@@ -76,6 +76,16 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
 
     }
 
+    /**
+     * @param principalManagerProvider
+     * @param securityEntityManager
+     */
+    public DefaultJetspeedPrincipalSynchronizer(JetspeedPrincipalManagerProvider principalManagerProvider, SecurityEntityManager securityEntityManager)
+    {
+        this.principalManagerProvider = principalManagerProvider;
+        this.securityEntityManager = securityEntityManager;
+    }
+
     public void synchronizeUserPrincipal(String name)
     {
         // don't process relations going towards users to avoid sync'ing huge
