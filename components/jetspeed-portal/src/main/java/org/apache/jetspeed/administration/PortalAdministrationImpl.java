@@ -43,7 +43,8 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.AttributeTypeNotFoundException;
+import org.apache.jetspeed.security.AttributeReadOnlyException;
+import org.apache.jetspeed.security.AttributesNotExtendableException;
 import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JSSubject;
@@ -315,9 +316,13 @@ public class PortalAdministrationImpl implements PortalAdministration
                         {
                             return e1;
                         } 
-                        catch (AttributeTypeNotFoundException e1)
+                        catch (AttributeReadOnlyException e)
                         {
-                            return e1;
+                            return e;
+                        }
+                        catch (AttributesNotExtendableException e)
+                        {
+                            return e;
                         } 
                     }
                 }, null);

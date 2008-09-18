@@ -38,7 +38,6 @@ import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -250,18 +249,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         updated = true;
                     }
                     
-                    Map<String, SecurityAttributeType> secAttrTypeMap = secAttrs.getSecurityAttributeTypes().getAttributeTypeMap();
-                    
                     for (JSNVPElement elem : jsPrincipal.getInfoAttributes().getValues())
                     {
-                        if (secAttrTypeMap.containsKey(elem.getKey()))
-                        {
-                            secAttrs.getAttribute(elem.getKey(), true).setStringValue(elem.getValue());
-                        }
-                        else
-                        {
-                            secAttrs.addNewInfoAttribute(elem.getKey(), SecurityAttributeType.DataType.STRING).setStringValue(elem.getValue());
-                        }
+                        secAttrs.getAttribute(elem.getKey(), true).setStringValue(elem.getValue());
                         
                         updated = true;
                     }
@@ -422,21 +412,10 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                     if (attributes != null)
                     {
                         SecurityAttributes userSecAttrs = user.getSecurityAttributes();
-                        Map<String, SecurityAttributeType> userSecAttrTypeMap = userSecAttrs.getSecurityAttributeTypes().getAttributeTypeMap();
                         
                         for (JSNVPElement element : attributes.getValues())
                         {
-                            String attrName = element.getKey();
-                            String attrValue = element.getValue();
-                            
-                            if (userSecAttrTypeMap.containsKey(attrName))
-                            {
-                                userSecAttrs.getAttribute(attrName, true).setStringValue(attrValue);
-                            }
-                            else
-                            {
-                                userSecAttrs.addNewInfoAttribute(attrName, SecurityAttributeType.DataType.STRING).setStringValue(attrValue);
-                            }                            
+                            userSecAttrs.getAttribute(element.getKey(), true).setStringValue(element.getValue());
                         }
                     }
                     JSNVPElements jsNVP = jsuser.getSecurityAttributes();

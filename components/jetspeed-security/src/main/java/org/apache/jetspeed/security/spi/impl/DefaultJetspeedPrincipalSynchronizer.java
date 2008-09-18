@@ -31,9 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AttributeReadOnlyException;
 import org.apache.jetspeed.security.AttributeRequiredException;
-import org.apache.jetspeed.security.AttributeTypeNotFoundException;
+import org.apache.jetspeed.security.AttributesNotExtendableException;
 import org.apache.jetspeed.security.AttributesReadOnlyException;
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
@@ -42,7 +41,6 @@ import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
@@ -298,11 +296,19 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
                         {
                             logger.error("Unexpected read-only exception for attribute " + addedEntityAttr.getMappedName() + ".", e);
                         }
-                    } catch (AttributeTypeNotFoundException e)
+                    } 
+                    catch (AttributesNotExtendableException e)
                     {
                         if (logger.isErrorEnabled())
                         {
-                            logger.error("Unexpected missing type exception for attribute " + addedEntityAttr.getMappedName() + ".", e);
+                            logger.error("Unexpected not extendable exception for attribute " + addedEntityAttr.getMappedName() + ".", e);
+                        }
+                    }
+                    catch (AttributeReadOnlyException e)
+                    {
+                        if (logger.isErrorEnabled())
+                        {
+                            logger.error("Unexpected read-only exception for attribute " + addedEntityAttr.getMappedName() + ".", e);
                         }
                     }
                 }

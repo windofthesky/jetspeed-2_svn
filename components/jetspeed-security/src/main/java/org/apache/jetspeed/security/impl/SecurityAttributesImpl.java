@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.security.AttributeAlreadyExistsException;
 import org.apache.jetspeed.security.AttributesNotExtendableException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.AttributeReadOnlyException;
@@ -33,11 +32,8 @@ import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.AttributeRequiredException;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
-import org.apache.jetspeed.security.AttributeTypeAlreadyDefinedException;
-import org.apache.jetspeed.security.AttributeTypeNotFoundException;
 import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.SecurityAttributes;
-import org.apache.jetspeed.security.SecurityAttributeType.DataType;
 
 /**
  * @version $Id$
@@ -132,6 +128,11 @@ public class SecurityAttributesImpl implements SecurityAttributes
         return Collections.unmodifiableSet(set);
     }
 
+    public boolean isDefinedAttribute(String name)
+    {
+        return jp.getType().getAttributeTypes().getAttributeTypeMap().containsKey(name);
+    }
+
     public Map<String, SecurityAttribute> getAttributeMap()
     {
         return Collections.unmodifiableMap(new HashMap<String, SecurityAttribute>(saMap));
@@ -174,64 +175,47 @@ public class SecurityAttributesImpl implements SecurityAttributes
     }
 
     public SecurityAttribute getAttribute(String name, boolean create)
-        throws AttributesReadOnlyException, AttributeTypeNotFoundException
+        throws AttributesReadOnlyException, AttributesNotExtendableException
     {
-        if (isReadOnly())
-        {
-            throw new AttributesReadOnlyException();
-        }
-        
-        SecurityAttributeType sat = getSecurityAttributeTypes().getAttributeTypeMap().get(name);
-        
-        if (sat == null)
-        {
-            throw new AttributeTypeNotFoundException();
-        }
-        
-        SecurityAttribute sa = saMap.get(name);
+        SecurityAttributeImpl sa = saMap.get(name);
         
         if (sa != null)
         {
             return sa;
         }
-        else if ( create == false )
+        else if (!create)
         {
             return null;
         }
         
-        SecurityAttributeValue value = new SecurityAttributeValue(name);
-        avColl.add(value);
-        SecurityAttributeImpl attr = new SecurityAttributeImpl(sat, value, persistent);
-        saMap.put(name, attr);
-        return attr;
-    }
-
-    public SecurityAttribute addNewInfoAttribute(String name, DataType type)
-        throws AttributesReadOnlyException, AttributeTypeAlreadyDefinedException, AttributeAlreadyExistsException, AttributesNotExtendableException
-    {
         if (isReadOnly())
         {
             throw new AttributesReadOnlyException();
-        }        
-        if (!isExtendable())
-        {
-            throw new AttributesNotExtendableException();
-        }        
+        }
+        
         SecurityAttributeType sat = getSecurityAttributeTypes().getAttributeTypeMap().get(name);
-        if (sat != null)
+                
+        if (sat == null)
         {
-            throw new AttributeTypeAlreadyDefinedException();
+            if (!isExtendable())
+            {
+                throw new AttributesNotExtendableException();
+            }
+            // New INFO_CATEGORY attribute, always of type STRING
+            SecurityAttributeValue value = new SecurityAttributeValue(name);
+            avColl.add(value);
+            sa = new SecurityAttributeImpl(new SecurityAttributeTypeImpl(name), value, persistent);
+            
         }
-        if (saMap.containsKey(name))
+        else
         {
-            throw new AttributeAlreadyExistsException();
+            SecurityAttributeValue value = new SecurityAttributeValue(name);
+            avColl.add(value);
+            sa = new SecurityAttributeImpl(sat, value, persistent);
         }
-        // TODO: making use of the DataType parameter (now ignored)
-        SecurityAttributeValue value = new SecurityAttributeValue(name);
-        avColl.add(value);
-        SecurityAttributeImpl attr = new SecurityAttributeImpl(new SecurityAttributeTypeImpl(name), value, persistent);
-        saMap.put(name, attr);
-        return attr;
+        
+        saMap.put(name, sa);
+        return sa;
     }
 
     public void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException

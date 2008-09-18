@@ -33,6 +33,8 @@ public interface SecurityAttributes
     boolean isExtendable();
     
     SecurityAttributeTypes getSecurityAttributeTypes();
+    
+    boolean isDefinedAttribute(String name);
 
     Set<String> getAttributeNames();
 
@@ -52,24 +54,20 @@ public interface SecurityAttributes
     SecurityAttribute getAttribute(String name);
 
     /**
-     * Returns an existing (predefined typed) attribute.
+     * Returns an existing (predefined typed) attribute or create one if parameter create is true.
      * If parameter create is true and it doesn't exist yet it will be created (based
      * upon its SecurityAttributeType) first, but only if the SecurityAttributes itself
      * isn't readOnly (then a AttributesReadOnlyException will be thrown).
      * If parameter create is false and it doesn't exist yet a NULL value will be
      * returned.
-     * If there is no SecurityAttributeType defined for the attribute (name), an
-     * AttributeTypeNotFoundException will be thrown.
-     * and parameter create is true will add it before returning it.
+     * If there is no SecurityAttributeType defined for the attribute (name), a new attribute
+     * with INFO_CATEGORY will be created.
      * @param name name of a predefined SecurityAttributeType (for this JetspeedPrincipal type)
      * @param create add the attribute when it doesn't exist yet
      * @return an existing attribute or one created on the fly (if parameter create is true)
      */
     SecurityAttribute getAttribute(String name, boolean create)
-        throws AttributesReadOnlyException, AttributeTypeNotFoundException;
-
-    SecurityAttribute addNewInfoAttribute(String name, SecurityAttributeType.DataType type)
-        throws AttributesReadOnlyException, AttributeTypeAlreadyDefinedException, AttributeAlreadyExistsException, AttributesNotExtendableException;
+        throws AttributesReadOnlyException, AttributesNotExtendableException;
 
     void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException;
 }

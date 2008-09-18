@@ -32,7 +32,8 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.security.AttributeTypeNotFoundException;
+import org.apache.jetspeed.security.AttributeReadOnlyException;
+import org.apache.jetspeed.security.AttributesNotExtendableException;
 import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.SecurityException;
@@ -190,10 +191,14 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 catch (AttributesReadOnlyException ae)
                 {
                     return ae;
-                } 
-                catch (AttributeTypeNotFoundException ae)
+                }
+                catch (AttributeReadOnlyException e)
                 {
-                    return ae;
+                    return e;
+                }
+                catch (AttributesNotExtendableException e)
+                {
+                    return e;
                 } 
             }
         }, null);
