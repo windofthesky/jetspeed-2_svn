@@ -81,8 +81,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         boolean authenticated = false;
         try
         {
-            authenticated = authenticateUser(userName, password);
-            authenticated = true;
+            authenticated = authenticateUser(userName, password);            
             if (authenticated)
             {
                 User user = getUser(userName);
