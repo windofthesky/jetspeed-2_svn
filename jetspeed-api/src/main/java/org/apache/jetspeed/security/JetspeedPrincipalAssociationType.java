@@ -60,5 +60,30 @@ public interface JetspeedPrincipalAssociationType
 
     JetspeedPrincipalType getToPrincipalType();
 
-    boolean isRequired(); // associations cannot be added or removed other then by removal of the Principal(s) itself
+    /**
+     * True if the from principal cannot be created without this association.
+     * <p>
+     * If {@link #isDependent()} the from principal will be deleted when the to principal is deleted,
+     * otherwise deleting the to principal is not allowed without first transfering association to another.
+     * </p>
+     */
+    boolean isRequired(); 
+
+    /**
+     * True if the from principal will be deleted when the to principal is deleted.
+     * <p>
+     * Deleting the to principal is not allowed when {@link #isRequired()} until the association is transferred to another. 
+     * </p>
+     */
+    boolean isDependent();
+    
+    /**
+     * True if the from principal can be associated at most once.
+     */
+    boolean isSingular();
+    
+    /**
+     * True if the to principal can be associated to at most once. 
+     */
+    boolean isDominant();
 }

@@ -25,6 +25,8 @@ import java.util.Set;
 public interface JetspeedPrincipalManager
 {
     JetspeedPrincipalType getPrincipalType();
+    
+    List<JetspeedPrincipalAssociationType> getAssociationTypes();
 
      boolean principalExists(String name);
 
@@ -63,7 +65,10 @@ public interface JetspeedPrincipalManager
     /**
      * <p>
      * Retrieves a detached and modifiable {@link JetspeedPrincipal} list of all the principals managed by this manager which are
-     * associated <em>to</em> the specified principal by the specified association.
+     * associated <em>from</em> the specified principal by the specified association.
+     * </p>
+     * <p>
+     * If the association is {@link JetspeedAssociationType#isSingular()} at most one principal will be returned.
      * </p>
      * 
      * @param principalFromName The principal name to find the other principals associated <em>to</em>.
@@ -76,7 +81,10 @@ public interface JetspeedPrincipalManager
     /**
      * <p>
      * Retrieves a detached and modifiable {@link JetspeedPrincipal} list of all the principals managed by this manager which are
-     * associated <em>from</em> the specified principal by the specified association.
+     * associated <em>to</em> the specified principal by the specified association.
+     * </p>
+     * <p>
+     * If the association is {@link JetspeedAssociationType#isDominant()} at most one principal will be returned.
      * </p>
      * 
      * @param principalToName The principal name to find the other principals associated <em>from</em>.
@@ -89,7 +97,10 @@ public interface JetspeedPrincipalManager
     /**
      * <p>
      * Retrieves a detached and modifiable list of the names of all the principals managed by this manager which are
-     * associated <em>to</em> the specified principal by the specified association.
+     * associated <em>from</em> the specified principal by the specified association.
+     * </p>
+     * <p>
+     * If the association is {@link JetspeedAssociationType#isSingular()} at most one principal name will be returned.
      * </p>
      * 
      * @param principalFromName The principal name to find the other principals associated <em>to</em>.
@@ -102,7 +113,10 @@ public interface JetspeedPrincipalManager
     /**
      * <p>
      * Retrieves a detached and modifiable list of the names of all the principals managed by this manager which are
-     * associated <em>from</em> the specified principal by the specified association.
+     * associated <em>to</em> the specified principal by the specified association.
+     * </p>
+     * <p>
+     * If the association is {@link JetspeedAssociationType#isDominant()} at most one principal name will be returned.
      * </p>
      * 
      * @param principalToName The principal name to find the other principals associated <em>from</em>.
@@ -111,56 +125,6 @@ public interface JetspeedPrincipalManager
      * @return The list of the names of the principals in the <em>from</em> side of the provided association for the provided principal name and its type
      */
     List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType to, String associationName);
-
-    /**
-     * <p>
-     * Resolved a detached and modifiable {@link JetspeedPrincipal} list of all the principals managed by this manager which are
-     * associated <em>to</em> the specified principal by the specified association as well as those within their hierarchical relationship.
-     * </p>
-     * <p>
-     * If there is no {@link JetspeedPrincipalHierachyAssociationType} configured, this method falls back to the {@link #getAssociatedFrom(String, JetspeedPrincipalType, String)}
-     * method.
-     * </p>
-     * <p>
-     * If a {@link JetspeedPrincipalHierachyAssociationType.HierarchyType#PART_OF partOf} hierachy is used, recursively all the "children" of the found principals will be retrieved
-     * as well.
-     * </p>
-     * <p>
-     * If a {@link JetspeedPrincipalHierachyAssociationType.HierarchyType#IS_A isA} or {@link JetspeedPrincipalHierachyAssociationType.HierarchyType#CHILD_OF childOf} hierachy
-     * is used, recursively all the "parents" of the found principals will be retrieved as well.
-     * </p>
-     * 
-     * @param principalFromName The principal name to find the other principals associated <em>to</em>.
-     * @param from The principal type of the provided principal name
-     * @param associationName The name of the association <em>from</em> the provided principal type <em>to</em> this Manager principal type.
-     * @return The hierarchically resolved list of {@link JetspeedPrincipal} in the <em>to</em> side of the provided association for the provided principal name and its type
-     */
-    List<? extends JetspeedPrincipal> resolveAssociatedFrom(String principalFromName, JetspeedPrincipalType from, String associationName);
-
-    /**
-     * <p>
-     * Resolved a detached and modifiable {@link JetspeedPrincipal} list of all the principals managed by this manager which are
-     * associated <em>from</em> the specified principal by the specified association as well as those within their hierarchical relationship.
-     * </p>
-     * <p>
-     * If there is no {@link JetspeedPrincipalHierachyAssociationType} configured, this method falls back to the {@link #getAssociatedTo(String, JetspeedPrincipalType, String)}
-     * method.
-     * </p>
-     * <p>
-     * If a {@link JetspeedPrincipalHierachyAssociationType.HierarchyType#PART_OF partOf} hierachy is used, recursively all the "children" of the found principals will be retrieved
-     * as well.
-     * </p>
-     * <p>
-     * If a {@link JetspeedPrincipalHierachyAssociationType.HierarchyType#IS_A isA} or {@link JetspeedPrincipalHierachyAssociationType.HierarchyType#CHILD_OF childOf} hierachy
-     * is used, recursively all the "parents" of the found principals will be retrieved as well.
-     * </p>
-     * 
-     * @param principalToName The principal name to find the other principals associated <em>from</em>.
-     * @param from The principal type of the provided principal name
-     * @param associationName The name of the association <em>from</em> this Manager principal type <em>to</em> the provided principal type.
-     * @return The hierarchically resolved list of {@link JetspeedPrincipal} in the <em>from</em> side of the provided association for the provided principal name and its type
-     */
-    List<? extends JetspeedPrincipal> resolveAssociatedTo(String principalToName, JetspeedPrincipalType to, String associationName);
 
     void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
         throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException;
@@ -172,6 +136,12 @@ public interface JetspeedPrincipalManager
 
     void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
         throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
+
+    void transferAssociationTo(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target, String associationName)
+    throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
+
+    void transferAssociationFrom(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target, String associationName)
+    throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
 
     void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
         throws PrincipalAssociationRequiredException, PrincipalNotFoundException;

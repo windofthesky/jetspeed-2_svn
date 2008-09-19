@@ -78,7 +78,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     {    	
     	if (userManager == null)
     	{
-        	userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+        	userManager = (UserManager)getPrincipalManagerProvider().getManager(userType);
     	}
     }      
     
@@ -200,15 +200,6 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
             throws SecurityException
     {
         return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.GroupManager#resolveGroupsForUser(java.lang.String)
-     */
-    public List<Group> resolveGroupsForUser(String username)
-            throws SecurityException
-    {
-        return (List<Group>) super.resolveAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**

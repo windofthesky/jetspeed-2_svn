@@ -36,9 +36,9 @@ public class SimpleMemberOfPrincipalAssociationHandler extends BaseJetspeedPrinc
         super(associationType, from, to, jpasm);
     }
     
-    public SimpleMemberOfPrincipalAssociationHandler(String associationName, JetspeedPrincipalManagerSPI from,JetspeedPrincipalManagerSPI to, boolean required, JetspeedPrincipalAssociationStorageManager jpasm)
+    public SimpleMemberOfPrincipalAssociationHandler(String associationName, JetspeedPrincipalManagerSPI from,JetspeedPrincipalManagerSPI to, JetspeedPrincipalAssociationStorageManager jpasm)
     {
-        this(new JetspeedPrincipalAssociationTypeImpl(associationName, from.getPrincipalType(), to.getPrincipalType(), required), from, to, jpasm);
+        this(new JetspeedPrincipalAssociationTypeImpl(associationName, from.getPrincipalType(), to.getPrincipalType(), false, false, false, false), from, to, jpasm);
     }
     
     /* (non-Javadoc)

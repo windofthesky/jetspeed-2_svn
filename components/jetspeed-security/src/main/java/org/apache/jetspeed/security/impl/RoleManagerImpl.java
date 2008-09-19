@@ -82,11 +82,11 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     {    	
     	if (userManager == null)
     	{
-    		userManager = (UserManager)getJetspeedPrincipalManagerProvider().getManager(userType);
+    		userManager = (UserManager)getPrincipalManagerProvider().getManager(userType);
     	}
     	if (groupManager == null)
     	{
-    		groupManager = (GroupManager)getJetspeedPrincipalManagerProvider().getManager(groupType);
+    		groupManager = (GroupManager)getPrincipalManagerProvider().getManager(groupType);
     	}
     }
     
@@ -215,22 +215,6 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
         return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.RoleManager#resolveRolesForUser(java.lang.String)
-     */
-    public List<Role> resolveRolesForUser(String username) throws SecurityException
-    {        
-        return (List<Role>)super.resolveAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
-    }
-
-    /**
-     * @see org.apache.jetspeed.security.RoleManager#resolveRolesInGroup(java.lang.String)
-     */
-    public List<Role> resolveRolesInGroup(String groupName) throws SecurityException
-    {
-        return (List<Role>)super.resolveAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
     }
 
     /**

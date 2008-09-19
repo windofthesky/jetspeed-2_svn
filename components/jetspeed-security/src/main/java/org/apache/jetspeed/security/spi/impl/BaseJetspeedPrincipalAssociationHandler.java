@@ -20,13 +20,11 @@ package org.apache.jetspeed.security.spi.impl;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.JetspeedPrincipalHierachyAssocationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.JetspeedPrincipalHierachyAssocationType.HierarchyType;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 
@@ -65,16 +63,6 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
         return associationType;
     }
     
-    public boolean isHierachyAssociationType()
-    {
-        return associationType instanceof JetspeedPrincipalHierachyAssocationType;
-    }
-
-    public HierarchyType getHierarchyType()
-    {
-        return isHierachyAssociationType() ? ((JetspeedPrincipalHierachyAssocationType)associationType).getHierachyType() : null;
-    }
-
     public JetspeedPrincipalManager getManagerFrom()
     {
         return from;

@@ -17,8 +17,10 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -51,7 +53,8 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
-import org.springframework.beans.factory.InitializingBean;
+import org.apache.jetspeed.security.spi.UserSubjectPrincipalsProvider;
+import org.apache.jetspeed.security.spi.UserSubjectPrincipalsResolver;
 
 /**
  * <p>
@@ -62,7 +65,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar </a>
  * @version $Id$
  */
-public class UserManagerImpl extends BaseJetspeedPrincipalManager implements UserManager
+public class UserManagerImpl extends BaseJetspeedPrincipalManager implements UserManager, UserSubjectPrincipalsProvider
 {
 	private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
@@ -73,6 +76,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	private UserPasswordCredentialManager credentialManager;
 	private RoleManager roleManager;
 	private GroupManager groupManager;
+	private Map<String, UserSubjectPrincipalsResolver> usprMap = new HashMap<String, UserSubjectPrincipalsResolver>();
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
 			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager)
@@ -87,11 +91,11 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	{
 		if (groupManager == null)
 		{
-			groupManager = (GroupManager) getJetspeedPrincipalManagerProvider().getManager(groupType);
+			groupManager = (GroupManager) getPrincipalManagerProvider().getManager(groupType);
 		}
 		if (roleManager == null)
 		{
-			roleManager = (RoleManager) getJetspeedPrincipalManagerProvider().getManager(roleType);
+			roleManager = (RoleManager) getPrincipalManagerProvider().getManager(roleType);
 		}
 	}
 
@@ -166,7 +170,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	public Subject getSubject(AuthenticatedUser user) throws SecurityException
 	{
 		Set<Principal> principals = new PrincipalsSet();
-		addSubjectPrincipals(user, principals);
+		resolveSubjectPrincipals(user, principals);
 		return JetspeedSubjectFactory.createSubject(user.getUser(), getPublicCredentialsForSubject(user), getPrivateCredentialsForSubject(user), principals);
 	}
 
@@ -190,22 +194,14 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		return credentials;
 	}
 
-	protected void addSubjectPrincipals(AuthenticatedUser user, Set<Principal> principals) throws SecurityException
+	protected void resolveSubjectPrincipals(AuthenticatedUser user, Set<Principal> principals) throws SecurityException
 	{
 		checkInitialized();
-		addSubjectRolePrincipals(user, principals, roleManager);
-		addSubjectGroupPrincipals(user, principals, groupManager);
-		// still TODO: adding roles for groups
-	}
-
-	protected void addSubjectRolePrincipals(AuthenticatedUser user, Set<Principal> principals, RoleManager roleManager) throws SecurityException
-	{
-		principals.addAll(roleManager.resolveRolesForUser(user.getUserName()));
-	}
-
-	protected void addSubjectGroupPrincipals(AuthenticatedUser user, Set<Principal> principals, GroupManager groupManager) throws SecurityException
-	{
-		principals.addAll(groupManager.resolveGroupsForUser(user.getUserName()));
+		HashSet<Long> resolvedIds = new HashSet<Long>();
+		for (UserSubjectPrincipalsResolver resolver : usprMap.values())
+		{
+		    resolver.resolve(user.getUser(), resolvedIds, principals, usprMap);
+		}
 	}
 
 	public User getUser(String username) throws SecurityException
@@ -322,4 +318,9 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	{
 		return newTransientPrincipal(name);
 	}
+
+    public void addSubjectPrincipalsResolver(UserSubjectPrincipalsResolver resolver)
+    {
+        this.usprMap.put(resolver.getPrincipalType().getName(), resolver);
+    }
 }

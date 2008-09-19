@@ -28,14 +28,20 @@ public class JetspeedPrincipalAssociationTypeImpl implements JetspeedPrincipalAs
     private JetspeedPrincipalType fromType;
     private JetspeedPrincipalType toType;
     private boolean required;
+    private boolean dependent;
+    private boolean singular;
+    private boolean dominant;
     
     public JetspeedPrincipalAssociationTypeImpl(String associationName, JetspeedPrincipalType fromType,
-                                                JetspeedPrincipalType toType, boolean required)
+                                                JetspeedPrincipalType toType, boolean required, boolean dependent, boolean singular, boolean dominant)
     {
         this.associationName = associationName;
         this.fromType = fromType;
         this.toType = toType;
         this.required = required;
+        this.dependent = dependent;
+        this.singular = singular;
+        this.dominant = dominant;
     }
 
     public String getAssociationName()
@@ -56,5 +62,20 @@ public class JetspeedPrincipalAssociationTypeImpl implements JetspeedPrincipalAs
     public boolean isRequired()
     {
         return required;
+    }
+
+    public boolean isDependent()
+    {
+        return dependent;
+    }
+
+    public boolean isSingular()
+    {
+        return singular;
+    }
+
+    public boolean isDominant()
+    {
+        return dominant;
     }
 }

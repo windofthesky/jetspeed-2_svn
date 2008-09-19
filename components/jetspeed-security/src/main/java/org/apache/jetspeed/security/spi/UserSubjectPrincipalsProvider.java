@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi;
+
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 
 /**
  * @version $Id$
  *
  */
-public interface JetspeedPrincipalHierachyAssocationType extends JetspeedPrincipalAssociationType
+public interface UserSubjectPrincipalsProvider extends JetspeedPrincipalManager
 {
-    enum HierarchyType { CHILD_OF, IS_A, PART_OF };
-    
-    HierarchyType getHierachyType();
+    void addSubjectPrincipalsResolver(UserSubjectPrincipalsResolver resolver);
+    JetspeedPrincipalAccessManager getPrincipalAccessManager();
 }
