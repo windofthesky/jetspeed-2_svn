@@ -52,6 +52,13 @@ public class AttributeDefImpl implements AttributeDef
         this.mapped=isMapped;
     }
 
+    public AttributeDefImpl(String name, boolean multiValue, boolean isMapped,String mappedName)
+    {
+        this(name, multiValue, isMapped);
+        this.mappedName = mappedName;
+    }
+
+    
     public String getName()
     {
         return name;
