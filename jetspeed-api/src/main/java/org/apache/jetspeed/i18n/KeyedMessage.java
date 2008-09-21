@@ -240,7 +240,7 @@ public class KeyedMessage implements Serializable
         if (resolved && scope != null)
         {
             int split = source.containingClass.getName().length()+1;
-            this.scopedKey = key.substring(0,split)+"."+scope+"."+key.substring(split);
+            this.scopedKey = key.substring(0,split)+scope+"."+key.substring(split);
         }
     }
 
@@ -584,6 +584,7 @@ public class KeyedMessage implements Serializable
                 try
                 {
                     message = bundle.getString(scopedKey);
+                    return format(message);
                 }
                 catch (RuntimeException e)
                 {
