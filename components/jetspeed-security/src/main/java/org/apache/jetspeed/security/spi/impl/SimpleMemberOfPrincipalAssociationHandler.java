@@ -48,6 +48,7 @@ public class SimpleMemberOfPrincipalAssociationHandler extends BaseJetspeedPrinc
                                                         DependentPrincipalException
     {
         // nothing to do
+        // use super.isSynchronizing() to turn off constraint checks        
     }
 
     /* (non-Javadoc)
@@ -56,5 +57,6 @@ public class SimpleMemberOfPrincipalAssociationHandler extends BaseJetspeedPrinc
     public void beforeRemoveTo(JetspeedPrincipal to) throws PrincipalNotRemovableException, DependentPrincipalException
     {
         // nothing to do
+        // use super.isSynchronizing() to turn off constraint checks
     }
 }

@@ -42,6 +42,7 @@ import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
+import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
 
 /**
  * @version $Id$
@@ -253,29 +254,32 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException
     {
         validatePrincipal(principal);
-        if (associations != null)
-        {
-            AssociationHandlerKey key = null;
+        // don't check required associations during synchronization
+        if (!isSynchronizing()){
             Map<AssociationHandlerKey, JetspeedPrincipalAssociationType> reqAss = new HashMap<AssociationHandlerKey, JetspeedPrincipalAssociationType>(reqAssociations);
-            for (JetspeedPrincipalAssociationReference ref : associations)
+            if (associations != null)
             {
-                if (ref.ref.isTransient())
+                AssociationHandlerKey key = null;
+                for (JetspeedPrincipalAssociationReference ref : associations)
                 {
-                    throw new IllegalArgumentException("Associated principal of type "+ref.ref.getType().getName() +" is transient");
+                    if (ref.ref.isTransient())
+                    {
+                        throw new IllegalArgumentException("Associated principal of type "+ref.ref.getType().getName() +" is transient");
+                    }
+                    if (ref.type == JetspeedPrincipalAssociationReference.Type.FROM)
+                    {
+                        key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
+                    }
+                    else
+                    {
+                        key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
+                    }
+                    if (!assHandlers.containsKey(key))
+                    {
+                        throw new PrincipalAssociationNotAllowedException();
+                    }
+                    reqAss.remove(key);
                 }
-                if (ref.type == JetspeedPrincipalAssociationReference.Type.FROM)
-                {
-                    key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
-                }
-                else
-                {
-                    key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
-                }
-                if (!assHandlers.containsKey(key))
-                {
-                    throw new PrincipalAssociationNotAllowedException();
-                }
-                reqAss.remove(key);
             }
             if (!reqAss.isEmpty())
             {
@@ -322,7 +326,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                                                             PrincipalNotFoundException, PrincipalReadOnlyException
     {
         validatePrincipal(principal);
-        if (principal.isReadOnly())
+        if (principal.isReadOnly() && !isSynchronizing())
         {
             throw new PrincipalReadOnlyException();
         }
@@ -385,7 +389,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         
         if (jpah != null)
         {
-            if (jpah.getAssociationType().isRequired())
+            if (jpah.getAssociationType().isRequired() && !isSynchronizing())
             {
                 throw new PrincipalAssociationRequiredException();
             }
@@ -408,4 +412,9 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             jpah.remove(from, to);
         }
     }
+    
+    protected boolean isSynchronizing(){
+        return SynchronizationStateAccess.getInstance().isSynchronizing();
+    }
+
 }

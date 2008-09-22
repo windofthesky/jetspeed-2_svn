@@ -50,6 +50,7 @@ import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalSynchronizer;
+import org.apache.jetspeed.security.spi.SynchronizationState;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -61,6 +62,18 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
 
     private static final Log logger = LogFactory.getLog(DefaultJetspeedPrincipalSynchronizer.class);
 
+    private static ThreadLocal synchronizing = new ThreadLocal();  
+    
+    private static final SynchronizationState syncStateSingleton = new SynchronizationState(){
+
+        public boolean isSynchronizing()
+        {
+            Boolean syncing = (Boolean)synchronizing.get();
+            return syncing != null && syncing;
+        }
+        
+    };
+    
     JetspeedPrincipalManagerProvider principalManagerProvider;
 
     SecurityEntityManager securityEntityManager;
@@ -84,6 +97,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
     {
         this.principalManagerProvider = principalManagerProvider;
         this.securityEntityManager = securityEntityManager;
+        
     }
 
     public void synchronizeUserPrincipal(String name)
@@ -93,10 +107,10 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         // TODO: allow processing of required relations towards users.
         Collection<String> skipEntities = Arrays.asList(new String[]
         { JetspeedPrincipalType.USER_TYPE_NAME});
-        recursiveSynchronizePrincipal(securityEntityManager.getEntity(JetspeedPrincipalType.USER_TYPE_NAME, name), new SynchronizationState(skipEntities));
+        recursiveSynchronizePrincipal(securityEntityManager.getEntity(JetspeedPrincipalType.USER_TYPE_NAME, name), new InternalSynchronizationState(skipEntities));
     }
 
-    public JetspeedPrincipal recursiveSynchronizePrincipal(Entity entity, SynchronizationState syncState)
+    public JetspeedPrincipal recursiveSynchronizePrincipal(Entity entity, InternalSynchronizationState syncState)
     {
         JetspeedPrincipal updatedPrincipal = null;
         if (entity != null && !syncState.isProcessed(entity))
@@ -135,7 +149,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         return updatedPrincipal;
     }
 
-    protected Collection<String> synchronizeAddedAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal, boolean entityIsFromEntity, SynchronizationState syncState){
+    protected Collection<String> synchronizeAddedAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal, boolean entityIsFromEntity, InternalSynchronizationState syncState){
         Collection<String> externalRelatedEntityIds=null;
         Collection<Entity> relatedEntities = entityIsFromEntity ? 
                 securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity) :
@@ -386,6 +400,15 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
 
     }
 
+    public SynchronizationState getSynchronizationState()
+    {
+        return syncStateSingleton;
+    }
+
+    private void setSynchronizing(boolean sync){
+        this.synchronizing.set(new Boolean(sync));
+    }
+    
     public void setPrincipalManagerProvider(JetspeedPrincipalManagerProvider principalManagerProvider)
     {
         this.principalManagerProvider = principalManagerProvider;
@@ -403,7 +426,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         }
     }
 
-    private class SynchronizationState
+    private class InternalSynchronizationState
     {
 
         // entity type to processed entity IDs map
@@ -423,18 +446,18 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         // is "user", the relation is flagged as processed.
         Collection<String> skipEntities;
 
-        SynchronizationState(Collection<String> skipEntities)
+        InternalSynchronizationState(Collection<String> skipEntities)
         {
             this.skipEntities = skipEntities;
         }
 
-        public boolean isProcessed(Entity entity)
+        private boolean isProcessed(Entity entity)
         {
             Set<String> processedEntitiesByType = processedEntities.get(entity.getType());
             return processedEntitiesByType != null && processedEntitiesByType.contains(entity.getId());
         }
 
-        public void setProcessed(Entity entity)
+        private void setProcessed(Entity entity)
         {
             Set<String> processedEntitiesByType = processedEntities.get(entity.getType());
             if (processedEntitiesByType == null)
@@ -444,7 +467,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
             processedEntitiesByType.add(entity.getId());
         }
 
-        public boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom){
+        private boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom){
             if (startEntityIsFrom){
                 return isRelationProcessed(relationType, startEntity, endEntity);
             } else {
@@ -452,7 +475,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
             }
         }
         
-        public boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
+        private boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
         {
             Map<String, Collection<String>> e2eMap = processedEntityRelationsFromTo.get(relationType);
             if (e2eMap != null)
@@ -463,7 +486,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
             return false;
         }
 
-        public void setRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom){
+        private void setRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom){
             if (startEntityIsFrom){
                 setRelationProcessed(relationType, startEntity, endEntity);
             } else {
@@ -471,7 +494,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
             }
         }
         
-        public void setRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
+        private void setRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
         {
             Map<String, Collection<String>> e2eMap = processedEntityRelationsFromTo.get(relationType);
             if (e2eMap == null)
@@ -489,5 +512,5 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         }
 
     }
-
+    
 }

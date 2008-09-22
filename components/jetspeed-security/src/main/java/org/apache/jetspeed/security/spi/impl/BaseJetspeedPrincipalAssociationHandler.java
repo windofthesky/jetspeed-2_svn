@@ -27,6 +27,7 @@ import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
+import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
 
 /**
  * @version $Id$
@@ -89,4 +90,9 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
             jpasm.removeAssociation(from, to, associationType.getAssociationName());
         }
     }
+    
+    protected boolean isSynchronizing(){
+        return SynchronizationStateAccess.getInstance().isSynchronizing();
+    }
+
 }

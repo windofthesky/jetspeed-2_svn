@@ -34,6 +34,7 @@ import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
 
 /**
  * @version $Id$
@@ -188,7 +189,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
             return null;
         }
         
-        if (isReadOnly())
+        if (isReadOnly() && !isSynchronizing())
         {
             throw new AttributesReadOnlyException();
         }
@@ -197,7 +198,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
                 
         if (sat == null)
         {
-            if (!isExtendable())
+            if (!isExtendable() && !isSynchronizing())
             {
                 throw new AttributesNotExtendableException();
             }
@@ -220,23 +221,27 @@ public class SecurityAttributesImpl implements SecurityAttributes
 
     public void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException
     {
-        if (isReadOnly())
+        if (isReadOnly() && !isSynchronizing())
         {
             throw new AttributesReadOnlyException();
         }
         SecurityAttributeImpl sa = saMap.get(name);
         if (sa != null)
         {
-            if (sa.isReadOnly())
+            if (sa.isReadOnly() && !isSynchronizing())
             {
                 throw new AttributeReadOnlyException();
             }
-            if (sa.isRequired())
+            if (sa.isRequired() && !isSynchronizing())
             {
                 throw new AttributeRequiredException();
             }
             saMap.remove(name);
             avColl.remove(sa.getSecurityAttributeValue());
         }
+    }
+    
+    protected boolean isSynchronizing(){
+        return SynchronizationStateAccess.getInstance().isSynchronizing();
     }
 }

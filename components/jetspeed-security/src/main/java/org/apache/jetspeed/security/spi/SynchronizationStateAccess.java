@@ -16,19 +16,23 @@
  */
 package org.apache.jetspeed.security.spi;
 
+
+
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface JetspeedPrincipalSynchronizer
+public class SynchronizationStateAccess
 {
-
-    SynchronizationState getSynchronizationState();
+    private static JetspeedPrincipalSynchronizer synchronizer;
     
-    void synchronizeUserPrincipal(String name);
+    protected SynchronizationStateAccess(JetspeedPrincipalSynchronizer synchronizer){
+        this.synchronizer = synchronizer;
+    }
     
-    void synchronizePrincipalsByType(String principalTypeName);
-    
-    void synchronizeAll();
+    public static SynchronizationState getInstance()
+    {        
+        return synchronizer.getSynchronizationState();
+    }
     
 }

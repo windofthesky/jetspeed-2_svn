@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -84,7 +85,7 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
 
     public void setEnabled(boolean enabled) throws PrincipalReadOnlyException
     {
-        if (isReadOnly())
+        if (isReadOnly() && !isSynchronizing())
         {
             throw new PrincipalReadOnlyException();
         }
@@ -187,4 +188,9 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
     {
         this.modifiedDate = new Timestamp(System.currentTimeMillis());
     }
+    
+    protected boolean isSynchronizing(){
+        return SynchronizationStateAccess.getInstance().isSynchronizing();
+    }
+
 }
