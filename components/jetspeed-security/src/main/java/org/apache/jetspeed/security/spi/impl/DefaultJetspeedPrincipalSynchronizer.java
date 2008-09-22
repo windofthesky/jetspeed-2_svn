@@ -41,6 +41,7 @@ import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
@@ -84,11 +85,6 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
 
     Map<String, Collection<SecurityEntityRelationType>> entityToRelationTypes = Collections.emptyMap();
 
-    public void synchronizeAll()
-    {
-
-    }
-
     /**
      * @param principalManagerProvider
      * @param securityEntityManager
@@ -100,14 +96,32 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         
     }
 
+    public void synchronizeAll()
+    {
+        setSynchronizing(true);
+        // TODO
+        setSynchronizing(false);
+    }
+
+    public void synchronizePrincipalsByType(String principalTypeName)
+    {
+        setSynchronizing(true);
+        // TODO
+        setSynchronizing(false);
+    }
+
     public void synchronizeUserPrincipal(String name)
     {
+        setSynchronizing(true);
+        
         // don't process relations going towards users to avoid sync'ing huge
         // amounts of data.
         // TODO: allow processing of required relations towards users.
         Collection<String> skipEntities = Arrays.asList(new String[]
         { JetspeedPrincipalType.USER_TYPE_NAME});
         recursiveSynchronizePrincipal(securityEntityManager.getEntity(JetspeedPrincipalType.USER_TYPE_NAME, name), new InternalSynchronizationState(skipEntities));
+        
+        setSynchronizing(false);
     }
 
     public JetspeedPrincipal recursiveSynchronizePrincipal(Entity entity, InternalSynchronizationState syncState)
@@ -209,19 +223,14 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
                     {
                         principalManager.removeAssociation(relatedPrincipal, principal, associationName);
                     }
-                } catch (PrincipalAssociationRequiredException e)
-                {
-                    if (logger.isErrorEnabled())
-                    {
-                        logger.error("Unexpected PrincipalAssociationRequiredException trying to remove association during synchronization.", e);
+                } catch (SecurityException e){
+                    if (isFromPrincipal){
+                        logger.error("Unexpected SecurityException trying to remove ("+principal.getType().getName()+","+relatedPrincipal.getType().getName()+","+associationName+") association during synchronization.", e);    
+                    } else {
+                        logger.error("Unexpected SecurityException trying to remove ("+relatedPrincipal.getType().getName()+","+principal.getType().getName()+","+associationName+") association during synchronization.", e);    
                     }
-                } catch (PrincipalNotFoundException e)
-                {
-                    if (logger.isErrorEnabled())
-                    {
-                        logger.error("Unexpected PrincipalNotFoundException trying to remove association during synchronization.", e);
-                    }
-                }
+                    
+                } 
             }
         }
     }
@@ -238,20 +247,8 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
         try
         {
             principalManager.addAssociation(fromPrincipal, toPrincipal, associationName);
-        } catch (PrincipalNotFoundException e)
-        {
-            if (logger.isErrorEnabled())
-            {
-                logger.error("Unexpected PrincipalNotFoundException trying to update principal association.", e);
-            }
-        } catch (PrincipalAssociationUnsupportedException e)
-        {
-        } catch (PrincipalAssociationNotAllowedException e)
-        {
-            if (logger.isErrorEnabled())
-            {
-                logger.error("Unexpected PrincipalAssociationNotAllowedException trying to update principal during synchronization.", e);
-            }
+        } catch (SecurityException e){
+            logger.error("Unexpected SecurityException during synchronization.", e);
         }
     }
 
@@ -309,7 +306,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
                     try
                     {
                         SecurityAttributeType securityAttrType = securityAttrTypes.get(addedEntityAttr.getMappedName());
-                        if (securityAttrType != null && !securityAttrType.isReadOnly())
+                        if (securityAttrType != null)
                         {
                             principalAttr = principalAttrs.getAttribute(addedEntityAttr.getMappedName(), true);
                         }
@@ -337,7 +334,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
                     }
                 }
             }
-            if (updatedPrincipal.isMapped() && !updatedPrincipal.isReadOnly())
+            if (updatedPrincipal.isMapped())
             {
                 boolean updated = (attrsToBeUpdated.size() > 0);
                 // Step 2, check whether attributes should be removed.
@@ -371,20 +368,9 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
                     try
                     {
                         principalManager.updatePrincipal(updatedPrincipal);
-                    } catch (PrincipalUpdateException e)
-                    {
-                        if (logger.isErrorEnabled())
-                        {
-                            logger.error("Could not synchronize principal " + updatedPrincipal.getName() + " of type " + updatedPrincipal.getType().getName(),
-                                    e);
-                        }
-                    } catch (Exception e)
-                    {
-                        if (logger.isErrorEnabled())
-                        {
-                            logger.error("Unexpected exception trying to update principal during synchronization.", e);
-                        }
-                    }
+                    } catch (SecurityException e){
+                        logger.error("Unexpected SecurityException: could not synchronize principal " + updatedPrincipal.getName() + " of type " + updatedPrincipal.getType().getName(), e);
+                    }  
                 }
             }
 
@@ -393,11 +379,6 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
             // TODO throw proper exception
         }
         return updatedPrincipal;
-    }
-
-    public void synchronizePrincipalsByType(String principalTypeName)
-    {
-
     }
 
     public SynchronizationState getSynchronizationState()
