@@ -19,7 +19,6 @@ package org.apache.jetspeed.security.spi.impl.ldap;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Properties;
 
 import javax.naming.CommunicationException;
@@ -29,7 +28,7 @@ import javax.naming.ServiceUnavailableException;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
@@ -39,40 +38,27 @@ public class LdapContextProxy implements InvocationHandler
 {
     private Properties env;
     private LdapContext ctx;
+    private LdapContextSource springContext;
+    private String initialContextFactory;    
+    private String userFilter;
+    private String memberShipSearchScope;
     
-    public static LdapContext createProxy(LdapBindingConfig config)
-    {
-        LdapContext proxy = config.getContext();
-        
-        if ( proxy == null || !(Proxy.getInvocationHandler(proxy) instanceof LdapContextProxy))
-        {
-            proxy = (LdapContext)Proxy.newProxyInstance(LdapContext.class.getClassLoader(),new Class[]{LdapContext.class}, new LdapContextProxy(config));
-     
-            config.setContext(proxy);
-        }
-        return proxy;
-    }
-    
-    private LdapContextProxy(LdapBindingConfig ldapBindingConfig)
-    {
+   
+    public LdapContextProxy(LdapContextSource context,String factory,String userFilter,String memberShipSearchScope)    {
+        springContext = context; 
         env = new Properties();
-        env.put(Context.INITIAL_CONTEXT_FACTORY, ldapBindingConfig.getInitialContextFactory());
-        env.put(Context.PROVIDER_URL, ldapBindingConfig.getLdapScheme() + "://" + ldapBindingConfig.getLdapServerName() + ":"
-                + ldapBindingConfig.getLdapServerPort() + "/" + ldapBindingConfig.getRootContext());
-        env.put(Context.SECURITY_PRINCIPAL, ldapBindingConfig.getRootDn());
-        env.put(Context.SECURITY_CREDENTIALS, ldapBindingConfig.getRootPassword());
-        env.put(Context.SECURITY_AUTHENTICATION, ldapBindingConfig.getLdapSecurityLevel());
-        if ( !StringUtils.isEmpty(ldapBindingConfig.getLdapSecurityProtocol()) )
-        {
-            env.put(Context.SECURITY_PROTOCOL, ldapBindingConfig.getLdapSecurityProtocol());
-        }
-        if ( !StringUtils.isEmpty(ldapBindingConfig.getLdapSocketFactory()) )
-        {
-            env.put("java.naming.ldap.factory.socket", ldapBindingConfig.getLdapSocketFactory());
-        }
+        env.put(Context.INITIAL_CONTEXT_FACTORY, factory);
+        env.put(Context.PROVIDER_URL,springContext.getUrls()[0]+"/" + springContext.getBaseLdapPath());
+        env.put(Context.SECURITY_AUTHENTICATION, "simple");
+        env.put(Context.SECURITY_CREDENTIALS, springContext.getAuthenticationSource().getCredentials());
+        env.put(Context.SECURITY_PRINCIPAL, springContext.getAuthenticationSource().getPrincipal());
+        
+        this.initialContextFactory = factory;
+        this.userFilter = userFilter;
+        this.memberShipSearchScope = memberShipSearchScope;
     }
     
-    private LdapContext getCtx() throws NamingException
+    public LdapContext getCtx() throws NamingException
     {
         if ( ctx == null )
         {
@@ -152,6 +138,24 @@ public class LdapContextProxy implements InvocationHandler
             }
         }
         return result;
+    }
+    public String getInitialContextFactory()
+    {
+        return initialContextFactory;
+    }
+
+    public String getUserFilter()
+    {
+        return userFilter;
+    }
+
+    public String getRootContext()
+    {
+        return springContext.getBaseLdapPathAsString();
+    }
+    public String getMemberShipSearchScope()
+    {
+        return memberShipSearchScope;
     }
 
 }

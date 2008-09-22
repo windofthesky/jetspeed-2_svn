@@ -23,18 +23,18 @@ import java.util.Iterator;
 import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.ldap.core.ContextMapper;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.Filter;
-import org.springframework.ldap.filter.OrFilter;
-
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultEntityContextMapper;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
 import org.apache.jetspeed.security.mapping.ldap.dao.SearchUtil;
 import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.DistinguishedName;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.Filter;
+import org.springframework.ldap.filter.OrFilter;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -42,11 +42,8 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public class SpringLDAPEntityDAO implements EntityDAO
 {
-
     protected LdapTemplate ldapTemplate;
-
     protected LDAPEntityDAOConfiguration configuration;
-
     private ContextMapper contextMapper;
 
     public void initialize(LdapTemplate ldapTemplate)
@@ -61,7 +58,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
         if (entities != null && entities.size() == 1)
         {
             return entities.iterator().next();
-        } else
+        }
+        else
         {
             return null;
         }
@@ -78,25 +76,25 @@ public class SpringLDAPEntityDAO implements EntityDAO
         Filter combinedFilter = null;
         if (configuration.getBaseFilter() != null)
         {
-            combinedFilter = SearchUtil.andFilters(idFilter, configuration
-                    .getBaseFilter());
-        } else
+            combinedFilter = SearchUtil.andFilters(idFilter, configuration.getBaseFilter());
+        }
+        else
         {
             combinedFilter = idFilter;
         }
         return getEntities(combinedFilter);
     }
 
-    public Collection<Entity> getEntitiesByInternalId(
-            Collection<String> internalIds)
+    public Collection<Entity> getEntitiesByInternalId(Collection<String> internalIds)
     {
         final Collection<Entity> resultSet = new ArrayList<Entity>();
-        for (Iterator<String> iterator = internalIds.iterator(); iterator
-                .hasNext();)
+        for (Iterator<String> iterator = internalIds.iterator(); iterator.hasNext();)
         {
             String internalId = (String) iterator.next();
-            Entity resultEntity = (Entity) ldapTemplate.lookup(internalId,
-                    contextMapper);
+            DistinguishedName principalDN = new DistinguishedName(internalId);
+            principalDN.removeFirst();
+            internalId =principalDN.toString();            
+            Entity resultEntity = (Entity) ldapTemplate.lookup(internalId, contextMapper);
             if (resultEntity != null)
             {
                 resultSet.add(resultEntity);
@@ -113,10 +111,10 @@ public class SpringLDAPEntityDAO implements EntityDAO
             if (filter == null)
             {
                 filter = configuration.getBaseFilter();
-            } else
+            }
+            else
             {
-                filter = SearchUtil.andFilters(configuration.getBaseFilter(),
-                        filter);
+                filter = SearchUtil.andFilters(configuration.getBaseFilter(), filter);
             }
         }
         String filterStr = filter.toString();
@@ -124,16 +122,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             filterStr = "(objectClass=*)"; // trivial search query
         }
-        return (Collection<Entity>) ldapTemplate.search(configuration
-                .getBaseDN(), filterStr, SearchControls.SUBTREE_SCOPE,
-                getContextMapper());
+        return (Collection<Entity>) ldapTemplate.search(configuration.getBaseDN(), filterStr, SearchControls.SUBTREE_SCOPE, getContextMapper());
     }
 
     public Collection<Entity> getAllEntities()
     {
-        final String finalFilter = configuration.getBaseFilter() != null ? configuration
-                .getBaseFilter().encode()
-                : "(objectClass=*)";
+        final String finalFilter = configuration.getBaseFilter() != null ? configuration.getBaseFilter().encode() : "(objectClass=*)";
         return getEntities(new SimpleFilter(finalFilter));
     }
 
@@ -161,9 +155,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     protected Filter createFilterForIdSearch(String entityId)
     {
-        return SearchUtil.constructMatchingFieldsFilter(configuration
-                .getBaseFilter(), new String[]
-        { configuration.getLdapIdAttribute(), entityId});
+        return SearchUtil.constructMatchingFieldsFilter(configuration.getBaseFilter(), new String[] { configuration.getLdapIdAttribute(), entityId });
     }
 
     public ContextMapper getContextMapper()
@@ -184,5 +176,4 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
         this.contextMapper = contextMapper;
     }
-
 }

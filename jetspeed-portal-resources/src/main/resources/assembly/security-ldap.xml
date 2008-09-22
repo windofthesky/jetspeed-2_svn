@@ -53,21 +53,6 @@
 		<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
 	</bean>	
 		
-	<bean id="ldapContext" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">		
-		<property name="targetClass">
-			<value>org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy</value>
-		</property>
-   		<property name="targetMethod">
-   			<value>createProxy</value>
-   		</property>
-		<property name="arguments">
-			<list>
-				<ref bean="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig" />
-			</list>    
-		</property>
- 	</bean>
-	
-
 	<bean id="org.apache.jetspeed.security.AuthenticationProvider" class="org.apache.jetspeed.security.impl.LdapAuthenticationProvider">
 		<constructor-arg index="0" value="ldapAuthenticationProvider" />
 		<constructor-arg index="1" value="Ldap Authentication Provider" />
@@ -77,7 +62,6 @@
 		<constructor-arg index="3" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
 		<constructor-arg index="4" ref="org.apache.jetspeed.security.UserManager" />
 		<property name="context" ref="ldapContext" />
-		<property name="config" ref="org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig" />
 		<property name="synchronizer" ref="JetspeedPrincipalSynchronizer" />
 	</bean>
 	<bean id="JetspeedPrincipalSynchronizer" class="org.apache.jetspeed.security.spi.impl.DefaultJetspeedPrincipalSynchronizer">
@@ -89,8 +73,14 @@
 		<property name="entityDAOs">
 		    <map>
 				<entry key="user" value-ref="UserDao"/>
+				<entry key="role" value-ref="RoleDao"/>
 		    </map>
 		</property>
+		<property name="entityRelationDAOs">
+		    <list>
+				<ref bean="UserRoleRelationDAO" />
+		    </list>
+		</property>		
 	</bean>
 	<bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
 		<property name="baseDN" value=""/>
@@ -115,11 +105,47 @@
 				<bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
 					<constructor-arg index="0" value="givenName" />
 					<constructor-arg index="1" value="false" />
-					<constructor-arg index="2" value="true" />					
+					<constructor-arg index="2" value="true" />
+					<constructor-arg index="3" value="user.name.given" />					
 				</bean>					
 			</set>
 		</property>
 		<property name="entityType" value="user"/>
+	</bean>
+	<bean id="RoleDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
+		<property name="baseDN" value=""/>
+		<property name="baseFilter">
+			<bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
+				<constructor-arg index="0" value="(objectClass=groupOfUniqueNames)" />
+			</bean>
+		</property>
+		<property name="ldapIdAttribute" value="cn"/>
+		<property name="attributeDefinitions">	
+			<set>
+				<bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+					<constructor-arg index="0" value="uid" />
+					<constructor-arg index="1" value="false" />
+					<constructor-arg index="2" value="true" />
+				</bean>
+				<bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+					<constructor-arg index="0" value="cn" />
+					<constructor-arg index="1" value="false" />
+					<constructor-arg index="2" value="true" />					
+				</bean>				
+				<bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+					<constructor-arg index="0" value="description" />
+					<constructor-arg index="1" value="false" />
+					<constructor-arg index="2" value="true" />
+					<constructor-arg index="3" value="role.display.name" />					
+				</bean>					
+				<bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+					<constructor-arg index="0" value="uniqueMember" />
+					<constructor-arg index="1" value="true" />
+					<constructor-arg index="2" value="false" />
+				</bean>					
+			</set>
+		</property>
+		<property name="entityType" value="role"/>
 	</bean>
 	<bean id="UserDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
 		<property name="ldapTemplate">
@@ -129,10 +155,45 @@
 		</property>
 		<property name="configuration" ref="UserDaoConfiguration"/>
 	</bean>
+		
+	<bean id="UserRoleRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
+		<property name="ldapTemplate">
+			<bean class="org.springframework.ldap.core.LdapTemplate">
+				<property name="contextSource" ref="LdapSpringContext" />
+			</bean>
+		</property>
+		<property name="relationAttribute" value ="uniqueMember"/>
+		<property name="attributeContainsInternalId" value ="true"/>
+		<property name="useFromEntityAttribute" value="false" />
+		<property name="relationType">		
+			<bean class="org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl">
+				<constructor-arg index="0" value="isMemberOf" />
+				<constructor-arg index="1" value="user" />
+				<constructor-arg index="2" value="role" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="RoleDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
+		<property name="ldapTemplate">
+			<bean class="org.springframework.ldap.core.LdapTemplate">
+				<property name="contextSource" ref="LdapSpringContext" />
+			</bean>
+		</property>
+		<property name="configuration" ref="RoleDaoConfiguration"/>
+	</bean>
 	<bean id="LdapSpringContext" class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldap://localhost:389"/>
 		<property name="base" value="o=sevenSeas"/>
 		<property name="userDn" value="cn=admin,o=sevenSeas"/>
 		<property name="password" value="secret"/>
 	</bean>
+
+	<bean id="ldapContext" class="org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy" depends-on="LdapSpringContext">
+		<constructor-arg index="0" ref="LdapSpringContext" />
+		<constructor-arg index="1" value="com.sun.jndi.ldap.LdapCtxFactory" />
+		<constructor-arg index="2" value="(objectclass=person)" />
+		<constructor-arg index="3" value="2" />
+ 	</bean>	
+
 </beans>

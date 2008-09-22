@@ -25,7 +25,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.i18n.KeyedMessage;
@@ -38,8 +37,7 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalSynchronizer;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
-import org.apache.jetspeed.security.spi.impl.PasswordCredentialImpl;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig;
+import org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy;
 
 /**
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
@@ -48,11 +46,9 @@ import org.apache.jetspeed.security.spi.impl.ldap.LdapBindingConfig;
 public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 {
     private JetspeedPrincipalSynchronizer synchronizer;
-    private LdapContext context;
-    private LdapBindingConfig config;
     private UserPasswordCredentialManager upcm;
     private UserManager manager;
-
+    private LdapContextProxy context;
     public LdapAuthenticationProvider(String providerName, String providerDescription, String loginConfig, UserPasswordCredentialManager upcm,
                                       UserManager manager)
     {
@@ -61,12 +57,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         this.manager = manager;
     }
 
-    public void setConfig(LdapBindingConfig config)
-    {
-        this.config = config;
-    }
-
-    public void setContext(LdapContext context)
+    public void setContext(LdapContextProxy context)
     {
         this.context = context;
     }
@@ -103,8 +94,8 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 
     private boolean authenticateUser(String userName, String password) throws NamingException, SecurityException
     {
-        Hashtable env = context.getEnvironment();
-        
+        Hashtable env = context.getCtx().getEnvironment();
+
         // String savedPassword = String.valueOf(getPassword(uid));
         String oldCredential = (String) env.get(Context.SECURITY_CREDENTIALS);
         String oldUsername = (String) env.get(Context.SECURITY_PRINCIPAL);
@@ -116,8 +107,8 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             // Build user dn using lookup value, just appending the user filter after the uid won't work when users
             // are/can be stored in a subtree (searchScope sub-tree)
             // The looked up dn though is/should always be correct, just need to append the root context.
-            if (!StringUtils.isEmpty(config.getRootContext()))
-                dn += "," + config.getRootContext();
+            if (!StringUtils.isEmpty(context.getRootContext()))
+                dn += "," + context.getRootContext();
             env.put(Context.SECURITY_PRINCIPAL, dn);
             env.put(Context.SECURITY_CREDENTIALS, password);
             new InitialContext(env);
@@ -160,7 +151,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     protected SearchControls setSearchControls()
     {
         SearchControls controls = new SearchControls();
-        controls.setReturningAttributes(config.getKnownAttributes());
+        controls.setReturningAttributes(new String[]{});
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         controls.setReturningObjFlag(true);
         return controls;
@@ -179,10 +170,10 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             query = "(&(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
         }
         // logger.debug("searchByWildCardedUid = " + query);
-        cons.setSearchScope(Integer.parseInt(config.getMemberShipSearchScope()));
+        cons.setSearchScope(Integer.parseInt(context.getMemberShipSearchScope()));
         // TODO: added this here for OpenLDAP (when users are stored in ou=People,o=evenSeas)
-        String searchBase = StringUtils.replace(getSearchDomain(), "," + config.getRootContext(), "");
-        NamingEnumeration results = ((DirContext) context).search(searchBase, query, cons);
+        String searchBase = StringUtils.replace(getSearchDomain(), "," + context.getRootContext(), "");
+        NamingEnumeration results = ((DirContext) context.getCtx()).search(searchBase, query, cons);
         return results;
     }
 
@@ -196,7 +187,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             String searchDomain = getSearchDomain();
             if (searchDomain.length() > 0)
             {
-                userDn += "," + StringUtils.replace(searchDomain, "," + config.getRootContext(), "");
+                userDn += "," + StringUtils.replace(searchDomain, "," + context.getRootContext(), "");
             }
         }
         return userDn;
@@ -204,16 +195,16 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 
     private String getSearchSuffix()
     {
-        return config.getUserFilter();
+        return  context.getUserFilter();
     }
 
     private String getEntryPrefix()
     {
-        return config.getUserIdAttribute();
+        return  "cn";
     }
 
     private String getSearchDomain()
     {
-        return config.getUserFilterBase();
+       return "";
     }
 }
