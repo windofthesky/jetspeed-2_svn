@@ -123,31 +123,8 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     public Role addRole(String roleName, boolean mapped) throws SecurityException
     {
         Role role = newRole(roleName, mapped);
-        
-        try
-        {
-            super.addPrincipal(role, null);
-        }
-        catch (PrincipalAlreadyExistsException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
-        catch (PrincipalAssociationRequiredException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        } 
-        catch (PrincipalAssociationNotAllowedException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
-        catch (PrincipalAssociationUnsupportedException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
+
+        super.addPrincipal(role, null);        
         
         if (log.isDebugEnabled())
             log.debug("Added role: " + roleName);
@@ -160,22 +137,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public void removeRole(String roleName) throws SecurityException
     {
-        try
-        {
-            super.removePrincipal(roleName);
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
-        catch (PrincipalNotRemovableException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
-        catch (DependentPrincipalException e)
-        {
-            throw new SecurityException(SecurityException.DEPENDENT_PRINCIPAL_EXISTS.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
-        }
+        super.removePrincipal(roleName);
     }
 
     /**
@@ -333,22 +295,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public void updateRole(Role role) throws SecurityException
     {
-        try
-        {
-            super.updatePrincipal(role);
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, role.getName()));
-        }
-        catch (PrincipalUpdateException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, role.getName()), e);
-        } 
-        catch (PrincipalReadOnlyException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, role.getName()));
-        }
+         super.updatePrincipal(role);
     }
 
     /* (non-Javadoc)

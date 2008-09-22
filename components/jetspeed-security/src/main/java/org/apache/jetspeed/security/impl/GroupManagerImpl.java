@@ -116,31 +116,8 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     {
         Group group = newGroup(groupName, mapped);
         
-        try
-        {
-            super.addPrincipal(group, null);
-        }
-        catch (PrincipalAlreadyExistsException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName)); 
-        }
-        catch (PrincipalAssociationRequiredException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        } 
-        catch (PrincipalAssociationNotAllowedException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        }
-        catch (PrincipalAssociationUnsupportedException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        }
-        
+        super.addPrincipal(group, null);
+            
         if (log.isDebugEnabled())
             log.debug("Added group: " + groupName);
         
@@ -152,22 +129,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
      */
     public void removeGroup(String groupName) throws SecurityException
     {
-        try
-        {
-            super.removePrincipal(groupName);
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        }
-        catch (PrincipalNotRemovableException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        }
-        catch (DependentPrincipalException e)
-        {
-            throw new SecurityException(SecurityException.DEPENDENT_PRINCIPAL_EXISTS.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-        }
+       super.removePrincipal(groupName);
     }
 
     /**
@@ -281,22 +243,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
      */
     public void updateGroup(Group group) throws SecurityException
     {
-        try
-        {
-            super.updatePrincipal(group);
-        }
-        catch (PrincipalNotFoundException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, group.getName()));
-        }
-        catch (PrincipalUpdateException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, group.getName()), e);
-        }
-        catch (PrincipalReadOnlyException e)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, group.getName()));
-        }
+        super.updatePrincipal(group);
     }
 
     public JetspeedPrincipal newPrincipal(String name, boolean mapped)

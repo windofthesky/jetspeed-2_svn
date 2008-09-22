@@ -107,30 +107,9 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	public User addUser(String username, boolean mapped) throws SecurityException
 	{
 		User user = newUser(username, mapped);
-		try
-		{
-			super.addPrincipal(user, null);
-		}
-		catch (PrincipalAlreadyExistsException e)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
-		catch (PrincipalAssociationRequiredException e)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
-		catch (PrincipalAssociationNotAllowedException e)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
-		catch (PrincipalAssociationUnsupportedException e)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
-		catch (PrincipalNotFoundException e)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
+		
+		super.addPrincipal(user, null);
+
 		if (log.isDebugEnabled())
 			log.debug("Added user: " + username);
 
@@ -256,23 +235,9 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	public void removeUser(String username) throws SecurityException
 	{
 		JetspeedPrincipal user;
-		try
-		{
-			user = getUser(username);
-			super.removePrincipal(user);
-		}
-		catch (PrincipalNotFoundException pnfe)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
-		catch (PrincipalNotRemovableException pnre)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
-		catch (DependentPrincipalException dpe)
-		{
-			throw new SecurityException(SecurityException.DEPENDENT_PRINCIPAL_EXISTS.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-		}
+		
+		user = getUser(username);
+		super.removePrincipal(user);
 	}
 
 	public void storePasswordCredential(PasswordCredential credential) throws SecurityException
@@ -286,22 +251,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public void updateUser(User user) throws SecurityException
 	{
-		try
-		{
-			super.updatePrincipal(user);
-		}
-		catch (PrincipalNotFoundException pnfe)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()));
-		}
-		catch (PrincipalUpdateException pue)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()), pue);
-		}
-		catch (PrincipalReadOnlyException e)
-		{
-			throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, user.getName()));
-		}
+		super.updatePrincipal(user);
 	}
 
 	public boolean userExists(String username)

@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.jetspeed.security.CredentialPasswordValidator;
-import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.SecurityException;
 
 /**
@@ -57,7 +56,7 @@ public class SimpleCredentialPasswordValidator implements CredentialPasswordVali
 
         if ( minPasswordLength > 0 && pwd.length < minPasswordLength )
         {
-            throw new InvalidPasswordException();
+            throw new SecurityException(SecurityException.INVALID_PASSWORD);
         }
 
         if ( minNumberOfDigits > 0)
@@ -71,7 +70,7 @@ public class SimpleCredentialPasswordValidator implements CredentialPasswordVali
             }
             if (digits < minNumberOfDigits)
             {
-                throw new InvalidPasswordException();
+                throw new SecurityException(SecurityException.INVALID_PASSWORD);
             }
         }
     }

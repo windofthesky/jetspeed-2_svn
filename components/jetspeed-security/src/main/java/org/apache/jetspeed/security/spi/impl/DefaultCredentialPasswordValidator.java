@@ -20,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.jetspeed.security.CredentialPasswordValidator;
-import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.SecurityException;
 
 /**
@@ -63,12 +62,12 @@ public class DefaultCredentialPasswordValidator implements CredentialPasswordVal
            //Match the given string with the pattern
            Matcher m = p.matcher(clearTextPassword);
            if(!m.matches())
-               throw new InvalidPasswordException();
+               throw new SecurityException(SecurityException.INVALID_PASSWORD);
        }
        else
        {
         if ( clearTextPassword == null || clearTextPassword.length() == 0)
-             throw new InvalidPasswordException();
+            throw new SecurityException(SecurityException.INVALID_PASSWORD);
        }
  
     }

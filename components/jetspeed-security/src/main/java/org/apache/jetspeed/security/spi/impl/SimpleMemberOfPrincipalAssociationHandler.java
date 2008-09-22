@@ -21,6 +21,7 @@ import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.JetspeedPrincipalAssociationTypeImpl;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
@@ -44,8 +45,7 @@ public class SimpleMemberOfPrincipalAssociationHandler extends BaseJetspeedPrinc
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler#beforeRemoveFrom(org.apache.jetspeed.security.JetspeedPrincipal)
      */
-    public void beforeRemoveFrom(JetspeedPrincipal from) throws PrincipalNotRemovableException,
-                                                        DependentPrincipalException
+    public void beforeRemoveFrom(JetspeedPrincipal from) throws SecurityException
     {
         // nothing to do
         // use super.isSynchronizing() to turn off constraint checks        
@@ -54,7 +54,7 @@ public class SimpleMemberOfPrincipalAssociationHandler extends BaseJetspeedPrinc
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler#beforeRemoveTo(org.apache.jetspeed.security.JetspeedPrincipal)
      */
-    public void beforeRemoveTo(JetspeedPrincipal to) throws PrincipalNotRemovableException, DependentPrincipalException
+    public void beforeRemoveTo(JetspeedPrincipal to) throws SecurityException
     {
         // nothing to do
         // use super.isSynchronizing() to turn off constraint checks

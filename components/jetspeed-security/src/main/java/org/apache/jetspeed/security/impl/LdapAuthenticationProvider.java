@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
-import org.apache.jetspeed.security.InvalidUidException;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
@@ -144,7 +143,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         String pattern = ".*\\(.*|.*\\[.*|.*\\{.*|.*\\\\.*|.*\\^.*|.*\\$.*|.*\\|.*|.*\\).*|.*\\?.*|.*\\*.*|.*\\+.*|.*\\..*";
         if (StringUtils.isEmpty(uid) || uid.matches(pattern))
         {
-            throw new InvalidUidException();
+            throw new SecurityException(SecurityException.INVALID_UID);
         }
     }
 

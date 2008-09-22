@@ -39,6 +39,7 @@ import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.PrincipalUpdateException;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
@@ -169,12 +170,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.getPrincipalsByAttribute(attributeName, attributeValue, principalType);
     }
 
-    public void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException,
-                                            DependentPrincipalException
+    public void removePrincipal(String name) throws SecurityException
     {
         JetspeedPrincipal principal = jpam.getPrincipal(name, principalType);
         if (principal == null)
-            throw new PrincipalNotFoundException();
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principalType.getName(),name));
         jpsm.removePrincipal(principal);
     }
     
@@ -251,7 +251,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     // JetspeedPrincipalStorageManager interface implementation
     //
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException
+        throws SecurityException
     {
         validatePrincipal(principal);
         // don't check required associations during synchronization
@@ -276,15 +276,14 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                     }
                     if (!assHandlers.containsKey(key))
                     {
-                        throw new PrincipalAssociationNotAllowedException();
+                        throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(principal.getName()));
                     }
                     reqAss.remove(key);
                 }
             }
             if (!reqAss.isEmpty())
             {
-                // TODO: proper named message or better replace with SecurityException(KeyedMessage)
-                throw new PrincipalAssociationRequiredException();
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(principal.getName()));
             }
         }
         jpsm.addPrincipal(principal, associations);
@@ -304,8 +303,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         }
     }
 
-    public void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException,
-                                                            PrincipalNotRemovableException, DependentPrincipalException
+    public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         validatePrincipal(principal);
         for (JetspeedPrincipalAssociationHandler jpah : assHandlers.values())
@@ -322,13 +320,12 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         jpsm.removePrincipal(principal);
     }
 
-    public void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException,
-                                                            PrincipalNotFoundException, PrincipalReadOnlyException
+    public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         validatePrincipal(principal);
         if (principal.isReadOnly() && !isSynchronizing())
         {
-            throw new PrincipalReadOnlyException();
+            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(principal.getName()));
         }
         jpsm.updatePrincipal(principal);
     }
@@ -336,14 +333,14 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     //
     // JetspeedPrincipalAssociationHandler interface invocations
     //
-    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException
+    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
         AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());        
         JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
         
         if (jpah == null)
         {
-            throw new PrincipalAssociationNotAllowedException();
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(from.getName()));
         }
         if (from.isTransient() || from.getId() == null)
         {
@@ -351,7 +348,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         }
         if (from == null)
         {
-            throw new PrincipalNotFoundException();
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
         }
         if (to.isTransient() || to.getId() == null)
         {
@@ -359,30 +356,26 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         }
         if (to == null)
         {
-            throw new PrincipalNotFoundException();
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
         }
         jpah.add(from, to);
     }
     
     public void transferAssociationFrom(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target,
-                                        String associationName) throws PrincipalNotFoundException,
-                                                               PrincipalAssociationUnsupportedException,
-                                                               PrincipalAssociationNotAllowedException
+                                        String associationName) throws SecurityException
     {
         // TODO Auto-generated method stub
         
     }
 
     public void transferAssociationTo(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target,
-                                      String associationName) throws PrincipalNotFoundException,
-                                                             PrincipalAssociationUnsupportedException,
-                                                             PrincipalAssociationNotAllowedException
+                                      String associationName) throws SecurityException
     {
         // TODO Auto-generated method stub
         
     }
 
-    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws PrincipalAssociationRequiredException, PrincipalNotFoundException
+    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
         AssociationHandlerKey key = new AssociationHandlerKey(associationName, from.getType().getName(), to.getType().getName());
         JetspeedPrincipalAssociationHandler jpah = assHandlers.get(key);
@@ -391,7 +384,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         {
             if (jpah.getAssociationType().isRequired() && !isSynchronizing())
             {
-                throw new PrincipalAssociationRequiredException();
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(from.getName()));             
             }
             if (from.isTransient() || from.getId() == null)
             {
@@ -399,7 +392,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             }
             if (from == null)
             {
-                throw new PrincipalNotFoundException();
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
             }
             if (to.isTransient() || to.getId() == null)
             {
@@ -407,7 +400,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             }
             if (to == null)
             {
-                throw new PrincipalNotFoundException();
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
             }
             jpah.remove(from, to);
         }

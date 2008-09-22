@@ -60,7 +60,7 @@ public interface JetspeedPrincipalManager
 
     JetspeedPrincipal newTransientPrincipal(String name);
     
-    void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
+    void removePrincipal(String name) throws SecurityException;
 
     /**
      * <p>
