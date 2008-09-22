@@ -250,7 +250,7 @@ public class JetspeedSecurityPersistenceManager
     {
         if (principalExists(principal))
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(principal.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(principal.getType().getName(), principal.getName()));
         }
         try
         {
@@ -277,7 +277,7 @@ public class JetspeedSecurityPersistenceManager
     {
         if (!principalExists(principal))
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getType().getName(), principal.getName()));
         }
         try
         {
@@ -288,7 +288,7 @@ public class JetspeedSecurityPersistenceManager
             if (pbe instanceof DataIntegrityViolationException)
             {
                 logger.error(pbe.getMessage(), pbe);
-                throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(principal.getName()));
+                throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(principal.getType().getName(), principal.getName()));
             }
             
             KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
@@ -304,7 +304,7 @@ public class JetspeedSecurityPersistenceManager
     {
         if (!principalExists(principal))
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getType().getName(), principal.getName()));
         }
         try
         {
@@ -315,7 +315,7 @@ public class JetspeedSecurityPersistenceManager
             if (pbe instanceof DataIntegrityViolationException)
             {
                 logger.error(pbe.getMessage(), pbe);
-                throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(principal.getName()));
+                throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(principal.getType().getName(), principal.getName()));
             }
             
             KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
