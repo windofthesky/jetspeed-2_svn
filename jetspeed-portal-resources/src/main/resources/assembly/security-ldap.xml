@@ -52,7 +52,13 @@
 		<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
 		<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
 	</bean>	
-		
+
+	<bean id="SynchronizationStateAccess" class="org.apache.jetspeed.security.spi.SynchronizationStateAccess">
+		<constructor-arg>
+			<ref bean="JetspeedPrincipalSynchronizer"/>
+		</constructor-arg>
+	</bean>	
+	
 	<bean id="org.apache.jetspeed.security.AuthenticationProvider" class="org.apache.jetspeed.security.impl.LdapAuthenticationProvider">
 		<constructor-arg index="0" value="ldapAuthenticationProvider" />
 		<constructor-arg index="1" value="Ldap Authentication Provider" />
@@ -187,8 +193,8 @@
 		<property name="base" value="o=sevenSeas"/>
 		<property name="userDn" value="cn=admin,o=sevenSeas"/>
 		<property name="password" value="secret"/>
-	</bean>
-
+	</bean>	
+	
 	<bean id="ldapContext" class="org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy" depends-on="LdapSpringContext">
 		<constructor-arg index="0" ref="LdapSpringContext" />
 		<constructor-arg index="1" value="com.sun.jndi.ldap.LdapCtxFactory" />
