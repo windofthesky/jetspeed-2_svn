@@ -21,6 +21,7 @@ import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
 import org.apache.jetspeed.security.PrincipalNotFoundException;
 import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @version $Id$
@@ -28,8 +29,8 @@ import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 public interface JetspeedPrincipalAssociationStorageManager
 {
     void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
-        throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
+        throws SecurityException;
 
     void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
-        throws PrincipalAssociationRequiredException, PrincipalNotFoundException;
+        throws SecurityException;
 }

@@ -27,10 +27,6 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
@@ -250,11 +246,11 @@ public class JetspeedSecurityPersistenceManager
     // JetspeedPrincipalStorageManager interface implementation
     //
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-        throws PrincipalAlreadyExistsException
+        throws SecurityException
     {
         if (principalExists(principal))
         {
-            throw new PrincipalAlreadyExistsException();
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(principal.getName()));
         }
         try
         {
@@ -276,12 +272,12 @@ public class JetspeedSecurityPersistenceManager
         return false;
     }
 
-    public void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException,
-                                                            PrincipalNotRemovableException
+    public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
+    
     {
         if (!principalExists(principal))
         {
-            throw new PrincipalNotFoundException();
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getName()));
         }
         try
         {
@@ -292,7 +288,7 @@ public class JetspeedSecurityPersistenceManager
             if (pbe instanceof DataIntegrityViolationException)
             {
                 logger.error(pbe.getMessage(), pbe);
-                throw new PrincipalNotRemovableException();
+                throw new SecurityException(SecurityException.PRINCIPAL_NOT_REMOVABLE.createScoped(principal.getName()));
             }
             
             KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
@@ -303,12 +299,12 @@ public class JetspeedSecurityPersistenceManager
         }
     }
 
-    public void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException,
-                                                            PrincipalNotFoundException
+    public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
+                                                            
     {
         if (!principalExists(principal))
         {
-            throw new PrincipalNotFoundException();
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getName()));
         }
         try
         {
@@ -319,7 +315,7 @@ public class JetspeedSecurityPersistenceManager
             if (pbe instanceof DataIntegrityViolationException)
             {
                 logger.error(pbe.getMessage(), pbe);
-                throw new PrincipalUpdateException();
+                throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(principal.getName()));
             }
             
             KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
@@ -417,7 +413,7 @@ public class JetspeedSecurityPersistenceManager
     // JetspeedPrincipalAssociationStorageManager interface implementation
     //
     public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
-        throws PrincipalNotFoundException
+        throws SecurityException
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("fromPrincipalId", from.getId());
@@ -435,7 +431,7 @@ public class JetspeedSecurityPersistenceManager
                 if (pbe instanceof DataIntegrityViolationException)
                 {
                     logger.error(pbe.getMessage(), pbe);
-                    throw new PrincipalNotFoundException();
+                    throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(from.getType().getName(), from.getName()));
                 }
                 
                 KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",

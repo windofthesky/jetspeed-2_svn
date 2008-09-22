@@ -21,10 +21,7 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
@@ -74,8 +71,7 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
         return to;
     }
     
-    public void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException,
-                                                                 PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException
+    public void add(JetspeedPrincipal from, JetspeedPrincipal to) throws SecurityException
     {
         if (from.getType().equals(associationType.getFromPrincipalType()) && to.getType().equals(associationType.getToPrincipalType()))
         {
@@ -83,7 +79,7 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
         }
     }
 
-    public void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException, PrincipalNotFoundException
+    public void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws SecurityException
     {
         if (from.getType().equals(associationType.getFromPrincipalType()) && to.getType().equals(associationType.getToPrincipalType()))
         {

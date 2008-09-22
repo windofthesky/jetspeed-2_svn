@@ -127,22 +127,22 @@ public interface JetspeedPrincipalManager
     List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType to, String associationName);
 
     void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-        throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException, PrincipalAssociationUnsupportedException;
+        throws SecurityException;
 
-    void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException, PrincipalReadOnlyException;
+    void updatePrincipal(JetspeedPrincipal principal) throws SecurityException;
 
     void removePrincipal(JetspeedPrincipal principal)
-        throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException;
+        throws SecurityException;
 
     void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
-        throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
+        throws SecurityException;
 
     void transferAssociationTo(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target, String associationName)
-    throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
+        throws SecurityException;
 
     void transferAssociationFrom(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target, String associationName)
-    throws PrincipalNotFoundException, PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException;
-
+        throws SecurityException;
+    
     void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
-        throws PrincipalAssociationRequiredException, PrincipalNotFoundException;
+        throws SecurityException;
 }

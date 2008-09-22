@@ -26,9 +26,9 @@ public interface JetspeedPrincipalAssociationHandler
     JetspeedPrincipalManager getManagerFrom();
     JetspeedPrincipalManager getManagerTo();
 
-    void add(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalNotFoundException, PrincipalAssociationNotAllowedException, PrincipalAssociationUnsupportedException;
+    void add(JetspeedPrincipal from, JetspeedPrincipal to) throws SecurityException;
 
-    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws PrincipalAssociationRequiredException, PrincipalNotFoundException;
+    void remove(JetspeedPrincipal from, JetspeedPrincipal to) throws SecurityException;
 
     /**
      * <p>
@@ -39,7 +39,7 @@ public interface JetspeedPrincipalAssociationHandler
      * or do so during the subsequent removal of the principal itself
      * </p>
      */
-    void beforeRemoveFrom(JetspeedPrincipal from) throws PrincipalNotRemovableException, DependentPrincipalException; 
+    void beforeRemoveFrom(JetspeedPrincipal from) throws SecurityException;
 
     /**
      * <p>
@@ -50,5 +50,5 @@ public interface JetspeedPrincipalAssociationHandler
      * or do so during the subsequent removal of the principal itself
      * </p>
      */
-    void beforeRemoveTo(JetspeedPrincipal to) throws PrincipalNotRemovableException, DependentPrincipalException;
+    void beforeRemoveTo(JetspeedPrincipal to) throws SecurityException;
 }
