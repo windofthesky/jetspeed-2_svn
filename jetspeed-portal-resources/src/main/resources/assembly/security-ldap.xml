@@ -21,6 +21,7 @@
 	<!--
   	<bean id="org.apache.jetspeed.security.mapping.ldap.dao"
 		class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
+        <meta key="j2:cat" value="ldap" />
 		    <property name="contextMapper">
       			<value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
     		</property>
@@ -43,23 +44,20 @@
 	-->
   	<bean id="org.apache.jetspeed.security.spi.JetspeedPostContextLoader"
 	class="org.apache.jetspeed.security.spi.JetspeedPostContextLoader" init-method="init"> 
+        <meta key="j2:cat" value="ldap" />
 		<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalSynchronizer" />
 		<constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
 	</bean>	
 	
 	<bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalSynchronizer"
 	class="org.apache.jetspeed.security.spi.impl.DefaultJetspeedPrincipalSynchronizer"> 
+        <meta key="j2:cat" value="ldap" />
 		<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
 		<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
 	</bean>	
 
-	<bean id="SynchronizationStateAccess" class="org.apache.jetspeed.security.spi.SynchronizationStateAccess">
-		<constructor-arg>
-			<ref bean="JetspeedPrincipalSynchronizer"/>
-		</constructor-arg>
-	</bean>	
-	
 	<bean id="org.apache.jetspeed.security.AuthenticationProvider" class="org.apache.jetspeed.security.impl.LdapAuthenticationProvider">
+        <meta key="j2:cat" value="ldap" />
 		<constructor-arg index="0" value="ldapAuthenticationProvider" />
 		<constructor-arg index="1" value="Ldap Authentication Provider" />
 		<constructor-arg index="2">
@@ -70,12 +68,16 @@
 		<property name="context" ref="ldapContext" />
 		<property name="synchronizer" ref="JetspeedPrincipalSynchronizer" />
 	</bean>
+
 	<bean id="JetspeedPrincipalSynchronizer" class="org.apache.jetspeed.security.spi.impl.DefaultJetspeedPrincipalSynchronizer">
+        <meta key="j2:cat" value="ldap" />
 		<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
 		<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
 	</bean>
+
 	<bean id="org.apache.jetspeed.security.mapping.SecurityEntityManager"
 	class="org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager" >	
+        <meta key="j2:cat" value="ldap" />
 		<property name="entityDAOs">
 		    <map>
 				<entry key="user" value-ref="UserDao"/>
@@ -89,6 +91,7 @@
 		</property>		
 	</bean>
 	<bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
+        <meta key="j2:cat" value="ldap" />
 		<property name="baseDN" value=""/>
 		<property name="baseFilter">
 			<bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
@@ -119,6 +122,7 @@
 		<property name="entityType" value="user"/>
 	</bean>
 	<bean id="RoleDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
+        <meta key="j2:cat" value="ldap" />
 		<property name="baseDN" value=""/>
 		<property name="baseFilter">
 			<bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
@@ -154,6 +158,7 @@
 		<property name="entityType" value="role"/>
 	</bean>
 	<bean id="UserDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
+        <meta key="j2:cat" value="ldap" />
 		<property name="ldapTemplate">
 			<bean class="org.springframework.ldap.core.LdapTemplate">
 				<property name="contextSource" ref="LdapSpringContext" />
@@ -163,6 +168,7 @@
 	</bean>
 		
 	<bean id="UserRoleRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
+        <meta key="j2:cat" value="ldap" />
 		<property name="ldapTemplate">
 			<bean class="org.springframework.ldap.core.LdapTemplate">
 				<property name="contextSource" ref="LdapSpringContext" />
@@ -181,6 +187,7 @@
 	</bean>
 	
 	<bean id="RoleDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
+        <meta key="j2:cat" value="ldap" />
 		<property name="ldapTemplate">
 			<bean class="org.springframework.ldap.core.LdapTemplate">
 				<property name="contextSource" ref="LdapSpringContext" />
@@ -189,6 +196,7 @@
 		<property name="configuration" ref="RoleDaoConfiguration"/>
 	</bean>
 	<bean id="LdapSpringContext" class="org.springframework.ldap.core.support.LdapContextSource">
+        <meta key="j2:cat" value="ldap" />
 		<property name="url" value="ldap://localhost:389"/>
 		<property name="base" value="o=sevenSeas"/>
 		<property name="userDn" value="cn=admin,o=sevenSeas"/>
@@ -196,6 +204,7 @@
 	</bean>	
 	
 	<bean id="ldapContext" class="org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy" depends-on="LdapSpringContext">
+        <meta key="j2:cat" value="ldap" />
 		<constructor-arg index="0" ref="LdapSpringContext" />
 		<constructor-arg index="1" value="com.sun.jndi.ldap.LdapCtxFactory" />
 		<constructor-arg index="2" value="(objectclass=person)" />

@@ -20,6 +20,7 @@
 
   	<bean id="org.apache.jetspeed.security.JetspeedPrincipalType.user"
 		class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
+        <meta key="j2:cat" value="default,security" />
 		<constructor-arg index="0" value="user" />
 		<constructor-arg index="1"
 			value="org.apache.jetspeed.security.impl.UserImpl" />
@@ -57,6 +58,7 @@
 	
 	<bean id="org.apache.jetspeed.security.JetspeedPrincipalType.role"
 		class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
+        <meta key="j2:cat" value="default,security" />
 		<constructor-arg index="0" value="role" />
 		<constructor-arg index="1"
 			value="org.apache.jetspeed.security.impl.RoleImpl" />
@@ -79,6 +81,7 @@
 
 	<bean id="org.apache.jetspeed.security.JetspeedPrincipalType.group"
 		class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
+        <meta key="j2:cat" value="default,security" />
 		<constructor-arg index="0" value="group" />
 		<constructor-arg index="1"
 			value="org.apache.jetspeed.security.impl.GroupImpl" />
@@ -246,7 +249,9 @@
        <ref bean="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     </constructor-arg>    
   </bean>
+  
   <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" class="org.apache.jetspeed.security.impl.JetspeedPrincipalManagerProviderImpl">
+    <meta key="j2:cat" value="default,security" />
 		<constructor-arg index="0">
 			<set>
 				<ref bean="org.apache.jetspeed.security.UserManager" />
