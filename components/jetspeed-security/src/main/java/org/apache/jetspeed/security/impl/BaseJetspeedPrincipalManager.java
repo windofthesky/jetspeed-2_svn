@@ -25,13 +25,13 @@ import java.util.Set;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;

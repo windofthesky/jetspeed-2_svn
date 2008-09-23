@@ -18,10 +18,10 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 

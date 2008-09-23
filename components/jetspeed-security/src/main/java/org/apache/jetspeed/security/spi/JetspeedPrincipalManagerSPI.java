@@ -17,7 +17,6 @@
 
 package org.apache.jetspeed.security.spi;
 
-import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 
 /**
