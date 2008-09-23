@@ -33,7 +33,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.spi.JetspeedPrincipalSynchronizer;
+import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy;
 
@@ -43,7 +43,7 @@ import org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy;
  */
 public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 {
-    private JetspeedPrincipalSynchronizer synchronizer;
+    private JetspeedSecuritySynchronizer synchronizer;
     private UserPasswordCredentialManager upcm;
     private UserManager manager;
     private LdapContextProxy context;
@@ -59,7 +59,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     {
         this.context = context;
     }
-    public void setSynchronizer(JetspeedPrincipalSynchronizer synchronizer)
+    public void setSynchronizer(JetspeedSecuritySynchronizer synchronizer)
     {
         this.synchronizer = synchronizer;
     }
@@ -86,7 +86,10 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 
     private User getUser(String userName) throws SecurityException
     {
-        synchronizer.synchronizeUserPrincipal(userName);
+        if(synchronizer!=null)
+        {
+            synchronizer.synchronizeUserPrincipal(userName);
+        }        
         return manager.getUser(userName);
     }
 

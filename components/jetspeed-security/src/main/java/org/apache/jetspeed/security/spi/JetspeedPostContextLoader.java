@@ -27,12 +27,12 @@ import org.apache.jetspeed.security.UserManager;
 public class JetspeedPostContextLoader
 {
     private UserManager userManager;
-    private JetspeedPrincipalSynchronizer synchronizer;
+    private JetspeedSecuritySynchronizer synchronizer;
     /**
      * @param synchronizer
      * @param userManager
      */
-    public JetspeedPostContextLoader(JetspeedPrincipalSynchronizer synchronizer, UserManager userManager)
+    public JetspeedPostContextLoader(JetspeedSecuritySynchronizer synchronizer, UserManager userManager)
     {
         this.synchronizer = synchronizer;
         this.userManager = userManager;
@@ -41,7 +41,7 @@ public class JetspeedPostContextLoader
     public void init() throws SecurityException
     {
         User anonymousUser = userManager.getUser(userManager.getAnonymousUser());
-        if(anonymousUser == null)
+        if(anonymousUser == null && synchronizer !=null)
         {
             synchronizer.synchronizeUserPrincipal(userManager.getAnonymousUser());
         }

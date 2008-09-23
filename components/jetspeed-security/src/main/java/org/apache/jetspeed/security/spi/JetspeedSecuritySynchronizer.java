@@ -20,7 +20,7 @@ package org.apache.jetspeed.security.spi;
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface JetspeedPrincipalSynchronizer
+public interface JetspeedSecuritySynchronizer
 {
     void synchronizeUserPrincipal(String name);
     

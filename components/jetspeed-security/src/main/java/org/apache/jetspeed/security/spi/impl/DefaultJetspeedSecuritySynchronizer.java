@@ -41,16 +41,16 @@ import org.apache.jetspeed.security.mapping.SecurityEntityManager;
 import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
-import org.apache.jetspeed.security.spi.JetspeedPrincipalSynchronizer;
+import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id: DefaultJetspeedPrincipalSynchronizer.java 694772 2008-09-12
  *          18:39:51Z ddam $
  */
-public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSynchronizer
+public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySynchronizer
 {
-    private static final Log logger = LogFactory.getLog(DefaultJetspeedPrincipalSynchronizer.class);
+    private static final Log logger = LogFactory.getLog(DefaultJetspeedSecuritySynchronizer.class);
 
     JetspeedPrincipalManagerProvider principalManagerProvider;
 
@@ -66,7 +66,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
      * @param principalManagerProvider
      * @param securityEntityManager
      */
-    public DefaultJetspeedPrincipalSynchronizer(JetspeedPrincipalManagerProvider principalManagerProvider, SecurityEntityManager securityEntityManager)
+    public DefaultJetspeedSecuritySynchronizer(JetspeedPrincipalManagerProvider principalManagerProvider, SecurityEntityManager securityEntityManager)
     {
         this.principalManagerProvider = principalManagerProvider;
         this.securityEntityManager = securityEntityManager;
