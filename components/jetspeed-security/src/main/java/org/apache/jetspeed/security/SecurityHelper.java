@@ -166,21 +166,21 @@ public class SecurityHelper
 
     /**
      * <p>
-     * Given a subject, find the (first) PasswordCredential from the private credentials
+     * Given a subject, find the (first) UserCredential from the private credentials
      * </p>
      * 
      * @param subject The subject
-     * @return the PasswordCredential or null if not found.
+     * @return the UserCredential or null if not found.
      */
-    public static PasswordCredential getPasswordCredential(Subject subject)
+    public static UserCredential getUserCredential(Subject subject)
     {
         Iterator iter = subject.getPrivateCredentials().iterator();
         while (iter.hasNext())
         {
             Object o = iter.next();
-            if (o instanceof PasswordCredential)
+            if (o instanceof UserCredential)
             {
-                return (PasswordCredential) o;
+                return (UserCredential) o;
             }
         }
         return null;

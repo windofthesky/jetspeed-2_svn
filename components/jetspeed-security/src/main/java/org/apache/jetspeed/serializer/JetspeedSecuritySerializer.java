@@ -351,13 +351,16 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                     if (user == null) // create new one
                     {
                         String password = recreatePassword(jsuser.getPassword());
-                        log.debug("add User " + jsuser.getName() + " with password " + password);
+                        log.debug("add User " + jsuser.getName() + " with password " + (password));
                         
                         user = userManager.addUser(jsuser.getName());
-                        PasswordCredential pwc = userManager.getPasswordCredential(user);
-                        pwc.setPassword(null, password);
-                        pwc.setEncoded((passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
-                        userManager.storePasswordCredential(pwc);
+                        if (password != null && password.length() > 0)
+                        {
+                            PasswordCredential pwc = userManager.getPasswordCredential(user);
+                            pwc.setPassword(null, password);
+                            pwc.setEncoded((passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
+                            userManager.storePasswordCredential(pwc);
+                        }
                         log.debug("add User done ");
                     }
                     try

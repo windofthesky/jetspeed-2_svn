@@ -32,6 +32,18 @@ public interface UserCredential extends Credential
      */
     String getUserName();
     
+    /**
+     * Synchronize the internal <em>read only</em> UserCredential state when its underlying PasswordCredential is changed (by a user).
+     * <p>
+     * If no update is allowed this method should not be called.
+     * </p>
+     * <p>
+     * Note: A PasswordCredential implementation (extending UserCredential) probably will throw an UnsupportedOperationException
+     * </p>
+     * @param pwc the underlying PasswordCredential for this UserCredential
+     */
+    void synchronize(PasswordCredential pwc);
+    
     boolean isUpdateAllowed();
     
     /**

@@ -31,6 +31,7 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.UserCredential;
 
 /**
  * PasswordCredentialValve
@@ -89,25 +90,25 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
             if ( request.getRequest().getUserPrincipal() != null )
             {
                 Subject subject = request.getSubject();
-                PasswordCredential pwdCredential = SecurityHelper.getPasswordCredential(subject);
+                UserCredential userCredential = SecurityHelper.getUserCredential(subject);
                 Integer passwordDaysValid = null;
                 
                 // check for an existing password credential
-                if ( pwdCredential != null )
+                if ( userCredential != null )
                 {
-                    if ( pwdCredential.isUpdateRequired() )
+                    if ( userCredential.isUpdateRequired() )
                     {
                         passwordDaysValid = new Integer(0); // required change
                     }
                     if ( request.getSessionAttribute(CHECKED_KEY) == null  )
                     {
                         request.setSessionAttribute(CHECKED_KEY,Boolean.TRUE);
-                        if ( pwdCredential.getPreviousAuthenticationDate() != null && 
-                                pwdCredential.getLastAuthenticationDate() != null &&
-                                pwdCredential.getExpirationDate() != null )
+                        if ( userCredential.getPreviousAuthenticationDate() != null && 
+                                userCredential.getLastAuthenticationDate() != null &&
+                                userCredential.getExpirationDate() != null )
                         {
-                            long expirationTime = pwdCredential.getExpirationDate().getTime();
-                            long lastAuthTime = pwdCredential.getLastAuthenticationDate().getTime();
+                            long expirationTime = userCredential.getExpirationDate().getTime();
+                            long lastAuthTime = userCredential.getLastAuthenticationDate().getTime();
                             int lastAuthDaysBeforeExpiration = (int)((expirationTime-lastAuthTime)/(24*60*60*1000));
                             if (  lastAuthDaysBeforeExpiration < 1 )
                             {
@@ -116,9 +117,9 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
                             else if (expirationWarningDays.length > 0)
                             {
                                 long prevAuthTime = Long.MIN_VALUE;
-                                if (pwdCredential.getPreviousAuthenticationDate() != null )
+                                if (userCredential.getPreviousAuthenticationDate() != null )
                                 {
-                                    prevAuthTime = pwdCredential.getPreviousAuthenticationDate().getTime();
+                                    prevAuthTime = userCredential.getPreviousAuthenticationDate().getTime();
                                 }
                                 int prevAuthDaysBeforeExpiration = (int)((expirationTime-prevAuthTime)/(24*60*60*1000));
                                 if ( prevAuthDaysBeforeExpiration > lastAuthDaysBeforeExpiration )

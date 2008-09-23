@@ -33,6 +33,8 @@ public interface PasswordCredential extends UserCredential
     public static final Short TYPE_CURRENT = new Short((short) 0);
     public static final Short TYPE_HISTORICAL = new Short((short) 1);
 
+    boolean isNew();
+    
     /**
      * @return The user the PasswordCredential belongs to
      */
@@ -80,6 +82,8 @@ public interface PasswordCredential extends UserCredential
     boolean isNewPasswordSet();
     
     void clearNewPasswordSet();
+    
+    void revertNewPasswordSet();
     
     boolean isEncoded();
     

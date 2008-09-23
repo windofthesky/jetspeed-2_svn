@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +32,7 @@ import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserCredential;
 import org.apache.jetspeed.security.UserManager;
 
 /**
@@ -115,16 +115,16 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                                 }
                                 else
                                 {
-                                    PasswordCredential pwdCredential = SecurityHelper.getPasswordCredential(um.getSubject(user));
-                                    if ( pwdCredential == null || !pwdCredential.isEnabled() )
+                                    UserCredential userCredential = SecurityHelper.getUserCredential(um.getSubject(user));
+                                    if ( userCredential == null || !userCredential.isEnabled() )
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_CREDENTIAL_DISABLED);
                                     }
-                                    else if ( pwdCredential.isExpired() )
+                                    else if ( userCredential.isExpired() )
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_CREDENTIAL_EXPIRED);
                                     }
-                                    else if ( maxNumberOfAuthenticationFailures > 1 && pwdCredential.getAuthenticationFailures() == maxNumberOfAuthenticationFailures -1  )
+                                    else if ( maxNumberOfAuthenticationFailures > 1 && userCredential.getAuthenticationFailures() == maxNumberOfAuthenticationFailures -1  )
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_FINAL_LOGIN_ATTEMPT);
                                     }
