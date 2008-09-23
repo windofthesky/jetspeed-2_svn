@@ -18,30 +18,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <!--
-    <bean id="org.apache.jetspeed.security.mapping.ldap.dao"
-    class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
-    <meta key="j2:cat" value="ldap" />
-    <property name="contextMapper">
-    <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
-    </property>
-    
-    <property name="configuration">
-    <ref bean="portletRegistryImpl" />
-    </property>
-    
-    <property name="ldapTemplate">
-    <ref bean="portletRegistryImpl" />
-    </property>
-    
-    <property name="configuration">
-    <bean class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
-    <property name=""></property>
-    <property name=""></property>
-    </bean>  			
-    </property>		
-    </bean>   
-  -->
   <bean id="org.apache.jetspeed.security.spi.JetspeedPostContextLoader"
     class="org.apache.jetspeed.security.spi.JetspeedPostContextLoader" init-method="init">
     <meta key="j2:cat" value="ldap" />
