@@ -278,16 +278,16 @@
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
   </bean>
-  
+
   <!-- PageSerializer, source: xmlPageManager, dest: dbPageMmanager -->
   <bean id="org.apache.jetspeed.page.PageSerializer" class="org.apache.jetspeed.page.PageSerializerImpl">
     <meta key="j2:cat" value="pageSerializer" />
     <constructor-arg index="0">
-      <ref bean="xmlPageManager"/>
+      <ref bean="xmlPageManager" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="dbPageManager"/>
-    </constructor-arg>    
+      <ref bean="dbPageManager" />
+    </constructor-arg>
   </bean>
-  
+
 </beans>

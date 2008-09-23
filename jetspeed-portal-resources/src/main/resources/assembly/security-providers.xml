@@ -35,7 +35,7 @@
     <constructor-arg index="3">
       <ref bean="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
     </constructor-arg>
-	
+
   </bean>
 
   <!-- Security: Authorization Provider -->

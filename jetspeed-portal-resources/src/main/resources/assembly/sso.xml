@@ -20,35 +20,35 @@
 
   <!-- SSO Implementation -->
   <!-- 
-  <bean id="PersistenceBrokerSSOProvider" class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider"
+    <bean id="PersistenceBrokerSSOProvider" class="org.apache.jetspeed.sso.impl.PersistenceBrokerSSOProvider"
     init-method="init">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>JETSPEED-INF/ojb/sso_repository.xml</value>
+    <value>JETSPEED-INF/ojb/sso_repository.xml</value>
     </constructor-arg>
-  </bean>
-
-  <bean id="org.apache.jetspeed.sso.SSOProvider" parent="baseTransactionProxy" name="ssoProvider">
+    </bean>
+    
+    <bean id="org.apache.jetspeed.sso.SSOProvider" parent="baseTransactionProxy" name="ssoProvider">
     <meta key="j2:cat" value="default" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.sso.SSOProvider</value>
+    <value>org.apache.jetspeed.sso.SSOProvider</value>
     </property>
-
+    
     <property name="target">
-      <ref bean="PersistenceBrokerSSOProvider" />
+    <ref bean="PersistenceBrokerSSOProvider" />
     </property>
     <property name="transactionAttributes">
-      <props>
-        <prop key="addSite*">PROPAGATION_REQUIRED</prop>
-        <prop key="updateSite*">PROPAGATION_REQUIRED</prop>
-        <prop key="removeSite">PROPAGATION_REQUIRED</prop>
-        <prop key="addCredentialsForSite">PROPAGATION_REQUIRED</prop>
-        <prop key="updateCredentialsForSite">PROPAGATION_REQUIRED</prop>
-        <prop key="removeCredentialsForSite">PROPAGATION_REQUIRED</prop>
-        <prop key="setRealmForSite">PROPAGATION_REQUIRED</prop>
-        <prop key="*">PROPAGATION_SUPPORTS</prop>
-      </props>
+    <props>
+    <prop key="addSite*">PROPAGATION_REQUIRED</prop>
+    <prop key="updateSite*">PROPAGATION_REQUIRED</prop>
+    <prop key="removeSite">PROPAGATION_REQUIRED</prop>
+    <prop key="addCredentialsForSite">PROPAGATION_REQUIRED</prop>
+    <prop key="updateCredentialsForSite">PROPAGATION_REQUIRED</prop>
+    <prop key="removeCredentialsForSite">PROPAGATION_REQUIRED</prop>
+    <prop key="setRealmForSite">PROPAGATION_REQUIRED</prop>
+    <prop key="*">PROPAGATION_SUPPORTS</prop>
+    </props>
     </property>
-
-  </bean>-->
+    
+    </bean>-->
 </beans>

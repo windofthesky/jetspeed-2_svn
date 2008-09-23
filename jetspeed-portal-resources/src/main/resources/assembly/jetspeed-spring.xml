@@ -86,10 +86,10 @@
       <ref bean="RequestContextObjects" />
     </constructor-arg>
   </bean>
-  
+
   <bean class="org.apache.jetspeed.components.factorybeans.NullReferenceFactoryBean">
     <meta key="j2:cat" value="noRequestContext" />
-    <meta key="j2:alias" value="org.apache.jetspeed.request.RequestContextComponent"/>
+    <meta key="j2:alias" value="org.apache.jetspeed.request.RequestContextComponent" />
     <property name="objectType" value="org.apache.jetspeed.request.RequestContextComponent"></property>
   </bean>
 

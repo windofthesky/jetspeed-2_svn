@@ -50,17 +50,17 @@
     <constructor-arg index="1"><value>base64</value></constructor-arg>
     </bean>       
   -->
-<!--
-  <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider"
+  <!--
+    <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider"
     class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
-      <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator" />
+    <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" />
+    <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" />
     </constructor-arg>
-  </bean>-->
+    </bean>-->
 
   <!-- A Two-way encoding password service which also implements CredentialPasswordEncoder
     this Service can be used instead of for example the default provided MessageDigestCredentialPasswordEncoder
@@ -102,36 +102,36 @@
 
   <!-- allow multiple InternalPasswordCredentialInterceptors to be used for DefaultCredentialHandler -->
   <!--
-  <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
+    <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
     class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
-      <list>
-        
-        <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor" />
-
-        
-        <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor" />
-      </list>
+    <list>
+    
+    <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor" />
+    
+    
+    <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor" />
+    </list>
     </constructor-arg>
-  </bean>-->
+    </bean>-->
 
   <!-- Security SPI: CredentialHandler -->
   <!--
-  <bean id="org.apache.jetspeed.security.spi.CredentialHandler"
+    <bean id="org.apache.jetspeed.security.spi.CredentialHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
-      <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
+    <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="org.apache.jetspeed.security.spi.PasswordCredentialProvider" />
+    <ref bean="org.apache.jetspeed.security.spi.PasswordCredentialProvider" />
     </constructor-arg>
     <constructor-arg index="2">
-      <ref bean="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor" />
+    <ref bean="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor" />
     </constructor-arg>
-  </bean>
-
+    </bean>
+    
   -->
   <!-- Security SPI: UserSecurityHandler -->
   <!-- The DefaultUSerSecurityHandler uses the raw SecurityAccessImpl so that it
@@ -140,26 +140,26 @@
     class="org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
+    <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
-  </bean>
-
-  <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" parent="baseTransactionProxy"
+    </bean>
+    
+    <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" parent="baseTransactionProxy"
     name="userSecurityHandler">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
-      <value>org.apache.jetspeed.security.spi.UserSecurityHandler</value>
+    <value>org.apache.jetspeed.security.spi.UserSecurityHandler</value>
     </property>
     <property name="target">
-      <ref bean="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl" />
+    <ref bean="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl" />
     </property>
-	<property name="transactionAttributes">
-	   <props>				
-		<prop key="add*">PROPAGATION_REQUIRED</prop>
-		<prop key="update*">PROPAGATION_REQUIRED</prop>
-		<prop key="remove*">PROPAGATION_REQUIRED</prop>
-		<prop key="*">PROPAGATION_SUPPORTS</prop>
-	   </props>
-	 </property>
-  </bean>-->
+    <property name="transactionAttributes">
+    <props>				
+    <prop key="add*">PROPAGATION_REQUIRED</prop>
+    <prop key="update*">PROPAGATION_REQUIRED</prop>
+    <prop key="remove*">PROPAGATION_REQUIRED</prop>
+    <prop key="*">PROPAGATION_SUPPORTS</prop>
+    </props>
+    </property>
+    </bean>-->
 </beans>

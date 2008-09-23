@@ -20,48 +20,48 @@
 
   <!-- ************** Security SPI Handlers ************** -->
   <!-- Security SPI: CommonQueries -->
-  
-  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager"
-	class="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager" init-method="init">
-		<meta key="j2:cat" value="default,security" />
-		<constructor-arg index="0">
-			<value>JETSPEED-INF/ojb/security_repository.xml</value>
-		</constructor-arg>
-  </bean>  
-   
-  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialManager"
-	class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl">
-	<meta key="j2:cat" value="default,security" />
-	<constructor-arg index="0"
-		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-	<constructor-arg index="1"
-		ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-		<constructor-arg index="2"
-		ref="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" />
-  </bean>     	
-  
-  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager"
-	class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl">
-	<meta key="j2:cat" value="default,security" />
-	<constructor-arg index="0"
-		ref="org.apache.jetspeed.security.CredentialPasswordEncoder" />
-	<constructor-arg index="1"
-		ref="org.apache.jetspeed.security.CredentialPasswordValidator" />
-	<constructor-arg index="2"><value>null</value></constructor-arg>
-  </bean>  
 
-  <bean id="org.apache.jetspeed.security.CredentialPasswordEncoder" 
-       class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
-  <meta key="j2:cat" value="default,security" />
-       <constructor-arg index="0"><value>SHA-1</value></constructor-arg>       
+  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager"
+    class="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager" init-method="init">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0">
+      <value>JETSPEED-INF/ojb/security_repository.xml</value>
+    </constructor-arg>
   </bean>
-  
+
+  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialManager"
+    class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" />
+  </bean>
+
+  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager"
+    class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.CredentialPasswordEncoder" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.CredentialPasswordValidator" />
+    <constructor-arg index="2">
+      <value>null</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="org.apache.jetspeed.security.CredentialPasswordEncoder"
+    class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0">
+      <value>SHA-1</value>
+    </constructor-arg>
+  </bean>
+
   <bean id="org.apache.jetspeed.security.CredentialPasswordValidator"
-	class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator">
-	<meta key="j2:cat" value="default,security" />
-  </bean>  
-  
-  <bean id="org.apache.jetspeed.security.spi.AuthorizationProvider" class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl">
+    class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator">
+    <meta key="j2:cat" value="default,security" />
+  </bean>
+
+  <bean id="org.apache.jetspeed.security.spi.AuthorizationProvider"
+    class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl">
     <meta key="j2:cat" value="default,security,AuthorizationProvider" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy" />
@@ -69,6 +69,6 @@
     <constructor-arg index="1">
       <value>true</value>
     </constructor-arg>
-  </bean> 
+  </bean>
 
 </beans>

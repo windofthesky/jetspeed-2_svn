@@ -49,7 +49,7 @@
         </entry>
         <!--<entry key="SSO">
           <ref bean="org.apache.jetspeed.sso.SSOProvider" />
-        </entry>-->
+          </entry>-->
         <entry key="EntityAccessor">
           <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent' />
         </entry>
@@ -127,8 +127,8 @@
           <ref bean="org.apache.jetspeed.serializer.JetspeedSerializer" />
         </entry>
         <!--<entry key="SecurityAttributesProvider">
-        	<ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
-        </entry>-->
+          <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
+          </entry>-->
         <!-- first uncomment the below service bean in security-spi-atn.xml
           <entry key="PasswordEncodingService">
           <ref bean="org.apache.jetspeed.security.PasswordEncodingService" />
