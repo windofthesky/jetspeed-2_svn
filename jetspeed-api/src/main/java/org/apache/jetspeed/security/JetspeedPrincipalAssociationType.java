@@ -24,12 +24,12 @@ public interface JetspeedPrincipalAssociationType
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isMemberOf" 
      */
-    String IS_MEMBER_OF_ASSOCIATION_TYPE_NAME = "isMemberOf"; // FROM node is member of TO node 
+    String IS_MEMBER_OF = "isMemberOf"; // FROM node is member of TO node 
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isChildOf"
      */
-    String IS_CHILD_OF_ASSOCIATION_TYPE_NAME = "isChildOf"; // FROM node is member of TO node
+    String IS_CHILD_OF = "isChildOf"; // FROM node is member of TO node
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isA"
@@ -37,7 +37,7 @@ public interface JetspeedPrincipalAssociationType
      * This association type (between two equal {@link JetspeedPrincipalType}s) represents
      * a Generalizing Hierarchical relationship where from <em>implies</em> to.
      */
-    String IS_A_ASSOCIATION_TYPE_NAME = "isA"; // FROM node is a TO node: FROM node implies TO node
+    String IS_A = "isA"; // FROM node is a TO node: FROM node implies TO node
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isPartOf"
@@ -45,15 +45,23 @@ public interface JetspeedPrincipalAssociationType
      * This association type (between two equal {@link JetspeedPrincipalType}s) represents
      * a Aggregating Hierarchical relationship where to <em>implies</em> from.
      */
-    String IS_PART_OF_ASSOCIATION_TYPE_NAME = "isPartOf"; // FROM node is part of TO node: TO node implies FROM node
+    String IS_PART_OF = "isPartOf"; // FROM node is part of TO node: TO node implies FROM node
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "belongsTo"
      * 
      * This association type represents a (possibly required) constraint where from may only belong to one to
      */
-    String BELONGS_TO_ASSOCIATION_TYPE_NAME = "belongsTo"; // FROM node is member of TO node: FROM node may only belong to one TO node
+    String BELONGS_TO = "belongsTo"; // FROM node is member of TO node: FROM node may only belong to one TO node
     
+    /**
+     * The name which is used <em>together</em> with the {@link #getFromPrincipalType()} and the
+     * {@link #getToPrincipalType()} to identify a specific association between two {@link JetspeedPrincipal}s.
+     * <p>
+     * Note: the asociation name <em>value</em> must conform to the Java Identifier requirements (e.g. no spaces, dots, etc.)
+     * to support localization through resource bundles.
+     * </p>
+     */
     String getAssociationName();
 
     JetspeedPrincipalType getFromPrincipalType();

@@ -48,33 +48,47 @@ public class SecurityException extends JetspeedException
     public static final KeyedMessage DEPENDENT_PRINCIPAL_EXISTS = new KeyedMessage("The principal {0} has one or more dependents.");
     
     /** <p>Principal association required exception message.</p> */
-    public static final KeyedMessage PRINCIPAL_ASSOCIATION_REQUIRED = new KeyedMessage("The principal association to {0} is required.");
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_REQUIRED = new KeyedMessage("A {0} {1} association is required.");
     
-    /** <p>Principal association is not allowed exception message.</p> */
-    public static final KeyedMessage PRINCIPAL_ASSOCIATION_NOT_ALLOWED = new KeyedMessage("The principal association to {0} is not allowed.");
-
     /** <p>Principal association is not supported exception message.</p> */
-    public static final KeyedMessage PRINCIPAL_ASSOCIATION_UNSUPPORTED = new KeyedMessage("The principal association to {0} is not supported.");
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_UNSUPPORTED = new KeyedMessage("A {0} {1} association is not supported.");
     
     /** <p>Permission does not exist exception message.</p> */
     public static final KeyedMessage PERMISSION_DOES_NOT_EXIST = new KeyedMessage("The permission {0} does not exist.");
     
-    /** <p>User principal already exists exception message.</p> */
+    /**
+     * <p>User principal already exists exception message.</p>
+     * @deprecated use {@link #PRINCIPAL_ALREADY_EXISTS} with method {@link KeyedMessage#createScoped(String, Object)} instead
+     */
     public static final KeyedMessage USER_ALREADY_EXISTS = new KeyedMessage("The user {0} already exists.");
 
-    /** <p>User principal does not exist exception message.</p> */
+    /**
+     * <p>User principal does not exist exception message.</p>
+     * @deprecated use {@link #PRINCIPAL_DOES_NOT_EXIST} with method {@link KeyedMessage#createScoped(String, Object)} instead
+     */
     public static final KeyedMessage USER_DOES_NOT_EXIST = new KeyedMessage("The user {0} does not exist.");
 
-    /** <p>Role principal already exists exception message.</p> */
+    /** <p>Role principal already exists exception message.</p>
+     * @deprecated use {@link #PRINCIPAL_ALREADY_EXIST} with method {@link KeyedMessage#createScoped(String, Object)} instead
+     */
     public static final KeyedMessage ROLE_ALREADY_EXISTS = new KeyedMessage("The role {0} already exists.");
 
-    /** <p>Role principal does not exist exception message.</p> */
+    /** 
+     * <p>Role principal does not exist exception message.</p>
+     * @deprecated use {@link #PRINCIPAL_DOES_NOT_EXIST} with method {@link KeyedMessage#createScoped(String, Object)} instead
+     */
     public static final KeyedMessage ROLE_DOES_NOT_EXIST = new KeyedMessage("The role {0} does not exist.");
 
-    /** <p>Group principal already exists exception message.</p> */
+    /** 
+     * <p>Group principal already exists exception message.</p>
+     * @deprecated use {@link #PRINCIPAL_ALREADY_EXIST} with method {@link KeyedMessage#createScoped(String, Object)} instead
+     */
     public static final KeyedMessage GROUP_ALREADY_EXISTS = new KeyedMessage("The group {0} already exists.");
 
-    /** <p>Group principal does not exist exception message.</p> */
+    /**
+     * <p>Group principal does not exist exception message.</p>
+     * @deprecated use {@link #PRINCIPAL_DOES_NOT_EXIST} with method {@link KeyedMessage#createScoped(String, Object)} instead
+     */
     public static final KeyedMessage GROUP_DOES_NOT_EXIST = new KeyedMessage("The group {0} does not exist.");
 
     /** <p>Invalid password exception message.</p> */
@@ -112,6 +126,13 @@ public class SecurityException extends JetspeedException
     
     public static final KeyedMessage UNKNOWN_PRINCIPAL_TYPE = new KeyedMessage("Unknown Principal Type provided: {0}");
     
+    public static final KeyedMessage ATTRIBUTE_IS_READ_ONLY = new KeyedMessage("The principal attribute {0} is read only.");
+    
+    public static final KeyedMessage ATTRIBUTE_IS_REQUIRED = new KeyedMessage("The principal attribute {0} is required.");
+    
+    public static final KeyedMessage ATTRIBUTES_ARE_READ_ONLY = new KeyedMessage("The principal attributes are read only.");
+
+    public static final KeyedMessage ATTRIBUTES_NOT_EXTENDABLE = new KeyedMessage("Adding new principal attributes is not supported.");
     /**
      * <p>Default Constructor.</p>
      */

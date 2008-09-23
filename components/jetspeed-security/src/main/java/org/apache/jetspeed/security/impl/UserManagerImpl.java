@@ -29,21 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -200,12 +191,12 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public List<User> getUsersInGroup(String groupFullPathName) throws SecurityException
 	{
-		return (List<User>) super.getAssociatedTo(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+		return (List<User>) super.getAssociatedTo(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
 	}
 
 	public List<User> getUsersInRole(String roleFullPathName) throws SecurityException
 	{
-		return (List<User>) super.getAssociatedTo(roleFullPathName, roleType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+		return (List<User>) super.getAssociatedTo(roleFullPathName, roleType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
 	}
 
 	public List<User> lookupUsers(String attributeName, String attributeValue) throws SecurityException

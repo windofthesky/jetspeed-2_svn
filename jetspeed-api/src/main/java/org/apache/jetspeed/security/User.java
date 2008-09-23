@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.security;
 
-import java.sql.Date;
-
 import org.apache.jetspeed.PortalReservedParameters;
 
 /**
@@ -29,7 +27,6 @@ public interface User extends JetspeedPrincipal
     /**
      * the subsite path for a given user stored as a user attribute
      */
-    final static String JETSPEED_USER_SUBSITE_ATTRIBUTE = "org.apache.jetspeed.user.subsite";
-    final static String JETSPEED_USER_PREFERED_LOCALE_ATTRIBUTE = PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE;
-    Date MAX_DATE = Date.valueOf("8099-01-01");
+    String JETSPEED_USER_SUBSITE_ATTRIBUTE = "org.apache.jetspeed.user.subsite";
+    String JETSPEED_USER_PREFERED_LOCALE_ATTRIBUTE = PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE;
 }

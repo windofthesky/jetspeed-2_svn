@@ -24,7 +24,6 @@ import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
-import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
 
 /**
  * @version $Id$
@@ -87,8 +86,8 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
         }
     }
     
-    protected boolean isSynchronizing(){
-        return SynchronizationStateAccess.getInstance().isSynchronizing();
+    protected boolean isSynchronizing()
+    {
+        return SynchronizationStateAccess.isSynchronizing();
     }
-
 }

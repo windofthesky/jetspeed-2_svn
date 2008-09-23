@@ -37,7 +37,7 @@ public interface JetspeedPrincipal extends Principal
 
     boolean isEnabled();
 
-    void setEnabled(boolean enabled) throws PrincipalReadOnlyException;
+    void setEnabled(boolean enabled) throws SecurityException;
 
     boolean isTransient();
 

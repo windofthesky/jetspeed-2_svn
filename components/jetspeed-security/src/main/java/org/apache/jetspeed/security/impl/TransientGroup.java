@@ -30,6 +30,6 @@ public class TransientGroup extends TransientJetspeedPrincipal implements Group
 
 	public TransientGroup(String name)
 	{
-        super(JetspeedPrincipalType.GROUP_TYPE_NAME, name);
+        super(JetspeedPrincipalType.GROUP, name);
 	}
 }

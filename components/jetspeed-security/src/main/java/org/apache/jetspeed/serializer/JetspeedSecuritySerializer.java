@@ -43,6 +43,7 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
 import org.apache.jetspeed.serializer.objects.JSGroup;
 import org.apache.jetspeed.serializer.objects.JSNVPElement;
 import org.apache.jetspeed.serializer.objects.JSNVPElements;
@@ -78,9 +79,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         
         public ImportRefs()
         {
-            principalMapByType.put(JetspeedPrincipalType.USER_TYPE_NAME, userMap);
-            principalMapByType.put(JetspeedPrincipalType.GROUP_TYPE_NAME, groupMap);
-            principalMapByType.put(JetspeedPrincipalType.ROLE_TYPE_NAME, roleMap);
+            principalMapByType.put(JetspeedPrincipalType.USER, userMap);
+            principalMapByType.put(JetspeedPrincipalType.GROUP, groupMap);
+            principalMapByType.put(JetspeedPrincipalType.ROLE, roleMap);
         }
         
         public HashMap<String, Principal> getPrincipalMap(String principalTypeName)
@@ -165,13 +166,21 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USERS))
         {
             log.info("creating users/roles/groups and permissions");
-            ImportRefs refs = new ImportRefs();
-            recreateJetspeedPrincipals(refs, snapshot, settings, log);
-            recreateRolesGroupsUsers(refs, snapshot, settings, log);
-            if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
+            try
             {
-                log.info("creating permissions");
-                recreatePermissions(refs, snapshot, settings, log);
+                SynchronizationStateAccess.setSynchronizing(Boolean.TRUE);
+                ImportRefs refs = new ImportRefs();
+                recreateJetspeedPrincipals(refs, snapshot, settings, log);
+                recreateRolesGroupsUsers(refs, snapshot, settings, log);
+                if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
+                {
+                    log.info("creating permissions");
+                    recreatePermissions(refs, snapshot, settings, log);
+                }
+            }
+            finally
+            {
+                SynchronizationStateAccess.setSynchronizing(Boolean.FALSE);
             }
         }
     }
@@ -183,6 +192,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             log.info("deleting users/roles/groups and permissions");
             try
             {
+                SynchronizationStateAccess.setSynchronizing(Boolean.TRUE);
                 for (JetspeedPermission permission : pm.getPermissions())
                 {
                     pm.removePermission(permission);
@@ -207,6 +217,10 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             catch (Exception e)
             {
                 throw new SerializerException(e);
+            }
+            finally
+            {
+                SynchronizationStateAccess.setSynchronizing(Boolean.FALSE);
             }
         }
     }

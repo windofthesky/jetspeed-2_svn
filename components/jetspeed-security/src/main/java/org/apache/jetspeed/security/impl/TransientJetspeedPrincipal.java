@@ -24,8 +24,8 @@ import java.util.Map;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @$
@@ -103,7 +103,7 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
         return true;
     }
 
-    public void setEnabled(boolean enabled) throws PrincipalReadOnlyException
+    public void setEnabled(boolean enabled) throws SecurityException
     {
         throw new UnsupportedOperationException();
     }

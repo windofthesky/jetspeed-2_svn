@@ -21,7 +21,6 @@ import org.apache.jetspeed.security.mapping.stubs.StubEntityDAO;
 import org.apache.jetspeed.security.mapping.stubs.StubEntityFactory;
 import org.apache.jetspeed.security.mapping.stubs.StubEntityRelationDAO;
 
-
 public class TestDefaultJetspeedSynchronizer extends TestCase
 {
 
@@ -69,9 +68,9 @@ public class TestDefaultJetspeedSynchronizer extends TestCase
         userDao.addEntity(group_yetAnother);
 
         StubEntityRelationDAO userToRole = new StubEntityRelationDAO(new SecurityEntityRelationTypeImpl(
-                JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME,
-                JetspeedPrincipalType.USER_TYPE_NAME,
-                JetspeedPrincipalType.ROLE_TYPE_NAME));
+                JetspeedPrincipalAssociationType.IS_MEMBER_OF,
+                JetspeedPrincipalType.USER,
+                JetspeedPrincipalType.ROLE));
         userToRole.relate(null, null, user_jsmith, role_manager);
         userToRole.relate(null, null, user_jsmith, role_random);
         userToRole.relate(null, null, user_jdoe, role_manager);
@@ -79,9 +78,9 @@ public class TestDefaultJetspeedSynchronizer extends TestCase
         userToRole.relate(null, null, user_jdoe, role_admin);
 
         StubEntityRelationDAO userToGroup = new StubEntityRelationDAO(new SecurityEntityRelationTypeImpl(
-                JetspeedPrincipalAssociationType.IS_CHILD_OF_ASSOCIATION_TYPE_NAME,
-                JetspeedPrincipalType.USER_TYPE_NAME,
-                JetspeedPrincipalType.GROUP_TYPE_NAME));
+                JetspeedPrincipalAssociationType.IS_CHILD_OF,
+                JetspeedPrincipalType.USER,
+                JetspeedPrincipalType.GROUP));
         userToGroup.relate(null, null, user_jsmith, group_programmers);
         userToGroup.relate(null, null, user_jsmith, group_random);
         userToGroup.relate(null, null, user_jdoe, group_board);
@@ -89,17 +88,17 @@ public class TestDefaultJetspeedSynchronizer extends TestCase
         userToGroup.relate(null, null, user_jdoe, group_random);
         
         StubEntityRelationDAO groupToRole = new StubEntityRelationDAO(new SecurityEntityRelationTypeImpl(
-                JetspeedPrincipalAssociationType.IS_CHILD_OF_ASSOCIATION_TYPE_NAME,
-                JetspeedPrincipalType.GROUP_TYPE_NAME,
-                JetspeedPrincipalType.ROLE_TYPE_NAME));
+                JetspeedPrincipalAssociationType.IS_CHILD_OF,
+                JetspeedPrincipalType.GROUP,
+                JetspeedPrincipalType.ROLE));
         
         groupToRole.relate(null, null, group_board, role_manager);
         groupToRole.relate(null, null, group_programmers, role_yetAnother);
         
         Map<String,EntityDAO> entityDAOs = new HashMap<String,EntityDAO>();
-        entityDAOs.put(JetspeedPrincipalType.USER_TYPE_NAME,userDao);
-        entityDAOs.put(JetspeedPrincipalType.ROLE_TYPE_NAME,roleDao);
-        entityDAOs.put(JetspeedPrincipalType.USER_TYPE_NAME,groupDao);
+        entityDAOs.put(JetspeedPrincipalType.USER,userDao);
+        entityDAOs.put(JetspeedPrincipalType.ROLE,roleDao);
+        entityDAOs.put(JetspeedPrincipalType.USER,groupDao);
 
         Collection<EntityRelationDAO> entityRelationDAOs = new ArrayList<EntityRelationDAO>();
         entityRelationDAOs.add(userToRole);

@@ -27,7 +27,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -80,7 +79,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         }
         catch (Exception e)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, userName), e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName), e);
         }
         return authUser;
     }
@@ -102,7 +101,9 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         try
         {
             if (dn == null)
-                throw new SecurityException(new KeyedMessage("User " + userName + " not found"));
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
+            }
             // Build user dn using lookup value, just appending the user filter after the uid won't work when users
             // are/can be stored in a subtree (searchScope sub-tree)
             // The looked up dn though is/should always be correct, just need to append the root context.

@@ -21,8 +21,8 @@ import java.util.Map;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityException;
 
 
 /**
@@ -144,7 +144,7 @@ public class StubJetspeedPrincipal implements JetspeedPrincipal
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.JetspeedPrincipal#setEnabled(boolean)
      */
-    public void setEnabled(boolean enabled) throws PrincipalReadOnlyException
+    public void setEnabled(boolean enabled) throws SecurityException
     {
         // TODO Auto-generated method stub
 

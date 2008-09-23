@@ -18,17 +18,8 @@ package org.apache.jetspeed.security.spi;
 
 import java.util.Set;
 
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
 import org.apache.jetspeed.security.SecurityException;
 
 /**

@@ -17,26 +17,16 @@
 package org.apache.jetspeed.security.stubs;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
-
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -65,16 +55,13 @@ public abstract class StubJetspeedPrincipalManager implements JetspeedPrincipalM
         }
     }
     
-    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws PrincipalNotFoundException,
-            PrincipalAssociationUnsupportedException, PrincipalAssociationNotAllowedException
+    public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
         internalAddAssocation(principalAssociationsFrom,from,to,associationName);
         internalAddAssocation(principalAssociationsTo,to,from,associationName);
     }
 
-    public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
-            throws PrincipalAssociationNotAllowedException, PrincipalAlreadyExistsException, PrincipalAssociationRequiredException, PrincipalNotFoundException,
-            PrincipalAssociationUnsupportedException
+    public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations) throws SecurityException
     {
         principals.put(principal.getName(),principal);
     }
@@ -162,20 +149,19 @@ public abstract class StubJetspeedPrincipalManager implements JetspeedPrincipalM
         return false;
     }
 
-    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws PrincipalAssociationRequiredException,
-            PrincipalNotFoundException
+    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
         // TODO Auto-generated method stub
         
     }
 
-    public void removePrincipal(JetspeedPrincipal principal) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException
+    public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         // TODO Auto-generated method stub
         
     }
 
-    public void removePrincipal(String name) throws PrincipalNotFoundException, PrincipalNotRemovableException, DependentPrincipalException
+    public void removePrincipal(String name) throws SecurityException
     {
         // TODO Auto-generated method stub
         
@@ -193,7 +179,31 @@ public abstract class StubJetspeedPrincipalManager implements JetspeedPrincipalM
         return null;
     }
 
-    public void updatePrincipal(JetspeedPrincipal principal) throws PrincipalUpdateException, PrincipalNotFoundException, PrincipalReadOnlyException
+    public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public List<JetspeedPrincipalAssociationType> getAssociationTypes()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public JetspeedPrincipal newPrincipal(String name, boolean mapped)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void transferAssociationFrom(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target, String associationName) throws SecurityException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void transferAssociationTo(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target, String associationName) throws SecurityException
     {
         // TODO Auto-generated method stub
         

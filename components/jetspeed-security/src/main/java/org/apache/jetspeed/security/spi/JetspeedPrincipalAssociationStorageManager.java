@@ -17,10 +17,6 @@
 package org.apache.jetspeed.security.spi;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
 import org.apache.jetspeed.security.SecurityException;
 
 /**

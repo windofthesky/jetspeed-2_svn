@@ -30,6 +30,6 @@ public class TransientUser extends TransientJetspeedPrincipal implements User
 
 	public TransientUser(String name)
 	{
-		super(JetspeedPrincipalType.USER_TYPE_NAME, name);
+		super(JetspeedPrincipalType.USER, name);
 	}
 }

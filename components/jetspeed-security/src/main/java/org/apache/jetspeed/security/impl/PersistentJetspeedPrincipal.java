@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
 import org.apache.jetspeed.security.SecurityAttributes;
-import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -83,11 +83,11 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) throws PrincipalReadOnlyException
+    public void setEnabled(boolean enabled) throws SecurityException
     {
         if (isReadOnly() && !isSynchronizing())
         {
-            throw new PrincipalReadOnlyException();
+            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(getType().getName(), getName()));
         }
         this.enabled = enabled;
     }
@@ -190,7 +190,7 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
     }
     
     protected boolean isSynchronizing(){
-        return SynchronizationStateAccess.getInstance().isSynchronizing();
+        return SynchronizationStateAccess.isSynchronizing();
     }
 
 }

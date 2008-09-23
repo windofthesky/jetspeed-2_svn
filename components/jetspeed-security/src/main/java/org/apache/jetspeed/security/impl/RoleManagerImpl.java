@@ -20,20 +20,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityException;
@@ -157,7 +148,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
         
         if (null == role) 
         { 
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName)); 
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE, roleName)); 
         }
 
         return role;
@@ -168,7 +159,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesForUser(String username) throws SecurityException
     {        
-        return (List<Role>)super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        return (List<Role>)super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -176,7 +167,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
-        return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -189,14 +180,14 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     	User user = userManager.getUser(username);
         if (user == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, username));
         }
         Role role = getRole(roleName);
         if (role == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE, roleName));
         }
-        super.addAssociation(user, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        super.addAssociation(user, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -209,14 +200,14 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     	User user = userManager.getUser(username);
         if (user == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, username));
         }
         Role role = getRole(roleName);
         if (role == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE, roleName));
         }
-        super.removeAssociation(user, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        super.removeAssociation(user, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -238,14 +229,14 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     	Group group = groupManager.getGroup(groupName);
         if (group == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP, groupName));
         }
         Role role = getRole(roleName);
         if (role == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE, roleName));
         }
-        super.addAssociation(group, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        super.addAssociation(group, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -258,14 +249,14 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     	Group group = groupManager.getGroup(groupName);
         if (group == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP, groupName));
         }
         Role role = getRole(roleName);
         if (role == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE_TYPE_NAME, roleName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.ROLE, roleName));
         }
-        super.removeAssociation(group, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        super.removeAssociation(group, role, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**

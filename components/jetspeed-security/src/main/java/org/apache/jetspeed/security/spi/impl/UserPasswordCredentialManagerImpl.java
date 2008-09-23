@@ -83,7 +83,7 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
         }
         if (!credential.isEnabled() || credential.isExpired())
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, userName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
         }
         try
         {
@@ -91,11 +91,11 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
         }
         catch (Exception e)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, userName), e);
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName), e);
         }
         if (credential.getUser() == null || !credential.getUser().isEnabled())
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, userName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
         }
         return credential;
     }

@@ -25,12 +25,24 @@ package org.apache.jetspeed.security;
 public interface JetspeedPrincipalType
 {
     /** build-in supported JetspeedPrincipalType "group" */
-    String GROUP_TYPE_NAME = "group";
+    String GROUP = "group";
     /** build-in supported JetspeedPrincipalType "role" */
-    String ROLE_TYPE_NAME = "role";
+    String ROLE = "role";
     /** build-in supported JetspeedPrincipalType "user" */
-    String USER_TYPE_NAME = "user";
+    String USER = "user";
     
+    /**
+     * The name to identify the type of a JetspeedPrincipal.
+     * <p>
+     * While the implementation class of a specific JetspeedPrincipalType might be replaced,
+     * the type name should remain constant (e.g. for a {@link #USER} a different implementation
+     * could be provided but it will remain a {@link #USER} afterall).
+     * </p>
+     * <p>
+     * Note: the name <em>value</em> must conform to the Java Identifier requirements (e.g. no spaces, dots, etc.)
+     * to support localization through resource bundles.
+     * </p>
+     */
     String getName();
 
     String getClassName();

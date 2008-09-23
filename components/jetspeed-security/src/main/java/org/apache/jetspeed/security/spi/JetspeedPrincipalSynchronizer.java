@@ -22,9 +22,6 @@ package org.apache.jetspeed.security.spi;
  */
 public interface JetspeedPrincipalSynchronizer
 {
-
-    SynchronizationState getSynchronizationState();
-    
     void synchronizeUserPrincipal(String name);
     
     void synchronizePrincipalsByType(String principalTypeName);

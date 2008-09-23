@@ -30,6 +30,6 @@ public class TransientRole extends TransientJetspeedPrincipal implements Role
 
 	public TransientRole(String name)
 	{
-        super(JetspeedPrincipalType.ROLE_TYPE_NAME, name);
+        super(JetspeedPrincipalType.ROLE, name);
 	}
 }

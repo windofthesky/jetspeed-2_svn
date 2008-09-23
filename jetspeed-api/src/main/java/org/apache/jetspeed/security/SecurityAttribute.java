@@ -23,5 +23,5 @@ public interface SecurityAttribute extends SecurityAttributeType
 {
     String getStringValue();
 
-    void setStringValue(String value) throws AttributeReadOnlyException;
+    void setStringValue(String value) throws SecurityException;
 }

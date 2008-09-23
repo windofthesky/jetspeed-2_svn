@@ -55,19 +55,19 @@ public class UserSubjectPrincipalsResolverImpl implements UserSubjectPrincipalsR
                                          JetspeedPrincipalAssociationType userAssociationType,
                                          JetspeedPrincipalAssociationType indirectAssociationType)
     {
-        if (!spp.getPrincipalType().getName().equals(JetspeedPrincipalType.USER_TYPE_NAME))
+        if (!spp.getPrincipalType().getName().equals(JetspeedPrincipalType.USER))
         {
             throw new IllegalArgumentException("The provided SubjectPrincipalsProvider should be for the user principalType");
         }
         this.spp = spp;
 
-        if (principalType.getName().equals(JetspeedPrincipalType.USER_TYPE_NAME))
+        if (principalType.getName().equals(JetspeedPrincipalType.USER))
         {
             throw new IllegalArgumentException("This resolver principalType cannot be that of the user principalType");
         }
         this.principalType = principalType;        
         
-        if (userAssociationType.getFromPrincipalType().getName().equals(JetspeedPrincipalType.USER_TYPE_NAME))
+        if (userAssociationType.getFromPrincipalType().getName().equals(JetspeedPrincipalType.USER))
         {
             if (userAssociationType.getToPrincipalType() != principalType)
             {
@@ -75,7 +75,7 @@ public class UserSubjectPrincipalsResolverImpl implements UserSubjectPrincipalsR
             }
             fromUser = true;
         }
-        else if (userAssociationType.getToPrincipalType().getName().equals(JetspeedPrincipalType.USER_TYPE_NAME))
+        else if (userAssociationType.getToPrincipalType().getName().equals(JetspeedPrincipalType.USER))
         {
             if (userAssociationType.getFromPrincipalType() != principalType)
             {

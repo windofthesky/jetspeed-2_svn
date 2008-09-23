@@ -24,26 +24,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationHandler;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalManagerSPI;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
-import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
+import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
 
 /**
  * @version $Id$
@@ -174,7 +165,9 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     {
         JetspeedPrincipal principal = jpam.getPrincipal(name, principalType);
         if (principal == null)
+        {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principalType.getName(),name));
+        }
         jpsm.removePrincipal(principal);
     }
     
@@ -276,14 +269,24 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                     }
                     if (!assHandlers.containsKey(key))
                     {
-                        throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(principal.getName()));
+                        if (ref.type == JetspeedPrincipalAssociationReference.Type.FROM)
+                        {
+                            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(ref.ref.getType().getName(), ref.associationName, principal.getType().getName()));
+                        }
+                        else
+                        {
+                            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(principal.getType().getName(), ref.associationName, ref.ref.getType().getName()));
+                        }
                     }
                     reqAss.remove(key);
                 }
             }
             if (!reqAss.isEmpty())
             {
-                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(principal.getName()));
+                JetspeedPrincipalAssociationType assType = reqAss.values().iterator().next();
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(assType.getFromPrincipalType().getName(),
+                                                                                                          assType.getAssociationName(),
+                                                                                                          assType.getToPrincipalType().getName()));
             }
         }
         jpsm.addPrincipal(principal, associations);
@@ -325,7 +328,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         validatePrincipal(principal);
         if (principal.isReadOnly() && !isSynchronizing())
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(principal.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(principal.getType().getName(), principal.getName()));
         }
         jpsm.updatePrincipal(principal);
     }
@@ -340,23 +343,25 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         
         if (jpah == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_NOT_ALLOWED.createScoped(from.getName()));
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_UNSUPPORTED.createScoped(from.getType().getName(), associationName, to.getType().getName()));
         }
         if (from.isTransient() || from.getId() == null)
         {
-            from = jpah.getManagerFrom().getPrincipal(from.getName());
-        }
-        if (from == null)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            JetspeedPrincipal pfrom = jpah.getManagerFrom().getPrincipal(from.getName());
+            if (pfrom == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(from.getType().getName(), from.getName()));
+            }
+            from = pfrom;
         }
         if (to.isTransient() || to.getId() == null)
         {
-            to = jpah.getManagerTo().getPrincipal(to.getName());
-        }
-        if (to == null)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+            JetspeedPrincipal pto = jpah.getManagerTo().getPrincipal(to.getName());
+            if (pto == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(to.getType().getName(), to.getName()));
+            }
+            to = pto;
         }
         jpah.add(from, to);
     }
@@ -384,30 +389,35 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         {
             if (jpah.getAssociationType().isRequired() && !isSynchronizing())
             {
-                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(from.getName()));             
+                JetspeedPrincipalAssociationType assType = jpah.getAssociationType();
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(assType.getFromPrincipalType().getName(),
+                                                                                                          assType.getAssociationName(),
+                                                                                                          assType.getToPrincipalType().getName()));             
             }
             if (from.isTransient() || from.getId() == null)
             {
-                from = jpah.getManagerFrom().getPrincipal(from.getName());
-            }
-            if (from == null)
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+                JetspeedPrincipal pfrom = jpah.getManagerFrom().getPrincipal(from.getName());
+                if (pfrom == null)
+                {
+                    throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(from.getType().getName(), from.getName()));
+                }
+                from = pfrom;
             }
             if (to.isTransient() || to.getId() == null)
             {
-                to = jpah.getManagerTo().getPrincipal(to.getName());
-            }
-            if (to == null)
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST);
+                JetspeedPrincipal pto = jpah.getManagerTo().getPrincipal(to.getName());
+                if (pto == null)
+                {
+                    throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(to.getType().getName(), to.getName()));
+                }
+                to = pto;
             }
             jpah.remove(from, to);
         }
     }
     
     protected boolean isSynchronizing(){
-        return SynchronizationStateAccess.getInstance().isSynchronizing();
+        return SynchronizationStateAccess.isSynchronizing();
     }
 
 }

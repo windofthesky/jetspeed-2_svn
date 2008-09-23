@@ -20,20 +20,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.PrincipalAlreadyExistsException;
-import org.apache.jetspeed.security.PrincipalAssociationNotAllowedException;
-import org.apache.jetspeed.security.PrincipalAssociationRequiredException;
-import org.apache.jetspeed.security.PrincipalAssociationUnsupportedException;
-import org.apache.jetspeed.security.PrincipalNotFoundException;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
-import org.apache.jetspeed.security.PrincipalReadOnlyException;
-import org.apache.jetspeed.security.PrincipalUpdateException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -149,7 +140,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         
         if (null == group) 
         { 
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP, groupName));
         }
 
         return group;
@@ -161,7 +152,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public List<Group> getGroupsForUser(String username)
             throws SecurityException
     {
-        return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        return (List<Group>) super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -170,7 +161,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public List<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
-        return (List<Group>) super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        return (List<Group>) super.getAssociatedTo(roleName, roleType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -183,15 +174,15 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
        	checkInitialized();
        	User user = userManager.getUser(username);
         if (user == null)
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
-            }
-            Group group = getGroup(groupName);
-            if (group == null)
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
-            }
-            super.addAssociation(user, group, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, username));
+        }
+        Group group = getGroup(groupName);
+        if (group == null)
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP, groupName));
+        }
+        super.addAssociation(user, group, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**
@@ -205,14 +196,14 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         User user = userManager.getUser(username);
         if (user == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER_TYPE_NAME, username));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, username));
         }
         Group group = getGroup(groupName);
         if (group == null)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP_TYPE_NAME, groupName));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.GROUP, groupName));
         }
-        super.removeAssociation(user, group, JetspeedPrincipalAssociationType.IS_MEMBER_OF_ASSOCIATION_TYPE_NAME);
+        super.removeAssociation(user, group, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
     }
 
     /**

@@ -25,16 +25,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.security.AttributesNotExtendableException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.AttributeReadOnlyException;
-import org.apache.jetspeed.security.AttributesReadOnlyException;
-import org.apache.jetspeed.security.AttributeRequiredException;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.SecurityAttributes;
-import org.apache.jetspeed.security.spi.SynchronizationStateAccess;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
 
 /**
  * @version $Id$
@@ -176,7 +173,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
     }
 
     public SecurityAttribute getAttribute(String name, boolean create)
-        throws AttributesReadOnlyException, AttributesNotExtendableException
+        throws SecurityException
     {
         SecurityAttributeImpl sa = saMap.get(name);
         
@@ -191,7 +188,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
         
         if (isReadOnly() && !isSynchronizing())
         {
-            throw new AttributesReadOnlyException();
+            throw new SecurityException(SecurityException.ATTRIBUTES_ARE_READ_ONLY.createScoped(getPrincipal().getType().getName()));
         }
         
         SecurityAttributeType sat = getSecurityAttributeTypes().getAttributeTypeMap().get(name);
@@ -200,7 +197,7 @@ public class SecurityAttributesImpl implements SecurityAttributes
         {
             if (!isExtendable() && !isSynchronizing())
             {
-                throw new AttributesNotExtendableException();
+                throw new SecurityException(SecurityException.ATTRIBUTES_NOT_EXTENDABLE.createScoped(getPrincipal().getType().getName()));
             }
             // New INFO_CATEGORY attribute, always of type STRING
             SecurityAttributeValue value = new SecurityAttributeValue(name);
@@ -219,22 +216,22 @@ public class SecurityAttributesImpl implements SecurityAttributes
         return sa;
     }
 
-    public void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException
+    public void removeAttribute(String name) throws SecurityException
     {
         if (isReadOnly() && !isSynchronizing())
         {
-            throw new AttributesReadOnlyException();
+            throw new SecurityException(SecurityException.ATTRIBUTES_ARE_READ_ONLY.createScoped(getPrincipal().getType().getName()));
         }
         SecurityAttributeImpl sa = saMap.get(name);
         if (sa != null)
         {
             if (sa.isReadOnly() && !isSynchronizing())
             {
-                throw new AttributeReadOnlyException();
+                throw new SecurityException(SecurityException.ATTRIBUTE_IS_READ_ONLY.createScoped(getPrincipal().getType().getName(), name));
             }
             if (sa.isRequired() && !isSynchronizing())
             {
-                throw new AttributeRequiredException();
+                throw new SecurityException(SecurityException.ATTRIBUTE_IS_REQUIRED.createScoped(getPrincipal().getType().getName(), name));
             }
             saMap.remove(name);
             avColl.remove(sa.getSecurityAttributeValue());
@@ -242,6 +239,6 @@ public class SecurityAttributesImpl implements SecurityAttributes
     }
     
     protected boolean isSynchronizing(){
-        return SynchronizationStateAccess.getInstance().isSynchronizing();
+        return SynchronizationStateAccess.isSynchronizing();
     }
 }

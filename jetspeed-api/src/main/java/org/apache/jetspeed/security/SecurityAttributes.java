@@ -66,8 +66,7 @@ public interface SecurityAttributes
      * @param create add the attribute when it doesn't exist yet
      * @return an existing attribute or one created on the fly (if parameter create is true)
      */
-    SecurityAttribute getAttribute(String name, boolean create)
-        throws AttributesReadOnlyException, AttributesNotExtendableException;
+    SecurityAttribute getAttribute(String name, boolean create) throws SecurityException;
 
-    void removeAttribute(String name) throws AttributesReadOnlyException, AttributeReadOnlyException, AttributeRequiredException;
+    void removeAttribute(String name) throws SecurityException;
 }

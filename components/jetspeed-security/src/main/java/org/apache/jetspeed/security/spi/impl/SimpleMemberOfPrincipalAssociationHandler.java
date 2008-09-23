@@ -17,10 +17,8 @@
 
 package org.apache.jetspeed.security.spi.impl;
 
-import org.apache.jetspeed.security.DependentPrincipalException;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
-import org.apache.jetspeed.security.PrincipalNotRemovableException;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.JetspeedPrincipalAssociationTypeImpl;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;

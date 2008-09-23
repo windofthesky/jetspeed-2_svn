@@ -43,9 +43,6 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.AttributeReadOnlyException;
-import org.apache.jetspeed.security.AttributesNotExtendableException;
-import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -311,18 +308,6 @@ public class PortalAdministrationImpl implements PortalAdministration
                         catch (NodeException e1)
                         {
                             return e1;
-                        } 
-                        catch (AttributesReadOnlyException e1)
-                        {
-                            return e1;
-                        } 
-                        catch (AttributeReadOnlyException e)
-                        {
-                            return e;
-                        }
-                        catch (AttributesNotExtendableException e)
-                        {
-                            return e;
                         } 
                     }
                 }, null);

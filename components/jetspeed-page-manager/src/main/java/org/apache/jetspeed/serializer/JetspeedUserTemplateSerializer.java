@@ -32,10 +32,8 @@ import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.security.AttributeReadOnlyException;
-import org.apache.jetspeed.security.AttributesNotExtendableException;
-import org.apache.jetspeed.security.AttributesReadOnlyException;
 import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -99,7 +97,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 adminUser = null;
             }            
             if (adminUser == null)
-                throw new SerializerException(SecurityException.USER_DOES_NOT_EXIST.create("admin"));
+                throw new SerializerException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, "admin"));
             for (JSUser user : snapshot.getUsers())
             {
                 String folderTemplate = user.getUserTemplate();
@@ -187,18 +185,6 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 {
                     se.printStackTrace();
                     return se;                    
-                } 
-                catch (AttributesReadOnlyException ae)
-                {
-                    return ae;
-                }
-                catch (AttributeReadOnlyException e)
-                {
-                    return e;
-                }
-                catch (AttributesNotExtendableException e)
-                {
-                    return e;
                 } 
             }
         }, null);

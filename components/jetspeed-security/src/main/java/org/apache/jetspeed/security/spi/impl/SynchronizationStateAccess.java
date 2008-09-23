@@ -1,27 +1,45 @@
-/*
+/* 
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.security.spi.impl;
 
-import org.apache.jetspeed.exception.JetspeedException;
+
 
 /**
+ * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class PrincipalAssociationRequiredException extends JetspeedException
+public class SynchronizationStateAccess
 {
-    private static final long serialVersionUID = 1693885988445864406L;
+    private static ThreadLocal<Boolean> synchronizing = new ThreadLocal<Boolean>();
+    
+    public static boolean isSynchronizing()
+    {        
+        return synchronizing.get() != null;
+    }
+    
+    public static void setSynchronizing(Boolean synchronizing)
+    {
+        if (synchronizing != null && synchronizing.booleanValue())
+        {
+            SynchronizationStateAccess.synchronizing.set(synchronizing);
+        }
+        else
+        {
+            SynchronizationStateAccess.synchronizing.remove();
+        }
+    }
 }
