@@ -130,7 +130,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
             // update / create corresponding JetspeedPrincipal first
             updatedPrincipal = synchronizePrincipalAttributes(entity);
 
-            if (updatedPrincipal != null)
+            if (updatedPrincipal != null && entityToRelationTypes.values().size() != 0)
             {
                 // loop through all relation types for this entity type
                 for (SecurityEntityRelationType relationTypeForThisEntity : entityToRelationTypes.get(entity.getType()))
@@ -308,7 +308,7 @@ public class DefaultJetspeedPrincipalSynchronizer implements JetspeedPrincipalSy
                         {
                             principalAttr = principalAttrs.getAttribute(addedEntityAttr.getMappedName(), true);
                         }
-                        principalAttr.setStringValue(addedEntityAttr.getValue());
+                        if (principalAttr!=null) principalAttr.setStringValue(addedEntityAttr.getValue());
                     } 
                     catch (SecurityException e)
                     {
