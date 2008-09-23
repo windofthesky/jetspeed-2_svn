@@ -38,7 +38,7 @@ import org.apache.jetspeed.security.SecurityException;
  */
 public interface AlgorithmUpgradeCredentialPasswordEncoder extends CredentialPasswordEncoder
 {
-    String encode(PasswordCredential credential) throws SecurityException;
-    void recodeIfNeeded(PasswordCredential credential) throws SecurityException;
+    String encode(PasswordCredential credential, String clearTextPassword) throws SecurityException;
+    void recodeIfNeeded(PasswordCredential credential, String clearTextPassword) throws SecurityException;
     boolean usesOldEncodingAlgorithm(PasswordCredential credential);
 }

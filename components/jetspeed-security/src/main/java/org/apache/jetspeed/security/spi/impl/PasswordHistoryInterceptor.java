@@ -59,7 +59,7 @@ public class PasswordHistoryInterceptor extends AbstractPasswordCredentialInterc
         this.historySize = historySize;
     }
     
-    public void beforeSetPassword(PasswordCredential credential, String password) throws SecurityException
+    public void beforeSetPassword(PasswordCredential credential, String password, boolean authenticated) throws SecurityException
     {
 /* TODO     
         Collection internalCredentials = internalUser.getCredentials();

@@ -17,12 +17,16 @@
 
 package org.apache.jetspeed.security.spi.impl;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.CredentialPasswordValidator;
+import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
 import org.apache.jetspeed.security.spi.PasswordCredentialInterceptor;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager;
 
@@ -45,10 +49,14 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
     {
         this.encoder = encoder;
         this.validator = validator;
-        //Remove the following comment and check, if interceptors are null or not
-        //if(interceptors !=null){
-        //	this.interceptors = (PasswordCredentialInterceptor[]) interceptors.toArray(new PasswordCredentialInterceptor[interceptors.size()]);
-        //}
+        if(interceptors !=null)
+        {
+            this.interceptors = (PasswordCredentialInterceptor[]) interceptors.toArray(new PasswordCredentialInterceptor[interceptors.size()]);
+        }
+        else
+        {
+            this.interceptors = new PasswordCredentialInterceptor[0];
+        }
     }
 
     public CredentialPasswordEncoder getCredentialPasswordEncoder()
@@ -61,19 +69,148 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
         return validator;
     }
 
-    public void onLoad(PasswordCredential credential, String userName)
+    public boolean onLoad(PasswordCredential credential, String userName) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        boolean update = false;
+        for (PasswordCredentialInterceptor pci : interceptors)
+        {
+            if (pci.afterLoad(userName, credential, encoder, validator))
+            {
+                update = true;
+            }
+        }
+        return update;
     }
 
     public boolean authenticate(PasswordCredential credential, String userName, String password) throws SecurityException
     {
-        // TODO Auto-generated method stub
-        return true;
+        String encodedPassword = password;
+        boolean authenticated = false;
+        if (encoder != null && credential.isEncoded())
+        {
+            if (encoder instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+            {
+                encodedPassword = ((AlgorithmUpgradeCredentialPasswordEncoder)encoder).encode(credential, password);
+            }
+            else
+            {
+                encodedPassword = encoder.encode(userName, password);
+            }
+            authenticated = credential.getPassword().equals(encodedPassword);            
+        }
+        boolean update = false;
+
+        for (PasswordCredentialInterceptor pci : interceptors)
+        {
+            if (pci.afterAuthenticated(credential, authenticated))
+            {
+                update = true;
+            }
+        }
+        if (update && (!credential.isEnabled() || credential.isExpired()))
+        {
+            authenticated = false;
+        }
+
+        if (authenticated)
+        {
+            credential.setAuthenticationFailures(0);
+            if (encoder != null && encoder instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+            {
+                ((AlgorithmUpgradeCredentialPasswordEncoder)encoder).recodeIfNeeded(credential, password);
+                credential.clearNewPasswordSet();
+            }
+            credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
+            credential.setLastAuthenticationDate(new Timestamp(new Date().getTime()));
+            update = true;
+        }
+        
+        return update;
     }
 
-    public void onStore(PasswordCredential credential)
+    public void onStore(PasswordCredential credential) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        if (credential.isNewPasswordSet())
+        {
+            String newPassword = null;
+            boolean authenticated = false;
+            if (credential.getNewPassword() != null)
+            {
+                if (credential.getOldPassword() != null)
+                {
+                    authenticated = true;
+                    String validatingOldPassword = credential.getOldPassword();
+                    if (credential.isEncoded() && encoder != null)
+                    {
+                        if (encoder instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+                        {
+                            validatingOldPassword = ((AlgorithmUpgradeCredentialPasswordEncoder)encoder).encode(credential, validatingOldPassword);
+                        }
+                        else
+                        {
+                            validatingOldPassword = encoder.encode(credential.getUserName(), validatingOldPassword);
+                        }
+                    }
+                    if (credential.getPassword() == null || !credential.getPassword().equals(validatingOldPassword))
+                    {
+                        throw new InvalidPasswordException();
+                    }
+                }
+                if (validator != null)
+                {
+                    validator.validate(credential.getNewPassword());
+                }
+                newPassword = credential.getNewPassword();
+                if (encoder != null)
+                {
+                    newPassword = encoder.encode(credential.getUserName(), newPassword);
+                }
+                
+            }
+            else
+            {
+                newPassword = credential.getPassword();
+                if (encoder != null && !credential.isEncoded())
+                {
+                    newPassword = encoder.encode(credential.getUserName(), newPassword);
+                }
+            }
+            
+            if (!credential.isNew())
+            {
+                credential.revertNewPasswordSet();
+                for (PasswordCredentialInterceptor pci : interceptors)
+                {
+                    pci.beforeSetPassword(credential, newPassword, authenticated);
+                }
+                credential.setUpdateRequired(false);
+            }
+            credential.setPassword(newPassword, encoder != null);
+            credential.clearNewPasswordSet();
+            if (!authenticated)
+            {
+                if (encoder != null && encoder instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+                {
+                    // set current time in previous auth date, and clear last authentication date
+                    // !!! While this might be a bit strange logic, it is *required* for the AlgorithmUpgradePBEPasswordEncodingService
+                    // to be able to distinguise password changes from other changes
+                    credential.setPreviousAuthenticationDate(new Timestamp(new Date().getTime()));
+                    credential.setLastAuthenticationDate(null);
+                }
+            }
+            else
+            {
+                // authenticated password change (by user itself)
+                credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
+                credential.setLastAuthenticationDate(new Timestamp(new Date().getTime()));
+            }
+        }
+        if (credential.isNew())
+        {
+            for (PasswordCredentialInterceptor pci : interceptors)
+            {
+                pci.beforeCreate(credential);
+            }
+        }
     }
 }

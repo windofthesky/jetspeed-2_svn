@@ -49,7 +49,7 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
     public PasswordCredential getPasswordCredential(User user) throws SecurityException
     {
         PasswordCredential credential = upcsm.getPasswordCredential(user);
-        if (upcpm != null)
+        if (!credential.isNew() && upcpm != null)
         {
             upcpm.onLoad(credential, user.getName());
         }
@@ -68,23 +68,49 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
     public PasswordCredential getAuthenticatedPasswordCredential(String userName, String password) throws SecurityException
     {
         PasswordCredential credential = upcam.getPasswordCredential(userName);
-        if (upcpm != null)
-        {
-            upcpm.onLoad(credential, userName);
-            upcpm.authenticate(credential, userName, password);
-        }
-        else if (password == null)
-        {
-            throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
-        }
-        else if (credential.getPassword() == null || !password.equals(new String(credential.getPassword())))
-        {
-            throw new SecurityException(SecurityException.INVALID_PASSWORD);
-        }
-        if (!credential.isEnabled() || credential.isExpired())
+        if (credential == null)
         {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
         }
+        
+        if (upcpm != null)
+        {
+            if (upcpm.onLoad(credential, userName))
+            {
+                upcsm.storePasswordCredential(credential);
+            }
+            if (credential.isEnabled() && !credential.isExpired())
+            {
+                if (upcpm.authenticate(credential, userName, password))
+                {
+                    upcsm.storePasswordCredential(credential);
+                }
+                if (!credential.isEnabled() || credential.isExpired())
+                {
+                    throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
+                }
+                else if (credential.getAuthenticationFailures() != 0)
+                {
+                    throw new SecurityException(SecurityException.INVALID_PASSWORD);
+                }
+            }
+        }
+        else
+        {
+            if (password == null)
+            {
+                throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
+            }
+            else if (credential.getPassword() == null || !password.equals(new String(credential.getPassword())))
+            {
+                throw new SecurityException(SecurityException.INVALID_PASSWORD);
+            }
+            if (!credential.isEnabled() || credential.isExpired())
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
+            }
+        }
+        
         try
         {
             upcam.loadPasswordCredentialUser(credential);
@@ -93,6 +119,7 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
         {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName), e);
         }
+        
         if (credential.getUser() == null || !credential.getUser().isEnabled())
         {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));

@@ -84,7 +84,7 @@ public interface PasswordCredentialInterceptor
 
     /**
      * <p>
-     * Invoked when a new unencoded password value is to be set for a user by the user itself.</p>
+     * Invoked when a new password value is to be set for a user.</p>
      * <p>
      * The new raw, possibly encoded, password value is <em>not</em> yet set on the provided credential when this callback is invoked but provided as parameter.
      * This allows custom history maintenance and/or auditing to be performed.</p>
@@ -95,7 +95,8 @@ public interface PasswordCredentialInterceptor
      * 
      * @param credential the credential of the user
      * @param password
+     * @param authenticated
      * @throws SecurityException
      */
-    void beforeSetPassword(PasswordCredential credential, char[] password) throws SecurityException;
+    void beforeSetPassword(PasswordCredential credential, String password, boolean authenticated) throws SecurityException;
 }

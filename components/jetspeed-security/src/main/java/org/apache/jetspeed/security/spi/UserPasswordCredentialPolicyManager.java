@@ -30,7 +30,7 @@ public interface UserPasswordCredentialPolicyManager
 {    
     CredentialPasswordEncoder getCredentialPasswordEncoder();
     CredentialPasswordValidator getCredentialPasswordValidator();
-    void onLoad(PasswordCredential credential, String userName) throws SecurityException;
+    boolean onLoad(PasswordCredential credential, String userName) throws SecurityException;
     boolean authenticate(PasswordCredential credential, String userName, String password) throws SecurityException;
     void onStore(PasswordCredential credential) throws SecurityException;
 }

@@ -36,12 +36,19 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
 {
     private static final long serialVersionUID = -4975305752376365096L;
     
+    private boolean persistent;
+    
     @SuppressWarnings("unused")
     private Long principalId;
     
     private User user;
     
     private String userName;
+    
+    /**
+     * The saved current "raw" password value
+     */
+    private String currentPassword;
 
     /** The "raw" password value */
     private String password;
@@ -118,6 +125,16 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
         this.password = password;
     }
     
+    public void synchronize(PasswordCredential pwc)
+    {
+        throw new UnsupportedOperationException();
+    }
+    
+    public boolean isNew()
+    {
+        return !persistent;
+    }
+    
     private void checkUpdatePassword()
     {
         if (!updateAllowed)
@@ -165,13 +182,13 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     {
         return type;
     }
-
+    
     /**
      * @return The password.
      */
     public String getPassword()
     {
-        return password != null ? password : null;
+        return currentPassword != null ? currentPassword : password;
     }
     
     public void setPassword(String password, boolean encoded)
@@ -179,6 +196,10 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
         checkUpdatePassword();
         if (password != null && (this.password == null || encoded != this.encoded || !password.equals(this.password)))
         {
+            if (!newPasswordSet && currentPassword == null)
+            {
+                currentPassword = password;
+            }
             this.password = password;
             this.encoded = encoded;
             oldPassword = null;
@@ -192,19 +213,34 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
         checkUpdatePassword();
         if (newPassword != null && (oldPassword == null || !newPassword.equals(oldPassword)))
         {
+            if (!newPasswordSet && currentPassword == null)
+            {
+                currentPassword = password;
+            }
             this.newPassword = newPassword;
             this.oldPassword = oldPassword;
-            password = null;
-            encoded = false;
             newPasswordSet = true;
         }
     }
     
     public void clearNewPasswordSet()
     {
+        currentPassword = null;
         oldPassword = null;
         newPassword = null;
         newPasswordSet = false;
+    }
+    
+    public void revertNewPasswordSet()
+    {
+        if (newPasswordSet)
+        {
+            newPassword = currentPassword;
+            currentPassword = null;
+            oldPassword = null;
+            newPassword = null;
+            newPasswordSet = false;
+        }
     }
     
     public String getOldPassword()
@@ -273,6 +309,10 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     {
         checkUpdateState();
         this.enabled = enabled;
+        if (enabled)
+        {
+            setAuthenticationFailures(0);
+        }
     }
 
     public boolean isExpired()
@@ -305,6 +345,14 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     {
         checkUpdateState();
         this.expirationDate = expirationDate;
+        if (expirationDate != null && new Date(new java.util.Date().getTime()).after(expirationDate))
+        {
+            setExpired(true);
+        }
+        else
+        {
+            setExpired(false);
+        }
     }
     
     public Timestamp getPreviousAuthenticationDate()
@@ -345,14 +393,17 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     //
     public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
     {
+        persistent = false;
     }
 
     public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
     {
+        persistent = true;
     }
 
     public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
     {
+        persistent = true;
     }
 
     public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException

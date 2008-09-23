@@ -58,11 +58,11 @@ public class AlgorithmUpgradePBEPasswordService extends PBEPasswordService imple
         return usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate());
     }
 
-    public String encode(PasswordCredential credential) throws SecurityException
+    public String encode(PasswordCredential credential, String clearTextPassword) throws SecurityException
     {
         if ( usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate()))
         {
-            return oldEncoder.encode(credential.getUserName(), credential.getNewPassword());
+            return oldEncoder.encode(credential.getUserName(), clearTextPassword);
         }
         else
         {
@@ -70,11 +70,11 @@ public class AlgorithmUpgradePBEPasswordService extends PBEPasswordService imple
         }
     }
 
-    public void recodeIfNeeded(PasswordCredential credential) throws SecurityException
+    public void recodeIfNeeded(PasswordCredential credential, String clearTextPassword) throws SecurityException
     {
         if ( usesOldEncodingAlgorithm(credential.isEnabled(), credential.getLastAuthenticationDate(), credential.getPreviousAuthenticationDate()))
         {
-            credential.setPassword(encode(credential.getUserName(), credential.getNewPassword()), true);
+            credential.setPassword(encode(credential.getUserName(), clearTextPassword), true);
         }
     }
     

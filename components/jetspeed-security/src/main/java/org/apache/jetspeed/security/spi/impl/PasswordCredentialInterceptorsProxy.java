@@ -82,13 +82,13 @@ public class PasswordCredentialInterceptorsProxy implements PasswordCredentialIn
         }
     }
 
-    public void beforeSetPassword(PasswordCredential credential, char[] password) throws SecurityException
+    public void beforeSetPassword(PasswordCredential credential, String password, boolean authenticated) throws SecurityException
     {
         for (int i = 0; i < interceptors.length; i++)
         {
             if (interceptors[i] != null)
             {
-                interceptors[i].beforeSetPassword(credential, password);
+                interceptors[i].beforeSetPassword(credential, password, authenticated);
             }
         }
     }

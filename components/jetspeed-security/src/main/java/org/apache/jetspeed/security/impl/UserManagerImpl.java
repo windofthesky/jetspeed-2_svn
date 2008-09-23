@@ -176,7 +176,12 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public User getUser(String username) throws SecurityException
 	{
-		return (User) getPrincipal(username);
+	    User user = (User)getPrincipal(username);
+	    if (null == user)
+	    {
+	        throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, username));
+	    }
+	    return user;
 	}
 
 	public List<String> getUserNames(String nameFilter) throws SecurityException

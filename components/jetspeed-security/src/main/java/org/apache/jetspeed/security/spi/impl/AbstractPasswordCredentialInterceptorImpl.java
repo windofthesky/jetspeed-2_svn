@@ -47,7 +47,7 @@ public abstract class AbstractPasswordCredentialInterceptorImpl implements Passw
     {
     }
 
-    public void beforeSetPassword(PasswordCredential credential, char[] password) throws SecurityException
+    public void beforeSetPassword(PasswordCredential credential, String password, boolean authenticated) throws SecurityException
     {
     }
 }

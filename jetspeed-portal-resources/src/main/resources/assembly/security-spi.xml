@@ -43,7 +43,12 @@
     <constructor-arg index="0" ref="org.apache.jetspeed.security.CredentialPasswordEncoder" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.CredentialPasswordValidator" />
     <constructor-arg index="2">
-      <value>null</value>
+      <list>
+        <!-- enforce an invalid preset password value in the persisent store is required to be changed -->
+        <bean class="org.apache.jetspeed.security.spi.impl.ValidatePasswordOnLoadInterceptor" />
+        <!-- ensure preset cleartext passwords in the persistent store  will be encoded on first use -->
+        <bean class="org.apache.jetspeed.security.spi.impl.EncodePasswordOnFirstLoadInterceptor" />
+      </list>
     </constructor-arg>
   </bean>
 
