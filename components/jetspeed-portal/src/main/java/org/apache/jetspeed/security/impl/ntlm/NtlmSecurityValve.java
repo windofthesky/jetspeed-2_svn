@@ -166,10 +166,7 @@ public class NtlmSecurityValve extends AbstractSecurityValve
             }  
             if (subject == null){
                 // create anonymous user
-                Principal userPrincipal = getUserPrincipal(context);
-                Set principals = new HashSet();
-                principals.add(userPrincipal);
-                subject = new Subject(true, principals, new HashSet(), new HashSet()); 
+                subject = userMgr.getSubject(userMgr.getUser(userMgr.getAnonymousUser()));
             }
             
             // create a new statistics *user* session
