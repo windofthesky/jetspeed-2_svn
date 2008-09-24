@@ -74,9 +74,8 @@ limitations under the License.
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="ATTR_NAME" primaryKey="true" required="true" size="200" type="VARCHAR"/>
         <column name="ATTR_VALUE" size="1000" type="VARCHAR"/>
-    <index name="IX_NAMEVALUE_LOOKUP">
+    <index name="IX_NAME_LOOKUP">
       <index-column name="ATTR_NAME"/>
-      <index-column name="ATTR_VALUE"/>
     </index>
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
