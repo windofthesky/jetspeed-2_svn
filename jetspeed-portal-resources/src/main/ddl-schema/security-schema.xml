@@ -42,7 +42,6 @@ limitations under the License.
         <column name="PRINCIPAL_TYPE" required="true" size="20" type="VARCHAR"/>
         <column name="PRINCIPAL_NAME" required="true" size="200" type="VARCHAR"/>        
         <column name="IS_MAPPED" required="true" type="BOOLEANINT"/>
-        <column name="PARENT_ID"  required="false" type="INTEGER"/>
         <column name="IS_ENABLED"  required="true" type="BOOLEANINT"/>
         <column name="IS_READONLY" required="true" type="BOOLEANINT"/>
         <column name="IS_REMOVABLE" required="true" type="BOOLEANINT"/>
@@ -52,12 +51,6 @@ limitations under the License.
           <unique-column name="PRINCIPAL_TYPE" />
           <unique-column name="PRINCIPAL_NAME" />
         </unique>        
-        <index name="IX_PARENT_PRINCIPAL">
-          <index-column name="PARENT_ID"/>
-        </index>
-        <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PARENT_PRINCIPAL" onDelete="cascade">
-            <reference foreign="PRINCIPAL_ID" local="PARENT_ID"/>
-        </foreign-key>        
     </table>
 
    <!-- 
