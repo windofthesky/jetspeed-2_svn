@@ -168,7 +168,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principalType.getName(),name));
         }
-        jpsm.removePrincipal(principal);
+        removePrincipal(principal);
     }
     
 
