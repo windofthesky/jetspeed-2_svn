@@ -45,10 +45,22 @@ public class SecurityException extends JetspeedException
     public static final KeyedMessage PRINCIPAL_NOT_REMOVABLE = new KeyedMessage("The principal {0} cannot be removed.");
     
     /** <p>Principal has one or more dependents. */
-    public static final KeyedMessage DEPENDENT_PRINCIPAL_EXISTS = new KeyedMessage("The principal {0} has one or more dependents.");
+    public static final KeyedMessage DEPENDENT_PRINCIPAL_EXISTS = new KeyedMessage("The principal {0} has one or more required {1} {2} associations.");
     
     /** <p>Principal association required exception message.</p> */
     public static final KeyedMessage PRINCIPAL_ASSOCIATION_REQUIRED = new KeyedMessage("A {0} {1} association is required.");
+    
+    /** <p>Principal association singular for same types exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_SINGULAR = new KeyedMessage("Only one {0} association is allowed from principal {1} to another {2}.");
+    
+    /** <p>Principal association dominant for same types exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_DOMINANT = new KeyedMessage("Only one {0} association is allowed to principal {1} from another {2}.");
+    
+    /** <p>Principal association singular for mixed types exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_SINGULAR_MIXED = new KeyedMessage("Only one {0} association is allowed from principal {1} to a {2}.");
+    
+    /** <p>Principal association dominant for mixed types exception message.</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_DOMINANT_MIXED = new KeyedMessage("Only one {0} association is allowed to principal {1} from a {2}.");
     
     /** <p>Principal association is not supported exception message.</p> */
     public static final KeyedMessage PRINCIPAL_ASSOCIATION_UNSUPPORTED = new KeyedMessage("A {0} {1} association is not supported.");

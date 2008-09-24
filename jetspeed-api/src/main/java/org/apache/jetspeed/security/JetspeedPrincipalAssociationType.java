@@ -22,35 +22,92 @@ package org.apache.jetspeed.security;
 public interface JetspeedPrincipalAssociationType
 {
     /**
-     * build-in supported @{link {@link #getAssociationName() associationName} "isMemberOf" 
+     * build-in supported @{link {@link #getAssociationName() associationName} "isMemberOf"
+     * <p>
+     * This association type between two different {@link JetspeedPrincipalType}s represents
+     * an N to M relationship
+     * </p>
+     * <p>
+     * Configuration needed for this association type:
+     * </p>
+     * <ul>
+     *   <li>required : false</li>
+     *   <li>dependent: false</li>
+     *   <li>singular : false</li>
+     *   <li>dominant : false</li>
+     * </ul>
      */
     String IS_MEMBER_OF = "isMemberOf"; // FROM node is member of TO node 
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isChildOf"
+     * <p>
+     * This association type between two equal {@link JetspeedPrincipalType}s represents
+     * a required from child to parent hierarchical relationship.
+     * </p>
+     * <p>
+     * Configuration needed for this association type:
+     * </p>
+     * <ul>
+     *   <li>required : true</li>
+     *   <li>dependent: true</li>
+     *   <li>singular : true</li>
+     *   <li>dominant : false</li>
+     * </ul>
      */
     String IS_CHILD_OF = "isChildOf"; // FROM node is member of TO node
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isA"
-     * 
-     * This association type (between two equal {@link JetspeedPrincipalType}s) represents
+     * <p>
+     * This association type between two equal {@link JetspeedPrincipalType}s represents
      * a Generalizing Hierarchical relationship where from <em>implies</em> to.
+     * </p>
+     * <p>
+     * Configuration needed for this association type:
+     * </p>
+     * <ul>
+     *   <li>required : false</li>
+     *   <li>dependent: true</li>
+     *   <li>singular : true</li>
+     *   <li>dominant : false</li>
+     * </ul>
      */
     String IS_A = "isA"; // FROM node is a TO node: FROM node implies TO node
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isPartOf"
-     * 
-     * This association type (between two equal {@link JetspeedPrincipalType}s) represents
+     * <p>
+     * This association type between two equal {@link JetspeedPrincipalType}s represents
      * a Aggregating Hierarchical relationship where to <em>implies</em> from.
+     * </p>
+     * <p>
+     * Configuration needed for this association type (same as {@link #IS_MEMBER_OF}):
+     * </p>
+     * <ul>
+     *   <li>required : false</li>
+     *   <li>dependent: false</li>
+     *   <li>singular : false</li>
+     *   <li>dominant : false</li>
+     * </ul>
      */
     String IS_PART_OF = "isPartOf"; // FROM node is part of TO node: TO node implies FROM node
 
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "belongsTo"
-     * 
-     * This association type represents a (possibly required) constraint where from may only belong to one to
+     * <p>
+     * This association type betweem two different {@link JetspeedPrincipalType}s represents
+     * a required relationship where from may only belong to one to
+     * </p>
+     * <p>
+     * Configuration needed for this association type:
+     * </p>
+     * <ul>
+     *   <li>required : true</li>
+     *   <li>dependent: true</li>
+     *   <li>singular : true</li>
+     *   <li>dominant : false</li>
+     * </ul>
      */
     String BELONGS_TO = "belongsTo"; // FROM node is member of TO node: FROM node may only belong to one TO node
     
@@ -94,4 +151,10 @@ public interface JetspeedPrincipalAssociationType
      * True if the to principal can be associated to at most once. 
      */
     boolean isDominant();
+    
+    /**
+     * True if this is an association between two different {@link JetspeedPrincipalType}s
+     * @return
+     */
+    boolean isMixedTypes();
 }

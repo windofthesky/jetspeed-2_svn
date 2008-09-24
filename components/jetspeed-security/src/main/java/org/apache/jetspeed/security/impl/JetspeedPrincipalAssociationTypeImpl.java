@@ -31,6 +31,7 @@ public class JetspeedPrincipalAssociationTypeImpl implements JetspeedPrincipalAs
     private boolean dependent;
     private boolean singular;
     private boolean dominant;
+    private boolean mixedTypes;
     
     public JetspeedPrincipalAssociationTypeImpl(String associationName, JetspeedPrincipalType fromType,
                                                 JetspeedPrincipalType toType, boolean required, boolean dependent, boolean singular, boolean dominant)
@@ -42,6 +43,7 @@ public class JetspeedPrincipalAssociationTypeImpl implements JetspeedPrincipalAs
         this.dependent = dependent;
         this.singular = singular;
         this.dominant = dominant;
+        this.mixedTypes = !fromType.getName().equals(toType.getName());
     }
 
     public String getAssociationName()
@@ -77,5 +79,10 @@ public class JetspeedPrincipalAssociationTypeImpl implements JetspeedPrincipalAs
     public boolean isDominant()
     {
         return dominant;
+    }
+    
+    public boolean isMixedTypes()
+    {
+        return mixedTypes;
     }
 }

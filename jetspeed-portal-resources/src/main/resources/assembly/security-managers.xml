@@ -258,32 +258,57 @@
   </bean>
 
   <bean id="userIsMemberOfRoleAssociationHandler"
-    class="org.apache.jetspeed.security.spi.impl.SimpleMemberOfPrincipalAssociationHandler">
+    class="org.apache.jetspeed.security.spi.impl.IsMemberOfPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
-    <constructor-arg index="0" value="isMemberOf" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
-    <constructor-arg index="2" ref="org.apache.jetspeed.security.RoleManager" />
-    <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
   </bean>
 
   <bean id="userIsMemberOfGroupAssociationHandler"
-    class="org.apache.jetspeed.security.spi.impl.SimpleMemberOfPrincipalAssociationHandler">
+    class="org.apache.jetspeed.security.spi.impl.IsMemberOfPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
-    <constructor-arg index="0" value="isMemberOf" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
-    <constructor-arg index="2" ref="org.apache.jetspeed.security.GroupManager" />
-    <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.GroupManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
   </bean>
 
   <bean id="groupIsMemberOfRoleAssociationHandler"
-    class="org.apache.jetspeed.security.spi.impl.SimpleMemberOfPrincipalAssociationHandler">
+    class="org.apache.jetspeed.security.spi.impl.IsMemberOfPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
-    <constructor-arg index="0" value="isMemberOf" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.GroupManager" />
-    <constructor-arg index="2" ref="org.apache.jetspeed.security.RoleManager" />
-    <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
   </bean>
 
+  <bean id="roleIsARoleAssociationHandler"
+    class="org.apache.jetspeed.security.spi.impl.IsAPrincipalAssociationHandler">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.RoleManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
+  <bean id="roleIsPartOfRoleAssociationHandler"
+    class="org.apache.jetspeed.security.spi.impl.IsPartOfPrincipalAssociationHandler">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.RoleManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
+  <bean id="groupIsAGroupAssociationHandler"
+    class="org.apache.jetspeed.security.spi.impl.IsAPrincipalAssociationHandler">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
+  <bean id="groupIsPartOfGroupAssociationHandler"
+    class="org.apache.jetspeed.security.spi.impl.IsPartOfPrincipalAssociationHandler">
+    <meta key="j2:cat" value="default,security" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
   <bean id="userSubjectRolesResolver" class="org.apache.jetspeed.security.spi.impl.UserSubjectPrincipalsResolverImpl">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
@@ -297,6 +322,26 @@
           <value>getAssociationType</value>
         </property>
       </bean>
+    </constructor-arg>
+    <constructor-arg index="3">
+      <list>
+        <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+          <property name="targetObject">
+            <ref bean="roleIsARoleAssociationHandler" />
+          </property>
+          <property name="targetMethod">
+            <value>getAssociationType</value>
+          </property>
+        </bean>
+        <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+          <property name="targetObject">
+            <ref bean="roleIsPartOfRoleAssociationHandler" />
+          </property>
+          <property name="targetMethod">
+            <value>getAssociationType</value>
+          </property>
+        </bean>
+      </list>
     </constructor-arg>
   </bean>
 
@@ -314,6 +359,34 @@
           <value>getAssociationType</value>
         </property>
       </bean>
+    </constructor-arg>
+    <constructor-arg index="3">
+      <list>
+        <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+          <property name="targetObject">
+            <ref bean="groupIsMemberOfRoleAssociationHandler" />
+          </property>
+          <property name="targetMethod">
+            <value>getAssociationType</value>
+          </property>
+        </bean>
+        <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+          <property name="targetObject">
+            <ref bean="groupIsAGroupAssociationHandler" />
+          </property>
+          <property name="targetMethod">
+            <value>getAssociationType</value>
+          </property>
+        </bean>
+        <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+          <property name="targetObject">
+            <ref bean="groupIsPartOfGroupAssociationHandler" />
+          </property>
+          <property name="targetMethod">
+            <value>getAssociationType</value>
+          </property>
+        </bean>
+      </list>
     </constructor-arg>
   </bean>
 

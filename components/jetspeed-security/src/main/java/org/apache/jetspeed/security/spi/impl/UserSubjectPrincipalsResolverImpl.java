@@ -18,6 +18,8 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,21 +41,38 @@ public class UserSubjectPrincipalsResolverImpl implements UserSubjectPrincipalsR
     private UserSubjectPrincipalsProvider spp;
     private JetspeedPrincipalType principalType;
     private JetspeedPrincipalAssociationType uat; 
-    private JetspeedPrincipalAssociationType iat; 
+    private List<JetspeedPrincipalAssociationType> iatList; 
     private boolean fromUser;
     private boolean initialized;
-    private boolean indirectFrom;
     private JetspeedPrincipalAccessManager accessManager;
+    
+    private static List<Object> wrapInList(JetspeedPrincipalAssociationType type)
+    {
+        if (type != null)
+        {
+            List<Object> list = new ArrayList<Object>(1);
+            list.add(type);
+            return list;
+        }
+        return Collections.emptyList();
+    }
 
     public UserSubjectPrincipalsResolverImpl(UserSubjectPrincipalsProvider spp, JetspeedPrincipalType principalType,
                                          JetspeedPrincipalAssociationType userAssociationType)
     {
-        init(spp, principalType, userAssociationType, null);
+        this(spp, principalType, userAssociationType, (JetspeedPrincipalAssociationType)null);
     }
     
-    protected void init(UserSubjectPrincipalsProvider spp, JetspeedPrincipalType principalType,
+    public UserSubjectPrincipalsResolverImpl(UserSubjectPrincipalsProvider spp, JetspeedPrincipalType principalType,
+            JetspeedPrincipalAssociationType userAssociationType,
+            JetspeedPrincipalAssociationType indirectAssociationType)
+    {
+        this(spp, principalType, userAssociationType, wrapInList(indirectAssociationType));
+    }
+    
+    public UserSubjectPrincipalsResolverImpl(UserSubjectPrincipalsProvider spp, JetspeedPrincipalType principalType,
                                          JetspeedPrincipalAssociationType userAssociationType,
-                                         JetspeedPrincipalAssociationType indirectAssociationType)
+                                         List<Object> indirectAssociationTypes)
     {
         if (!spp.getPrincipalType().getName().equals(JetspeedPrincipalType.USER))
         {
@@ -89,16 +108,21 @@ public class UserSubjectPrincipalsResolverImpl implements UserSubjectPrincipalsR
         }
         this.uat = userAssociationType;
         
-        if (indirectAssociationType != null)
+        if (indirectAssociationTypes != null && !indirectAssociationTypes.isEmpty())
         {
-            if (indirectAssociationType.getFromPrincipalType() != principalType || indirectAssociationType.getToPrincipalType() != principalType)
+            iatList = new ArrayList<JetspeedPrincipalAssociationType>(indirectAssociationTypes.size());
+            
+            for (Object o: indirectAssociationTypes)
             {
-                throw new IllegalArgumentException("Provided indirectAssociationType should match this resolvers principalType");
-            }
-            else
-            {
-                this.iat = indirectAssociationType;
-                indirectFrom = indirectAssociationType.getFromPrincipalType() == principalType;
+                JetspeedPrincipalAssociationType iat = (JetspeedPrincipalAssociationType)o;
+                if (iat.getFromPrincipalType() != principalType && iat.getToPrincipalType() != principalType)
+                {
+                    throw new IllegalArgumentException("Provided indirectAssociationType "+iat.getAssociationName()+" should match this resolvers principalType");
+                }
+                else
+                {
+                   iatList.add(iat); 
+                }
             }
         }
         
@@ -164,18 +188,22 @@ public class UserSubjectPrincipalsResolverImpl implements UserSubjectPrincipalsR
             return;
         }
         principals.add(principal);
-        if (iat != null)
+        if (iatList != null)
         {
-            List <JetspeedPrincipal> found = null;
-            if (indirectFrom)
+            for (JetspeedPrincipalAssociationType iat : iatList)
             {
-                found = accessManager.getAssociatedFrom(principal.getId(), iat.getFromPrincipalType(), iat.getToPrincipalType(), iat.getAssociationName());
+                List <JetspeedPrincipal> found = null;
+                
+                if ((!iat.isMixedTypes() && !iat.isSingular()) || !iat.getFromPrincipalType().getName().equals(getPrincipalType().getName()))
+                {
+                    found = accessManager.getAssociatedTo(principal.getId(), iat.getFromPrincipalType(), iat.getToPrincipalType(), iat.getAssociationName());
+                }
+                else
+                {
+                    found = accessManager.getAssociatedFrom(principal.getId(), iat.getFromPrincipalType(), iat.getToPrincipalType(), iat.getAssociationName());
+                }
+                processFound(found, user, resolvedIds, principals, resolvers);
             }
-            else
-            {
-                found = accessManager.getAssociatedTo(user.getId(), iat.getFromPrincipalType(), iat.getToPrincipalType(), iat.getAssociationName());
-            }
-            processFound(found, user, resolvedIds, principals, resolvers);
         }
     }
 }

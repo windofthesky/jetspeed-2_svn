@@ -17,6 +17,8 @@
 
 package org.apache.jetspeed.security.spi.impl;
 
+import java.util.List;
+
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
@@ -74,6 +76,31 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
     {
         if (from.getType().equals(associationType.getFromPrincipalType()) && to.getType().equals(associationType.getToPrincipalType()))
         {
+            if (!isSynchronizing())
+            {
+                if (associationType.isSingular() && !getManagerFrom().getAssociatedFrom(from.getName(), from.getType(), associationType.getAssociationName()).isEmpty())
+                {
+                    if (associationType.isMixedTypes())
+                    {
+                        throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_SINGULAR_MIXED.createScoped(from.getType().getName(),associationType.getAssociationName(), from.getName(), to.getType().getName()));
+                    }
+                    else
+                    {
+                        throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_SINGULAR.createScoped(from.getType().getName(),associationType.getAssociationName(), from.getName(), from.getType().getName()));
+                    }
+                }
+                if (associationType.isDominant() && !getManagerTo().getAssociatedTo(to.getName(), to.getType(), associationType.getAssociationName()).isEmpty())
+                {
+                    if (associationType.isMixedTypes())
+                    {
+                        throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_DOMINANT_MIXED.createScoped(to.getType().getName(),associationType.getAssociationName(), to.getName(), from.getType().getName()));
+                    }
+                    else
+                    {
+                        throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_DOMINANT.createScoped(to.getType().getName(),associationType.getAssociationName(), to.getName(), to.getType().getName()));
+                    }
+                }
+            }
             jpasm.addAssociation(from, to, associationType.getAssociationName());
         }
     }
@@ -83,6 +110,32 @@ public abstract class BaseJetspeedPrincipalAssociationHandler implements Jetspee
         if (from.getType().equals(associationType.getFromPrincipalType()) && to.getType().equals(associationType.getToPrincipalType()))
         {
             jpasm.removeAssociation(from, to, associationType.getAssociationName());
+        }
+    }
+    
+    public void beforeRemoveFrom(JetspeedPrincipal from) throws SecurityException
+    {
+        // by default nothing to do
+        // use isSynchronizing() to turn off constraint checks        
+    }
+
+    @SuppressWarnings("unchecked")
+    public void beforeRemoveTo(JetspeedPrincipal to) throws SecurityException
+    {
+        if (associationType.isDependent())
+        {
+            List<JetspeedPrincipal> fromList = (List<JetspeedPrincipal>)getManagerTo().getAssociatedTo(to.getName(), to.getType(), associationType.getAssociationName());
+            for (JetspeedPrincipal from : fromList)
+            {
+                getManagerFrom().removePrincipal(from);
+            }
+        }
+        else if (associationType.isRequired() && !isSynchronizing())
+        {
+            if (!getManagerTo().getAssociatedTo(to.getName(), to.getType(), associationType.getAssociationName()).isEmpty())
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_REQUIRED.createScoped(to.getType().getName(), to.getName(), associationType.getFromPrincipalType().getName(), associationType.getAssociationName()));
+            }
         }
     }
     
