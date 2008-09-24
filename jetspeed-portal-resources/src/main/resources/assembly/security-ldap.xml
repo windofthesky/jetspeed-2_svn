@@ -51,13 +51,6 @@
     <property name="synchronizer" ref="JetspeedPrincipalSynchronizer" />
   </bean>
 
-  <bean id="JetspeedPrincipalSynchronizer"
-    class="org.apache.jetspeed.security.spi.impl.DefaultJetspeedPrincipalSynchronizer">
-    <meta key="j2:cat" value="ldap" />
-    <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
-  </bean>
-
   <bean id="org.apache.jetspeed.security.mapping.SecurityEntityManager"
     class="org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager">
     <meta key="j2:cat" value="ldap" />
@@ -65,11 +58,14 @@
       <map>
         <entry key="user" value-ref="UserDao" />
         <entry key="role" value-ref="RoleDao" />
+		<entry key="group" value-ref="GroupDao" />
       </map>
     </property>
     <property name="entityRelationDAOs">
       <list>
         <ref bean="UserRoleRelationDAO" />
+		<ref bean="RoleGroupRelationDAO" />
+		<ref bean="UserGroupRelationDAO" />
       </list>
     </property>
   </bean>
@@ -86,18 +82,18 @@
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="uid" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg  index="1" value="false" />
+          <constructor-arg  index="2" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="cn" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg  index="1" value="false" />
+          <constructor-arg  index="2" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="givenName" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg  index="1" value="false" />
+          <constructor-arg  index="2" value="true" />
           <constructor-arg type="java.lang.String" index="3" value="user.name.given" />
         </bean>
       </set>
@@ -117,24 +113,24 @@
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String"  index="0" value="uid" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="cn" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="description" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
           <constructor-arg type="java.lang.String" index="3" value="role.display.name" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="true" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="false" />
+          <constructor-arg index="1" value="true" />
+          <constructor-arg index="2" value="false" />
         </bean>
       </set>
     </property>
@@ -142,7 +138,7 @@
   </bean>
   <bean id="GroupDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
     <meta key="j2:cat" value="ldap" />
-    <property name="baseDN" value="" />
+    <property name="baseDN" value="ou=Groups,o=Jetspeed" />
     <property name="baseFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="(objectClass=groupOfUniqueNames)" />
@@ -153,24 +149,24 @@
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String"  index="0" value="uid" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="cn" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="description" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="false" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="true" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
           <constructor-arg type="java.lang.String" index="3" value="group.display.name" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
-          <constructor-arg type="java.lang.Boolean" index="1" value="true" />
-          <constructor-arg type="java.lang.Boolean" index="2" value="false" />
+          <constructor-arg index="1" value="true" />
+          <constructor-arg index="2" value="false" />
         </bean>
       </set>
     </property>
@@ -279,5 +275,4 @@
     <constructor-arg index="2" value="(objectclass=person)" />
     <constructor-arg index="3" value="2" />
   </bean>
-
 </beans>
