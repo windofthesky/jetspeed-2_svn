@@ -21,15 +21,44 @@
   <!-- ************** Security SPI Handlers ************** -->
   <!-- Security SPI: CommonQueries -->
 
-  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager"
+  <bean id="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager"
     class="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager" init-method="init">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/security_repository.xml</value>
     </constructor-arg>
   </bean>
-
-  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialManager"
+  
+  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,security" />
+    <property name="proxyInterfaces">
+      <value>
+        org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager,
+        org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager,
+        org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager,
+        org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager,
+        org.apache.jetspeed.security.spi.UserPasswordCredentialAccessManager,
+        org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager
+      </value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="add*">PROPAGATION_REQUIRED</prop>
+        <prop key="update*">PROPAGATION_REQUIRED</prop>
+        <prop key="grant*">PROPAGATION_REQUIRED</prop>
+        <prop key="remove*">PROPAGATION_REQUIRED</prop>
+        <prop key="revoke*">PROPAGATION_REQUIRED</prop>
+        <prop key="store*">PROPAGATION_REQUIRED</prop>
+        <prop key="getPasswordCredential*">PROPAGATION_REQUIRED</prop>
+        <prop key="*">PROPAGATION_SUPPORTS</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl"
     class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
@@ -37,7 +66,22 @@
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" />
   </bean>
 
-  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager"
+  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,security" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.security.spi.UserPasswordCredentialManager</value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl"
     class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.CredentialPasswordEncoder" />
@@ -52,6 +96,22 @@
     </constructor-arg>
   </bean>
 
+  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="default,security" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager</value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="authenticate*">PROPAGATION_REQUIRED</prop>
+        <prop key="on*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+  
   <bean id="org.apache.jetspeed.security.CredentialPasswordEncoder"
     class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
     <meta key="j2:cat" value="default,security" />
