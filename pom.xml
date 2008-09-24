@@ -1161,6 +1161,18 @@
     </dependencies>
   </dependencyManagement>
 
+  <distributionManagement>
+      <!-- A dummy repository just to keep the maven deploy plugin happy.
+           To deploy: use mvn deploy -DaltDeploymentRepository=serverId::default::url
+           See also : http://www.apache.org/dev/repository-faq.html
+                      http://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html
+      -->
+      <repository>
+        <id></id>
+        <url></url>
+      </repository>
+  </distributionManagement>
+
   <dependencies>
 
     <!-- Provided Dependencies -->
@@ -1199,18 +1211,6 @@
 
   </dependencies>
 
-  <distributionManagement>
-    
-    <!--
-      <repository>
-      <id>apache.releases</id>
-      <name>Apache Release Distribution Repository</name>
-      <url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
-      </repository>
-    -->
-    
-  </distributionManagement>
-  
   <!-- Global Build Configuration -->
 
   <build>
@@ -1420,6 +1420,19 @@
       </testResource>
     </testResources>
 
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ssh-external</artifactId>
+         <version>1.0-alpha-5</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ftp</artifactId>
+         <version>1.0-alpha-6</version>
+      </extension>
+    </extensions>
+    
   </build>
 
   <profiles>
