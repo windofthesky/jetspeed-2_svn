@@ -69,37 +69,19 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
 
     public void synchronizeAll()
     {
+        setSynchronizing(true);
         try
         {
-            setSynchronizing(true);
-            synchronizePrincipalsByType(JetspeedPrincipalType.GROUP);
-            synchronizePrincipalsByType(JetspeedPrincipalType.ROLE);
-            synchronizePrincipalsByType(JetspeedPrincipalType.USER);
-        }
-        finally
-        {
-            setSynchronizing(false);
-        }
-    }
-
-    public void synchronizePrincipalsByType(String principalTypeName)
-    {
-        try
-        {
-            if (principalTypeName.equalsIgnoreCase(JetspeedPrincipalType.USER))
+            // don't skip any entity type when synchronizing all
+            Collection<String> skipEntities = new ArrayList<String>();
+            InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
+            
+            for (String type : securityEntityManager.getSupportedEntityTypes())
             {
-                setSynchronizing(true);
-                synchronizePrincipals(JetspeedPrincipalType.USER);
-            }
-            else if (principalTypeName.equalsIgnoreCase(JetspeedPrincipalType.GROUP))
-            {
-                setSynchronizing(true);
-                synchronizePrincipals(JetspeedPrincipalType.GROUP);
-            }
-            else if (principalTypeName.equalsIgnoreCase(JetspeedPrincipalType.ROLE))
-            {
-                setSynchronizing(true);
-                synchronizePrincipals(JetspeedPrincipalType.ROLE);
+                for (Entity entity : securityEntityManager.getAllEntities(type))
+                {
+                    recursiveSynchronizeEntity(entity, synchronizationState);
+                }
             }
         }
         finally
@@ -108,14 +90,27 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    private void synchronizePrincipals(String type)
+    public void synchronizePrincipalsByType(String type)
     {
-        Collection<Entity> entites = securityEntityManager.getAllEntities(type);
-        Collection<String> skipEntities = new ArrayList<String>();
-        InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
-        for (Entity entity : entites)
+        setSynchronizing(true);
+        try
         {
-            recursiveSynchronizeEntity(entity, synchronizationState);
+            Collection<Entity> entites = securityEntityManager.getAllEntities(type);
+            Collection<String> skipEntities = new ArrayList<String>();
+            if (!type.equals(JetspeedPrincipalType.USER))
+            {
+                // skip synchronizing users when not synchronizing the USER type itself
+                skipEntities.add(JetspeedPrincipalType.USER);
+            }
+            InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
+            for (Entity entity : entites)
+            {
+                recursiveSynchronizeEntity(entity, synchronizationState);
+            }
+        }
+        finally
+        {
+            setSynchronizing(false);
         }
     }
 
@@ -138,9 +133,9 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
 
     public void synchronizeUserPrincipal(String name)
     {
+        setSynchronizing(true);
         try
         {
-            setSynchronizing(true);
             // don't process relations going towards users to avoid sync'ing huge
             // amounts of data.
             // TODO: allow processing of required relations towards users.
