@@ -261,18 +261,32 @@
   
   <bean id="LdapSpringContext" class="org.springframework.ldap.core.support.LdapContextSource">
     <meta key="j2:cat" value="ldap" />
-    <property name="url" value="ldap://localhost:389" />
-    <property name="base" value="o=sevenSeas" />
-    <property name="userDn" value="cn=admin,o=sevenSeas" />
-    <property name="password" value="secret" />
+    <property name="url">
+          <value>${ldap.url}</value>
+    </property>
+    <property name="base">
+          <value>${ldap.base}</value>
+    </property>
+    <property name="userDn">
+          <value>${ldap.userDn}</value>
+    </property>
+    <property name="password">
+          <value>${ldap.password}</value>
+    </property>    
   </bean>
 
   <bean id="ldapContext" class="org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy"
     depends-on="LdapSpringContext">
     <meta key="j2:cat" value="ldap" />
     <constructor-arg index="0" ref="LdapSpringContext" />
-    <constructor-arg index="1" value="com.sun.jndi.ldap.LdapCtxFactory" />
-    <constructor-arg index="2" value="(objectclass=person)" />
-    <constructor-arg index="3" value="2" />
+    <constructor-arg index="1">
+    	<value>${ldap.context.factory}</value>
+    </constructor-arg>  
+    <constructor-arg index="2">
+       	<value>${ldap.user.filter}</value>
+    </constructor-arg>
+    <constructor-arg index="3">
+       	<value>${ldap.search.scope}</value>
+    </constructor-arg>
   </bean>
 </beans>
