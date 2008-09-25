@@ -94,7 +94,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
             DistinguishedName principalDN = new DistinguishedName(internalId);
             principalDN.removeFirst();
             internalId =principalDN.toString();            
-            Entity resultEntity = (Entity) ldapTemplate.lookup(internalId, contextMapper);
+            Entity resultEntity = (Entity) ldapTemplate.lookup(internalId, getContextMapper());
             if (resultEntity != null)
             {
                 resultSet.add(resultEntity);

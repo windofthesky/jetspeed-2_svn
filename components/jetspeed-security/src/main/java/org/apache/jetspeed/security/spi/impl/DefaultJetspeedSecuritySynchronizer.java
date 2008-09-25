@@ -45,21 +45,15 @@ import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
- * @version $Id: DefaultJetspeedPrincipalSynchronizer.java 694772 2008-09-12
- *          18:39:51Z ddam $
+ * @version $Id$
  */
 public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySynchronizer
 {
     private static final Log logger = LogFactory.getLog(DefaultJetspeedSecuritySynchronizer.class);
-
     JetspeedPrincipalManagerProvider principalManagerProvider;
-
     SecurityEntityManager securityEntityManager;
-
     Collection<String> supportedExternalEntityTypes = Collections.emptyList();
-
     Collection<SecurityEntityRelationType> supportedExternalEntityRelationTypes = Collections.emptyList();
-
     Map<String, Collection<SecurityEntityRelationType>> entityToRelationTypes = Collections.emptyMap();
 
     /**
@@ -70,7 +64,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
     {
         this.principalManagerProvider = principalManagerProvider;
         this.securityEntityManager = securityEntityManager;
-        
+        createRelations();
     }
 
     public void synchronizeAll()
@@ -78,7 +72,9 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         try
         {
             setSynchronizing(true);
-            // TODO
+            synchronizePrincipalsByType(JetspeedPrincipalType.GROUP);
+            synchronizePrincipalsByType(JetspeedPrincipalType.ROLE);
+            synchronizePrincipalsByType(JetspeedPrincipalType.USER);
         }
         finally
         {
@@ -90,12 +86,53 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
     {
         try
         {
-            setSynchronizing(true);
-            // TODO
+            if (principalTypeName.equalsIgnoreCase(JetspeedPrincipalType.USER))
+            {
+                setSynchronizing(true);
+                synchronizePrincipals(JetspeedPrincipalType.USER);
+            }
+            else if (principalTypeName.equalsIgnoreCase(JetspeedPrincipalType.GROUP))
+            {
+                setSynchronizing(true);
+                synchronizePrincipals(JetspeedPrincipalType.GROUP);
+            }
+            else if (principalTypeName.equalsIgnoreCase(JetspeedPrincipalType.ROLE))
+            {
+                setSynchronizing(true);
+                synchronizePrincipals(JetspeedPrincipalType.ROLE);
+            }
         }
         finally
         {
             setSynchronizing(false);
+        }
+    }
+
+    private void synchronizePrincipals(String type)
+    {
+        Collection<Entity> entites = securityEntityManager.getAllEntities(type);
+        Collection<String> skipEntities = new ArrayList<String>();
+        InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
+        for (Entity entity : entites)
+        {
+            recursiveSynchronizeEntity(entity, synchronizationState);
+        }
+    }
+
+    private void recursiveSynchronizeEntity(Entity entity, InternalSynchronizationState syncState)
+    {
+        JetspeedPrincipal updatedPrincipal = null;
+        if (entity != null && !syncState.isProcessed(entity))
+        {
+            // mark as processed, to avoid nasty loops
+            syncState.setProcessed(entity);
+            // update / create corresponding JetspeedPrincipal first
+            updatedPrincipal = synchronizePrincipalAttributes(entity);
+            if (updatedPrincipal != null)
+            {
+                // Synchronizing Relations
+                synchronizePrincipalRelation(updatedPrincipal, entity, syncState);
+            }
         }
     }
 
@@ -104,14 +141,11 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         try
         {
             setSynchronizing(true);
-            
             // don't process relations going towards users to avoid sync'ing huge
             // amounts of data.
             // TODO: allow processing of required relations towards users.
-            Collection<String> skipEntities = Arrays.asList(new String[]
-            { JetspeedPrincipalType.USER});
+            Collection<String> skipEntities = Arrays.asList(new String[] { JetspeedPrincipalType.USER });
             recursiveSynchronizePrincipal(securityEntityManager.getEntity(JetspeedPrincipalType.USER, name), new InternalSynchronizationState(skipEntities));
-            
         }
         finally
         {
@@ -126,49 +160,137 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         {
             // mark as processed, to avoid nasty loops
             syncState.setProcessed(entity);
-
             // update / create corresponding JetspeedPrincipal first
             updatedPrincipal = synchronizePrincipalAttributes(entity);
-
-            if (updatedPrincipal != null && entityToRelationTypes.values().size() != 0)
+            if (updatedPrincipal != null)
             {
-                // loop through all relation types for this entity type
-                for (SecurityEntityRelationType relationTypeForThisEntity : entityToRelationTypes.get(entity.getType()))
-                {
-                    // check at what side of the relationship this entity
-                    // represents (from or to) and check whether
-                    // entities on the other side should be synchronized.Entity
-                    // entity
-                    if (relationTypeForThisEntity.getFromEntityType().equals(entity.getType())){
-                        Collection<String> updatedAssociationToNames = synchronizeAddedAssociations(relationTypeForThisEntity,entity,updatedPrincipal,true,syncState);   
-                        synchronizeRemovedAssociations(updatedAssociationToNames, relationTypeForThisEntity.getRelationType(), updatedPrincipal, true);
-                    }
-                    
-                    // the entity can represent either side or *both* sides of
-                    // the relationship, so synchronize both ways.
-                    if (relationTypeForThisEntity.getToEntityType().equals(entity.getType()))
-                    {
-                        Collection<String> updatedAssociationFromNames = synchronizeAddedAssociations(relationTypeForThisEntity,entity,updatedPrincipal,false,syncState);   
-                        synchronizeRemovedAssociations(updatedAssociationFromNames, relationTypeForThisEntity.getRelationType(), updatedPrincipal, false);
-                    }
-                }
+                // Synchronizing Relations
+                synchronizePrincipalRelation(updatedPrincipal, entity, syncState);
             }
-
         }
         return updatedPrincipal;
     }
 
-    protected Collection<String> synchronizeAddedAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal, boolean entityIsFromEntity, InternalSynchronizationState syncState){
-        Collection<String> externalRelatedEntityIds=null;
-        Collection<Entity> relatedEntities = entityIsFromEntity ? 
-                securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity) :
-                securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);
+    protected JetspeedPrincipal synchronizePrincipalRelation(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState)
+    {
+        if (entityToRelationTypes.values().size() != 0)
+            // loop through all relation types for this entity type
+            for (SecurityEntityRelationType relationTypeForThisEntity : entityToRelationTypes.get(entity.getType()))
+            {
+                // check at what side of the relationship this entity
+                // represents (from or to) and check whether
+                // entities on the other side should be synchronized.Entity
+                // entity
+                if (relationTypeForThisEntity.getFromEntityType().equals(entity.getType()))
+                {
+                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getToEntityType()))
+                    {
+                        Collection<String> updatedAssociationToNames = synchronizeAssociations(relationTypeForThisEntity, entity, principal, true, syncState);
+                        synchronizeRemovedAssociations(updatedAssociationToNames, relationTypeForThisEntity.getRelationType(), principal, true);
+                    }
+                }
+                // the entity can represent either side or *both* sides of
+                // the relationship, so synchronize both ways.
+                if (relationTypeForThisEntity.getToEntityType().equals(entity.getType()))
+                {
+                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getFromEntityType()))
+                    {
+                        Collection<String> updatedAssociationFromNames = synchronizeAssociations(relationTypeForThisEntity, entity, principal, false, syncState);
+                        synchronizeRemovedAssociations(updatedAssociationFromNames, relationTypeForThisEntity.getRelationType(), principal, false);
+                    }
+                }
+            }
+        return principal;
+    }
+
+    protected JetspeedPrincipal synchronizePrincipalRelations(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState)
+    {
+        if (entityToRelationTypes.values().size() != 0)
+            // loop through all relation types for this entity type
+            for (SecurityEntityRelationType relationTypeForThisEntity : entityToRelationTypes.get(entity.getType()))
+            {
+                // check at what side of the relationship this entity
+                // represents (from or to) and check whether
+                // entities on the other side should be synchronized.Entity
+                // entity
+                if (relationTypeForThisEntity.getFromEntityType().equals(entity.getType()))
+                {
+                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getToEntityType()))
+                    {
+                        Collection<String> updatedAssociationToNames = synchronizeAddedAssociations(relationTypeForThisEntity, entity, principal, true,
+                                                                                                    syncState);
+                        synchronizeRemovedAssociations(updatedAssociationToNames, relationTypeForThisEntity.getRelationType(), principal, true);
+                    }
+                }
+                // the entity can represent either side or *both* sides of
+                // the relationship, so synchronize both ways.
+                if (relationTypeForThisEntity.getToEntityType().equals(entity.getType()))
+                {
+                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getFromEntityType()))
+                    {
+                        Collection<String> updatedAssociationFromNames = synchronizeAddedAssociations(relationTypeForThisEntity, entity, principal, false,
+                                                                                                      syncState);
+                        synchronizeRemovedAssociations(updatedAssociationFromNames, relationTypeForThisEntity.getRelationType(), principal, false);
+                    }
+                }
+            }
+        return principal;
+    }
+
+    protected Collection<String> synchronizeAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
+                                                         boolean entityIsFromEntity, InternalSynchronizationState syncState)
+    {
+        Collection<String> externalRelatedEntityIds = null;
+        Collection<Entity> relatedEntities = entityIsFromEntity ? securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity)
+                                                               : securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);
         externalRelatedEntityIds = new ArrayList<String>();
         for (Entity relatedEntity : relatedEntities)
-        {                
+        {
             Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
-            Entity toEntity = entityIsFromEntity ? relatedEntity : entity ;
-            if (syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
+            Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
+            if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
+            {
+                // first flag the relation as processed to
+                // prevent synchronizing the same relation from
+                // the other side.
+                syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
+                // first create/update principal
+                // JetspeedPrincipal relatedPrincipal = recursiveSynchronizePrincipal(relatedEntity, syncState);
+                JetspeedPrincipal relatedPrincipal = null;
+                JetspeedPrincipalManager principalManager = principalManagerProvider
+                                                                                    .getManager(principalManagerProvider
+                                                                                                                        .getPrincipalType(relatedEntity
+                                                                                                                                                       .getType()));
+                if (principalManager != null)
+                {
+                    relatedPrincipal = principalManager.getPrincipal(relatedEntity.getId());
+                }
+                // .. then update associations to / from it
+                JetspeedPrincipal fromPrincipal = entityIsFromEntity ? principal : relatedPrincipal;
+                JetspeedPrincipal toPrincipal = entityIsFromEntity ? relatedPrincipal : principal;
+                // does association exist in DB ?
+                if (relatedPrincipal != null && !associationExists(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType()))
+                {
+                    synchronizeAddedPrincipalAssocation(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType());
+                    externalRelatedEntityIds.add(relatedPrincipal.getName());
+                }
+            }
+        }
+        return externalRelatedEntityIds;
+    }
+
+    protected Collection<String> synchronizeAddedAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
+                                                              boolean entityIsFromEntity, InternalSynchronizationState syncState)
+    {
+        Collection<String> externalRelatedEntityIds = null;
+        Collection<Entity> relatedEntities = entityIsFromEntity ? securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity)
+                                                               : securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);
+        externalRelatedEntityIds = new ArrayList<String>();
+        for (Entity relatedEntity : relatedEntities)
+        {
+            Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
+            Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
+            if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
             {
                 // first flag the relation as processed to
                 // prevent synchronizing the same relation from
@@ -189,9 +311,9 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
         return externalRelatedEntityIds;
     }
-    
+
     protected void synchronizeRemovedAssociations(Collection<String> externalRelatedEntityIds, String associationName, JetspeedPrincipal principal,
-            boolean isFromPrincipal)
+                                                  boolean isFromPrincipal)
     {
         // check whether associations were removed in external store (e.g.
         // LDAP), but still present in the DB
@@ -200,7 +322,8 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         if (isFromPrincipal)
         {
             relatedToPrincipals = principalManager.getAssociatedFrom(principal.getName(), principal.getType(), associationName);
-        } else
+        }
+        else
         {
             relatedToPrincipals = principalManager.getAssociatedTo(principal.getName(), principal.getType(), associationName);
         }
@@ -214,35 +337,45 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                     if (isFromPrincipal)
                     {
                         principalManager.removeAssociation(principal, relatedPrincipal, associationName);
-                    } else
+                    }
+                    else
                     {
                         principalManager.removeAssociation(relatedPrincipal, principal, associationName);
                     }
-                } catch (SecurityException e){
-                    if (isFromPrincipal){
-                        logger.error("Unexpected SecurityException trying to remove ("+principal.getType().getName()+","+relatedPrincipal.getType().getName()+","+associationName+") association during synchronization.", e);    
-                    } else {
-                        logger.error("Unexpected SecurityException trying to remove ("+relatedPrincipal.getType().getName()+","+principal.getType().getName()+","+associationName+") association during synchronization.", e);    
+                }
+                catch (SecurityException e)
+                {
+                    if (isFromPrincipal)
+                    {
+                        logger.error("Unexpected SecurityException trying to remove (" + principal.getType().getName() + "," +
+                                     relatedPrincipal.getType().getName() + "," + associationName + ") association during synchronization.", e);
                     }
-                    
-                } 
+                    else
+                    {
+                        logger.error("Unexpected SecurityException trying to remove (" + relatedPrincipal.getType().getName() + "," +
+                                     principal.getType().getName() + "," + associationName + ") association during synchronization.", e);
+                    }
+                }
             }
         }
     }
 
-    protected boolean associationExists(JetspeedPrincipal fromPrincipal, JetspeedPrincipal toPrincipal, String associationName){
+    protected boolean associationExists(JetspeedPrincipal fromPrincipal, JetspeedPrincipal toPrincipal, String associationName)
+    {
         JetspeedPrincipalManager principalManager = principalManagerProvider.getManager(fromPrincipal.getType());
         List<String> toPrincipals = principalManager.getAssociatedNamesFrom(fromPrincipal.getName(), fromPrincipal.getType(), associationName);
         return toPrincipals.contains(toPrincipal.getName());
     }
-    
+
     protected void synchronizeAddedPrincipalAssocation(JetspeedPrincipal fromPrincipal, JetspeedPrincipal toPrincipal, String associationName)
     {
         JetspeedPrincipalManager principalManager = principalManagerProvider.getManager(fromPrincipal.getType());
         try
         {
             principalManager.addAssociation(fromPrincipal, toPrincipal, associationName);
-        } catch (SecurityException e){
+        }
+        catch (SecurityException e)
+        {
             logger.error("Unexpected SecurityException during synchronization.", e);
         }
     }
@@ -261,8 +394,19 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                 // principal does not exist yet, create it using the Jetspeed
                 // principal manager
                 updatedPrincipal = principalManager.newPrincipal(entity.getId(), true);
+                try
+                {
+                    principalManager.addPrincipal(updatedPrincipal, null);
+                }
+                catch (SecurityException sexp)
+                {
+                    if (logger.isErrorEnabled())
+                    {
+                        logger.error("Unexpected exception in adding new pricipal of type " + updatedPrincipal.getType().getName() + ".", sexp);
+                    }
+                }
                 attrsToBeUpdated.addAll(mappedEntityAttrs.values());
-            } 
+            }
             else if (updatedPrincipal.isMapped())
             {
                 SecurityAttributes principalAttrs = updatedPrincipal.getSecurityAttributes();
@@ -276,7 +420,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         {
                             // TODO : multi-valued Principal attrs are not yet
                             // supported
-                        } 
+                        }
                         else
                         {
                             if (!StringUtils.equals(principalAttr.getStringValue(), entityAttr.getValue()))
@@ -284,17 +428,15 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                                 attrsToBeUpdated.add(entityAttr);
                             }
                         }
-                    } 
+                    }
                     else
                     {
                         attrsToBeUpdated.add(entityAttr);
                     }
                 }
             }
-
             SecurityAttributes principalAttrs = updatedPrincipal.getSecurityAttributes();
             Map<String, SecurityAttributeType> securityAttrTypes = principalAttrs.getSecurityAttributeTypes().getAttributeTypeMap();
-
             // Step 1. update principal's attributes
             for (Attribute addedEntityAttr : attrsToBeUpdated)
             {
@@ -308,15 +450,16 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         {
                             principalAttr = principalAttrs.getAttribute(addedEntityAttr.getMappedName(), true);
                         }
-                        if (principalAttr!=null) principalAttr.setStringValue(addedEntityAttr.getValue());
-                    } 
+                        if (principalAttr != null)
+                            principalAttr.setStringValue(addedEntityAttr.getValue());
+                    }
                     catch (SecurityException e)
                     {
                         if (logger.isErrorEnabled())
                         {
                             logger.error("Unexpected exception for attribute " + addedEntityAttr.getMappedName() + ".", e);
                         }
-                    } 
+                    }
                 }
             }
             if (updatedPrincipal.isMapped())
@@ -346,15 +489,15 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                     try
                     {
                         principalManager.updatePrincipal(updatedPrincipal);
-                    } 
+                    }
                     catch (SecurityException e)
                     {
-                        logger.error("Unexpected SecurityException: could not synchronize principal " + updatedPrincipal.getName() + " of type " + updatedPrincipal.getType().getName(), e);
-                    }  
+                        logger.error("Unexpected SecurityException: could not synchronize principal " + updatedPrincipal.getName() + " of type " +
+                                     updatedPrincipal.getType().getName(), e);
+                    }
                 }
             }
-
-        } 
+        }
         else
         {
             // TODO throw proper exception
@@ -362,18 +505,18 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         return updatedPrincipal;
     }
 
-    private void setSynchronizing(boolean sync){
+    private void setSynchronizing(boolean sync)
+    {
         SynchronizationStateAccess.setSynchronizing(sync ? Boolean.TRUE : Boolean.FALSE);
     }
-    
+
     public void setPrincipalManagerProvider(JetspeedPrincipalManagerProvider principalManagerProvider)
     {
         this.principalManagerProvider = principalManagerProvider;
     }
 
-    public void setSecurityEntityManager(SecurityEntityManager securityEntityManager)
+    private void createRelations()
     {
-        this.securityEntityManager = securityEntityManager;
         supportedExternalEntityTypes = securityEntityManager.getSupportedEntityTypes();
         supportedExternalEntityRelationTypes = securityEntityManager.getSupportedEntityRelationTypes();
         entityToRelationTypes = new HashMap<String, Collection<SecurityEntityRelationType>>();
@@ -385,13 +528,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
 
     private class InternalSynchronizationState
     {
-
         // entity type to processed entity IDs map
         Map<String, Set<String>> processedEntities = new HashMap<String, Set<String>>();
-
         // map relation type to a "from entity" -> "to entity" mapping
         Map<SecurityEntityRelationType, Map<String, Collection<String>>> processedEntityRelationsFromTo = new HashMap<SecurityEntityRelationType, Map<String, Collection<String>>>();
-
         // Entity types which are not processed
         // This is implemented as not following relations towards entities of
         // these types. E.g. if skipEntities contains the "user" type, and
@@ -414,6 +554,11 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             return processedEntitiesByType != null && processedEntitiesByType.contains(entity.getId());
         }
 
+        private boolean shouldFollowRelationTo(String relationType)
+        {
+            return !skipEntities.contains(relationType);
+        }
+
         private void setProcessed(Entity entity)
         {
             Set<String> processedEntitiesByType = processedEntities.get(entity.getType());
@@ -424,14 +569,6 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             processedEntitiesByType.add(entity.getId());
         }
 
-        private boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom){
-            if (startEntityIsFrom){
-                return isRelationProcessed(relationType, startEntity, endEntity);
-            } else {
-                return isRelationProcessed(relationType, endEntity, startEntity);
-            }
-        }
-        
         private boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
         {
             Map<String, Collection<String>> e2eMap = processedEntityRelationsFromTo.get(relationType);
@@ -443,14 +580,18 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             return false;
         }
 
-        private void setRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom){
-            if (startEntityIsFrom){
+        private void setRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom)
+        {
+            if (startEntityIsFrom)
+            {
                 setRelationProcessed(relationType, startEntity, endEntity);
-            } else {
+            }
+            else
+            {
                 setRelationProcessed(relationType, endEntity, startEntity);
             }
         }
-        
+
         private void setRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
         {
             Map<String, Collection<String>> e2eMap = processedEntityRelationsFromTo.get(relationType);
@@ -467,7 +608,5 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             }
             endIds.add(toEntity.getId());
         }
-
     }
-    
 }
