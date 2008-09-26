@@ -82,9 +82,7 @@ limitations under the License.
           <%
               // TODO hack alert, we need to do this because PortletDecorationImpl has
               // decorator.vm hard coded sigh!     
-              String _tempPath = maxFragment.getDecoration().getBasePath();
-              String _portletJSP = _tempPath.substring(0,_tempPath.lastIndexOf('/')) +
-                                   "/decorator.jsp";
+              String _portletJSP = "/" + maxFragment.getDecoration().getResource("decorator.jsp");
               pageContext.setAttribute("fragTemplateUrl", _portletJSP, PageContext.PAGE_SCOPE);
           %>
           
