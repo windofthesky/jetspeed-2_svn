@@ -16,6 +16,10 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.security.JetspeedBeanInitializer;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -24,27 +28,57 @@ import org.apache.jetspeed.security.UserManager;
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
  * @version $Id:
  */
-public class JetspeedPostContextLoader
+public class JetspeedPostContextLoader implements JetspeedBeanInitializer
 {
+    private static final Log log = LogFactory.getLog(JetspeedPostContextLoader.class);
     private UserManager userManager;
     private JetspeedSecuritySynchronizer synchronizer;
+    private boolean synchronizeAllUser;
+    private String synchronizeEntityType;
+
     /**
      * @param synchronizer
      * @param userManager
      */
-    public JetspeedPostContextLoader(JetspeedSecuritySynchronizer synchronizer, UserManager userManager)
+    public JetspeedPostContextLoader(JetspeedSecuritySynchronizer synchronizer, UserManager userManager, boolean synchronizeAllUser,
+                                     String synchronizeEntityType)
     {
         this.synchronizer = synchronizer;
         this.userManager = userManager;
+        this.synchronizeAllUser = synchronizeAllUser;
+        this.synchronizeEntityType = synchronizeEntityType;
     }
-    
-    public void init() throws SecurityException
+
+    public void intialize()
     {
-        User anonymousUser = userManager.getUser(userManager.getAnonymousUser());
-        if(anonymousUser == null && synchronizer !=null)
+        if (synchronizer != null)
         {
-            synchronizer.synchronizeUserPrincipal(userManager.getAnonymousUser());
+            try
+            {
+                if (userManager.getUser(userManager.getAnonymousUser()) == null)
+                {
+                    synchronizer.synchronizeUserPrincipal(userManager.getAnonymousUser());
+                }
+                
+                if (synchronizeAllUser)
+                {
+                    synchronizer.synchronizeAll();
+                }
+                else
+                {
+                    if (StringUtils.isNotEmpty(synchronizeEntityType))
+                    {
+                        synchronizer.synchronizePrincipalsByType(synchronizeEntityType);
+                    }
+                }
+            }
+            catch (SecurityException secExp)
+            {
+                if (log.isErrorEnabled())
+                {
+                    log.error("Error occured while executing JetspeedPostContextLoader", secExp);
+                }
+            }
         }
-                                                 
     }
 }

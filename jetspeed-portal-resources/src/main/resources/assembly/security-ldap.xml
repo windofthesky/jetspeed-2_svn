@@ -28,6 +28,8 @@
     <meta key="j2:cat" value="ldap" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
+    <constructor-arg index="2" type="boolean" value="false" />
+    <constructor-arg index="3" value="group" />
   </bean>
 
   <bean id="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer"
