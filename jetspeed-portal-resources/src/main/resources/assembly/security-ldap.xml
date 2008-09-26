@@ -48,7 +48,7 @@
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.UserManager" />
     <property name="context" ref="ldapContext" />
-    <property name="synchronizer" ref="JetspeedPrincipalSynchronizer" />
+    <property name="synchronizer" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
   </bean>
 
   <bean id="org.apache.jetspeed.security.mapping.SecurityEntityManager"

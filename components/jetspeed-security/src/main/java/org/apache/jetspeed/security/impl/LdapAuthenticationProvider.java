@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.impl;
 
 import java.util.Hashtable;
 
+import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
@@ -47,6 +48,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     private UserPasswordCredentialManager upcm;
     private UserManager manager;
     private LdapContextProxy context;
+
     public LdapAuthenticationProvider(String providerName, String providerDescription, String loginConfig, UserPasswordCredentialManager upcm,
                                       UserManager manager)
     {
@@ -59,6 +61,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     {
         this.context = context;
     }
+
     public void setSynchronizer(JetspeedSecuritySynchronizer synchronizer)
     {
         this.synchronizer = synchronizer;
@@ -70,39 +73,54 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         boolean authenticated = false;
         try
         {
-            authenticated = authenticateUser(userName, password);            
+            if (userName == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER,userName));
+            }
+            if (password == null)
+            {
+                throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
+            }
+
+            authenticated = authenticateUser(userName, password);
             if (authenticated)
             {
                 User user = getUser(userName);
                 authUser = new AuthenticatedUserImpl(user, new UserCredentialImpl(upcm.getPasswordCredential(user)));
             }
         }
-        catch (Exception e)
+        catch (SecurityException authEx)
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName), e);
+           if(authEx.getCause().getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
+            {
+               throw new SecurityException(SecurityException.INCORRECT_PASSWORD);
+            }else{
+                throw authEx;
+            }
         }
         return authUser;
     }
 
     private User getUser(String userName) throws SecurityException
     {
-        if(synchronizer!=null)
+        if (synchronizer != null)
         {
             synchronizer.synchronizeUserPrincipal(userName);
-        }        
+        }
         return manager.getUser(userName);
     }
 
-    private boolean authenticateUser(String userName, String password) throws NamingException, SecurityException
+    private boolean authenticateUser(String userName, String password) throws SecurityException
     {
-        Hashtable env = context.getCtx().getEnvironment();
-
-        // String savedPassword = String.valueOf(getPassword(uid));
-        String oldCredential = (String) env.get(Context.SECURITY_CREDENTIALS);
-        String oldUsername = (String) env.get(Context.SECURITY_PRINCIPAL);
-        String dn = lookupByUid(userName);
         try
         {
+            Hashtable env = context.getCtx().getEnvironment();
+            
+            // String savedPassword = String.valueOf(getPassword(uid));
+            String oldCredential = (String) env.get(Context.SECURITY_CREDENTIALS);
+            String oldUsername = (String) env.get(Context.SECURITY_PRINCIPAL);
+            String dn = lookupByUid(userName);
+            
             if (dn == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
@@ -119,17 +137,19 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             env.put(Context.SECURITY_CREDENTIALS, oldCredential);
             return true;
         }
-        catch (Exception e)
+        catch (AuthenticationException aex)
         {
-            e.printStackTrace();
-            // TODO: handle exception
+            throw new SecurityException(aex);
+
         }
-        return false;
+        catch (NamingException nex)
+        {
+            throw new SecurityException(SecurityException.UNEXPECTED.createScoped("in logining in",JetspeedPrincipalType.USER,userName));
+        }
     }
 
     public String lookupByUid(final String uid) throws SecurityException
     {
-        validateUid(uid);
         try
         {
             SearchControls cons = setSearchControls();
@@ -141,20 +161,10 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             throw new SecurityException(e);
         }
     }
-
-    protected void validateUid(String uid) throws SecurityException
-    {
-        String pattern = ".*\\(.*|.*\\[.*|.*\\{.*|.*\\\\.*|.*\\^.*|.*\\$.*|.*\\|.*|.*\\).*|.*\\?.*|.*\\*.*|.*\\+.*|.*\\..*";
-        if (StringUtils.isEmpty(uid) || uid.matches(pattern))
-        {
-            throw new SecurityException(SecurityException.INVALID_UID);
-        }
-    }
-
     protected SearchControls setSearchControls()
     {
         SearchControls controls = new SearchControls();
-        controls.setReturningAttributes(new String[]{});
+        controls.setReturningAttributes(new String[] {});
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         controls.setReturningObjFlag(true);
         return controls;
@@ -198,16 +208,16 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 
     private String getSearchSuffix()
     {
-        return  context.getUserFilter();
+        return context.getUserFilter();
     }
 
     private String getEntryPrefix()
     {
-        return  "cn";
+        return "cn";
     }
 
     private String getSearchDomain()
     {
-       return "";
+        return "";
     }
 }
