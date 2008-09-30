@@ -98,10 +98,12 @@
       </list>
     </property>
   </bean>
+  
   <bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
     <meta key="j2:cat" value="ldap" />
-    <property name="baseDN" value="" />
-    <property name="baseFilter">
+    <property name="baseDN" value="${ldap.base}" />
+    <property name="searchDN" value="" />
+    <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="(objectClass=person)" />
       </bean>
@@ -131,8 +133,9 @@
   </bean>
   <bean id="RoleDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
     <meta key="j2:cat" value="ldap" />
-    <property name="baseDN" value="" />
-    <property name="baseFilter">
+    <property name="baseDN" value="${ldap.base}" />
+    <property name="searchDN" value="${ldap.role.searchBase}" />
+    <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="(objectClass=groupOfUniqueNames)" />
       </bean>
@@ -167,8 +170,9 @@
   </bean>
   <bean id="GroupDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
     <meta key="j2:cat" value="ldap" />
-    <property name="baseDN" value="ou=Groups,o=Jetspeed" />
-    <property name="baseFilter">
+    <property name="baseDN" value="${ldap.base}" />
+    <property name="searchDN" value="${ldap.group.searchBase}" />
+    <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="(objectClass=groupOfUniqueNames)" />
       </bean>

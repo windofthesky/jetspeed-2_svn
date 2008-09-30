@@ -30,6 +30,8 @@ public class LDAPEntityDAOConfiguration
 {
 
     private String baseDN;
+    
+    private String searchDN;
 
     private Filter baseFilter;
 
@@ -48,13 +50,23 @@ public class LDAPEntityDAOConfiguration
     {
         this.baseDN = baseDN;
     }
+    
+    public String getSearchDN()
+    {
+        return searchDN;
+    }
+    
+    public void setSearchDN(String searchDN)
+    {
+        this.searchDN = searchDN;
+    }
 
-    public Filter getBaseFilter()
+    public Filter getSearchFilter()
     {
         return baseFilter;
     }
 
-    public void setBaseFilter(Filter baseFilter)
+    public void setSearchFilter(Filter baseFilter)
     {
         this.baseFilter = baseFilter;
     }

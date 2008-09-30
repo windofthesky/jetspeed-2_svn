@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.naming.Name;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +34,11 @@ import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
 import org.apache.jetspeed.security.mapping.ldap.dao.SearchUtil;
 import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
+import org.apache.jetspeed.security.mapping.model.Attribute;
+import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -86,9 +93,9 @@ public class SpringLDAPEntityDAO implements EntityDAO
             idFilter.or(new EqualsFilter(idAttr, id));
         }
         Filter combinedFilter = null;
-        if (configuration.getBaseFilter() != null)
+        if (configuration.getSearchFilter() != null)
         {
-            combinedFilter = SearchUtil.andFilters(idFilter, configuration.getBaseFilter());
+            combinedFilter = SearchUtil.andFilters(idFilter, configuration.getSearchFilter());
         }
         else
         {
@@ -103,9 +110,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
         for (Iterator<String> iterator = internalIds.iterator(); iterator.hasNext();)
         {
             String internalId = (String) iterator.next();
-            DistinguishedName principalDN = new DistinguishedName(internalId);
-            principalDN.removeFirst();
-            internalId =principalDN.toString();            
+            DistinguishedName principalDN = getRelativeDN(internalId);
+            internalId = principalDN.toString(); 
             Entity resultEntity = (Entity) ldapTemplate.lookup(internalId, getContextMapper());
             if (resultEntity != null)
             {
@@ -114,19 +120,25 @@ public class SpringLDAPEntityDAO implements EntityDAO
         }
         return resultSet;
     }
+    
+    protected DistinguishedName getRelativeDN(String fullDN){
+        DistinguishedName principalDN = new DistinguishedName(fullDN);
+        if (configuration.getBaseDN() != null && configuration.getBaseDN().length() > 0){
+            principalDN.removeFirst(new DistinguishedName(configuration.getBaseDN()));
+        }
+        return principalDN;
+    }
 
-    @SuppressWarnings("unchecked")
-    public Collection<Entity> getEntities(Filter filter)
-    {
-        if (configuration.getBaseFilter() != null)
+    protected String createSearchFilter(Filter filter){
+        if (configuration.getSearchFilter() != null)
         {
             if (filter == null)
             {
-                filter = configuration.getBaseFilter();
+                filter = configuration.getSearchFilter();
             }
             else
             {
-                filter = SearchUtil.andFilters(configuration.getBaseFilter(), filter);
+                filter = SearchUtil.andFilters(configuration.getSearchFilter(), filter);
             }
         }
         String filterStr = filter.toString();
@@ -134,17 +146,41 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             filterStr = "(objectClass=*)"; // trivial search query
         }
-        return (Collection<Entity>) ldapTemplate.search(configuration.getBaseDN(), filterStr, SearchControls.SUBTREE_SCOPE, getContextMapper());
+        return filterStr;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Collection<Entity> getEntities(Filter filter)
+    {
+        String filterStr = createSearchFilter(filter);
+        return (Collection<Entity>) ldapTemplate.search(configuration.getSearchDN(), filterStr, SearchControls.SUBTREE_SCOPE, getContextMapper());
     }
 
     public Collection<Entity> getAllEntities()
     {
-        final String finalFilter = configuration.getBaseFilter() != null ? configuration.getBaseFilter().encode() : "(objectClass=*)";
+        final String finalFilter = configuration.getSearchFilter() != null ? configuration.getSearchFilter().encode() : "(objectClass=*)";
         return getEntities(new SimpleFilter(finalFilter));
     }
 
     public void update(Entity entity)
     {
+        String internalIdStr = entity.getInternalId();
+        if (internalIdStr == null){
+            Entity ldapEntity = getEntity(entity.getId());
+            if (ldapEntity == null || ldapEntity.getInternalId() == null){
+                // TODO throw exception
+                return;
+            }   
+            internalIdStr = entity.getInternalId();
+        }
+        Name dn=getRelativeDN(internalIdStr);
+        DirContextOperations dirCtxOps = ldapTemplate.lookupContext(dn);
+        if (dirCtxOps == null){
+            // TODO throw exception
+            return;
+        }
+        Collection<ModificationItem> modItems = getModItems(entity,dirCtxOps);
+        ldapTemplate.modifyAttributes(dn, modItems.toArray(new ModificationItem[]{}));
     }
 
     public void addEntity(Entity entity)
@@ -155,14 +191,25 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
     }
 
+    
+    public void addEntity(Entity entity, Entity parentEntity)
+    {
+        
+    }
+
+    public void removeEntity(Entity entity, Entity parentEntity)
+    {
+        
+    }
+
+    public void update(Entity entity, Entity parentEntity)
+    {
+        
+    }
+
     public LDAPEntityDAOConfiguration getConfiguration()
     {
         return configuration;
-    }
-
-    protected Filter createFilterForIdSearch(String entityId)
-    {
-        return SearchUtil.constructMatchingFieldsFilter(configuration.getBaseFilter(), new String[] { configuration.getLdapIdAttribute(), entityId });
     }
 
     public ContextMapper getContextMapper()
@@ -184,4 +231,68 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
         this.contextMapper = contextMapper;
     }
+
+    protected boolean setNamingAttribute(Attribute entityAttr, DirContextOperations dirCtxOps){
+        boolean attrAdded = false;
+        if (entityAttr != null){
+            AttributeDef attrDef = entityAttr.getDefinition();
+            if (attrDef.isMultiValue()){
+                Collection<String> values = entityAttr.getValues();
+                if (values != null){
+                    dirCtxOps.setAttributeValues(attrDef.getName(),values.toArray());
+                    attrAdded = true;
+                }
+            } else {
+                String value = entityAttr.getValue();
+                if (value != null){
+                    dirCtxOps.setAttributeValue(attrDef.getName(),value);
+                    attrAdded = true;
+                }
+            }                    
+        }    
+        return attrAdded;
+    }
+    
+    protected Collection<ModificationItem> getModItems(Entity entity, DirContextOperations dirCtxOps){
+        Collection<ModificationItem> modItems = new ArrayList<ModificationItem>();
+        
+        for(AttributeDef attrDef : configuration.getAttributeDefinitions()){
+            if (!attrDef.getName().equals(configuration.getLdapIdAttribute())){
+                Attribute entityAttr = entity.getAttribute(attrDef.getName());
+                boolean attrAdded = false;
+                if (entityAttr != null){
+                    if (attrDef.isMultiValue()){
+                        Collection<String> values = entityAttr.getValues();
+                        if (values != null){
+                            javax.naming.directory.Attribute namingAttr = new BasicAttribute(entityAttr.getName(), entityAttr.getValues().toArray());
+                            modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,namingAttr));
+                            attrAdded = true;
+                        }
+                    } else {
+                        String value = entityAttr.getValue();
+                        if (value != null){
+                            javax.naming.directory.Attribute namingAttr = new BasicAttribute(entityAttr.getName(), entityAttr.getValue());
+                            modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,namingAttr));
+                            attrAdded = true;
+                        }
+                    }                    
+                }    
+                if (!attrAdded){
+                    // entity attribute not added, so remove it if present in ldap.
+                    Object namingAttrValue = dirCtxOps.getObjectAttribute(attrDef.getName());
+                    if (namingAttrValue != null){
+                        modItems.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,new BasicAttribute(attrDef.getName(), namingAttrValue)));
+                    }
+                }
+            }
+        }
+        return modItems;
+    }
+    
+    protected Filter createFilterForIdSearch(String entityId)
+    {
+        return SearchUtil.constructMatchingFieldsFilter(configuration.getSearchFilter(), new String[] { configuration.getLdapIdAttribute(), entityId });
+    }
+
+
 }

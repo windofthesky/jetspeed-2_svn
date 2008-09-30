@@ -78,7 +78,13 @@ public interface EntityDAO
     void addEntity(Entity entity);
 
     void removeEntity(Entity entity);
-    
+
+    void update(Entity entity, Entity parentEntity);
+
+    void addEntity(Entity entity, Entity parentEntity);
+
+    void removeEntity(Entity entity, Entity parentEntity);
+
     EntityFactory getEntityFactory();
 
 }

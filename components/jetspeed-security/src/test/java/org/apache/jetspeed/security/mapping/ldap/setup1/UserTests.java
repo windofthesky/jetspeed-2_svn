@@ -59,6 +59,35 @@ public class UserTests extends AbstractSetup1LDAPTest
                 "jsmith", resultSet);
     }
 
+    public void testUpdateEntity() throws Exception
+    {
+        EntityImpl sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
+        sampleUser
+                .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
+        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
+        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+        
+        // test attribute modification
+        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith modified");
+        entityManager.update(sampleUser);
+        
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+
+        // test attribute removal
+        sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
+        sampleUser
+                .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
+        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        
+        entityManager.update(sampleUser);
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+    }
+    
     @Override
     protected void internaltearDown() throws Exception
     {

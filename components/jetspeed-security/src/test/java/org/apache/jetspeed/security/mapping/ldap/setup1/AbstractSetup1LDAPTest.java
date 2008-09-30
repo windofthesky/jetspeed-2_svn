@@ -86,9 +86,10 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         userAttrDefs.add(GIVEN_NAME_DEF);
 
         userSearchConfig = new LDAPEntityDAOConfiguration();
-        userSearchConfig.setBaseDN("");
+        userSearchConfig.setBaseDN("o=sevenSeas");
+        userSearchConfig.setSearchDN("");
         userSearchConfig
-                .setBaseFilter(new SimpleFilter("(objectClass=person)"));
+                .setSearchFilter(new SimpleFilter("(objectClass=person)"));
         userSearchConfig.setLdapIdAttribute("uid");
         userSearchConfig.setAttributeDefinitions(userAttrDefs);
         userSearchConfig.setEntityType("user");
@@ -103,8 +104,9 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         roleAttrDefs.add(DESCRIPTION_ATTR_DEF);
 
         LDAPEntityDAOConfiguration roleSearchConfig = new LDAPEntityDAOConfiguration();
-        roleSearchConfig.setBaseDN("");
-        roleSearchConfig.setBaseFilter(new SimpleFilter(
+        roleSearchConfig.setBaseDN("o=sevenSeas");
+        roleSearchConfig.setSearchDN("");
+        roleSearchConfig.setSearchFilter(new SimpleFilter(
                 "(objectClass=groupOfUniqueNames)"));
         roleSearchConfig.setLdapIdAttribute("cn");
         roleSearchConfig.setAttributeDefinitions(roleAttrDefs);

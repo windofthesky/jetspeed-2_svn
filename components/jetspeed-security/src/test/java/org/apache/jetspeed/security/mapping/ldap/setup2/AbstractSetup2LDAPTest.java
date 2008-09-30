@@ -88,8 +88,9 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         userAttrDefs.add(J2_ROLE_DEF);
 
         userSearchConfig = new LDAPEntityDAOConfiguration();
-        userSearchConfig.setBaseDN("");
-        userSearchConfig.setBaseFilter(new SimpleFilter(
+        userSearchConfig.setBaseDN("o=sevenSeas");
+        userSearchConfig.setSearchDN("");
+        userSearchConfig.setSearchFilter(new SimpleFilter(
                 "(objectClass=jetspeed-2-user)"));
         userSearchConfig.setLdapIdAttribute("uid");
         userSearchConfig.setAttributeDefinitions(userAttrDefs);
@@ -105,8 +106,9 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         roleAttrDefs.add(DESCRIPTION_ATTR_DEF);
 
         LDAPEntityDAOConfiguration roleSearchConfig = new LDAPEntityDAOConfiguration();
-        roleSearchConfig.setBaseDN("");
-        roleSearchConfig.setBaseFilter(new SimpleFilter(
+        roleSearchConfig.setBaseDN("o=sevenSeas");
+        roleSearchConfig.setSearchDN("");
+        roleSearchConfig.setSearchFilter(new SimpleFilter(
                 "(objectClass=jetspeed-2-role)"));
         roleSearchConfig.setLdapIdAttribute("uid");
         roleSearchConfig.setAttributeDefinitions(roleAttrDefs);
