@@ -23,6 +23,8 @@ import java.util.Iterator;
 import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.impl.EntityFactoryImpl;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultEntityContextMapper;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
@@ -45,6 +47,16 @@ public class SpringLDAPEntityDAO implements EntityDAO
     protected LdapTemplate ldapTemplate;
     protected LDAPEntityDAOConfiguration configuration;
     private ContextMapper contextMapper;
+    private EntityFactory entityFactory;
+
+    
+    public SpringLDAPEntityDAO(LDAPEntityDAOConfiguration configuration)
+    {
+        super();
+        this.configuration = configuration;
+        this.entityFactory = new EntityFactoryImpl(configuration);
+        this.contextMapper = new DefaultEntityContextMapper(entityFactory);
+    }
 
     public void initialize(LdapTemplate ldapTemplate)
     {
@@ -148,11 +160,6 @@ public class SpringLDAPEntityDAO implements EntityDAO
         return configuration;
     }
 
-    public void setConfiguration(LDAPEntityDAOConfiguration configuration)
-    {
-        this.configuration = configuration;
-    }
-
     protected Filter createFilterForIdSearch(String entityId)
     {
         return SearchUtil.constructMatchingFieldsFilter(configuration.getBaseFilter(), new String[] { configuration.getLdapIdAttribute(), entityId });
@@ -160,11 +167,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     public ContextMapper getContextMapper()
     {
-        if (contextMapper == null && configuration != null)
-        {
-            contextMapper = new DefaultEntityContextMapper(configuration);
-        }
         return contextMapper;
+    }
+
+    public EntityFactory getEntityFactory()
+    {
+        return entityFactory;
     }
 
     public void setLdapTemplate(LdapTemplate ldapTemplate)

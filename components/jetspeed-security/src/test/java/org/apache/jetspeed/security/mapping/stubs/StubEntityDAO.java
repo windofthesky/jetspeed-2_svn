@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.springframework.ldap.filter.Filter;
@@ -72,6 +73,12 @@ public class StubEntityDAO implements EntityDAO
     public void update(Entity entity)
     {
         entities.put(entity.getId(),entity);
+    }
+
+    public EntityFactory getEntityFactory()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

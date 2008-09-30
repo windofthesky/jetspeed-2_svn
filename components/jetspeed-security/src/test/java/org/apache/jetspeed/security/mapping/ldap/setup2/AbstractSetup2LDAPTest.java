@@ -95,9 +95,8 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         userSearchConfig.setAttributeDefinitions(userAttrDefs);
         userSearchConfig.setEntityType("user");
 
-        SpringLDAPEntityDAO userDAO = new SpringLDAPEntityDAO();
+        SpringLDAPEntityDAO userDAO = new SpringLDAPEntityDAO(userSearchConfig);
         userDAO.setLdapTemplate(ldapTemplate);
-        userDAO.setConfiguration(userSearchConfig);
 
         // setting up role DAO
 
@@ -113,9 +112,8 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         roleSearchConfig.setAttributeDefinitions(roleAttrDefs);
         roleSearchConfig.setEntityType("role");
 
-        SpringLDAPEntityDAO roleDAO = new SpringLDAPEntityDAO();
+        SpringLDAPEntityDAO roleDAO = new SpringLDAPEntityDAO(roleSearchConfig);
         roleDAO.setLdapTemplate(ldapTemplate);
-        roleDAO.setConfiguration(roleSearchConfig);
 
         Map<String, EntityDAO> daos = new HashMap<String, EntityDAO>();
         daos.put("user", userDAO);

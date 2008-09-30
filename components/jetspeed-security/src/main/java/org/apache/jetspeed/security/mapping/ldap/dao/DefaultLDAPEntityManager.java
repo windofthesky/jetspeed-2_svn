@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
 import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
@@ -164,5 +165,14 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
             this.entityRelationDAOs.put( dao.getRelationType(), dao);
         }
     }
+
+    public EntityFactory getEntityFactory(String entityType)
+    {
+        EntityDAO dao = entityDAOs.get(entityType);
+        
+        return dao != null ? dao.getEntityFactory() : null;
+    }
+    
+    
     
 }

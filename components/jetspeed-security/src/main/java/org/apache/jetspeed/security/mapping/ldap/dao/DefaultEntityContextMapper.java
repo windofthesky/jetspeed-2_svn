@@ -16,19 +16,9 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.support.AbstractContextMapper;
-
-import org.apache.jetspeed.security.mapping.model.Attribute;
-import org.apache.jetspeed.security.mapping.model.AttributeDef;
-import org.apache.jetspeed.security.mapping.model.impl.AttributeImpl;
-import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -37,63 +27,16 @@ import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
 public class DefaultEntityContextMapper extends AbstractContextMapper
 {
 
-    LDAPEntityDAOConfiguration searchConfiguration;
+    EntityFactory entityFactory;
 
-    public DefaultEntityContextMapper(
-            LDAPEntityDAOConfiguration searchConfiguration)
+    public DefaultEntityContextMapper(EntityFactory entityFactory)
     {
-        this.searchConfiguration = searchConfiguration;
+        this.entityFactory = entityFactory;
     }
 
     public Object doMapFromContext(DirContextOperations ctx)
     {
-        String entityId = null;
-        Set<Attribute> attributes = new HashSet<Attribute>();
-        for (AttributeDef attrDef : searchConfiguration
-                .getAttributeDefinitions())
-        {
-
-            String[] values = ctx.getStringAttributes(attrDef.getName());
-            if (values != null && values.length > 0)
-            {
-                Attribute a = new AttributeImpl(attrDef);
-                if (attrDef.isMultiValue())
-                {
-                    Collection attrValues = new ArrayList();
-                    attrValues.addAll(Arrays.asList(values));
-                    a.setValues(attrValues);
-                } else
-                {
-                    if (attrDef.getName().equals(
-                            searchConfiguration.getLdapIdAttribute()))
-                    {
-                        entityId = values[0];
-                    }
-                    a.setValue(values[0]);
-                }
-                attributes.add(a);
-            }
-        }
-        if (entityId != null)
-        {
-            EntityImpl entity = new EntityImpl(searchConfiguration
-                    .getEntityType(), entityId, searchConfiguration
-                    .getAttributeDefinitions());
-            entity.setAttributes(attributes);
-            entity.setInternalId(ctx.getNameInNamespace().toString()); // set
-                                                                       // full
-                                                                       // DN
-                                                                       // (incl.
-                                                                       // base
-                                                                       // DN) as
-                                                                       // internal
-                                                                       // ID
-            entity.setType(searchConfiguration.getEntityType());
-            return entity;
-        } else
-        {
-            return null;
-        }
+        return entityFactory.createEntity(ctx);
     }
 
 }

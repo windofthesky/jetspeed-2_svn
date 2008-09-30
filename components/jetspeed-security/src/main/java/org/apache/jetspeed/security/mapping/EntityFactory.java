@@ -16,35 +16,21 @@
  */
 package org.apache.jetspeed.security.mapping;
 
-import java.util.Collection;
-
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.springframework.ldap.core.DirContextOperations;
+
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityEntityManager
+
+public interface EntityFactory
 {
 
-    Collection<String> getSupportedEntityTypes();
+    Entity createEntity(JetspeedPrincipal principal);
 
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes();
-
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType);
-
-    Entity getEntity(String entityType, String entityId);
-
-    Collection<Entity> getAllEntities(String entityType);
-
-    void update(Entity entity);
-
-    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType);
-
-    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);
-
-    void addRelatedEntity(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType);
-
-    EntityFactory getEntityFactory(String entityType);
+    Entity createEntity(DirContextOperations ctx);
     
 }
