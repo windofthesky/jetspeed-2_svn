@@ -43,7 +43,9 @@ public interface SecurityEntityManager
 
     Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);
 
-    void addRelatedEntity(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType);
+    void addRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType);
+    
+    void removeRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType);
 
     EntityFactory getEntityFactory(String entityType);
     

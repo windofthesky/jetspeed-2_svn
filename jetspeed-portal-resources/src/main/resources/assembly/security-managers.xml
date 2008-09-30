@@ -136,7 +136,7 @@
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-    <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
     <constructor-arg index="5" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
   </bean>
 
@@ -170,7 +170,7 @@
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.user" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-    <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
   </bean>
 
   <!-- Security: Role Manager -->
@@ -203,12 +203,12 @@
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.user" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-    <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
   </bean>
 
   <!-- Security: Permission Manager -->
 
-  <bean id="org.apache.jetspeed.security.PermissionManager" parent="baseTransactionProxy" name="permissionManager">
+  <bean id="org.apache.jetspeed.security.PermissionManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.PermissionManager</value>
@@ -262,7 +262,7 @@
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager" />
-    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
 
   <bean id="userIsMemberOfGroupAssociationHandler"
@@ -270,7 +270,7 @@
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.GroupManager" />
-    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
 
   <bean id="groupIsMemberOfRoleAssociationHandler"
@@ -278,35 +278,35 @@
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager" />
-    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
 
   <bean id="roleIsARoleAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsAPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.RoleManager" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="roleIsPartOfRoleAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsPartOfPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.RoleManager" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="groupIsAGroupAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsAPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="groupIsPartOfGroupAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsPartOfPrincipalAssociationHandler">
     <meta key="j2:cat" value="default,security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="userSubjectRolesResolver" class="org.apache.jetspeed.security.spi.impl.UserSubjectPrincipalsResolverImpl">
@@ -389,5 +389,4 @@
       </list>
     </constructor-arg>
   </bean>
-
 </beans>

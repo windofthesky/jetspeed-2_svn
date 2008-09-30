@@ -29,7 +29,9 @@
     </constructor-arg>
   </bean>
   
-  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" parent="baseTransactionProxy">
+  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" 
+  name="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager,org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" 
+  parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>

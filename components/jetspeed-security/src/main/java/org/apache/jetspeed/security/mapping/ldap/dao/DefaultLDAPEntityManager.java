@@ -77,7 +77,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
                 fromEntityType, targetEntityType));
     }
 
-    public void addRelatedEntity(Entity sourceEntity, Entity targetEntity,
+    public void addRelation(Entity sourceEntity, Entity targetEntity,
             SecurityEntityRelationType relationType)
     {
         EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
@@ -94,12 +94,18 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
             }         
             if (relationDAO != null)
             {
-                relationDAO.relate(sourceDAO, targetDAO, sourceEntity,
+                relationDAO.addRelation(sourceDAO, targetDAO, sourceEntity,
                         targetEntity);
             }
         }
     }
-
+    
+    public void removeRelation(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+   
     public Collection<Entity> getAllEntities(String entityType)
     {
         EntityDAO dao = entityDAOs.get(entityType);
@@ -172,7 +178,4 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         
         return dao != null ? dao.getEntityFactory() : null;
     }
-    
-    
-    
 }

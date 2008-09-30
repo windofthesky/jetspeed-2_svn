@@ -36,7 +36,9 @@ public interface EntityRelationDAO
     Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao,
             EntityDAO toDao, Entity toEntity);
 
-    void relate(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
+    void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
             Entity targetEntity);
 
+    void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
+                Entity targetEntity);   
 }
