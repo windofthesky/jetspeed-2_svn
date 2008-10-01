@@ -30,5 +30,9 @@ public interface AttributeDef
     boolean isMapped();
     
     String getMappedName();
+    
+    boolean isRequired();
+    
+    String getRequiredDefaultValue();
 
 }

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security.mapping.ldap.setup1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -40,18 +41,30 @@ public class UserTests extends AbstractSetup1LDAPTest
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
     }
 
-    public void testFetchRolesForUserByRoleAttribute() throws Exception
-    {
+    private EntityImpl getInitialRole1(){
         EntityImpl role1 = new EntityImpl("role", "Role1", roleAttrDefs);
         role1.setInternalId("cn=Role1, o=sevenSeas");
         role1.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Role 1");
         role1.setAttribute(CN_DEF.getName(), "Role1");
-
+        
+        role1.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Arrays.asList(new String[]{
+                "cn=OrgUnit2User1,ou=People,ou=OrgUnit2,o=sevenSeas",
+                "cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas",
+                "cn=OrgUnit2User2,ou=People,ou=OrgUnit2,o=sevenSeas"}) );
+        return role1;
+    }
+    
+    public void testFetchRolesForUserByRoleAttribute() throws Exception
+    {
+       
+        Entity role1 = getInitialRole1();
         EntityImpl role3 = new EntityImpl("role", "Role3", roleAttrDefs);
         role3.setInternalId("cn=Role3, o=sevenSeas");
         role3.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Role 3");
         role3.setAttribute(CN_DEF.getName(), "Role3");
-
+        role3.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Arrays.asList(new String[]{
+                "cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas"
+        }));
         Collection<Entity> resultSet = new ArrayList<Entity>();
         resultSet.add(role1);
         resultSet.add(role3);
@@ -59,8 +72,9 @@ public class UserTests extends AbstractSetup1LDAPTest
                 "jsmith", resultSet);
     }
 
-    public void testUpdateEntity() throws Exception
+    public void testUpdateSingleValuedEntityAttr() throws Exception
     {
+        // first assert that the sample user is equal to the corresponding user in LDAP
         EntityImpl sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
         sampleUser
                 .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
@@ -69,7 +83,8 @@ public class UserTests extends AbstractSetup1LDAPTest
         sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
         
-        // test attribute modification
+        // next, try some identity transformation checks to assert that updating works
+        // 1. test attribute modification
         sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith modified");
         entityManager.update(sampleUser);
         
@@ -86,6 +101,36 @@ public class UserTests extends AbstractSetup1LDAPTest
         entityManager.update(sampleUser);
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+    }
+    
+    public void testUpdateMultivaluedEntityAttr() throws Exception
+    {
+        // first assert that the sample user is equal to the corresponding user in LDAP
+        EntityImpl sampleRole = getInitialRole1();
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
+        
+        // next, try some identity transformation checks to assert that updating works
+        // 1. test attribute modification
+        sampleRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Arrays.asList(new String[]{"cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas"}) );
+        entityManager.update(sampleRole);
+        
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
+
+        sampleRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Arrays.asList(new String[]{"cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas","cn=OrgUnit2User1,ou=People,ou=OrgUnit2,o=sevenSeas"}) );
+        entityManager.update(sampleRole);
+        basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
+
+        // 2. test attribute removal
+        sampleRole = new EntityImpl("role", "Role1", roleAttrDefs);
+        sampleRole.setInternalId("cn=Role1, o=sevenSeas");
+        sampleRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Role 1");
+        sampleRole.setAttribute(CN_DEF.getName(), "Role1");
+        
+        entityManager.update(sampleRole);
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
     }
     
     @Override

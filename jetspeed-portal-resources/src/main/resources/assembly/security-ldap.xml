@@ -163,6 +163,8 @@
           <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
+          <property name="required" value="true" />
+          <property name="requiredDefaultValue" value="uid=foobar" />
         </bean>
       </set>
     </property>
@@ -200,6 +202,8 @@
           <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
+          <property name="required" value="true" />
+          <property name="requiredDefaultValue" value="uid=foobar" />
         </bean>
       </set>
     </property>

@@ -33,6 +33,10 @@ public class AttributeDefImpl implements AttributeDef
 
     private boolean mapped=true;
     
+    private boolean required=false;
+
+    private String requiredDefaultValue;
+    
     public AttributeDefImpl(String name)
     {
         super();
@@ -92,6 +96,37 @@ public class AttributeDefImpl implements AttributeDef
     public void setMultiValue(boolean multiValue)
     {
         this.multiValue = multiValue;
+    }
+    
+    public boolean isRequired()
+    {
+        return required;
+    }
+    
+    public void setRequired(boolean required)
+    {
+        this.required = required;
+    }
+    
+    public String getRequiredDefaultValue()
+    {
+        return requiredDefaultValue;
+    }
+
+    
+    public void setRequiredDefaultValue(String requiredDefaultValue)
+    {
+        this.requiredDefaultValue = requiredDefaultValue;
+    }
+
+    public AttributeDefImpl cfgRequired(boolean required){
+        setRequired(required);
+        return this;
+    }
+
+    public AttributeDefImpl cfgRequiredDefaultValue(String requiredDefaultValue){
+        setRequiredDefaultValue(requiredDefaultValue);
+        return this;
     }
 
     @Override

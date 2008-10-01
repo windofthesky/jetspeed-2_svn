@@ -101,7 +101,14 @@ public class EntityFactoryImpl implements EntityFactory
                 {
                     Collection<String> attrValues = new ArrayList<String>();
                     attrValues.addAll(Arrays.asList(values));
-                    a.setValues(attrValues);
+                    // remove the dummy value for required fields when present. 
+                    if (attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null && attrValues.contains(attrDef.getRequiredDefaultValue())){
+                        attrValues.remove(attrDef.getRequiredDefaultValue());
+                    }
+                    if (attrValues.size() != 0){
+                        a.setValues(attrValues);
+                        attributes.add(a);
+                    }
                 } else
                 {
                     if (attrDef.getName().equals(
@@ -110,8 +117,8 @@ public class EntityFactoryImpl implements EntityFactory
                         entityId = values[0];
                     }
                     a.setValue(values[0]);
+                    attributes.add(a);
                 }
-                attributes.add(a);
             }
         }
         return internalCreateEntity(entityId, ctx.getNameInNamespace().toString(), attributes);

@@ -58,6 +58,9 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
     public static final AttributeDefImpl DESCRIPTION_ATTR_DEF = new AttributeDefImpl(
             "description");
 
+    public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl(
+    "uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
+
     protected Set<AttributeDef> userAttrDefs;
 
     protected Set<AttributeDef> roleAttrDefs;
@@ -102,6 +105,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         roleAttrDefs = new HashSet<AttributeDef>();
         roleAttrDefs.addAll(basicAttrDefs);
         roleAttrDefs.add(DESCRIPTION_ATTR_DEF);
+        roleAttrDefs.add(UNIQUEMEMBER_ATTR_DEF);
 
         LDAPEntityDAOConfiguration roleSearchConfig = new LDAPEntityDAOConfiguration();
         roleSearchConfig.setBaseDN("o=sevenSeas");

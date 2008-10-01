@@ -264,9 +264,15 @@ public class SpringLDAPEntityDAO implements EntityDAO
                     if (attrDef.isMultiValue()){
                         Collection<String> values = entityAttr.getValues();
                         if (values != null){
-                            javax.naming.directory.Attribute namingAttr = new BasicAttribute(entityAttr.getName(), entityAttr.getValues().toArray());
-                            modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,namingAttr));
-                            attrAdded = true;
+                            javax.naming.directory.Attribute namingAttr = new BasicAttribute(entityAttr.getName());
+                            if (values.size() > 0){
+                                for (String val : values)
+                                {   
+                                    namingAttr.add(val);
+                                }
+                                modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,namingAttr));
+                                attrAdded = true;
+                            }
                         }
                     } else {
                         String value = entityAttr.getValue();
@@ -281,7 +287,18 @@ public class SpringLDAPEntityDAO implements EntityDAO
                     // entity attribute not added, so remove it if present in ldap.
                     Object namingAttrValue = dirCtxOps.getObjectAttribute(attrDef.getName());
                     if (namingAttrValue != null){
-                        modItems.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,new BasicAttribute(attrDef.getName(), namingAttrValue)));
+                        BasicAttribute basicAttr = new BasicAttribute(attrDef.getName());
+                        if (attrDef.isRequired()){
+                            if (attrDef.isMultiValue() && attrDef.getRequiredDefaultValue() != null){
+                                basicAttr.add(attrDef.getRequiredDefaultValue());
+                                modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,basicAttr));
+                            } else {
+                                // TODO throw exception
+                                break;
+                            }
+                        } else {
+                            modItems.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,basicAttr));
+                        }
                     }
                 }
             }
