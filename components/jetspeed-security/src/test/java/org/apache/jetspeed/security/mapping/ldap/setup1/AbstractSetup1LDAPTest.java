@@ -45,7 +45,7 @@ import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 {
 
-    public static final AttributeDefImpl CN_DEF = new AttributeDefImpl("cn");
+    public static final AttributeDefImpl CN_DEF = new AttributeDefImpl("cn").cfgRequired(true);
 
     public static final AttributeDefImpl UID_DEF = new AttributeDefImpl("uid");
 
@@ -87,7 +87,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         userAttrDefs = new HashSet<AttributeDef>();
         userAttrDefs.addAll(basicAttrDefs);
         userAttrDefs.add(GIVEN_NAME_DEF);
-
+        
         userSearchConfig = new LDAPEntityDAOConfiguration();
         userSearchConfig.setBaseDN("o=sevenSeas");
         userSearchConfig.setSearchDN("");

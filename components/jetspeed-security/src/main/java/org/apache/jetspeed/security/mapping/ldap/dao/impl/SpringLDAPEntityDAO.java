@@ -28,7 +28,7 @@ import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.mapping.EntityFactory;
-import org.apache.jetspeed.security.mapping.impl.EntityFactoryImpl;
+import org.apache.jetspeed.security.mapping.ldap.EntityFactoryImpl;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultEntityContextMapper;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
@@ -164,6 +164,11 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     public void update(Entity entity)
     {
+        update(entity,true);
+    }
+    
+    public void update(Entity entity, boolean updateMappedAttributes)
+    {
         String internalIdStr = entity.getInternalId();
         if (internalIdStr == null){
             Entity ldapEntity = getEntity(entity.getId());
@@ -179,7 +184,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
             // TODO throw exception
             return;
         }
-        Collection<ModificationItem> modItems = getModItems(entity,dirCtxOps);
+        Collection<ModificationItem> modItems = getModItems(entity,dirCtxOps,updateMappedAttributes);
         ldapTemplate.modifyAttributes(dn, modItems.toArray(new ModificationItem[]{}));
     }
 
@@ -253,11 +258,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
         return attrAdded;
     }
     
-    protected Collection<ModificationItem> getModItems(Entity entity, DirContextOperations dirCtxOps){
+    protected Collection<ModificationItem> getModItems(Entity entity, DirContextOperations dirCtxOps, boolean useMappedAttributes){
         Collection<ModificationItem> modItems = new ArrayList<ModificationItem>();
         
         for(AttributeDef attrDef : configuration.getAttributeDefinitions()){
-            if (!attrDef.getName().equals(configuration.getLdapIdAttribute())){
+            
+            if (!attrDef.getName().equals(configuration.getLdapIdAttribute()) && ( (useMappedAttributes && attrDef.isMapped()) || (!useMappedAttributes && !attrDef.isMapped()))){
                 Attribute entityAttr = entity.getAttribute(attrDef.getName());
                 boolean attrAdded = false;
                 if (entityAttr != null){
@@ -289,7 +295,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
                     if (namingAttrValue != null){
                         BasicAttribute basicAttr = new BasicAttribute(attrDef.getName());
                         if (attrDef.isRequired()){
-                            if (attrDef.isMultiValue() && attrDef.getRequiredDefaultValue() != null){
+                            if (attrDef.getRequiredDefaultValue() != null){
                                 basicAttr.add(attrDef.getRequiredDefaultValue());
                                 modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,basicAttr));
                             } else {

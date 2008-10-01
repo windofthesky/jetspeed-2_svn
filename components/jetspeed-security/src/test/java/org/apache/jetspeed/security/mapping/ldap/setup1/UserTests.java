@@ -101,6 +101,30 @@ public class UserTests extends AbstractSetup1LDAPTest
         entityManager.update(sampleUser);
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+
+        // add "lastname" attribute value
+        sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
+        sampleUser
+                .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
+        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(LAST_NAME_DEF.getName(), "jsmith");
+        
+        entityManager.update(sampleUser);
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+
+        // test attribute removal of required attribute ("lastname") with a required default value set for it
+        sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
+        sampleUser
+                .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
+        sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
+        
+        entityManager.update(sampleUser);
+        
+        basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+
     }
     
     public void testUpdateMultivaluedEntityAttr() throws Exception

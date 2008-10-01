@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.mapping.impl;
+package org.apache.jetspeed.security.mapping.ldap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,8 +116,14 @@ public class EntityFactoryImpl implements EntityFactory
                     {
                         entityId = values[0];
                     }
-                    a.setValue(values[0]);
-                    attributes.add(a);
+                    if (values[0] !=null){
+                        // check if the value is 乙ot the required default value (a dummy value) If it is, ignore the attribute. 
+                        if (!(attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null && values[0].equals(attrDef.getRequiredDefaultValue()))){
+                            a.setValue(values[0]);
+                            attributes.add(a);
+                        } 
+                    }
+
                 }
             }
         }

@@ -75,6 +75,8 @@ public interface EntityDAO
 
     void update(Entity entity);
 
+    void update(Entity entity, boolean updateMappedAttributes);
+
     void addEntity(Entity entity);
 
     void removeEntity(Entity entity);
