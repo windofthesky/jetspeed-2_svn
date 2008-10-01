@@ -22,5 +22,5 @@ package org.apache.jetspeed.security;
  */
 public interface JetspeedBeanInitializer
 {
-    void intialize();
+    void initialize();
 }

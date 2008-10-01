@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.JetspeedBeanInitializer;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 
 /**
@@ -48,8 +47,8 @@ public class JetspeedPostContextLoader implements JetspeedBeanInitializer
         this.synchronizeAllUser = synchronizeAllUser;
         this.synchronizeEntityType = synchronizeEntityType;
     }
-
-    public void intialize()
+    
+    public void initialize()
     {
         if (synchronizer != null)
         {

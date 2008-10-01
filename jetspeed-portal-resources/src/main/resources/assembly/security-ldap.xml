@@ -20,7 +20,8 @@
 
   <bean id="JetspeedPrincipalStorageManager" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager">
   	<meta key="j2:cat" value="ldap" />
-    	<constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    	<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    	<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
   </bean>
   
    <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" parent="baseTransactionProxy">
@@ -51,7 +52,7 @@
    -->
    
   <bean id="org.apache.jetspeed.security.spi.JetspeedPostContextLoader"
-    class="org.apache.jetspeed.security.spi.JetspeedPostContextLoader" init-method="init">
+    class="org.apache.jetspeed.security.spi.JetspeedPostContextLoader">
     <meta key="j2:cat" value="ldap" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
@@ -170,6 +171,7 @@
     </property>
     <property name="entityType" value="role" />
   </bean>
+  
   <bean id="GroupDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
     <meta key="j2:cat" value="ldap" />
     <property name="baseDN" value="${ldap.base}" />
@@ -211,7 +213,7 @@
   </bean>  
   <bean id="UserDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
     <meta key="j2:cat" value="ldap" />
-    <constructor-arg index="1" ref="UserDaoConfiguration"/>
+    <constructor-arg ref="UserDaoConfiguration"/>
     <property name="ldapTemplate">
       <bean class="org.springframework.ldap.core.LdapTemplate">
         <property name="contextSource" ref="LdapSpringContext" />
@@ -278,7 +280,7 @@
   
   <bean id="RoleDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
     <meta key="j2:cat" value="ldap" />
-    <constructor-arg index="1" ref="RoleDaoConfiguration"/>
+    <constructor-arg ref="RoleDaoConfiguration"/>
     <property name="ldapTemplate">
       <bean class="org.springframework.ldap.core.LdapTemplate">
         <property name="contextSource" ref="LdapSpringContext" />
@@ -288,7 +290,7 @@
   
   <bean id="GroupDao" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO">
     <meta key="j2:cat" value="ldap" />
-    <constructor-arg index="1" ref="GroupDaoConfiguration"/>
+    <constructor-arg ref="GroupDaoConfiguration"/>
     <property name="ldapTemplate">
       <bean class="org.springframework.ldap.core.LdapTemplate">
         <property name="contextSource" ref="LdapSpringContext" />

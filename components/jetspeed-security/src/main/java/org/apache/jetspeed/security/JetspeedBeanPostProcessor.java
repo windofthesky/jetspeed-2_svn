@@ -60,7 +60,7 @@ public class JetspeedBeanPostProcessor implements ApplicationListener
                 try
                 {
                     intializer = (JetspeedBeanInitializer) context.getBean(bean);
-                    intializer.intialize();
+                    intializer.initialize();
                 }
                 catch (Exception e)
                 {

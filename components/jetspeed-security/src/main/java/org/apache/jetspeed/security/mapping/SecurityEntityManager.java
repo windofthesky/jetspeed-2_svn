@@ -37,11 +37,11 @@ public interface SecurityEntityManager
 
     Collection<Entity> getAllEntities(String entityType);
 
-    void addEnity(Entity entity);
+    void addEntity(Entity entity);
     
-    void removeEnity(Entity entity);
+    void removeEntity(Entity entity);
     
-    void updateEnity(Entity entity);
+    void updateEntity(Entity entity);
     
     void addRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType);
     

@@ -75,7 +75,6 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             // don't skip any entity type when synchronizing all
             Collection<String> skipEntities = new ArrayList<String>();
             InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
-            
             for (String type : securityEntityManager.getSupportedEntityTypes())
             {
                 for (Entity entity : securityEntityManager.getAllEntities(type))
@@ -251,6 +250,8 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                 syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
                 // first create/update principal
                 // JetspeedPrincipal relatedPrincipal = recursiveSynchronizePrincipal(relatedEntity, syncState);
+                
+                //TODO change for nested level of group and roles.
                 JetspeedPrincipal relatedPrincipal = null;
                 JetspeedPrincipalManager principalManager = principalManagerProvider
                                                                                     .getManager(principalManagerProvider
