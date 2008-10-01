@@ -37,15 +37,19 @@ public interface SecurityEntityManager
 
     Collection<Entity> getAllEntities(String entityType);
 
-    void update(Entity entity);
-
-    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType);
-
-    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);
-
+    void addEnity(Entity entity);
+    
+    void removeEnity(Entity entity);
+    
+    void updateEnity(Entity entity);
+    
     void addRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType);
     
     void removeRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType);
+
+    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType);
+
+    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);    
 
     EntityFactory getEntityFactory(String entityType);
     
