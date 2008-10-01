@@ -265,7 +265,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                     }
                     else
                     {
-                        key = new AssociationHandlerKey(ref.associationName, ref.ref.getType().getName(), principalType.getName());
+                        key = new AssociationHandlerKey(ref.associationName, principalType.getName(), ref.ref.getType().getName());
                     }
                     if (!assHandlers.containsKey(key))
                     {
