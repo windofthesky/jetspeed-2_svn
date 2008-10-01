@@ -15,50 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security.spi.impl;
+package org.apache.jetspeed.security.spi;
+
+import java.util.List;
 
 import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
 
 /**
  * @version $Id$
  *
  */
-public class PersistentJetspeedPermission implements JetspeedPermission
+public interface JetspeedPermissionAccessManager
 {
-    private static final long serialVersionUID = 9200223005769593282L;
-    private Long id;
-    private String type;
-    private String name;
-    private String actions;
-
-    public PersistentJetspeedPermission(String type, String name)
-    {
-        this.type = type;
-        this.name = name;
-    }
-
-    public Long getId()
-    {
-        return id;
-    }
-    
-    public String getType()
-    {
-        return type;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public String getActions()
-    {
-        return actions;
-    }
-    
-    public void setActions(String actions)
-    {
-        this.actions = actions;
-    }
+    boolean permissionExists(JetspeedPermission permission);
+    List<? extends JetspeedPermission> getPermissions(PersistentJetspeedPrincipal principal);
+    List<? extends JetspeedPermission> getPermissions();
+    List<? extends JetspeedPermission> getPermissions(String type);
+    List<? extends JetspeedPermission> getPermissions(String type, String nameFilter);
+    List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission);
 }

@@ -68,6 +68,9 @@ public class SecurityException extends JetspeedException
     /** <p>Permission does not exist exception message.</p> */
     public static final KeyedMessage PERMISSION_DOES_NOT_EXIST = new KeyedMessage("The permission {0} does not exist.");
     
+    /** <p>Permission already exists exception message.</p> */
+    public static final KeyedMessage PERMISSION_ALREADY_EXISTS = new KeyedMessage("The permission {0} already exists.");
+    
     /**
      * <p>User principal already exists exception message.</p>
      * @deprecated use {@link #PRINCIPAL_ALREADY_EXISTS} with method {@link KeyedMessage#createScoped(String, Object)} instead

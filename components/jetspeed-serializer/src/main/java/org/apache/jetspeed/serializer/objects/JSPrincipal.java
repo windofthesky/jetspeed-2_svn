@@ -39,7 +39,6 @@ public class JSPrincipal
     private boolean readonly;
     private boolean removable;
     private JSSecurityAttributes secAttrs = null;
-    private JSSecurityAttributes infoAttrs = null;
     
     public JSPrincipal()
     {
@@ -183,28 +182,6 @@ public class JSPrincipal
             SecurityAttribute attrib = e.getValue();
             JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getStringValue());
             this.secAttrs.add(element);
-        }
-    }
-
-    public JSSecurityAttributes getInfoAttributes()
-    {
-        return this.infoAttrs;
-    }
-    
-    public void setInfoAttributes(JSSecurityAttributes infoAttrs)
-    {
-        this.infoAttrs = infoAttrs;
-    }
-    
-    public void setInfoAttributes(Map<String, SecurityAttribute> sa)
-    {
-        this.infoAttrs = new JSSecurityAttributes(); 
-        
-        for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
-        {
-            SecurityAttribute attrib = e.getValue();
-            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getStringValue());
-            this.infoAttrs.add(element);
         }
     }
 }

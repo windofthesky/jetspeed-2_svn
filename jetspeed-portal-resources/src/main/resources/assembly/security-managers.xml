@@ -243,6 +243,9 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    </constructor-arg>
   </bean>
 
   <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"

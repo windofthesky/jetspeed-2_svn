@@ -31,6 +31,7 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.TransientRole;
@@ -173,18 +174,15 @@ public class SecurityPermissionAction
                 // assume no change
                 oldActions = actions;
             }
-            JetspeedPermission permission = null;
+            JetspeedPermission permission = pm.newPermission(type, resource, actions);
             if (!oldActions.equals(actions))
             {
-                permission = pm.newPermission(type, resource, oldActions);
-                pm.removePermission(permission);
-                permission = pm.newPermission(type, resource, actions);
-                pm.addPermission(permission);
+                pm.updatePermission(permission);
             }   
-            else
-            {
-                permission = pm.newPermission(type, resource, actions);
-            }
+//            else
+//            {
+//                permission = pm.newPermission(type, resource, actions);
+//            }
             String roleNames = getActionParameter(requestContext, "roles");
             return updateRoles(permission, roleNames);
         }
@@ -208,7 +206,7 @@ public class SecurityPermissionAction
                 count++;
             }                
         }
-        pm.grantPermissionOnlyTo(permission, principals);
+        pm.grantPermissionOnlyTo(permission, JetspeedPrincipalType.ROLE, principals);
         return count;
     }
 

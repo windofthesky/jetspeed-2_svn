@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.spi.impl;
 import java.security.Permission;
 
 import org.apache.jetspeed.security.PermissionFactory;
+import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 
 /**
  * <p>Folder permission.</p>

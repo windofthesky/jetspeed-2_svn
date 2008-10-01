@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 
 import java.security.Permission;
 import java.security.PermissionCollection;
@@ -78,22 +79,22 @@ public abstract class BaseJetspeedPermission extends Permission implements Jetsp
     public BaseJetspeedPermission(String type, String name, int mask)
     {
         super(name);
-        this.permission = new PersistentJetspeedPermission(type, name);
+        this.permission = new PersistentJetspeedPermissionImpl(type, name);
         this.mask = mask;
     }
     
     public BaseJetspeedPermission(String type, String name, String actions)
     {
         super(name);
-        this.permission = new PersistentJetspeedPermission(type, name);
-        this.mask = parseActions(actions);
+        this.permission = new PersistentJetspeedPermissionImpl(type, name);
+        this.mask = JetspeedActions.getContainerActionsMask(actions);
     }
     
     public BaseJetspeedPermission(PersistentJetspeedPermission permission)
     {
         super(permission.getName());
         this.permission = permission;
-        this.mask = parseActions(permission.getActions());
+        this.mask = JetspeedActions.getContainerActionsMask(permission.getActions());
     }
     
     public PersistentJetspeedPermission getPermission()
@@ -134,17 +135,6 @@ public abstract class BaseJetspeedPermission extends Permission implements Jetsp
     public boolean implies(Permission permission)
     {
         throw new IllegalStateException("Permission class did not implement implies");
-    }
-
-    /**
-     * <p>Parses the actions string.</p>
-     * <p>Actions are separated by commas or white space.</p>
-     *
-     * @param actions The actions
-     */
-    public static int parseActions(String actions)
-    {
-        return JetspeedActions.getContainerActionsMask(actions);
     }
 
     /**

@@ -19,12 +19,18 @@ package org.apache.jetspeed.security.impl;
 
 import java.security.Permissions;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.spi.JetspeedPermissionAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
+import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
+import org.apache.jetspeed.security.spi.impl.BaseJetspeedPermission;
 import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
 
 /**
@@ -33,62 +39,121 @@ import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
  */
 public class PermissionManagerImpl implements PermissionManager
 {
-    public PermissionManagerImpl(List<JetspeedPermissionFactory> factories, JetspeedPermissionStorageManager jpsm)
+    private HashMap<String, JetspeedPermissionFactory> factoryMap = new HashMap<String, JetspeedPermissionFactory>();
+    private JetspeedPermissionAccessManager jpam;
+    private JetspeedPermissionStorageManager jpsm;
+    
+    public PermissionManagerImpl(List<JetspeedPermissionFactory> factories, JetspeedPermissionAccessManager jpam, JetspeedPermissionStorageManager jpsm)
     {
+        for (JetspeedPermissionFactory pf : factories)
+        {
+            factoryMap.put(pf.getType(), pf);
+        }
+        this.jpam = jpam;
+        this.jpsm = jpsm;
+    }
+    
+    protected PersistentJetspeedPermission getPersistentJetspeedPermission(JetspeedPermission permission)
+    {
+        if (permission instanceof PersistentJetspeedPermission)
+        {
+            return (PersistentJetspeedPermission)permission;
+        }
+        else
+        {
+            return ((BaseJetspeedPermission)permission).getPermission();
+        }
+    }
+    
+    public JetspeedPermission newPermission(String type, String name, String actions)
+    {
+        return factoryMap.get(type).newPermission(name, actions);
+    }
+
+    public JetspeedPermission newPermission(String type, String name, int mask)
+    {
+        return factoryMap.get(type).newPermission(name, mask);
+    }
+
+    public int parseActions(String actions)
+    {
+        return JetspeedActions.getContainerActionsMask(actions);
     }
     
     public Permissions getPermissions(JetspeedPrincipal principal)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Permissions permissions = new Permissions();
+        if (principal instanceof PersistentJetspeedPrincipal && ((PersistentJetspeedPrincipal)principal).getId() != null)
+        {
+            List<PersistentJetspeedPermission> permList = (List<PersistentJetspeedPermission>)jpam.getPermissions((PersistentJetspeedPrincipal)principal);        
+            for (PersistentJetspeedPermission p : permList)
+            {
+                permissions.add(factoryMap.get(p.getType()).newPermission(p));
+            }
+        }
+        return permissions;
     }
 
     public Permissions getPermissions(Principal[] principals)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Permissions permissions = new Permissions();
+        for (Principal principal : principals)
+        {
+            if (principal instanceof PersistentJetspeedPrincipal && ((PersistentJetspeedPrincipal)principal).getId() != null)
+            {
+                List<PersistentJetspeedPermission> permList = (List<PersistentJetspeedPermission>)jpam.getPermissions((PersistentJetspeedPrincipal)principal);        
+                for (PersistentJetspeedPermission p : permList)
+                {
+                    permissions.add(factoryMap.get(p.getType()).newPermission(p));
+                }
+            }
+        }
+        return permissions;
     }
 
     public List<JetspeedPermission> getPermissions()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return (List<JetspeedPermission>)jpam.getPermissions();
     }
 
     public List<JetspeedPermission> getPermissions(String typeName)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return (List<JetspeedPermission>)jpam.getPermissions(typeName);
     }
 
     public List<JetspeedPermission> getPermissions(String typeName, String nameFilter)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return (List<JetspeedPermission>)jpam.getPermissions(typeName, nameFilter);
     }
 
     public List<JetspeedPrincipal> getPrincipals(JetspeedPermission permission)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return jpam.getPrincipals(getPersistentJetspeedPermission(permission));
     }
 
-    public JetspeedPermission newPermission(String typeName, String name, String actions)
+    public List<JetspeedPrincipal> getPrincipals(JetspeedPermission permission, String principalType)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return jpam.getPrincipals(getPersistentJetspeedPermission(permission));
     }
 
     public boolean permissionExists(JetspeedPermission permission)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return jpam.permissionExists(permission);
     }
 
-    public void addPermission(JetspeedPermission permission)
+    public void addPermission(JetspeedPermission permission) throws SecurityException
     {
-        // TODO Auto-generated method stub
-        
+        jpsm.addPermission(getPersistentJetspeedPermission(permission));
+    }
+
+    public void updatePermission(JetspeedPermission permission) throws SecurityException
+    {
+        jpsm.updatePermission(getPersistentJetspeedPermission(permission));
+    }
+
+    public void removePermission(JetspeedPermission permission) throws SecurityException
+    {
+        jpsm.removePermission(getPersistentJetspeedPermission(permission));
     }
 
     public void grantPermission(JetspeedPermission permission, JetspeedPrincipal principal)
@@ -103,7 +168,7 @@ public class PermissionManagerImpl implements PermissionManager
         
     }
 
-    public void removePermission(JetspeedPermission permission)
+    public void grantPermissionOnlyTo(JetspeedPermission permission, String principalType, List<JetspeedPrincipal> principal)
     {
         // TODO Auto-generated method stub
         
@@ -119,23 +184,5 @@ public class PermissionManagerImpl implements PermissionManager
     {
         // TODO Auto-generated method stub
         
-    }
-
-    public void updatePermission(JetspeedPermission permission, String actions)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public JetspeedPermission newPermission(String type, String name, int mask)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public int parseActions(String actions)
-    {
-        // TODO Auto-generated method stub
-        return 0;
     }
 }

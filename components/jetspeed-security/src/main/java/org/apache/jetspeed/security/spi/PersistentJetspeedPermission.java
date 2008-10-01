@@ -15,31 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.security.spi.impl;
+package org.apache.jetspeed.security.spi;
 
-import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPermission;
 
 /**
  * @version $Id$
  *
  */
-public abstract class JetspeedPermissionFactory
+public interface PersistentJetspeedPermission extends JetspeedPermission
 {
-    private String type;
-
-    public JetspeedPermissionFactory(String type)
-    {
-        this.type = type;
-    }
-
-    public String getType()
-    {
-        return type;
-    }
-    
-    public abstract BaseJetspeedPermission newPermission(String name, String actions);    
-
-    public abstract BaseJetspeedPermission newPermission(String name, int mask);    
-
-    public abstract BaseJetspeedPermission newPermission(PersistentJetspeedPermission permission);    
+    public Long getId();
+    public void setActions(String actions);
 }

@@ -263,13 +263,6 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         updated = true;
                     }
                     
-                    for (JSNVPElement elem : jsPrincipal.getInfoAttributes().getValues())
-                    {
-                        secAttrs.getAttribute(elem.getKey(), true).setStringValue(elem.getValue());
-                        
-                        updated = true;
-                    }
-                    
                     if (updated)
                     {
                         principalManager.updatePrincipal(principal);
@@ -802,8 +795,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         _jsPrincipal.setEnabled(principal.isEnabled());
         _jsPrincipal.setReadonly(principal.isReadOnly());
         _jsPrincipal.setRemovable(principal.isRemovable());
-        _jsPrincipal.setSecurityAttributes(principal.getSecurityAttributes().getAttributeMap(SecurityAttribute.JETSPEED_CATEGORY));
-        _jsPrincipal.setInfoAttributes(principal.getSecurityAttributes().getInfoAttributeMap());
+        _jsPrincipal.setSecurityAttributes(principal.getSecurityAttributes().getAttributeMap());
         return _jsPrincipal;
     }
 

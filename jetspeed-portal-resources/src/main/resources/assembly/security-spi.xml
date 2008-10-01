@@ -35,6 +35,7 @@
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>
+        org.apache.jetspeed.security.spi.JetspeedPermissionAccessManager,
         org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager,
         org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager,
         org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager,

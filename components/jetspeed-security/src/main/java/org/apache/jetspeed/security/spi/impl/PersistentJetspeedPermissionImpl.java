@@ -23,23 +23,46 @@ import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
  * @version $Id$
  *
  */
-public abstract class JetspeedPermissionFactory
+public class PersistentJetspeedPermissionImpl implements PersistentJetspeedPermission
 {
+    private static final long serialVersionUID = 9200223005769593282L;
+    private Long id;
     private String type;
+    private String name;
+    private String actions;
 
-    public JetspeedPermissionFactory(String type)
+    public PersistentJetspeedPermissionImpl()
     {
-        this.type = type;
     }
 
+    public PersistentJetspeedPermissionImpl(String type, String name)
+    {
+        this.type = type;
+        this.name = name;
+    }
+
+    public Long getId()
+    {
+        return id;
+    }
+    
     public String getType()
     {
         return type;
     }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getActions()
+    {
+        return actions;
+    }
     
-    public abstract BaseJetspeedPermission newPermission(String name, String actions);    
-
-    public abstract BaseJetspeedPermission newPermission(String name, int mask);    
-
-    public abstract BaseJetspeedPermission newPermission(PersistentJetspeedPermission permission);    
+    public void setActions(String actions)
+    {
+        this.actions = actions;
+    }
 }

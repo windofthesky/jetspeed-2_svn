@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.i18n.KeyedMessage;
+import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -31,10 +32,12 @@ import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
+import org.apache.jetspeed.security.spi.JetspeedPermissionAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
+import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialAccessManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager;
 import org.apache.ojb.broker.PersistenceBroker;
@@ -42,6 +45,7 @@ import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.ojb.broker.accesslayer.LookupException;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.apache.ojb.broker.util.collections.ManageableArrayList;
@@ -55,7 +59,7 @@ public class JetspeedSecurityPersistenceManager
     extends InitablePersistenceBrokerDaoSupport
     implements JetspeedPrincipalAccessManager,
                 JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager, UserPasswordCredentialAccessManager,
-                JetspeedPrincipalAssociationStorageManager, JetspeedPermissionStorageManager
+                JetspeedPrincipalAssociationStorageManager, JetspeedPermissionAccessManager, JetspeedPermissionStorageManager
 {
     private static class ManagedListByQueryCallback implements PersistenceBrokerCallback
     {
@@ -280,7 +284,7 @@ public class JetspeedSecurityPersistenceManager
                                                                    "addPrincipal",
                                                                    pbe.getMessage());
             logger.error(msg, pbe);
-            throw new RuntimeException(new SecurityException(msg, pbe));            
+            throw new SecurityException(msg, pbe);            
         }
         // Note: the (optional) required associations are expected to be stored by the calling JetspeedPrincipalManager
     }
@@ -313,7 +317,7 @@ public class JetspeedSecurityPersistenceManager
                                                                    "removePrincipal",
                                                                    pbe.getMessage());
             logger.error(msg, pbe);
-            throw new RuntimeException(new SecurityException(msg, pbe));            
+            throw new SecurityException(msg, pbe);            
         }
     }
 
@@ -340,7 +344,7 @@ public class JetspeedSecurityPersistenceManager
                                                                    "removePrincipal",
                                                                    pbe.getMessage());
             logger.error(msg, pbe);
-            throw new RuntimeException(new SecurityException(msg, pbe));            
+            throw new SecurityException(msg, pbe);            
         }
     }
 
@@ -465,12 +469,12 @@ public class JetspeedSecurityPersistenceManager
                                                                        "addAssociation",
                                                                        pbe.getMessage());
                 logger.error(msg, pbe);
-                throw new RuntimeException(new SecurityException(msg, pbe));
+                throw new SecurityException(msg, pbe);
             }
         }
     }
 
-    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
+    public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("fromPrincipalId", from.getId());
@@ -489,18 +493,167 @@ public class JetspeedSecurityPersistenceManager
                                                                        "removeAssociation",
                                                                        pbe.getMessage());
                 logger.error(msg, pbe);
-                throw new RuntimeException(new SecurityException(msg, pbe));
+                throw new SecurityException(msg, pbe);
             }
         }
     }
 
     //
+    // JetspeedPermissionAccessManager interface implementation
+    //
+    public List<PersistentJetspeedPermission> getPermissions()
+    {
+        QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, new Criteria());
+        query.addOrderByAscending("type");
+        query.addOrderByAscending("name");
+        return (List<PersistentJetspeedPermission>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+    }
+
+    public List<PersistentJetspeedPermission> getPermissions(String type)
+    {
+        return getPermissions(type, null);
+    }
+
+    public List<PersistentJetspeedPermission> getPermissions(String type, String nameFilter)
+    {
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("type", type);
+        if (nameFilter != null && nameFilter.length() > 0)
+        {
+            criteria.addLike("name", nameFilter+"%");
+        }
+        QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+        query.addOrderByAscending("name");
+        return (List<PersistentJetspeedPermission>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+    }
+
+    public boolean permissionExists(JetspeedPermission permission)
+    {
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("type", permission.getType());
+        criteria.addEqualTo("name", permission.getName());
+        Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+        return getPersistenceBrokerTemplate().getCount(query) == 1;
+    }
+    
+    public List<PersistentJetspeedPermission> getPermissions(PersistentJetspeedPrincipal principal)
+    {
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("principals.principalId", principal.getId());
+        QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+        query.addOrderByAscending("type");
+        query.addOrderByAscending("name");
+        return (List<PersistentJetspeedPermission>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+    }
+
+    public List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission)
+    {
+        Criteria criteria = new Criteria();
+        if (permission.getId() != null)
+        {
+            criteria.addEqualTo("permissions.permissionId", permission.getId());
+        }
+        else
+        {
+            criteria.addEqualTo("permissions.permission.type", permission.getType());
+            criteria.addEqualTo("permissions.permission.name", permission.getName());
+        }
+        QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
+        query.addOrderByAscending("type");
+        query.addOrderByAscending("name");
+        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+    }
+
+    //
     // JetspeedPermissionStorageManager interface implementation
     //
-    public void addPermission(PersistentJetspeedPermission permission)
+    public void addPermission(PersistentJetspeedPermission permission) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        if (permission.getId() != null || permissionExists(permission))
+        {
+            throw new SecurityException(SecurityException.PERMISSION_ALREADY_EXISTS.create(permission.getName()));
+        }
+        try
+        {
+            getPersistenceBrokerTemplate().store(permission);
+        }
+        catch (Exception pbe)
+        {
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                   "addPermission",
+                                                                   pbe.getMessage());
+            logger.error(msg, pbe);
+            throw new SecurityException(msg, pbe);            
+        }
     }
+
+    public void updatePermission(PersistentJetspeedPermission permission) throws SecurityException
+    {
+        Criteria criteria = new Criteria();
+        if (permission.getId() == null)
+        {
+            criteria.addEqualTo("type", permission.getType());
+            criteria.addEqualTo("name", permission.getName());
+        }
+        else
+        {
+            criteria.addEqualTo("id", permission.getId());
+        }
+        Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+        PersistentJetspeedPermission current = (PersistentJetspeedPermission)getPersistenceBrokerTemplate().getObjectByQuery(query);
+        if (current == null)
+        {
+            throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST.create(permission.getName()));
+        }
+        if (!current.getActions().equals(permission.getActions()))
+        {
+            current.setActions(permission.getActions());
+            try
+            {
+                getPersistenceBrokerTemplate().store(permission);
+            }
+            catch (Exception pbe)
+            {
+                KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                       "updatePermission",
+                                                                       pbe.getMessage());
+                logger.error(msg, pbe);
+                throw new SecurityException(msg, pbe);
+            }
+        }
+    }    
+    
+    public void removePermission(PersistentJetspeedPermission permission) throws SecurityException
+    {
+        Criteria criteria = new Criteria();
+        if (permission.getId() == null)
+        {
+            criteria.addEqualTo("type", permission.getType());
+            criteria.addEqualTo("name", permission.getName());
+        }
+        else
+        {
+            criteria.addEqualTo("id", permission.getId());
+        }
+        Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+        PersistentJetspeedPermission current = (PersistentJetspeedPermission)getPersistenceBrokerTemplate().getObjectByQuery(query);
+        if (current == null)
+        {
+            throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST.create(permission.getName()));
+        }
+        try
+        {
+            getPersistenceBrokerTemplate().delete(current);
+        }
+        catch (Exception pbe)
+        {
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                   "removePermission",
+                                                                   pbe.getMessage());
+            logger.error(msg, pbe);
+            throw new SecurityException(msg, pbe);            
+        }
+    }    
 
     public void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal)
     {
@@ -512,7 +665,7 @@ public class JetspeedSecurityPersistenceManager
         // TODO Auto-generated method stub
     }
 
-    public void removePermission(PersistentJetspeedPermission permission)
+    public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principal)
     {
         // TODO Auto-generated method stub
     }
@@ -527,8 +680,4 @@ public class JetspeedSecurityPersistenceManager
         // TODO Auto-generated method stub
     }
 
-    public void updatePermission(PersistentJetspeedPermission permission, String actions)
-    {
-        // TODO Auto-generated method stub
-    }    
 }

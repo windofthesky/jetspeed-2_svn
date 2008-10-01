@@ -19,19 +19,20 @@ package org.apache.jetspeed.security.spi;
 import java.util.List;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermission;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @version $Id$
  */
 public interface JetspeedPermissionStorageManager
 {
-    void addPermission(PersistentJetspeedPermission permission);
-    void removePermission(PersistentJetspeedPermission permission);
-    void updatePermission(PersistentJetspeedPermission permission, String actions);
+    void addPermission(PersistentJetspeedPermission permission) throws SecurityException;
+    void removePermission(PersistentJetspeedPermission permission) throws SecurityException;
+    void updatePermission(PersistentJetspeedPermission permission) throws SecurityException;
 
-    void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal);
-    void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal);
-    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, List<JetspeedPrincipal> principal);
-    void revokeAllPermissions(JetspeedPrincipal principal);
+    void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
+    void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
+    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, List<JetspeedPrincipal> principal) throws SecurityException;
+    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principal) throws SecurityException;
+    void revokeAllPermissions(JetspeedPrincipal principal) throws SecurityException;
 }

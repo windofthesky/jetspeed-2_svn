@@ -159,7 +159,7 @@ limitations under the License.
 	   - S E C U R I T Y  P E R M I S S I O N
 	-->	
 	<class-descriptor
-	    class="org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermission"
+	    class="org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermissionImpl"
 	    table="SECURITY_PERMISSION"
 	>
 	    <documentation>Represents a security permission in the security policy.</documentation>
@@ -196,6 +196,15 @@ limitations under the License.
 	        length="254"
 	    >
 	    </field-descriptor>
+      <collection-descriptor
+          name="principals"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalPermission"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="principalId"/>
+      </collection-descriptor>
 	</class-descriptor>
 
 
@@ -307,6 +316,15 @@ limitations under the License.
       >
         <inverse-foreignkey field-ref="toPrincipalId"/>
       </collection-descriptor>
+      <collection-descriptor
+          name="permissions"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalPermission"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="permissionId"/>
+      </collection-descriptor>
   </class-descriptor>
   
    <!--
@@ -416,12 +434,14 @@ limitations under the License.
       <reference-descriptor
          name="principal"
          class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
       >
          <foreignkey field-ref="principalId"/>
       </reference-descriptor>
       <reference-descriptor
          name="permission"
-         class-ref="org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermission"
+         class-ref="org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermissionImpl"
+         auto-retrieve="false"
       >
          <foreignkey field-ref="permissionId"/>
       </reference-descriptor>
