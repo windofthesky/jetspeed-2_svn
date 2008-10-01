@@ -81,4 +81,28 @@ public class StubEntityDAO implements EntityDAO
         return null;
     }
 
+    public void add(Entity entity)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void add(Entity entity, Entity parentEntity)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void remove(Entity entity)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void update(Entity entity, boolean updateMappedAttributes)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

@@ -84,4 +84,16 @@ public class StubEntityRelationDAO implements EntityRelationDAO
         internalRelate(toFrom,targetEntity,sourceEntity);
     }
 
+    public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
