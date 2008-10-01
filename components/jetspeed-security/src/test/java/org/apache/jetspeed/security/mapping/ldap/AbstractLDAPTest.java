@@ -38,6 +38,7 @@ import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -45,6 +46,27 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public abstract class AbstractLDAPTest extends TestCase
 {
+    
+    public static final AttributeDefImpl CN_DEF = new AttributeDefImpl("cn",false,false).cfgRequired(true).cfgIdAttribute(true);
+
+    public static final AttributeDefImpl SN_DEF = new AttributeDefImpl("sn",false,false).cfgRequired(true).cfgIdAttribute(true);
+
+    public static final AttributeDefImpl UID_DEF = new AttributeDefImpl("uid",false,false).cfgRequired(true).cfgIdAttribute(true);
+
+    public static final AttributeDefImpl GIVEN_NAME_DEF = new AttributeDefImpl(
+            "givenName");;
+
+    public static final AttributeDefImpl LAST_NAME_DEF = new AttributeDefImpl(
+            "lastname");;
+
+    public static final AttributeDefImpl DESCRIPTION_ATTR_DEF = new AttributeDefImpl(
+            "description");
+
+    public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl(
+    "uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
+
+    public static final AttributeDefImpl J2_ROLE_DEF = new AttributeDefImpl(
+            "j2-role",true); // multi-valued attribute
 
     protected LdapTemplate ldapTemplate;
 

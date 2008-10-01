@@ -45,20 +45,6 @@ import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
 {
 
-    public static final AttributeDefImpl CN_DEF = new AttributeDefImpl("cn");
-
-    public static final AttributeDefImpl UID_DEF = new AttributeDefImpl("uid");
-
-    public static final AttributeDefImpl GIVEN_NAME_DEF = new AttributeDefImpl(
-            "givenName");;
-
-    public static final AttributeDefImpl J2_ROLE_DEF = new AttributeDefImpl(
-            "j2-role",true); // multi-valued attribute
-
-    public static final AttributeDefImpl DESCRIPTION_ATTR_DEF = new AttributeDefImpl(
-            "description");
-
-    
     protected Set<AttributeDef> userAttrDefs;
 
     protected Set<AttributeDef> roleAttrDefs;

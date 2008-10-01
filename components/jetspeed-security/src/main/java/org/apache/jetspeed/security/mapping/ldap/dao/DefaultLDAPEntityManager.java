@@ -161,7 +161,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)
         {
-            dao.addEntity(entity);
+            dao.add(entity);
         }
     }
 

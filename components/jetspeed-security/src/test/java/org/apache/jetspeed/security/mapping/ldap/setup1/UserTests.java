@@ -38,6 +38,8 @@ public class UserTests extends AbstractSetup1LDAPTest
         sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
         sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
         sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(SN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
     }
 
@@ -52,6 +54,26 @@ public class UserTests extends AbstractSetup1LDAPTest
                 "cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas",
                 "cn=OrgUnit2User2,ou=People,ou=OrgUnit2,o=sevenSeas"}) );
         return role1;
+    }
+    
+    private EntityImpl getDefaultJoeSmith(){
+        // first assert that the sample user is equal to the corresponding user in LDAP
+        EntityImpl sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
+        sampleUser
+                .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
+        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
+        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(SN_DEF.getName(), "jsmith");
+        return sampleUser;
+    }
+    
+    private EntityImpl getDefaultJoeSmithOnlyMappedAttrs(){
+        // first assert that the sample user is equal to the corresponding user in LDAP
+        EntityImpl sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
+        sampleUser.setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
+        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
+        return sampleUser;
     }
     
     public void testFetchRolesForUserByRoleAttribute() throws Exception
@@ -75,18 +97,13 @@ public class UserTests extends AbstractSetup1LDAPTest
     public void testUpdateSingleValuedEntityAttr() throws Exception
     {
         // first assert that the sample user is equal to the corresponding user in LDAP
-        EntityImpl sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);
-        sampleUser
-                .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
-        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
-        sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
-        sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        EntityImpl sampleUser = getDefaultJoeSmith();
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
         
         // next, try some identity transformation checks to assert that updating works
         // 1. test attribute modification
         sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith modified");
-        entityManager.update(sampleUser);
+        entityManager.updateEntity(sampleUser);
         
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
@@ -97,8 +114,9 @@ public class UserTests extends AbstractSetup1LDAPTest
                 .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
         sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
         sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(SN_DEF.getName(), "jsmith");
         
-        entityManager.update(sampleUser);
+        entityManager.updateEntity(sampleUser);
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
 
@@ -108,9 +126,10 @@ public class UserTests extends AbstractSetup1LDAPTest
                 .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
         sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
         sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(SN_DEF.getName(), "jsmith");
         sampleUser.setAttribute(LAST_NAME_DEF.getName(), "jsmith");
         
-        entityManager.update(sampleUser);
+        entityManager.updateEntity(sampleUser);
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
 
@@ -119,9 +138,10 @@ public class UserTests extends AbstractSetup1LDAPTest
         sampleUser
                 .setInternalId("cn=jsmith, ou=People, ou=OrgUnit3, o=sevenSeas");
         sampleUser.setAttribute(CN_DEF.getName(), "jsmith");
+        sampleUser.setAttribute(SN_DEF.getName(), "jsmith");
         sampleUser.setAttribute(UID_DEF.getName(), "jsmith");
         
-        entityManager.update(sampleUser);
+        entityManager.updateEntity(sampleUser);
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
 
@@ -137,13 +157,13 @@ public class UserTests extends AbstractSetup1LDAPTest
         // next, try some identity transformation checks to assert that updating works
         // 1. test attribute modification
         sampleRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Arrays.asList(new String[]{"cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas"}) );
-        entityManager.update(sampleRole);
+        entityManager.updateEntity(sampleRole);
         
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
 
         sampleRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Arrays.asList(new String[]{"cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas","cn=OrgUnit2User1,ou=People,ou=OrgUnit2,o=sevenSeas"}) );
-        entityManager.update(sampleRole);
+        entityManager.updateEntity(sampleRole);
         basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
 
         // 2. test attribute removal
@@ -152,9 +172,39 @@ public class UserTests extends AbstractSetup1LDAPTest
         sampleRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Role 1");
         sampleRole.setAttribute(CN_DEF.getName(), "Role1");
         
-        entityManager.update(sampleRole);
+        // note: we call the user DAO directly, because updating internal
+        // attributes is only meant to be used internally, e.g. from within an EntityRelationDAO
+        entityManager.updateEntity(sampleRole);
         
         basicTestCases.testFetchSingleEntity(entityManager, sampleRole);
+    }
+    
+    public void testAddEntity() throws Exception {
+        EntityImpl jsmithCopy = getDefaultJoeSmithOnlyMappedAttrs();
+        jsmithCopy.setId("jsmithCopy");
+        
+        entityManager.addEntity(jsmithCopy);
+        
+        jsmithCopy.setAttribute(UID_DEF.getName(), "jsmithCopy");
+        jsmithCopy.setAttribute(CN_DEF.getName(), "jsmithCopy");
+        jsmithCopy.setAttribute(SN_DEF.getName(), "jsmithCopy");
+        jsmithCopy.setInternalId("uid=jsmithCopy, o=sevenSeas");
+        basicTestCases.testFetchSingleEntity(entityManager, jsmithCopy);
+    }
+    
+    public void testUpdateInternalAttrs() throws Exception {
+        EntityImpl jsmith = getDefaultJoeSmith();
+        jsmith.setAttribute(SN_DEF.getName(), "whatever");
+        jsmith.setAttribute(GIVEN_NAME_DEF.getName(), "foobar");
+        
+        // note: we call the user DAO directly, because updating internal
+        // attributes is only meant to be used internally, e.g. from within an EntityRelationDAO
+        userDAO.updateInternalAttributes(jsmith);
+
+        // reset given name to value in ldap, givenName should be unmodified
+        // the (internal) sn attribute is modified in LDAP
+        jsmith.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
+        basicTestCases.testFetchSingleEntity(entityManager, jsmith);
     }
     
     @Override

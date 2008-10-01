@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.mapping.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
@@ -114,4 +115,24 @@ public class AttributeImpl implements Attribute
         return definition;
     }
 
+    public String toString(){
+        StringBuffer sb = new StringBuffer();
+        sb.append(getName());
+        sb.append("=");
+        if (getDefinition().isMultiValue()){
+            Collection<String> values = getValues();
+            if (values != null){
+                Iterator<String> valIter = values.iterator();
+                while (valIter.hasNext()){
+                    sb.append(values.getClass());
+                    if (valIter.hasNext()){
+                        sb.append(",");
+                    }
+                }
+            }
+        } else {
+            sb.append(getValue());
+        }
+        return sb.toString();
+    }
 }

@@ -144,7 +144,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         {
             relationAttribute.setValue(attrValue);
         }
-        fromEntityDAO.update(fromEntity,false);
+        fromEntityDAO.updateInternalAttributes(fromEntity);
     }
 
     private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity)
@@ -172,7 +172,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         {
             relationAttribute.setValue(null);
         }
-        fromEntityDAO.update(fromEntity,false);
+        fromEntityDAO.updateInternalAttributes(fromEntity);
     }
     public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity)
     {

@@ -105,4 +105,10 @@ public class StubEntityDAO implements EntityDAO
         
     }
 
+    public void updateInternalAttributes(Entity entity)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

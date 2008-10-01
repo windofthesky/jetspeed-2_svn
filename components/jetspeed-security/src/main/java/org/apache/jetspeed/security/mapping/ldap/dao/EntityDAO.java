@@ -75,17 +75,13 @@ public interface EntityDAO
 
     void update(Entity entity);
 
-    void update(Entity entity, boolean updateMappedAttributes);
+    void updateInternalAttributes(Entity entity);
 
-    void addEntity(Entity entity);
+    void add(Entity entity);
 
-    void removeEntity(Entity entity);
+    void remove(Entity entity);
 
-    void update(Entity entity, Entity parentEntity);
-
-    void addEntity(Entity entity, Entity parentEntity);
-
-    void removeEntity(Entity entity, Entity parentEntity);
+    void add(Entity entity, Entity parentEntity);
 
     EntityFactory getEntityFactory();
 

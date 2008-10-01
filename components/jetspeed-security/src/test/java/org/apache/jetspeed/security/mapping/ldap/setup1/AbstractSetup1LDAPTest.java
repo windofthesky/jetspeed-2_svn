@@ -45,28 +45,14 @@ import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 {
 
-    public static final AttributeDefImpl CN_DEF = new AttributeDefImpl("cn").cfgRequired(true);
-
-    public static final AttributeDefImpl UID_DEF = new AttributeDefImpl("uid");
-
-    public static final AttributeDefImpl GIVEN_NAME_DEF = new AttributeDefImpl(
-            "givenName");;
-
-    public static final AttributeDefImpl LAST_NAME_DEF = new AttributeDefImpl(
-            "lastname");;
-
-    public static final AttributeDefImpl DESCRIPTION_ATTR_DEF = new AttributeDefImpl(
-            "description");
-
-    public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl(
-    "uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
-
     protected Set<AttributeDef> userAttrDefs;
 
     protected Set<AttributeDef> roleAttrDefs;
 
     protected AttributeBasedRelationDAO hasRoleDAO;
 
+    protected SpringLDAPEntityDAO userDAO;
+    
     public Resource[] initializationData()
     {
         final ClassPathResource ldapPersonInfo = new ClassPathResource(
@@ -87,6 +73,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         userAttrDefs = new HashSet<AttributeDef>();
         userAttrDefs.addAll(basicAttrDefs);
         userAttrDefs.add(GIVEN_NAME_DEF);
+        userAttrDefs.add(SN_DEF);
         
         userSearchConfig = new LDAPEntityDAOConfiguration();
         userSearchConfig.setBaseDN("o=sevenSeas");
@@ -96,8 +83,9 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         userSearchConfig.setLdapIdAttribute("uid");
         userSearchConfig.setAttributeDefinitions(userAttrDefs);
         userSearchConfig.setEntityType("user");
+        userSearchConfig.setObjectClass("inetOrgPerson");
 
-        SpringLDAPEntityDAO userDAO = new SpringLDAPEntityDAO(userSearchConfig);
+        userDAO = new SpringLDAPEntityDAO(userSearchConfig);
         userDAO.setLdapTemplate(ldapTemplate);
 
         // setting up role DAO

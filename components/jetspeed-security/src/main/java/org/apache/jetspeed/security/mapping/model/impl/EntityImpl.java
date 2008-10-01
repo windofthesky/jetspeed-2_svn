@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.mapping.model.impl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public class EntityImpl implements Entity
     private String internalId;
 
     private String type;
-
+    
     public EntityImpl(String type, String id,
             Set<AttributeDef> allowedAttributes)
     {
@@ -198,6 +199,26 @@ public class EntityImpl implements Entity
             if (other.type != null) return false;
         } else if (!type.equals(other.type)) return false;
         return true;
+    }
+    
+    public String toString(){
+        StringBuffer sb = new StringBuffer();
+        sb.append("Entity of type '");
+        sb.append(getType());
+        sb.append("'\nid=");
+        sb.append(getId());
+        sb.append("\ninternalId=");
+        sb.append(getInternalId());
+        sb.append("\nAmount of attributes: ");
+        sb.append(nameToAttributeMap.values().size());
+        sb.append("\n");
+        for (Attribute attr : nameToAttributeMap.values())
+        {
+            sb.append("attribute: ");
+            sb.append(attr.toString());            
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
 }
