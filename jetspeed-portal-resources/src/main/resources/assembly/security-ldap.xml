@@ -106,21 +106,33 @@
     <property name="searchDN" value="" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
-        <constructor-arg index="0" value="(objectClass=person)" />
+        <constructor-arg index="0" value="(objectClass=inetOrgPerson)" />
       </bean>
     </property>
     <property name="ldapIdAttribute" value="uid" />
+    <property name="objectClass" value="inetOrgPerson"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="uid" />
           <constructor-arg  index="1" value="false" />
-          <constructor-arg  index="2" value="true" />
+          <constructor-arg  index="2" value="false" />
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="cn" />
           <constructor-arg  index="1" value="false" />
-          <constructor-arg  index="2" value="true" />
+          <constructor-arg  index="2" value="false" />
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
+        </bean>
+        <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+          <constructor-arg type="java.lang.String" index="0" value="sn" />
+          <constructor-arg  index="1" value="false" />
+          <constructor-arg  index="2" value="false" />
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="givenName" />
@@ -142,17 +154,22 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
+    <property name="objectClass" value="groupOfUniqueNames"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String"  index="0" value="uid" />
           <constructor-arg index="1" value="false" />
-          <constructor-arg index="2" value="true" />
+          <constructor-arg index="2" value="false" />
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="cn" />
-          <constructor-arg index="1" value="false" />
-          <constructor-arg index="2" value="true" />
+          <constructor-arg index="1" value="false" /> 
+          <constructor-arg index="2" value="false" /> 
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="description" />
@@ -182,17 +199,22 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
+    <property name="objectClass" value="groupOfUniqueNames"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String"  index="0" value="uid" />
           <constructor-arg index="1" value="false" />
-          <constructor-arg index="2" value="true" />
+          <constructor-arg index="2" value="false" />
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="cn" />
           <constructor-arg index="1" value="false" />
-          <constructor-arg index="2" value="true" />
+          <constructor-arg index="2" value="false" />
+          <property name="required" value="true"/>
+          <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="description" />

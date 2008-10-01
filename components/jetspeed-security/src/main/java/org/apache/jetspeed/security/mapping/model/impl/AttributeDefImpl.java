@@ -37,6 +37,8 @@ public class AttributeDefImpl implements AttributeDef
 
     private String requiredDefaultValue;
     
+    private boolean idAttribute;
+    
     public AttributeDefImpl(String name)
     {
         super();
@@ -119,9 +121,21 @@ public class AttributeDefImpl implements AttributeDef
         this.requiredDefaultValue = requiredDefaultValue;
     }
 
+    
     public AttributeDefImpl cfgRequired(boolean required){
         setRequired(required);
         return this;
+    }
+
+    
+    public boolean isIdAttribute()
+    {
+        return idAttribute;
+    }
+
+    public void setIdAttribute(boolean idAttribute)
+    {
+        this.idAttribute = idAttribute;
     }
 
     public AttributeDefImpl cfgRequiredDefaultValue(String requiredDefaultValue){
@@ -129,6 +143,11 @@ public class AttributeDefImpl implements AttributeDef
         return this;
     }
 
+    public AttributeDefImpl cfgIdAttribute(boolean isIdAttribute){
+        setIdAttribute(isIdAttribute);
+        return this;
+    }
+    
     @Override
     public int hashCode()
     {

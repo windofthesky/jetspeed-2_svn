@@ -34,5 +34,7 @@ public interface AttributeDef
     boolean isRequired();
     
     String getRequiredDefaultValue();
+    
+    boolean isIdAttribute();
 
 }

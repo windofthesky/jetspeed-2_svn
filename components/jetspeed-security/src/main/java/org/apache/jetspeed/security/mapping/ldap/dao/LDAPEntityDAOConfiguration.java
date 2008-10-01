@@ -40,6 +40,8 @@ public class LDAPEntityDAOConfiguration
     private Set<AttributeDef> attributeDefinitions;
 
     private String entityType;
+    
+    private String objectClass;
 
     public String getBaseDN()
     {
@@ -101,4 +103,14 @@ public class LDAPEntityDAOConfiguration
         this.entityType = entityType;
     }
 
+    public String getObjectClass()
+    {
+        return objectClass;
+    }
+    
+    public void setObjectClass(String objectClass)
+    {
+        this.objectClass = objectClass;
+    }
+    
 }
