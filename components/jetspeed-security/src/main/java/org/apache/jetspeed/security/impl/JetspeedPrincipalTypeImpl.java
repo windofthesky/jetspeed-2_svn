@@ -29,10 +29,15 @@ public class JetspeedPrincipalTypeImpl implements JetspeedPrincipalType
     private Class<JetspeedPrincipal> principalClass;
     private SecurityAttributeTypes attributeTypes;
 
+    @SuppressWarnings("unchecked") 
     public JetspeedPrincipalTypeImpl(String name, String className, SecurityAttributeTypes attributeTypes) throws ClassNotFoundException
     {
         this.name = name;
         this.principalClass = (Class<JetspeedPrincipal>)Class.forName(className);
+        if (!JetspeedPrincipal.class.isAssignableFrom(principalClass))
+        {
+            throw new ClassCastException("Not a subclass of JetspeedPrincipal: "+principalClass);
+        }
         this.attributeTypes = attributeTypes;
     }
 
