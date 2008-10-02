@@ -203,7 +203,7 @@ limitations under the License.
           auto-update="none"
           auto-delete="none"
       >
-        <inverse-foreignkey field-ref="principalId"/>
+        <inverse-foreignkey field-ref="permissionId"/>
       </collection-descriptor>
 	</class-descriptor>
 
@@ -323,7 +323,7 @@ limitations under the License.
           auto-update="none"
           auto-delete="none"
       >
-        <inverse-foreignkey field-ref="permissionId"/>
+        <inverse-foreignkey field-ref="principalId"/>
       </collection-descriptor>
   </class-descriptor>
   
@@ -422,14 +422,12 @@ limitations under the License.
           column="principal_id"
           jdbc-type="BIGINT"
           primarykey="true"
-          access="anonymous"
       />
       <field-descriptor
           name="permissionId"
           column="permission_id"
           jdbc-type="BIGINT"
           primarykey="true"
-          access="anonymous"
       />
       <reference-descriptor
          name="principal"

@@ -32,7 +32,6 @@ public interface JetspeedPermissionStorageManager
 
     void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
     void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
-    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, List<JetspeedPrincipal> principal) throws SecurityException;
-    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principal) throws SecurityException;
+    void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principals) throws SecurityException;
     void revokeAllPermissions(JetspeedPrincipal principal) throws SecurityException;
 }

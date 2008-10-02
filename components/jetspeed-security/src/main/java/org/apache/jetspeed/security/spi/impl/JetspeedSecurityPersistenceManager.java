@@ -97,6 +97,7 @@ public class JetspeedSecurityPersistenceManager
     //
     // JetspeedPrincipalAccessManager interface implementation
     //
+    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -107,6 +108,7 @@ public class JetspeedSecurityPersistenceManager
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -117,6 +119,7 @@ public class JetspeedSecurityPersistenceManager
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -127,6 +130,7 @@ public class JetspeedSecurityPersistenceManager
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -137,6 +141,7 @@ public class JetspeedSecurityPersistenceManager
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    @SuppressWarnings("unchecked") 
     public List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -153,6 +158,7 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    @SuppressWarnings("unchecked") 
     public List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -169,6 +175,7 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    @SuppressWarnings("unchecked") 
     public List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -185,6 +192,7 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    @SuppressWarnings("unchecked") 
     public List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
     {
         Criteria criteria = new Criteria();
@@ -215,6 +223,7 @@ public class JetspeedSecurityPersistenceManager
         return (JetspeedPrincipal)getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
+    @SuppressWarnings("unchecked") 
     public List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type)
     {
         Criteria criteria = new Criteria();
@@ -233,6 +242,7 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type)
     {
         Criteria criteria = new Criteria();
@@ -245,6 +255,7 @@ public class JetspeedSecurityPersistenceManager
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue, JetspeedPrincipalType type)
     {
         Criteria criteria = new Criteria();
@@ -425,6 +436,7 @@ public class JetspeedSecurityPersistenceManager
         }
     }
 
+    @SuppressWarnings("unchecked") 
     public List<PasswordCredential> getHistoricPasswordCredentials(User user)
     {
         Criteria criteria = new Criteria();
@@ -501,6 +513,7 @@ public class JetspeedSecurityPersistenceManager
     //
     // JetspeedPermissionAccessManager interface implementation
     //
+    @SuppressWarnings("unchecked") 
     public List<PersistentJetspeedPermission> getPermissions()
     {
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, new Criteria());
@@ -514,6 +527,7 @@ public class JetspeedSecurityPersistenceManager
         return getPermissions(type, null);
     }
 
+    @SuppressWarnings("unchecked") 
     public List<PersistentJetspeedPermission> getPermissions(String type, String nameFilter)
     {
         Criteria criteria = new Criteria();
@@ -536,6 +550,7 @@ public class JetspeedSecurityPersistenceManager
         return getPersistenceBrokerTemplate().getCount(query) == 1;
     }
     
+    @SuppressWarnings("unchecked") 
     public List<PersistentJetspeedPermission> getPermissions(PersistentJetspeedPrincipal principal)
     {
         Criteria criteria = new Criteria();
@@ -546,7 +561,8 @@ public class JetspeedSecurityPersistenceManager
         return (List<PersistentJetspeedPermission>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
-    public List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission)
+    @SuppressWarnings("unchecked") 
+    public List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission, String principalType)
     {
         Criteria criteria = new Criteria();
         if (permission.getId() != null)
@@ -557,6 +573,10 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("permissions.permission.type", permission.getType());
             criteria.addEqualTo("permissions.permission.name", permission.getName());
+        }
+        if (principalType != null)
+        {
+            criteria.addEqualTo("type", principalType);
         }
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         query.addOrderByAscending("type");
@@ -610,7 +630,7 @@ public class JetspeedSecurityPersistenceManager
             current.setActions(permission.getActions());
             try
             {
-                getPersistenceBrokerTemplate().store(permission);
+                getPersistenceBrokerTemplate().store(current);
             }
             catch (Exception pbe)
             {
@@ -655,29 +675,176 @@ public class JetspeedSecurityPersistenceManager
         }
     }    
 
-    public void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal)
+    public void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        if (permission.getId() == null)
+        {
+            Criteria criteria = new Criteria();
+            criteria.addEqualTo("type", permission.getType());
+            criteria.addEqualTo("name", permission.getName());
+            Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+            PersistentJetspeedPermission p = (PersistentJetspeedPermission)getPersistenceBrokerTemplate().getObjectByQuery(query);
+            if (p == null)
+            {
+                throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST.create(permission.getName()));
+            }
+            permission = p;
+        }
+        grantPermission(permission, principal, true);
     }
 
-    public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, List<JetspeedPrincipal> principal)
+    protected void grantPermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal, boolean checkExists) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        if (principal.isTransient() || principal.getId() == null)
+        {
+            JetspeedPrincipal p = getPrincipal(principal.getName(), principal.getType());
+            if (p ==  null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(principal.getType().getName(), principal.getName()));
+            }
+            principal = p;
+        }
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("principalId", principal.getId());
+        criteria.addEqualTo("permissionId", permission.getId());
+        Query query = QueryFactory.newQuery(JetspeedPrincipalPermission.class,criteria);
+        if (!checkExists || getPersistenceBrokerTemplate().getCount(query) == 0)
+        {
+            try
+            {
+                getPersistenceBrokerTemplate().store(new JetspeedPrincipalPermission(principal, permission));
+            }
+            catch (Exception pbe)
+            {
+                KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                       "grantPermission",
+                                                                       pbe.getMessage());
+                logger.error(msg, pbe);
+                throw new SecurityException(msg, pbe);
+            }
+        }
     }
 
-    public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principal)
+    @SuppressWarnings("unchecked") 
+    public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principals) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        if (permission.getId() == null)
+        {
+            Criteria criteria = new Criteria();
+            criteria.addEqualTo("type", permission.getType());
+            criteria.addEqualTo("name", permission.getName());
+            Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+            PersistentJetspeedPermission p = (PersistentJetspeedPermission)getPersistenceBrokerTemplate().getObjectByQuery(query);
+            if (p == null)
+            {
+                throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST.create(permission.getName()));
+            }
+            permission = p;
+        }
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("permissions.permissionId", permission.getId());
+        if (principalType != null)
+        {
+            criteria.addEqualTo("type", principalType);
+        }
+        QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
+        List<JetspeedPrincipal> currentList = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        List<JetspeedPrincipal> targetList = new ArrayList<JetspeedPrincipal>(principals);
+        for (Iterator<JetspeedPrincipal> i = currentList.iterator(); i.hasNext(); )
+        {
+            JetspeedPrincipal current = i.next();
+            for (Iterator<JetspeedPrincipal> j = targetList.iterator(); j.hasNext(); )
+            {
+                JetspeedPrincipal target = j.next();
+                
+                if (principalType != null && !target.getType().getName().equals(principalType))
+                {
+                    throw new SecurityException(SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager", 
+                                                                                    "grantPermissionOnlyTo",
+                                                                                    "Specified "+target.getType().getName()+" principal: "+target.getName()+" is not of type: "+principalType));
+                }
+                if (current.getType().getName().equals(target.getType().getName()) && current.getName().equals(target.getName()))
+                {
+                    j.remove();
+                    current = null;
+                    break;
+                }
+            }
+            if (current == null)
+            {
+                i.remove();
+            }
+        }
+        for (Iterator<JetspeedPrincipal> i = currentList.iterator(); i.hasNext(); )
+        {
+            revokePermission(permission, i.next());
+        }
+        for (Iterator<JetspeedPrincipal> i = targetList.iterator(); i.hasNext(); )
+        {
+            grantPermission(permission, i.next(), false);
+        }
     }
 
-    public void revokeAllPermissions(JetspeedPrincipal principal)
+    public void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        Criteria criteria = new Criteria();
+        if (principal.isTransient() || principal.getId() == null)
+        {
+            criteria.addEqualTo("principal.type", principal.getType());
+            criteria.addEqualTo("principal.name", principal.getName());
+        }
+        else
+        {
+            criteria.addEqualTo("principalId", principal.getId());
+        }
+        if (permission.getId() == null)
+        {
+            criteria.addEqualTo("permission.type", permission.getType());
+            criteria.addEqualTo("permission.name", permission.getName());
+        }
+        else
+        {
+            criteria.addEqualTo("permissionId", permission.getId());
+        }
+        Query query = QueryFactory.newQuery(JetspeedPrincipalPermission.class,criteria);
+        try
+        {
+            getPersistenceBrokerTemplate().deleteByQuery(query);
+        }
+        catch (Exception pbe)
+        {
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                   "revokePermission",
+                                                                   pbe.getMessage());
+            logger.error(msg, pbe);
+            throw new SecurityException(msg, pbe);
+        }
     }
-
-    public void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal)
+    
+    public void revokeAllPermissions(JetspeedPrincipal principal) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        Criteria criteria = new Criteria();
+        if (principal.isTransient() || principal.getId() == null)
+        {
+            criteria.addEqualTo("principal.type", principal.getType());
+            criteria.addEqualTo("principal.name", principal.getName());
+        }
+        else
+        {
+            criteria.addEqualTo("principalId", principal.getId());
+        }
+        Query query = QueryFactory.newQuery(JetspeedPrincipalPermission.class,criteria);
+        try
+        {
+            getPersistenceBrokerTemplate().deleteByQuery(query);
+        }
+        catch (Exception pbe)
+        {
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                   "revokeAllPermissions",
+                                                                   pbe.getMessage());
+            logger.error(msg, pbe);
+            throw new SecurityException(msg, pbe);
+        }
     }
-
 }

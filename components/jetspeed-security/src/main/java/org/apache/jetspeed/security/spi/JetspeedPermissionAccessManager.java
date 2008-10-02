@@ -34,5 +34,5 @@ public interface JetspeedPermissionAccessManager
     List<? extends JetspeedPermission> getPermissions();
     List<? extends JetspeedPermission> getPermissions(String type);
     List<? extends JetspeedPermission> getPermissions(String type, String nameFilter);
-    List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission);
+    List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission, String principalType);
 }

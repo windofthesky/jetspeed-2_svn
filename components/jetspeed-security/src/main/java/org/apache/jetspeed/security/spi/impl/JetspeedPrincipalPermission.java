@@ -19,8 +19,8 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.io.Serializable;
 
-import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 
 /**
  * @version $Id$
@@ -31,9 +31,9 @@ public class JetspeedPrincipalPermission implements Serializable
     private static final long serialVersionUID = 1842368505096279355L;
     
     @SuppressWarnings("unused")
-    private JetspeedPrincipal principal;
+    private Long principalId;
     @SuppressWarnings("unused")
-    private JetspeedPermission permission;
+    private Long permissionId;
     
     public JetspeedPrincipalPermission()
     {
@@ -41,19 +41,9 @@ public class JetspeedPrincipalPermission implements Serializable
         // as the only operations to be used are insert/delete, never update
     }
 
-    public JetspeedPrincipalPermission(JetspeedPrincipal principal, JetspeedPermission permission)
+    public JetspeedPrincipalPermission(JetspeedPrincipal principal, PersistentJetspeedPermission permission)
     {
-        this.principal = principal;
-        this.permission = permission;
-    }
-
-    public JetspeedPrincipal getPrincipal()
-    {
-        return principal;
-    }
-
-    public JetspeedPermission getPermission()
-    {
-        return permission;
+        this.principalId = principal.getId();
+        this.permissionId = permission.getId();
     }
 }

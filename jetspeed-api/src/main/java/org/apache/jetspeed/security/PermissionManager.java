@@ -45,7 +45,7 @@ public interface PermissionManager extends PermissionFactory
 
     void grantPermission(JetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
     void revokePermission(JetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException;
-    void grantPermissionOnlyTo(JetspeedPermission permission, List<JetspeedPrincipal> principal) throws SecurityException;
-    void grantPermissionOnlyTo(JetspeedPermission permission, String principalType, List<JetspeedPrincipal> principal) throws SecurityException;
+    void grantPermissionOnlyTo(JetspeedPermission permission, List<JetspeedPrincipal> principals) throws SecurityException;
+    void grantPermissionOnlyTo(JetspeedPermission permission, String principalType, List<JetspeedPrincipal> principals) throws SecurityException;
     void revokeAllPermissions(JetspeedPrincipal principal) throws SecurityException;
 }
