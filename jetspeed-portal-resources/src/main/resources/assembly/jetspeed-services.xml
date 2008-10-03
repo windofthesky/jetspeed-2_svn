@@ -126,6 +126,9 @@
         <entry key="JetspeedSerializer">
           <ref bean="org.apache.jetspeed.serializer.JetspeedSerializer" />
         </entry>
+        <entry key="JetspeedPrincipalManagerProvider">
+          <ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
+        </entry>
         <!--<entry key="SecurityAttributesProvider">
           <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
           </entry>-->
