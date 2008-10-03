@@ -18,6 +18,11 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.util.ArrayList;
 
+import org.apache.jetspeed.security.JetspeedPrincipalType;
+
+import javolution.xml.XMLFormat;
+import javolution.xml.stream.XMLStreamException;
+
 
 /**
  * Simple wrapper class for XML serialization
@@ -28,4 +33,76 @@ import java.util.ArrayList;
 public class JSPrincipals extends ArrayList<JSPrincipal>
 {
     private static final long serialVersionUID = -5698435742048612881L;
+    
+    private String type = JetspeedPrincipalType.USER;
+
+    public JSPrincipals()
+    {
+    }
+    
+    public JSPrincipals(String type)
+    {
+        this();
+        this.type = type;
+    }
+    
+    public String getType()
+    {
+        return this.type;
+    }
+    
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+    
+    /***************************************************************************
+     * SERIALIZER
+     */
+    private static final XMLFormat XML = new XMLFormat(JSPrincipals.class)
+    {
+
+        public void write(Object o, OutputElement xml)
+                throws XMLStreamException
+        {
+            try
+            {
+                JSPrincipals g = (JSPrincipals) o;
+                xml.setAttribute("type", g.getType());
+                
+                for (JSPrincipal p : g)
+                {
+                    xml.add(p, "Principal", JSPrincipal.class);
+                }
+            } 
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        public void read(InputElement xml, Object o)
+        {
+
+            try
+            {
+                JSPrincipals g = (JSPrincipals) o;
+                g.setType(xml.getAttribute("type", JetspeedPrincipalType.USER));
+                
+                while (xml.hasNext())
+                {
+                    JSPrincipal elem = (JSPrincipal) xml.get("Principal", JSPrincipal.class);
+                    g.add(elem);
+                }
+            } 
+            catch (Exception e)
+            {
+                /**
+                 * while annoying invalid entries in the file should be
+                 * just disregarded
+                 */
+                e.printStackTrace();
+            }
+        }
+    };
 }

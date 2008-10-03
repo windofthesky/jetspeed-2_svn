@@ -17,11 +17,86 @@
 
 package org.apache.jetspeed.serializer.objects;
 
+import org.apache.jetspeed.security.SecurityAttributeType;
+
+import javolution.xml.XMLFormat;
+import javolution.xml.stream.XMLStreamException;
+
 
 public class JSSecurityAttributes extends JSNVPElements
 {
+    private String category = SecurityAttributeType.JETSPEED_CATEGORY;
+    
     public JSSecurityAttributes()
     {
         super("SecurityAttribute");
     }
+    
+    public JSSecurityAttributes(String category)
+    {
+        this();
+        this.category = category;
+    }
+    
+    public String getCategory()
+    {
+        return this.category;
+    }
+    
+    public void setCategory(String category)
+    {
+        this.category = category;
+    }
+    
+    /***************************************************************************
+     * SERIALIZER
+     */
+    /***************************************************************************
+     * SERIALIZER
+     */
+    private static final XMLFormat XML = new XMLFormat(JSSecurityAttributes.class)
+    {
+
+        public void write(Object o, OutputElement xml)
+                throws XMLStreamException
+        {
+            try
+            {
+                JSSecurityAttributes g = (JSSecurityAttributes) o;
+                xml.setAttribute("category", g.getCategory());
+                
+                for (JSNVPElement element : g.getValues())
+                {
+                    xml.add(element, g.getItemElementName(), JSNVPElement.class);
+                }
+            } 
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        public void read(InputElement xml, Object o)
+        {
+            try
+            {
+                JSSecurityAttributes g = (JSSecurityAttributes) o;
+                g.setCategory(xml.getAttribute("category", SecurityAttributeType.JETSPEED_CATEGORY));
+                
+                while (xml.hasNext())
+                {
+                    JSNVPElement elem = (JSNVPElement)xml.get(g.getItemElementName(), JSNVPElement.class);
+                    g.add(elem);
+                }
+            } 
+            catch (Exception e)
+            {
+                /**
+                 * while annoying invalid entries in the file should be
+                 * just disregarded
+                 */
+                e.printStackTrace();
+            }
+        }
+    };
 }

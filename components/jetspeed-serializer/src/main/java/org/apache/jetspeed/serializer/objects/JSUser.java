@@ -45,13 +45,13 @@ public class JSUser
 
     private JSPWAttributes pwData = null;
 
-    private List<JSRole> roles = null;
+    private List<JSPrincipal> roles = null;
 
-    private List<JSGroup> groups = null;
+    private List<JSPrincipal> groups = null;
 
     private JSUserAttributes userInfo = null;
 
-    private JSNVPElements attributes = null;
+    private JSSecurityAttributes attributes = null;
 
     private List<Credential> publicCredentials = null;
 
@@ -86,26 +86,26 @@ public class JSUser
         privateCredentials.add(o);
     }
 
-    public void addGroup(JSGroup group)
+    public void addGroup(JSPrincipal group)
     {
         if (groups == null) 
-            groups = new ArrayList<JSGroup>();
+            groups = new ArrayList<JSPrincipal>();
         groups.add(group);
     }
 
-    public void addRole(JSRole role)
+    public void addRole(JSPrincipal role)
     {
         if (roles == null) 
-            roles = new ArrayList<JSRole>();
+            roles = new ArrayList<JSPrincipal>();
         roles.add(role);
     }
 
-    public List<JSGroup> getGroups()
+    public List<JSPrincipal> getGroups()
     {
         return groups;
     }
 
-    public void setGroups(List<JSGroup> groups)
+    public void setGroups(List<JSPrincipal> groups)
     {
         this.groups = groups;
     }
@@ -211,12 +211,12 @@ public class JSUser
         this.name = name;
     }
 
-    public List<JSRole> getRoles()
+    public List<JSPrincipal> getRoles()
     {
         return roles;
     }
 
-    public void setRoles(List<JSRole> roles)
+    public void setRoles(List<JSPrincipal> roles)
     {
         this.roles = roles;
     }
@@ -226,14 +226,14 @@ public class JSUser
         return name;
     }
 
-    public JSNVPElements getSecurityAttributes()
+    public JSSecurityAttributes getSecurityAttributes()
     {
         return attributes;
     }
 
     public void setSecurityAttributes(Map<String, SecurityAttribute> sa)
     {
-        this.attributes = new JSNVPElements();
+        this.attributes = new JSSecurityAttributes();
         for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
         {
             SecurityAttribute attrib = e.getValue();
@@ -372,8 +372,8 @@ public class JSUser
 	                    g.roleString = (JSUserRoles) o1;
 	                else if (o1 instanceof JSUserAttributes)
 	                    g.userInfo  = (JSUserAttributes) o1;
-	                else if (o1 instanceof JSNVPElements)
-		                g.attributes  = (JSNVPElements) o1;
+	                else if (o1 instanceof JSSecurityAttributes)
+		                g.attributes  = (JSSecurityAttributes) o1;
                     else if (o1 instanceof JSPrincipalRules)
 	                    g.rules  = (JSPrincipalRules) o1;
                 }
@@ -387,9 +387,14 @@ public class JSUser
     };
 
 
-    private String append(JSRole rule)
+    private String append(JSPrincipal principal)
     {
-        return rule.getName();
+        return principal.getName();
+    }
+    
+    private String append(JSRole role)
+    {
+        return role.getName();
     }
 
     private String append(JSGroup group)
@@ -399,6 +404,7 @@ public class JSUser
 
     private String append(Object s)
     {
+        if (s instanceof JSPrincipal) return append((JSPrincipal) s);
         if (s instanceof JSRole) return append((JSRole) s);
         if (s instanceof JSGroup) return append((JSGroup) s);
 
@@ -480,7 +486,47 @@ public class JSUser
 		return pwData;
 	}
 
-	public void setPwData(JSPWAttributes pwData)
+    public String getPwDataValue(String key)
+    {
+        return getPwDataValue(key, null);
+    }
+    
+    public String getPwDataValue(String key, String defValue)
+    {
+        String value = (this.pwData != null ? this.pwData.getMyMap().get(key) : null);
+        return (value != null ? value : defValue);
+    }
+    
+    public boolean getPwDataValueAsBoolean(String key)
+    {
+        return getPwDataValueAsBoolean(key, false);
+    }
+    
+    public boolean getPwDataValueAsBoolean(String key, boolean defValue)
+    {
+        String sv = getPwDataValue(key);        
+        return (sv != null ? Boolean.parseBoolean(sv) : defValue);
+    }
+    
+    public Date getPwDataValueAsDate(String key)
+    {
+        return getPwDataValueAsDate(key, null);
+    }
+    
+    public Date getPwDataValueAsDate(String key, Date defValue)
+    {
+        Date value = null;
+        String sv = getPwDataValue(key, null);
+        
+        if (sv != null)
+        {
+            value = Date.valueOf(sv);
+        }
+        
+        return (value != null ? value : defValue);
+    }
+
+    public void setPwData(JSPWAttributes pwData)
 	{
 		this.pwData = pwData;
 	}
@@ -491,7 +537,6 @@ public class JSUser
         return subsite;
     }
 
-    
     public void setSubsite(String subsite)
     {
         this.subsite = subsite;

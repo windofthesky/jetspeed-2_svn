@@ -30,7 +30,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -38,7 +37,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
-import org.apache.jetspeed.serializer.objects.JSUser;
+import org.apache.jetspeed.serializer.objects.JSPrincipal;
 
 /**
  * JetspeedSecuritySerializer - Security component serializer
@@ -86,6 +85,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
         {
             log.info("creating user templates");
             User adminUser = null;
+            
             try
             {
                 adminUser = userManager.getUser(this.adminUserName);
@@ -95,30 +95,33 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
                 System.out.println("admin user failed to retrieve " + adminUserName);
                 e.printStackTrace();
                 adminUser = null;
-            }            
+            }
+
             if (adminUser == null)
                 throw new SerializerException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, "admin"));
-            for (JSUser user : snapshot.getUsers())
+            
+            for (JSPrincipal user : snapshot.getUsers())
             {
-                String folderTemplate = user.getUserTemplate();
-                String ssubsite = user.getSubsite();
-                if (folderTemplate != null)
-                {
-                    String userTemplate = null;
-                    String subsite = null;
-                    if (user.getSubsite() != null)
-                    {
-                        subsite = user.getSubsite();
-                        String path = PageManagerUtils.concatenatePaths(Folder.SUBSITE_ROOT_FOLDER, subsite);
-                        userTemplate = PageManagerUtils.concatenatePaths(path, Folder.USER_FOLDER + user.getName());
-                        //userTemplate = Folder.SUBSITE_ROOT_FOLDER + subsite + Folder.USER_FOLDER + user.getName();
-                    } 
-                    else
-                    {
-                        userTemplate = Folder.USER_FOLDER + user.getName();
-                    }
-                    this.createUserTemplate(folderTemplate, userTemplate, subsite, this.pageManager, user.getName(), adminUser);
-                }
+                // TODO: should have a specific user JSPrincipal class?
+//                String folderTemplate = user.getUserTemplate();
+//                String ssubsite = user.getSubsite();
+//                if (folderTemplate != null)
+//                {
+//                    String userTemplate = null;
+//                    String subsite = null;
+//                    if (user.getSubsite() != null)
+//                    {
+//                        subsite = user.getSubsite();
+//                        String path = PageManagerUtils.concatenatePaths(Folder.SUBSITE_ROOT_FOLDER, subsite);
+//                        userTemplate = PageManagerUtils.concatenatePaths(path, Folder.USER_FOLDER + user.getName());
+//                        //userTemplate = Folder.SUBSITE_ROOT_FOLDER + subsite + Folder.USER_FOLDER + user.getName();
+//                    } 
+//                    else
+//                    {
+//                        userTemplate = Folder.USER_FOLDER + user.getName();
+//                    }
+//                    this.createUserTemplate(folderTemplate, userTemplate, subsite, this.pageManager, user.getName(), adminUser);
+//                }
 
             }
         }

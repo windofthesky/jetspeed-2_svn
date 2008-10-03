@@ -18,6 +18,7 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
@@ -43,11 +44,11 @@ public class JSPermission
 
 	private long id;
 
-	private ArrayList roles = null;
+	private List<JSPrincipal> roles = null;
 
-	private ArrayList groups = null;
+	private List<JSPrincipal> groups = null;
 
-	private ArrayList users = null;
+	private List<JSPrincipal> users = null;
 
 	private JSUserRoles roleString;
 
@@ -101,7 +102,7 @@ public class JSPermission
 		return s.toString();
 	}
 
-	private String putTokens(ArrayList _list)
+	private String putTokens(List<JSPrincipal> _list)
 	{
 		if ((_list == null) || (_list.size() == 0))
 			return "";
@@ -140,7 +141,7 @@ public class JSPermission
 	/**
 	 * @return Returns the groups.
 	 */
-	public ArrayList getGroups()
+	public List<JSPrincipal> getGroups()
 	{
 		return groups;
 	}
@@ -174,7 +175,7 @@ public class JSPermission
 	/**
 	 * @return Returns the roles.
 	 */
-	public ArrayList getRoles()
+	public List<JSPrincipal> getRoles()
 	{
 		return roles;
 	}
@@ -183,7 +184,7 @@ public class JSPermission
 	 * @param roles
 	 *            The roles to set.
 	 */
-	public void setRoles(ArrayList roles)
+	public void setRoles(List<JSPrincipal> roles)
 	{
 		this.roles = roles;
 	}
@@ -208,7 +209,7 @@ public class JSPermission
 	/**
 	 * @return Returns the users.
 	 */
-	public ArrayList getUsers()
+	public List<JSPrincipal> getUsers()
 	{
 		return users;
 	}
@@ -240,27 +241,28 @@ public class JSPermission
 		this.id = id;
 	}
 
-	
-
-	public void addGroup(JSGroup group)
+	public void addGroup(JSPrincipal group)
 	{
 		if (groups == null)
-			groups = new ArrayList();
+			groups = new ArrayList<JSPrincipal>();
+		
 		groups.add(group);
 	}
 
-	public void addRole(JSRole role)
+	public void addRole(JSPrincipal role)
 	{
 		if (roles == null)
-			roles = new ArrayList();
+			roles = new ArrayList<JSPrincipal>();
+		
 		roles.add(role);
 	}
 
 
-	public void addUser(JSUser user)
+	public void addUser(JSPrincipal user)
 	{
 		if (users == null)
-			users = new ArrayList();
+			users = new ArrayList<JSPrincipal>();
+		
 		users.add(user);
 	}
 

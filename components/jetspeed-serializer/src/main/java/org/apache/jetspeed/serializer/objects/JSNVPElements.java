@@ -77,11 +77,13 @@ public class JSNVPElements
             try
             {
                 JSNVPElements g = (JSNVPElements) o;
+                
                 for (JSNVPElement element : g.values)
                 {
                     xml.add(element, g.getItemElementName(), JSNVPElement.class);
                 }
-            } catch (Exception e)
+            } 
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -93,12 +95,16 @@ public class JSNVPElements
             try
             {
                 JSNVPElements g = (JSNVPElements) o;
+                
                 while (xml.hasNext())
 				{
-					JSNVPElement elem = (JSNVPElement)xml.get(g.getItemElementName(), JSNVPElement.class);
+                    // Allow any sub element as long as it has name-value pair. 
+					//JSNVPElement elem = (JSNVPElement)xml.get(g.getItemElementName(), JSNVPElement.class);
+                    JSNVPElement elem = (JSNVPElement)xml.getNext();
 					g.add(elem);
 				}
-            } catch (Exception e)
+            } 
+            catch (Exception e)
             {
                 /**
                  * while annoying invalid entries in the file should be

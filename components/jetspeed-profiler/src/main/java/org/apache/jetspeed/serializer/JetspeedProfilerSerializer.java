@@ -41,7 +41,7 @@ import org.apache.jetspeed.serializer.objects.JSProfilingRules;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
-import org.apache.jetspeed.serializer.objects.JSUser;
+import org.apache.jetspeed.serializer.objects.JSPrincipal;
 
 /**
  * JetspeedProfilerSerializer - Profiler component serializer
@@ -176,36 +176,27 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
         log.debug("recreateUserPrincipalRules - started");
 
         // get Rules for each user
-
-        Iterator _itUsers = snapshot.getUsers().iterator();
-        while (_itUsers.hasNext())
+        for (JSPrincipal _user : snapshot.getUsers())
         {
-            JSUser _user = (JSUser) _itUsers.next();
-            JSPrincipalRules jsRules = _user.getRules();
             try
             {
                 User user = userManager.getUser(_user.getName());
-
-                if (jsRules != null)
+                
+                for (JSPrincipalRule pr : _user.getRules())
                 {
-                    Iterator _itRoles = jsRules.iterator();
-                    while (_itRoles.hasNext())
+                    ProfilingRule pRule = pm.getRule(pr.getRule());
+    
+                    try
                     {
-                        JSPrincipalRule pr = (JSPrincipalRule) _itRoles.next();
-                        ProfilingRule pRule = pm.getRule(pr.getRule());
-
-                        try
-                        {
-                            PrincipalRule p1 = pm.createPrincipalRule();
-                            p1.setLocatorName(pr.getLocator());
-                            p1.setProfilingRule(pRule);
-                            p1.setPrincipalName(user.getName());
-                            pm.storePrincipalRule(p1);
-                        }
-                        catch (Exception eRole)
-                        {
-                            eRole.printStackTrace();
-                        }
+                        PrincipalRule p1 = pm.createPrincipalRule();
+                        p1.setLocatorName(pr.getLocator());
+                        p1.setProfilingRule(pRule);
+                        p1.setPrincipalName(user.getName());
+                        pm.storePrincipalRule(p1);
+                    }
+                    catch (Exception eRole)
+                    {
+                        eRole.printStackTrace();
                     }
                 }
             }
@@ -214,8 +205,8 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                 eUser.printStackTrace();
             }
         }
+        
         log.debug("recreateUserPrincipalRules - done");
-
     }
 
     /**
@@ -369,19 +360,15 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
     private void exportUserPrincipalRules(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
     {
         // get Rules for each user
-
-        Iterator _itUsers = snapshot.getUsers().iterator();
-        while (_itUsers.hasNext())
+        
+        for (JSPrincipal _user : snapshot.getUsers())
         {
-            JSUser _user = (JSUser) _itUsers.next();
             Principal principal = _user.getPrincipal();
+            
             if (principal != null)
             {
-                Collection col = pm.getRulesForPrincipal(principal);
-                Iterator _itCol = col.iterator();
-                while (_itCol.hasNext())
+                for (PrincipalRule p1 : (Collection<PrincipalRule>) pm.getRulesForPrincipal(principal))
                 {
-                    PrincipalRule p1 = (PrincipalRule) _itCol.next();
                     JSPrincipalRule pr = new JSPrincipalRule(p1.getLocatorName(), p1.getProfilingRule().getId());
                     _user.getRules().add(pr);
                 }

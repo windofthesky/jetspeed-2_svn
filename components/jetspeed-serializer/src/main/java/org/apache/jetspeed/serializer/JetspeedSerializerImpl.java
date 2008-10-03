@@ -45,13 +45,13 @@ import org.apache.jetspeed.serializer.objects.JSMediaType;
 import org.apache.jetspeed.serializer.objects.JSMediaTypes;
 import org.apache.jetspeed.serializer.objects.JSMimeType;
 import org.apache.jetspeed.serializer.objects.JSMimeTypes;
+import org.apache.jetspeed.serializer.objects.JSNVPElement;
 import org.apache.jetspeed.serializer.objects.JSNVPElements;
 import org.apache.jetspeed.serializer.objects.JSPWAttributes;
 import org.apache.jetspeed.serializer.objects.JSPermission;
 import org.apache.jetspeed.serializer.objects.JSPermissions;
 import org.apache.jetspeed.serializer.objects.JSPortlet;
 import org.apache.jetspeed.serializer.objects.JSPortlets;
-import org.apache.jetspeed.serializer.objects.JSPrincipal;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
 import org.apache.jetspeed.serializer.objects.JSPrincipals;
@@ -176,18 +176,18 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
     protected void setupAliases(XMLBinding binding)
     {
-        binding.setAlias(JSPrincipal.class, "Principal");
         binding.setAlias(JSPrincipals.class, "Principals");
-        binding.setAlias(JSSecurityAttributes.class, "SecurityAttributes");
-        binding.setAlias(JSSecurityAttributes.class, "InfoAttributes");
         binding.setAlias(JSRole.class, "Role");
         binding.setAlias(JSRoles.class, "Roles");
         binding.setAlias(JSGroup.class, "Group");
         binding.setAlias(JSGroups.class, "Groups");
         binding.setAlias(JSUser.class, "User");
         binding.setAlias(JSUsers.class, "Users");
-        binding.setAlias(JSNVPElements.class, "preferences");
+        binding.setAlias(JSSecurityAttributes.class, "SecurityAttributes");
         binding.setAlias(JSUserAttributes.class, "userinfo");
+        binding.setAlias(JSNVPElements.class, "preferences");
+        binding.setAlias(JSNVPElement.class, "SecurityAttribute");
+        binding.setAlias(JSNVPElement.class, "preference");
         binding.setAlias(JSSnapshot.class, "snapshot");
         binding.setAlias(JSUserRoles.class, "roles");
         binding.setAlias(JSUserGroups.class, "groups");

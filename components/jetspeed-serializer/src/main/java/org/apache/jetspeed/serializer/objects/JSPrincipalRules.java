@@ -27,6 +27,6 @@ import java.util.ArrayList;
 * @author <a href="mailto:hajo@bluesunrise.com">Hajo Birthelmer</a>
 * @version $Id: $
 */
-public class JSPrincipalRules extends ArrayList
+public class JSPrincipalRules extends ArrayList<JSPrincipalRule>
 {
 }
