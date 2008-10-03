@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.mapping.ldap.dao;
 
 import java.util.Collection;
 
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.springframework.ldap.filter.Filter;
@@ -73,15 +74,15 @@ public interface EntityDAO
      */
     Collection<Entity> getAllEntities();
 
-    void update(Entity entity);
+    void update(Entity entity) throws SecurityException;
 
-    void updateInternalAttributes(Entity entity);
+    void updateInternalAttributes(Entity entity) throws SecurityException ;
 
-    void add(Entity entity);
+    void add(Entity entity) throws SecurityException;
 
-    void remove(Entity entity);
+    void remove(Entity entity) throws SecurityException;
 
-    void add(Entity entity, Entity parentEntity);
+    void add(Entity entity, Entity parentEntity) throws SecurityException;
 
     EntityFactory getEntityFactory();
 

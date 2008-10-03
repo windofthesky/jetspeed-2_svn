@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
 import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
@@ -138,7 +139,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         // types and relation type is not configured.
     }
 
-    public void updateEntity(Entity entity)
+    public void updateEntity(Entity entity) throws SecurityException
     {
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)
@@ -147,16 +148,16 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         }
     }
 
-    public void removeEntity(Entity entity)
+    public void removeEntity(Entity entity) throws SecurityException
     {
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)
         {
-            dao.update(entity);
+            dao.remove(entity);
         }
     }
 
-    public void addEntity(Entity entity)
+    public void addEntity(Entity entity) throws SecurityException
     {
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)

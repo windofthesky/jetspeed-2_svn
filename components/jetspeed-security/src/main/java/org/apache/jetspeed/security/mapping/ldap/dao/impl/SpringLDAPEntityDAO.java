@@ -23,12 +23,12 @@ import java.util.Iterator;
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.ldap.EntityFactoryImpl;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultEntityContextMapper;
@@ -54,8 +54,11 @@ import org.springframework.ldap.filter.OrFilter;
  */
 public class SpringLDAPEntityDAO implements EntityDAO
 {
-    private enum UpdateMode { MAPPED , INTERNAL, ALL };
-    
+    private enum UpdateMode
+    {
+        MAPPED, INTERNAL, ALL
+    };
+
     protected LdapTemplate ldapTemplate;
     protected LDAPEntityDAOConfiguration configuration;
     private ContextMapper contextMapper;
@@ -72,6 +75,31 @@ public class SpringLDAPEntityDAO implements EntityDAO
     public void initialize(LdapTemplate ldapTemplate)
     {
         this.ldapTemplate = ldapTemplate;
+    }
+
+    public LDAPEntityDAOConfiguration getConfiguration()
+    {
+        return configuration;
+    }
+
+    public ContextMapper getContextMapper()
+    {
+        return contextMapper;
+    }
+
+    public EntityFactory getEntityFactory()
+    {
+        return entityFactory;
+    }
+
+    public void setLdapTemplate(LdapTemplate ldapTemplate)
+    {
+        this.ldapTemplate = ldapTemplate;
+    }
+
+    public void setContextMapper(ContextMapper contextMapper)
+    {
+        this.contextMapper = contextMapper;
     }
 
     public Entity getEntity(String entityId)
@@ -115,7 +143,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             String internalId = (String) iterator.next();
             DistinguishedName principalDN = getRelativeDN(internalId);
-            internalId = principalDN.toString(); 
+            internalId = principalDN.toString();
             Entity resultEntity = (Entity) ldapTemplate.lookup(internalId, getContextMapper());
             if (resultEntity != null)
             {
@@ -124,16 +152,19 @@ public class SpringLDAPEntityDAO implements EntityDAO
         }
         return resultSet;
     }
-    
-    protected DistinguishedName getRelativeDN(String fullDN){
+
+    protected DistinguishedName getRelativeDN(String fullDN)
+    {
         DistinguishedName principalDN = new DistinguishedName(fullDN);
-        if (configuration.getBaseDN() != null && configuration.getBaseDN().length() > 0){
+        if (configuration.getBaseDN() != null && configuration.getBaseDN().length() > 0)
+        {
             principalDN.removeFirst(new DistinguishedName(configuration.getBaseDN()));
         }
         return principalDN;
     }
 
-    protected String createSearchFilter(Filter filter){
+    protected String createSearchFilter(Filter filter)
+    {
         if (configuration.getSearchFilter() != null)
         {
             if (filter == null)
@@ -152,7 +183,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         }
         return filterStr;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Collection<Entity> getEntities(Filter filter)
     {
@@ -166,209 +197,238 @@ public class SpringLDAPEntityDAO implements EntityDAO
         return getEntities(new SimpleFilter(finalFilter));
     }
 
-    public void update(Entity entity)
+    private void internalUpdate(Entity entity, UpdateMode umode) throws SecurityException
     {
-        internalUpdate(entity, UpdateMode.MAPPED);
-    }
-    
-    public void updateInternalAttributes(Entity entity)
-    {
-       internalUpdate(entity, UpdateMode.INTERNAL);
+        Name dn = getRelativeDN(entity.getInternalId());
+        DirContextOperations dirCtxOps = ldapTemplate.lookupContext(dn);
+        if (dirCtxOps == null)
+        {
+            throw new SecurityException(SecurityException.UNEXPECTED);
+        }
+        Collection<ModificationItem> modItems = getModItems(entity, dirCtxOps, umode);
+        ldapTemplate.modifyAttributes(dn, modItems.toArray(new ModificationItem[] {}));
     }
 
-    private void internalUpdate(Entity entity, UpdateMode umode)
+    public void add(Entity entity, Entity parentEntity) throws SecurityException
     {
-        String internalIdStr = entity.getInternalId();
-        if (internalIdStr == null){
-            Entity ldapEntity = getEntity(entity.getId());
-            if (ldapEntity == null || ldapEntity.getInternalId() == null){
-                // TODO throw exception
-                return;
-            }   
-            internalIdStr = entity.getInternalId();
-        }
-        Name dn=getRelativeDN(internalIdStr);
-        DirContextOperations dirCtxOps = ldapTemplate.lookupContext(dn);
-        if (dirCtxOps == null){
-            // TODO throw exception
-            return;
-        }
-        Collection<ModificationItem> modItems = getModItems(entity,dirCtxOps,umode);
-        ldapTemplate.modifyAttributes(dn, modItems.toArray(new ModificationItem[]{}));
+        // TODO need to be implemented
     }
-    
-    public void add(Entity entity)
+
+    public void add(Entity entity) throws SecurityException
     {
-        if (entityExists(entity)){
-            // TODO throw exception 
-            return;
+        if (entityExists(entity))
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId()));
         }
         DistinguishedName dn = new DistinguishedName();
-        if (configuration.getSearchDN() != null && configuration.getSearchDN().length() > 0){
-            try{
+        if (configuration.getSearchDN() != null && configuration.getSearchDN().length() > 0)
+        {
+            try
+            {
                 dn.add(configuration.getSearchDN());
-            } catch (InvalidNameException inex){
+            }
+            catch (InvalidNameException inex)
+            {
                 // TODO throw exception
                 dn = null;
             }
         }
-
         DirContextAdapter context = new DirContextAdapter();
-
-        if (dn != null){
+        if (dn != null)
+        {
             dn.add(configuration.getLdapIdAttribute(), entity.getId());
-            BasicAttributes basicAttrs = new BasicAttributes();
-            for (AttributeDef attrDef : configuration.getAttributeDefinitions()){
+            for (AttributeDef attrDef : configuration.getAttributeDefinitions())
+            {
                 Attribute entityAttr = entity.getAttribute(attrDef.getName());
                 BasicAttribute basicAttr = null;
-                if (entityAttr != null){
-                    if (attrDef.isMultiValue()){
+                if (entityAttr != null)
+                {
+                    if (attrDef.isMultiValue())
+                    {
                         Collection<String> entityAttrValues = entityAttr.getValues();
-                        if (entityAttrValues != null && entityAttrValues.size() > 0){
+                        if (entityAttrValues != null && entityAttrValues.size() > 0)
+                        {
                             basicAttr = new BasicAttribute(attrDef.getName());
-                            for (String val : entityAttrValues){
+                            for (String val : entityAttrValues)
+                            {
                                 basicAttr.add(val);
                             }
-                        }                        
-                    } else {
+                        }
+                    }
+                    else
+                    {
                         basicAttr = new BasicAttribute(attrDef.getName());
                         basicAttr.add(entityAttr.getValue());
                     }
-                } else {
-                    if (attrDef.isIdAttribute()){
+                }
+                else
+                {
+                    if (attrDef.isIdAttribute())
+                    {
                         basicAttr = new BasicAttribute(attrDef.getName());
                         basicAttr.add(entity.getId());
-                    } else if (attrDef.isRequired()){
+                    }
+                    else if (attrDef.isRequired())
+                    {
                         String requiredValue = attrDef.getRequiredDefaultValue();
-                        if (requiredValue != null && requiredValue.length() > 0){
+                        if (requiredValue != null && requiredValue.length() > 0)
+                        {
                             basicAttr = new BasicAttribute(attrDef.getName());
                             basicAttr.add(attrDef.getRequiredDefaultValue());
                         }
-                    } else  {
+                    }
+                    else
+                    {
                         // TODO missing required attribute value, throw exception
-                        return;
+                        // return;
                     }
                 }
-                
-                if (basicAttr != null){
+                if (basicAttr != null)
+                {
                     context.setAttribute(basicAttr);
                 }
             }
-            BasicAttribute attr = new BasicAttribute("objectClass",configuration.getObjectClass());
+            BasicAttribute attr = new BasicAttribute("objectClass", configuration.getObjectClass());
             context.setAttribute(attr);
-
             ldapTemplate.bind(dn, context, null);
         }
-        
     }
 
-    public void remove(Entity entity)
+    public void remove(Entity entity) throws SecurityException
     {
+        if (!entityExists(entity))
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId()));
+        }
+        String internalIdStr = entity.getInternalId();
+        if (internalIdStr == null)
+        {
+            Entity ldapEntity = getEntity(entity.getId());
+            if (ldapEntity == null || ldapEntity.getInternalId() == null)
+            {
+                // TODO throw exception
+                return;
+            }
+            else
+            {
+                internalIdStr = ldapEntity.getInternalId();
+            }
+        }
+        ldapTemplate.unbind(getRelativeDN(internalIdStr));
     }
 
-    
-    public void add(Entity entity, Entity parentEntity)
+    public void update(Entity entity) throws SecurityException
     {
-        
+        Entity ldapEntity = getEntity(entity.getId());
+        if (ldapEntity == null)
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId()));
+        }
+        internalUpdate(ldapEntity, UpdateMode.MAPPED);
     }
 
-    public LDAPEntityDAOConfiguration getConfiguration()
+    public void updateInternalAttributes(Entity entity) throws SecurityException
     {
-        return configuration;
+        internalUpdate(entity, UpdateMode.INTERNAL);
     }
 
-    public ContextMapper getContextMapper()
+    protected boolean entityExists(Entity entity)
     {
-        return contextMapper;
-    }
-
-    public EntityFactory getEntityFactory()
-    {
-        return entityFactory;
-    }
-
-    public void setLdapTemplate(LdapTemplate ldapTemplate)
-    {
-        this.ldapTemplate = ldapTemplate;
-    }
-
-    public void setContextMapper(ContextMapper contextMapper)
-    {
-        this.contextMapper = contextMapper;
-    }
-
-    protected boolean entityExists(Entity entity){
         return getEntity(entity.getId()) != null;
     }
-    
-    protected boolean setNamingAttribute(Attribute entityAttr, DirContextOperations dirCtxOps){
+
+    protected boolean setNamingAttribute(Attribute entityAttr, DirContextOperations dirCtxOps)
+    {
         boolean attrAdded = false;
-        if (entityAttr != null){
+        if (entityAttr != null)
+        {
             AttributeDef attrDef = entityAttr.getDefinition();
-            if (attrDef.isMultiValue()){
+            if (attrDef.isMultiValue())
+            {
                 Collection<String> values = entityAttr.getValues();
-                if (values != null){
-                    dirCtxOps.setAttributeValues(attrDef.getName(),values.toArray());
+                if (values != null)
+                {
+                    dirCtxOps.setAttributeValues(attrDef.getName(), values.toArray());
                     attrAdded = true;
                 }
-            } else {
+            }
+            else
+            {
                 String value = entityAttr.getValue();
-                if (value != null){
-                    dirCtxOps.setAttributeValue(attrDef.getName(),value);
+                if (value != null)
+                {
+                    dirCtxOps.setAttributeValue(attrDef.getName(), value);
                     attrAdded = true;
                 }
-            }                    
-        }    
+            }
+        }
         return attrAdded;
     }
-    
-    protected Collection<ModificationItem> getModItems(Entity entity, DirContextOperations dirCtxOps, UpdateMode umode){
+
+    protected Collection<ModificationItem> getModItems(Entity entity, DirContextOperations dirCtxOps, UpdateMode umode)
+    {
         Collection<ModificationItem> modItems = new ArrayList<ModificationItem>();
-        
-        for(AttributeDef attrDef : configuration.getAttributeDefinitions()){
-            
-            if (!attrDef.getName().equals(configuration.getLdapIdAttribute())){
-                if (umode == UpdateMode.ALL || (umode == UpdateMode.MAPPED && attrDef.isMapped()) || (umode == UpdateMode.INTERNAL && !attrDef.isMapped())){
+        for (AttributeDef attrDef : configuration.getAttributeDefinitions())
+        {
+            if (!attrDef.getName().equals(configuration.getLdapIdAttribute()))
+            {
+                if (umode == UpdateMode.ALL || (umode == UpdateMode.MAPPED && attrDef.isMapped()) || (umode == UpdateMode.INTERNAL && !attrDef.isMapped()))
+                {
                     Attribute entityAttr = entity.getAttribute(attrDef.getName());
                     boolean attrAdded = false;
-                    if (entityAttr != null){
-                        if (attrDef.isMultiValue()){
+                    if (entityAttr != null)
+                    {
+                        if (attrDef.isMultiValue())
+                        {
                             Collection<String> values = entityAttr.getValues();
-                            if (values != null){
+                            if (values != null)
+                            {
                                 javax.naming.directory.Attribute namingAttr = new BasicAttribute(entityAttr.getName());
-                                if (values.size() > 0){
+                                if (values.size() > 0)
+                                {
                                     for (String val : values)
-                                    {   
+                                    {
                                         namingAttr.add(val);
                                     }
-                                    modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,namingAttr));
+                                    modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, namingAttr));
                                     attrAdded = true;
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             String value = entityAttr.getValue();
-                            if (value != null){
+                            if (value != null)
+                            {
                                 javax.naming.directory.Attribute namingAttr = new BasicAttribute(entityAttr.getName(), entityAttr.getValue());
-                                modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,namingAttr));
+                                modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, namingAttr));
                                 attrAdded = true;
                             }
-                        }                    
-                    }    
-                    if (!attrAdded){
+                        }
+                    }
+                    if (!attrAdded)
+                    {
                         // entity attribute not added, so remove it if present in ldap.
                         Object namingAttrValue = dirCtxOps.getObjectAttribute(attrDef.getName());
-                        if (namingAttrValue != null){
+                        if (namingAttrValue != null)
+                        {
                             BasicAttribute basicAttr = new BasicAttribute(attrDef.getName());
-                            if (attrDef.isRequired()){
-                                if (attrDef.getRequiredDefaultValue() != null){
+                            if (attrDef.isRequired())
+                            {
+                                if (attrDef.getRequiredDefaultValue() != null)
+                                {
                                     basicAttr.add(attrDef.getRequiredDefaultValue());
-                                    modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,basicAttr));
-                                } else {
+                                    modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, basicAttr));
+                                }
+                                else
+                                {
                                     // TODO throw exception
                                     break;
                                 }
-                            } else {
-                                modItems.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,basicAttr));
+                            }
+                            else
+                            {
+                                modItems.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, basicAttr));
                             }
                         }
                     }
@@ -377,11 +437,9 @@ public class SpringLDAPEntityDAO implements EntityDAO
         }
         return modItems;
     }
-    
+
     protected Filter createFilterForIdSearch(String entityId)
     {
         return SearchUtil.constructMatchingFieldsFilter(configuration.getSearchFilter(), new String[] { configuration.getLdapIdAttribute(), entityId });
     }
-
-
 }
