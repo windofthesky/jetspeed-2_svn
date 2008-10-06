@@ -75,7 +75,9 @@ public class EntityFactoryImpl implements EntityFactory
             if (sa != null)
             {
                 // currently only single-valued attributes are supported
-                ldapAttrValues.add(new AttributeImpl(attrDef));
+                AttributeImpl attr = new AttributeImpl(attrDef);
+                attr.setValue(sa.getStringValue());
+                ldapAttrValues.add(attr);
             }
         }
         return internalCreateEntity(principal.getName(), null, ldapAttrValues);
