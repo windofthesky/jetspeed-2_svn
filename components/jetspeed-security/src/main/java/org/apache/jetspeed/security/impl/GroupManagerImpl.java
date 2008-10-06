@@ -149,6 +149,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroupsForUser(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<Group> getGroupsForUser(String username)
             throws SecurityException
     {
@@ -158,6 +159,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroupsInRole(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<Group> getGroupsInRole(String roleName)
             throws SecurityException
     {
@@ -213,12 +215,13 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     public boolean isUserInGroup(String username, String groupName)
             throws SecurityException
     {
-        return getGroupsForUser(username).contains(getGroup(groupName));
+        return getAssociatedNamesFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF).contains(groupName);
     }
 
     /**
      * @see org.apache.jetspeed.security.GroupManager#getGroups(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<Group> getGroups(String nameFilter) throws SecurityException
     {
         return (List<Group>) super.getPrincipals(nameFilter);
@@ -237,6 +240,40 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
         super.updatePrincipal(group);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.GroupManager#addGroupToGroup(org.apache.jetspeed.security.Group, org.apache.jetspeed.security.Group, java.lang.String)
+     */
+    public void addGroupToGroup(Group from, Group to, String associationName) throws SecurityException
+    {
+        this.addAssociation(from, to, associationName);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.GroupManager#removeGroupFromGroup(org.apache.jetspeed.security.Group, org.apache.jetspeed.security.Group, java.lang.String)
+     */
+    public void removeGroupFromGroup(Group from, Group to, String associationName) throws SecurityException
+    {
+        removeAssociation(from, to, associationName);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.GroupManager#getGroupsAssociatedFrom(org.apache.jetspeed.security.Group, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    public List<Group> getGroupsAssociatedFrom(Group from, String associationName)
+    {
+        return (List<Group>)getAssociatedFrom(from.getName(), from.getType(), associationName);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.GroupManager#getGroupsAssociatedTo(org.apache.jetspeed.security.Group, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    public List<Group> getGroupsAssociatedTo(Group to, String associationName)
+    {
+        return (List<Group>)getAssociatedFrom(to.getName(), to.getType(), associationName);
+    }
+    
     public JetspeedPrincipal newPrincipal(String name, boolean mapped)
     {
         return newGroup(name, mapped);

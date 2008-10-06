@@ -157,6 +157,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRolesForUser(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<Role> getRolesForUser(String username) throws SecurityException
     {        
         return (List<Role>)super.getAssociatedFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
@@ -165,6 +166,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRolesInGroup(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<Role> getRolesInGroup(String groupName) throws SecurityException
     {
         return (List<Role>)super.getAssociatedFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);
@@ -216,7 +218,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public boolean isUserInRole(String username, String roleName) throws SecurityException
     {
-        return getRolesForUser(username).contains(getRole(roleName));
+        return getAssociatedNamesFrom(username, userType, JetspeedPrincipalAssociationType.IS_MEMBER_OF).contains(roleName);
     }
 
     /**
@@ -265,12 +267,13 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
      */
     public boolean isGroupInRole(String groupName, String roleName) throws SecurityException
     {
-        return getRolesInGroup(groupName).contains(getRole(roleName));
+        return getAssociatedNamesFrom(groupName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF).contains(roleName);
     }
 
     /**
      * @see org.apache.jetspeed.security.RoleManager#getRoles(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<Role> getRoles(String nameFilter) throws SecurityException
     {
         return (List<Role>)super.getPrincipals(nameFilter);
@@ -288,7 +291,41 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     {
          super.updatePrincipal(role);
     }
-
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.RoleManager#addRoleToRole(org.apache.jetspeed.security.Role, org.apache.jetspeed.security.Role, java.lang.String)
+     */
+    public void addRoleToRole(Role from, Role to, String associationName) throws SecurityException
+    {
+        this.addAssociation(from, to, associationName);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.RoleManager#removeRoleFromRole(org.apache.jetspeed.security.Role, org.apache.jetspeed.security.Role, java.lang.String)
+     */
+    public void removeRoleFromRole(Role from, Role to, String associationName) throws SecurityException
+    {
+        removeAssociation(from, to, associationName);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.RoleManager#getRolesAssociatedFrom(org.apache.jetspeed.security.Role, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    public List<Role> getRolesAssociatedFrom(Role from, String associationName)
+    {
+        return (List<Role>)getAssociatedFrom(from.getName(), from.getType(), associationName);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.RoleManager#getRolesAssociatedTo(org.apache.jetspeed.security.Role, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    public List<Role> getRolesAssociatedTo(Role to, String associationName)
+    {
+        return (List<Role>)getAssociatedFrom(to.getName(), to.getType(), associationName);
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.security.JetspeedPrincipalManager#newPrincipal(java.lang.String, boolean)
      */

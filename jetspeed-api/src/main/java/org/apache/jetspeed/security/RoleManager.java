@@ -20,10 +20,9 @@ import java.util.List;
 
 /**
  * <p>Describes the service interface for managing roles.</p>
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  * @version $Id$
  */
-public interface RoleManager
+public interface RoleManager extends PrincipalTypeManager
 {
     Role newRole(String name, boolean mapped);
     Role newTransientRole(String name);
@@ -170,4 +169,86 @@ public interface RoleManager
      * @throws SecurityException
      */
     void updateRole(Role role) throws SecurityException;
+    
+    /**
+     * Add a hierarchical association between two roles.
+     * <p>
+     * Default supported hierarchical associations are {@link JetspeedPrincipalAssociationType#IS_A} and
+     * {@link JetspeedPrincipalAssociationType#IS_PART_OF}, but it will depend on the actual runtime configuration
+     * if the required {@link JetspeedPrincipalAssociationType} is available.
+     * </p>
+     * @param from The role for the from side of the association 
+     * @param to The role for the to side of the association
+     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     * @throws SecurityException
+     */
+    void addRoleToRole(Role from, Role to, String associationName) throws SecurityException;
+
+    /**
+     * Remove a hierarchical association between two roles.
+     * <p>
+     * Default supported hierarchical associations are {@link JetspeedPrincipalAssociationType#IS_A} and
+     * {@link JetspeedPrincipalAssociationType#IS_PART_OF}, but it will depend on the actual runtime configuration
+     * if the required {@link JetspeedPrincipalAssociationType} is available.
+     * </p>
+     * @param from The role for the from side of the association 
+     * @param to The role for the to side of the association
+     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     * @throws SecurityException
+     */
+    void removeRoleFromRole(Role from, Role to, String associationName) throws SecurityException;
+    
+    /**
+     * Retrieve all the roles which are associated <em>to</em> the provided role. 
+     * <p>
+     * Default supported hierarchical associations are {@link JetspeedPrincipalAssociationType#IS_A} and
+     * {@link JetspeedPrincipalAssociationType#IS_PART_OF}, but it will depend on the actual runtime configuration
+     * if the required {@link JetspeedPrincipalAssociationType} is available.
+     * </p>
+     * <p>
+     * If the corresponding {@link JetspeedPrincipalAssociationType} is not available, this method will simply
+     * return a empty list.
+     * </p>
+     * <p>
+     * For a {@link JetspeedPrincipalAssociationType#IS_PART_OF} association, this will return all
+     * the nested roles which together <em>represent</em> the provided role.
+     * </p>
+     * <p>
+     * For a {@link JetspeedPrincipalAssociationType#IS_A} association, this will return all
+     * the roles which <em>extend</em> the provided role.
+     * </p>
+     * <p>
+     * Note: this method will only return the directly associated roles, not further derived associations.
+     * </p>
+     * @param to The role for the to side of the association
+     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     */
+    List<Role> getRolesAssociatedTo(Role to, String associationName);
+
+    /**
+     * Retrieve all the roles which are associated <em>from</em> the provided role. 
+     * <p>
+     * Default supported hierarchical associations are {@link JetspeedPrincipalAssociationType#IS_A} and
+     * {@link JetspeedPrincipalAssociationType#IS_PART_OF}, but it will depend on the actual runtime configuration
+     * if the required {@link JetspeedPrincipalAssociationType} is available.
+     * </p>
+     * <p>
+     * If the corresponding {@link JetspeedPrincipalAssociationType} is not available, this method will simply
+     * return a empty list.
+     * </p>
+     * <p>
+     * For a {@link JetspeedPrincipalAssociationType#IS_PART_OF} association, this will return (at most)
+     * the single role where the provided role is part of.
+     * </p>
+     * <p>
+     * For a {@link JetspeedPrincipalAssociationType#IS_A} association, this will return all
+     * the roles which the provided role <em>extends</em>.
+     * </p>
+     * <p>
+     * Note: this method will only return the directly associated role(s), not further derived associations.
+     * </p>
+     * @param from The role for the from side of the association 
+     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     */
+    List<Role> getRolesAssociatedFrom(Role from, String associationName);
 }

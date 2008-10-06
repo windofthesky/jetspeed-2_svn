@@ -27,6 +27,7 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
@@ -131,6 +132,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return principalType;
     }
     
+    public final JetspeedPrincipalManager getPrincipalManager()
+    {
+        return this;
+    }
+    
     public List<JetspeedPrincipalAssociationType> getAssociationTypes()
     {
         return Collections.unmodifiableList(associationTypes);
@@ -176,8 +182,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, from.getName(), principalType.getName())))
         {
-            // TODO: should we throw an exception here???
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return jpam.getAssociatedFrom(principalFromName, from, principalType, associationName);
     }
@@ -186,8 +191,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, from.getName(), principalType.getName())))
         {
-            // TODO: should we throw an exception here???
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return jpam.getAssociatedNamesFrom(principalFromName, from, principalType, associationName);
     }
@@ -196,8 +200,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, principalType.getName(), to.getName())))
         {
-            // TODO: should we throw an exception here???
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return jpam.getAssociatedNamesTo(principalToName, principalType, to, associationName);
     }
@@ -206,8 +209,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     {
         if ( !assHandlers.containsKey(new AssociationHandlerKey(associationName, principalType.getName(), to.getName())))
         {
-            // TODO: should we throw an exception here???
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return jpam.getAssociatedTo(principalToName, principalType, to, associationName);
     }

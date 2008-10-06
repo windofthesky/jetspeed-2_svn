@@ -27,10 +27,9 @@ import javax.security.auth.Subject;
  * {@link User}.
  * </p>
  * 
- * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  */
-public interface UserManager
+public interface UserManager extends PrincipalTypeManager
 {
     /**
      * @return the name of the anonymous user
