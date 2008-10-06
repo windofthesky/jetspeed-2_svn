@@ -23,9 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-
 import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.ldap.AbstractLDAPTest;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager;
@@ -36,7 +33,8 @@ import org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelation
 import org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
-import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>

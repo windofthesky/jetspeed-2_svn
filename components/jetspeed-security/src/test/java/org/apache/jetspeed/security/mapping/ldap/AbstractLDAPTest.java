@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 import javax.naming.directory.DirContext;
 
@@ -28,17 +27,13 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
+import org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager;
+import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
+import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
-
-import org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager;
-import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
-import org.apache.jetspeed.security.mapping.model.Attribute;
-import org.apache.jetspeed.security.mapping.model.AttributeDef;
-import org.apache.jetspeed.security.mapping.model.Entity;
-import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
