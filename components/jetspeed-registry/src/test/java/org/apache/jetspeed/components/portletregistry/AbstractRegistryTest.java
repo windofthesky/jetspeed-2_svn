@@ -198,10 +198,15 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
     }
 
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "registry,transaction,cache,jdbcDS";
+    }
+    
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "registry-test.xml", "cache.xml" };
+        { "transaction.xml", "registry-test.xml", "cache.xml", "static-bean-references.xml" };
     }
 
 }

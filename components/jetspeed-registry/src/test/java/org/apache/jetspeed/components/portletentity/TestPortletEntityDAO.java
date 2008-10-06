@@ -26,7 +26,6 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -205,23 +204,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         prefs = (PreferenceSetComposite)entity.getPreferenceSet();
         pref2 = (PreferenceComposite) prefs.get("pref2");
 
-        assertFalse(pref2.isValueSet());
-        prefValues = pref2.getValuesList();
-        
-        assertTrue(prefValues.size() == 0);
-        
-        pref2.setValues(prefValues);
-        assertFalse(pref2.isValueSet());
-
-        entity.store();
-
-        prefs = (PreferenceSetComposite)entity.getPreferenceSet();
-        pref2 = (PreferenceComposite) prefs.get("pref2");
-
-        assertFalse(pref2.isValueSet());
-        prefValues = pref2.getValuesList();
-        
-        assertTrue(prefValues.size() == 0);
+        assertNull(pref2);
         
         MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
@@ -300,9 +283,14 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         registry.registerPortletApplication(app);
     }
 
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "registry,transaction,cache,jdbcDS";
+    }
+    
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "registry-test.xml", "cache.xml" };
+        { "transaction.xml", "registry-test.xml", "cache.xml", "static-bean-references.xml" };
     }
 }
