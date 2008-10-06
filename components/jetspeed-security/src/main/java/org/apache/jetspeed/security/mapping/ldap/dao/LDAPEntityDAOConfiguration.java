@@ -18,9 +18,9 @@ package org.apache.jetspeed.security.mapping.ldap.dao;
 
 import java.util.Set;
 
-import org.springframework.ldap.filter.Filter;
-
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
+import org.springframework.ldap.filter.Filter;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -41,7 +41,22 @@ public class LDAPEntityDAOConfiguration
 
     private String entityType;
     
-    private String objectClass;
+    private String[] objectClassesArr;
+
+    public void initialize() throws JetspeedException {
+        checkNotEmpty("entityType", entityType);
+        checkNotNull("baseDN", baseDN);
+        checkNotEmpty("ldapIdAttribute", ldapIdAttribute);
+        checkNotNull("attributeDefinitions", attributeDefinitions);
+    }
+    
+    private void checkNotNull(String fieldName, Object fieldValue ) throws JetspeedException {
+        if (fieldValue == null) throw new JetspeedException(getClass().getName()+": property '"+fieldName+"' cannot be null.");
+    }
+
+    private void checkNotEmpty(String fieldName, String fieldValue ) throws JetspeedException {
+        if (fieldValue == null) throw new JetspeedException(getClass().getName()+": property '"+fieldName+"' cannot be null or empty.");
+    }
 
     public String getBaseDN()
     {
@@ -103,14 +118,16 @@ public class LDAPEntityDAOConfiguration
         this.entityType = entityType;
     }
 
-    public String getObjectClass()
+    public String[] getObjectClassesArray()
     {
-        return objectClass;
+        return objectClassesArr;
     }
     
-    public void setObjectClass(String objectClass)
+    public void setObjectClasses(String objectClasses)
     {
-        this.objectClass = objectClass;
+        if (objectClasses != null){
+            this.objectClassesArr=objectClasses.split(",");
+        }
     }
     
 }

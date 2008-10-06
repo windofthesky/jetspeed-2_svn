@@ -321,7 +321,11 @@ public class SpringLDAPEntityDAO implements EntityDAO
                     context.setAttribute(basicAttr);
                 }
             }
-            BasicAttribute attr = new BasicAttribute("objectClass", configuration.getObjectClass());
+            BasicAttribute attr = new BasicAttribute("objectClass");
+            for (String objClass : configuration.getObjectClassesArray())
+            {
+                attr.add(objClass);
+            }
             context.setAttribute(attr);
             ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try

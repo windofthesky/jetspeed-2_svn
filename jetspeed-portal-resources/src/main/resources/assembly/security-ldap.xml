@@ -100,7 +100,7 @@
     </property>
   </bean>
   
-  <bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
+  <bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldap" />
     <property name="baseDN" value="${ldap.base}" />
     <property name="searchDN" value="" />
@@ -110,7 +110,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="uid" />
-    <property name="objectClass" value="inetOrgPerson"/>
+    <property name="objectClasses" value="inetOrgPerson,organizationalPerson,person,top"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
@@ -144,7 +144,7 @@
     </property>
     <property name="entityType" value="user" />
   </bean>
-  <bean id="RoleDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
+  <bean id="RoleDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldap" />
     <property name="baseDN" value="${ldap.base}" />
     <property name="searchDN" value="${ldap.role.searchBase}" />
@@ -154,7 +154,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
-    <property name="objectClass" value="groupOfUniqueNames"/>
+    <property name="objectClasses" value="groupOfUniqueNames"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
@@ -189,7 +189,7 @@
     <property name="entityType" value="role" />
   </bean>
   
-  <bean id="GroupDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration">
+  <bean id="GroupDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldap" />
     <property name="baseDN" value="${ldap.base}" />
     <property name="searchDN" value="${ldap.group.searchBase}" />
@@ -199,7 +199,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
-    <property name="objectClass" value="groupOfUniqueNames"/>
+    <property name="objectClasses" value="groupOfUniqueNames"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
