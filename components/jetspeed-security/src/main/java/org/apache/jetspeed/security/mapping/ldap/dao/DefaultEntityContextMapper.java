@@ -16,31 +16,27 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import javax.naming.directory.DirContext;
-
 import org.apache.jetspeed.security.mapping.EntityFactory;
-import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.ldap.core.support.AbstractContextMapper;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class DefaultEntityContextMapper implements ContextMapper
+public class DefaultEntityContextMapper extends AbstractContextMapper
 {
 
     EntityFactory entityFactory;
 
-    
-    
     public DefaultEntityContextMapper(EntityFactory entityFactory)
     {
         this.entityFactory = entityFactory;
     }
 
-    public Object mapFromContext(Object ctx)
+    public Object doMapFromContext(DirContextOperations ctx)
     {
-        DirContext context = (DirContext)ctx;
-        return entityFactory.createEntity(context);
+        return entityFactory.createEntity(ctx);
     }
 
 }
