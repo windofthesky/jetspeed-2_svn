@@ -262,7 +262,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             try
             {
-                dn.add(configuration.getSearchDN());
+                dn.addAll(new DistinguishedName(configuration.getSearchDN()));
             } catch (InvalidNameException inex)
             {
                 // TODO throw exception

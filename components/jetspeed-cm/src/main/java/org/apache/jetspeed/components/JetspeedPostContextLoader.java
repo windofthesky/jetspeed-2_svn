@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.components;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.JetspeedBeanInitializer;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 
 /**
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>

@@ -28,11 +28,11 @@
       Zero means no portlet timeout option by default.
     -->
     <constructor-arg index='1'>
-      <value>0</value>
+      <value>${portal.core.aggregator.portlet.timeout}</value>
     </constructor-arg>
     <!--  Out of service limit, if a portlet entity times out past its limit (or default limit) n consecutive times, it is taken out of service -->
     <constructor-arg index="2">
-      <value>3</value>
+      <value>${portal.core.aggregator.portlet.service.limit}</value>
     </constructor-arg>
   </bean>
 
@@ -152,19 +152,19 @@
 
     <constructor-arg index="0">
       <!-- Minimum number of workers to create -->
-      <value>5</value>
+      <value>${portal.core.aggregator.worker.minthreads}</value>
     </constructor-arg>
     <constructor-arg index="1">
       <!-- Maximum number of workers to create -->
-      <value>50</value>
+      <value>${portal.core.aggregator.worker.threads}</value>
     </constructor-arg>
     <constructor-arg index="2">
       <!-- Spare number of workers to create -->
-      <value>3</value>
+      <value>${portal.core.aggregator.worker.sparethreads}</value>
     </constructor-arg>
     <constructor-arg index="3">
       <!-- Maximum number of jobs processed by a worker before being released -->
-      <value>3</value>
+      <value>${portal.core.aggregator.worker.maxjobsthreads}</value>
     </constructor-arg>
 
   </bean>

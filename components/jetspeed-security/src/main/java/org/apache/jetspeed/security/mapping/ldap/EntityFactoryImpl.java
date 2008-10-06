@@ -143,6 +143,8 @@ public class EntityFactoryImpl implements EntityFactory
                     {
                         a.setValues(attrValues);
                         attributes.add(a);
+                    }else{
+                        attributes.add(a);
                     }
                 }
                 else

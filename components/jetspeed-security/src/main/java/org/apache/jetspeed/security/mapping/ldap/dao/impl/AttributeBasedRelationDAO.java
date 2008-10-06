@@ -121,6 +121,8 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
 
     private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
+        fromEntity =  fromEntityDAO.getEntity(fromEntity.getId());
+        toEntity =  toEntityDAO.getEntity(toEntity.getId());
         String attrValue = null;
         if (attributeContainsInternalId)
         {
@@ -178,11 +180,11 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
     {
         if (useFromEntityAttribute)
         {
-            internalAddRelation(targetDao, sourceDao, targetEntity, sourceEntity);
+            internalAddRelation(sourceDao, targetDao, sourceEntity, targetEntity);
         }
         else
         {
-            internalAddRelation(sourceDao, targetDao, sourceEntity, targetEntity);
+            internalAddRelation(targetDao, sourceDao, targetEntity, sourceEntity);
         }
     }
 

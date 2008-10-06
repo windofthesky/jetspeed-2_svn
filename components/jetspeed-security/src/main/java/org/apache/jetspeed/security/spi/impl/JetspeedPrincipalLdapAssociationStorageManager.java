@@ -32,13 +32,15 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManag
 public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedPrincipalAssociationStorageManager
 {
     private SecurityEntityManager ldapEntityManager;
+    private JetspeedPrincipalAssociationStorageManager databaseStorageManager;
 
     /**
      * @param ldapEntityManager
      */
-    public JetspeedPrincipalLdapAssociationStorageManager(SecurityEntityManager ldapEntityManager)
+    public JetspeedPrincipalLdapAssociationStorageManager(JetspeedPrincipalAssociationStorageManager databaseStorageMngr,SecurityEntityManager ldapEntityManager)
     {
         this.ldapEntityManager = ldapEntityManager;
+        this.databaseStorageManager = databaseStorageMngr;
     }
 
     public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
@@ -49,6 +51,7 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
         Entity toEntity = relatedFactory.createEntity(to);
         SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
         ldapEntityManager.addRelation(fromEntity, toEntity, relationType);
+        databaseStorageManager.addAssociation(from, to, associationName);
     }
 
     public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
@@ -59,6 +62,6 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
         Entity toEntity = relatedFactory.createEntity(to);
         SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
         ldapEntityManager.removeRelation(fromEntity, toEntity, relationType);
-        
+        databaseStorageManager.removeAssociation(from, to, associationName);
     }
 }
