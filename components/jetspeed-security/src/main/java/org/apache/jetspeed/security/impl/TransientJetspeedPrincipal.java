@@ -161,4 +161,9 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     {
         return getSecurityAttributes().getInfoMap();
     }
+
+    public String toString()
+    {
+        return getType().getName()+": "+getName()+" (id: "+(getId())+", transient: "+isTransient()+", mapped: "+isMapped()+")";
+    }
 }
