@@ -218,7 +218,14 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     private void internalUpdate(Entity entity, UpdateMode umode) throws SecurityException
     {
-        Name dn = getRelativeDN(entity.getInternalId());
+        String internalId = entity.getInternalId();
+        if (internalId == null){
+            Entity ldapEntity = getEntity(entity.getId());
+            if (ldapEntity == null || ldapEntity.getInternalId() == null) { throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(entity.getType(), entity.getId())); }
+            internalId=ldapEntity.getInternalId();
+        }
+        
+        Name dn = getRelativeDN(internalId);
         DirContextOperations dirCtxOps = null;
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try
@@ -330,7 +337,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     public void remove(Entity entity) throws SecurityException
     {
-        if (!entityExists(entity)) { throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId())); }
+        if (!entityExists(entity)) { throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId())); }
         String internalIdStr = entity.getInternalId();
         if (internalIdStr == null)
         {
@@ -359,9 +366,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     public void update(Entity entity) throws SecurityException
     {
-        Entity ldapEntity = getEntity(entity.getId());
-        if (ldapEntity == null) { throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId())); }
-        internalUpdate(ldapEntity, UpdateMode.MAPPED);
+        internalUpdate(entity, UpdateMode.MAPPED);
     }
 
     public void updateInternalAttributes(Entity entity) throws SecurityException
