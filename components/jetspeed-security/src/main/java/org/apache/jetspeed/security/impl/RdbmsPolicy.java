@@ -24,12 +24,12 @@ import java.security.Permissions;
 import java.security.Policy;
 import java.security.Principal;
 import java.security.ProtectionDomain;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.SecurityPolicies;
 
 /**
@@ -200,7 +200,7 @@ public class RdbmsPolicy extends Policy
                     log.debug("Checking policy: " + currPolicy.getClass().getName());
                 }
                 PermissionCollection currPerms = currPolicy.getPermissions(codeSource);
-                SecurityHelper.addPermissions(otherPerms, currPerms);
+                addPermissions(otherPerms, currPerms);
             }
         }
 
@@ -208,4 +208,36 @@ public class RdbmsPolicy extends Policy
         return otherPerms;
     }
 
+    /**
+     * <p>
+     * Adds a collection of permsToAdd to a collection of existing permissions.
+     * </p>
+     * 
+     * @param perms The existing permissions.
+     * @param permsToAdd The permissions to add.
+     */
+    private static void addPermissions(PermissionCollection perms, PermissionCollection permsToAdd)
+    {
+        int permsAdded = 0;
+        if (null != permsToAdd)
+        {
+            Enumeration<Permission> permsToAddEnum = permsToAdd.elements();
+            while (permsToAddEnum.hasMoreElements())
+            {
+                permsAdded++;
+                Permission currPerm = permsToAddEnum.nextElement();
+                perms.add(currPerm);
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Adding the permission: [class, " + currPerm.getClass().getName() + "], " + "[name, "
+                            + currPerm.getName() + "], " + "[actions, " + currPerm.getActions() + "]");
+                }
+            }
+        }
+        if ((permsAdded == 0) && log.isDebugEnabled())
+        {
+            log.debug("No permissions to add...");
+        }
+    }
+    
 }

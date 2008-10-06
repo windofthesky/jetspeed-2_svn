@@ -24,7 +24,7 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 
 /**
  * Standard Jetspeed-1 style resolver for criterion.
@@ -75,7 +75,7 @@ public class StandardResolver implements RuleCriterionResolver
     protected String resolvePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
     {
         StringBuffer result = new StringBuffer();
-        Iterator principals = SecurityHelper.getPrincipals(subject, classe).iterator();
+        Iterator principals = SubjectHelper.getPrincipals(subject, classe).iterator();
         int count = 0;
         while (principals.hasNext())
         {
@@ -97,7 +97,7 @@ public class StandardResolver implements RuleCriterionResolver
     protected String combinePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
     {
         StringBuffer result = new StringBuffer();
-        Iterator principals = SecurityHelper.getPrincipals(subject, classe).iterator();
+        Iterator principals = SubjectHelper.getPrincipals(subject, classe).iterator();
         int count = 0;
         while (principals.hasNext())
         {

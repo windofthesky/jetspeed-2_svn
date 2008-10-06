@@ -30,7 +30,7 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserCredential;
 import org.apache.jetspeed.security.UserManager;
@@ -115,7 +115,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                                 }
                                 else
                                 {
-                                    UserCredential userCredential = SecurityHelper.getUserCredential(um.getSubject(user));
+                                    UserCredential userCredential = SubjectHelper.getUserCredential(um.getSubject(user));
                                     if ( userCredential == null || !userCredential.isEnabled() )
                                     {
                                         request.setSessionAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_CREDENTIAL_DISABLED);

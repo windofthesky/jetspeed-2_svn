@@ -48,7 +48,7 @@ import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.Language;
@@ -381,7 +381,7 @@ public class JetspeedRequestContext implements RequestContext
 
     public Principal getUserPrincipal()
     {
-        return SecurityHelper.getBestPrincipal(getSubject(), User.class);
+        return SubjectHelper.getBestPrincipal(getSubject(), User.class);
     }
     
     /**

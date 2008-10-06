@@ -37,7 +37,7 @@ import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.login.filter.PortalRequestWrapper;
 import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 
@@ -72,7 +72,7 @@ public class ShibbolethPortalFilter implements Filter
 				Subject subject = (Subject) request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
 				if (subject != null)
 				{
-					Principal principal = SecurityHelper.getPrincipal(subject, User.class);
+					Principal principal = SubjectHelper.getPrincipal(subject, User.class);
 					if (principal != null)
 					{
 						if (principal.getName().equals(username))
@@ -142,7 +142,7 @@ public class ShibbolethPortalFilter implements Filter
 					catch (SecurityException sex)
 					{
 					}
-					Principal principal = SecurityHelper.getPrincipal(subject, User.class);
+					Principal principal = SubjectHelper.getPrincipal(subject, User.class);
 					sRequest = wrapperRequest(request, subject, principal);
 					request.getSession().removeAttribute(LoginConstants.ERRORCODE);
 					HttpSession session = request.getSession(true);
@@ -159,7 +159,7 @@ public class ShibbolethPortalFilter implements Filter
 				Subject subject = (Subject) request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
 				if (subject != null)
 				{
-					Principal principal = SecurityHelper.getPrincipal(subject, User.class);
+					Principal principal = SubjectHelper.getPrincipal(subject, User.class);
 					ShibbolethConfiguration config = (ShibbolethConfiguration) Jetspeed.getComponentManager().getComponent(
 							"org.apache.jetspeed.security.shibboleth.ShibbolethConfiguration");
 					if (principal != null && principal.getName().equals(config.getGuestUser()))

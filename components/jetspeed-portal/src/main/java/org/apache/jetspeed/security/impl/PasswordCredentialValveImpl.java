@@ -30,7 +30,7 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.UserCredential;
 
 /**
@@ -90,7 +90,7 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
             if ( request.getRequest().getUserPrincipal() != null )
             {
                 Subject subject = request.getSubject();
-                UserCredential userCredential = SecurityHelper.getUserCredential(subject);
+                UserCredential userCredential = SubjectHelper.getUserCredential(subject);
                 Integer passwordDaysValid = null;
                 
                 // check for an existing password credential

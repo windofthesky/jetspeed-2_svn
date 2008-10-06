@@ -16,10 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Permission;
-import java.security.PermissionCollection;
 import java.security.Principal;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,21 +24,16 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * <p>
- * Security helper.
+ * Subject helper.
  * </p>
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SecurityHelper
+public class SubjectHelper
 {
-    private static final Log log = LogFactory.getLog(SecurityHelper.class);
-
     /**
      * <p>
      * Given a subject, finds the first principal of the given classe for that subject. If a
@@ -52,16 +44,16 @@ public class SecurityHelper
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return The first principal matching a principal classe parameter.
      */
-    public static Principal getPrincipal(Subject subject, Class classe)
+    public static Principal getPrincipal(Subject subject, Class<? extends Principal> classe)
     {
         Principal principal = null;
-        Set principalList = subject.getPrincipals();
+        Set<Principal> principalList = subject.getPrincipals();
         if (principalList != null)
         { 
-        	Iterator principals = subject.getPrincipals().iterator();
+        	Iterator<Principal> principals = subject.getPrincipals().iterator();
 	        while (principals.hasNext())
 	        {
-	            Principal p = (Principal) principals.next();
+	            Principal p = principals.next();
 	            if (classe.isInstance(p))
 	            {
 	                principal = p;
@@ -83,14 +75,14 @@ public class SecurityHelper
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return The first principal matching a principal classe parameter.
      */
-    public static Principal getBestPrincipal(Subject subject, Class classe)
+    public static Principal getBestPrincipal(Subject subject, Class<? extends Principal> classe)
     {
 
         Principal principal = null;
-        Iterator principals = subject.getPrincipals().iterator();
+        Iterator<Principal> principals = subject.getPrincipals().iterator();
         while (principals.hasNext())
         {
-            Principal p = (Principal) principals.next();
+            Principal p = principals.next();
             if (classe.isInstance(p))
             {
                 principal = p;
@@ -116,7 +108,7 @@ public class SecurityHelper
      * @param classe The class of Principal
      * @return The principal.
      */
-    public static Principal getBestPrincipal(Principal[] principals, Class classe)
+    public static Principal getBestPrincipal(Principal[] principals, Class<? extends Principal> classe)
     {
 
         Principal principal = null;
@@ -149,7 +141,7 @@ public class SecurityHelper
      * @param classe A class or interface derived from java.security.InternalPrincipal.
      * @return A List of all principals of type Principal matching a principal classe parameter.
      */
-    public static List<Principal> getPrincipals(Subject subject, Class classe)
+    public static List<Principal> getPrincipals(Subject subject, Class<? extends Principal> classe)
     {
         List<Principal> result = new LinkedList<Principal>();
         Iterator<Principal> principals = subject.getPrincipals().iterator();
@@ -163,6 +155,29 @@ public class SecurityHelper
         }
         return result;
     }
+    
+    /**
+     * <p>
+     * Given a subject, finds a specific principal by name of the given classe for that subject.
+     * </p>
+     * 
+     * @param subject The subject supplying the principals.
+     * @param classe A class or interface derived from java.security.InternalPrincipal.
+     * @param name the name of the principal to look for
+     */
+    public static Principal getPrincipal(Subject subject, Class<? extends Principal> classe, String name)
+    {
+        Iterator<Principal> principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = principals.next();
+            if (classe.isInstance(p) && p.getName().equals(name))
+            {
+                return p;
+            }
+        }
+        return null;
+    }
 
     /**
      * <p>
@@ -174,7 +189,7 @@ public class SecurityHelper
      */
     public static UserCredential getUserCredential(Subject subject)
     {
-        Iterator iter = subject.getPrivateCredentials().iterator();
+        Iterator<Object> iter = subject.getPrivateCredentials().iterator();
         while (iter.hasNext())
         {
             Object o = iter.next();
@@ -184,37 +199,5 @@ public class SecurityHelper
             }
         }
         return null;
-    }
-
-    /**
-     * <p>
-     * Adds a collection of permsToAdd to a collection of existing permissions.
-     * </p>
-     * 
-     * @param perms The existing permissions.
-     * @param permsToAdd The permissions to add.
-     */
-    public static void addPermissions(PermissionCollection perms, PermissionCollection permsToAdd)
-    {
-        int permsAdded = 0;
-        if (null != permsToAdd)
-        {
-            Enumeration<Permission> permsToAddEnum = permsToAdd.elements();
-            while (permsToAddEnum.hasMoreElements())
-            {
-                permsAdded++;
-                Permission currPerm = permsToAddEnum.nextElement();
-                perms.add(currPerm);
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Adding the permission: [class, " + currPerm.getClass().getName() + "], " + "[name, "
-                            + currPerm.getName() + "], " + "[actions, " + currPerm.getActions() + "]");
-                }
-            }
-        }
-        if ((permsAdded == 0) && log.isDebugEnabled())
-        {
-            log.debug("No permissions to add...");
-        }
     }
 }

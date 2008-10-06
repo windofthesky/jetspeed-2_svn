@@ -33,7 +33,7 @@ import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.container.session.PortalSessionsManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.statistics.PortalStatistics;
@@ -234,7 +234,7 @@ public class GetUserListAction
     			{
     				for (User user : userManager.getUsers(""))
         			{
-        				Principal userPrincipal = SecurityHelper.getPrincipal(userManager.getSubject(user), User.class);
+        				Principal userPrincipal = SubjectHelper.getPrincipal(userManager.getSubject(user), User.class);
         				if(userPrincipal != null)
         				{
         					// Check if this users is already added as online user

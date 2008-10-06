@@ -17,15 +17,13 @@
 package org.apache.jetspeed.login.filter;
 
 import java.security.Principal;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 
 public class PortalRequestWrapper extends HttpServletRequestWrapper
 {
@@ -46,15 +44,7 @@ public class PortalRequestWrapper extends HttpServletRequestWrapper
         {
             return false;
         }
-        List roles = SecurityHelper.getPrincipals(subject, Role.class);
-        Iterator ir = roles.iterator();
-        while (ir.hasNext())
-        {
-            Role role = (Role)ir.next();
-            if (roleName.equals(role.getName()))
-                return true;
-        }
-        return false;
+        return SubjectHelper.getPrincipal(subject, Role.class, roleName) != null;
     }
     
     public void setUserPrincipal(Principal userPrincipal)

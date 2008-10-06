@@ -42,7 +42,7 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 
 /**
@@ -154,7 +154,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             {
                 throw new ProfilerException("Missing subject for request: " + request.getPath());
             }            
-            Principal principal = SecurityHelper.getBestPrincipal(subject, User.class);
+            Principal principal = SubjectHelper.getBestPrincipal(subject, User.class);
             if (principal == null)
             {
                 throw new ProfilerException("Missing principal for request: " + request.getPath());

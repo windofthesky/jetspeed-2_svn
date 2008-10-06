@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
@@ -69,7 +69,7 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
     {
 
         Map<String,String> userAttributeMap = new HashMap<String,String>();
-        Principal userPrincipal = SecurityHelper.getPrincipal(subject, User.class);
+        Principal userPrincipal = SubjectHelper.getPrincipal(subject, User.class);
         if (null != userPrincipal)
         {
             log.debug("Got user principal: " + userPrincipal.getName());

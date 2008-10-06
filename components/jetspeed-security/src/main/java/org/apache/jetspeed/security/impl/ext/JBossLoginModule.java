@@ -28,7 +28,7 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserSubjectPrincipal;
@@ -107,12 +107,12 @@ public class JBossLoginModule extends DefaultLoginModule
     protected void commitSubject(Subject containerSubject, Subject jetspeedSubject, AuthenticatedUser user)
     {
         // add user specific portal user name and roles
-        Principal userSubjectPrincipal = SecurityHelper.getPrincipal(jetspeedSubject, UserSubjectPrincipal.class);
+        Principal userSubjectPrincipal = SubjectHelper.getPrincipal(jetspeedSubject, UserSubjectPrincipal.class);
         subject.getPrincipals().add(userSubjectPrincipal);
         boolean hasPortalUserRole = false;
         JBossGroup roles = new JBossGroup("Roles");
         
-        for (Principal role : SecurityHelper.getPrincipals(jetspeedSubject, Role.class))
+        for (Principal role : SubjectHelper.getPrincipals(jetspeedSubject, Role.class))
         {
             roles.addMember(role);
             if (role.getName().equals(portalUserRole))

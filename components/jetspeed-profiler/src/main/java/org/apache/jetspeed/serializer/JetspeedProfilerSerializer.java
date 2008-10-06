@@ -21,9 +21,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.jetspeed.profiler.Profiler;
@@ -31,11 +28,9 @@ import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
-import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
 import org.apache.jetspeed.serializer.objects.JSProfilingRule;
 import org.apache.jetspeed.serializer.objects.JSProfilingRules;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterion;

@@ -28,7 +28,7 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.TransientRole;
 
@@ -72,7 +72,7 @@ public class PortletActionSecurityPathMergeBehavior
             count++;                        
         }
         Set principals = new HashSet();
-        principals.add(SecurityHelper.getBestPrincipal(currentSubject, User.class));
+        principals.add(SubjectHelper.getBestPrincipal(currentSubject, User.class));
         principals.add(new TransientRole(combo.toString()));
         Subject subject = 
             new Subject(true, principals, new HashSet(), new HashSet());

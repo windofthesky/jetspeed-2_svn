@@ -28,7 +28,7 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserSubjectPrincipal;
@@ -93,7 +93,7 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
         Subject subject = getSubjectFromSession(request);
         if (subject != null)
         {
-            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, User.class);
+            Principal subjectUserPrincipal = SubjectHelper.getPrincipal(subject, User.class);
             if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(userPrincipal.getName()))
             {
                 subject = null;

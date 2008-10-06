@@ -27,7 +27,7 @@ import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.AbstractSecurityValve;
@@ -112,7 +112,7 @@ public class NtlmSecurityValve extends AbstractSecurityValve
         Subject subject = getSubjectFromSession(context);
         if (subject != null)
         {
-            return SecurityHelper.getPrincipal(subject, User.class);
+            return SubjectHelper.getPrincipal(subject, User.class);
         } 
         // otherwise return anonymous principal
         
@@ -140,7 +140,7 @@ public class NtlmSecurityValve extends AbstractSecurityValve
         // check whether principal name stored in session subject equals the remote user name passed by the web container
         if (subject != null)
         {
-            Principal subjectUserPrincipal = SecurityHelper.getPrincipal(subject, User.class);
+            Principal subjectUserPrincipal = SubjectHelper.getPrincipal(subject, User.class);
             if ((subjectUserPrincipal == null) || !subjectUserPrincipal.getName().equals(userName))
             {
                 subject = null;

@@ -43,7 +43,7 @@ import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 
@@ -142,7 +142,7 @@ public class PortalFilter implements Filter
                 Subject subject = (Subject)request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
                 if (subject != null)
                 {
-                    Principal principal = SecurityHelper.getPrincipal(subject, User.class);
+                    Principal principal = SubjectHelper.getPrincipal(subject, User.class);
                     if (principal != null && principal.getName().equals(this.guest))
                     {                        
                     }

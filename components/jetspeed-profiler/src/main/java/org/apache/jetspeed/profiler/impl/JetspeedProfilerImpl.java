@@ -39,7 +39,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule;
 import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.ojb.broker.query.Criteria;
@@ -203,7 +203,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         }
         // get the UserPrincipal, finding the first UserPrincipal, or
         // find the first principal if no UserPrincipal isn't available
-        Principal principal = SecurityHelper.getBestPrincipal(subject,
+        Principal principal = SubjectHelper.getBestPrincipal(subject,
                 UserSubjectPrincipal.class);
         if (principal == null)
         {
