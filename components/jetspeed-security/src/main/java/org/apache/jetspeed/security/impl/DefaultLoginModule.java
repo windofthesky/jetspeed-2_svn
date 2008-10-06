@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.impl;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -34,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.LoginModuleProxy;
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.SecurityHelper;
+import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.AuthenticationProvider;
@@ -301,10 +300,10 @@ public class DefaultLoginModule implements LoginModule
     protected void commitSubject(Subject containerSubject, Subject jetspeedSubject, AuthenticatedUser user)
     {
         // add user specific portal user name and roles
-        Principal userSubjectPrincipal = SecurityHelper.getPrincipal(jetspeedSubject, UserSubjectPrincipal.class);
-        subject.getPrincipals().add(userSubjectPrincipal);
+        subject.getPrincipals().add(SubjectHelper.getPrincipal(jetspeedSubject, UserSubjectPrincipal.class));
+        subject.getPrincipals().add(SubjectHelper.getPrincipal(jetspeedSubject, User.class));
         boolean hasPortalUserRole = false;
-        for (Principal role : SecurityHelper.getPrincipals(jetspeedSubject, Role.class))
+        for (Principal role : SubjectHelper.getPrincipals(jetspeedSubject, Role.class))
         {
             subject.getPrincipals().add(role);
             if (role.getName().equals(portalUserRole))
