@@ -47,7 +47,10 @@ public abstract class BaseJetspeedPermission extends Permission implements Jetsp
         @Override
         public void add(Permission permission)
         {
-            permissions.add(permission);
+            if (!permissions.contains(permission))
+            {
+                permissions.add(permission);
+            }
         }
 
         @Override
