@@ -132,9 +132,9 @@
                 <configuration>
                     <excludes>
                         <exclude>**/spi/ldap/**.java</exclude>
-                        <exclude>**/TestSecurityMappingHandler.java</exclude>
-                        <exclude>**/TestGeneralizationHierarchy.java</exclude>
-                        <exclude>**/TestAggregationHierarchy.java</exclude>
+                        <exclude>**/spi/TestDefaultJetspeedSynchronizer.java</exclude>
+                        <exclude>**/spi/TestPasswordHistoryInterceptor.java</exclude>
+                        <exclude>**/spi/TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -156,7 +156,7 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>transaction.xml,cache.xml,security-*.xml,boot/datasource.xml</include>
+                                        <include>transaction.xml,cache.xml,security-*.xml,static-bean-references.xml,boot/datasource.xml</include>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>

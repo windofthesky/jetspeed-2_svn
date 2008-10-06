@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
-import java.util.Collection;
+import java.util.List;
+
+import javax.security.auth.Subject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.impl.GroupImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -35,25 +35,6 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestGroupManager extends AbstractSecurityTestcase
 {
-
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        destroyPrincipals();
-        super.tearDown();
-
-    }
-
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
@@ -92,16 +73,6 @@ public class TestGroupManager extends AbstractSecurityTestcase
         catch (SecurityException sex)
         {
         }
-
-        // Cleanup test.
-        try
-        {
-            gms.removeGroup("testgroup");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -127,8 +98,8 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             gms.addUserToGroup("anonuser1", "testusertogroup1.group1");
-            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
-            assertTrue("anonuser1 should contain testusertogroup1.group1", principals.contains(new GroupImpl("testusertogroup1.group1")));
+            Subject subject = ums.getSubject(ums.getUser("anonuser1"));
+            assertTrue("anonuser1 should contain testusertogroup1.group1", SubjectHelper.getPrincipal(subject, Group.class, "testusertogroup1.group1") != null);
         }
         catch (SecurityException sex)
         {
@@ -138,8 +109,8 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             gms.addUserToGroup("anonuser1", "testusertogroup1.group2");
-            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
-            assertTrue("anonuser1 should contain testusertogroup1.group2", principals.contains(new GroupImpl("testusertogroup1.group2")));
+            Subject subject = ums.getSubject(ums.getUser("anonuser1"));
+            assertTrue("anonuser1 should contain testusertogroup1.group2", SubjectHelper.getPrincipal(subject, Group.class, "testusertogroup1.group2") != null);
         }
         catch (SecurityException sex)
         {
@@ -163,17 +134,6 @@ public class TestGroupManager extends AbstractSecurityTestcase
         catch (SecurityException sex)
         {
         }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser1");
-            gms.removeGroup("testusertogroup1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -181,53 +141,37 @@ public class TestGroupManager extends AbstractSecurityTestcase
      * Test remove group.
      * </p>
      */
-    public void testRemoveGroup()
+    public void testRemoveGroup() throws Exception
     {
         // Init test.
-        try
-        {
-            ums.addUser("anonuser2");
-            gms.addGroup("testgroup1");
-            gms.addGroup("testgroup1.group1");
-            gms.addGroup("testgroup1.group2");
-            gms.addGroup("testgroup2");
-            gms.addGroup("testgroup2.group1");
-            gms.addUserToGroup("anonuser2", "testgroup1.group1");
-            gms.addUserToGroup("anonuser2", "testgroup1.group2");
-            gms.addUserToGroup("anonuser2", "testgroup2.group1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testRemoveGroup(), " + sex, false);
-        }
+        User user = ums.addUser("anonuser2");
+        Group group1 = gms.addGroup("testgroup1");
+        Group group11 = gms.addGroup("testgroup1.group1");
+        Group group12 = gms.addGroup("testgroup1.group2");
+        Group group2 = gms.addGroup("testgroup2");
+        Group group21 = gms.addGroup("testgroup2.group1");
+        gms.addGroupToGroup(group11, group1, JetspeedPrincipalAssociationType.IS_A);
+        gms.addGroupToGroup(group12, group1, JetspeedPrincipalAssociationType.IS_A);
+        gms.addGroupToGroup(group21, group2, JetspeedPrincipalAssociationType.IS_A);
+        gms.addUserToGroup("anonuser2", "testgroup1.group1");
+        gms.addUserToGroup("anonuser2", "testgroup1.group2");
+        gms.addUserToGroup("anonuser2", "testgroup2.group1");            
 
         try
         {
-            gms.removeGroup("testgroup1.group1");
-            Collection principals = ums.getSubject(ums.getUser("anonuser2")).getPrincipals();
-            // because of hierarchical groups with generalization strategy as default. Was 5 groups + 1 user, should now be 5
-            // (4 groups + 1 user).
+            gms.removeGroup("testgroup1.group1");            
+            Subject subject = ums.getSubject(user);
+            // because of hierarchical groups with generalization strategy as default. Was 5 groups + 2 users (including UserSubjectPrincipal), should now be 6
+            // (4 groups + 2 users).
             assertEquals(
-                "principal size should be == 3 after removing testgroup1.group1, for principals: " + principals.toString(),
-                3,
-                principals.size());
-            assertFalse("anonuser2 should not contain testgroup1.group1", principals.contains(new GroupImpl("testgroup1.group1")));
+                "principal size should be == 6 after removing testgroup1.group1, for principals: " + subject.getPrincipals(),
+                6,
+                subject.getPrincipals().size());
+            assertTrue("anonuser2 should not contain testgroup1.group1", SubjectHelper.getPrincipal(subject, Group.class, "testgroup1.group1") == null);
         }
         catch (SecurityException sex)
         {
             assertTrue("should remove group. exception caught: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser2");
-            gms.removeGroup("testgroup1");
-            gms.removeGroup("testgroup2");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and group. exception caught: " + sex, false);
         }
     }
 
@@ -260,16 +204,6 @@ public class TestGroupManager extends AbstractSecurityTestcase
         }
         assertNotNull("group is null", group);
         assertEquals("expected group principal full path == testgetgroup", "testgetgroup", group.getName());
-
-        // Cleanup test.
-        try
-        {
-            gms.removeGroup("testgetgroup");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -299,25 +233,13 @@ public class TestGroupManager extends AbstractSecurityTestcase
 
         try
         {
-            Collection groups = gms.getGroupsForUser("anonuser2");
+            List<Group> groups = gms.getGroupsForUser("anonuser2");
             // Default hierarchy used in by generalization.
             assertEquals("groups size should be == 3", 3, groups.size());
         }
         catch (SecurityException sex)
         {
             assertTrue("user exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser2");
-            gms.removeGroup("testgroup1");
-            gms.removeGroup("testgroup2");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and group. exception caught: " + sex, false);
         }
     }
 
@@ -346,23 +268,12 @@ public class TestGroupManager extends AbstractSecurityTestcase
 
         try
         {
-            Collection groups = gms.getGroupsInRole("testuserrolemapping");
+            List<Group> groups = gms.getGroupsInRole("testuserrolemapping");
             assertEquals("groups size should be == 3", 3, groups.size());
         }
         catch (SecurityException sex)
         {
             assertTrue("role exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            rms.removeRole("testuserrolemapping");
-            gms.removeGroup("testrolegroupmapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove role and group. exception caught: " + sex, false);
         }
     }
 
@@ -389,23 +300,12 @@ public class TestGroupManager extends AbstractSecurityTestcase
         try
         {
             gms.removeUserFromGroup("anonuser4", "testgroup1.group1");
-            Collection groups = gms.getGroupsForUser("anonuser4");
+            List<Group> groups = gms.getGroupsForUser("anonuser4");
             assertEquals("groups size should be == 0", 0, groups.size());
         }
         catch (SecurityException sex)
         {
             assertTrue("user exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser4");
-            gms.removeGroup("testgroup1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and group. exception caught: " + sex, false);
         }
     }
 
@@ -438,17 +338,6 @@ public class TestGroupManager extends AbstractSecurityTestcase
         {
             assertTrue("user and group exist. should not have thrown an exception: " + sex, false);
         }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser4");
-            gms.removeGroup("testgroup1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -460,34 +349,9 @@ public class TestGroupManager extends AbstractSecurityTestcase
      */
     public void testGetGroups() throws Exception
     {
-    	int groupCount = 0;
-    	int groupAdded = 0;
-        Collection<Group> groups = gms.getGroups("");
-        for (Group group : groups)
-        {
-            System.out.println("Group is " + group);
-            groupCount++;
-        }
-
-    	ums.addUser("notme");
         gms.addGroup("g1");
         gms.addGroup("g2");
         gms.addGroup("g3");
-        groupAdded = 3;
-        int count = 0;
-        groups = gms.getGroups("");
-        for (Group group : groups)
-        {
-            System.out.println("Group is " + group);
-            count++;
-        }
-        ums.removeUser("notme");
-        gms.removeGroup("g1");
-        gms.removeGroup("g2");
-        gms.removeGroup("g3");
-        assertTrue("group count should be " + (groupAdded + groupCount), count == (groupAdded + groupCount));
-               
+        assertTrue("group count should be 3", 3 == gms.getGroups(null).size());
     }
-    
-   
 }

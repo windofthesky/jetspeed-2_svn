@@ -40,25 +40,6 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestUserManager extends AbstractSecurityTestcase
 {
-
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        destroyPrincipals();
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        destroyPrincipals();
-        super.tearDown();
-    }
-
     public static Test suite()
     {
         return new TestSuite(TestUserManager.class);
@@ -100,7 +81,6 @@ public class TestUserManager extends AbstractSecurityTestcase
         {
             assertTrue("user should have been removed: ", false);
         }
-
     }
 
     /**
@@ -180,130 +160,6 @@ public class TestUserManager extends AbstractSecurityTestcase
         {
             assertTrue("failed to test 'rolesInheritableViaGroups' mode in testGetUser(), " + sex, false);
         }
-        finally
-        {
-            // Cleanup test.
-            try
-            {
-                rms.removeRole("assignedRole");
-            }
-            catch (SecurityException sex)
-            {
-            }
-            
-            try
-            {
-                gms.removeGroup("inheritingGroup");
-            }
-            catch (SecurityException sex)
-            {
-            }
-            
-            try
-            {
-                ums.removeUser("inheritedUser");
-            }
-            catch (SecurityException sex)
-            {
-            }
-        }
-
-    }
-
-    /**
-     * <p>
-     * Test get users in role.
-     * </p>
-     */
-    public void testGetUsersInRole()
-    {
-        // Init test.
-        try
-        {
-            ums.addUser("anonuser3");
-            ums.addUser("anonuser4");
-            rms.addRole("testuserrolemapping");
-            rms.addRole("testuserrolemapping.role1");
-            rms.addRole("testuserrolemapping.role2");
-            rms.addRoleToUser("anonuser3", "testuserrolemapping");
-            rms.addRoleToUser("anonuser3", "testuserrolemapping.role1");
-            rms.addRoleToUser("anonuser3", "testuserrolemapping.role2");
-            rms.addRoleToUser("anonuser4", "testuserrolemapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testGetUsersInRole(), " + sex, false);
-        }
-
-        try
-        {
-            Collection<User> users = ums.getUsersInRole("testuserrolemapping");
-            assertEquals("users size should be == 2", 2, users.size());
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("role exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser3");
-            ums.removeUser("anonuser4");
-            rms.removeRole("testuserrolemapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and role. exception caught: " + sex, false);
-        }
-    }
-
-    /**
-     * <p>
-     * Test get users in group.
-     * </p>
-     */
-    public void testGetUsersInGroup()
-    {
-        // Init test.
-        try
-        {
-            ums.addUser("anonuser2");
-            ums.addUser("anonuser3");
-            ums.addUser("anonuser4");
-            gms.addGroup("testgroup1");
-            gms.addGroup("testgroup1.group1");
-            gms.addUserToGroup("anonuser2", "testgroup1.group1");
-            gms.addUserToGroup("anonuser3", "testgroup1.group1");
-            gms.addUserToGroup("anonuser4", "testgroup1.group1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testGetUsersInGroup(), " + sex, false);
-        }
-
-        try
-        {
-            Collection<User> users = ums.getUsersInGroup("testgroup1.group1");
-            assertEquals("users size should be == 3", 3, users.size());
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("group exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser2");
-            ums.removeUser("anonuser3");
-            ums.removeUser("anonuser4");
-            gms.removeGroup("testgroup1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -317,14 +173,29 @@ public class TestUserManager extends AbstractSecurityTestcase
         {
             User user = ums.addUser("anon");
             PasswordCredential pwc = ums.getPasswordCredential(user);
-            pwc.setPassword(null, "password");
+            pwc.setPassword("password", false);
             ums.storePasswordCredential(pwc);
 
+            LoginContext loginContext = null;
+            
+            // Test that the user can log in.
+            try
+            {
+                PassiveCallbackHandler pch = new PassiveCallbackHandler("anon", "newpassword");
+                loginContext = new LoginContext("Jetspeed", pch);
+                loginContext.login();
+                loginContext.logout();
+            }
+            catch (LoginException le)
+            {
+                le.printStackTrace();
+                assertTrue("failed to login user with new password.", false);
+            }
+            
             pwc = ums.getPasswordCredential(user);
             pwc.setPassword("password", "newpassword");
             ums.storePasswordCredential(pwc);
 
-            LoginContext loginContext = null;
             // Test that the user can log in with the new password.
             try
             {
@@ -357,31 +228,21 @@ public class TestUserManager extends AbstractSecurityTestcase
         ums.addUser("two");
         ums.addUser("three");
         int count = 0;
-        Collection<User> users = ums.getUsers("");
-        for (User user : users)
+        for (User user : ums.getUsers(null))
         {
-            for (Principal principal : ums.getSubject(user).getPrincipals())
+            if (user.getName().equals("one"))
             {
-                System.out.println("principal = " + principal.getName());
-                if (principal.getName().equals("one"))
-                {
-                    count++;
-                }
-                else if (principal.getName().equals("two"))
-                {
-                    count++;
-                }
-                else if (principal.getName().equals("three"))
-                {
-                    count++;
-                }
+                count++;
+            }
+            else if (user.getName().equals("two"))
+            {
+                count++;
+            }
+            else if (user.getName().equals("three"))
+            {
+                count++;
             }
         }
         assertTrue("user count should be 3", count == 3);
-        ums.removeUser("one");
-        ums.removeUser("two");
-        ums.removeUser("three");
     }
-
-
 }

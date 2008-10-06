@@ -18,6 +18,7 @@ package org.apache.jetspeed.security;
 
 import java.security.Principal;
 
+import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -25,7 +26,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -56,58 +56,34 @@ public class TestLoginModule extends AbstractSecurityTestcase
         }
     }
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        destroyUserObject();
-        super.tearDown();
-        
-    }
-
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestLoginModule.class);
     }
 
-    public void testLogin() throws LoginException
+    public void testLogin() throws Exception
     {
-        loginContext.login();
-        Principal found = SecurityHelper.getPrincipal(loginContext.getSubject(), UserPrincipal.class);
-        assertNotNull("found principal is null", found);
-        assertTrue("found principal should be anonlogin, " + found.getName(), found.getName().equals((new UserPrincipalImpl("anonlogin")).getName()));      
+        loginContext.login();        
+        Subject subject = loginContext.getSubject();
+        Principal found = SubjectHelper.getPrincipal(loginContext.getSubject(), User.class);
+        assertNotNull("found principal is null, subject: "+subject, found);
+        assertTrue("found principal should be anonlogin, " + found.getName(), found.getName().equals("anonlogin"));      
     }
     
     public void testLogout() throws LoginException
     {
         loginContext.login();
         loginContext.logout();
-        Principal found = SecurityHelper.getBestPrincipal(loginContext.getSubject(), UserPrincipal.class);
+        Principal found = SubjectHelper.getBestPrincipal(loginContext.getSubject(), User.class);
         assertNull("found principal is not null", found);
     }
 
     /**
      * <p>Initialize user test object.</p>
      */
-    protected void initUserObject()
+    protected void initUserObject() throws SecurityException
     {
-        try
-        {
-            ums.addUser("anonlogin", "password");
-        }
-        catch (SecurityException sex)
-        {
-        }
+        addUser("anonlogin", "password");
     }
-
-    /**
-     * <p>Destroy user test object.</p>
-     */
-    protected void destroyUserObject() throws Exception
-    {
-        ums.removeUser("anonlogin");
-    }
-
 }

@@ -18,6 +18,7 @@ package org.apache.jetspeed.security;
 
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.security.Permission;
 import java.security.Policy;
 import java.security.PrivilegedAction;
 
@@ -28,8 +29,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
-import org.apache.jetspeed.security.spi.impl.PortletPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -84,7 +83,6 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
             le.printStackTrace();
             assertTrue("\t\t[TestRdbmsPolicy] Failed to tear down test.", false);
         }
-        destroyUser();
         super.tearDown();
     }
 
@@ -162,11 +160,11 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         // InternalPermission should be granted.
         try
         {
-            JSSubject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    PortletPermission perm1 = new PortletPermission("myportlet", "view");
+                    Permission perm1 = (Permission)pms.newPermission(PermissionFactory.PORTLET_PERMISSION, "myportlet", "view");
                     System.out.println("\t\t[TestRdbmsPolicy] Check access control for permission: [myportlet, view]");
                     System.out.println("\t\t                  with policy: " + Policy.getPolicy().getClass().getName());
                     AccessController.checkPermission(perm1);
@@ -182,11 +180,11 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
         // Should be denied.
         try
         {
-            JSSubject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAsPrivileged(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    PortletPermission perm2 = new PortletPermission("myportlet", "secure");
+                    Permission perm2 = (Permission)pms.newPermission(PermissionFactory.PORTLET_PERMISSION, "myportlet", "secure");
                     System.out.println("\t\t[TestRdbmsPolicy] Check access control for permission: [myportlet, secure]");
                     System.out.println("\t\t                  with policy: " + Policy.getPolicy().getClass().getName());
                     AccessController.checkPermission(perm2);
@@ -218,45 +216,16 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
      * Initialize user test object.
      * </p>
      */
-    protected void initUser()
+    protected void initUser() throws SecurityException
     {
-        try
-        {
-            ums.addUser("anon", "password");
-        }
-        catch (SecurityException sex)
-        {
-        }
-        UserPrincipal user = new UserPrincipalImpl("anon");
-        PortletPermission perm1 = new PortletPermission("myportlet", "view");
-        PortletPermission perm2 = new PortletPermission("myportlet", "view, edit");
-        try
-        {
-            pms.addPermission(perm1);
-            pms.addPermission(perm2);
+        
+        User user = addUser("anon", "password");
+        JetspeedPermission perm1 = pms.newPermission(PermissionFactory.PORTLET_PERMISSION, "myportlet", "view");
+        JetspeedPermission perm2 = pms.newPermission(PermissionFactory.PORTLET_PERMISSION, "myportlet2", "view, edit");
+        pms.addPermission(perm1);
+        pms.addPermission(perm2);
 
-            pms.grantPermission(user, perm1);
-            pms.grantPermission(user, perm2);
-        }
-        catch (SecurityException sex)
-        {
-            sex.printStackTrace();
-        }
+        pms.grantPermission(perm1, user);
+        pms.grantPermission(perm2, user);
     }
-
-    /**
-     * <p>
-     * Destroy user test object.
-     * </p>
-     */
-    protected void destroyUser() throws Exception
-    {
-        ums.removeUser("anon");
-        // Remove permissions.
-        PortletPermission perm1 = new PortletPermission("myportlet", "view");
-        PortletPermission perm2 = new PortletPermission("myportlet", "view, edit");
-        pms.removePermission(perm1);
-        pms.removePermission(perm2);
-    }
-
 }

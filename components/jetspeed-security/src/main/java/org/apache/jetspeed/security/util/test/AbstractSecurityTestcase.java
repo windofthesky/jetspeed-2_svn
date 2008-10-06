@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.util.test;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,14 +26,14 @@ import javax.security.auth.Subject;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
@@ -62,10 +63,6 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
 
         super.setUp();
 
-        
-        // Security Providers.        
-        AuthenticationProvider atnProvider = (AuthenticationProvider) scm.getComponent("org.apache.jetspeed.security.AuthenticationProvider");
-       
         ums = (UserManager) scm.getComponent("org.apache.jetspeed.security.UserManager");
         gms = (GroupManager) scm.getComponent("org.apache.jetspeed.security.GroupManager");
         rms = (RoleManager) scm.getComponent("org.apache.jetspeed.security.RoleManager");
@@ -74,8 +71,18 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
         pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
         
         new JetspeedActions(new String[] {"secure"}, new String[] {});
+        
+        destroyPrincipals();
+        destroyPermissions();
     }
 
+    protected void tearDown() throws Exception
+    {
+        destroyPrincipals();
+        destroyPermissions();
+        super.tearDown();
+    }
+    
     /**
      * Returns subject's principals of type claz
      * 
@@ -83,33 +90,46 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
      * @param claz
      * @return Returns subject's principals of type claz
      */
-    protected Collection getPrincipals(Subject subject, Class claz)
+    protected Collection<Principal> getPrincipals(Subject subject, Class<? extends Principal> claz)
     {
-        List principals = new ArrayList();
-        for (Iterator iter = subject.getPrincipals().iterator(); iter.hasNext();)
+        List<Principal> principals = new ArrayList<Principal>();
+        for (Iterator<Principal> iter = subject.getPrincipals().iterator(); iter.hasNext();)
         {
-            Object element = iter.next();
+            Principal element = iter.next();
             if (claz.isInstance(element))
                 principals.add(element);
 
         }
         return principals;
     }
+    
+    protected User addUser(String name, String password) throws SecurityException
+    {
+        User user = ums.addUser(name);            
+        PasswordCredential credential = ums.getPasswordCredential(user);
+        credential.setPassword(password, false);
+        ums.storePasswordCredential(credential);
+        return user;
+    }
+    
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "security,transaction,cache,jdbcDS";
+    }
 
     protected String[] getConfigurations()
     {
         //String[] confs = super.getConfigurations();
-        List confList = new ArrayList(); //Arrays.asList(confs));
+        List<String> confList = new ArrayList<String>(); //Arrays.asList(confs));
         confList.add("security-atn.xml");
         confList.add("security-atz.xml");
         confList.add("security-managers.xml");
         confList.add("security-providers.xml");
         confList.add("security-spi.xml");
         confList.add("security-spi-atn.xml");
-        confList.add("security-spi-atz.xml");
-        confList.add("security-attributes.xml");
         confList.add("transaction.xml");
         confList.add("cache.xml");
+        confList.add("static-bean-references.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 
@@ -120,21 +140,35 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
      */
     protected void destroyPrincipals() throws Exception
     {
-        Collection<User> users = this.ums.getUsers("");
-        for (User user : users)
+        for (String name : ums.getUserNames(null))
         {
-            ums.removeUser(user.getName());
+            ums.removeUser(name);
         }
-        Collection<Role> roles = this.rms.getRoles("");
-        for (Role role : roles)
+        for (String name : rms.getRoleNames(null))
         {
-            rms.removeRole(role.getName());
+            // because of possible dependent roles already been deleted through a parent deletion,
+            // first check if it still exists
+            if (rms.roleExists(name))
+            {
+                rms.removeRole(name);
+            }
         }
-        Collection<Group> groups = this.gms.getGroups("");
-        for (Group group : groups)
+        for (String name : gms.getGroupNames(null))
         {
-            gms.removeGroup(group.getName());
+            // because of possible dependent groups already been deleted through a parent deletion,
+            // first check if it still exists
+            if (gms.groupExists(name))
+            {
+                gms.removeGroup(name);
+            }
         }
     }
-     
+    
+    protected void destroyPermissions() throws Exception
+    {
+        for (JetspeedPermission p : pms.getPermissions())
+        {
+            pms.removePermission(p);
+        }
+    }
 }

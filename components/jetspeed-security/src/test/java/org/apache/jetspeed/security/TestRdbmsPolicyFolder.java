@@ -18,6 +18,7 @@ package org.apache.jetspeed.security;
 
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.security.Permission;
 import java.security.PrivilegedAction;
 
 import javax.security.auth.login.LoginContext;
@@ -28,8 +29,6 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.spi.impl.BaseJetspeedPermission;
-import org.apache.jetspeed.security.spi.impl.FolderPermission;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -82,7 +81,6 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
             le.printStackTrace();
             assertTrue("\t\t[TestRdbmsPolicy - Folder] Failed to tear down test.", false);
         }
-        destroyUser();
         super.tearDown();
     }
 
@@ -101,12 +99,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
 
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/test.xml", "edit");                    
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/test.xml", "edit");                    
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -119,12 +117,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         // Should be denied.
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm2 = new FolderPermission.Factory().newPermission("/files/test.xml", "secure");
-                    AccessController.checkPermission(perm2);
+                    JetspeedPermission perm2 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/test.xml", "secure");
+                    AccessController.checkPermission((Permission)perm2);
                     return null;
                 }
             });
@@ -144,12 +142,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
 
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder1/test.xml", "view");
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder1/test.xml", "view");
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -162,12 +160,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder1/foo", "view");
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder1/foo", "view");
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -179,12 +177,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder1/foo/anotherdoc.xml", "view");
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder1/foo/anotherdoc.xml", "view");
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -197,12 +195,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder2/test.xml", "view");
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder2/test.xml", "view");
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -215,12 +213,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder2/foo", "view");
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder2/foo", "view");
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -232,12 +230,12 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         
         try
         {
-            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction()
+            JSSubject.doAs(loginContext.getSubject(), new PrivilegedAction<Object>()
             {
                 public Object run()
                 {
-                    BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/subfolder2/foo/anotherdoc.xml", "view");
-                    AccessController.checkPermission(perm1);
+                    JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder2/foo/anotherdoc.xml", "view");
+                    AccessController.checkPermission((Permission)perm1);
                     return null;
                 }
             });
@@ -252,53 +250,19 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
     /**
      * <p>Initialize user test object.</p>
      */
-    protected void initUser()
+    protected void initUser() throws SecurityException
     {
-        User user = null;
-        try
-        {
-            user = ums.addUser("anon", false);
-            PasswordCredential pwc = ums.getPasswordCredential(user);
-            pwc.setPassword(null, "password");
-            ums.storePasswordCredential(pwc);
-        }
-        catch (SecurityException sex)
-        {
-            sex.printStackTrace();
-        }
+        User user = addUser("anon","password");
         
-        BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/test.xml", "edit");
-        BaseJetspeedPermission perm2 = new FolderPermission.Factory().newPermission("/files/subfolder1/*", "view");
-        BaseJetspeedPermission perm3 = new FolderPermission.Factory().newPermission("/files/subfolder2/-", "view");
-        try
-        {
-            pms.addPermission(perm1);
-            pms.addPermission(perm2);
-            pms.addPermission(perm3);
-            
-            pms.grantPermission(user, perm1);
-            pms.grantPermission(user, perm2);
-            pms.grantPermission(user, perm3);
-        }
-        catch (SecurityException sex)
-        {
-            sex.printStackTrace();
-        }
+        JetspeedPermission perm1 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/test.xml", "edit");
+        JetspeedPermission perm2 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder1/*", "view");
+        JetspeedPermission perm3 = pms.newPermission(PermissionFactory.FOLDER_PERMISSION, "/files/subfolder2/-", "view");
+        pms.addPermission(perm1);
+        pms.addPermission(perm2);
+        pms.addPermission(perm3);
+        
+        pms.grantPermission(perm1, user);
+        pms.grantPermission(perm2, user);
+        pms.grantPermission(perm3, user);
     }
-
-    /**
-     * <p>Destroy user test object.</p>
-     */
-    protected void destroyUser() throws Exception
-    {
-        ums.removeUser("anon");
-
-        BaseJetspeedPermission perm1 = new FolderPermission.Factory().newPermission("/files/test.xml", "edit");
-        BaseJetspeedPermission perm2 = new FolderPermission.Factory().newPermission("/files/subfolder1/*", "view");
-        BaseJetspeedPermission perm3 = new FolderPermission.Factory().newPermission("/files/subfolder2/-", "view");
-        pms.removePermission(perm1);
-        pms.removePermission(perm2);
-        pms.removePermission(perm3);
-    }
-
 }

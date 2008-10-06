@@ -17,7 +17,7 @@
 package org.apache.jetspeed.security;
 
 import java.security.Principal;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -25,35 +25,31 @@ import javax.security.auth.Subject;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.impl.UserPrincipalImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
- * TestSecurityHelper
+ * TestSubjectHelper
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestSecurityHelper extends AbstractSecurityTestcase
+public class TestSubjectHelper extends AbstractSecurityTestcase
 {
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestSecurityHelper.class);
+        return new TestSuite(TestSubjectHelper.class);
     }
     
     public void testHelpers() throws Exception
     {
-        Principal principal = new UserPrincipalImpl("anon");
-        Set principals = new PrincipalsSet();
+        Principal principal = ums.newTransientUser("anon");
+        Set<Principal> principals = new PrincipalsSet();
         principals.add(principal);
-        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
-        System.out.println("subject = " + subject);
+        Subject subject = new Subject(true, principals, Collections.emptySet(), Collections.emptySet());
         
-        Principal found = SecurityHelper.getBestPrincipal(subject, UserPrincipal.class);
+        Principal found = SubjectHelper.getBestPrincipal(subject, User.class);
         assertNotNull("found principal is null", found);
         assertTrue("found principal should be anon", found.getName().equals("anon"));
-        System.out.println("found = " + found.getName());
     }
-    
 }

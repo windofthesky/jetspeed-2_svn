@@ -16,12 +16,11 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.Collection;
+import javax.security.auth.Subject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.impl.RoleImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
@@ -34,24 +33,6 @@ import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
  */
 public class TestRoleManager extends AbstractSecurityTestcase
 {
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        destroyPrincipals();
-    }
-
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
-    public void tearDown() throws Exception
-    {
-        destroyPrincipals();
-        super.tearDown();
-    }
-
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
@@ -125,8 +106,8 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             rms.addRoleToUser("anonuser1", "testusertorole1.role1");
 
-            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
-            assertTrue("anonuser1 should contain testusertorole1.role1", principals.contains(new RoleImpl("testusertorole1.role1")));
+            Subject subject = ums.getSubject(ums.getUser("anonuser1"));
+            assertTrue("anonuser1 should contain testusertorole1.role1", SubjectHelper.getPrincipal(subject, Role.class, "testusertorole1.role1") != null);
         }
         catch (SecurityException sex)
         {
@@ -136,8 +117,8 @@ public class TestRoleManager extends AbstractSecurityTestcase
         try
         {
             rms.addRoleToUser("anonuser1", "testusertorole1.role2");
-            Collection principals = ums.getSubject(ums.getUser("anonuser1")).getPrincipals();
-            assertTrue("anonuser1 should contain testusertorole1.role2", principals.contains(new RoleImpl("testusertorole1.role2")));
+            Subject subject = ums.getSubject(ums.getUser("anonuser1"));
+            assertTrue("anonuser1 should contain testusertorole1.role2", SubjectHelper.getPrincipal(subject, Role.class, "testusertorole1.role2") != null);
         }
         catch (SecurityException sex)
         {
@@ -161,17 +142,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
         catch (SecurityException sex)
         {
         }
-
-        // Cleanup.
-        try
-        {
-            ums.removeUser("anonuser1");
-            rms.removeRole("testusertorole1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and role. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -179,54 +149,42 @@ public class TestRoleManager extends AbstractSecurityTestcase
      * Test remove role.
      * </p>
      */
-    public void testRemoveRole()
+    public void testRemoveRole() throws Exception
     {
         // Init test.
-        try
-        {
-            ums.addUser("anonuser2");
-            rms.addRole("testrole1");
-            rms.addRole("testrole1.role1");
-            rms.addRole("testrole1.role2");
-            rms.addRole("testrole2");
-            rms.addRole("testrole2.role1");
-            rms.addRole("testrole2.role2");
-            rms.addRoleToUser("anonuser2", "testrole1.role1");
-            rms.addRoleToUser("anonuser2", "testrole1.role2");
-            rms.addRoleToUser("anonuser2", "testrole2.role1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testRemoveRole(), " + sex, false);
-        }
+        User user = ums.addUser("anonuser2");
+        Role role1 = rms.addRole("testrole1");
+        Role role11 = rms.addRole("testrole1.role1");
+        Role role12 = rms.addRole("testrole1.role2");
+        Role role2 = rms.addRole("testrole2");
+        Role role21 = rms.addRole("testrole2.role1");
+        Role role22 = rms.addRole("testrole2.role2");
+        rms.addRoleToRole(role11,role1, JetspeedPrincipalAssociationType.IS_A);
+        rms.addRoleToRole(role21,role2, JetspeedPrincipalAssociationType.IS_A);
+        rms.addRoleToRole(role12,role1, JetspeedPrincipalAssociationType.IS_A);
+        rms.addRoleToRole(role22,role2, JetspeedPrincipalAssociationType.IS_A);
+        rms.addRoleToUser("anonuser2", "testrole1.role1");
+        rms.addRoleToUser("anonuser2", "testrole1.role2");
+        rms.addRoleToUser("anonuser2", "testrole2.role1");
 
         try
         {
+            Subject subject = ums.getSubject(user);
+            assertEquals("Number of role principals should be 5", 5, SubjectHelper.getPrincipals(subject, Role.class).size());
             rms.removeRole("testrole1.role1");
-            Collection principals = ums.getSubject(ums.getUser("anonuser2")).getPrincipals();
-            // because of hierarchical roles with generalization strategy.
-            assertEquals("principal size should be == 3 after removing testrole1.role1, for principals: "
-                    + principals.toString(), 3, principals.size());
-            assertFalse("anonuser2 should not contain testrole1.role1", principals.contains(new RoleImpl("testrole1.role1")));
+            subject = ums.getSubject(user);
+            assertEquals("Number of role principals should be 4", 4, SubjectHelper.getPrincipals(subject, Role.class).size());
+            assertTrue("anonuser2 should not contain testrole1.role1", SubjectHelper.getPrincipal(subject, Role.class, "testrole1.role1") == null);
             // Make sure that the children are removed as well.
             rms.removeRole("testrole2");
-            boolean roleExists = rms.roleExists("testrole2");
-            assertFalse(roleExists);
+            assertFalse(rms.roleExists("testrole2"));
+            assertFalse(rms.roleExists("testrole2.role1"));
+            subject = ums.getSubject(user);
+            assertEquals("Number of role principals should be 2", 2, SubjectHelper.getPrincipals(subject, Role.class).size());
         }
         catch (SecurityException sex)
         {
             assertTrue("should remove role. exception caught: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser2");
-            rms.removeRole("testrole1");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and role. exception caught: " + sex, false);
         }
     }
 
@@ -259,107 +217,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
         }
         assertNotNull("role is null", role);
         assertEquals("expected role principal full path name == testgetrole", "testgetrole", role.getName());
-
-        // Cleanup test.
-        try
-        {
-            rms.removeRole("testgetrole");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove role. exception caught: " + sex, false);
-        }
-    }
-
-    /**
-     * <p>
-     * Test get roles for user.
-     * </p>
-     */
-    public void testGetRolesForUser()
-    {
-        // Init test.
-        try
-        {
-            ums.addUser("anonuser3");
-            rms.addRole("testuserrolemapping");
-            rms.addRole("testuserrolemapping.role1");
-            rms.addRole("testuserrolemapping2.role2");
-            rms.addRoleToUser("anonuser3", "testuserrolemapping");
-            rms.addRoleToUser("anonuser3", "testuserrolemapping.role1");
-            rms.addRoleToUser("anonuser3", "testuserrolemapping2.role2");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testGetRolesForUser(), " + sex, false);
-        }
-
-        try
-        {
-            Collection roles = rms.getRolesForUser("anonuser3");
-            assertEquals("roles size should be == 3", 3, roles.size());
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("user exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser3");
-            rms.removeRole("testuserrolemapping");
-            rms.removeRole("testuserrolemapping2");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and role. exception caught: " + sex, false);
-        }
-    }
-
-    /**
-     * <p>
-     * Test get roles in group.
-     * </p>
-     */
-    public void testGetRolesInGroup()
-    {
-        // Init test.
-        try
-        {
-            rms.addRole("testuserrolemapping");
-            rms.addRole("testuserrolemapping.role1");
-            rms.addRole("testuserrolemapping.role3");
-            gms.addGroup("testrolegroupmapping");
-            rms.addRoleToGroup("testuserrolemapping", "testrolegroupmapping");
-            rms.addRoleToGroup("testuserrolemapping.role1", "testrolegroupmapping");
-            rms.addRoleToGroup("testuserrolemapping.role3", "testrolegroupmapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testGetRolesForGroup(), " + sex, false);
-        }
-
-        try
-        {
-            Collection roles = rms.getRolesInGroup("testrolegroupmapping");
-            assertEquals("roles size should be == 3", 3, roles.size());
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("group exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            rms.removeRole("testuserrolemapping");
-            gms.removeGroup("testrolegroupmapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove role and group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -384,23 +241,11 @@ public class TestRoleManager extends AbstractSecurityTestcase
         try
         {
             rms.removeRoleFromUser("anonuser5", "testrole3");
-            Collection roles = rms.getRolesForUser("anonuser5");
-            assertEquals("roles size should be == 0", 0, roles.size());
+            assertEquals("roles size should be == 0", 0, rms.getRolesForUser("anonuser5").size());
         }
         catch (SecurityException sex)
         {
             assertTrue("user exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser5");
-            rms.removeRole("testrole3");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and role. exception caught: " + sex, false);
         }
     }
 
@@ -432,63 +277,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             assertTrue("user and role exist. should not have thrown an exception: " + sex, false);
         }
-
-        // Cleanup test.
-        try
-        {
-            ums.removeUser("anonuser4");
-            rms.removeRole("testuserrolemapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove user and role. exception caught: " + sex, false);
-        }
-    }
-
-    /**
-     * <p>
-     * Test remove role from group.
-     * </p>
-     */
-    public void testRemoveRoleFromGroup()
-    {
-        // Init test.
-        try
-        {
-            rms.addRole("testuserrolemapping");
-            rms.addRole("testuserrolemapping.role1");
-            rms.addRole("testuserrolemapping.role3");
-            gms.addGroup("testrolegroupmapping");
-            rms.addRoleToGroup("testuserrolemapping", "testrolegroupmapping");
-            rms.addRoleToGroup("testuserrolemapping.role1", "testrolegroupmapping");
-            rms.addRoleToGroup("testuserrolemapping.role3", "testrolegroupmapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("failed to init testRemoveRoleFromGroup(), " + sex, false);
-        }
-
-        try
-        {
-            rms.removeRoleFromGroup("testuserrolemapping.role3", "testrolegroupmapping");
-            Collection roles = rms.getRolesInGroup("testrolegroupmapping");
-            assertEquals("roles size should be == 2", 2, roles.size());
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("group exists. should not have thrown an exception: " + sex, false);
-        }
-
-        // Cleanup test.
-        try
-        {
-            rms.removeRole("testuserrolemapping");
-            gms.removeGroup("testrolegroupmapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove group and role. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -518,17 +306,6 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             assertTrue("group and role exist. should not have thrown an exception: " + sex, false);
         }
-
-        // Cleanup test.
-        try
-        {
-            rms.removeRole("testuserrolemapping");
-            gms.removeGroup("testrolegroupmapping");
-        }
-        catch (SecurityException sex)
-        {
-            assertTrue("could not remove role and group. exception caught: " + sex, false);
-        }
     }
 
     /**
@@ -540,36 +317,10 @@ public class TestRoleManager extends AbstractSecurityTestcase
      */
     public void testGetRoles() throws Exception
     {
-    	int roleCount = 0;
-    	int rolesAdded = 0;
-        Collection<Role> roles = rms.getRoles("");
-        for (Role role : roles)
-        {            
-            System.out.println("Role = " + role.getName());
-            roleCount++;
-        }
-        ums.addUser("notme");
-        gms.addGroup("g1");
         rms.addRole("r1");
         rms.addRole("r2");
         rms.addRole("r3");
-        rolesAdded = 3;
-
-        int count = 0;
-        
-        roles = rms.getRoles("");
-        for (Role role : roles)
-        {
-            System.out.println("* Role = " + role.getName());
-            count++;
-        }
-        ums.removeUser("notme");
-        gms.removeGroup("g1");
-        rms.removeRole("r1");
-        rms.removeRole("r2");
-        rms.removeRole("r3");
-        assertTrue("role count should be " + (rolesAdded + roleCount), count == (rolesAdded + roleCount));
+        assertTrue("role count should be 3", 3 == rms.getRoles(null).size());
                
     }
-   
 }

@@ -16,15 +16,7 @@
  */
 package org.apache.jetspeed.security.spi;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.om.InternalUserPrincipal;
-import org.apache.jetspeed.security.om.impl.InternalCredentialImpl;
-import org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialImpl;
 import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 import junit.framework.Test;
@@ -43,15 +35,7 @@ public class TestCredentialPasswordEncoder extends AbstractSecurityTestcase
     protected void setUp() throws Exception
     {
         super.setUp(); 
-        // cleanup for previously failed test
-        destroyUser();
         initUser();
-    }
-
-    public void tearDown() throws Exception
-    {
-        destroyUser();
-        super.tearDown();
     }
 
     public static Test suite()
@@ -61,39 +45,15 @@ public class TestCredentialPasswordEncoder extends AbstractSecurityTestcase
 
     public void testEncodedPassword() throws Exception
     {
-        Set privateCredentials = ums.getUser("testcred").getSubject().getPrivateCredentials();
-        assertNotNull(privateCredentials);
-        assertEquals(1, privateCredentials.size());
-        PasswordCredential[] pwdCreds = (PasswordCredential[]) privateCredentials.toArray(new PasswordCredential[0]);
-        assertEquals("testcred", pwdCreds[0].getUserName());
-        assertNotSame("Password should be not same (encoded)", "password", new String(pwdCreds[0].getPassword()));
+        PasswordCredential pwc = ums.getPasswordCredential(ums.getUser("testcred"));
+        assertNotNull(pwc);
+        assertEquals("testcred", pwc.getUserName());
+        assertNotSame("Password should be not same (encoded)", "password", new String(pwc.getPassword()));
     }
 
     protected void initUser() throws Exception
     {
         // create user without password
-        ums.addUser("testcred", null);
-        // add a non-encoded password credential directly 
-        InternalUserPrincipal internalUser = securityAccess.getInternalUserPrincipal("testcred");
-        ArrayList credentials = new ArrayList();
-        InternalCredentialImpl credential = 
-            new InternalCredentialImpl(internalUser.getPrincipalId(),
-                    "password", 0, DefaultPasswordCredentialImpl.class.getName());
-        credentials.add(credential);
-        internalUser.setCredentials(credentials);
-        securityAccess.storeInternalUserPrincipal(internalUser,false);
+        addUser("testcred", "password");
     }
-
-    protected void destroyUser() throws Exception
-    {
-        ums.removeUser("testcred");
-    }
-    
-    protected String[] getConfigurations()
-    {
-        String[] confs = super.getConfigurations();
-        List confList = new ArrayList(Arrays.asList(confs));
-        confList.add("JETSPEED-INF/spring/TestCredentialPasswordEncoder.xml");
-        return (String[])confList.toArray(new String[1]);
-    }    
 }
