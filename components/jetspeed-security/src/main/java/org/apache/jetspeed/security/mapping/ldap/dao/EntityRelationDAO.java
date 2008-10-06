@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.mapping.ldap.dao;
 
 import java.util.Collection;
 
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Entity;
 
@@ -37,8 +38,8 @@ public interface EntityRelationDAO
             EntityDAO toDao, Entity toEntity);
 
     void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
-            Entity targetEntity);
+            Entity targetEntity) throws SecurityException;
 
     void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
-                Entity targetEntity);   
+                Entity targetEntity) throws SecurityException;
 }

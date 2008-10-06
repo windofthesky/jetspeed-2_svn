@@ -19,12 +19,12 @@ package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.Filter;
-
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.Filter;
 
 /**
  * DAO for fetching relationships between LDAP entities. A relationship between two entities is created by adding an attribute value to either the entity on the
@@ -119,7 +119,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         this.attributeContainsInternalId = attributeContainsInternalId;
     }
 
-    private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity)
+    private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
         String attrValue = null;
         if (attributeContainsInternalId)
@@ -147,7 +147,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         fromEntityDAO.updateInternalAttributes(fromEntity);
     }
 
-    private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity)
+    private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
         String attrValue = null;
         if (attributeContainsInternalId)
@@ -174,7 +174,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         }
         fromEntityDAO.updateInternalAttributes(fromEntity);
     }
-    public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity)
+    public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException
     {
         if (useFromEntityAttribute)
         {
@@ -186,7 +186,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         }
     }
 
-    public void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity)
+    public void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException
     {
         if (useFromEntityAttribute)
         {

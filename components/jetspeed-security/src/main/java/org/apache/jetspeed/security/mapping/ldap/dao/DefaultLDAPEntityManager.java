@@ -72,7 +72,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         return entityRelationDAOs.get(new SecurityEntityRelationTypeImpl(relationType, fromEntityType, targetEntityType));
     }
 
-    public void addRelation(Entity sourceEntity, Entity targetEntity, SecurityEntityRelationType relationType)
+    public void addRelation(Entity sourceEntity, Entity targetEntity, SecurityEntityRelationType relationType) throws SecurityException
     {
         EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
         if (relationDAO != null)
