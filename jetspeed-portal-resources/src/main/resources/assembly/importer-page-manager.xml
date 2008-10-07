@@ -147,11 +147,11 @@
     </constructor-arg>
     <!-- permissions security enabled flag, default=false -->
     <constructor-arg index="4">
-      <value>${castorXmlPageManager.permission}</value>
+      <value>${import.page.manager.permissions.security}</value>
     </constructor-arg>
-    <!-- constraints security enabled flag, default=true -->
+    <!-- constraints security enabled flag, default=false -->
     <constructor-arg index="5">
-      <value>${castorXmlPageManager.constraints}</value>
+      <value>${import.page.manager.constraints.security}</value>
     </constructor-arg>
   </bean>
 

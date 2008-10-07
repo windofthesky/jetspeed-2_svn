@@ -68,16 +68,8 @@ public class TomcatManager implements ApplicationServerManager
 
     private PutMethod deploy;
 
-    public TomcatManager(String catalinaBase, String catalinaEngine, String hostName, int hostPort, String userName, String password) throws IOException
+    public TomcatManager(String hostName, int hostPort, String userName, String password) throws IOException
     {
-        super();
-        
-        if ( !catalinaBase.endsWith("/") )
-        {
-        }
-        else
-        {
-        }    
         this.hostUrl = hostName;
         this.hostPort = hostPort;
         this.userName = userName;

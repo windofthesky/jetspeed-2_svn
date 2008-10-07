@@ -52,8 +52,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <org.apache.jetspeed.services.autodeployment.user>j2deployer</org.apache.jetspeed.services.autodeployment.user>
-        <org.apache.jetspeed.services.autodeployment.password>j2deployer</org.apache.jetspeed.services.autodeployment.password>
 
         <org.apache.jetspeed.server.home>@rootdir@/applications/jetspeed-demo/target/demo-deploy</org.apache.jetspeed.server.home>
 

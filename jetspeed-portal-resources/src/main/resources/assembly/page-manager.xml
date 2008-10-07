@@ -153,12 +153,12 @@
     </constructor-arg>
     <!-- folder/page/link cache size, default=128, min=128 -->
     <constructor-arg index="1">
-      <value>${dbPageManager.cache.size}</value>
+      <value>${db.page.manager.cache.size}</value>
     </constructor-arg>
     <!-- folder/page/link cache expires seconds, default=-1, infinite=0, min=30 -->
     <!--                                         (default is 150 seconds) -->
     <constructor-arg index="2">
-      <value>${dbPageManager.cache.expire}</value>
+      <value>${db.page.manager.cache.expire}</value>
     </constructor-arg>
     <!-- permissions security enabled flag, default=false -->
     <constructor-arg index="3">

@@ -20,7 +20,7 @@
 
   <!-- Application Server Manager for Tomcat. Comment out for others like JBoss
     Provides hooks into the application server to help us deploy portlet applications
-    as web application into that server.  This manager is for Tomcat 5
+    as web application into that server.  This manager is for Tomcat >= 5.5
   -->
 
   <bean id="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager"
@@ -28,22 +28,16 @@
     destroy-method="stop">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>${autodeployment.catalina.base}</value>
+      <value>${application.server.host}</value>
     </constructor-arg>
     <constructor-arg index="1">
-      <value>${autodeployment.catalina.engine}</value>
+      <value>${application.server.port}</value>
     </constructor-arg>
     <constructor-arg index="2">
-      <value>${autodeployment.server}</value>
+      <value>${application.server.manager.name}</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <value>${autodeployment.port}</value>
-    </constructor-arg>
-    <constructor-arg index="4">
-      <value>${autodeployment.user}</value>
-    </constructor-arg>
-    <constructor-arg index="5">
-      <value>${autodeployment.password}</value>
+      <value>${application.server.manager.password}</value>
     </constructor-arg>
   </bean>
 
