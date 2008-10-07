@@ -18,7 +18,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="JetspeedPrincipalStorageManager" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager">
+  <bean id="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager">
   	<meta key="j2:cat" value="ldap" />
     	<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     	<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
@@ -30,7 +30,7 @@
       <value>org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager</value>
     </property>
     <property name="target">
-      <ref bean="JetspeedPrincipalStorageManager" />
+      <ref bean="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager" />
     </property>
     <property name="transactionAttributes">
       <props>

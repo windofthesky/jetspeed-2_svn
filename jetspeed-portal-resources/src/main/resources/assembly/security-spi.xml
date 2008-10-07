@@ -29,9 +29,7 @@
     </constructor-arg>
   </bean>
   
-  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" 
-  name="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager,org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" 
-  parent="baseTransactionProxy">
+  <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" parent="baseTransactionProxy">
     <meta key="j2:cat" value="default,security" />
     <property name="proxyInterfaces">
       <value>
@@ -59,6 +57,30 @@
         <prop key="*">PROPAGATION_SUPPORTS</prop>
       </props>
     </property>
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean">
+    <meta key="j2:cat" value="dbSecurity" />
+    <meta key="j2:alias" value="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
+    <property name="targetBeanName" value="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean">
+    <meta key="j2:cat" value="dbSecurity" />
+    <meta key="j2:alias" value="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
+    <property name="targetBeanName" value="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean">
+    <meta key="j2:cat" value="dbSecurity" />
+    <meta key="j2:alias" value="org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager" />
+    <property name="targetBeanName" value="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean">
+    <meta key="j2:cat" value="dbSecurity" />
+    <meta key="j2:alias" value="org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager" />
+    <property name="targetBeanName" value="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
   </bean>
   
   <bean id="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl"
