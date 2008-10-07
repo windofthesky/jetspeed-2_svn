@@ -23,6 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
@@ -38,7 +39,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class TestJetspeedPortletDescriptor extends TransactionCacheEnabledSpringTestCase 
+public class TestJetspeedPortletDescriptor extends AbstractRequestContextTestCase
 {
     
     private static final String PORTLET_01 = "HelloPortlet";

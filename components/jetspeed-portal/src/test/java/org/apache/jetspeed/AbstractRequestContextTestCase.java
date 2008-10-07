@@ -33,6 +33,18 @@ public class AbstractRequestContextTestCase extends RegistrySupportedTestCase
         String[] confs = super.getConfigurations();
         List confList = new ArrayList(Arrays.asList(confs));
         confList.add("rc2.xml");
+        confList.add("static-bean-references.xml");
+        confList.add("security-managers.xml");
+        confList.add("security-providers.xml");
+        confList.add("security-spi.xml");
+        confList.add("security-atn.xml");
+        confList.add("security-spi-atn.xml");
+        confList.add("security-atz.xml");
         return (String[]) confList.toArray(new String[confList.size()]);
+    }
+
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return super.getBeanDefinitionFilterCategories()+",security,dbSecurity";
     }
 }
