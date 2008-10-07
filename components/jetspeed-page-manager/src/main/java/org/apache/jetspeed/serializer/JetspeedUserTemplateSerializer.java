@@ -100,8 +100,8 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
             if (adminUser == null)
                 throw new SerializerException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, "admin"));
             
-            for (JSPrincipal user : snapshot.getUsers())
-            {
+//            for (JSPrincipal user : snapshot.getUsers())
+//            {
                 // TODO: should have a specific user JSPrincipal class?
 //                String folderTemplate = user.getUserTemplate();
 //                String ssubsite = user.getSubsite();
@@ -123,7 +123,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
 //                    this.createUserTemplate(folderTemplate, userTemplate, subsite, this.pageManager, user.getName(), adminUser);
 //                }
 
-            }
+//            }
         }
     }
 

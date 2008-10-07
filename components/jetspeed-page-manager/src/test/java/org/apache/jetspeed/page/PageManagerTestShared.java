@@ -27,6 +27,7 @@ import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ import javax.security.auth.Subject;
 
 import junit.framework.TestCase;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
@@ -63,13 +65,19 @@ import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
 import org.apache.jetspeed.page.document.psml.FileSystemFolderHandler;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.JetspeedPermission;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.SecurityAttributeType;
+import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.impl.RoleImpl;
-import org.apache.jetspeed.security.impl.UserImpl;
+import org.apache.jetspeed.security.impl.TransientJetspeedPrincipal;
 import org.apache.jetspeed.security.spi.impl.FolderPermission;
 import org.apache.jetspeed.security.spi.impl.FragmentPermission;
+import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
 import org.apache.jetspeed.security.spi.impl.PagePermission;
 
 /**
@@ -214,21 +222,21 @@ interface PageManagerTestShared
             
             // setup test subjects
             Set principals = new PrincipalsSet();
-            principals.add(new UserImpl("admin"));
-            principals.add(new RoleImpl("admin"));
+            principals.add(new TestUser("admin"));
+            principals.add(new TestRole("admin"));
             Subject adminSubject = new Subject(true, principals, new HashSet(), new HashSet());
             
             principals = new PrincipalsSet();
-            principals.add(new UserImpl("user"));
+            principals.add(new TestUser("user"));
             Subject userSubject = new Subject(true, principals, new HashSet(), new HashSet());
             
             principals = new PrincipalsSet();
-            principals.add(new UserImpl("manager"));
-            principals.add(new RoleImpl("manager"));
+            principals.add(new TestUser("manager"));
+            principals.add(new TestRole("manager"));
             Subject managerSubject = new Subject(true, principals, new HashSet(), new HashSet());
 
             principals = new PrincipalsSet();
-            principals.add(new UserImpl("guest"));
+            principals.add(new TestUser("guest"));
             Subject guestSubject = new Subject(true, principals, new HashSet(), new HashSet());
 
             // setup test as admin user
@@ -649,6 +657,16 @@ interface PageManagerTestShared
     static class PageManagerPermissionsPolicy extends Policy
     {
         private Policy defaultPolicy;
+        private static PermissionFactory pf = new TestPermissionFactory();
+        static 
+        {
+            org.apache.jetspeed.om.page.psml.AbstractBaseElement.setPermissionsFactory(pf);
+            org.apache.jetspeed.om.page.impl.BaseElementImpl.setPermissionsFactory(pf);
+            org.apache.jetspeed.om.folder.impl.FolderImpl.setPermissionsFactory(pf);
+            org.apache.jetspeed.om.folder.psml.FolderImpl.setPermissionsFactory(pf);
+            org.apache.jetspeed.om.page.impl.FragmentImpl.setPermissionsFactory(pf);
+            org.apache.jetspeed.om.page.psml.FragmentImpl.setPermissionsFactory(pf);
+        }
 
         public PageManagerPermissionsPolicy(Policy defaultPolicy)
         {
@@ -661,11 +679,10 @@ interface PageManagerTestShared
             // is not optimized: multiple protection domains exist on the
             // call stack, so this method will be invoked 2-3 times for each
             // access check with the identical principals and permission
+            JetspeedPermission j2p = permission instanceof JetspeedPermission ? (JetspeedPermission)permission : null;
+            boolean testPermission = j2p != null && (j2p.getType().equals("folder")||j2p.getType().equals("page")||j2p.getType().equals("fragment"));
             Principal[] principals = domain.getPrincipals();
-            if ((principals != null) && (principals.length > 0) &&
-                ((permission instanceof FolderPermission) ||
-                 (permission instanceof PagePermission) ||
-                 (permission instanceof FragmentPermission)))
+            if ((principals != null) && (principals.length > 0) && (testPermission))
             {
                 // check permission using principals if available
                 Permissions permissions = new Permissions();
@@ -678,24 +695,24 @@ interface PageManagerTestShared
                         if (user.equals("admin"))
                         {
                             // owner permissions                            
-                            permissions.add(new FolderPermission.Factory().newPermission("/", "view, edit"));
-                            permissions.add(new PagePermission.Factory().newPermission("/default-page.psml", "view, edit"));
+                            permissions.add((Permission)pf.newPermission("folder", "/", "view, edit"));
+                            permissions.add((Permission)pf.newPermission("page", "/default-page.psml", "view, edit"));
                         }
                         else if (user.equals("user"))
                         {
                             // owner permissions
-                            permissions.add(new FragmentPermission.Factory().newPermission("/default-page.psml/some-app::SomePortlet", "view, edit"));
+                            permissions.add((Permission)pf.newPermission("fragment", "/default-page.psml/some-app::SomePortlet", "view, edit"));
                             
                             // granted permissions
-                            permissions.add(new PagePermission.Factory().newPermission("/user-page.psml", "view, edit"));
-                            permissions.add(new FragmentPermission.Factory().newPermission("/user-page.psml/*", "view"));
+                            permissions.add((Permission)pf.newPermission("page", "/user-page.psml", "view, edit"));
+                            permissions.add((Permission)pf.newPermission("fragment", "/user-page.psml/*", "view"));
                         }
                         
                         // public view permissions
-                        permissions.add(new FolderPermission.Factory().newPermission("/", "view"));
-                        permissions.add(new PagePermission.Factory().newPermission("/default-page.psml", "view"));
-                        permissions.add(new PagePermission.Factory().newPermission("/page.security", "view"));
-                        permissions.add(new FragmentPermission.Factory().newPermission("security::*", "view"));
+                        permissions.add((Permission)pf.newPermission("folder", "/", "view"));
+                        permissions.add((Permission)pf.newPermission("page", "/default-page.psml", "view"));
+                        permissions.add((Permission)pf.newPermission("page", "/page.security", "view"));
+                        permissions.add((Permission)pf.newPermission("fragment", "security::*", "view"));
                     }
                     else if (principals[i] instanceof Role)
                     {
@@ -704,14 +721,14 @@ interface PageManagerTestShared
                         if (role.equals("admin"))
                         {
                             // global permissions
-                            permissions.add(new FolderPermission.Factory().newPermission("<<ALL FILES>>", "view, edit"));
-                            permissions.add(new FragmentPermission.Factory().newPermission("<<ALL FRAGMENTS>>", "view, edit"));
+                            permissions.add((Permission)pf.newPermission("folder", "<<ALL FILES>>", "view, edit"));
+                            permissions.add((Permission)pf.newPermission("fragment", "<<ALL FRAGMENTS>>", "view, edit"));
                         }
                         else if (role.equals("manager"))
                         {
                             // granted permissions
-                            permissions.add(new PagePermission.Factory().newPermission("/default-page.psml", "edit"));
-                            permissions.add(new PagePermission.Factory().newPermission("/default.link", "edit"));
+                            permissions.add((Permission)pf.newPermission("page", "/default-page.psml", "edit"));
+                            permissions.add((Permission)pf.newPermission("page", "/default.link", "edit"));
                         }
                     }
                 }
@@ -760,6 +777,117 @@ interface PageManagerTestShared
             {
                 defaultPolicy.refresh();
             }
+        }
+    }
+    
+    static class AbstractTestPrincipal extends TransientJetspeedPrincipal
+    {
+        private static final SecurityAttributeTypes attributeTypes = new SecurityAttributeTypes()
+        {
+
+            public Map<String, SecurityAttributeType> getAttributeTypeMap()
+            {
+                return Collections.emptyMap();
+            }
+
+            public Map<String, SecurityAttributeType> getAttributeTypeMap(String category)
+            {
+                return Collections.emptyMap();
+            }
+
+            public boolean isExtendable()
+            {
+                return false;
+            }
+
+            public boolean isReadOnly()
+            {
+                return true;
+            }
+        };
+        
+        private JetspeedPrincipalType type;
+        
+        private static final long serialVersionUID = 1L;
+        
+
+        public AbstractTestPrincipal(final String type, String name)
+        {
+            super(type, name);
+            this.type = new JetspeedPrincipalType()
+            {               
+                public SecurityAttributeTypes getAttributeTypes()
+                {
+                    return attributeTypes;
+                }
+
+                public String getClassName()
+                {
+                    return null;
+                }
+
+                public String getName()
+                {
+                    return type;
+                }
+
+                public Class<JetspeedPrincipal> getPrincipalClass()
+                {
+                    return null;
+                }
+            };
+        }
+
+        @Override
+        public synchronized JetspeedPrincipalType getType()
+        {
+            return type;
+        }
+    }
+    
+    static class TestUser extends AbstractTestPrincipal implements User
+    {
+        private static final long serialVersionUID = 1L;
+
+        public TestUser(String name)
+        {
+            super(JetspeedPrincipalType.USER, name);
+        }
+    }
+
+    static class TestRole extends AbstractTestPrincipal implements Role
+    {
+        private static final long serialVersionUID = 1L;
+
+        public TestRole(String name)
+        {
+            super(JetspeedPrincipalType.ROLE, name);
+        }
+    }
+    
+    static class TestPermissionFactory implements PermissionFactory
+    {
+        private static Map<String, JetspeedPermissionFactory> factories = new HashMap<String, JetspeedPermissionFactory>();
+        static
+        {
+            factories.put("folder", new FolderPermission.Factory());
+            factories.put("page", new PagePermission.Factory());
+            factories.put("fragment", new FragmentPermission.Factory());
+        }
+
+        public JetspeedPermission newPermission(String type, String name, String actions)
+        {
+            return factories.get(type).newPermission(name, actions);
+        }
+
+        public JetspeedPermission newPermission(String type, String name, int mask)
+        {
+            return factories.get(type).newPermission(name, mask);
+        }
+
+        public int parseActions(String actions)
+        {
+            return JetspeedActions.getContainerActionsMask(actions);
         }
     }
 }

@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,8 +26,6 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
-import org.apache.jetspeed.security.impl.RoleImpl;
-import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
@@ -109,12 +106,12 @@ public class TestCreateUserHomePagesFromRoles extends JetspeedTestCase implement
         Set principals = new HashSet();
         
         // create the role principals
-        principals.add(new RoleImpl("role1"));
-        principals.add(new RoleImpl("role2"));
-        principals.add(new RoleImpl("role3"));
+        principals.add(new TestRole("role1"));
+        principals.add(new TestRole("role2"));
+        principals.add(new TestRole("role3"));
         
         // create the user principal
-        principals.add(new UserImpl("david"));
+        principals.add(new TestUser("david"));
         
         // create the subject
         Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
