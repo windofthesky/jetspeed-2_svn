@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+			targetNamespace="http://portals.apache.org" 
+			xmlns="http://portals.apache.org" 
+			elementFormDefault="qualified" 
+			version="1.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">Schema for data serialization of JetSpeed 2 DataModel
+      Licensed to the Apache Software Foundation (ASF) under one or more
+      contributor license agreements.  See the NOTICE file distributed with
+      this work for additional information regarding copyright ownership.
+      The ASF licenses this file to You under the Apache License, Version 2.0
+      (the "License"); you may not use this file except in compliance with
+      the License.  You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0
+		Unless required by applicable law or agreed to in writing, software 
+		distributed under the License is distributed on an "AS IS" BASIS, 
+		WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+		See the License for the specific language governing permissions and 
+		limitations under the License.
+	  </xs:documentation>
+	</xs:annotation>
+	
+	<xs:element name="DataModel">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The DataModel consists of a list of 
+		domain objects that are valid for this version. Each domain object holds the data of a given component. 
+		</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="schemaVersion" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+						<xs:documentation xml:lang="en">The schemaVersion denotes the backward compatibility 
+						of this schema. The optional version attribute of the schema above denotes the version of this schema and
+						the schemaVersion element here declares the latest schema version with which the instance is compatible
+						With this approach, an application could compare the schema version (captured in the 
+						schema file) with the version to which the instance reports that it is compatible.
+						</xs:documentation>
+				</xs:annotation>
+				</xs:element>
+				<xs:element name="Domain" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">The Domain is the collection of 
+						all relevant data objects for this portal. 
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PortalName" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									The PortalName allows to identify the source of the data.
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="DateCreated" type="xs:date" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Always helpful to recognize when it was created.
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="Roles" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Roles
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+					            <xs:sequence>
+                					<xs:element ref="Role" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+								</xs:element>
+							<xs:element name="Groups" maxOccurs="unbounded" type="Group">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Groups
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="Permissions" maxOccurs="unbounded" type="Permission">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Permissions
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="Capabilities" maxOccurs="unbounded" type="Capability">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Capabilities
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="MimeTypes" maxOccurs="unbounded" type="MimeType">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Mime Types
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="Clients" maxOccurs="unbounded" type="Client">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Clients
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="MediaTypes" maxOccurs="unbounded" type="MediaType">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Media Types
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+
+	<!--  Associations -->
+
+
+							<xs:element name="ClientToCapabilities" maxOccurs="unbounded" type="ClientCapability">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Client to Capabilities
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="ClientToMimeTypes" maxOccurs="unbounded" type="ClientMimeTypes">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Client To MimeTypes
+									</xs:documentation>
+								</xs:annotation>
+								</xs:element>
+							<xs:element name="MediaToMimeTypes" maxOccurs="unbounded" type="MediaMimeTypes">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Media To MimeTypes
+									</xs:documentation>
+								</xs:annotation>
+	</xs:element>
+						<xs:element name="ProfilingRules" maxOccurs="unbounded" type="ProfilingRule">
+								<xs:annotation>
+									<xs:documentation xml:lang="en">
+									Profiling Rule
+									</xs:documentation>
+								</xs:annotation>
+		</xs:element>
+						</xs:sequence>
+		
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="UniqueDomain">
+			<xs:selector xpath="Domain"/>
+			<xs:field xpath="@PortalName"/>
+		</xs:key>
+	</xs:element>
+	
+	<xs:complexType name="Role">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Role ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="Group">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Group ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Permission">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Permission ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Capability">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Capability ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="capability_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="capability" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="MimeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Mimetype ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mimetype_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Client">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Client ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="client_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="eval_order" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="user_agent_pattern" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="manufacturer" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="model" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="version" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="preferred_mimetype_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="MediaType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">MediaType ....
+						</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mediatype_id" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="character_set" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ClientCapability">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+			Associate clients with capabilities
+			 </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="clientID" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="capabilityID" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ClientMimeTypes">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+			Associate clients with mime types
+			 </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="clientID" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="mimetypeID" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="MediaMimeTypes">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+			Associate media types with mime types 
+			 </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mediatypeID" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="mimetypeID" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProfilingRule">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+			Profiling Rule
+			 </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="tbd" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

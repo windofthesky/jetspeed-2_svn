@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  jetspeed-mvn-settings.xml
+  
+  This file is usually placed in your root project folder.
+  It can be used to provide a specific Maven settings.xml for usage with the jetspeed:mvn plugin
+  when executing specific targets, like database initialization or deployments.
+  This allows easier maintenance and configuration for different conditions and environments
+  like development|test|staging|production, *and* keeping these configurations with your
+  project source (version management). 
+
+  By providing multiple profiles, it is easy to switch different settings by configuring the
+  specific profile(s) to be used for a specific jetspeed:mvn target with a <profiles> subelement.
+  
+  Lookup and usage of the nearest jetspeed-mvn-settings.xml file, searching current project folder
+  and then upwards to the root project, is enabled by default.
+  
+  The default lookup behavior can be disabled or overridden in 3 ways (in higest precedence order):
+  
+  a) specify a custom settings.xml file in one of the target specific or general jetspeed-mvn properties
+     using key jetspeed.mvn.settings.xml
+  b) specify a specific settings.xml file for a target with a <settingsFile> element
+  c) configure <useSettings>false</useSettings> in the configuration of the jetspeed:mvn plugin
+     to disable using a custom settings.xml
+  d) lookup of the nearest jetspeed-mvn-settings.xml
+
+  $Id$
+-->
+<settings xmlns="http://maven.apache.org/POM/4.0.0">
+
+  <profiles>
+
+    <!-- Sample Jetspeed Invoker (jetspeed:mvn plugin) Maven settings.xml configuration using embedded Derby-->
+    <profile>
+      <id>jetspeed-mvn-settings</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+
+        <org.apache.jetspeed.server.home>@rootdir@/applications/jetspeed-demo/target/demo-deploy</org.apache.jetspeed.server.home>
+
+        <!-- demo embedded Derby database configurations -->
+        
+        <!-- Production Derby jdbc driver artifact properties -->
+        
+        <org.apache.jetspeed.production.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.production.jdbc.driver.groupId>
+        <org.apache.jetspeed.production.jdbc.driver.artifactId>derby</org.apache.jetspeed.production.jdbc.driver.artifactId>
+        <org.apache.jetspeed.production.jdbc.driver.version>10.3.2.1</org.apache.jetspeed.production.jdbc.driver.version>
+
+        <!-- required production database configuration properties:
+             make sure to check/correct the database.url path location (e.g. /tmp on Linux usually is restricted)
+        -->             
+        <org.apache.jetspeed.production.database.default.name>derby</org.apache.jetspeed.production.database.default.name>
+        <org.apache.jetspeed.production.database.url>jdbc:derby:/tmp/derby/productiondb;create=true</org.apache.jetspeed.production.database.url>
+        <org.apache.jetspeed.production.database.driver>org.apache.derby.jdbc.EmbeddedDriver</org.apache.jetspeed.production.database.driver>
+        <org.apache.jetspeed.production.database.user></org.apache.jetspeed.production.database.user>
+        <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
+
+        <!-- Jetspeed Portal development test Derby database properties -->
+        
+        <org.apache.jetspeed.test.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
+        <org.apache.jetspeed.test.jdbc.driver.artifactId>derby</org.apache.jetspeed.test.jdbc.driver.artifactId>
+        <org.apache.jetspeed.test.jdbc.driver.version>10.3.2.1</org.apache.jetspeed.test.jdbc.driver.version>
+
+        <!-- make sure to check/correct the database.url path location (e.g. /tmp on Linux usually is restricted) -->
+        <org.apache.jetspeed.test.database.default.name>derby</org.apache.jetspeed.test.database.default.name>
+        <org.apache.jetspeed.test.database.url>jdbc:derby:/tmp/derby/testdb;create=true</org.apache.jetspeed.test.database.url>
+        <org.apache.jetspeed.test.database.driver>org.apache.derby.jdbc.EmbeddedDriver</org.apache.jetspeed.test.database.driver>
+        <org.apache.jetspeed.test.database.user></org.apache.jetspeed.test.database.user>
+        <org.apache.jetspeed.test.database.password></org.apache.jetspeed.test.database.password>
+
+      </properties>
+    </profile>
+
+  </profiles>
+
+</settings>

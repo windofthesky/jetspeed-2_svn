@@ -1,0 +1,107 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*#
+#macro (traverseFragments $f $singleLayoutId $singlePortletId)
+    <fragment id="$f.Id" type="$f.Type" name="$f.Name" decorator="$!f.Decorator">
+    #set($hasSizesProperty=false)
+    #foreach ($prop in $f.getProperties().entrySet())
+      <property name="$prop.Key" value="$prop.Value" />
+       #if($prop.Key == "sizes")
+          #set($hasSizesProperty=true)
+       #end
+	    #end
+    #if($f.Type == "layout" && ! $hasSizesProperty && $sizes.get($f.Id))
+       <property name="sizes" value="$sizes.get($f.Id)" />
+    #end
+#foreach ($pref in $f.Preferences)
+		<preference name="$pref.Name" readOnly='$pref.isReadOnly()'>		
+		  #foreach ($value in $pref.ValueList)
+		    <value>$value</value>
+		  #end
+		</preference>
+	#end
+#if($f.Type == "layout" && (! $singleLayoutId || $f.Id == $singleLayoutId))
+		#foreach($subf in $f.Fragments)
+		    #if(! $singlePortletId || ($subf.Type == "portlet" && $subf.Id == $singlePortletId))
+                #traverseFragments($subf $singleLayoutId $singlePortletId)
+            #end
+		#end
+	#end
+#if($f.Type == "portlet")
+	#foreach ($action in $f.decoration.actions)
+     <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
+	#end
+	<mode>$!f.decoration.getCurrentModeAction()</mode>
+	<state>$!f.decoration.getCurrentStateAction()</state>
+	#if($portletIcons.get($f.Id))
+    <icon>$portletIcons.get($f.Id)</icon>
+    #end
+#end
+    </fragment>                                		
+#end
+
+<js>
+    <status>$status</status>
+    <action>$action</action>
+    
+<page hidden='$page.Hidden'>
+  <defaults
+     layout-decorator='$!defaultLayout'
+     portlet-decorator='$!page.getDefaultDecorator("portlet")'
+     theme='$!page.Skin'     
+  />
+  <name>$page.Name</name>
+  <path>$page.Path</path>
+  <profiledPath>$profiledPath</profiledPath>
+  <title>$esc.xml($!page.Title)</title>
+  <short-title>$esc.xml($!page.ShortTitle)</short-title>
+#foreach ($meta in $page.Metadata.Fields)
+	<metadata name="$meta.Name" xml:lang="$meta.Locale.toString()">$!meta.Value</metadata>
+#end
+  <npe>$pageQualifiedForCreateNewPageOnEdit</npe>
+  <uIA>$userIsAnonymous</uIA>
+#foreach ($action in $page.getRootContentFragment().decoration.actions)
+     <action id="${action.ActionName}" type="${action.ActionType}" name="${action.Name}" url="${action.Action}"/>    
+#end
+
+#if ($fragments == "true")
+  #if ($layoutsingle)
+    #traverseFragments($layoutsingle $layoutsingle.Id $portletsingleId)
+  #else
+  	#traverseFragments($page.RootFragment false false)
+  #end
+#end
+#if ($securityRefs)
+#foreach ($sec in $securityRefs)
+      	<security-ref>$sec</security-ref>
+#end
+#end
+#if ($securityOwner)
+      <security-owner>$securityOwner</security-owner>
+#end
+#if ($securityDefs)
+#foreach ($sec in $securityDefs)
+      	<security-def id="$velocityCount">
+      	   <permissions>$!sec.Permissions</permissions>
+      	   <roles>$!sec.Roles</roles>
+      	   <groups>$!sec.Groups</groups>
+      	   <users>$!sec.Users</users>      	   
+      	</security-def>
+#end  
+#end
+</page>    
+
+</js>

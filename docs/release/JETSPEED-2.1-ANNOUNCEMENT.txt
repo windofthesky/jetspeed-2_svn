@@ -1,0 +1,78 @@
+Email destinations:
+
+* jetspeed-dev@portals.apache.org
+* jetspeed-user@portals.apache.org
+* general@portals.apache.org
+* announce@apache.org
+
+Subject: Jetspeed 2.1 Final Release
+
+Message:
+
+The Apache Portals Jetspeed Team is pleased to announce the final release of the Jetspeed 2.1 Open Source Enterprise Portal. 
+
+Jetspeed is an Open Portal Platform and Enterprise Information Portal, written all in open source under the Apache license in Java and XML. 
+Jetspeed is build upon an open component architecture based on standards. All access to the portal is managed through a robust portal security policy. 
+Within the Jetspeed portal, individual portlets can be aggregated to create a page. Each portlet is an independent application with Jetspeed 
+acting as the central hub making information from multiple sources available in an easy to use manner.
+
+Version 2.1 continues the evolution of the Jetspeed portal technology, with a more stabilized codebase.
+This release includes many new features including Web 2.0 client-side aggregator, distributed portal and portlet caching,
+parallel rendering and aggregation, and many more improvements and bug fixes.
+
+This final release is fully-compliant with the Portlet Specification 1.0 (JSR-168).
+
+The Jetspeed team will be presenting the new 2.1 release at ApacheCon Europe 2007 in Amsterdam.
+
+--------------------------  
+ Jetspeed 2.1 Release
+   March 3, 2007
+--------------------------
+
+New Features in Version 2.1 include:
+
+ * Jetspeed Desktop - Web 2.0 client-side JSR-168 portlet aggregation.
+ * Parallel Rendering - multithreaded portlet aggregator with portlet timeout tracking, removal of slow rendering portlets.
+ * Jetspeed Distributed Cluster - support for distributed deployments of the portal on multiple application server platforms
+ * JSR 168 Caching - full caching support of JSR 168 portlet specification, distributed cache invalidation
+ * TCK Compliant as of 2.1 (2.0 was compliant as well)
+ * Custom Portlet Modes and Window States - a "print" PortletMode and "solo" WindowState are now standard supported
+ * Improved LDAP support - full security maintenance using LDAP is now supported for many LDAP providers 
+ * New and Improved Administrative and Security Portlets
+ * XML Schemas for PSML, jetspeed-portlet.xml, and Jetspeed XML (seed data)
+ * Installation choice of either Demo Portal or Minimal Starter Portal
+ * New Jetspeed Tutorial
+ * Maven-2 build support as well as Maven-1
+ * Remote Portal Application Deployer - hot deploy portlet applications from remote locations on the Web
+ * Improved Customizers - Portal and Desktop Customizers, drag and drop moving of portlets, nested fragment customization
+ * New Portlet Category Selector
+ * XML Import/Export of all Jetspeed database data and seed data scripts for backup and restore and data migration
+ * Improved Security Control - fully swappable Security Constraint or Security Permission support
+ * Portlet-level Security checks based on Security Constraints or Security Permissions 
+ * Improved Jetspeed AJAX API
+ * Improved Delegation of Security Support
+ * New Site Manager
+ * Improved Database Page Manager
+ * New binary installers making it very easy to setup a basic or demo Jetspeed Portal
+ 
+----------------------------------------------------------------------
+
+The release and the new binary installers are available for download from the Apache Download Mirrors through:
+
+    * http://portals.apache.org/jetspeed-2/download.html
+     
+The readme, installation instructions and detailed release notes:
+
+    * http://www.apache.org/dist/portals/jetspeed-2/JETSPEED-2.1-README.txt
+
+
+We hope you enjoy using Jetspeed! If you have any questions, please consult:
+
+    * The web site: http://portals.apache.org/jetspeed-2/
+
+    * The jetspeed-user mailing list: http://portals.apache.org/jetspeed-2/mail-lists.html
+
+For news and information, see:
+
+    * http://portals.apache.org/news.html
+

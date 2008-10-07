@@ -1,0 +1,591 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  $Id$
+-->
+<document>
+  <properties>
+    <title>Automating Maven project builds using the jetspeed:mvn Maven Plugin</title>
+    <authors>
+      <person name="Ate Douma" email="ate@douma.nu" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Automating Maven project builds using the jetspeed:mvn Maven Plugin">
+      <p>
+        The jetspeed:mvn Maven Plugin is a general purpose plugin for automating and coordinating specific integration tasks using the Maven build environment
+        itself. This plugin provides support for "running" one or more custom Maven project build definitions using predefined set of goals, profiles, Maven settings
+        and runtime properties.
+      </p>
+      <p>
+        The rationale for running custom Maven project build definitions <em>besides</em> the standard Maven project definitions and build
+        lifecycle is described in <a href="the-need-for-a-custom-lifecycle.html">The need for a custom Maven lifecycle</a>.
+      </p>
+      <p>
+        The jetspeed:mvn plugin is based upon and adapted from the standard <a href="http://maven.apache.org/plugins/maven-invoker-plugin/">Maven Invoker Plugin</a>,
+        which is (only) targetted at running integration test projects as attached to the integration-test lifecycle phase.
+      </p>
+      <p>
+        The jetspeed:mvn expands upon the Invoker Plugin by allowing to be invoked directly from the commandline as well as providing a more generic and
+        configurable <em>chain</em> of execution targets, similar to <a href="http://ant.apache.org">Apache Ant</a> build scripts, but fully using and
+        delegating to standard Maven-2 project build lifecycle handling for the actually execution of the individual target tasks.
+      </p>
+      <p>
+        Other than allowing execution from the commandline and the enhanced configuration options, the jetspeed:mvn doesn't really provide new behavior
+        compared to the standard Maven Invoker Plugin and uses the same Maven API and components (the shared maven-invoker component).
+      </p>
+      <p>
+        This plugin doesn't depend in any way on Jetspeed-2 itself and as such is equally usable for other type of projects with similar need for
+        performing tasks <em>besides</em> the normal Maven build lifecycle. Additionally, this plugin can also be used for "just" automating the standard
+        Maven build tasks accross multiple projects using the Apache Ant like chained target definition configurations.   
+      </p>
+    </section>
+    <section name="Quick Overview">
+      <p>
+        The jetspeed:mvn plugin when invoked will execute a single target task defined in its plugin configuration. But, because a target can have a "depends"
+        configuration itself, this might actually result in a chain of targets to be executed up the originally specified target itself.
+      </p>
+      <p>
+        This is a listing of all the elements which can be configured for the jetspeed:mvn plugin:
+      </p>
+      <p>
+        <source><![CDATA[<plugin>
+  <groupId>org.apache.portals.jetspeed-2</groupId>
+  <artifactId>jetspeed-mvn-maven-plugin</artifactId>
+  <version>${org.apache.portals.jetspeed.version}</version>
+  <configuration>
+
+    <targets combine.children="append">
+      ...
+      <target>
+        <id>...</id>
+        <depends>...</depends>
+        <name>...</name>
+        <dir>...</dir>
+        <goals>...</goals>
+        <profiles>...</profiles>
+        <properties>
+          ...
+        </properties>
+        <settingsFile>...</settingsFile>
+        <mavenOpts>...</mavenOpts>
+      </target>
+      ...
+    </targets>
+    <defaultTarget>...</defaultTarget>
+    <useSettings>...</useSettings>
+    <properties>
+      ...
+    </properties>
+    <mavenOpts>...</mavenOpts>
+
+  </configuration>
+</plugin>]]></source>
+        </p>
+    </section>
+    <section name="Default plugin configuration">
+      <p>
+        As can be seen from the above configuration overview, the primary configuration element is the list of targets and the target elements themselves.
+      </p>
+      <subsection name="&lt;targets combine.children=&quot;append&quot;&gt;">
+        <p>
+          One important and <strong>essential</strong> part of the configuration is the <strong><code>combine.children="append"</code></strong> attribute specified
+          for the <strong><code>targets</code></strong> element.
+        </p>
+        <p>
+          Maven 2 plugin configuration parsing (using Xpp3) by default <strong><em>merges</em></strong> configuration elements for children elements if not defined!
+          This default behavior allows to only define <strong>overriding</strong> properties for a certain configuration element.
+        </p>
+        <p>
+          But, for the target configurations this is <strong><em>not</em></strong> very convenient because it requires to specify <strong><em>all</em></strong> optional properties for
+          a <strong><code>task</code></strong> element to prevent "merging in" property values from <em>unrelated</em> previously defined target elements.
+        </p>
+        <p>
+          To solve this inconvenience, a <strong><code>combine.children="append"</code></strong> attribute can be specified on a parent element to use <strong><em>append</em></strong>
+          instead of <strong><em>merge</em></strong> when parsing the child elements.
+        </p>
+        <p>
+          So, make sure to always use <strong><code>&lt;targets combine.children="append"&gt;</code></strong> to ensure a target configuration is actually parsed as specified!
+        </p>
+      </subsection>      
+      <subsection name="General options"> 
+        <p>
+          Besides the targets, a few additional (all optional) configuration elements can be specified: 
+        </p>
+        <table>
+          <tr>
+            <th>Element</th>
+            <th width="90%">Description</th>
+          </tr>
+          <tr>
+            <td>defaultTarget</td>
+            <td>
+                The intended usage of the jetspeed:mvn is to specify a target on the commandline using <strong><code>$mvn jetspeed:mvn -Dtarget=&lt;target id&gt;</code></strong>.<br/>                
+                If there is a real need for a default (and thereby very common) target, its <strong>id</strong> property can be specified here which will then be
+                used if no commandline parameter is specified.
+            </td>
+          </tr>
+          <tr>
+            <td>useSettings</td>
+            <td>
+              <code>default: true</code><br/>
+              The optional usage of custom Maven settings for the execution of a specific target will be explained further below, but this setting determines the default
+              lookup and usage of a <strong><code>jetspeed-mvn-settings.xml</code></strong> file if for a target no specific <strong><code>settingsFile</code></strong> itself is configured. 
+            </td>
+          </tr>
+          <tr>
+            <td>properties</td>
+            <td>
+              The usage of runtime properties provided to the Maven execution environment of a specific target will be explained further below,
+              but <strong>global</strong> properties (which can be overridden) to be used for all targets can be configured here.<br/>
+              The format for definining properties is the same as used for standard Maven project properties:<br/>
+              <pre>
+                &lt;property-name&gt;value&lt;/property-name&gt;</pre>
+            </td>
+          </tr>
+          <tr>
+            <td>mavenOpts</td>
+            <td>
+              <code>default: none</code><br/>
+              Default Maven runtime options to be set for a target execution environment can be specified here. For a specific target these can be overrridden with its
+              own <strong><code>mavenOpts</code></strong> configuration. 
+            </td>
+          </tr>
+        </table>
+      </subsection>
+    </section>
+    <section name="Target configuration">
+      <p>
+        The execution of a target in a separate Maven environment requires three different sets of parameters:
+        <ul>
+          <li>the target itself and the possible other targets it depends on</li>
+          <li>the (custom) Maven project file to be invoked</li>         
+          <li>the goals, profiles, settings and runtime properties to be used</li>         
+        </ul> 
+      </p>
+      <subsection name="target identification and its dependencies">
+        <p>
+          A target is uniquely identified (within the scope of the current project) by its required <strong><code>&lt;id/&gt;</code></strong> element:
+        <source><![CDATA[<target>
+  <id>aTarget</id>
+  ...
+</target>]]></source>
+        </p>
+        <p>
+          Optionally, dependencies on other targets can be specified with a <strong><code>&lt;depends/&gt;</code></strong> element using a comma separated list of other target
+          <strong><code>id</code></strong> values:
+        <source><![CDATA[<target>
+  <id>target1</id>
+  <depends/>
+  ...
+</target>
+<target>
+  <id>target2</id>
+  <depends>target1</depends>
+  ...
+</target>
+<target>
+  <id>target3</id>
+  <depends>target1,target2</depends>
+  ...
+</target>]]></source>
+        </p>        
+        <p>
+          The above example specifies that <strong><code>target2</code></strong> depends on <strong><code>target1</code></strong> and <strong><code>target3</code></strong> depends on both
+          <strong><code>target1</code></strong> and <strong><code>target2</code></strong>. 
+        </p>
+        <p>
+          This indicates that when <strong><code>target3</code></strong> is to be executed, <strong><code>target1</code></strong> and <strong><code>target2</code></strong> need to be executed first (and
+          in that order).
+        </p>
+        <p>
+          When a target dependency chain is resolved, the dependencies will be invoked <em>in order</em> as defined, whereby a single target will <em>only</em> be executed
+          <em>once</em>, even if multiple dependent targets define a dependency on the same other target.
+        </p>
+        <p>
+          With the above example, the actual execution order thus will be: <strong><code>target1,target2,target3</code></strong>,
+          <em>not</em>: <strong><code>target1,target1,target2,target3</code></strong> 
+        </p>
+        <p>
+          This means that for the above example <strong><code>target3</code></strong> actually can be defined even simpler as <strong><code>target2</code></strong> already depends
+          on <strong><code>target1</code></strong>:
+        <source><![CDATA[<target>
+  <id>target3</id>
+  <depends>target2</depends>
+  ...
+</target>]]></source>
+        </p>
+      </subsection>
+      <subsection name="target Maven project file">
+        <p>
+          Which (custom) Maven project file is to be invoked for a target is determined from the (both optional) <strong><code>name</code></strong> and <strong><code>dir</code></strong>
+          elements:
+        <source><![CDATA[<target>
+  <id>dbInit</id>
+  <name>db</name>
+  <dir>@rootdir@/my-portal</dir>
+  ...
+</target>]]></source>
+        </p>
+        <p>
+          The <strong><code>name</code></strong> element is used to resolve a <em>custom</em> Maven project file named: jetspeed-mvn-<strong>${name}</strong>-pom.xml.
+        </p>
+        <p>
+          The <strong><code>dir</code></strong> element is used to resolve the location of the determined target Maven project file.
+        </p>
+        <h4>name and dir not defined</h4>
+        <p>
+          If both <strong><code>name</code></strong> and <strong><code>dir</code></strong> are not defined, jetspeed:mvn will do nothing for <em>this</em> target, but <em>will</em> execute
+          the targets which it <strong><code>depends</code></strong> on, e.g. executing:
+        <source>$mvn jetspeed:mvn -Dtarget=target3</source> using the following configuration:
+        <source><![CDATA[<target>
+  <id>target1</id>
+  <depends/>
+  <name>pomA</name>
+  ...
+</target>
+<target>
+  <id>target2</id>
+  <depends>target1</depends>
+  <name>pomB</name>
+  ...
+</target>
+<target>
+  <id>target3</id>
+  <depends>target2</depends>
+</target>]]></source>
+          will still result in <strong><code>pomA</code></strong> and <strong><code>pomB</code></strong> to be invoked.
+        </p>
+        <h4>only dir defined</h4>
+        <p>
+          If only <strong><code>dir</code></strong> is defined, jetspeed:mvn will lookup the standard Maven pom.xml in the specified directory.
+        </p>
+        <p>
+          The file lookup is done relative to the current working directory, e.g. the Maven project in which jetspeed:mvn is invoked.  
+        </p>
+        <p>
+          Alternatively, an absolute directory can be specified too, or the special @rootdir@ variable can be used (see below).
+        </p>
+        <p>
+          <em>Hint: to invoke the default Maven pom.xml in the current directory, specify &lt;dir&gt;./&lt;/dir&gt;</em>.
+        </p>
+        <h4>only name defined</h4>
+        <p>
+          If only <strong><code>name</code></strong> is defined, jetspeed:mvn will look for a custom Maven project file named jetspeed-mvn-<strong>${name}</strong>-pom.xml
+          first in the <em>current</em> Maven project directory, and if not found search for it upwards in the parent project(s) of the current Maven project.
+        </p>
+        <h4>both name and dir defined</h4>
+        <p>
+          When both <strong><code>name</code></strong> and <strong><code>dir</code></strong> are defined, the custom Maven project file named
+          jetspeed-mvn-<strong>${name}</strong>-pom.xml has to exist in the specified <strong><code>dir</code></strong>.
+        </p>
+        <h4>@rootdir@</h4>
+          <p>
+            The special variable <strong><code>@rootdir@</code></strong> can be used to refer to the (absolute) path of the topmost Maven project of the current project.             
+          </p>
+          <p>
+            If however a property <strong>rootdir<code></code></strong> already is defined for the current Maven project (or in one of its parent projects), its value will
+            be used instead.
+          </p>
+          <h4>execution working directory</h4>
+          <p>
+            Important to note is that <em>before</em> the resolved (custom) Maven project file is invoked, the current working directory will be (temporarily) changed
+            to the directory containing the project file. So all relative file and resource references will be resolved relative to this directory as well! 
+          </p>
+      </subsection>
+      <subsection name="target execution parameters and environment">
+        <p>
+          Once a target its target Maven project file is determined, its execution environment and runtime parameters are determined based on the following (all optional) elements
+          and the default/global elements defined for all targets (see above):
+        <source><![CDATA[<target>
+  <id>aTarget</id>
+  <name>db</name>
+  <dir>@rootdir@</dir>
+  
+  <goals>process-resources</goals>
+  <profiles>proddb</profiles>
+  <properties>
+    <!-- (default) production target specific properties -->
+  </properties>
+  <settingsFile>@rootdir@/prod-settings.xml</settingsFile>
+  <mavenOpts>-Xms128m -Xmx256m</mavenOpts>
+
+</target>]]></source>
+        </p>
+        <h4>goals</h4>
+        <p>
+          The (custom) target Maven project file can be invoked to run or or more goals using one or more profiles and even a specific Maven settings file. 
+        </p>
+        <p>
+          The <strong><code>goals</code></strong> element can optionally be defined to specify a comma separated list of goals to run:
+          <source>&lt;goals&gt;goal1,goal2,goal3&lt;/goals&gt;</source>.
+          If the <strong><code>goals</code></strong> element is not defined, the target Maven project file must have a <strong><code>defaultGoal</code></strong> build element:
+        <source><![CDATA[<build>
+  <defaultGoal>process-resources</defaultGoal>
+</build>]]></source>
+        </p>
+        <h4>profiles</h4>
+        <p>
+          Like with goals, optionally one or more profiles to be used (by all the goals to be run) can be specified as comma separated list:
+          <source>&lt;profiles&gt;profile1,profile2,profile3&lt;/profiles&gt;</source>
+        </p>
+        <h4>properties</h4>
+        <p>
+          A very important requirement for the execution of a target is providing the Maven execution environment with the right set of runtime parameters. 
+        </p>
+        <p>
+          The jetspeed:mvn plugin will accumulate the set of properties to be provided as runtime (e.g. -D) parameters <em>for each target execution individually</em>
+          in the following order:
+          <table>
+            <tr>
+              <th>Order</th>
+              <th>Source</th>
+              <th width="90%">Lookup</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td><span style="whitespace:nowrap"><![CDATA[<configuration><properties/></configuration]]></span></td>
+              <td>the jetspeed:mvn default configuration properties</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><span style="whitespace:nowrap"><![CDATA[<target><properties/></target>]]></span></td>
+              <td>the target specific properties</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><span style="whitespace:nowrap">current Maven project properties</span></td>
+              <td>Note: this includes properties defined in the parent project(s) of the current project and even the default Maven settings</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><span style="whitespace:nowrap">jetspeed-mvn.properties</span></td>
+              <td>
+                This file is searched for in the current Maven project directory or else upwards in its parent project(s) directory.<br/>
+                The properties file found will be <em><strong>interpolated</strong></em> with the already resolved properties using ${} variable replacements.                
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><span style="whitespace:nowrap">jetspeed-mvn-${target name}.properties</span></td>
+              <td>
+                This file is searched for in the current Maven project directory or else upwards in its parent project(s) directory.<br/>
+                The properties file found will be <em><strong>interpolated</strong></em> with the already resolved properties using ${} variable replacements.                
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><span style="white-space:nowrap">jetspeed-mvn-${target name}-${target id}.properties</span></td>
+              <td>
+                This file is searched for in the current Maven project directory or else upwards in its parent project(s) directory.<br/>
+                The properties file found will be <em><strong>interpolated</strong></em> with the already resolved properties using ${} variable replacements.                
+              </td>
+            </tr>
+          </table> 
+        </p>
+        <p>
+          The jetspeed:mvn specific property files are <em>individually</em> looked up, e.g. the location of one doesn't depict the location of another.
+        </p>
+        <p>
+          <em>
+            Warning: be careful depending on properties resolved from the current Maven project as these might be different
+            depending on from which project folder the jetspeed:mvn is invoked.<br/>
+          </em>
+        </p>
+        <h4>useSettings and settingsFile</h4>
+        <p>
+          Certain Maven configuration elements and properties can or should only be specified in a <a href="http://maven.apache.org/settings.html">Maven settings</a> file,
+          like security sensitive server parameters (username, password etc.).
+        </p>
+        <p>
+          While Maven will by default lookup the settings.xml file from the user's home directory: <code><strong>${user.home}/.m2/settings.xml</strong></code>, this
+          isn't always very inconvenient, especially not if one is involved in many different projects each with its own specific settings requirements. 
+        </p>
+        <p>
+          Sometimes it is more convenient or even required to maintain project specific settings with or within the project source (control) environment itself.
+        </p>
+        <p>
+          The jetspeed:mvn plugin can use a custom setttings file (by default) which is controlled by the optional configuration <strong><code>useSettings</code></strong> element,
+          a target specific <strong><code>settingsFile</code></strong> element or a specific property <strong><code>jetspeed.mvn.settings.xml</code></strong>.
+        </p>
+        <p>
+          When the jetspeed:mvn configuration element &lt;useSettings&gt;true&lt;/useSettings&gt; is specified (which it is by default), 
+          jetspeed:mvn will look for a custom Maven settings file named jetspeed-mvn-settings.xml first in the <em>current</em> Maven project directory, and if not found search
+          for it upwards in the parent project(s) of the current Maven project.
+        </p>
+        <p>
+          Alternatively, a target <strong><code>settingsFile</code></strong> element can be used to use a target specific settings file, as shown in the full example
+          target configuration above.
+        </p>
+        <p>
+          Finally, a (target specific) settings file can also be defined as property either for the current Maven project or one of its parents, or in the
+          resolved target specific properties (which do incorparate the current Maven project properties) using the property name: <strong><code>jetspeed.mvn.settings.xml</code></strong>.
+        </p>
+        <p>
+          A custom Maven settings file specified as <strong><code>jetspeed.mvn.settings.xml</code></strong> property overrules a target specific <strong><code>settingsFile</code></strong>,
+          and these both overrule a jetspeed:mvn default <strong><code>useSettings</code></strong> configuration and lookup. 
+        </p>
+        <h4>Advanced: Maven project and settings file variables interpolation</h4>
+        <p>
+          An advanced feature to even further configuring the target Maven project and/or settings file is inherited from the
+          <a href="http://maven.apache.org/plugins/maven-invoker-plugin/advance-usage.html">Maven Invoker Plugin</a> from which the jetspeed:mvn plugin was derived.
+        </p>
+        <p>
+          Before the resolved Maven project and optional settings file are actually executed and used, an <em>interpolated</em> version of these files are temporarily written
+          to disk in which variables between <strong><code>@</code></strong> markers are filtered using the resolved target properties (see above).
+        </p>
+        <p>
+          The Jetspeed-2 Portal project itself uses this feature in its jetspeed-mvn-db-init-pom.xml for initializing either a test or production
+          database.
+        </p>
+        <p>  
+          The actually database configuration properties used by Jetspeed have a common prefix: either <strong><code>org.apache.jetspeed.test.database</code></strong>
+          or <strong><code>org.apache.jetspeed.production.database</code></strong>.
+        </p>
+        <p>
+          For the initialization of the two different target (test|production) databases, the jetspeed-mvn-db-init-pom.xml references these configuration parameters using the
+          following prefix: <strong><code>org.apache.jetspeed.@database.type@.database</code></strong>:
+        <source><![CDATA[<plugin>
+  <groupId>${pom.groupId}</groupId>
+  <artifactId>jetspeed-db-maven-plugin</artifactId>
+  <version>${pom.version}</version>
+  <configuration>
+    <connection>
+      <username>${org.apache.jetspeed.@database.type@.database.user}</username>
+      <password>${org.apache.jetspeed.@database.type@.database.password}</password>
+      <url>${org.apache.jetspeed.@database.type@.database.url}</url>
+      <driver>${org.apache.jetspeed.@database.type@.database.driver}</driver>
+    </connection>
+  </configuration>
+  ...]]></source>
+          The separate jetspeed-mvn targets used for the initialization each define a different value for property <strong><code>database.type</code></strong>:
+        <source><![CDATA[<target>
+  <id>testdb</id>
+  <name>db-init</name>
+  <properties>
+    <database.type>test</database.type>
+  </properties>
+</target>
+<target>
+  <id>proddb</id>
+  <name>db-init</name>
+  <properties>
+    <database.type>production</database.type>
+  </properties>
+</target>]]></source>
+          As result of the automatic interpolation of the target project (and settings) file, only a single definition for the jetspeed-db:init plugin is needed
+          handling both initializing test and production databases.
+        </p>
+        <p>
+          This feature also makes it very easy to later add even more target databases, like for staging purposes: just add another target with value "staging" for
+          the database.type property (and of course provide the corresponding org.apache.jetspeed.staging.database.* properties in the jetspeed-mvn-settings.xml).
+        </p>
+        <h4>mavenOpts</h4>
+        <p>
+          Finally, the special overriding Maven MAVEN_OPTS environment variable can also be specified for a specific target using a <strong><code>mavenOpts</code></strong> element,
+          or if not defined, also a default for all targets as jetspeed:mvn configuration element (see above).
+        </p>
+      </subsection>
+      <subsection name="target configuration summary">
+        <p>
+          The following table summarizes the configuration elements for a target:  
+        </p>
+        <table>
+          <tr>
+            <th>Element</th>
+            <th width="90%">Description</th>
+          </tr>
+          <tr>
+            <td>id</td>
+            <td>
+              The only required element to uniquely identify a target.<br/>
+            </td>
+          </tr>
+          <tr>
+            <td>depends</td>
+            <td>
+              The optional comma separated list of other target ids this target depends upon and which will be automatically executed beforehand
+            </td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>
+              The optional name of the target which is used to lookup a <em>custom</em> Maven project file named: jetspeed-mvn-${name}-pom.xml.<br/>
+              If only element <strong><code>dir</code></strong> is defined, the standard Maven pom.xml project file from the <strong><code>dir</code></strong>
+              will be used.              
+            </td>
+          </tr>
+          <tr>
+            <td>dir</td>
+            <td>
+              The optional directory where to lookup a custom Maven project file (using the <strong><code>name</code></strong>) of the target.<br/>
+              If <strong><code>name</code></strong> is not defined the standard Maven pom.xml project file will be used from this directory.
+            </td>
+          </tr>
+          <tr>
+            <td>goals</td>
+            <td>
+              The optional comma separated list of Maven goals to be invoked on the resolved (custom) Maven project file.<br/>
+              If not defined, the target Maven project file must have a <strong><code>&lt;defaultGoal/&gt;</code></strong> build element configured.              
+            </td>
+          </tr>
+          <tr>
+            <td>profiles</td>
+            <td>
+              The optional comma separated list of profiles to be provided when the resolved (custom) Maven project file is executed.
+            </td>
+          </tr>
+          <tr>
+            <td>properties</td>
+            <td>
+              The optional target specific properties to be provided as runtime (-D) parameters.<br/>
+              These properties can be overruled by jetspeed:mvn specific property files, see previous section.
+            </td>
+          </tr>
+          <tr>
+            <td>settingsFile</td>
+            <td>
+              The location of an optional custom Maven settings file to be used when executing this target.<br/>
+              If not defined, the default &lt;useSettings/&gt; configuration element value (true by default) determines if a jetspeed-mvn-settings.xml file
+              is looked up instead.
+              Note: This settingsFile can also be overruled with a property <strong><code>jetspeed.mvn.settings.xml</code></strong>, see previous section. 
+            </td>
+          </tr>
+          <tr>
+            <td>mavenOpts</td>
+            <td>
+              The optional value for the special Maven MAVEN_OPTS Maven environment variable to be used.<br/>
+              If not defined, the (also optional) default &lt;mavenOpts/&gt; configuration element value will be used.
+            </td>
+          </tr>
+        </table>
+      </subsection> 
+    </section>
+    <section name="Usage">
+      <p>
+        Finally, actually using the jetspeed:mvn plugin and invoking a specific target will be very simple:
+        <source><![CDATA[$mvn jetspeed:mvn -Dtarget=<target id>]]></source>
+      </p>
+      <p>
+        Optionally, if also a <strong><code>defaultTarget</code></strong> is configured for the jetspeed:mvn plugin, even the following will work:
+        <source><![CDATA[$mvn jetspeed:mvn]]></source>
+        but usually more than one target will be needed for a specific (Jetspeed Portal) project in which case defining and using a
+        <strong><code>defaultTarget</code></strong> is not really recommended. 
+      </p>
+    </section>
+  </body>
+</document>

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Guide to Profiling IP Addresses</title>
+		<subtitle>Documentation for Using the ip-address Profiler rule</subtitle>
+		<authors>
+			<person name="Philip Mark Donaghy" email="philip.donaghy@gmail.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Guide to Profiling IP Addresses">
+			<p>
+  Jetspeed has a built in mechanism to serve custom content
+  to a specific IP address. This feature uses the Profiler 
+  to negociate pages based on the requesting clients IP address.
+			</p>
+			<subsection name="1. The Rule">
+			<p>
+  The rule is identified by the key <b>ip-address</b>. There is one criterion
+  called <b>ip</b> resolved using the IP Criterion Resolver. This class implements
+  the resolve method of the Rule Criterion Resolver in order to obtain the IP address
+  from the request.
+			</p>
+                        <source>
+    public String resolve(RequestContext context, RuleCriterion criterion)
+    {
+        // look for override
+        String value = super.resolve(context, criterion);
+        if (value != null) { return value.toLowerCase(); }
+
+        // Note IP addresses can vary depending on the client
+        // Konqueror 3.4.2 returns IPv6 e.g. 0:0:0:0:0:0:0:1
+        // Firefox 1.0.7 returns IPv4 e.g. 127.0.0.1
+        // This is the value used to resolve pages in the _ip directory
+        // TODO create an option to convert all IPv4 addresses to IPv6
+        return context.getRequest().getRemoteAddr();
+    }
+                        </source>
+			</subsection>
+			<subsection name="2. The Page Locator">
+			<p>
+  Users with this profile rule set to the <b>page</b> locator are served pages from the _ip 
+  directory of the psml site tree. Example, if a request is made for
+  http://www.apache.org/jetspeed/portal/default-page.psml from 81.29.65.234
+  then the rule will match /WEB-INF/pages/_ip/81.29.65.234/default-page.psml before
+  falling back to /WEB-INF/pages/default-page.psml
+			</p>
+			</subsection>
+			<subsection name="3. Example Use Cases">
+                        <p>
+  You have a location in Tokyo serving content specific to that 
+  location. Your kiosk is configured with a fixed IP address. The annonymous 
+  user (guest by default) uses this profile rule. Anyone using 
+  the portal from that kiosk would be served content from the _ip directory.
+			</p>
+			<p>
+  It could also be used to profile robots. Or keep out unwanted visitors. And can be the basis for 
+  profiling IP ranges or IP prefixes, networks and subnetworks, and geographic locations.
+			</p>
+			</subsection>
+		</section>
+	</body>
+</document>

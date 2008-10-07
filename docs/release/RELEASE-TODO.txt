@@ -1,0 +1,77 @@
+0. Vote on the Final Release before doing anything !!!!!
+
+1. update project.xml and etc/project-dependencies/*.xml in all projects to 2.x
+
+2. delete old versions of jars from shared/lib
+
+3. checkout to a clean directory
+
+4. build with tests on all db platforms (hsql, mysql, oracle...)
+
+5. test running app in Tomcat
+
+6. build with Derby
+    maven -o allClean allBuild
+    maven -o quickStart
+
+7. build the 2 installers (see instructions under installer2 directory)
+   creating the 2 distributable installers
+
+8. create the README for the specific version, see docs/release/JETSPEED-README-*.txt
+
+9. tag the release from Eclipse or command line using tag format:
+ 
+      JETSPEED-RELEASE-2-X
+
+10. get a clean checkout, don't build anything
+
+12. Sign the distributions and source
+
+    distribution dir == /www/www.apache.org/dist/portals/jetspeed-2/
+
+    a. Download the KEYS from the distribution directory 
+    b. Export your public key 
+                                        
+        gpg --list-sigs <your name> >> KEYS
+        gpg --armor --export <your name>) >> KEYS
+
+    b. Add the contents of th KEYS to your public ring 
+
+        gpg --import KEYS
+
+    c. Generate the .asc files using:
+
+        gpg -sab Jetspeed2.0-derby-install.jar
+        gpg -sab Jetspeed2.0-MultiDB-install.jar
+        gpg -sab jetspeed-2.X-src.zip
+        gpg -sab jetspeed-2.X-src.tar.gz
+
+    d. Generate the .md5 hashes:
+
+        openssl md5 < Jetspeed2.0-derby-install.jar > Jetspeed2.0-derby-install.jar.md5
+        openssl md5 < Jetspeed2.0-MultiDB-install.jar > Jetspeed2.0-MultiDB-install.jar.md5
+        openssl md5 < jetspeed-2.0-M1-src.zip > jetspeed-2.0-M1-src.zip.md5
+        openssl md5 < jetspeed-2.0-M1-src.tar.gz > jetspeed-2.0-M1-src.tar.gz.md5
+
+    e. upload the files to the distributions directory (BINARY, SOURCE)
+
+ 14. Create Symbolic Links to Current 
+
+ 15. scp the jars to the remote repo
+  
+    /www/cvs.apache.org/repository/org.apache.portals.jetspeed-2
+ 
+ 16. Write and post release announcements to mailing lists:
+       (see JETSPEED-2.0.ANNOUNCEMENT.txt)
+       
+		* jetspeed-dev@portals.apache.org
+		* jetspeed-user@portals.apache.org
+		* general@portals.apache.org
+		* announce@apache.org
+		
+ 17. Update the news page
+
+   http://portals.apache.org/news.html
+   
+
+

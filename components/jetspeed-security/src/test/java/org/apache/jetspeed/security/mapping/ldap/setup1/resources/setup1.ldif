@@ -1,0 +1,201 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# $Id$
+
+dn: o=sevenSeas
+objectClass: top
+objectClass: organization
+o: sevenSeas
+
+dn: ou=OrgUnit1,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: OrgUnit1
+
+dn: ou=OrgUnit2,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: OrgUnit2
+
+dn: ou=OrgUnit3,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: OrgUnit3
+
+dn: ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Groups,ou=OrgUnit1,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit1,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: Roles
+
+dn: ou=People,ou=OrgUnit2,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Groups,ou=OrgUnit2,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit2,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: Roles
+
+dn: ou=People,ou=OrgUnit3,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Groups,ou=OrgUnit3,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
+dn: ou=Roles,ou=OrgUnit3,o=sevenSeas
+objectClass: top
+objectClass: organizationalUnit
+ou: Roles
+
+dn: cn=Group1,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: Group1
+uniqueMember: cn=admin,ou=People,ou=OrgUnit1
+
+dn: cn=Group2,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: Group2
+uniqueMember: cn=admin,ou=People,ou=OrgUnit1
+
+dn: cn=Group3,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: Group3
+uniqueMember: cn=admin,ou=People,ou=OrgUnit1
+
+dn: cn=Role1,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: Role1
+description: Role 1
+uniqueMember: cn=OrgUnit2User1,ou=People,ou=OrgUnit2,o=sevenSeas
+uniqueMember: cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas
+uniqueMember: cn=OrgUnit2User2,ou=People,ou=OrgUnit2,o=sevenSeas
+
+dn: cn=Role2,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: Role2
+uniqueMember: cn=OrgUnit2User2,ou=People,ou=OrgUnit2,o=sevenSeas
+uniqueMember: cn=OrgUnit2User1,ou=People,ou=OrgUnit2,o=sevenSeas
+
+dn: cn=Role3,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: Role3
+description: Role 3
+uniqueMember: cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas
+
+dn: cn=admin,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: admin
+uniqueMember: uid=adminuser,o=sevenSeas
+
+dn: cn=manager,o=sevenSeas
+objectClass: top
+objectClass: groupOfUniqueNames
+cn: manager
+uniqueMember: uid=admin,ou=People,ou=OrgUnit1,o=sevenSeas
+
+dn: cn=OrgUnit1User1,ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: OrgUnit1User1
+givenName: OrgUnit1User1
+sn: OrgUnit1User1
+uid: OrgUnit1User1
+userPassword:: eA==
+
+dn: cn=OrgUnit1User2,ou=People,ou=OrgUnit1,o=sevenSeas
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: OrgUnit1User2
+givenName: OrgUnit1User2
+sn: OrgUnit1User2
+uid: OrgUnit1User2
+userPassword:: eA==
+
+dn: cn=OrgUnit2User1,ou=People,ou=OrgUnit2,o=sevenSeas
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: OrgUnit2User1
+givenName: OrgUnit2User1
+sn: OrgUnit2User1
+uid: OrgUnit2User1
+userPassword:: eA==
+
+dn: cn=OrgUnit2User2,ou=People,ou=OrgUnit2,o=sevenSeas
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: OrgUnit2User2
+givenName: OrgUnit2User2
+sn: OrgUnit2User2
+uid: OrgUnit2User2
+userPassword:: eA==
+
+dn: cn=OrgUnit3User1,ou=People,ou=OrgUnit3,o=sevenSeas
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: OrgUnit3User1
+givenName: OrgUnit3User1
+sn: OrgUnit3User1
+uid: OrgUnit3User1
+userPassword:: eA==
+
+dn: cn=jsmith,ou=People,ou=OrgUnit3,o=sevenSeas
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: jsmith
+givenName: Joe Smith
+sn: jsmith
+uid: jsmith
+userPassword:: eA==
+

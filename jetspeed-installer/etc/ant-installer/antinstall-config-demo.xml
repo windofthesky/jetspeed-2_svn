@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  $Id$
+-->
+<!-- JS2-657: Installer fails with firewall
+<!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN"
+    "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
+-->
+<installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.1 Demo Installer"
+  windowIcon="/resources/feather-small.png" defaultImageResource="/resources/Jetspeed_blue_med.png" minJavaVersion="1.4"
+  wide="700:250" antialiased="true">
+
+  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.2-SNAPSHOT">
+    <comment displayText="" />
+    <comment displayText="This installer will guide you through setting up the Jetspeed Portal Demo." />
+  </page>
+
+  <page type="license" name="license" displayText="License conditions" resource="/LICENSE.TXT"></page>
+
+  <page type="input" name="properties" displayText="Installation location">
+    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.2-SNAPSHOT"
+      defaultValueWin="C:\Apache\Jetspeed-2.2-SNAPSHOT" displayText="Select an installation directory" create="true"
+      checkExists="true" />
+    <comment displayText=""/>
+    <comment displayText="Warning: on Windows, the location must not contain spaces." bold="true"/>
+  </page>
+
+  <page type="input" name="requiredComponents" displayText="Components selection">
+    <comment displayText="Jetspeed Enterprise Portal version 2.2-SNAPSHOT" bold="true" />
+    <target displayText="Tomcat 5.5.20 Webserver" target="install" defaultValue="true" force="true" />
+    <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Layout Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Portal Administration Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="RSS Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Demo Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="JPetstore Demo Portlet" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="JSF Demo Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
+  </page>
+
+  <page type="input" name="databaseSelection" displayText="Database selection">
+    <hidden property="checkdb" value="false" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="db.type" value="derby" />
+    <hidden property="dbDisplayName" value="Derby"/>
+    <hidden property="setupDBAntTarget" value="runSetupDB" />
+
+    <comment displayText="Please select the target database type you want to use for the portal." />
+    <select property="dbName" displayText="Database type" defaultValue="derby">
+      <option text="DB2" value="db2" />
+      <option text="Derby" value="derby" />
+      <option text="MSSQL" value="mssql" />
+      <option text="MySql" value="mysql" />
+      <option text="PostgreSQL" value="postgres" />
+      <option text="Oracle (9i or higher)" value="oracle" />
+      <option text="SapDB" value="sapdb" />
+      <option text="Manual database setup" value="manual" />
+    </select>
+  </page>
+
+  <page type="input" name="mysql" displayText="MySQL Database connection parameters" ifProperty="${dbName}=mysql">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="MySQL"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the MySQL database." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:mysql://localhost:3306/&lt;dbname&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="com.mysql.jdbc.Driver" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}mysql-connector-java-5.0.4.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="postgres" displayText="PostgreSQL Database connection parameters"
+    ifProperty="${dbName}=postgres">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="PostgreSQL"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the PostgreSQL database." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:postgresql://localhost:5432/&lt;dbname&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="org.postgresql.Driver" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}postgresql-8.1-405.jdbc3.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="sapdb" displayText="SapDB Database connection parameters" ifProperty="${dbName}=sapdb">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="SapDB"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the SapDB database." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String" defaultValue="jdbc:sapdb://localhost/&lt;dbname&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="com.sap.dbtech.jdbc.DriverSapDB" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}sapdb-jdbc-bin-7.4.04.03a.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="oracle" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="Oracle"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the Oracle database." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:oracle:thin:@localhost:1521:&lt;instance&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="oracle.jdbc.driver.OracleDriver" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}ojdbc14.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="mssql" displayText="Microsoft SQL Server connection parameters"
+    ifProperty="${dbName}=mssql">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="MSSQL"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the Microsoft SQL Server." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:jtds:sqlserver://localhost:1433/&lt;dbname&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname"
+      defaultValue="net.sourceforge.jtds.jdbc.Driver" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}jtds-1.2.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="db2" displayText="DB2 Database connection parameters" ifProperty="${dbName}=db2">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="DB2"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the DB2 database." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:db2://localhost:1527/&lt;dbname&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="COM.ibm.db2.jdbc.app.DB2Driver" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}db2jcc.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="preDBCheck" displayText="Testing the database connection"
+    ifProperty="(${checkdb}=true) AND (${dbvalid}=false)" postDisplayTarget="antinstaller-checkdb">
+    <hidden property="db.type" value="${dbName}" />
+    <hidden property="db.username" value="${dbUser}" />
+    <hidden property="db.password" value="${dbPassword}" />
+    <hidden property="jdbc.url" value="${jdbcUrl}" />
+    <hidden property="jdbc.driver.class" value="${jdbcDriverClass}" />
+    <hidden property="jdbc.driver.jar" value="${jdbcDriverJar}" />
+    <hidden property="setupDBAntTarget" value="runSetupDB" />
+    <comment displayText="Press Next to test the database connection ..." />
+  </page>
+
+  <page type="input" name="dbCheckFailed" displayText="Connection to the database failed"
+    ifProperty="(${checkdb}=true) AND (${dbvalid}=false)">
+    <hidden property="checkdb" value="false" />
+    <hidden property="setupDBAntTarget" value="setupNoDB" />
+
+    <comment displayText="Please go back and specify the correct database configurtion parameters." bold="true" />
+    <comment displayText="" />
+    <comment displayText="Continuing now will otherwise require manual setup of the database."/>
+  </page>
+
+  <page type="input" name="beforeInstall" displayText="Before your install ..." ifProperty="(${dbName}=manual) OR (${setupDBAntTarget}=setupNoDB)">
+    <hidden property="db.username" value="" />
+    <hidden property="db.password" value="" />
+    <hidden property="jdbc.url" value="" />
+    <hidden property="jdbc.driver.class" value="" />
+    <hidden property="jdbc.driver.jar" value="" />
+    <hidden property="setupDBAntTarget" value="setupNoDB" />
+    <comment displayText="Jetspeed will be installed without yet an configured database to:" bold="true"/>
+    <comment displayText="  ${installDir}"/>
+    <comment displayText="Warning: All content in this directory will be deleted first." bold="true"/>
+    <comment displayText=""/>
+    <comment displayText="After the installation you must manually setup the database."/>
+    <comment displayText="An ant script is provided within the installation database directory." />
+    <comment displayText="The database configuration must be defined in a database.properties" />
+    <comment displayText="file provided in the same directory before running ant." />
+    <comment displayText="Initialize the database by running ant from the database directory." />
+  </page>
+
+  <page type="input" name="beforeInstall" displayText="Before you install ..." ifProperty="${setupDBAntTarget}=runSetupDB">
+    <comment displayText="Jetspeed will be installed using a ${dbDisplayName} database to:" bold="true"/>
+    <comment displayText="  ${installDir}"/>
+    <comment displayText="Warning: All content in this directory will be deleted first!" bold="true"/>
+    <comment displayText=""/>
+    <comment displayText="After the installation you can manually reinitialize the database"/>
+    <comment displayText="or even switch to another database using an ant script"/>
+    <comment displayText="provided within the installation database directory." />
+    <comment displayText="The database configuration is defined in the database.properties" />
+    <comment displayText="file provided in the same directory before running ant." />
+    <comment displayText="Reinitialize the database by running ant from the database directory." />
+  </page>
+
+  <page type="progress" name="progress" displayText="Installation progress" />
+
+</installer>

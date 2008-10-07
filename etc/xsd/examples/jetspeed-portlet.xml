@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<portlet-app id="j2-admin" version="1.0"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:js="http://portals.apache.org/jetspeed"
+    xmlns:dc="http://www.purl.org/dc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/jetspeed-portlet.xsd">
+     
+    <js:security-constraint-ref>admin-only</js:security-constraint-ref>      
+
+    <dc:creator>J2 Team</dc:creator>
+    <dc:title>Jetspeed-2 Administration Portlets</dc:title>
+    <dc:title xml:lang="en">Jetspeed-2 Administration Portlets</dc:title>
+    
+    <custom-portlet-mode>
+      <name>mycustom</name>
+      <mapped-name>mymap</mapped-name>
+    </custom-portlet-mode>
+    
+    <custom-window-state>
+      <name>popup</name>
+      <mapped-name>solo</mapped-name> 
+    </custom-window-state>
+
+	<portlet>
+        <portlet-name>LoginPortlet</portlet-name>
+        <js:security-constraint-ref>users-1</js:security-constraint-ref>                                        
+        <dc:creator>J2 Team</dc:creator>
+        <dc:title>Login Portlet</dc:title>
+    </portlet>
+
+    <portlet>
+        <portlet-name>LocaleSelector</portlet-name>
+        <js:security-constraint-ref>users-1</js:security-constraint-ref>                                        
+        <dc:creator>J2 Team</dc:creator>        
+        <dc:title>Locale Selector Portlet</dc:title>
+    </portlet>
+
+	<js:services>        
+        <js:service name='ApplicationServerManager'/>
+        <js:service name='DeploymentManager'/>
+		<js:service name='EntityAccessor'/>
+        <js:service name='GroupManager'/>    
+        <js:service name='PageManager'/>    
+        <js:service name='PermissionManager'/>        
+        <js:service name='PortalAdministration'/>        
+        <js:service name='PortletFactory'/>        
+        <js:service name='PortalAdministration'/>
+        <js:service name='PortletRegistryComponent'/>
+        <js:service name='PortalStatistics'/>        
+        <js:service name="Profiler" />         
+        <js:service name='RoleManager'/>
+	    <js:service name='SearchComponent'/>                
+        <js:service name="SSO" />                 
+        <js:service name='UserManager'/>     
+        <js:service name='DecorationFactory'/>        
+	</js:services>
+	
+	<user-attribute-ref>
+	  <js:name>my name</js:name>
+	  <js:name-link>my link</js:name-link>
+	  <js:description>my description</js:description>
+	</user-attribute-ref>
+
+</portlet-app>

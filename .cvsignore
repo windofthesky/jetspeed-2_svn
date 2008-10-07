@@ -1,8 +1,0 @@
-target
-*.log
-.project
-.classpath
-hsqldb
-bin
-*.1
-*.out

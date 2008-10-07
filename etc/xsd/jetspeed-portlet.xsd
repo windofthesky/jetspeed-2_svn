@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" 
+	targetNamespace="http://portals.apache.org/jetspeed"
+	xmlns:tns="http://portals.apache.org/jetspeed"
+	xmlns:dc="http://www.purl.org/dc" 
+	xmlns:js="http://portals.apache.org/jetspeed" 
+	xmlns:p="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
+
+  <xs:import namespace="http://www.purl.org/dc" schemaLocation="dublin-core.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+             schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+             
+  <xs:element name="portlet-app">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element name="security-constraint-ref" minOccurs="0" type="xs:string"/>          
+        <xs:group ref="tns:metadataGroup" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="tns:custom-portlet-mode" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="tns:custom-window-state" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="tns:portlet" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="tns:services" minOccurs="0"/>
+        <xs:element ref="tns:user-attribute-ref" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="version" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>  
+  
+  <xs:element name="portlet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="portlet-name" type="xs:string"/>
+        <xs:element name="security-constraint-ref" minOccurs="0" type="xs:string"/>
+        <xs:group ref="tns:metadataGroup" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="optional"/>
+    </xs:complexType>
+  </xs:element>  
+
+  <xs:element name="custom-portlet-mode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="mapped-name" type="xs:string"/>
+        <xs:element name="description" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="custom-window-state">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="mapped-name" type="xs:string"/>
+        <xs:element name="description" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>   
+  
+  <xs:element name="user-attribute-ref">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="name-link" type="xs:string"/>
+        <xs:element name="description" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>         
+    
+  <xs:element name="metadata">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute ref="xml:lang"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="services">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="js:service"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="service">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="metadataGroup">
+     <xs:choice>
+       <xs:element ref="dc:creator"/>
+       <xs:element ref="dc:description"/>
+       <xs:element ref="dc:title"/>
+       <xs:element ref="dc:type"/>
+       <xs:element ref="dc:source"/>
+       <xs:element ref="dc:right"/>
+         
+       <xs:element ref="dc:relation"/>
+       <xs:element ref="dc:publisher"/>
+       <xs:element ref="dc:language"/>
+       <xs:element ref="dc:identifer"/>
+       <xs:element ref="dc:format"/>
+       <xs:element ref="dc:contributor"/>
+       <xs:element ref="dc:coverage"/> 
+       <xs:element ref="dc:subject"/>
+       <xs:element ref="js:metadata"/>
+     </xs:choice>
+  </xs:group>
+</xs:schema>

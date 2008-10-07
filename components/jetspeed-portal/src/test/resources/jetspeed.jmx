@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<node>
+<testelement class="org.apache.jmeter.testelement.TestPlan">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.testelement.TestPlan</property>
+<property name="TestElement.name" xml:space="preserve">Jetspeed Test Plan</property>
+<property name="TestPlan.functional_mode" xml:space="preserve">false</property>
+<collection name="TestPlan.thread_groups" class="java.util.LinkedList"/>
+<testelement name="TestPlan.user_defined_variables" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.config.gui.ArgumentsPanel</property>
+</testelement>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.control.gui.TestPlanGui</property>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.threads.ThreadGroup">
+<property name="TestElement.name" xml:space="preserve">Thread Group</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.threads.ThreadGroup</property>
+<testelement name="ThreadGroup.main_controller" class="org.apache.jmeter.control.LoopController">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.control.LoopController</property>
+<property name="TestElement.name" xml:space="preserve">Loop Controller</property>
+<property name="LoopController.continue_forever" xml:space="preserve">false</property>
+<property name="LoopController.loops" xml:space="preserve">1</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.control.gui.LoopControlPanel</property>
+</testelement>
+<property name="ThreadGroup.num_threads" xml:space="preserve">30</property>
+<property name="ThreadGroup.ramp_time" xml:space="preserve">15</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.threads.gui.ThreadGroupGui</property>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.control.CookieManager">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.CookieManager</property>
+<property name="TestElement.name" xml:space="preserve">HTTP Cookie Manager</property>
+<collection name="CookieManager.cookies" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.CookiePanel</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.control.OnceOnlyController">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.control.OnceOnlyController</property>
+<property name="TestElement.name" xml:space="preserve">Once Only Controller</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.control.gui.OnceOnlyControllerGui</property>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.sampler.HTTPSampler">
+<property name="TestElement.name" xml:space="preserve">Login</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.sampler.HTTPSampler</property>
+<property name="HTTPSampler.port" xml:space="preserve">8080</property>
+<property name="HTTPSampler.method" xml:space="preserve">POST</property>
+<property name="HTTPSampler.mimetype" xml:space="preserve"/>
+<collection name="AbstractSampler.assertions" class="java.util.ArrayList"/>
+<testelement name="HTTPsampler.Arguments" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList">
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">username</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">turbine</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">username</property>
+<property name="Argument.value" xml:space="preserve">turbine</property>
+</testelement>
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">password</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">turbine</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">password</property>
+<property name="Argument.value" xml:space="preserve">turbine</property>
+</testelement>
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">submit</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">login</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">submit</property>
+<property name="Argument.value" xml:space="preserve">login</property>
+</testelement>
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">action</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">JLoginUser</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">action</property>
+<property name="Argument.value" xml:space="preserve">JLoginUser</property>
+</testelement>
+</collection>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel</property>
+</testelement>
+<property name="HTTPSampler.follow_redirects" xml:space="preserve">true</property>
+<property name="HTTPSampler.protocol" xml:space="preserve">http</property>
+<property name="HTTPSampler.FILE_FIELD" xml:space="preserve"/>
+<property name="HTTPSampler.path" xml:space="preserve">/jetspeed/portal/</property>
+<property name="HTTPSampler.domain" xml:space="preserve">localhost</property>
+<property name="HTTPSampler.use_keepalive" xml:space="preserve">true</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui</property>
+<property name="HTTPSampler.FILE_NAME" xml:space="preserve"/>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.assertions.ResponseAssertion">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.assertions.ResponseAssertion</property>
+<property name="TestElement.name" xml:space="preserve">Login Assertion</property>
+<property name="Assertion.test_type" xml:space="preserve">2</property>
+<property name="Assertion.test_field" xml:space="preserve">Assertion.response_data</property>
+<collection name="Asserion.test_strings" class="java.util.ArrayList">
+<string xml:space="preserve">Welcome</string>
+</collection>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.assertions.gui.AssertionGui</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">View Results in Table</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.TableVisualizer</property>
+</testelement>
+</node>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.sampler.HTTPSampler">
+<property name="TestElement.name" xml:space="preserve">Load Group Page</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.sampler.HTTPSampler</property>
+<property name="HTTPSampler.port" xml:space="preserve">8080</property>
+<property name="HTTPSampler.method" xml:space="preserve">GET</property>
+<property name="HTTPSampler.mimetype" xml:space="preserve"/>
+<collection name="AbstractSampler.assertions" class="java.util.ArrayList"/>
+<testelement name="HTTPsampler.Arguments" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel</property>
+</testelement>
+<property name="HTTPSampler.follow_redirects" xml:space="preserve">true</property>
+<property name="HTTPSampler.protocol" xml:space="preserve">http</property>
+<property name="HTTPSampler.FILE_FIELD" xml:space="preserve"/>
+<property name="HTTPSampler.path" xml:space="preserve">/jetspeed/portal/group/apache/page/news</property>
+<property name="HTTPSampler.domain" xml:space="preserve">localhost</property>
+<property name="HTTPSampler.use_keepalive" xml:space="preserve">true</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui</property>
+<property name="HTTPSampler.FILE_NAME" xml:space="preserve"/>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.assertions.ResponseAssertion">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.assertions.ResponseAssertion</property>
+<property name="TestElement.name" xml:space="preserve">Response Assertion</property>
+<property name="Assertion.test_type" xml:space="preserve">2</property>
+<property name="Assertion.test_field" xml:space="preserve">Assertion.response_data</property>
+<collection name="Asserion.test_strings" class="java.util.ArrayList">
+<string xml:space="preserve">Apacheweek</string>
+</collection>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.assertions.gui.AssertionGui</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">View Results in Table</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.TableVisualizer</property>
+</testelement>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.sampler.HTTPSampler">
+<property name="TestElement.name" xml:space="preserve">Back Home</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.sampler.HTTPSampler</property>
+<property name="HTTPSampler.port" xml:space="preserve">8080</property>
+<property name="HTTPSampler.method" xml:space="preserve">GET</property>
+<property name="HTTPSampler.mimetype" xml:space="preserve"/>
+<collection name="AbstractSampler.assertions" class="java.util.ArrayList"/>
+<testelement name="HTTPsampler.Arguments" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel</property>
+</testelement>
+<property name="HTTPSampler.follow_redirects" xml:space="preserve">true</property>
+<property name="HTTPSampler.protocol" xml:space="preserve">http</property>
+<property name="HTTPSampler.FILE_FIELD" xml:space="preserve"/>
+<property name="HTTPSampler.path" xml:space="preserve">/jetspeed/portal/</property>
+<property name="HTTPSampler.domain" xml:space="preserve">localhost</property>
+<property name="HTTPSampler.use_keepalive" xml:space="preserve">true</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui</property>
+<property name="HTTPSampler.FILE_NAME" xml:space="preserve"/>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">View Results in Table</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.TableVisualizer</property>
+</testelement>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.timers.ConstantTimer">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.timers.ConstantTimer</property>
+<property name="TestElement.name" xml:space="preserve">Constant Timer</property>
+<property name="ConstantTimer.delay" xml:space="preserve">2000</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.timers.gui.ConstantTimerGui</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">Graph Results</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.GraphVisualizer</property>
+</testelement>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.threads.ThreadGroup">
+<property name="TestElement.name" xml:space="preserve">Thread Group 2</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.threads.ThreadGroup</property>
+<testelement name="ThreadGroup.main_controller" class="org.apache.jmeter.control.LoopController">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.control.LoopController</property>
+<property name="TestElement.name" xml:space="preserve">Loop Controller</property>
+<property name="LoopController.continue_forever" xml:space="preserve">false</property>
+<property name="LoopController.loops" xml:space="preserve">1</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.control.gui.LoopControlPanel</property>
+</testelement>
+<property name="ThreadGroup.num_threads" xml:space="preserve">20</property>
+<property name="ThreadGroup.ramp_time" xml:space="preserve">1</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.threads.gui.ThreadGroupGui</property>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.control.CookieManager">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.CookieManager</property>
+<property name="TestElement.name" xml:space="preserve">HTTP Cookie Manager</property>
+<collection name="CookieManager.cookies" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.CookiePanel</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.control.OnceOnlyController">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.control.OnceOnlyController</property>
+<property name="TestElement.name" xml:space="preserve">Once Only Controller</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.control.gui.OnceOnlyControllerGui</property>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.sampler.HTTPSampler">
+<property name="TestElement.name" xml:space="preserve">Login</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.sampler.HTTPSampler</property>
+<property name="HTTPSampler.port" xml:space="preserve">8080</property>
+<property name="HTTPSampler.method" xml:space="preserve">POST</property>
+<property name="HTTPSampler.mimetype" xml:space="preserve"/>
+<collection name="AbstractSampler.assertions" class="java.util.ArrayList"/>
+<testelement name="HTTPsampler.Arguments" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList">
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">username</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">callcenter</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">username</property>
+<property name="Argument.value" xml:space="preserve">callcenter</property>
+</testelement>
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">password</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">password</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">password</property>
+<property name="Argument.value" xml:space="preserve">password</property>
+</testelement>
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">submit</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">login</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">submit</property>
+<property name="Argument.value" xml:space="preserve">login</property>
+</testelement>
+<testelement class="org.apache.jmeter.protocol.http.util.HTTPArgument">
+<property name="HTTPArgument.always_encode" xml:space="preserve">false</property>
+<property name="Argument.name" xml:space="preserve">action</property>
+<property name="HTTPArgument.encoded_value" xml:space="preserve">JLoginUser</property>
+<property name="HTTPArgument.encoded_name" xml:space="preserve">action</property>
+<property name="Argument.value" xml:space="preserve">JLoginUser</property>
+</testelement>
+</collection>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel</property>
+</testelement>
+<property name="HTTPSampler.follow_redirects" xml:space="preserve">true</property>
+<property name="HTTPSampler.protocol" xml:space="preserve">http</property>
+<property name="HTTPSampler.FILE_FIELD" xml:space="preserve"/>
+<property name="HTTPSampler.path" xml:space="preserve">/wts28223/portal/</property>
+<property name="HTTPSampler.domain" xml:space="preserve">localhost</property>
+<property name="HTTPSampler.use_keepalive" xml:space="preserve">true</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui</property>
+<property name="HTTPSampler.FILE_NAME" xml:space="preserve"/>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.assertions.ResponseAssertion">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.assertions.ResponseAssertion</property>
+<property name="TestElement.name" xml:space="preserve">Login Assertion</property>
+<property name="Assertion.test_type" xml:space="preserve">2</property>
+<property name="Assertion.test_field" xml:space="preserve">Assertion.response_data</property>
+<collection name="Asserion.test_strings" class="java.util.ArrayList">
+<string xml:space="preserve">Welcome</string>
+</collection>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.assertions.gui.AssertionGui</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">Assertion Results</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="filename" xml:space="preserve">/tmp/Assertions.txt</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.AssertionVisualizer</property>
+</testelement>
+</node>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.sampler.HTTPSampler">
+<property name="TestElement.name" xml:space="preserve">Load Group Page</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.sampler.HTTPSampler</property>
+<property name="HTTPSampler.port" xml:space="preserve">8080</property>
+<property name="HTTPSampler.method" xml:space="preserve">GET</property>
+<property name="HTTPSampler.mimetype" xml:space="preserve"/>
+<collection name="AbstractSampler.assertions" class="java.util.ArrayList"/>
+<testelement name="HTTPsampler.Arguments" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel</property>
+</testelement>
+<property name="HTTPSampler.follow_redirects" xml:space="preserve">true</property>
+<property name="HTTPSampler.protocol" xml:space="preserve">http</property>
+<property name="HTTPSampler.FILE_FIELD" xml:space="preserve"/>
+<property name="HTTPSampler.path" xml:space="preserve">/jetspeed/portal/group/apache/page/news</property>
+<property name="HTTPSampler.domain" xml:space="preserve">localhost</property>
+<property name="HTTPSampler.use_keepalive" xml:space="preserve">true</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui</property>
+<property name="HTTPSampler.FILE_NAME" xml:space="preserve"/>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">Assertion Results</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="filename" xml:space="preserve">/tmp/Assertions.txt</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.AssertionVisualizer</property>
+</testelement>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.protocol.http.sampler.HTTPSampler">
+<property name="TestElement.name" xml:space="preserve">Back Home</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.protocol.http.sampler.HTTPSampler</property>
+<property name="HTTPSampler.port" xml:space="preserve">8080</property>
+<property name="HTTPSampler.method" xml:space="preserve">GET</property>
+<property name="HTTPSampler.mimetype" xml:space="preserve"/>
+<collection name="AbstractSampler.assertions" class="java.util.ArrayList"/>
+<testelement name="HTTPsampler.Arguments" class="org.apache.jmeter.config.Arguments">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.config.Arguments</property>
+<property name="TestElement.name" xml:space="preserve">Argument List</property>
+<collection name="Arguments.arguments" class="java.util.ArrayList"/>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel</property>
+</testelement>
+<property name="HTTPSampler.follow_redirects" xml:space="preserve">true</property>
+<property name="HTTPSampler.protocol" xml:space="preserve">http</property>
+<property name="HTTPSampler.FILE_FIELD" xml:space="preserve"/>
+<property name="HTTPSampler.path" xml:space="preserve">/jetspeed/portal/</property>
+<property name="HTTPSampler.domain" xml:space="preserve">localhost</property>
+<property name="HTTPSampler.use_keepalive" xml:space="preserve">true</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui</property>
+<property name="HTTPSampler.FILE_NAME" xml:space="preserve"/>
+</testelement>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">Assertion Results</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="filename" xml:space="preserve">/tmp/Assertions.txt</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.AssertionVisualizer</property>
+</testelement>
+</node>
+</node>
+<node>
+<testelement class="org.apache.jmeter.timers.ConstantTimer">
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.timers.ConstantTimer</property>
+<property name="TestElement.name" xml:space="preserve">Constant Timer</property>
+<property name="ConstantTimer.delay" xml:space="preserve">5000</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.timers.gui.ConstantTimerGui</property>
+</testelement>
+</node>
+<node>
+<testelement class="org.apache.jmeter.reporters.ResultCollector">
+<property name="TestElement.name" xml:space="preserve">Graph Results</property>
+<property name="TestElement.test_class" xml:space="preserve">org.apache.jmeter.reporters.ResultCollector</property>
+<property name="ResultCollector.error_logging" xml:space="preserve">false</property>
+<property name="TestElement.gui_class" xml:space="preserve">org.apache.jmeter.visualizers.GraphVisualizer</property>
+</testelement>
+</node>
+</node>
+</node>

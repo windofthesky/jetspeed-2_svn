@@ -1,0 +1,79 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*#
+#if ($format == "json")
+#if ($type == "portletDecorations")
+[
+#foreach($p in $portletDecorations)    
+#if($velocityCount > 1),#end["$p", "$p"]
+#end        
+]
+#elseif ($type == "pageDecorations")
+[
+#foreach($p in $pageDecorations)    
+#if($velocityCount > 1),#end["$p", "$p"]
+#end        
+]
+#elseif ($type == "desktopPageDecorations")
+[
+#foreach($dt in $desktopPageDecorations)    
+#if($velocityCount > 1),#end["$dt", "$dt"]
+#end 
+]
+#elseif ($type == "desktopPortletDecorations")
+[
+#foreach($dt in $desktopPortletDecorations)    
+#if($velocityCount > 1),#end["$dt", "$dt"]
+#end 
+]
+#elseif ($type == "layouts")
+[
+#foreach($l in $layouts)    
+#if($velocityCount > 1),#end["$l.DisplayName", "$l.Name"]
+#end        
+]
+#end
+#else    
+<js>
+    <status>$status</status>
+    <action>$action</action>    
+    <layouts>    
+#foreach($l in $layouts)    
+    <layout>$l.DisplayName</layout>    
+#end        
+    </layouts>
+    <page-decorations>
+#foreach($p in $pageDecorations)    
+    <page-decoration>$p</page-decoration>    
+#end    
+    </page-decorations>
+    <portlet-decorations>
+#foreach($p in $portletDecorations)    
+    <portlet-decoration>$p</portlet-decoration>    
+#end    
+    </portlet-decorations>
+    <desktop-page-decorations>
+#foreach($dt in $desktopPageDecorations)    
+    <page-decoration>$dt</page-decoration>    
+#end 
+    </desktop-page-decorations>
+    <desktop-portlet-decorations>
+#foreach($p in $desktopPortletDecorations)    
+    <portlet-decoration>$p</portlet-decoration>    
+#end    
+    </desktop-portlet-decorations>
+</js>
+#end   

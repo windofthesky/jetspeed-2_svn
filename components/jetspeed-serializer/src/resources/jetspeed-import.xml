@@ -1,0 +1,404 @@
+<?xml version="1.0"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<import-data>
+	<!-- import information -->
+	<version>1.0</version>
+	<name>Import Test</name>
+	<date>2005-12-18 15:16:04.0 PST</date>
+	<locale>en_US</locale>
+	
+	<!-- roles -->	
+	<roles>
+		<role>ra</role>
+		<role>rb</role>
+		<role>rc</role>
+		<role>rd</role>
+	</roles>
+	
+	<!-- groups -->
+	<groups>
+		<group>ga</group>
+		<group>gb</group>
+		<group>gc</group>
+		<group>gd</group>
+	</groups>
+
+	<!-- permissions -->
+	<permissions>
+		<permission>
+			<type>folder</type>
+			<resource>/</resource>
+			<actions>view, edit</actions>
+			<roles>admin, user</roles>
+			<groups>dev</groups>
+			<users>joe</users>
+		</permission>
+		<permission>
+			<type>page</type>
+			<resource>/default-page.psml</resource>
+			<actions>view</actions>
+			<roles>admin, user</roles>
+			<groups>dev</groups>
+			<users>joe</users>
+		</permission>		
+	</permissions>	
+		
+	<!-- profiling rules -->
+	<profilingRules>
+		<profilingRule>
+			<name>j2</name>
+			<className>org.apache.jetspeed.profile.RuleImpl</className>
+			<description>whatever</description>
+			<criteria>
+				<criterion>
+					<order>0</order>
+					<type>user</type>
+					<name>user</name>
+					<value>*</value>
+					<fallback>continue</fallback>
+				</criterion> 
+				<criterion>
+					<order>1</order>
+					<type>path.session</type>
+					<name>path</name>
+					<value>default-page.psml</value>
+					<fallback>continue</fallback>
+				</criterion> 								
+			</criteria>
+		</profilingRule>		
+	</profilingRules>
+	
+	<!-- users -->
+	<users>
+     <user>
+	   <name>joe</name>
+	   <password>xxx</password>
+       <template>/_user/template/</template>
+		 
+       <roles>admin, user</roles>
+       <groups>dev,groupa, groupb</groups>
+       <userInfo>
+           <info>
+               <name>user.first.name</name>
+               <value>John</value>
+           </info>
+           <info>
+               <name>user.last.name</name>
+               <value>Smith</value>
+           </info>
+       </userInfo>
+       
+<!--       <preferences/> -->
+       
+       <profileRules>
+           <rule>
+			   <name>page</name>
+			   <value>userrolefallback</value>
+		   </rule>
+           <rule>
+			   <name>menu</name>
+			   <value>j2</value>
+		   </rule>
+       </profileRules>
+    </user>
+	</users>	
+	
+	<!-- Capability -->
+    <capabilities>
+    <capability><name>HTML_3_2</name></capability>		
+    <capability><name>HTML_4_0</name></capability>			
+    <capability><name>HTML_TABLE</name></capability>    
+    <capability><name>HTML_NESTED_TABLE</name></capability>
+    <capability><name>HTML_IMAGE</name></capability>    
+    <capability><name>HTML_FORM</name></capability>
+    <capability><name>HTML_FRAME</name></capability>
+    <capability><name>HTML_JAVA</name></capability>
+    <capability><name>HTML_JAVA1_0</name></capability>
+    <capability><name>HTML_JAVA1_1</name></capability>
+    <capability><name>HTML_JAVA1_2</name></capability>    
+    <capability><name>HTML_JAVA_JRE</name></capability>    
+    <capability><name>HTML_JSCRIPT</name></capability>    
+    <capability><name>HTML_JSCRIPT1_0</name></capability>
+    <capability><name>HTML_JSCRIPT1_1</name></capability>    
+    <capability><name>HTML_JSCRIPT1_2</name></capability>    
+    <capability><name>HTML_JAVASCRIPT</name></capability>    
+    <capability><name>HTML_JAVASCRIPT_1_0</name></capability>    
+    <capability><name>HTML_JAVASCRIPT_1_1</name></capability>    
+    <capability><name>HTML_JAVASCRIPT_1_2</name></capability>    
+    <capability><name>HTML_PLUGIN</name></capability>    
+    <capability><name>HTML_ACTIVEX</name></capability>    
+    <capability><name>HTML_PLUGIN</name></capability>
+    <capability><name>HTML_CSS1</name></capability>    
+    <capability><name>HTML_CSS2</name></capability>    
+    <capability><name>HTML_CSSP</name></capability>    
+    <capability><name>HTML_IFRAME</name></capability>    
+    <capability><name>HTML_LAYER</name></capability>    
+    <capability><name>HTML_DOM_IE</name></capability>    
+    <capability><name>HTML_DOM_NS4</name></capability>    
+    <capability><name>HTML_DOM_1</name></capability>    
+    <capability><name>HTML_DOM_2</name></capability>
+    <capability><name>WML_1_0</name></capability>    
+    <capability><name>WML_1_1</name></capability>    
+    <capability><name>WML_TABLE</name></capability>    
+    <capability><name>XML_XSLT</name></capability>    
+    <capability><name>XML_XPATH</name></capability>    
+    <capability><name>XML_XINCLUDE</name></capability>    
+    <capability><name>HTTP_1_1</name></capability>    
+    <capability><name>HTTP_COOKIE</name></capability>    
+    <capability><name>HTML_XML</name></capability>    
+    <capability><name>HTML_XSL</name></capability>    
+    <capability><name>HTML_DOM</name></capability>    
+    </capabilities>
+    
+    <mimetypes>
+        <mimetype>
+            <name>text/html</name>            
+        </mimetype>
+        <mimetype>
+            <name>text/vnd.wap.wml</name>            
+        </mimetype>
+        <mimetype>
+            <name>text/vxml</name>            
+        </mimetype>
+        <mimetype>
+            <name>text/xml</name>            
+        </mimetype>
+        <mimetype>
+            <name>text/xhtml</name>            
+        </mimetype>
+        <mimetype>
+            <name>application/xhtml+xml</name>            
+        </mimetype>        
+    </mimetypes>
+    
+    <clients>
+        <client>
+            <evalOrder>4</evalOrder>
+            <name>ie5</name>
+            <userAgentPattern>.*MSIE 5.*</userAgentPattern>
+            <manufacturer>Microsoft</manufacturer>
+            <model>None</model>
+            <version>5.5</version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+            <capabilities>
+                <capability>HTML_3_2</capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+                <capability></capability>
+            </capabilities>
+            <mimetypes>
+                <mimetype></mimetype>
+                <mimetype></mimetype>
+                <mimetype></mimetype>
+            </mimetypes>
+        </client>        
+        <client>
+            <evalOrder>5</evalOrder>
+            <name>ns4</name>
+            <userAgentPattern>.*Mozilla/4.*</userAgentPattern>
+            <manufacturer>Netscape</manufacturer>
+            <model>None</model>
+            <version>4.75</version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>6</evalOrder>
+            <name>mozilla</name>
+            <userAgentPattern>.*Mozilla/5.*</userAgentPattern>
+            <manufacturer>Mozilla</manufacturer>
+            <model>Mozilla</model>
+            <version>1.x</version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>7</evalOrder>
+            <name>lynx</name>
+            <userAgentPattern>Lynx.*</userAgentPattern>
+            <manufacturer>GNU</manufacturer>
+            <model>None</model>
+            <version></version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>8</evalOrder>
+            <name>nokia_generic</name>
+            <userAgentPattern>Nokia.*</userAgentPattern>
+            <manufacturer>Nokia</manufacturer>
+            <model>Nokia</model>
+            <version></version>
+            <preferred-mimetype>text/vnd.wap.wml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>10</evalOrder>
+            <name>up</name>
+            <userAgentPattern>UP.*|.*UP\.Browser.*</userAgentPattern>
+            <manufacturer>United Planet</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vnd.wap.wml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>11</evalOrder>
+            <name>sonyericsson</name>
+            <userAgentPattern>Ercis.*|SonyE.*</userAgentPattern>
+            <manufacturer>SonyEricsson</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vnd.wap.wml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>12</evalOrder>
+            <name>wapalizer</name>
+            <userAgentPattern>Wapalizer.*</userAgentPattern>
+            <manufacturer>Wapalizer</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vnd.wap.wml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>13</evalOrder>
+            <name>klondike</name>
+            <userAgentPattern>Klondike.*</userAgentPattern>
+            <manufacturer>Klondike</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vnd.wap.wml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>14</evalOrder>
+            <name>wml_generic</name>
+            <userAgentPattern>.*WML.*|.*WAP.*|.*Wap.*|.*wml.*</userAgentPattern>
+            <manufacturer>Generic</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vnd.wap.wml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>15</evalOrder>
+            <name>vxml_generic</name>
+            <userAgentPattern>.*VoiceXML.*</userAgentPattern>
+            <manufacturer>Generic</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vxml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>16</evalOrder>
+            <name>nuance</name>
+            <userAgentPattern>Nuance.*</userAgentPattern>
+            <manufacturer>Nuance</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/vxml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>17</evalOrder>
+            <name>agentxml</name>
+            <userAgentPattern>agentxml/1.0.*</userAgentPattern>
+            <manufacturer>Unknown</manufacturer>
+            <model>Generic</model>
+            <version></version>
+            <preferred-mimetype>text/xml</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>18</evalOrder>
+            <name>opera7</name>
+            <userAgentPattern>.*Opera/7.*</userAgentPattern>
+            <manufacturer>Opera',</manufacturer>
+            <model>Opera7</model>
+            <version>7.x</version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>1</evalOrder>
+            <name>ie5mac</name>
+            <userAgentPattern>.*MSIE 5.*Mac.*</userAgentPattern>
+            <manufacturer>Microsoft</manufacturer>
+            <model>None</model>
+            <version>5.*</version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>3</evalOrder>
+            <name>ie6</name>
+            <userAgentPattern>.*MSIE 6.*</userAgentPattern>
+            <manufacturer>Microsoft</manufacturer>
+            <model>None</model>
+            <version>6.0</version>
+            <preferred-mimetype>text/html</preferred-mimetype>
+        </client>
+        <client>
+            <evalOrder>9</evalOrder>
+            <name>xhtml-basic</name>
+            <userAgentPattern>DoCoMo/2.0.*|KDDI-.*UP\.Browser.*|J-PHONE/5.0.*|Vodafone/1.0/.*</userAgentPattern>
+            <manufacturer>WAP</manufacturer>
+            <model>Generic</model>
+            <version>application/xhtml+xml</version>
+            <preferred-mimetype></preferred-mimetype>
+        </client>
+    </clients>
+
+    <media-types>
+    <media-type>
+        <name>html</name>        
+        <characterSet>UTF-8</characterSet>
+        <title>HTML</title>
+        <description>Rich HTML for HTML 4.0 compliants browsers</description>
+        <mimetypes>
+            <mimetype></mimetype>
+            <mimetype></mimetype>
+            <mimetype></mimetype>
+        </mimetypes>
+        
+    </media-type>    
+    <media-type>
+        <name>wml</name>        
+        <characterSet>UTF-8</characterSet>
+        <title>WML</title>
+        <description>Format for mobile phones and PDAs compatible with WML 1.1</description>
+    </media-type>    
+    <media-type>
+        <name>vxml</name>        
+        <characterSet>UTF-8</characterSet>
+        <title>VoiceXML</title>
+        <description>Format suitable for use with an audio VoiceXML server</description>
+    </media-type>    
+    <media-type>
+        <name>xml</name>        
+        <characterSet>UTF-8</characterSet>
+        <title>XML</title>
+        <description>XML 1.0</description>
+    </media-type>    
+    <media-type>
+        <name>xhtml-basic</name>        
+        <characterSet>UTF-8</characterSet>
+        <title>XHTML</title>
+        <description>XHTML Basic</description>
+    </media-type>    
+    </media-types>
+    
+</import-data>

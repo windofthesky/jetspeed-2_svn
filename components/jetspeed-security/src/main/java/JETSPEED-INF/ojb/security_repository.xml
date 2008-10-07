@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<descriptor-repository version="1.0">
+	
+	<!--
+	   - P A S S W O R D C R E D E N T I A L
+	-->
+	<class-descriptor
+	    class="org.apache.jetspeed.security.spi.impl.PasswordCredentialImpl"
+	    table="SECURITY_CREDENTIAL"
+	>
+	    <field-descriptor
+	        name="id"
+	        column="credential_id"
+	        jdbc-type="BIGINT"
+	        primarykey="true"
+	        autoincrement="true"
+            access="anonymous"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="principalId"
+	        column="principal_id"
+	        jdbc-type="BIGINT"
+            nullable="false"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="password"
+	        column="credential_value"
+	        jdbc-type="VARCHAR"
+	        nullable="true"
+	        length="150"
+	    >
+	    </field-descriptor>
+	     <field-descriptor
+	        name="type"
+	        column="type"
+	        jdbc-type="SMALLINT"
+	        nullable="false"
+	    >
+	    </field-descriptor>
+      <field-descriptor
+          name="updateAllowed"
+          column="update_allowed"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="stateReadOnly"
+          column="is_state_readonly"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="updateRequired"
+          column="update_required"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="encoded"
+          column="is_encoded"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="authenticationFailures"
+          column="auth_failures"
+          jdbc-type="SMALLINT"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="expired"
+          column="is_expired"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>                  
+      <field-descriptor
+          name="creationDate"
+          column="creation_date"
+          jdbc-type="TIMESTAMP"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="modifiedDate"
+          column="modified_date"
+          jdbc-type="TIMESTAMP"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="previousAuthenticationDate"
+          column="prev_auth_date"
+          jdbc-type="TIMESTAMP"
+          nullable="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="lastAuthenticationDate"
+          column="last_auth_date"
+          jdbc-type="TIMESTAMP"
+          nullable="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="expirationDate"
+          column="expiration_date"
+          jdbc-type="DATE"
+          nullable="true"
+      >
+      </field-descriptor>      
+      <reference-descriptor
+         name="user"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
+      >
+         <foreignkey field-ref="principalId"/>
+      </reference-descriptor>
+	</class-descriptor>
+	
+	<!--
+	   - S E C U R I T Y  P E R M I S S I O N
+	-->	
+	<class-descriptor
+	    class="org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermissionImpl"
+	    table="SECURITY_PERMISSION"
+	>
+	    <documentation>Represents a security permission in the security policy.</documentation>
+	    <field-descriptor
+	        name="id"
+	        column="permission_id"
+	        jdbc-type="BIGINT"
+	        primarykey="true"
+	        indexed="true"
+	        autoincrement="true"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="type"
+	        column="permission_type"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="30"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="name"
+	        column="name"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="254"
+	    >
+	    </field-descriptor>
+	    <field-descriptor
+	        name="actions"
+	        column="actions"
+	        jdbc-type="VARCHAR"
+	        nullable="false"
+	        length="254"
+	    >
+	    </field-descriptor>
+      <collection-descriptor
+          name="principals"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalPermission"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="permissionId"/>
+      </collection-descriptor>
+	</class-descriptor>
+
+
+  <!--
+     - J E T S P E E D   P R I N C I P A L
+  --> 
+  <class-descriptor
+      class="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+      table="SECURITY_PRINCIPAL"
+      row-reader="org.apache.jetspeed.security.util.ojb.JetspeedPrincipalConcreteClassRowReader"
+  >  
+      <documentation>Represents a security principal in the security policy.</documentation>
+      
+      <field-descriptor
+          name="id"
+          column="principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          indexed="true"
+          autoincrement="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="type"
+          column="principal_type"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="30"
+      >
+      </field-descriptor>     
+      <field-descriptor
+          name="name"
+          column="principal_name"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="200"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="mapped"
+          column="is_mapped"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="enabled"
+          column="is_enabled"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>      
+      <field-descriptor
+          name="readOnly"
+          column="is_readonly"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="removable"
+          column="is_removable"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="creationDate"
+          column="creation_date"
+          jdbc-type="TIMESTAMP"
+          nullable="false"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="modifiedDate"
+          column="modified_date"
+          jdbc-type="TIMESTAMP"
+          nullable="false"
+      >
+      </field-descriptor>
+      <collection-descriptor
+          name="attributes"
+          element-class-ref="org.apache.jetspeed.security.impl.SecurityAttributeValue"
+          auto-retrieve="true"
+          auto-update="true"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="principalId"/>
+      </collection-descriptor>
+      <collection-descriptor
+          name="associationsFrom"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalAssociation"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="fromPrincipalId"/>
+      </collection-descriptor>
+      <collection-descriptor
+          name="associationsTo"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalAssociation"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="toPrincipalId"/>
+      </collection-descriptor>
+      <collection-descriptor
+          name="permissions"
+          element-class-ref="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalPermission"
+          auto-retrieve="false"
+          auto-update="none"
+          auto-delete="none"
+      >
+        <inverse-foreignkey field-ref="principalId"/>
+      </collection-descriptor>
+  </class-descriptor>
+  
+   <!--
+   - S E C U R I T Y   A T T R I B U T E S
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.security.impl.SecurityAttributeValue"
+      table="SECURITY_ATTRIBUTE"
+  >
+      <documentation>Represents a Security Principal Attribute definition.</documentation>
+      <field-descriptor
+          name="id"
+          column="attr_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          autoincrement="true"
+      />
+      <field-descriptor
+          name="principalId"
+          column="principal_id"
+          jdbc-type="BIGINT"
+          nullable="false"
+          access="anonymous"
+      />
+      <field-descriptor
+          name="name"
+          column="attr_name"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="200"
+      />
+      <field-descriptor
+          name="value"
+          column="attr_value"
+          jdbc-type="VARCHAR"
+          nullable="true"
+          length="1000"
+      />      
+  </class-descriptor>
+
+
+   <!--
+   - J E T S P E E D   P R I N C I P A L   A S S O C I A T I O N
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalAssociation"
+      table="SECURITY_PRINCIPAL_ASSOC"
+  >
+      <documentation>Represents an association between two Security Principals</documentation>
+      <field-descriptor
+          name="fromPrincipalId"
+          column="from_principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+      />
+      <field-descriptor
+          name="toPrincipalId"
+          column="to_principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+      />
+      <field-descriptor
+          name="associationName"
+          column="assoc_name"
+          jdbc-type="VARCHAR"
+          length="30"
+          primarykey="true"
+      />
+      <reference-descriptor
+         name="from"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
+      >
+         <foreignkey field-ref="fromPrincipalId"/>
+      </reference-descriptor>
+      <reference-descriptor
+         name="to"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
+      >
+         <foreignkey field-ref="toPrincipalId"/>
+      </reference-descriptor>
+  </class-descriptor>
+
+   <!--
+   - P R I N C I P A L   P E R M I S S I O N   A S S O C I A T I O N
+   -->
+  <class-descriptor
+      class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalPermission"
+      table="PRINCIPAL_PERMISSION"
+  >
+      <documentation>Represents an association between a JetspeedPrincipal and a JetspeedPermission</documentation>
+      <field-descriptor
+          name="principalId"
+          column="principal_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+      />
+      <field-descriptor
+          name="permissionId"
+          column="permission_id"
+          jdbc-type="BIGINT"
+          primarykey="true"
+      />
+      <reference-descriptor
+         name="principal"
+         class-ref="org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal"
+         auto-retrieve="false"
+      >
+         <foreignkey field-ref="principalId"/>
+      </reference-descriptor>
+      <reference-descriptor
+         name="permission"
+         class-ref="org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermissionImpl"
+         auto-retrieve="false"
+      >
+         <foreignkey field-ref="permissionId"/>
+      </reference-descriptor>
+  </class-descriptor>
+
+</descriptor-repository>

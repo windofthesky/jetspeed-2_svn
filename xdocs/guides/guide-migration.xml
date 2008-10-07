@@ -1,0 +1,640 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Migration Guide</title>
+		<subtitle>Migration Guide</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		    <person name="Ate Douma" email="ate@douma.nu" />
+		</authors>
+	</properties>
+	<body>
+	  <section name="Data Migrating from Jetspeed 2.1.2 to 2.1.3">
+	    <p>The following tables describe database schema changes from version 2.1.3 to version 2.1.2.                                  
+	    </p>
+         <subsection name="Added Indexes">
+            <table>
+                <tr>
+                <th>Table</th>
+                <th>Index</th>                    
+                <th>type</th>                    
+                <th>column(s)</th>
+                </tr>
+                <tr>
+                 <td>PREFS_NODE</td> 
+                 <td>IX_PREFS_NODE_1</td> 
+                 <td>non unique</td> 
+                 <td>PARENT_NODE_ID</td>                                                            
+                </tr>
+                <tr>
+                 <td>PREFS_NODE</td> 
+                 <td>IX_PREFS_NODE_2</td> 
+                 <td>non unique</td> 
+                 <td>FULL_PATH</td>                                                            
+                </tr>                
+                <tr>
+                 <td>PREFS_PROPERTY_VALUE</td> 
+                 <td>IX_FKPPV_1</td> 
+                 <td>non unique</td> 
+                 <td>NODE_ID</td>                                                            
+                </tr>                
+                
+             </table>
+         </subsection>            
+         <subsection name="Foreign Key Altering">
+            <table>
+                <tr>
+                <th>Table</th>                
+                <th>Name</th>
+                <th>Column(s)</th>                    
+                <th>Referencing table</th>
+                <th>Referencing column(s)</th>
+                <th>2.1.2</th>
+                <th>2.1.3</th>                    
+                </tr>
+                <tr>
+                 <td>PREFS_NODE</td> 
+                 <td>FK_PREFS_NODE_1</td>
+                 <td>PARENT_NODE_ID</td> 
+                 <td>PREFS_NODE</td>                                                            
+                 <td>NODE_ID</td>                                                            
+                 <td>(not casade delete)</td>                                                            
+                 <td>CASCADE DELETE</td>                                                            
+                </tr>
+                <tr>
+                 <td>PREFS_PROPERTY_VALUE</td> 
+                 <td>(not named)</td> 
+                 <td>NODE_ID</td>
+                 <td>PREFS_NODE</td>
+                 <td>NODE_ID</td> 
+                 <td>(not casade delete)</td>                                                            
+                 <td>CASCADE DELETE</td>                                                            
+                </tr>                
+            </table>
+            </subsection>                         
+	  </section>	
+	  <section name="Data Migrating from Jetspeed 2.1 to 2.1.2">
+			<p>The following tables describe database schema changes from version 2.1 to version 2.1.2.                                  
+			</p>
+			<subsection name="Added Tables">
+				<table>
+					<tr>
+						<th>Table</th>
+					</tr>
+					<tr>
+						<td>ADMIN_ACTIVITY</td>
+					</tr>
+					<tr>
+						<td>USER_ACTIVITY</td>
+					</tr>                
+				</table>
+			</subsection>            
+		</section>	
+	 <section name="Configuration Migrating from Jetspeed 2.0 to 2.1">
+	  <p>The following items describe important functional changes in Jetspeed 2.1
+	  </p>
+	  <subsection name="Portlet API Caching">
+	  <p>Version 2.1 is the first Jetspeed version to support Portlet API Caching. In 2.0 the expiration-cache was set to -1 (infinity time) 
+	  for all layouts in the file WEB-INF\apps\jetspeed-layouts\WEB-INF\portlet.xml. When upgrading to version 2.1 or greater from 2.0, you will need 
+	  to update your database to disable portlet caching on the Jetspeed layouts. Updating the layouts can be achieved by either redeploying the jetspeed-layouts portlet application,
+	  or by updating your database as shown below (assuming the APPLICATION_ID value is 2) for the jetspeed-layouts application.
+<source><![CDATA[
+UPDATE PORTLET_DEFINITION P SET EXPIRATION_CACHE = 0 WHERE P.APPLICATION_ID = 2
+]]></source>
+	  </p>
+      </subsection>	  
+	  <subsection name="Portlet Preferences">
+	   <p>Portlet Preferences are now by default user specific on all pages. In Jetspeed 2.0, for shared pages, the Portlet Preferences were shared as well.</p>
+	   <p>To retain most of the old Jetspeed 2.0 behavior, allowing an administrator to still set/modify <i>initial</i> Preferences for other users,<br/> 
+	   modify the following setting in the registry.xml spring assembly configuration for the portletEntityAccessImpl component:
+	   <source>
+&lt;!-- 
+  All preferences were shared. With JS2-449, preferences are now
+  stored 'per user'. The username is stored in the preferences FULL_PATH
+  To turn on mergeSharedPreferences configure this property to true 
+  This will NOT turn off per user prefs, 
+  but instead merge with them, where user prefs override.
+  boolean
+--&gt;    
+&lt;constructor-arg type="boolean"&gt;
+&lt;value&gt;false&lt;/value&gt;
+&lt;/constructor-arg&gt;        
+	   </source>
+	   As is commented in the assembly configuration also, setting <i>mergeSharedPreferences</i> to <i>true</i> will <i>NOT</i> turn off per user Preferences.<br/>
+	   Once a user sets its own Preference values (if allowed), those will override the shared Preference values.<br/>
+	   See for further information: <a href="http://issues.apache.org/jira/browse/JS2-449" target="_blank">JS2-449</a>
+	   </p>
+	  </subsection>
+	 </section>  
+	 <section name="Data Migrating from Jetspeed 2.0 to 2.1">
+	    <p>The following tables describe database schema changes from version 2.0 to version 2.1.                                  
+		   </p>
+         <subsection name="Added Tables">
+            <table>
+                <tr>
+                <th>Table</th>
+                </tr>
+                <tr>
+                    <td>CUSTOM_PORTLET_MODE</td>
+                </tr>
+                <tr>
+                    <td>CUSTOM_WINDOW_STATE</td>
+                </tr>                
+            </table>
+         </subsection>            
+         <subsection name="Column Altering">
+            <table>
+                <tr>
+                <th>Table</th>
+                <th>Column</th>                    
+                <th>2.0</th>
+                <th>2.1</th>                    
+                </tr>
+                <tr>
+                 <td>PORTLET_STATISTICS</td> 
+                 <td>ELAPSED_TIME</td> 
+                 <td>INTEGER</td> 
+                 <td>BIGINT</td>                                                            
+                </tr>
+                <tr>
+                 <td>PAGE_STATISTICS</td> 
+                 <td>ELAPSED_TIME</td> 
+                 <td>INTEGER</td> 
+                 <td>BIGINT</td>                                                            
+                </tr>
+                <tr>
+                 <td>USER_STATISTICS</td> 
+                 <td>ELAPSED_TIME</td> 
+                 <td>INTEGER</td> 
+                 <td>BIGINT</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FOLDER</td> 
+                 <td>SKIN</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(80)</td>                                                            
+                </tr>
+                <tr>
+                 <td>FOLDER</td> 
+                 <td>DEFAULT_LAYOUT_DECORATOR</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(80)</td>                                                            
+                </tr>
+                <tr>
+                 <td>FOLDER</td> 
+                 <td>DEFAULT_PORTLET_DECORATOR</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(80)</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>STATE</td> 
+                 <td>VARCHAR(40)</td> 
+                 <td>VARCHAR(10)</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>PMODE</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(10)</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>LAYOUT_X</td> 
+                 <td></td> 
+                 <td>NEW: REAL</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>LAYOUT_Y</td> 
+                 <td></td> 
+                 <td>NEW: REAL</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>LAYOUT_Z</td> 
+                 <td></td> 
+                 <td>NEW: REAL</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>LAYOUT_WIDTH</td> 
+                 <td></td> 
+                 <td>NEW: REAL</td>                                                            
+                </tr>
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>LAYOUT_HEIGHT</td> 
+                 <td></td> 
+                 <td>NEW: REAL</td>                                                            
+                </tr>
+                <tr>
+                 <td>LINK</td> 
+                 <td>SKIN</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(80)</td>                                                            
+                </tr>
+                <tr>
+                 <td>PORTLET_DEFINITION</td> 
+                 <td>SECURITY_REF</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(40)</td>                                                            
+                </tr>
+                <tr>
+                 <td>PORTLET_DEFINITION</td> 
+                 <td>SECURITY_REF</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(40)</td>                                                            
+                </tr>
+                <tr>
+                 <td>PORTLET_APPLICATION</td> 
+                 <td>SECURITY_REF</td> 
+                 <td></td> 
+                 <td>NEW: VARCHAR(40)</td>                                                            
+                </tr>
+                <tr>
+                 <td>SSO_COOKIE</td> 
+                 <td>COOKIE</td> 
+                 <td>VARCHAR(250)</td> 
+                 <td>VARCHAR(1024)</td>                                                            
+                </tr>                
+            </table>
+            </subsection>                         
+         <subsection name="Index Altering">
+            <table>
+                <tr>
+                <th>Table</th>
+                <th>Index</th>                    
+                <th>2.0</th>
+                <th>2.1</th>                    
+                </tr>
+                <tr>
+                 <td>FOLDER_MENU</td> 
+                 <td>UN_FOLDER_MENU_1</td> 
+                 <td>unique</td> 
+                 <td>(non unique) index</td>                                                            
+                </tr>
+                <tr>
+                 <td>PAGE_MENU</td> 
+                 <td>UN_PAGE_MENU_1</td> 
+                 <td>unique</td> 
+                 <td>(non unique) index</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>UN_FRAGMENT_1</td> 
+                 <td>unique</td> 
+                 <td>(non unique) index</td>                                                            
+                </tr>                
+                
+             </table>
+         </subsection>            
+         <subsection name="Foreign Key Altering">
+            <table>
+                <tr>
+                <th>Table</th>
+                <th>Column</th>                    
+                <th>2.0</th>
+                <th>2.1</th>                    
+                </tr>
+                <tr>
+                 <td>FOLDER</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_1"</td>                                                            
+                </tr>
+                <tr>
+                 <td>FOLDER_METADATA</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_METADATA_1"</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FOLDER_CONSTRAINT</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_CONSTRAINT_1"</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FOLDER_CONSTRAINTS_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_CONSTRAINT_REF_1"</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FOLDER_ORDER</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_ORDER_1"</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FOLDER_MENU</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_MENU_1"</td>                                                            
+                </tr>                
+                <tr>
+                 <td>FOLDER_MENU</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_MENU_2"</td>                                                            
+                </tr>                                
+                <tr>
+                 <td>FOLDER_MENU_METADATA</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FOLDER_MENU_METADATA_1"</td>
+                </tr>                                                
+                <tr>
+                 <td>PAGE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_1"</td>
+                </tr>                                                                
+                <tr>
+                 <td>PAGE_METADATA</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_METADATA_1"</td>
+                </tr>                                                                
+                <tr>
+                 <td>PAGE_CONSTRAINT</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_CONSTRAINT_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_CONSTRAINT_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_CONSTRAINTS_REF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_MENU</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_MENU_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_MENU</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "PM_M_FK_PAGE_ID_PAGE"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_MENU_METADATA</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_MENU_METADATA_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FRAGMENT_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>FRAGMENT</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FRAGMENT_2"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>FRAGMENT_CONSTRAINT</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FRAGMENT_CONSTRAINT_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>FRAGMENT_CONSTRAINT_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FRAGMENT_CONSTRAINT_REF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>FRAGMENT_PREF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FRAGMENT_PREF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>FRAGMENT_PREF_VALUE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_FRAGMENT_PREF_VALUE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>LINK</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_LINK_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>LINK_METADATA</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_LINK_METADATA_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>LINK_CONSTRAINT</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_LINK_CONSTRAINT_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>LINK_CONSTRAINT_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_LINK_CONSTRAINT_REF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_SECURITY</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_SECURITY_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_SEC_CONSTRAINTS_DEF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_SEC_CONSTRAINTS_DEF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_SEC_CONSTRAINT_DEF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_SEC_CONSTRAINT_DEF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_SEC_CONSTRAINTS_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_SEC_CONSTRAINTS_REF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PAGE_SEC_CONSTRAINT_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PAGE_SEC_CONSTRAINT_REF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>RULE_CRITERION</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_RULE_CRITERION_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PREFS_NODE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PREFS_NODE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PA_METADATA_FIELDS</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PA_METADATA_FIELDS_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PD_METADATA_FIELDS</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PD_METADATA_FIELDS_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>USER_ATTRIBUTE_REF</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_USER_ATTRIBUTE_REF_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>USER_ATTRIBUTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_USER_ATTRIBUTE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PRINCIPAL_PERMISSION</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PRINCIPAL_PERMISSION_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>PRINCIPAL_PERMISSION</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_PRINCIPAL_PERMISSION_2"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_CREDENTIAL</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_CREDENTIAL_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SSO_SITE_TO_PRINCIPALS</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "SSO_SITE_TO_PRINC_FK1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SSO_SITE_TO_PRINCIPALS</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "SSO_SITE_TO_PRINC_FK2"</td>
+                </tr>                                                                                                
+                <tr>
+                 <td>SSO_PRINCIPAL_TO_REMOTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SSO_PRINCIPAL_TO_REMOTE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SSO_PRINCIPAL_TO_REMOTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SSO_PRINCIPAL_TO_REMOTE_2"</td>
+                </tr>                                                                                                
+                <tr>
+                 <td>SSO_SITE_TO_REMOTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SSO_SITE_TO_REMOTE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SSO_SITE_TO_REMOTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SSO_SITE_TO_REMOTE_2"</td>
+                </tr>                                                                                                
+                <tr>
+                 <td>SSO_COOKIE_TO_REMOTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SSO_COOKIE_TO_REMOTE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SSO_COOKIE_TO_REMOTE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SSO_COOKIE_TO_REMOTE_2"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_USER_ROLE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_USER_ROLE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_USER_ROLE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_USER_ROLE_2"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_USER_GROUP</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_USER_GROUP_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_USER_GROUP</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_USER_GROUP_2"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_GROUP_ROLE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_GROUP_ROLE_1"</td>
+                </tr>                                                                                
+                <tr>
+                 <td>SECURITY_GROUP_ROLE</td> 
+                 <td>(FK constraint)</td> 
+                 <td>(not named)</td> 
+                 <td>named FK constraint "FK_SECURITY_GROUP_ROLE_2"</td>
+                </tr>                                                                                
+            </table>
+            </subsection>                         
+            
+		</section>
+	</body>
+</document>
+

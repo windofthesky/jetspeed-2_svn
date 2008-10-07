@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+		xmlns:tns="http://portals.apache.org/jetspeed"
+		targetNamespace="http://portals.apache.org/jetspeed">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+  <xs:element name="folder">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:title" minOccurs="0"/>
+        <xs:element ref="tns:short-title" minOccurs="0"/>
+        <xs:element ref="tns:default-page" minOccurs="0"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:metadata"/>
+        <xs:element minOccurs="0" ref="tns:defaults"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:document-order"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:menu"/>
+        <xs:element minOccurs="0" ref="tns:security-constraints"/>
+      </xs:sequence>
+      <xs:attribute name="hidden" type="xs:boolean" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="default-page" type="xs:string"/>
+  <xs:element name="defaults">
+    <xs:complexType>
+      <xs:attribute name="layout-decorator" use="required" type="xs:string"/>
+      <xs:attribute name="portlet-decorator" use="required" type="xs:string"/>
+      <xs:attribute name="skin" use="optional" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="document-order" type="xs:string"/>
+  <xs:element name="menu">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:title" minOccurs="0"/>
+        <xs:element ref="tns:short-title" minOccurs="0"/>
+        <xs:element ref="tns:metadata" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="tns:menu" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="tns:options"/>
+	      <xs:element ref="tns:separator"/>
+	      <xs:element ref="tns:exclude"/>
+	      <xs:element ref="tns:include"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="name"    use="optional" type="xs:string"/>
+      <xs:attribute name="depth"   use="optional" type="xs:integer"/>
+      <xs:attribute name="options" use="optional" type="xs:string"/>
+      <xs:attribute name="regexp"  use="optional" type="xs:boolean"/>
+      <xs:attribute name="skin"    use="optional" type="xs:string"/>
+      <xs:attribute name="profile" use="optional" type="xs:string"/>
+      <xs:attribute name="order"   use="optional" type="xs:string"/>
+      <xs:attribute name="paths"   use="optional" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="exclude" type="xs:string"/>
+  <xs:element name="include">
+    <xs:complexType mixed="true">
+      <xs:attribute name="nest" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="short-title" type="xs:string"/>
+  <xs:element name="options">
+    <xs:complexType mixed="true">
+      <xs:attribute name="profile" use="optional" type="xs:string"/>
+      <xs:attribute name="regexp"  use="optional" type="xs:boolean"/>
+      <xs:attribute name="depth"   use="optional" type="xs:integer"/>
+      <xs:attribute name="order"   use="optional" type="xs:string"/>
+      <xs:attribute name="skin"    use="optional" type="xs:string"/>
+      <xs:attribute name="paths"   use="optional" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="separator">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element ref="tns:text" minOccurs="0"/>
+        <xs:element ref="tns:title" minOccurs="0"/>
+        <xs:element ref="tns:metadata" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="skin" use="optional" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="text" type="xs:string"/>
+  <xs:element name="security-constraints">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="tns:owner"/>
+        <xs:element minOccurs="0" ref="tns:security-constraints-ref"/>
+        <xs:element minOccurs="0" ref="tns:security-constraint"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="owner" type="xs:string"/>
+  <xs:element name="security-constraints-ref" type="xs:string"/>
+  <xs:element name="security-constraint">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:roles"/>
+        <xs:element ref="tns:permissions"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="roles" type="xs:string"/>
+  <xs:element name="permissions" type="xs:string"/>
+  <xs:element name="metadata">
+    <xs:complexType mixed="true">
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute ref="xml:lang" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

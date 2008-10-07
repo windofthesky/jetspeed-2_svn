@@ -1,0 +1,145 @@
+--------------------------  
+ Jetspeed 2.0-M1 Release
+   December 5, 2004
+--------------------------
+
+
+-----------
+ Features
+-----------
+* JSR 168 Support
+* Component Architecture (Spring)
+* J2EE Security, Portal Security Policy
+* Page and Portal Security Constraints (Bronco)
+* PSML/Folder CMS Navigations, Menus, Links
+* Jetspeed SSO
+* Multithreaded Aggregation Engine
+* Full Localization Support
+* Pipeline Request Processor
+* Rules-based Profiler
+* Basic Page Customization
+* Auto Deployment of Portlet Applications
+* Auto Deployment of Layouts and Decorators
+* Advanced Password Features
+* Navigational State Component
+* Integration with Pluto Portlet Container
+* Tigris CSS 
+* Client Indepedent Capability Engine (HTML, XHTML, WML, VML....)
+* Portals Bridges 
+    - Struts
+    - MyFaces
+    - Velocity
+    - Perl
+    - PHP
+    - Bridges Framework
+* Admin Portlets 
+    - Portlet Application Managerr
+    - Profiler Admin
+    - Role Manager
+    - Portal Site Manager
+    - User Manager
+* Sample Portlets 
+    - XSLT RSS
+    - Rome RSS 
+    - WebContent
+    - IFrame
+    - Calendar
+    - Bookmark
+    - Tree Navigator
+    - Guess Games
+
+
+---------------------
+ Tested App Servers:
+---------------------
+ * Tomcat 4.1.30
+ * Tomcat 5.0.30
+
+ (Tomcat 5.5 requires a different jetspeed.xml found in the source tree under src/resources/jetspeed-tomcat-5.5.xml)
+
+ Jetspeed 2 has been independently tested and run on JBoss, Weblogic, and Websphere application servers
+ Check out our wiki page for details: http://wiki.apache.org/portals/Jetspeed2
+
+
+---------------------------
+ Installation Instructions
+---------------------------
+
+1. Download jetspeed-2.0-M1.tar.gz 
+   Download jetspeed-2.0-M1.zip (windows)
+2. Expand jetspeed-2.0-M1.tar.gz into a clean Tomcat installation **
+   
+
+   tar xfz jetspeed-2.0-M1.tar.gz -C tomcat   # where 'tomcat' is your tomcat home directory
+
+   For Windows:
+
+   unzip jetspeed-2.0-M1.zip directly into your tomcat home directory (overlay)
+
+3. cd $TOMCAT_HOME/jetspeed-database
+
+4. start-database.sh (.bat)
+  
+5. startup Tomcat
+
+6. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
+
+
+------------------------------
+ Configuring Another Database
+------------------------------
+
+1. cd $TOMCAT_HOME/jetspeed-database/scripts
+2. edit the build.properties, set the properties for your database connection, save.
+3. create a database schema/catalog to hold your database tables 
+4. type 'ant' to run the database population scripts
+5. edit the jetspeed.xml properties 
+    - Tomcat4 - $TOMCAT_HOME/webapps/jetspeed.xml
+    - Tomcat5 - $TOMCAT_HOME/conf/Catalina/localhost/jetspeed.xml
+   
+    and set your database connection
+
+6. copy your database driver into Tomcat's common/endorsed directory
+
+7. start up Jetspeed, navigate to http://localhost:8080/jetspeed/portal
+
+ Sample accounts to login as:
+    
+ admin/admin
+
+**    NOTE: if you are installing into a Tomcat instance which had Jetspeed installed previously, remember to delete these files :
+        $TOMCAT_HOME/shared/lib/jetspeed*.jar
+        $TOMCAT_HOME/shared/lib/pluto*.jar
+        $TOMCAT_HOME/shared/lib/portlet-api*.jar
+        $TOMCAT_HOME/shared/lib/portals-bridges*.jar
+        $TOMCAT_HOME/webapps/jetspeed
+
+
+-----------------------------
+   Deployment Optimization
+-----------------------------
+
+There are some known issues with deployment and race conditions with the default jetspeed configuration.
+To optimize deployment, add these properties to your $HOME/build.properties:
+
+org.apache.jetspeed.services.autodeployment.user = admin
+org.apache.jetspeed.services.autodeployment.password = admin
+
+Edit your $TOMCAT_HOME/conf/tomcat-users.xml and add the required manager and admin roles and admin user:
+
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+  <role rolename="manager"/>
+  <role rolename="admin"/>
+  ...
+  <user username="admin" password="admin" roles="admin,manager,user"/>
+</tomcat-users>
+
+
+If you make these changes, its recommended to change Tomcat's server.xml and turn off Autodeployment feature:
+
+      <Host name="localhost" debug="0" appBase="webapps"
+       unpackWARs="true" autoDeploy="false">  <------------------
+
+
+

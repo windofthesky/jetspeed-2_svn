@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Frequently Asked Questions</title>
+		<subtitle>Jetspeed-2 FAQs</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="How do I create new users, roles, and groups?">
+		<p>There are several ways to create new users, roles and groups:</p>
+		<ul>
+		<li>With the administrative user/role/group browser/details portlets</li>
+		<li>With the self-registration portlet</li>
+		<li>With Jetspeed Seed Data</li>
+		<li>Programmatically, writing your own portlet</li>		
+		</ul>
+		<subsection name='Administrative Portlets'>
+		<p>Creating a new user with the Administrative portlets is easy:
+		</p>
+		<ul>
+		<li>Login as admin (the default password is admin)</li>
+		<li>From the LHS menu, navigate to the <b>Jetspeed Administrative Portlets</b> link</li>
+		<li>The User Management page is the first tab on the administrative menu across the top</li>
+		<li>Here you see the User Browser on the left, and the User Details on the right</li>
+		</ul>
+		<p>From here you can create a new user. Choose a unique username with no spaces. Then enter a secure password.
+		You can require the password to be changed on the first login. You can also select the default role assigned to this user,
+		as well as a default profiling rule. Last, you can assign this user to a subsite</p>
+		 <img src="images/add-user.png"/>
+		<p>Going into edit mode, you an further configure the User Details portlet. Note that the following fields can be defaulted:
+		</p>
+		<img src="images/add-user-editmode.png"/>		
+		<ul><li>Default Role for New User</li>
+		<li>Required Role for New User (not shown on view mode)</li>
+		<li>Default Profile for new user</li>
+		<li>New User Template Directory - leave blank to not use a template</li>
+		<li>Subsite Root Folder</li>
+		<li>Default Subsite for new user</li>
+		</ul>
+		<p>The User Details configuration is useful for delegated security scenarios. For example, setting up a User Management page for all users
+		with the <i>Developer</i> role. First, setup the User Browser preference to FilterByRole on <i>Developer</i>. Then you can assign a default role,
+		required role, new user template, and subsite area all for new developers, managed by a user with the <i>DeveloperManager</i> role. This user
+		then can create only developer type users complete with the correct roles and user templates. The edit mode of the User Details portlet can be
+		secured so that the global admin can only edit the configuration, limiting the development manager to only creating or deleting developers</p>
+		<p>The Group and Role administration pages work similarly to the User administration page. You can add/edit/delete both groups and roles</p>
+		</subsection>
+		<subsection name='Self-Registration portlet'>
+		<p>Users can also be created in the portal by the end user, requiring no administrative actions. Self-registration is probably one of the most customization
+		areas of the portal, as all portals have different requirements for self-registration. The self-registration portlet also has preferences that
+		can be configured by the administrator: 
+		<ul>
+		<li>A list of one or more groups</li>
+		<li>A list of one or more roles comma-separated</li>
+		<li>A subsite root folder</li>
+		<li>A boolean flag to send email notification or not</li>
+		<li>A new user template</li>
+		<li>Profiling rule names and values comma-seperated</li>
+		</ul>
+		</p>
+		</subsection>
+	<!-- 
+		<subsection name='Populating Users, Groups and Roles with XML Seed Data'>
+		<p>The <i>out of the box</i> default Users, Groups and Roles are originally populated into the Jetspeed Portal during the installation process as well as during the Jetspeed build.
+		There are specific targets in the build which populate the default <i>seed</i> data from XML files. The installer uses the same XML files to populate the seed data.
+		Lets take a look at what the seed data looks like for roles:
+		</p>
+		</subsection> 
+		<subsection name='Creating users, groups, roles programmatically'>
+		</subsection>
+		</section>
+		<section name='How do I create security constraints?'>
+		</section>
+		<section name='How do I create profiles?'>
+		<p>What happens if it fails in the Profiler Admin</p>
+		</section>
+		<section name='How do I debug decorators?'>
+		</section>
+		<section name='Where to debug when Jetspeed won’t get started?'>
+		</section>
+		<section name='What to do when Jetspeed does not show portlets that you have deployed?'>
+		</section>
+		<section name='How do I turn the feature to Clear All Window States and Portlet Modes when Navigating (changing) pages?'>
+			<ul>
+			<li>1. In pipelines.xml, edit the <b>pageHistoryValve</b> bean. Set the <b>valveDisabled</b> flag to false.</li>
+			<li>2. In portal-url-generation.xml, edit the <b>NavigationalState</b> bean. Modify the <b>NavigationalState</b>, changing the constructor-arg 3 to the boolean value true.
+			</li>
+			</ul>   			
+		</section>
+		<section name='How do I turn the feature to Maximize on Edit mode and Edit Defaults mode?'>
+			<ul>
+			<li></li>
+			<li>
+			</li>
+			</ul>   			
+		</section>
+		<section name='How do I turn the feature to Maximize on Edit mode, Edit Defaults and Configure modes?'>
+			<ul>
+			<li></li>
+			<li>
+			</li>
+			</ul>   			
+		</section>
+		<section name='How do I turn the feature - Auto-switching for Edit Defaults and Configure modes?'>
+			<ul>
+			<li></li>
+			<li>
+			</li>
+			</ul>   			
+		</section>
+		-->
+		</section>
+	</body>
+</document>
+

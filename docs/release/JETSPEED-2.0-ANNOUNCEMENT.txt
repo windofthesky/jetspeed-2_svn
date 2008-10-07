@@ -1,0 +1,119 @@
+Email destinations:
+
+* jetspeed-dev@portals.apache.org
+* jetspeed-user@portals.apache.org
+* general@portals.apache.org
+* announce@apache.org
+
+Subject: Jetspeed 2.0 Final Released
+
+Message:
+
+The Apache Portals Jetspeed Team is pleased to announce the final release of the Jetspeed 2.0 Open Source Enterprise Portal. This final release is fully-compliant with the Portlet Specification 1.0 (JSR-168).
+Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully CERTIFIED to the Java Portlet Standard.
+
+The Jetspeed team will be presenting the new 2.0 release at ApacheCon US 2005 on December 10th in San Diego.
+
+Jetspeed is a full implementation of the Java Portlet API. 
+Notable features include security components backed by LDAP and database implementations and some robust administration interfaces. Custom portals can be built and  deployed using the Jetspeed plugin for Maven. Developers can use the Jetspeed PSML language to assemble portlets and the Apache Portals Bridges project to 'bridge' portals with existing technologies including Struts, JSF, PHP, Perl. For GUI designers, Jetspeed comes with several built-in  templates used to decorate portals and portlets. Join the growing community of Jetspeed users and developers at ApacheCon. David Sean Taylor will be  presenting a
+Jetspeed tutorial that shouldn't be missed by anyone interested in the
+technology. 
+
+----------------------------- 
+ Jetspeed 2.0 Release Notes
+   December 8, 2005
+-----------------------------
+
+Features of the Final Release Include:
+
+Standardized:
+* Fully compliant with Java Portlet API Standard 1.0 (JSR 168)
+* Passed JSR-168 TCK Compatibility Test Suite
+* J2EE Security based on JAAS Standard, JAAS DB Portal Security Policy
+* LDAP Support for User Authentication
+
+Foundation Component Architecture:
+* Spring-based Components and Scalable Architecture
+* Configurable Pipeline Request Processor
+* Auto Deployment of Portlet Applications
+* Jetspeed Component Java API
+* Jetspeed AJAX XML API
+* PSML: Extended Portlet Site Markup Language
+    - Database Persistent
+    - Content Management Facilities
+    - Security Constraints
+
+Portal Core Features:
+* Declarative Security Constraints and JAAS Database Security Policy
+* Runtime Portlet API Standard Role-based Security
+* Portal Content Management and Navigations: Pages, Menus, Folders, Links
+* Multithreaded Aggregation Engine
+* PSML Folder CMS Navigations, Menus, Links
+* Jetspeed SSO (Single Sign-on)
+* Rules-based Profiler for page and resource location
+* Integrates with most popular databases including
+   - Derby, MySQL, MS SQL, Oracle, Postgres, DB2
+* Client independent capability engine (HTML, XHTML, WML, VML)
+* Internationalization: Localized Portal Resources in 12 Languages
+* Statistics Logging Engine
+* Portlet Registry
+* Full Text Search of Portlet Resources with Lucene
+* User Registration
+* Forgotten Password
+* Rich Login and Password Configuration Management
+
+Administrative Portlets:
+* User, Role, Group, Password, and Profile Management
+* JSR 168 Generic User Attributes Editor
+    - JSR 168 Preferences Editor 
+    -  Site Manager
+    -  SSO Manager
+    -  Portlet Application and Lifecycle Management
+    -  Profiler Administration
+    -  Statistics Reports
+
+Web Framework Support and Sample Portlets:
+* Bridges to other Web Frameworks
+   - JSF, Struts, PHP, Perl, Velocity
+* Sample Portlets
+   - RSS, IFrame, Calendar XSLT, Bookmark, Database Browser
+   - Integration with Display Tags, Spring MVC
+
+Customization Features:
+* Administrative Site Manager
+* Page Customizer
+
+Portal Design Features:
+* Deployment Jetspeed Portlet and Page Skins (Decorators) CSS Components
+* Configurable CSS Page Layouts
+* Easy to Use Velocity Macro Language for Skin and Layout Components
+
+Development Tools
+* Automated Maven Build
+* Jetspeed-2 Maven Plugin for Custom Portal Development
+* AutoDeployment of Portlet Applications, Portal Resources
+* Deployment Tools
+* Plugin Goals integrated with Auto Deployment Feature
+
+Application Servers Supported:
+* Tomcat 5.0.x
+* Tomcat 5.5.x
+* Websphere 5.1, 6.0
+* JBoss 
+
+----------------------------------------------------------------------
+
+The release is available for download from the Apache Download Mirrors:
+
+     http://portals.apache.org/jetspeed-2/download.html
+
+We hope you enjoy using Jetspeed! If you have any questions, please consult:
+
+    * The web site: http://portals.apache.org/jetspeed-2/
+
+    * The jetspeed-user mailing list: http://portals.apache.org/jetspeed-2/mail-lists.html
+
+  For news and information, see:
+
+    * http://portals.apache.org/news.html
+

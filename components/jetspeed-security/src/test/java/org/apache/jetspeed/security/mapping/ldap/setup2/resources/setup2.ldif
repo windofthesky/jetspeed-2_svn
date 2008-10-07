@@ -1,0 +1,295 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# $Id$
+
+dn: o=sevenSeas
+objectClass: top
+objectClass: organization
+o: sevenSeas
+
+dn: ou=rootOrg,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: rootOrg
+
+dn: ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: ou=Groups,ou=rootOrg,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: cn=accounting,ou=Groups,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: accounting
+j2-classname: accounting
+uid: accounting
+uniqueMember: uid=accounting
+
+dn: cn=engineering,ou=Groups,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: engineering
+j2-classname: engineering
+uid: engineering
+uniqueMember: uid=engineering
+
+dn: cn=marketing,ou=Groups,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-group
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: marketing
+j2-classname: marketing
+uid: marketing
+uniqueMember: uid=marketing
+
+dn: cn=admin,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: admin
+j2-classname: admin
+uid: admin
+uniqueMember: uid=admin
+
+dn: cn=manager,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: manager
+description: Manager Role
+j2-classname: manager
+uid: manager
+uniqueMember: uid=manager
+
+dn: cn=user,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: user
+description: User Role
+j2-classname: user
+uid: user
+uniquemember: uid=user
+uniquemember: uid=admin
+uniquemember: uid=manager
+uniquemember: uid=local
+
+dn: cn=guest,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: guest
+j2-classname: guest
+uid: guest
+uniquemember: uid=guest
+
+dn: cn=subsite,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: subsite
+j2-classname: subsite
+uid: subsite
+uniquemember: uid=subsite
+
+dn: cn=subsite2,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: subsite2
+j2-classname: subsite2
+uid: subsite2
+uniquemember: uid=subsite
+
+dn: cn=dev,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: dev
+j2-classname: dev
+uid: dev
+uniquemember: uid=dev
+
+dn: cn=devmgr,ou=Roles,ou=rootOrg,o=sevenSeas
+objectClass: jetspeed-2-role
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: devmgr
+j2-classname: devmgr
+uid: devmgr
+uniquemember: uid=devmgr
+
+dn: cn=admin,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: admin
+givenname: Admin
+j2-role: admin
+j2-role: manager
+j2-role: user
+sn: admin
+uid: admin
+userpassword:: c2VjcmV0
+
+dn: cn=someManager,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: someManager
+givenname: Some Manager
+j2-role: manager
+j2-role: user
+sn: someManager
+uid: someManager
+userpassword:: c2VjcmV0
+
+dn: cn=user,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: user
+givenname: User
+j2-role: user
+sn: user
+uid: user
+userpassword:: c2VjcmV0
+
+dn: cn=local,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: local
+givenname: Local
+j2-role: user
+sn: local
+uid: local
+userpassword:: c2VjcmV0
+
+dn: cn=sublocal,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: sublocal
+givenname: sublocal
+j2-role: user
+sn: sublocal
+uid: sublocal
+userpassword:: c2VjcmV0
+
+dn: cn=tomcat,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: tomcat
+givenname: tomcat
+sn: tomcat
+uid: tomcat
+userpassword:: c2VjcmV0
+
+dn: cn=jetspeed,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: jetspeed
+givenname: jetspeed
+j2-role: manager
+sn: jetspeed
+uid: jetspeed
+userpassword:: c2VjcmV0
+
+dn: cn=guest,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: guest
+givenname: guest
+sn: guest
+uid: guest
+userpassword:: c2VjcmV0
+
+dn: cn=subsite,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: subsite
+givenname: subsite
+j2-role: subsite
+j2-role: subsite2
+j2-role: user
+sn: subsite
+uid: subsite
+userpassword:: c2VjcmV0
+
+dn: cn=subsite2,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: subsite2
+givenname: subsite2
+j2-role: subsite
+j2-role: subsite2
+j2-role: user
+sn: subsite2
+uid: subsite2
+userpassword:: c2VjcmV0
+
+dn: cn=devmgr,ou=People,ou=rootOrg,o=sevenSeas
+objectClass: organizationalPerson
+objectClass: person
+objectClass: jetspeed-2-user
+objectClass: inetOrgPerson
+objectClass: top
+cn: devmgr
+givenname: devmgr
+j2-role: devmgr
+j2-role: dev
+j2-role: user
+sn: devmgr
+uid: devmgr
+userpassword:: c2VjcmV0

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
+	<bean id="serializer" class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
+	  <constructor-arg index="0">
+	    <list>
+	      <bean class="org.apache.jetspeed.serializer.JetspeedCapabilitiesSerializer">
+	        <constructor-arg ref="org.apache.jetspeed.capabilities.Capabilities"/>
+	      </bean>
+	    </list>
+	  </constructor-arg>
+	  <constructor-arg index="1">
+	    <map>
+	    	<entry key="process_capabilities"><value type="java.lang.Boolean">true</value></entry>
+	    </map>
+	  </constructor-arg>
+	</bean>
+	
+</beans>

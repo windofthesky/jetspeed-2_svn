@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Tomcat SSO and Cross Context Webapps Guide</title>
+		<subtitle>Documentation for using the Jetspeed Authentication accross multiple webapps running in the same Tomcat container</subtitle>
+		<authors>
+			<person name="Philip Mark Donaghy" email="philip.donaghy@gmail.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Sharing the Jetspeed Realm Across Tomcat Webapps">
+			<p>
+				This guide provides a tutorial for creating a shared authentication Realm
+				between multiple webapps running in the same Tomcat(&gt;=5.5) container.
+			</p>
+			<subsection name="1. The Jetspeed Realm">
+				<p>
+				Realms are configured in the Engine element of $CATALINA_HOME/conf/server.xml. Move the Jetspeed Realm element from $CATALINA_HOME/conf/Catalina/localhost/jetspeed.xml to $CATALINA_HOME/conf/server.xml replacng or commenting out the UserDatabase Realm. 
+				<source><![CDATA[
+<Realm className="org.apache.catalina.realm.JAASRealm"
+           appName="Jetspeed"
+           userClassNames="org.apache.jetspeed.security.impl.UserPrincipalImpl"
+           roleClassNames="org.apache.jetspeed.security.impl.RolePrincipalImpl"
+           useContextClassLoader="false"
+           debug="0"/>]]>
+				</source>
+				</p>
+			</subsection>
+			<subsection name="2. Enable the Tomcat SingleSignOn Valve">
+			<p>
+			Uncomment the Tomcat single sign on Valve in $CATALINA_HOME/conf/server.xml.
+			<source><![CDATA[
+<Host name="localhost" appBase="webapps">
+    <!-- Enable tomcat SSO *** -->
+    <Valve className="org.apache.catalina.authenticator.SingleSignOn" />
+</Host>]]>
+			</source>
+			</p>
+			</subsection>
+			<subsection name="3. Each web.xml">
+			<p>
+			Create a security-constraint in each webapp web.xml descriptor.
+			<source><![CDATA[
+  <security-constraint>
+    <web-resource-collection>
+       <web-resource-name>Whatever</web-resource-name>
+       <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>manager</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <!-- Define the Login Configuration for this Application -->
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Jetspeed</realm-name>
+  </login-config>
+
+  <!-- Security roles referenced by this web application -->
+  <security-role>
+    <description>
+        The role that is required to log in to the Manager Application
+    </description>
+    <role-name>manager</role-name>
+  </security-role>]]>
+			</source>
+			</p>
+			</subsection>
+			<subsection name="4. Known Issues">
+			<p>
+			1. The default Tomcat Realm must be replaced, removed, or commented out. A known side effect of this prevents the Tomcat manager application from working. It can be resolved by using the Jetspeed realm in $CATALINA_HOME/server/webapps/manager/manager.xml.
+			<source><![CDATA[
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Jetspeed</realm-name>
+  </login-config>]]>
+			</source>
+			</p>
+			<p>
+			2. Authentication must be made in Jetspeed before accessing other webapps.
+			</p>
+			</subsection>
+		</section>
+	</body>
+</document>

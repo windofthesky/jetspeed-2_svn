@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 	xmlns="http://www.w3.org/2001/XMLSchema" 
+			targetNamespace="http://portals.apache.org" 
+			xmlns:pa="http://portals.apache.org" 
+			elementFormDefault="qualified" 
+			version="1.0">
+	<annotation>
+		<documentation xml:lang="en">Schema for data serialization of JetSpeed 2 DataModel
+      Licensed to the Apache Software Foundation (ASF) under one or more
+      contributor license agreements.  See the NOTICE file distributed with
+      this work for additional information regarding copyright ownership.
+      The ASF licenses this file to You under the Apache License, Version 2.0
+      (the "License"); you may not use this file except in compliance with
+      the License.  You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0
+		Unless required by applicable law or agreed to in writing, software 
+		distributed under the License is distributed on an "AS IS" BASIS, 
+		WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+		See the License for the specific language governing permissions and 
+		limitations under the License.
+	  </documentation>
+	</annotation>
+	
+	<element name="DataModel">
+		<annotation>
+			<documentation xml:lang="en">The DataModel consists of a list of 
+		domain objects that are valid for this version. Each domain object holds the data of a given component. 
+		</documentation>
+		</annotation>
+
+		<complexType>
+			<sequence>
+				<element name="schemaVersion" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+						<documentation xml:lang="en">The schemaVersion denotes the backward compatibility 
+						of this schema. The optional version attribute of the schema above denotes the version of this schema and
+						the schemaVersion element here declares the latest schema version with which the instance is compatible
+						With this approach, an application could compare the schema version (captured in the 
+						schema file) with the version to which the instance reports that it is compatible.
+						</documentation>
+				</annotation>
+				</element>
+				<element name="Domain" minOccurs="1" maxOccurs="1">
+					<annotation>
+						<documentation xml:lang="en">The Domain is the collection of 
+						all relevant data objects for this portal. 
+						</documentation>
+					</annotation>
+					<complexType>
+						<sequence>
+							<element name="PortalName" type="string" minOccurs="1" maxOccurs="1">
+								<annotation>
+									<documentation xml:lang="en">
+									The PortalName allows to identify the source of the data.
+									</documentation>
+								</annotation>
+								</element>
+							<element name="DateCreated" type="date" minOccurs="1" maxOccurs="1">
+								<annotation>
+									<documentation xml:lang="en">
+									Always helpful to recognize when it was created.
+									</documentation>
+								</annotation>
+								</element>
+							<element name="Roles" minOccurs="0" maxOccurs="1">
+								<annotation>
+									<documentation xml:lang="en">
+									Roles
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:Role" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+
+								</element>
+							<element name="Groups" minOccurs="0" maxOccurs="1">
+								<annotation>
+									<documentation xml:lang="en">
+									Groups
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:Group" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+								</element>
+							<element name="Permissions" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Permissions
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:Permission" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+								</element>
+							<element name="Capabilities" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Capabilities
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:Capability" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+
+								</element>
+							<element name="MimeTypes" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Mime Types
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:MimeType" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+								</element>
+							<element name="Clients" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Clients
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:Client" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+								</element>
+							<element name="MediaTypes" minOccurs="0" maxOccurs="1">
+								<annotation>
+									<documentation xml:lang="en">
+									Media Types
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:MediaType" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+								</element>
+
+	<!--  Associations -->
+
+
+							<element name="ClientToCapabilities" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Client to Capabilities
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:ClientCapability" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+
+								</element>
+							<element name="ClientToMimeTypes" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Client To MimeTypes
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:ClientMimeTypes" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+								</element>
+							<element name="MediaToMimeTypes" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Media To MimeTypes
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:MediaMimeTypes" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+							</element>
+						<element name="ProfilingRules" minOccurs="0" maxOccurs="1" >
+								<annotation>
+									<documentation xml:lang="en">
+									Profiling Rule
+									</documentation>
+								</annotation>
+								<complexType>
+					            	<sequence>
+                						<element ref="pa:ProfilingRule" minOccurs="1" maxOccurs="unbounded"/>
+									</sequence>
+								</complexType>
+						</element>
+						</sequence>
+		
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+		<key name="UniqueDomain">
+			<selector xpath="Domain"/>
+			<field xpath="@PortalName"/>
+		</key>
+	</element>
+	<element name="Role">
+	<complexType >
+		<annotation>
+			<documentation xml:lang="en">Role ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+
+	<element name="Group">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">Group ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+	</element>
+
+	<element name="Permission">
+		<complexType>
+		<annotation>
+			<documentation xml:lang="en">Permission ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="Capability">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">Capability ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="capability_id" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="capability" type="string" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="MimeType">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">Mimetype ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="mimetype_id" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="Client">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">Client ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="client_id" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="eval_order" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+			<element name="user_agent_pattern" type="string" minOccurs="0" maxOccurs="1"/>
+				<element name="manufacturer" type="string" minOccurs="0" maxOccurs="1"/>
+			<element name="model" type="string" minOccurs="0" maxOccurs="1"/>
+			<element name="version" type="string" minOccurs="0" maxOccurs="1"/>
+			<element name="preferred_mimetype_id" type="integer" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="MediaType">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">MediaType ....
+						</documentation>
+		</annotation>
+		<sequence>
+			<element name="mediatype_id" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+			<element name="character_set" type="string" minOccurs="0" maxOccurs="1"/>
+			<element name="title" type="string" minOccurs="0" maxOccurs="1"/>
+			<element name="description" type="string" minOccurs="0" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="ClientCapability">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">
+			Associate clients with capabilities
+			 </documentation>
+		</annotation>
+		<sequence>
+			<element name="clientID" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="capabilityID" type="integer" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="ClientMimeTypes">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">
+			Associate clients with mime types
+			 </documentation>
+		</annotation>
+		<sequence>
+			<element name="clientID" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="mimetypeID" type="integer" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+	<element name="MediaMimeTypes">
+	<complexType>
+		<annotation>
+			<documentation xml:lang="en">
+			Associate media types with mime types 
+			 </documentation>
+		</annotation>
+		<sequence>
+			<element name="mediatypeID" type="integer" minOccurs="1" maxOccurs="1"/>
+			<element name="mimetypeID" type="integer" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+	</element>
+
+	<element name="ProfilingRule">
+	<complexType>
+
+		<annotation>
+			<documentation xml:lang="en">
+			Profiling Rule
+			 </documentation>
+		</annotation>
+		<sequence>
+			<element name="tbd" type="string" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</element>
+
+</schema>

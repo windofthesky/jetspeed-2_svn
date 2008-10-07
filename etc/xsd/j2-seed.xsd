@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://portals.apache.org/jetspeed"
+	xmlns:tns="http://portals.apache.org/jetspeed">
+  <xs:element name="Snapshot">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+	        <xs:element ref="tns:Null"/>
+            <xs:element ref="tns:softwareVersion"/>
+        </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>        
+	        <xs:element  ref="tns:softwareSubVersion"/>
+		</xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        
+	        <xs:element  ref="tns:default_rule"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:encryption"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:MimeTypes"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:MediaTypes"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Capabilities"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Clients"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Roles"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Groups"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Users"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:Permissions"/>
+	    </xs:choice>
+        <xs:choice>
+            <xs:element ref="tns:Null"/>			        	    
+	        <xs:element  ref="tns:ProfilingRules"/>
+	    </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="softwareVersion">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="softwareSubVersion">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="default_rule">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="encryption">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MimeTypes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:MimeType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MimeType" type="xs:string"/>
+  <xs:element name="MediaTypes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:MediaType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MediaType">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:charcterSet"/>
+        <xs:element ref="tns:title"/>
+        <xs:element ref="tns:description"/>
+        <xs:element ref="tns:capabilities"/>
+        <xs:element ref="tns:mimeTypes"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="charcterSet">
+    <xs:complexType>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Capabilities">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:Capability"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Capability" type="xs:string"/>
+  <xs:element name="Clients">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:Client"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Client">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:userAgentPattern"/>
+        <xs:element ref="tns:version"/>
+        <xs:element ref="tns:model"/>
+        <xs:element ref="tns:manufacturer"/>
+        <xs:element ref="tns:capabilities"/>
+        <xs:element ref="tns:mimeTypes"/>
+      </xs:sequence>
+      <xs:attribute name="evalOrder" use="required" type="xs:integer"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="preferredMimeTypeID" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="userAgentPattern">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="version">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="model">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="manufacturer">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Roles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:Role"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Role" type="xs:string"/>
+  <xs:element name="Groups">
+    <xs:complexType>
+      <xs:sequence minOccurs='0'>
+        <xs:element minOccurs='0' maxOccurs="unbounded" ref="tns:Group"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Group" type="xs:string" />
+  <xs:element name="Users">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:User"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="User">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="tns:Null"/>
+          <xs:element ref="tns:credentials"/>
+        </xs:choice>
+        <xs:element ref="tns:roles"/>
+        <xs:element ref="tns:groups"/>
+        <xs:choice>
+          <xs:element ref="tns:Null"/>        
+	      <xs:element ref="tns:preferences"/>
+	    </xs:choice>
+	    <xs:choice>
+          <xs:element ref="tns:Null"/>	    
+          <xs:element ref="tns:userinfo"/>
+        </xs:choice>
+        <xs:choice>
+           <xs:element ref="tns:Null"/>        
+           <xs:element ref="tns:Rules"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="userTemplate" type="xs:string"/>
+      <xs:attribute name="subsite"  type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Null">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="credentials">
+    <xs:complexType>
+      <xs:attribute name="enabled" use="required">
+         <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="TRUE" />
+            <xs:enumeration value="FALSE" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="password" use="required" type="xs:string"/>
+      <xs:attribute name="requiresUpdate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="TRUE" />
+            <xs:enumeration value="FALSE" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="expirationDate" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="preferences">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="tns:preference"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="userinfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:preference"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Rules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:Rule"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Rule">
+    <xs:complexType>
+      <xs:attribute name="locator" use="required" type="xs:string"/>
+      <xs:attribute name="rule" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Permissions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:Permission"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Permission">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:roles"/>
+        <xs:element ref="tns:groups"/>
+        <xs:element ref="tns:users"/>
+      </xs:sequence>
+      <xs:attribute name="actions" use="required" type="xs:string"/>
+      <xs:attribute name="resource" use="required" type="xs:string"/>
+      <xs:attribute name="type" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="users" type="xs:string"/>
+  <xs:element name="ProfilingRules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:ProfilingRule"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProfilingRule">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:description"/>
+        <xs:element ref="tns:Criteria"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="standardRule" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Criteria">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tns:Criterion"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Criterion">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:type"/>
+        <xs:element minOccurs="0" ref="tns:value"/>
+        <xs:element ref="tns:fallBackOrder"/>
+        <xs:element ref="tns:fallBackType"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="type">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value">
+    <xs:complexType>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fallBackOrder">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fallBackType">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="description">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="capabilities" type="xs:string"/>
+  <xs:element name="mimeTypes" type="xs:string"/>
+  <xs:element name="roles" type="xs:string"/>
+  <xs:element name="groups" type="xs:string"/>
+    <xs:element name="preference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tns:name"/>
+        <xs:element ref="tns:value"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

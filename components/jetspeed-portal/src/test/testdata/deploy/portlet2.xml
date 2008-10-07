@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<portlet-app id="HW_App" version="1.0">
+  <portlet id="HelloPortlet">
+    <init-param>
+			<description>test init param</description>
+			<name>hello</name>
+			<value>Hello Portlet</value>
+     </init-param>   
+    <portlet-name>HelloPortlet</portlet-name>
+    <display-name>HelloWorld Portlet Wrapper</display-name>
+    <description>This is the hello world of portlets, it doesn't do much</description>
+    <portlet-class>org.apache.jetspeed.portlet.helloworld.HelloWorld</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>EDIT</portlet-mode>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>HelloWorldTitle</title>
+      <short-title>This is the short title</short-title>
+      <keywords>Test</keywords>
+    </portlet-info>
+  </portlet>
+  
+   <portlet id="JMXPortlet">
+      
+    <portlet-name>JMXPortlet</portlet-name>
+    <display-name>JMX Registry Access portlet</display-name>
+    <portlet-class>org.apache.jetspeed.demo.jmx.JMXPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>JMX Portal Console</title>
+      <short-title>JMX Portlet Console</short-title>
+      <keywords>JMX</keywords>
+    </portlet-info>
+  </portlet>
+  
+  <portlet id="PreferencePortlet">      
+    <portlet-name>PreferencePortlet</portlet-name>
+    <display-name>PreferencePortlet</display-name>
+    <portlet-class>org.apache.jetspeed.demo.preferences.PreferencePortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Preference Test</title>
+      <short-title>Preference Test</short-title>
+      <keywords>Preferences</keywords>
+    </portlet-info>
+    <portlet-preferences>
+    	 <preference>
+    	 	 <name>pref1</name>
+    	 	 <value>Hello</value>
+    	 	 <value>Hello2</value>
+    	  </preference>
+    </portlet-preferences>
+  </portlet>
+ 
+  <portlet id="DisplayRequestPortlet">
+    <init-param> 
+	    <name>HelpPage</name>
+	    <value>/WEB-INF/demo/simple/DisplayRequestHelp.jsp</value>
+    </init-param> 
+    <init-param> 
+	    <name>ViewPage</name>
+  	  <value>/WEB-INF/demo/simple/DisplayRequest.jsp</value>
+    </init-param> 
+    <portlet-name>DisplayRequestPortlet</portlet-name>
+    <display-name>DisplayRequest Portlet Wrapper</display-name>
+    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Display the Portlet Request Information</title>
+      <short-title>Portlet Request Information</short-title>
+    </portlet-info>
+  </portlet>
+ 
+  <portlet id="PickANumberPortlet">
+    <portlet-name>PickANumberPortlet</portlet-name>
+    <display-name>Pick a number game</display-name>
+    <portlet-class>org.apache.jetspeed.demo.simple.PickANumberServlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Pick a Number</title>
+    </portlet-info>
+  </portlet>
+  
+  <portlet id="AttributeScopePortlet">
+    <portlet-name>AttributeScopePortlet</portlet-name>
+    <display-name>Attribute Scope Demo</display-name>
+    <portlet-class>org.apache.jetspeed.demo.simple.AttributeScopeServlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+      <portlet-mode>HELP</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Attribute Scope Demo Portlet</title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="CustomerList">
+    <init-param> 
+	  <name>ViewPage</name>
+  	  <value>/WEB-INF/demo/customerInfo/Page1.jsp</value>
+    </init-param> 
+    <portlet-name>CustomerList</portlet-name>
+    <display-name>Customer List</display-name>
+    <portlet-class>org.apache.jetspeed.demo.customerInfo.CustomerPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Customer List</title>
+      <short-title>Customer List</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="CustomerInfo">
+    <init-param> 
+	  <name>ViewPage</name>
+  	  <value>/WEB-INF/demo/customerInfo/Page2.jsp</value>
+    </init-param> 
+    <portlet-name>CustomerInfo</portlet-name>
+    <display-name>Customer Information</display-name>
+    <portlet-class>org.apache.jetspeed.demo.customerInfo.CustomerPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Customer Information</title>
+      <short-title>Customer Info</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="CustomerDetail">
+    <init-param> 
+	  <name>ViewPage</name>
+  	  <value>/WEB-INF/demo/customerInfo/Page3.jsp</value>
+    </init-param> 
+    <portlet-name>CustomerDetail</portlet-name>
+    <display-name>Customer Detail</display-name>
+    <portlet-class>org.apache.jetspeed.demo.customerInfo.CustomerPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <portlet-info>
+      <title>Customer Detail</title>
+      <short-title>Customer Detail</short-title>
+    </portlet-info>
+  </portlet>
+
+  <portlet id="LoginPortlet">
+    <init-param> 
+	    <name>ViewPage</name>
+  	  <value>/WEB-INF/demo/simple/Login.jsp</value>
+    </init-param> 
+    <portlet-name>LoginPortlet</portlet-name>
+    <display-name>LoginRequest Portlet Wrapper</display-name>
+    <portlet-class>org.apache.jetspeed.portlet.ServletPortlet</portlet-class>
+    <expiration-cache>-1</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>VIEW</portlet-mode>
+   </supports>
+    <portlet-info>
+      <title>Login/Logout  Request Information</title>
+      <short-title>Portlet Request Information</short-title>
+    </portlet-info>
+  </portlet>
+
+</portlet-app>
+

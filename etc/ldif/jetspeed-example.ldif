@@ -1,0 +1,174 @@
+dn: o=sevenSeas
+objectClass: top
+objectClass: organization
+o: sevenSeas
+
+dn: cn=admin,o=sevenSeas
+objectClass: person
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+cn: admin
+sn: admin
+uid: admin
+userPassword:: cGFzczEyMw==
+
+dn: o=Jetspeed,o=sevenSeas
+objectClass: top
+objectClass: organization
+o: Jetspeed
+
+dn: o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: top
+objectClass: organization
+o: Amsterdam
+
+dn: o=SanFrancisco,o=Jetspeed,o=sevenSeas
+objectClass: top
+objectClass: organization
+o: SanFrancisco
+
+dn: o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+objectClass: top
+objectClass: organization
+o: Peoples
+
+dn: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+objectClass: person
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+cn: David
+givenName: David
+sn: David
+uid: david
+userPassword:: cGFzcw==
+
+dn: cn=John,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: John
+givenName: John
+sn: john
+uid: john
+userPassword:: cGFzcw==
+
+dn: cn=Jennifer,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Jennifer
+givenName: Jennifer
+sn: jennifer
+uid: jennifer
+userPassword:: cGFzcw==
+
+dn: cn=Lisa,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Lisa
+givenName: Lisa
+sn: lisa
+uid: lisa
+userPassword:: cGFzcw==
+
+dn: o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: top
+objectClass: organization
+o: Peoples
+
+
+dn: cn=Linda,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Linda
+givenName: Linda
+sn: linda
+uid: linda
+userPassword:: cGFzcw==
+
+dn: cn=Robert,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Robert
+givenName: Robert
+sn: robert
+uid: robert
+userPassword:: cGFzcw==
+
+dn: cn=Mark,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Mark
+givenName: Mark
+sn: mark
+uid: mark
+userPassword:: cGFzcw==
+
+dn: cn=Paul,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Paul
+givenName: Paul
+sn: paul
+uid: paul
+userPassword:: cGFzcw==
+
+dn: cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Thomas
+givenName: Thomas
+sn: thomas
+uid: thomas
+userPassword:: cGFzcw==
+
+dn: ou=Roles,o=Jetspeed,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+
+dn: ou=Groups,o=Jetspeed,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: cn=Users,ou=Roles,o=Jetspeed,o=sevenSeas
+objectClass: groupOfUniqueNames
+cn: Users
+uniqueMember: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+uniqueMember: cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+
+dn: cn=Publishers,ou=Groups,o=Jetspeed,o=sevenSeas
+objectClass: groupOfUniqueNames
+cn: Publishers
+uniqueMember: cn=Lisa,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+uniqueMember: cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+
+dn: cn=Finance,ou=Roles,o=Jetspeed,o=sevenSeas
+objectClass: groupOfUniqueNames
+cn: Finance
+uniqueMember: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
+uniqueMember: cn=Linda,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+uniqueMember: cn=Robert,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
+
+dn: cn=Marketing,ou=Groups,o=Jetspeed,o=sevenSeas
+objectClass: groupOfUniqueNames
+cn: Marketing
+uniqueMember: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas

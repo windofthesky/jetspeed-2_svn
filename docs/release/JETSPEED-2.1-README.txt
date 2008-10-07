@@ -1,0 +1,276 @@
+--------------------------  
+ Jetspeed 2.1 Release
+   March 3, 2007
+--------------------------
+
+The Apache Portals Jetspeed Team is pleased to announce the 2.1 release of 
+the Jetspeed-2 Open Source Enterprise Portal. This release, like the 2.0 release,
+is fully-compliant with the Portlet Specification 1.0 (JSR-168).
+Jetspeed-2 has passed the TCK (Test Compatibility Kit) suite and is fully CERTIFIED
+to the Java Portlet Standard.
+
+The Jetspeed 2.1 release is the second major release of the Jetspeed-2 Portal.
+
+New Features in Version 2.1 include:
+
+ * Jetspeed Desktop - Web 2.0 client-side JSR-168 portlet aggregation.
+ * Parallel Rendering - multithreaded portlet aggregator with portlet timeout tracking, removal of slow rendering portlets.
+ * Jetspeed Distributed Cluster - support for distributed deployments of the portal on multiple application server platforms
+ * JSR 168 Caching - full caching support of JSR 168 portlet specification, distributed cache invalidation
+ * TCK Compliant as of 2.1 (2.0 was compliant as well)
+ * Custom Portlet Modes and Window States - a "print" PortletMode and "solo" WindowState are now standard supported
+ * Improved LDAP support - full security maintenance using LDAP is now supported for many LDAP providers 
+ * New and Improved Administrative and Security Portlets
+ * XML Schemas for PSML, jetspeed-portlet.xml, and Jetspeed XML (seed data)
+ * Installation choice of either Demo Portal or Minimal Starter Portal
+ * New Jetspeed Tutorial
+ * Maven-2 build support as well as Maven-1
+ * Remote Portal Application Deployer - hot deploy portlet applications from remote locations on the Web
+ * Improved Customizers - Portal and Desktop Customizers, drag and drop moving of portlets, nested fragment customization
+ * New Portlet Category Selector
+ * XML Import/Export of all Jetspeed database data and seed data scripts for backup and restore and data migration
+ * Improved Security Control - fully swappable Security Constraint or Security Permission support
+ * Portlet-level Security checks based on Security Constraints or Security Permissions 
+ * Improved Jetspeed AJAX API
+ * Improved Delegation of Security Support
+ * New Site Manager
+ * Improved Database Page Manager
+ * New binary installers making it very easy to setup a basic or demo Jetspeed Portal
+ 
+----------------------------------------------------------------------------------------
+
+The release is available for download from the Apache Download Mirrors through:
+
+     http://portals.apache.org/jetspeed-2/download.html
+
+----------------------------------------------------------------------------------------
+
+---------------------------
+ Installation Requirements
+---------------------------
+1. JVM 1.4.2_04 or greater
+2. 256 MB of Disk Space
+3. 512 MB of Memory
+
+---------------------------
+ Installation Instructions
+---------------------------
+
+1. For a minimal installation of the Jetspeed 2.1 Portal and Administrative portlet application, download:
+  
+   jetspeed-2.1-installer.jar
+   
+   For an installation of the complete Jetspeed 2.1 Demo Portal, download:
+
+   jetspeed-2.1-demo-installer.jar
+   
+2. Run the installer 
+   
+	java -jar jetspeed-2.1-installer.jar	
+	-- or --
+	java -jar jetspeed-2.1-demo-installer.jar
+	
+	The installer will operate in both graphical and headless-commandline mode.
+	You may choose the location of the install, and configure the database
+	
+	Supported Databases:
+	
+	    db2
+		derby 
+		mssql
+		mysql
+		oracle
+		postgres
+		sapdb
+		
+	For all databases except Derby, please have your database driver located on your file system
+	The installer will ask for the location of the driver.
+	
+    With the exception of Derby, you will need to create an empty database schema in 
+      your particular database to store the Jetspeed tables.
+      
+	
+3. startup Tomcat (depending on where you installed to, the location may vary)
+
+   cd ~/jetspeed-2.1/bin
+   ./startup.sh
+   
+   For Windows:
+   
+   cd C:\Apache\Jetspeed-2.1\bin
+   startup.bat
+   
+
+4. The very first invocation of the portal requires anywhere from 10 seconds to 30 seconds for initial 
+   startup and final installation. After starting the server, start up a web browser 
+   and navigate to http://localhost:8080/jetspeed/portal
+
+5. Login 
+
+All preconfigured users have the same password as username
+
+If you installed with the Minimal installer, two test accounts are available:
+
+admin 	  -- System administrator, super user
+devmgr 	  -- Delegated security manager, can manage users with the "dev" (developer) role
+
+If you installed with the Full Demo installer, test accounts are available:
+
+admin 	  -- System administrator, super user
+manager   -  Has system administration rights, but not super user
+user 	  -- A sample user demonstrating with with a home page and advanced profiled menus 
+tomcat 	  -- A sample user demonstrating a user without a home page
+jetspeed  -- A sample user demonstrating discovery of pages by both group and role fallback profiling algorithms
+subsite   -- Example of how to setup users with a primary subsite role fallback profiling rules
+subsite2  -- Example of how to setup users with a secondary subsite role fallback profiling rules
+devmgr 	  -- Delegated security manager, can manage users with the "dev" (developer) role
+
+6. Desktop
+
+The Jetspeed Desktop is a client-side JSR-168 aggregation engine.
+To accesss the Desktop, navigate your browser to http://localhost:8080/jetspeed/desktop
+When switching between the /desktop and the /portal URLs, logout to start a new session.
+
+7. Migrating from Jetspeed 2.0 to 2.1
+
+Import information for migrating existing Jetspeed 2.0 installations to 2.1 is provided in the migration guide:
+
+     http://portals.apache.org/jetspeed-2/guides/guide-migration.html
+
+
+----------------------------------------------------------------------------
+
+Release Notes - Jetspeed 2 - Version 2.1
+
+** Bug
+    * [JS2-134] - Language Set not created from supported-locale
+    * [JS2-168] - capabilities test fails on hsql
+    * [JS2-204] - PLT.7.1.2 Portlet URL securit y not implemented and absolute URL rendering
+    * [JS2-226] - Page Aggregation using STRATEGY_PARALLEL severly broken
+    * [JS2-273] - Editing Page Layout works incorrectly
+    * [JS2-282] - Error when session expires and portlet window is maximized
+    * [JS2-315] - Premature access to portal can break access to portlets.
+    * [JS2-316] - JSF Component javascript not being rendered
+    * [JS2-339] - Calls to preferences.store() trigger a warning about missing transaction in OJB
+    * [JS2-375] - Database scripts broken on Oracle 8i
+    * [JS2-405] - Logout Problem when running behind Apache with mod_jk
+    * [JS2-438] - Broken link on web site
+    * [JS2-439] - typo in SSO sites portlet
+    * [JS2-445] - Unable to build J2 - Failed to download, Missing version numbers
+    * [JS2-448] - Oracle installer broken.
+    * [JS2-450] - portlet application manager eats useful exception message
+    * [JS2-452] - unable to add a custom mode to the portlet.
+    * [JS2-456] - PageImporter did not import <users/> element in page.security to database
+    * [JS2-458] - J2 Security constraint is broken by  DatabasePageManager
+    * [JS2-460] - Minimize/Restore broken
+    * [JS2-464] - Redeployment of portlets that have services defined jetspeed-portlet.xml ARE NOT updating the JETSPEED_SERVICES table with new/altered values.
+    * [JS2-467] - Broken links in http://portals.apache.org/jetspeed-2/getting-started-binary.html
+    * [JS2-468] - Customizer cannot edit nested layouts.
+    * [JS2-473] - Many uses of Fragment.getFragments() assume access to the underlying list, not a copy: this is invalid
+    * [JS2-475] - Proposed changes in portal permissions
+    * [JS2-478] - admin portlets application inconsistency
+    * [JS2-479] - Non-thread safe code in the DB PageManager
+    * [JS2-481] - Unable to change Jetspeed2's default theme "tigris" to another one.
+    * [JS2-483] - buggy css layouts / patch for table based layout
+    * [JS2-485] - admin portlets profiler admin
+    * [JS2-495] - OJB + Spring Transactions broken
+    * [JS2-496] - J2 on tomcat 5.5.15: 403 returned to client browser when any user that doesn't have admin role attempts to log in
+    * [JS2-497] - Can not correctly display the display-names of layout-portlet when editing  a page in Chinese or Japanese.
+    * [JS2-498] - When editting page, can not correctly display the display-name in the language, which have country name.
+    * [JS2-501] - Pluto ObjectID implementation produces invalid map key values
+    * [JS2-503] - UserManager's setUserEnabled() method fails after creating new users
+    * [JS2-509] - Portlet Preferences are not stored on a user by user basis
+    * [JS2-511] - org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl line 558 throws NPE
+    * [JS2-518] - Setting PorletPreferences in PSML does not work
+    * [JS2-519] - Concurrency issues due to ServletPortletInvoker being used as singleton
+    * [JS2-520] - RSSPortlet ignores preference itemdisplayed
+    * [JS2-522] - Infinite loop created in PortletWindowAccessorImpl.getWindowFromCache() while under load
+    * [JS2-526] - JBoss web.xml entry for security-constraint login/redirector wont work under Tomcat
+    * [JS2-528] - Error while trying to deploy portlets
+    * [JS2-530] - MenuElementImpl.getMetadata does not return the defined data
+    * [JS2-535] - SSO default resources
+    * [JS2-556] - decorator.vm in portlet decorators not overriden
+    * [JS2-562] - LDAP attribute name comparison should be case-insensitive
+    * [JS2-564] - wrong italian localization strings
+    * [JS2-571] - Changes to page structure (PSML) using the DatabasePageManager are not reflected to the internal page representation.
+    * [JS2-572] - Maven 2 build requires spring-portlet and spring-beans version
+    * [JS2-576] - PortletDefinitionImpl.getDisplayNameSet() returns empty set if getDisplayName() is not called first
+    * [JS2-582] - Portlet sessions are not invalidated when the portal session is destroyed with emptySessionPath="true"
+    * [JS2-588] - "Portal Site Detail" portlet doesn't work in trunk
+    * [JS2-590] - Moving / Deleting portlets doesn't always work under DatabasePageManager
+    * [JS2-591] - cannot access a new page with a multibyte page name
+    * [JS2-592] - The customizer portlet cannot add portlets to a .psml page when logged in as admin
+    * [JS2-599] - Statistics throw a NumberFormatException for last 24 hours and last 7 days
+    * [JS2-605] - Query string parameters should not (by default) be provided to portlets to be compliant to JSR 168 spec requirements
+    * [JS2-607] - An error occur when trying storing a null value in preferences
+    * [JS2-611] - Custom Portlet Mode and Window State incorrectly handled / processed from portlet.xml
+    * [JS2-613] - ConcurrentModificationException under high load
+    * [JS2-633] - nested layout broken with permission security enabled
+    * [JS2-635] - count of portlet on portlet selecotor
+    * [JS2-641] - override.properties isn't loaded by the bean 'placeholderConfig'
+    * [JS2-646] - ActionValveImpl can throw NullPointerException under clustered environment.
+    * [JS2-651] - Add Portlet fails when logged in as Subsite User
+    * [JS2-652] - Desktop does not render page if any portlet on the page shows "Failed to retrieve Portlet Definition"
+    * [JS2-655] - Entity Editor Broken
+    * [JS2-656] - Cross-Site Scripting (XSS)  vulnerability
+
+** Improvement
+    * [JS2-110] - Replace HSQL with Axion as default database in J2
+    * [JS2-190] - Changing the portlet.xml in a deployed portlet/webapp does not change Jetspeed.
+    * [JS2-198] - Portlets don't use user-specific preferences. The Portlet Preferences for anon user are always used.
+    * [JS2-264] - Updating just the portlet content
+    * [JS2-329] - 3 new 100% table-free portlet decorations.
+    * [JS2-354] - Provision for portlet-level permissions
+    * [JS2-449] - User Specific Preferences
+    * [JS2-461] - Serializer component
+    * [JS2-462] - Need to clean up Velocity logs, too many warnings and some errors even
+    * [JS2-470] - LDAP Authorization Support Implementation + Sun LDAP Authentication Support
+    * [JS2-480] - Statistics cleanup
+    * [JS2-491] - Enhance J2 LDAP Security Documentation
+    * [JS2-493] - More chinese Localization
+    * [JS2-504] - update chinese Localization
+    * [JS2-506] - Extend profiler to fallback to parent folders when requested path is not available.
+    * [JS2-508] - Fixing commons-logging on WebSphere and other application servers
+    * [JS2-516] - Make selection of last visited page in folder on folder request optional
+    * [JS2-527] - Allow email addresses to be used for user accounts by making hierarchical interpretation of principal names optional
+    * [JS2-534] - Korean translation for portal, portal-site, j2-admin, demo, rss, gems, layout-portlets, and jetspeed-api.
+    * [JS2-539] - Korean translation for *.psml, *.link, and folder.metadata files under the /WEB-INF/pages/**/ folder.
+    * [JS2-541] - Log initialization failures when deploying on Websphere 6.0.2.x
+    * [JS2-543] - Velocity logging using the jetspeed-webapp-logging component
+    * [JS2-549] - Simple documentation for using the JSF bridge in Jetspeed
+    * [JS2-568] - Upgrade commons-httpclient bundled in jetspeed war
+    * [JS2-575] - Sun LDAP connection pooling implementation needed so that Jetspeed does not need to be restarted if LDAP server is restarted or connection is lost.
+    * [JS2-578] - Improve Creation of PSML pages for new users
+    * [JS2-600] - update Chinese Localization
+    * [JS2-603] - Upgrade Search component to lucene 2.0.0
+    * [JS2-606] - Allow deployment of local portlet applications without a jetspeed- name prefix
+    * [JS2-614] - Jetspeed Deploy compliant with servlet spec 2.4
+    * [JS2-640] - Run with active Java security manager enabled
+    * [JS2-642] - update chinese LOCALIZATION
+    * [JS2-648] - A multi-database profile settings for maven 2
+    * [JS2-649] - XML Schemas for Jetspeed XML Data
+    * [JS2-654] - enhance components to use JetspeedCache for distributed environments
+
+** New Feature
+    * [JS2-275] - Option to make Action URLs relative or absolute
+    * [JS2-283] - Basic Ajax Service Implementation
+    * [JS2-466] - Production Configuration / Hardcode Base URL
+    * [JS2-476] - Create user pages from a user's roles
+    * [JS2-490] - A profiler rule which serves content based on the network associated with the http request
+    * [JS2-514] - Jetspeed Desktop
+    * [JS2-523] - Supporting custom PortletModes and WindowStates
+    * [JS2-524] - Providing a "print" custom PortletMode and a "solo" custom  WindowState
+    * [JS2-550] - A new Two-way password encoding service allowing decoding of encoded passwords
+    * [JS2-557] - Property Loader Valve
+    * [JS2-559] - Place portlets in decorators
+    * [JS2-583] - Message properties files in greek
+    * [JS2-585] - A continuous build script
+    * [JS2-596] - CLONE -Support Tomcat TCP Clustering
+    * [JS2-610] - Categorization of Portlets with new Category Portlet Selector
+    * [JS2-644] - Remote Portlet Application Deployer
+    * [JS2-645] - Portlet Security Constraints
+    * [JS2-647] - Cluster Deployment
+    * [JS2-653] - Show theme depending what user you are
+
+
+
