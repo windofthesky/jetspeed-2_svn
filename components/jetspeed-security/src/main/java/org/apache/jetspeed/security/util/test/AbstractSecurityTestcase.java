@@ -114,7 +114,7 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
     
     protected String getBeanDefinitionFilterCategories()
     {
-        return "security,transaction,cache,jdbcDS";
+        return "security,dbSecurity,transaction,cache,jdbcDS";
     }
 
     protected String[] getConfigurations()

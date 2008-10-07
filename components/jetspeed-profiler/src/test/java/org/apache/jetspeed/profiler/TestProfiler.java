@@ -16,6 +16,9 @@
  */
 package org.apache.jetspeed.profiler;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,6 +68,38 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         TEST_PROPS.put("profilingRule.impl", "org.apache.jetspeed.profiler.rules.impl.AbstractProfilingRule");
     }
 
+    /**
+     * Override the location of the test properties by using the jetspeed properties found in the default package.
+     * Make sure to have your unit test copy in jetspeed properties into the class path root like:
+     <blockquote><pre>
+        &lt;resource&gt;
+            &lt;path&gt;conf/jetspeed&lt;/path&gt;
+            &lt;include&gt;*.properties&lt;/include&gt;                                        
+        &lt;/resource&gt;                                         
+     </pre></blockquote>
+     */
+    @Override    
+    protected Properties getInitProperties()
+    {
+        Properties props = new Properties();
+        try 
+        {
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("jetspeed.properties");
+            if (is != null)
+                props.load(is);
+        } catch (FileNotFoundException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+        catch (IOException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return props;
+    }
+           
     /**
      * Start the tests.
      * 
@@ -124,7 +159,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     public void firstTestSetup() throws Exception
     {
         System.out.println("firstTestSetup");
-        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
+        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("JetspeedSerializer");
         serializer.deleteData();
         serializer.importData(getBaseDir()+"target/test-classes/j2-seed.xml");
     }
@@ -132,7 +167,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     public void lastTestTeardown() throws Exception
     {
         System.out.println("lastTestTeardown");
-        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
+        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("JetspeedSerializer");
         serializer.deleteData();
     }
     
@@ -523,11 +558,14 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     protected String[] getConfigurations()
     {
-        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "cache.xml",
-                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-spi-atz.xml", "security-atz.xml" };
+        return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "cache.xml", "capabilities.xml", "registry.xml", "search.xml", "jetspeed-spring.xml",
+                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-atz.xml", "static-bean-references.xml" };
     }
 
-    
+    protected String getBeanDefinitionFilterCategories()
+    {
+        return "security,serializer,registry,search,capabilities,profiler,dbSecurity,transaction,cache,noRequestContext,jdbcDS";
+    }
     
     protected RuleCriterion addRuleCriterion(ProfilingRule rule,  
                                    String criterionName, String criterionType, String criterionValue,int fallbackOrder, int fallbackType)

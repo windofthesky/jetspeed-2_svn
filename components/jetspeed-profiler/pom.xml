@@ -69,6 +69,21 @@
 
         <!-- Test Dependencies -->
         <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-capability</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-registry</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-search</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
             <scope>test</scope>
@@ -113,10 +128,14 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>profiler.xml,transaction.xml,cache.xml,security-*.xml,boot/datasource.xml</include>
+                                        <include>*.xml,boot/datasource.xml</include>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>
+                                    </resource>
+                                    <resource>
+                                        <path>conf/jetspeed</path>
+                                        <include>jetspeed.properties</include>
                                     </resource>
                                     <resource>
                                         <path>seed/min</path>
