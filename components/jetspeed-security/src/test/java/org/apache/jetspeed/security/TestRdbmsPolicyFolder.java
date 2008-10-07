@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * @author <a href="mailto:christophe.lombart@sword-technologies.com">Christophe Lombart</a>

@@ -23,7 +23,7 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
+import org.apache.jetspeed.security.AbstractSecurityTestcase;
 
 /**
 * <p>

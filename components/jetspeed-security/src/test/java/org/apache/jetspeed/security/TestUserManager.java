@@ -29,7 +29,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
-import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 /**
  * <p>

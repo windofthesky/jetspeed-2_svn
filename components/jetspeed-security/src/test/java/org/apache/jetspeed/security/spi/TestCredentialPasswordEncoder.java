@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import org.apache.jetspeed.security.AbstractSecurityTestcase;
 import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.util.test.AbstractSecurityTestcase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
