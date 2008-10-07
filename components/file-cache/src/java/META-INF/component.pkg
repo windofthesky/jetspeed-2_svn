@@ -1,0 +1,10 @@
+package.id=FileCache
+
+classloading.strategy=webapp
+
+component=org.apache.jetspeed.cache.file.FileCache
+org.apache.jetspeed.cache.file.FileCache.key.as.class=true
+org.apache.jetspeed.cache.file.FileCache.is.singleton=true
+org.apache.jetspeed.cache.file.FileCache.classname=org.apache.jetspeed.cache.file.impl.BaseFileCache
+
+

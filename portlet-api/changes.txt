@@ -1,0 +1,344 @@
+Copyright 2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+API changes
+===========
+(- == removed; + == added; X == changed)
+
+since 0.6.3:
+------------
+  changed Javadocs
+
+
+since 0.6.2:
+------------
+  changed Javadocs
+
+PortletRequest
+  - getPreviousPortletMode
+  - getPreviousWindowState
+
+PortletSession
+  x getId:
+    - IllegalStateException
+
+
+since 0.6.1:
+------------
+  changed Javadocs
+
+PortletResponse
+  - encodeNamespace
+
+RenderResponse
+  + encodeNamespace
+
+
+since 0.6.0:
+------------
+
+RenderResponse
+  - encodeNamespace
+  x getOutputStream -> getPortletOutputStream
+
+PortletResponse
+  + encodeNamespace
+
+
+
+since 0.5.9:
+------------
+  changed Javadocs
+
+RenderResponse
+  + EXPIRATION_CACHE
+
+
+since 0.5.8:
+------------
+  changed Javadocs
+
+PortletURL
+  + setParameters(Map parameters)
+
+all Parameter methods throw IllegalArgumentException for
+null values as name or value
+
+alll Attribute, Property methods throw IllegalArgumentException for
+null values as name
+
+
+since 0.5.7:
+------------
+  changed Javadocs
+
+ActionResponse
+  x setPortletMode, added java.lang.IllegalStateException
+  x setWindowState, added java.lang.IllegalStateException
+
+x Request -> PortletRequest
+
++ PortletResponse
+
+
+since 0.5.6:
+------------
+  changed Javadocs
+
+GenericPortlet
+  x getTitle now protected
+  x doDispatch now protected
+  - doCustomMode
+
+PortletPreferences
+  x store, added UnsupportedOperation exception
+
+RenderRequest
+  - String getScheme()
+  - String getServerName()
+  - int getServerPort()
+
+Request
+  + String getScheme()
+  + String getServerName()
+  + int getServerPort()
+
+
+since 0.5.5:
+------------
+  changed Javadocs
+
+- PortletRequest (split into Request, ActionRequest, RenderRequest)
+
++ Request
+  + PortletMode getPreviousPortletMode
+  + WindowState getPreviousWindowState
+
++ ActionRequest
+
++ RenderRequest
+  + String getScheme()
+  + String getServerName()
+  + int getServerPort()
+
+GenericPortlet
+  + doDispatch(RenderRequest, RenderResponse)
+
+RenderResponse
+  - setCacheExpiration
+  + void reset()
+  + boolean isCommitted()
+  + void resetBuffer()
+  + flushBuffer()
+  + int getBufferSize()
+  + void setBufferSize(int size)
+  + OutputStream getOutputStream()
+
+
+
+since 0.5.4:
+------------
+  changed Javadocs
+
+GenericPortlet:
+  + init()
+
+ActionResponse:
+  + encodeURL
+
+PortletURL:
+  + setSecure(boolean)
+
+
+since 0.5.3:
+------------
+  changed Javadocs
+
+PortletPreferences:
+  - isArray
+  x get -> getValue
+  x getArray -> getValues
+  x set -> setValue
+  x setArray -> setValues
+
+PortletSession:
+  + Object getAttribute(String)
+  + void removeAttribute(String)
+  + void setAttribute(String, Object)
+
+
+since 0.5.2:
+------------
+  changed Javadocs
+
+
+since 0.5.1:
+------------
+  changed Javadocs
+
+PortalContext:
+  x Object getProperty(String) -> String getProperty
+
+since 0.5:
+------------
+  changed Javadocs
+
+
+since 0.4.8:
+------------
+  changed Javadocs
+
+replaced Iterator with Enumeration
+
+ValidatorException:
+  x Set replaced with Collection
+
+
+since 0.4.7:
+------------
+ changed javadocs
+
+xRequestDispatcher -> PortletRequestDispatcher
+
+PortletRequest
+  x getInputStream -> getPortletInputStream
+
+
+since 0.4.6:
+------------
+ changed javadocs
+
+
+since 0.4.5:
+------------
+
+xPortletResponse -> RenderResponse
+
+xNonModifiableException -> UnmodifiableException
+
+ActionResponse
+  x getRenderParameter -> setRenderParameter
+
+RenderRepsone
+  - TITLE
+
+PortletURL
+  x addParameter -> setParameter
+
+
+ValidatorException
+  x VadatorException: added Set failedKeys
+  + Set getFailedKeys
+
+
+since 0.4.4:
+------------
+
+re-wording of a lot of javadoc comments
+
+PortletPreferences
+  - MAX_KEY_LENGTH
+  X remove -> reset
+  - reset
+
++ NonModifiableException
+
+PortletRequest
+  x getHeader -> getProperty
+  x getHeaders -> Iterator getProperties(String)
+  x getHeaderNames -> getPropertyNames
+  + getRequestedSessionId
+  + isRequestedSessionIdValid
+
+ActionResponse
+  + void setProperty(String,String)
+  - addPoperty(String, String[])
+
+PortletResponse
+  + void setProperty(String,String)
+  - addPoperty(String, String[])
+  - setTitleBarResources
+  - setShortTitle
+  - SHORT_TITLE
+
+GenericPortlet
+  x doTitle(req, resp) -> String getTitle(req)
+
+
+since 0.4.3:
+------------
+
+ActionResponse
+  + void addRenderParameter(String,String[])
+
+- AttributeDescriptor
+
+- CacheException
+
+GenericPortlet
+  - isCacheValid
+
+PortalContext
+  X Iterator getSupportedPortletModes()
+  X Iterator getSupportedWindowStates()
+
+PortletContext
+  X Iterator getAttributeNames()
+  X Iterator getInitParameterNames()
+
+PortletPreferences
+  - getPreferencesDescriptor
+  - modifiableKeys
+  X Iterator getNames
+  X store throws ValidatorException
+
+PortletRequest
+  X Iterator getAttributeNames
+  + void setCharacterEncoding(String)
+  X Iterator getParameterNames
+  X Iterator getResponseContentTypes
+  - getValidationKey
+
+PortletResponse
+  + getLocale
+  - setValidationKey
+  - setuseCachedContent
+  + addProperty(String, String[])
+  X setProperty -> addProperty
+
+PortletSession
+  X Iterator getAttributeNames
+
+*PortletURL
+  +void addParameter(String,String[])
+
+-PreferencesDescriptor
+
+PreferencesValidator
+  X void validate(PortletPreferences) throws ValidatorException
+
++ValidatorException
+
+
+
+
+
+
+
+since 0.4.2:
+------------
+
+PortletPreferences:
+- modifableKeys()
+

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<document>
+
+  <properties>
+    <author email="taylor@apache.org">David Sean Taylor</author>
+    <title>Apache Portals Mission</title>
+  </properties>
+
+<body>
+<section name="Mission">
+    <p>
+    <b>Apache Portals</b> exists to promote the use of open source portal technology.
+    We view portals as an important technology in in the growing portal and web application environments.  
+    We intend to build freely available portal software in order to promote the use of this technology.
+    </p>
+    <p>
+    To provide reference implementations Java and W3C Standards such as the
+    <ul>
+    <li>Java Portlet Standard (Pluto)</li>
+    <li>WSRP Portlet Standard (WSRP-4J)</li>
+    </ul>
+    To provide portal implementations including:
+    <ul>
+    <li>Cocoon Portal</li>
+    <li>Jetspeed-1</li>
+    <li>Jetspeed-2</li>
+    <li>PHP Portals (TBD)</li>
+    </ul>
+    To provide fully working and standardized portlet applications:
+    <ul>
+    <li>Jetspeed Content Replication Engine</li>
+    <li>Jetspeed Portal Administration Application</li>
+    <li>(TBD)</li>
+    </ul>
+    To provide common frameworks and tools for developing portal software
+    <ul>
+    <li>CPS (Cornerstone Portlet Services)</li>
+    <li>Struts Portlet Application Framework</li>
+    <li>Python Portlet Application Framework</li> 
+    <li>Turbine Portlet Application Framework</li> 
+    </ul>
+    To provide portal interoperability frameworks and tools for programming languages including
+    <ul>
+    <li>Java</li>
+    <li>Perl</li>
+    <li>PHP</li>
+    <li>Python</li>
+    <li>...</li>
+    </ul>
+    </p>
+</section>
+</body>
+</document>

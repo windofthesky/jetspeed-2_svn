@@ -1,0 +1,8 @@
+package.id=Capability
+
+component=org.apache.jetspeed.capability.Capabilities
+
+org.apache.jetspeed.capability.Capabilities.key.as.class=true
+org.apache.jetspeed.capability.Capabilities.is.singleton=true
+org.apache.jetspeed.capability.Capabilities.classname=org.apache.jetspeed.capability.impl.JetspeedCapabilities
+

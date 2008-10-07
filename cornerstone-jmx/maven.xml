@@ -1,0 +1,91 @@
+<project default="full-build"
+         xmlns:j="jelly:core" 
+         xmlns:define="jelly:define"
+         xmlns:reactor="reactor">
+
+<goal name="full-build">
+	<attainGoal name="copySource" />
+	<attainGoal name="jar:install" />
+</goal>
+
+<goal name="copySource">
+	<!-- api -->
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/config">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/config"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/context">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/context"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/core">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/core"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/factory">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/factory"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/implementation">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/implementation"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/jmx">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/jmx"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/pubsub">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/pubsub"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/registry">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/registry"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/singleton">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/singleton"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/api/util">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/api/util"/>
+	</copy>
+
+	<!-- source -->
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/bean/helper">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/bean/helper"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/constant">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/constant"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/context">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/context"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/core">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/core"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/factory">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/factory"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/implementation">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/implementation"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/init">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/init"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/jmx">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/jmx"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/pubsub">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/pubsub"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/singleton">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/singleton"/>
+	</copy>
+	<copy todir="${basedir}/src/java/org/apache/cornerstone/framework/util">
+		<fileset dir="${basedir}/../cornerstone/src/java/org/apache/cornerstone/framework/util"/>
+	</copy>
+
+	<!-- source -->
+	<copy todir="${basedir}/src/resources/org/apache/cornerstone/framework/init">
+		<fileset dir="${basedir}/../cornerstone/src/resources/org/apache/cornerstone/framework/init"/>
+	</copy>
+	<copy todir="${basedir}/src/resources/org/apache/cornerstone/framework/jmx">
+		<fileset dir="${basedir}/../cornerstone/src/resources/org/apache/cornerstone/framework/jmx"/>
+	</copy>
+	<copy todir="${basedir}/src/resources/org/apache/cornerstone/framework/pubsub">
+		<fileset dir="${basedir}/../cornerstone/src/resources/org/apache/cornerstone/framework/pubsub"/>
+	</copy>
+</goal>
+
+</project>

@@ -1,8 +1,0 @@
-# try running this before jetspeed-apacheds.ldif
-# for apache ds, you will need to create a new domain, and not use this file.
-# see the Jetspeed online documentation
-dn: o=sevenSeas
-objectClass: domain
-objectClass: extensibleObject
-objectClass: top
-o: sevenSeas

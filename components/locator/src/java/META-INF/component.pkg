@@ -1,0 +1,13 @@
+package.id=Locator
+
+component=TemplateLocator,DecorationLocator
+
+TemplateLocator.is.singleton=true
+TemplateLocator.classname=org.apache.jetspeed.locator.JetspeedTemplateLocator
+TemplateLocator.template.roots=${app.root}/WEB-INF/templates
+
+DecorationLocator.is.singleton=true
+DecorationLocator.classname=org.apache.jetspeed.locator.JetspeedTemplateLocator
+DecorationLocator.template.roots=${app.root}/WEB-INF/decorations
+
+export.package=org.apache.jetspeed.locator

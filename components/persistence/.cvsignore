@@ -1,0 +1,4 @@
+maven.log
+target
+vfs_cache
+junit*.properties

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<document>
+ <properties>
+  <title>Apache Portals owered web sites</title>
+   <author email="taylor@apache.org">David Sean Taylor</author>
+ </properties>
+
+ <body>
+ <section name="Supporting Organizations">
+ <p>
+  The companies and organizations support and contribute to the Apache Portals projects.
+ </p>
+
+  <table>
+   <tr>
+    <th>Organization</th>
+    <th>Contributions</th>
+   </tr>
+   <tr>
+    <td>
+     <a href="http://www.ibm.com/">IBM</a>
+    </td>
+    <td>
+     Contributed reference implementations of Pluto and WSRP4J
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <a href="http://www.bluesunrise.com/">Bluesunrise Software</a>
+    </td>
+    <td>
+     Apache Portal committer: David Sean Taylor
+    </td>
+   </tr>
+  </table>
+ </section>
+
+ </body>
+</document>

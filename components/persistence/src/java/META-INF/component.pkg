@@ -1,0 +1,7 @@
+package.id=Persistence
+
+component=org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer
+
+org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer.key.as.class=true
+org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer.is.singleton=true
+org.apache.jetspeed.components.persistence.store.PersistenceStoreContainer.classname=org.apache.jetspeed.components.persistence.store.impl.DefaultPersistenceStoreContainer

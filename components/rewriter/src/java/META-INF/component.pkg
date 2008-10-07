@@ -1,0 +1,8 @@
+package.id=Rewriter
+
+classloading.strategy=webapp
+
+component=RewriterController
+
+RewriterController.is.singleton=true
+RewriterController.classname=org.apache.jetspeed.rewriter.JetspeedRewriterController
