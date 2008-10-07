@@ -121,18 +121,26 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         this.attributeContainsInternalId = attributeContainsInternalId;
     }
 
+    private Entity getLiveEntity(EntityDAO dao, Entity transientEntity) throws SecurityException {
+        Entity liveEntity = dao.getEntity(transientEntity.getId());
+        if (liveEntity == null){
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(transientEntity.getType(), transientEntity.getId()));
+        }
+        if (liveEntity.getInternalId() == null){
+            throw new SecurityException(SecurityException.UNEXPECTED);
+        }
+        return liveEntity;
+    }
+    
     private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
-        fromEntity = fromEntityDAO.getEntity(fromEntity.getId());
-        toEntity = toEntityDAO.getEntity(toEntity.getId());
+        fromEntity = getLiveEntity(fromEntityDAO, fromEntity);
+        
+        toEntity = getLiveEntity(toEntityDAO, toEntity);
+        
         String attrValue = null;
         if (attributeContainsInternalId)
-        {
-            if (toEntity.getInternalId() == null)
-            {
-                // internal ID (ldap DN) is not present, refetch the entity from LDAP to get the DN
-                toEntity = toEntityDAO.getEntity(toEntity.getId());
-            }
+        {            
             attrValue = toEntity.getInternalId();
         }
         else
