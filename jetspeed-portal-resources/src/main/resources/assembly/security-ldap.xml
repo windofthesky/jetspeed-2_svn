@@ -38,28 +38,29 @@
       </props>
     </property>
   </bean>
-  
-  
+    
    <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" 
   	class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapAssociationStorageManager">  	
   		<meta key="j2:cat" value="ldap" />  	
     </bean>  	
-  
-  
+    
   <!--
-  	JetspeedPostContextLoader will load the guest user from LDAP, in-case its not in portal database
-  	It would be required for loading default page  
+  	OnStartupSecuritySynchronizationBean will load the guest user from LDAP, in-case its not in portal database
+  	It would be required for loading default page.
+    This bean is wrapped in a ContextRefreshableBeanInitializer to kickstart it once the complete Spring context is initialized.
    -->
-   
-  <bean id="org.apache.jetspeed.security.spi.JetspeedPostContextLoader"
-    class="org.apache.jetspeed.security.spi.JetspeedPostContextLoader">
+  <bean id="_ldapOnStartupSecuritySynchronizer" class="org.apache.jetspeed.components.ContextRefreshableBeanInitializer">
     <meta key="j2:cat" value="ldap" />
-    <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
-    <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
-    <constructor-arg index="2" type="boolean" value="false" />
-    <constructor-arg index="3" value="group" />
+    <constructor-arg>
+      <bean class="org.apache.jetspeed.security.spi.impl.OnStartupSecuritySynchronizationBean">
+        <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
+        <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
+        <constructor-arg index="2" type="boolean" value="false" />
+        <constructor-arg index="3" value="group" />
+      </bean>
+    </constructor-arg>
   </bean>
-
+  
   <bean id="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer"
     class="org.apache.jetspeed.security.spi.impl.DefaultJetspeedSecuritySynchronizer">
     <meta key="j2:cat" value="ldap" />

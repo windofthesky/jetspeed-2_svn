@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.components;
 
 /** 
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
- * @version $Id:
+ * @version $Id$
  */
-public interface JetspeedBeanInitializer
+public interface RefreshableBean
 {
-    void initialize();
+    void refresh();
 }

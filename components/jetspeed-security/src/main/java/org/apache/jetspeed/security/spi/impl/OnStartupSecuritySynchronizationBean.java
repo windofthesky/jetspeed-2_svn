@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.components;
+package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.security.JetspeedBeanInitializer;
+import org.apache.jetspeed.components.RefreshableBean;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
@@ -28,9 +28,9 @@ import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
  * @version $Id:
  */
-public class JetspeedPostContextLoader implements JetspeedBeanInitializer
+public class OnStartupSecuritySynchronizationBean implements RefreshableBean
 {
-    private static final Log log = LogFactory.getLog(JetspeedPostContextLoader.class);
+    private static final Log log = LogFactory.getLog(OnStartupSecuritySynchronizationBean.class);
     private UserManager userManager;
     private JetspeedSecuritySynchronizer synchronizer;
     private boolean synchronizeAllUser;
@@ -40,7 +40,7 @@ public class JetspeedPostContextLoader implements JetspeedBeanInitializer
      * @param synchronizer
      * @param userManager
      */
-    public JetspeedPostContextLoader(JetspeedSecuritySynchronizer synchronizer, UserManager userManager, boolean synchronizeAllUser,
+    public OnStartupSecuritySynchronizationBean(JetspeedSecuritySynchronizer synchronizer, UserManager userManager, boolean synchronizeAllUser,
                                      String synchronizeEntityType)
     {
         this.synchronizer = synchronizer;
@@ -49,7 +49,7 @@ public class JetspeedPostContextLoader implements JetspeedBeanInitializer
         this.synchronizeEntityType = synchronizeEntityType;
     }
     
-    public void initialize()
+    public void refresh()
     {
         if (synchronizer != null)
         {

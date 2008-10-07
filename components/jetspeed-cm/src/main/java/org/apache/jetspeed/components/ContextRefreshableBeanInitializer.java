@@ -14,59 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security;
+package org.apache.jetspeed.components;
 
-import java.util.List;
-
-import org.springframework.context.ApplicationContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
- * @version $Id:
+ * @version $Id$
  */
-public class JetspeedBeanPostProcessor implements ApplicationListener
+public class ContextRefreshableBeanInitializer implements ApplicationListener
 {
-    private ApplicationContext context;
-    private List<String> beanList = null;
-
+    Log log = LogFactory.getLog(ContextRefreshableBeanInitializer.class);
+    
+    private RefreshableBean bean;
     /**
-     * @param beanList
+     * @param bean
      */
-    public JetspeedBeanPostProcessor(List<String> beanList)
+    public ContextRefreshableBeanInitializer(RefreshableBean bean)
     {
-        this.beanList = beanList;
+        this.bean = bean;
     }
 
     public void onApplicationEvent(ApplicationEvent appEvent)
     {
-        if (appEvent instanceof ContextRefreshedEvent)
+        if (appEvent instanceof ContextRefreshedEvent && bean != null)
         {
-            ContextRefreshedEvent event = (ContextRefreshedEvent) appEvent;
-            this.context = event.getApplicationContext();
-            processBeans();
-        }
-    }
-
-    private void processBeans()
-    {
-        if (beanList != null)
-        {
-            JetspeedBeanInitializer intializer = null;
-            for (String bean : beanList)
+            try
             {
-                try
-                {
-                    intializer = (JetspeedBeanInitializer) context.getBean(bean);
-                    intializer.initialize();
-                }
-                catch (Exception e)
-                {
-                    // Log error messages
-                    e.printStackTrace();
-                }
+                bean.refresh();
+            }
+            catch (Exception ex)
+            {
+                log.error("Failed to refresh bean", ex);
             }
         }
     }
