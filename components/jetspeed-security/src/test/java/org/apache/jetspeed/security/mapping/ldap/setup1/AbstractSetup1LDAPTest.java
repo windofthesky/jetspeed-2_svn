@@ -51,6 +51,8 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 
     protected SpringLDAPEntityDAO userDAO;
     
+    protected SpringLDAPEntityDAO roleDAO;
+    
     public Resource[] initializationData()
     {
         final ClassPathResource ldapPersonInfo = new ClassPathResource(
@@ -81,7 +83,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         userSearchConfig.setLdapIdAttribute("uid");
         userSearchConfig.setAttributeDefinitions(userAttrDefs);
         userSearchConfig.setEntityType("user");
-        userSearchConfig.setObjectClass("inetOrgPerson");
+        userSearchConfig.setObjectClasses("inetOrgPerson,");
 
         userDAO = new SpringLDAPEntityDAO(userSearchConfig);
         userDAO.setLdapTemplate(ldapTemplate);
@@ -102,7 +104,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         roleSearchConfig.setAttributeDefinitions(roleAttrDefs);
         roleSearchConfig.setEntityType("role");
 
-        SpringLDAPEntityDAO roleDAO = new SpringLDAPEntityDAO(roleSearchConfig);
+        roleDAO = new SpringLDAPEntityDAO(roleSearchConfig);
         roleDAO.setLdapTemplate(ldapTemplate);
 
         Map<String, EntityDAO> daos = new HashMap<String, EntityDAO>();
