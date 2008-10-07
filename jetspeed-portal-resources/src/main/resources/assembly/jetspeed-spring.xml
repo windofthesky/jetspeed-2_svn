@@ -37,7 +37,7 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <list>
-        <value>${applicationRoot}/WEB-INF/templates</value>
+        <value>${portal.core.templates.path}</value>
       </list>
     </constructor-arg>
     <constructor-arg>
@@ -50,7 +50,7 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <list>
-        <value>${applicationRoot}/decorations</value>
+        <value>${portal.core.decorations.path}</value>
       </list>
     </constructor-arg>
     <constructor-arg>

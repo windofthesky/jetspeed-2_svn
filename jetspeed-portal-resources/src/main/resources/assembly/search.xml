@@ -40,13 +40,13 @@
   <bean id="org.apache.jetspeed.search.SearchEngine" class="org.apache.jetspeed.search.lucene.SearchEngineImpl">
     <meta key="j2:cat" value="default,search" />
     <constructor-arg index="0">
-      <value>${applicationRoot}/WEB-INF/search_index</value>
+      <value>${search.index.location}</value>
     </constructor-arg>
     <constructor-arg index="1">
       <null />
     </constructor-arg>
     <constructor-arg type="boolean">
-      <value>true</value>
+      <value>${search.index.optimizeAfterUpdate}</value>
     </constructor-arg>
     <constructor-arg>
       <ref bean="org.apache.jetspeed.search.HandlerFactory" />

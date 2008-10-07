@@ -24,42 +24,42 @@
     <meta key="j2:cat" value="default" />
     <!-- logToCLF -->
     <constructor-arg index='0' type="boolean">
-      <value>false</value>
+      <value>${portal.statistics.logToLogger}</value>
     </constructor-arg>
 
     <!-- logToDatabase -->
     <constructor-arg index='1' type="boolean">
-      <value>true</value>
+      <value>${portal.statistics.logToDatabase}</value>
     </constructor-arg>
 
     <!-- maxRecordToFlush_Portal -->
     <constructor-arg index='2'>
-      <value>300</value>
+      <value>${portal.statistics.MaxPortalRecordToFlush}</value>
     </constructor-arg>
 
     <!-- maxRecordToFlush_User -->
     <constructor-arg index='3'>
-      <value>50</value>
+      <value>${portal.statistics.MaxUserUserRecordToFlush}</value>
     </constructor-arg>
 
     <!-- maxRecordToFlush_Page -->
     <constructor-arg index='4'>
-      <value>100</value>
+      <value>${portal.statistics.MaxPagePageRecordToFlush}</value>
     </constructor-arg>
 
     <!-- maxTimeMsToFlush_Portal -->
     <constructor-arg index='5'>
-      <value>300000</value>
+      <value>${portal.statistics.MaxTimePortalToFlush}</value>
     </constructor-arg>
 
     <!-- maxTimeMsToFlush_User -->
     <constructor-arg index='6'>
-      <value>5000</value>
+      <value>${portal.statistics.MaxTimeUserToFlush}</value>
     </constructor-arg>
 
     <!-- maxTimeMsToFlush_Page -->
     <constructor-arg index='7'>
-      <value>60000</value>
+      <value>${portal.statistics.MaxTimePageToFlush}</value>
     </constructor-arg>
 
     <!-- jetspeedDSEntry -->
@@ -75,7 +75,7 @@
       <ref bean="JetspeedDS" />
     </constructor-arg>
     <property name="enabled">
-      <value type='boolean'>true</value>
+      <value type='boolean'>${portal.audit.enable}</value>
     </property>
   </bean>
 

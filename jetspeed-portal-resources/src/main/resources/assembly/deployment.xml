@@ -119,10 +119,10 @@
       <value>${autodeployment.target.dir}</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <value>${applicationRoot}/WEB-INF/apps</value>
+      <value>${autodeployment.apps.internal.path}</value>
     </constructor-arg>
     <constructor-arg index="4">
-      <value>${autodeployment.staging.dir}/local</value>
+      <value>${autodeployment.apps.local.path}</value>
     </constructor-arg>
     <!-- strip commons-logging and/or log4j jars from war files: for JBoss set this to true -->
     <constructor-arg index="5">
@@ -136,7 +136,7 @@
   <bean id="decoratorDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
-      <value>${applicationRoot}/decorations</value>
+      <value>${portal.core.decorations.path}</value>
     </constructor-arg>
   </bean>
 
