@@ -17,12 +17,14 @@
 package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.Filter;
 
@@ -121,8 +123,8 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
 
     private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
-        fromEntity =  fromEntityDAO.getEntity(fromEntity.getId());
-        toEntity =  toEntityDAO.getEntity(toEntity.getId());
+        fromEntity = fromEntityDAO.getEntity(fromEntity.getId());
+        toEntity = toEntityDAO.getEntity(toEntity.getId());
         String attrValue = null;
         if (attributeContainsInternalId)
         {
@@ -151,6 +153,8 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
 
     private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
+        fromEntity = fromEntityDAO.getEntity(fromEntity.getId());
+        toEntity = toEntityDAO.getEntity(toEntity.getId());
         String attrValue = null;
         if (attributeContainsInternalId)
         {
@@ -168,7 +172,27 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
         if (relationAttribute.getDefinition().isMultiValue())
         {
-            relationAttribute.getValues().remove(attrValue);
+            DistinguishedName attrib = new DistinguishedName(attrValue);
+            if (attributeContainsInternalId)
+            {
+                boolean found = false;
+                String attribValue = null;
+                Iterator<String> iterator = relationAttribute.getValues().iterator();
+                while(iterator.hasNext() && !found)
+                {
+                    attribValue = iterator.next();
+                    DistinguishedName ldapAttr = new DistinguishedName(attribValue);
+                    if (ldapAttr.equals(attrib))
+                    {
+                        relationAttribute.getValues().remove(attribValue);
+                        found = true; 
+                    }
+                }
+            }
+            else
+            {
+                relationAttribute.getValues().remove(attrValue);
+            }
         }
         else
         {
@@ -176,6 +200,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         }
         fromEntityDAO.updateInternalAttributes(fromEntity);
     }
+
     public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException
     {
         if (useFromEntityAttribute)
@@ -192,11 +217,11 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
     {
         if (useFromEntityAttribute)
         {
-            internalRemoveRelation(targetDao, sourceDao, targetEntity, sourceEntity);
+            internalRemoveRelation(sourceDao, targetDao, sourceEntity, targetEntity);
         }
         else
         {
-            internalRemoveRelation(sourceDao, targetDao, sourceEntity, targetEntity);
+            internalRemoveRelation(targetDao, sourceDao, targetEntity, sourceEntity);
         }
     }
 }

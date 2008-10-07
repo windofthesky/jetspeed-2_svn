@@ -33,17 +33,20 @@ public class JetspeedPrincipalLdapStorageManager implements JetspeedPrincipalSto
 {
     private SecurityEntityManager ldapEntityManager;
     private JetspeedPrincipalStorageManager delegateJpsm;
-        
-    public JetspeedPrincipalLdapStorageManager(JetspeedPrincipalStorageManager databaseStorage,SecurityEntityManager ldapEntityManager)
+
+    public JetspeedPrincipalLdapStorageManager(JetspeedPrincipalStorageManager databaseStorage, SecurityEntityManager ldapEntityManager)
     {
         this.delegateJpsm = databaseStorage;
         this.ldapEntityManager = ldapEntityManager;
     }
 
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations) throws SecurityException
-    {        
+    {
         EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
-        ldapEntityManager.addEntity(entityFactory.createEntity(principal));
+        if (!SynchronizationStateAccess.isSynchronizing())
+        {
+            ldapEntityManager.addEntity(entityFactory.createEntity(principal));
+        }
         delegateJpsm.addPrincipal(principal, associations);
     }
 
@@ -55,14 +58,20 @@ public class JetspeedPrincipalLdapStorageManager implements JetspeedPrincipalSto
     public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
-        ldapEntityManager.removeEntity(entityFactory.createEntity(principal));
+        if (!SynchronizationStateAccess.isSynchronizing())
+        {
+            ldapEntityManager.removeEntity(entityFactory.createEntity(principal));
+        }
         delegateJpsm.removePrincipal(principal);
     }
 
     public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
-        ldapEntityManager.updateEntity(entityFactory.createEntity(principal));
+        if (!SynchronizationStateAccess.isSynchronizing())
+        {
+            ldapEntityManager.updateEntity(entityFactory.createEntity(principal));
+        }
         delegateJpsm.updatePrincipal(principal);
     }
 }

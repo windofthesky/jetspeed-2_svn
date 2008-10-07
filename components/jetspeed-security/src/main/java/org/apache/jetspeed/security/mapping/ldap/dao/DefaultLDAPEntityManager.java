@@ -96,9 +96,28 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         }
     }
 
-    public void removeRelation(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType)
+    public void removeRelation(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType) throws SecurityException
     {
-        // TODO Auto-generated method stub
+        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
+        if (relationDAO != null)
+        {
+            EntityDAO sourceDAO;
+            EntityDAO targetDAO;
+            if (relationType.getFromEntityType().equals(entity.getType()))
+            {
+                sourceDAO = entityDAOs.get(entity.getType());
+                targetDAO = entityDAOs.get(relationType.getToEntityType());
+            }
+            else
+            {
+                targetDAO = entityDAOs.get(entity.getType());
+                sourceDAO = entityDAOs.get(relationType.getToEntityType());
+            }
+            if (relationDAO != null)
+            {
+                relationDAO.removeRelation(sourceDAO, targetDAO, entity, relatedEntity);
+            }
+        }
     }
 
     public Collection<Entity> getAllEntities(String entityType)

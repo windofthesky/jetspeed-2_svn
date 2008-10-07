@@ -37,7 +37,8 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
     /**
      * @param ldapEntityManager
      */
-    public JetspeedPrincipalLdapAssociationStorageManager(JetspeedPrincipalAssociationStorageManager databaseStorageMngr,SecurityEntityManager ldapEntityManager)
+    public JetspeedPrincipalLdapAssociationStorageManager(JetspeedPrincipalAssociationStorageManager databaseStorageMngr,
+                                                          SecurityEntityManager ldapEntityManager)
     {
         this.ldapEntityManager = ldapEntityManager;
         this.databaseStorageManager = databaseStorageMngr;
@@ -45,23 +46,29 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
 
     public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
-        EntityFactory entityFactory = ldapEntityManager.getEntityFactory(from.getType().getName());
-        EntityFactory relatedFactory = ldapEntityManager.getEntityFactory(to.getType().getName());
-        Entity fromEntity = entityFactory.createEntity(from);
-        Entity toEntity = relatedFactory.createEntity(to);
-        SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
-        ldapEntityManager.addRelation(fromEntity, toEntity, relationType);
+        if (!SynchronizationStateAccess.isSynchronizing())
+        {
+            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(from.getType().getName());
+            EntityFactory relatedFactory = ldapEntityManager.getEntityFactory(to.getType().getName());
+            Entity fromEntity = entityFactory.createEntity(from);
+            Entity toEntity = relatedFactory.createEntity(to);
+            SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
+            ldapEntityManager.addRelation(fromEntity, toEntity, relationType);
+        }
         databaseStorageManager.addAssociation(from, to, associationName);
     }
 
     public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
-        EntityFactory entityFactory = ldapEntityManager.getEntityFactory(from.getType().getName());
-        EntityFactory relatedFactory = ldapEntityManager.getEntityFactory(to.getType().getName());
-        Entity fromEntity = entityFactory.createEntity(from);
-        Entity toEntity = relatedFactory.createEntity(to);
-        SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
-        ldapEntityManager.removeRelation(fromEntity, toEntity, relationType);
-        databaseStorageManager.removeAssociation(from, to, associationName);
+        if (!SynchronizationStateAccess.isSynchronizing())
+        {
+            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(from.getType().getName());
+            EntityFactory relatedFactory = ldapEntityManager.getEntityFactory(to.getType().getName());
+            Entity fromEntity = entityFactory.createEntity(from);
+            Entity toEntity = relatedFactory.createEntity(to);
+            SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
+            ldapEntityManager.removeRelation(fromEntity, toEntity, relationType);
+            databaseStorageManager.removeAssociation(from, to, associationName);
+        }
     }
 }
