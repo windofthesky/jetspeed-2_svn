@@ -42,6 +42,8 @@
    <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" 
   	class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapAssociationStorageManager">  	
   		<meta key="j2:cat" value="ldap" />  	
+    	<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    	<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />		  		
     </bean>  	
     
   <!--
