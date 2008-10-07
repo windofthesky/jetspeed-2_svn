@@ -185,6 +185,51 @@
         <plugins>
           <plugin>
             <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>unpack-appserver</id>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <unpack>
+                    <artifact>org.apache.portals.jetspeed-2:jetspeed-portal-resources:jar</artifact>
+                    <resources>
+                      <resource>
+                        <path>conf</path>
+                        <include>tomcat/context.xml</include>
+                      </resource>
+                    </resources>
+                  </unpack>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.portals.jetspeed-2</groupId>
+                <artifactId>jetspeed-portal-resources</artifactId>
+                <version>${org.apache.portals.jetspeed.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>resources</id>
+                <goals>
+                  <goal>resources</goal>
+                </goals>
+                <phase>process-resources</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-deploy-maven-plugin</artifactId>
             <version>${org.apache.portals.jetspeed.version}</version>
             <executions>
@@ -197,6 +242,9 @@
                 <configuration>
                   <targetBaseDir>${org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <destinations>
+                    <context>webapps/${org.apache.jetspeed.portal.context.name}/META-INF</context>
+                  </destinations>
                   <deployments>
                     <!-- shared/lib -->
                     <deployment>
@@ -224,6 +272,11 @@
                       <expand>true</expand>
                       <targetName>${org.apache.jetspeed.portal.context.name}</targetName>
                       <delete>./${org.apache.jetspeed.portal.context.name}</delete>
+                    </deployment>
+                    <!-- demo portal tomcat context -->
+                    <deployment>
+                      <file>${project.build.directory}/resources/tomcat/context.xml</file>
+                      <destination>context</destination>
                     </deployment>
                     <!-- admin pa -->
                     <deployment>
@@ -337,9 +390,59 @@
             </dependencies>
           </plugin>
         </plugins>
+        <resources>
+          <resource>
+            <directory>${project.build.directory}/tomcat</directory>
+            <targetPath>../resources/tomcat</targetPath>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
       </build>
     </profile>
 
+    <profile>
+      <id>deploy-dbpsml</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-deploy-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>deploy</id>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <targetBaseDir>${org.apache.jetspeed.server.home}</targetBaseDir>
+                  <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <destinations>
+                    <conf>webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/conf</conf>
+                  </destinations>
+                  <deployments>
+                    <deployment>
+                      <file>${basedir}/src/etc/dbpsml/spring-filter-key.properties</file>
+                      <destination>conf</destination>
+                    </deployment>
+                  </deployments>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <!-- plugin own dependencies -->
+              <dependency>
+                <groupId>org.apache.portals.jetspeed-2</groupId>
+                <artifactId>jetspeed-deploy-tools</artifactId>
+                <version>${org.apache.portals.jetspeed.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
   </profiles>
 
 </project>

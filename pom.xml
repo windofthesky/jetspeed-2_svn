@@ -1358,11 +1358,6 @@
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
               </target>
               <target>
-                <id>demo-dbpsml-install</id>
-                <dir>@rootdir@/applications/jetspeed-demo</dir>
-                <profiles>dbpsml</profiles>
-              </target>
-              <target>
                 <id>demo-seed</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
@@ -1382,6 +1377,12 @@
                 <profiles>deploy</profiles>
               </target>
               <target>
+                <id>demo-deploy-dbpsml</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>deploy-dbpsml</profiles>
+              </target>
+              <target>
                 <id>demo-db</id>
                 <depends>proddb,demo-seed</depends>
               </target>
@@ -1395,7 +1396,7 @@
               </target>
               <target>
                 <id>demo-dbpsml</id>
-                <depends>demo-dbpsml-install,demo-db-psml,demo-deploy</depends>
+                <depends>demo-db-psml,demo-deploy,demo-deploy-dbpsml</depends>
               </target>
             </targets>
           </configuration>
