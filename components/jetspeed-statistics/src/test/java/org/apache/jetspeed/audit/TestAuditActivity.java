@@ -16,10 +16,14 @@
  */
 package org.apache.jetspeed.audit;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -342,6 +346,27 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
         }        
     }    
 
+    protected Properties getInitProperties()
+    {
+        Properties props = new Properties();
+        try 
+        {
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("jetspeed.properties");
+            if (is != null)
+                props.load(is);
+        } catch (FileNotFoundException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
+        catch (IOException e) 
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return props;
+    }
+    
     protected String[] getConfigurations()
     {
         return new String[]
