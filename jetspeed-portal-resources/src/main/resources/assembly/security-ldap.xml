@@ -157,7 +157,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
-    <property name="objectClasses" value="groupOfUniqueNames"/>
+    <property name="objectClasses" value="groupOfUniqueNames,extensibleObject"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
@@ -180,6 +180,13 @@
           <property name="required" value="true" />
           <property name="requiredDefaultValue" value="uid=foobar" />
         </bean>
+        <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+          <constructor-arg type="java.lang.String" index="0" value="member" />
+          <constructor-arg index="1" value="true" />
+          <constructor-arg index="2" value="false" />
+          <property name="required" value="true" />
+          <property name="requiredDefaultValue" value="uid=foobar" />
+        </bean>
       </set>
     </property>
     <property name="entityType" value="role" />
@@ -195,7 +202,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
-    <property name="objectClasses" value="groupOfUniqueNames"/>
+    <property name="objectClasses" value="groupOfUniqueNames,extensibleObject"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
@@ -213,6 +220,13 @@
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
+          <constructor-arg index="1" value="true" />
+          <constructor-arg index="2" value="false" />
+          <property name="required" value="true" />
+          <property name="requiredDefaultValue" value="uid=foobar" />
+        </bean>
+        <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
+          <constructor-arg type="java.lang.String" index="0" value="member" />
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
@@ -277,14 +291,14 @@
         <property name="contextSource" ref="LdapSpringContext" />
       </bean>
     </property>
-    <property name="relationAttribute" value="uniqueMember" />
+    <property name="relationAttribute" value="member" />
     <property name="attributeContainsInternalId" value="true" />
-    <property name="useFromEntityAttribute" value="false" />
+    <property name="useFromEntityAttribute" value="true" />
     <property name="relationType">
       <bean class="org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl">
         <constructor-arg index="0" value="isMemberOf" />
-        <constructor-arg index="1" value="role" />
-        <constructor-arg index="2" value="group" />
+        <constructor-arg index="1" value="group" />
+        <constructor-arg index="2" value="role" />
       </bean>
     </property>
   </bean>
