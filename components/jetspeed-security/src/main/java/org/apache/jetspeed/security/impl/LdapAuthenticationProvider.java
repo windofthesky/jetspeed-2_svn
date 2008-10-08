@@ -144,7 +144,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         }
         catch (NamingException nex)
         {
-            throw new SecurityException(SecurityException.UNEXPECTED.createScoped("in logining in",JetspeedPrincipalType.USER,userName));
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"authenticateUser", nex.getMessage()));
         }
     }
 
