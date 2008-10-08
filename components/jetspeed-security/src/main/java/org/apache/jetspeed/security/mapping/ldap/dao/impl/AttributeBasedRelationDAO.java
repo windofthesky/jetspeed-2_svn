@@ -150,11 +150,15 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         }
         Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
         
-        if(relationAttribute == null){
+        if(relationAttribute == null)
+        {
             fromEntity.setAttribute(this.relationAttribute,new ArrayList<String>());    
-        }else{
-            if(relationAttribute.getValues().contains(attrValue)){
-                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getId(),toEntity.getId()));
+        }
+        else
+        {
+            if(relationAttribute.getValues().contains(attrValue))
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getType(), fromEntity.getId(), relationAttribute, toEntity.getId()));
             }
         }
         
