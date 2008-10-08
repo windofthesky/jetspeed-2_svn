@@ -179,6 +179,26 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         }
     }
 
+    public void addEntity(Entity entity, Entity parentEntity) throws SecurityException
+    {
+        EntityDAO parentEntityDao = getDAOForEntity(parentEntity);
+        Entity liveParentEntity = null;
+        if (parentEntityDao!=null){
+            // fetch "live" entity from LDAP to 
+            // 1) check whether entity exists and 
+            // 2) fetch all LDAP attributes (mapped and not mapped) + fill the internal ID
+            liveParentEntity=parentEntityDao.getEntity(parentEntity.getId());
+            if (liveParentEntity == null){
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(parentEntity.getType(), parentEntity.getId()));
+            }
+            EntityDAO dao = getDAOForEntity(entity);
+            if (dao != null)
+            {
+                dao.add(entity,liveParentEntity);
+            }
+        }         
+    }
+
     public void setEntityDAOs(Map<String, EntityDAO> entityDAOs)
     {
         this.entityDAOs = entityDAOs;

@@ -19,8 +19,10 @@ package org.apache.jetspeed.security.mapping.ldap.setup2;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
+import org.springframework.ldap.core.DistinguishedName;
 
 
 /**
@@ -32,60 +34,73 @@ public class UserTests extends AbstractSetup2LDAPTest
 
     public void testSingleUser() throws Exception
     {
-        EntityImpl sampleUser = new EntityImpl("user", "someManager", userAttrDefs);
+        EntityImpl sampleUser = new EntityImpl("user", "thomas", userAttrDefs);
         sampleUser
-                .setInternalId("cn=someManager, ou=People, ou=rootOrg, o=sevenSeas");
-        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Some Manager");
-        sampleUser.setAttribute(UID_DEF.getName(), "someManager");
-        sampleUser.setAttribute(CN_DEF.getName(), "someManager");
-        Collection<String> roles = new ArrayList<String>();
-        roles.add("manager");
-        roles.add("user");
-        sampleUser.setAttribute(J2_ROLE_DEF.getName(), roles);
+                .setInternalId("cn=Thomas, o=Peoples, o=Amsterdam, o=Jetspeed, o=sevenSeas");
+        sampleUser.setAttribute(GIVEN_NAME_DEF.getName(), "Thomas");
+        sampleUser.setAttribute(UID_DEF.getName(), "thomas");
+        sampleUser.setAttribute(CN_DEF.getName(), "Thomas");
         basicTestCases.testFetchSingleEntity(entityManager, sampleUser);
+    }
+
+    private EntityImpl getFinanceRole(){
+        EntityImpl financeRole = new EntityImpl("role", "Finance", roleAttrDefs);
+        financeRole.setInternalId("cn=Finance, ou=Roles, o=Jetspeed, o=sevenSeas");
+        financeRole.setAttribute(CN_DEF.getName(), "Finance");
+        Collection<String> members = new ArrayList<String>();
+        members.add(DnUtils.encodeDn("cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas"));
+        financeRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), members);
+        return financeRole;
+    }
+
+    private EntityImpl getUsersRole(){
+        EntityImpl usersRole = new EntityImpl("role", "Users", roleAttrDefs);
+        usersRole.setInternalId("cn=Users, ou=Roles, o=Jetspeed, o=sevenSeas");
+        usersRole.setAttribute(CN_DEF.getName(), "Users");
+        Collection<String> members = new ArrayList<String>();
+        members.add(DnUtils.encodeDn("cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas"));
+        members.add(DnUtils.encodeDn("cn=Paul,o=People,o=Amsterdam,o=Jetspeed,o=sevenSeas"));
+        members.add(DnUtils.encodeDn("cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas"));
+        usersRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), members);
+        return usersRole;
     }
 
     public void testFetchRolesForUserByRoleAttribute() throws Exception
     {
-        EntityImpl managerRole = new EntityImpl("role", "manager", roleAttrDefs);
-        managerRole.setInternalId("cn=manager, ou=Roles, ou=rootOrg, o=sevenSeas");
-        managerRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Manager Role");
-        managerRole.setAttribute(CN_DEF.getName(), "manager");
-        managerRole.setAttribute(UID_DEF.getName(), "manager");
-
-        EntityImpl userRole = new EntityImpl("role", "user", roleAttrDefs);
-        userRole.setInternalId("cn=user, ou=Roles, ou=rootOrg, o=sevenSeas");
-        userRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "User Role");
-        userRole.setAttribute(CN_DEF.getName(), "user");
-        userRole.setAttribute(UID_DEF.getName(), "user");
-
+        EntityImpl userRole = getUsersRole();
+        EntityImpl financeRole = getFinanceRole();
         Collection<Entity> resultSet = new ArrayList<Entity>();
-        resultSet.add(managerRole);
         resultSet.add(userRole);
-        
+        resultSet.add(financeRole);
         // test fetching roles for a user
         basicTestCases.testFetchRelatedEntitiesFrom("user", "role", "hasRole",
-                "someManager", resultSet);
+                "David", resultSet);
 
-        // .. next, test fetching users for a role using the same EntityRelationDAO
-        Entity user = createUser("someManager", 
-                "cn=someManager, ou=People, ou=rootOrg, o=sevenSeas",
-                 "Some Manager","someManager","someManager",new String[]{"manager","user"});
-        Entity jetspeed = createUser("jetspeed", 
-                "cn=jetspeed, ou=People, ou=rootOrg, o=sevenSeas",
-                 "jetspeed","jetspeed","jetspeed",new String[]{"manager"});
-        Entity admin = createUser("admin", 
-                "cn=admin, ou=People, ou=rootOrg, o=sevenSeas",
-                 "Admin","admin","admin",new String[]{"admin","manager","user"});
-        
-        
-        resultSet = new ArrayList<Entity>();
-        resultSet.add(user);
-        resultSet.add(jetspeed);
-        resultSet.add(admin);
-        basicTestCases.testFetchRelatedEntitiesTo("user", "role", "hasRole",
-                "manager", resultSet);
 
+    }
+    
+    private EntityImpl getGroup(String id, String description){
+        EntityImpl group = new EntityImpl("group", id, groupAttrDefs);
+        if (description != null){
+            group.setAttribute(DESCRIPTION_ATTR_DEF.getName(), description);
+        }
+        group.setAttribute(CN_DEF.getName(), id);
+        return group;
+    }
+    
+    public void testAddNestedEntities() throws Exception {
+        Entity marketingGroup = entityManager.getEntity("group", "Marketing");
+        
+        assertNotNull(marketingGroup);
+        
+        EntityImpl nestedGroup = getGroup("nestedGroup1", "Some Nested Group");
+        
+        entityManager.addEntity(nestedGroup, marketingGroup);
+        
+        Entity liveNestedGroup = entityManager.getEntity("group", nestedGroup.getId());
+        assertNotNull(liveNestedGroup);
+        String newDn = DnUtils.encodeDnUsingSeparator(",", marketingGroup.getInternalId(), "cn="+liveNestedGroup.getId());
+        assertEquals("cn=nestedGroup1,cn=Marketing,ou=Groups,o=Jetspeed,o=sevenSeas", newDn);
     }
     
     private Entity createUser(String id, String internalId, String givenName, String cn, String uid, String[] roles){
@@ -94,12 +109,6 @@ public class UserTests extends AbstractSetup2LDAPTest
         user.setAttribute(GIVEN_NAME_DEF.getName(), givenName);
         user.setAttribute(CN_DEF.getName(), cn);
         user.setAttribute(UID_DEF.getName(), uid);
-        Collection<String> roleValues=new ArrayList<String>();
-        for (int i = 0; i < roles.length; i++)
-        {
-            roleValues.add(roles[i]);
-        }
-        user.setAttribute(J2_ROLE_DEF.getName(), roleValues);
         return user;
     }
 

@@ -49,7 +49,11 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
 
     protected Set<AttributeDef> roleAttrDefs;
 
+    protected Set<AttributeDef> groupAttrDefs;
+
     protected AttributeBasedRelationDAO hasRoleDAO;
+
+    protected AttributeBasedRelationDAO isMemberOfGroupDAO;
 
     public Resource[] initializationData()
     {
@@ -71,16 +75,16 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         userAttrDefs = new HashSet<AttributeDef>();
         userAttrDefs.addAll(basicAttrDefs);
         userAttrDefs.add(GIVEN_NAME_DEF);
-        userAttrDefs.add(J2_ROLE_DEF);
 
         userSearchConfig = new LDAPEntityDAOConfiguration();
         userSearchConfig.setBaseDN("o=sevenSeas");
         userSearchConfig.setSearchDN("");
         userSearchConfig.setSearchFilter(new SimpleFilter(
-                "(objectClass=jetspeed-2-user)"));
+                "(objectClass=inetOrgPerson)"));
         userSearchConfig.setLdapIdAttribute("uid");
         userSearchConfig.setAttributeDefinitions(userAttrDefs);
         userSearchConfig.setEntityType("user");
+        userSearchConfig.setObjectClasses("inetOrgPerson,organizationalPerson,person,top");
 
         SpringLDAPEntityDAO userDAO = new SpringLDAPEntityDAO(userSearchConfig);
         userDAO.setLdapTemplate(ldapTemplate);
@@ -93,19 +97,44 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
 
         LDAPEntityDAOConfiguration roleSearchConfig = new LDAPEntityDAOConfiguration();
         roleSearchConfig.setBaseDN("o=sevenSeas");
-        roleSearchConfig.setSearchDN("");
+        roleSearchConfig.setSearchDN("ou=Roles,o=Jetspeed");
         roleSearchConfig.setSearchFilter(new SimpleFilter(
-                "(objectClass=jetspeed-2-role)"));
-        roleSearchConfig.setLdapIdAttribute("uid");
+                "(objectClass=groupOfUniqueNames)"));
+        roleSearchConfig.setLdapIdAttribute("cn");
         roleSearchConfig.setAttributeDefinitions(roleAttrDefs);
         roleSearchConfig.setEntityType("role");
+        roleSearchConfig.setObjectClasses("groupOfUniqueNames,extensibleObject");
 
         SpringLDAPEntityDAO roleDAO = new SpringLDAPEntityDAO(roleSearchConfig);
         roleDAO.setLdapTemplate(ldapTemplate);
 
+        groupAttrDefs = new HashSet<AttributeDef>();
+        groupAttrDefs.addAll(basicAttrDefs);
+        groupAttrDefs.add(DESCRIPTION_ATTR_DEF);
+        groupAttrDefs.add(UNIQUEMEMBER_ATTR_DEF);
+
+        LDAPEntityDAOConfiguration groupSearchConfig = new LDAPEntityDAOConfiguration();
+        groupSearchConfig.setBaseDN("o=sevenSeas");
+        groupSearchConfig.setSearchDN("ou=Groups,o=Jetspeed");
+        groupSearchConfig.setSearchFilter(new SimpleFilter(
+                "(objectClass=groupOfUniqueNames)"));
+        groupSearchConfig.setLdapIdAttribute("cn");
+        groupSearchConfig.setAttributeDefinitions(groupAttrDefs);
+        groupSearchConfig.setEntityType("group");
+        groupSearchConfig.setObjectClasses("groupOfUniqueNames,extensibleObject");
+        
+        SpringLDAPEntityDAO groupDAO = new SpringLDAPEntityDAO(groupSearchConfig);
+        groupDAO.setLdapTemplate(ldapTemplate);
+
         Map<String, EntityDAO> daos = new HashMap<String, EntityDAO>();
         daos.put("user", userDAO);
         daos.put("role", roleDAO);
+
+        entityManager = new DefaultLDAPEntityManager();
+        entityManager.setEntityDAOs(daos);
+        daos.put("user", userDAO);
+        daos.put("role", roleDAO);
+        daos.put("group", groupDAO);
 
         entityManager = new DefaultLDAPEntityManager();
         entityManager.setEntityDAOs(daos);
@@ -117,11 +146,10 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         // use attribute on from entity (of "user" type); user IDs are stored
         // in the "j2-role" attribute
         hasRoleDAO = new AttributeBasedRelationDAO();
-        hasRoleDAO.setLdapTemplate(ldapTemplate);
-        hasRoleDAO.setRelationAttribute("j2-role");
-        hasRoleDAO.setUseFromEntityAttribute(true);
+        hasRoleDAO.setRelationAttribute("uniqueMember");
+        hasRoleDAO.setUseFromEntityAttribute(false);
         hasRoleDAO.setRelationType(new SecurityEntityRelationTypeImpl("hasRole","user","role"));
-        hasRoleDAO.setAttributeContainsInternalId(false);
+        hasRoleDAO.setAttributeContainsInternalId(true);
         relationDaos.add(hasRoleDAO);
 
         entityManager.setEntityRelationDAOs(relationDaos);

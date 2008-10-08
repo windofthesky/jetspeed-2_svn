@@ -236,7 +236,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         } finally{
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-        if (dirCtxOps == null) { throw new SecurityException(SecurityException.UNEXPECTED); }
+        if (dirCtxOps == null) { throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId())); }
 
         Collection<ModificationItem> modItems = getModItems(entity, dirCtxOps, umode);
         try
@@ -251,12 +251,16 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     public void add(Entity entity, Entity parentEntity) throws SecurityException
     {
-        // TODO need to be implemented
+        if (parentEntity == null || parentEntity.getInternalId() == null){
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"add(Entity entity, Entity parentEntity)","Provided parent entity is null or has no internal ID."));
+        }        
+        DistinguishedName parentDn = new DistinguishedName(parentEntity.getInternalId());
+        parentDn.removeFirst(new DistinguishedName(configuration.getBaseDN()));
+        internalAdd(entity,parentDn);        
     }
 
     public void add(Entity entity) throws SecurityException
     {
-        if (entityExists(entity)) { throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId())); }
         DistinguishedName dn = new DistinguishedName();
         if (configuration.getSearchDN() != null && configuration.getSearchDN().length() > 0)
         {
@@ -265,10 +269,15 @@ public class SpringLDAPEntityDAO implements EntityDAO
                 dn.addAll(new DistinguishedName(configuration.getSearchDN()));
             } catch (InvalidNameException inex)
             {
-                // TODO throw exception
-                dn = null;
+                throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"add(Entity entity)",inex));
             }
         }
+        internalAdd(entity, dn);
+    }
+    
+    public void internalAdd(Entity entity, DistinguishedName dn) throws SecurityException
+    {
+        if (entityExists(entity)) { throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId())); }
         DirContextAdapter context = new DirContextAdapter();
         if (dn != null)
         {

@@ -128,7 +128,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(transientEntity.getType(), transientEntity.getId()));
         }
         if (liveEntity.getInternalId() == null){
-            throw new SecurityException(SecurityException.UNEXPECTED);
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"getLiveEntity","Internal ID not found"));
         }
         return liveEntity;
     }
