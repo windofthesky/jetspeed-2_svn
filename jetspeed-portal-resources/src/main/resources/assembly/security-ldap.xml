@@ -248,11 +248,6 @@
 
   <bean id="UserRoleRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.LdapTemplate">
-        <property name="contextSource" ref="LdapSpringContext" />
-      </bean>
-    </property>
     <property name="relationAttribute" value="uniqueMember" />
     <property name="attributeContainsInternalId" value="true" />
     <property name="useFromEntityAttribute" value="false" />
@@ -267,11 +262,6 @@
 
   <bean id="UserGroupRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.LdapTemplate">
-        <property name="contextSource" ref="LdapSpringContext" />
-      </bean>
-    </property>
     <property name="relationAttribute" value="uniqueMember" />
     <property name="attributeContainsInternalId" value="true" />
     <property name="useFromEntityAttribute" value="false" />
@@ -286,11 +276,6 @@
   
   <bean id="RoleGroupRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.LdapTemplate">
-        <property name="contextSource" ref="LdapSpringContext" />
-      </bean>
-    </property>
     <property name="relationAttribute" value="member" />
     <property name="attributeContainsInternalId" value="true" />
     <property name="useFromEntityAttribute" value="true" />
