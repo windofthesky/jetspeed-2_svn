@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -148,6 +149,15 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             attrValue = toEntity.getId();
         }
         Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
+        
+        if(relationAttribute == null){
+            fromEntity.setAttribute(this.relationAttribute,new ArrayList<String>());    
+        }else{
+            if(relationAttribute.getValues().contains(attrValue)){
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getId(),toEntity.getId()));
+            }
+        }
+        
         if (relationAttribute.getDefinition().isMultiValue())
         {
             relationAttribute.getValues().add(attrValue);

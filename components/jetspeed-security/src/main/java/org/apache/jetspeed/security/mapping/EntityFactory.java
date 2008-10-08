@@ -17,11 +17,9 @@
 package org.apache.jetspeed.security.mapping;
 
 import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.mapping.model.Entity;
-import org.springframework.ldap.core.DirContextOperations;
 
 
 /**

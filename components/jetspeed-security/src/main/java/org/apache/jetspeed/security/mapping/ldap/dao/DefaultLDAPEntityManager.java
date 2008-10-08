@@ -26,7 +26,6 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
 import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
-import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Entity;
 
 /**
@@ -65,11 +64,6 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     private EntityDAO getDAOForEntity(Entity entity)
     {
         return entity.getType() != null ? entityDAOs.get(entity.getType()) : null;
-    }
-
-    private EntityRelationDAO getRelationDAO(String relationType, String fromEntityType, String targetEntityType)
-    {
-        return entityRelationDAOs.get(new SecurityEntityRelationTypeImpl(relationType, fromEntityType, targetEntityType));
     }
 
     public void addRelation(Entity sourceEntity, Entity targetEntity, SecurityEntityRelationType relationType) throws SecurityException

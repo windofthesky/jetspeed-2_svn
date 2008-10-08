@@ -62,6 +62,9 @@ public class SecurityException extends JetspeedException
     /** <p>Principal association dominant for mixed types exception message.</p> */
     public static final KeyedMessage PRINCIPAL_ASSOCIATION_DOMINANT_MIXED = new KeyedMessage("Only one {0} association is allowed to principal {1} from a {2}.");
     
+    /** <p>Principal association already exist with principal</p> */
+    public static final KeyedMessage PRINCIPAL_ASSOCIATION_ALREADY_EXISTS = new KeyedMessage("Principal {0} already has association with {1}.");
+    
     /** <p>Principal association is not supported exception message.</p> */
     public static final KeyedMessage PRINCIPAL_ASSOCIATION_UNSUPPORTED = new KeyedMessage("A {0} {1} association is not supported.");
     
