@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -154,6 +155,9 @@ public class EntityImpl implements Entity
 
     public void setInternalId(String internalId)
     {
+        if (internalId != null){
+            internalId = DnUtils.encodeDn(internalId);
+        }
         this.internalId = internalId;
     }
 

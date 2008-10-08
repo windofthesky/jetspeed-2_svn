@@ -39,7 +39,9 @@ public interface SecurityEntityManager
     Collection<Entity> getAllEntities(String entityType);
 
     void addEntity(Entity entity) throws SecurityException;
-    
+
+    void addEntity(Entity entity, Entity parentEntity) throws SecurityException;
+
     void removeEntity(Entity entity) throws SecurityException;
     
     void updateEntity(Entity entity) throws SecurityException;

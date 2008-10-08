@@ -150,18 +150,21 @@ objectClass: top
 ou: Groups
 
 dn: cn=Users,ou=Roles,o=Jetspeed,o=sevenSeas
+objectClass: extensibleObject
 objectClass: groupOfUniqueNames
 cn: Users
 uniqueMember: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
 uniqueMember: cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
 
 dn: cn=Publishers,ou=Groups,o=Jetspeed,o=sevenSeas
+objectClass: extensibleObject
 objectClass: groupOfUniqueNames
 cn: Publishers
 uniqueMember: cn=Lisa,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
 uniqueMember: cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
 
 dn: cn=Finance,ou=Roles,o=Jetspeed,o=sevenSeas
+objectClass: extensibleObject
 objectClass: groupOfUniqueNames
 cn: Finance
 uniqueMember: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas
@@ -169,6 +172,7 @@ uniqueMember: cn=Linda,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
 uniqueMember: cn=Robert,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas
 
 dn: cn=Marketing,ou=Groups,o=Jetspeed,o=sevenSeas
+objectClass: extensibleObject
 objectClass: groupOfUniqueNames
 cn: Marketing
 uniqueMember: cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas

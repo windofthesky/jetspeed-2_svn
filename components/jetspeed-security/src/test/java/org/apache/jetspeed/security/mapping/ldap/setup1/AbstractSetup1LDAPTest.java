@@ -119,7 +119,6 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 
         // hasRole relation DAO
         hasRoleDAO = new AttributeBasedRelationDAO();
-        hasRoleDAO.setLdapTemplate(ldapTemplate);
         hasRoleDAO.setRelationAttribute("uniqueMember");
         // use attribute on target entity (of "role" type); user IDs are stored
         // in a multi-valued attribute on roles.

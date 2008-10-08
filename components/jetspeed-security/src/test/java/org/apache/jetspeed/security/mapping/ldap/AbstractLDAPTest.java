@@ -60,9 +60,6 @@ public abstract class AbstractLDAPTest extends TestCase
     public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl(
     "uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
 
-    public static final AttributeDefImpl J2_ROLE_DEF = new AttributeDefImpl(
-            "j2-role",true); // multi-valued attribute
-
     protected LdapTemplate ldapTemplate;
 
     protected ContextSource contextSource;
