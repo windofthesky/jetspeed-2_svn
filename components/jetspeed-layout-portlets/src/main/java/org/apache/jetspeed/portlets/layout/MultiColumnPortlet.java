@@ -963,8 +963,9 @@ public class MultiColumnPortlet extends LayoutPortlet
             String jsChangeThemeAll = request.getParameter("jsChangeThemeAll");
             if (jsChangeThemeAll != null)
             {
-                String decorators = request.getParameter("decorators");                
-                Iterator fragmentsIter = requestPage.getRootFragment().getFragments().iterator();
+                String decorators = request.getParameter("decorators");            
+                String fragment_Id = request.getParameter("fragment");
+                Iterator fragmentsIter = requestPage.getFragmentById(fragment_Id).getFragments().iterator();
                 while(fragmentsIter.hasNext())
                 {
                     Fragment fragment = (Fragment) fragmentsIter.next();
