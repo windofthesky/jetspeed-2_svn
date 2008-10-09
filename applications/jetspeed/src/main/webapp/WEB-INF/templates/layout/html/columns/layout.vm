@@ -172,7 +172,7 @@ limitations under the License.
          ####### Take all fragments and apply style	  
         #if($allowChangePortletDecorator)          
         <div>
-          <input type="hidden" name="fragment" value="">
+          <input type="hidden" name="fragment" value="$myFragment.id">
           <input type="hidden" name="move" value="">
           <input type="hidden" name="remove" value="">
           <label for="decorators">$messages.getString("portal.page.editing.portlet.decorator")</label>
