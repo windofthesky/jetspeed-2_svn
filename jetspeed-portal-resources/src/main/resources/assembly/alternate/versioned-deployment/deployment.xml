@@ -19,7 +19,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory" />
-  <bean id="PAM" class="org.apache.jetspeed.tools.pamanager.VersionedPortletApplicationManager" init-method="start"
+  <bean id="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" class="org.apache.jetspeed.tools.pamanager.VersionedPortletApplicationManager" init-method="start"
     destroy-method="stop">
     <constructor-arg>
       <ref bean="portletFactory" />
@@ -66,9 +66,26 @@
       see https://issues.apache.org/jira/browse/JS2-666
       <property name="maxRetriedStarts"><value>10</value></property>
     -->
-
-
   </bean>
+
+   <bean id="PAM" parent="baseTransactionProxy">
+        <property name="proxyInterfaces">
+            <value>org.apache.jetspeed.tools.pamanager.PortletApplicationManagement</value>
+        </property>
+
+        <property name="target">
+            <ref bean="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="start*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+                <prop key="stop*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+                <prop key="unregister*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+                <prop key="register*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+                <prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+            </props>
+        </property>
+    </bean>
 
   <!-- Portlet Application and Decorator deployment event listeners -->
   <bean id="portletAppDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener">
