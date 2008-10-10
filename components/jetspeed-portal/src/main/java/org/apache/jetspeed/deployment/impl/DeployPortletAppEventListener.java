@@ -198,9 +198,7 @@ public class DeployPortletAppEventListener implements DeploymentEventListener
         String fileName = event.getName();
         if (fileName.endsWith(".war"))
         {
-            if ((localAppStagingDir != null && getEventParentPath(event).equals(localAppStagingDir))
-                    || (fileName.length() > localPAPrefixLength && fileName.substring(0, localPAPrefixLength)
-                            .equalsIgnoreCase(PortletApplicationManagement.LOCAL_PA_PREFIX)))
+            if (localAppStagingDir != null && getEventParentPath(event).equals(localAppStagingDir))
             {
                 deployLocalPortletApplication(event);
             }
