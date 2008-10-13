@@ -99,6 +99,7 @@
   </bean>
 
    <bean id="PAM" parent="baseTransactionProxy">
+     <meta key="j2:cat" value="default" />
         <property name="proxyInterfaces">
             <value>org.apache.jetspeed.tools.pamanager.PortletApplicationManagement</value>
         </property>
