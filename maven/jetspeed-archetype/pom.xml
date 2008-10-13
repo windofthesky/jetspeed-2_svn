@@ -15,16 +15,49 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
+  $Id: pom.xml 678019 2008-07-18 19:57:49Z ate $
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>jetspeed-archetype</artifactId>
-  <name>Jetspeed 2 Maven Archetype</name>
-  <url>http://maven.apache.org</url>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+
+  <artifactId>maven</artifactId>
+  <name>Jetspeed-2 Maven Plugins</name>
+  <description>Jetspeed-2 Maven Plugins</description>
   <parent>
     <groupId>org.apache.portals.jetspeed-2</groupId>
-    <artifactId>maven</artifactId>
+    <artifactId>jetspeed-2</artifactId>
     <version>2.2-SNAPSHOT</version>
   </parent>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>jetspeed-maven-utils</module>
+    <module>jetspeed-mvn-maven-plugin</module>
+    <module>jetspeed-unpack-maven-plugin</module>
+    <module>jetspeed-deploy-maven-plugin</module>
+    <module>jetspeed-db-maven-plugin</module>
+    <module>jetspeed-archetype</module>
+  </modules>
+
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>            
+            <reports>              
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+
 </project>
