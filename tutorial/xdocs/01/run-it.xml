@@ -34,9 +34,9 @@
 cd tomcat-express
 cd bin
 # Windows
-catdebug 
+startup.bat 
 # Linux
-./catdebug.sh
+./startup.sh
      ]]>
 	</source> 
       <p>
