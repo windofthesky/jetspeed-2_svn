@@ -370,6 +370,8 @@ public class MultiColumnPortlet extends LayoutPortlet
                 try
                 {
                     Folder parent = (Folder)requestPage.getParent();
+                    pageManager.removePage(requestPage);
+                    
                     if (parent != null)
                     {
                         List orderList = parent.getDocumentOrder();
@@ -384,8 +386,6 @@ public class MultiColumnPortlet extends LayoutPortlet
                             }
                         }
                     }
-
-                    pageManager.removePage(requestPage);
                 }
                 catch (Exception e)
                 {
