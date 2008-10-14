@@ -370,6 +370,8 @@ public class MultiColumnPortlet extends LayoutPortlet
                 try
                 {
                     Folder parent = (Folder)requestPage.getParent();
+                    pageManager.removePage(requestPage);
+                    
                     if (parent != null)
                     {
                         List orderList = parent.getDocumentOrder();
@@ -384,8 +386,6 @@ public class MultiColumnPortlet extends LayoutPortlet
                             }
                         }
                     }
-
-                    pageManager.removePage(requestPage);
                 }
                 catch (Exception e)
                 {
@@ -963,7 +963,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             String jsChangeThemeAll = request.getParameter("jsChangeThemeAll");
             if (jsChangeThemeAll != null)
             {
-                String decorators = request.getParameter("decorators");                
+                String decorators = request.getParameter("decorators");            
                 String fragment_Id = request.getParameter("fragment");
                 Iterator fragmentsIter = requestPage.getFragmentById(fragment_Id).getFragments().iterator();
                 while(fragmentsIter.hasNext())
