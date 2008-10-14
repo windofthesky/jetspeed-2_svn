@@ -46,6 +46,7 @@
 	     <li>Java 1.4 or higher</li>
 	     <li>Maven-2</li>	 
 	     <li>An internet connection so that Maven can download plugins</li>
+	     <li>Jetspeed-2 tutorial resources <a href="jetspeed-2-resources.zip">download</a></li>
 	   </ul>
 	  <p>
 	    Before getting started with the tutorial, review the Custom Build commands available to you:

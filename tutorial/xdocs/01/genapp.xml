@@ -38,7 +38,7 @@ cd \JetspeedTraining\workspace
 
 mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 
                      -DarchetypeArtifactId=portal-archetype 
-                     -DarchetypeVersion=2.1 
+                     -DarchetypeVersion=2.1.3 
                      -DgroupId=org.apache.portals.tutorials
                      -DartifactId=jetexpress
                      -Dversion=1.0
@@ -46,7 +46,7 @@ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2
 	</source> 
 	  <p>
 	  <b>Paste into Command Line:</b>
-	  <input id='genapp' size="80" value="mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1 -DgroupId=org.apache.portals.tutorials -DartifactId=jetexpress -Dversion=1.0"/>	  
+	  <input id='genapp' size="80" value="mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1.3 -DgroupId=org.apache.portals.tutorials -DartifactId=jetexpress -Dversion=1.0"/>	  
 	  </p>
       <p>      
        A directory named <b>jetexpress</b> under <i>/JetspeedTraining/workspace</i> should have been created.
