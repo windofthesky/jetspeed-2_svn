@@ -177,13 +177,13 @@ limitations under the License.
           <input type="hidden" name="remove" value="">
           <label for="decorators">$messages.getString("portal.page.editing.portlet.decorator")</label>
           <select id="decorators" name="decorators">
-            <option value=''>
-        	    #foreach($pd in $decorationFactory.getPortletDecorations($rc))
+            <option value=''>        	    
                 #set ($fd = "")
-                #if (!$f.Decorator)
+                #if ($f.Decorator)
                     #set ($fd = $f.Decorator)
                 #end
-            <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
+				#foreach($pd in $decorationFactory.getPortletDecorations($rc))
+			<option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
         	    #end
           </select>
           <input type="submit" name="jsChangeThemeAll" value="$messages.getString("portal.page.editing.changethemeall")"/>
@@ -317,7 +317,6 @@ limitations under the License.
 			
       ## get the decorated Portlet content
 		  <div class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
-		  
 		    ## editing block
 		    #if($editing)
 		      <div class="portlet-edit-bar">
@@ -332,7 +331,7 @@ limitations under the License.
                   <select id='decorator' name='decorator' onChange="$form$dcnt$submit">
                     <option value=''>
 	                #set ($fd = "")
-	                #if (!$f.Decorator)
+	                #if ($f.Decorator)
 	                    #set ($fd = $f.Decorator)
 	                #end
                     #foreach($pd in $decorationFactory.getPortletDecorations($rc))
@@ -373,8 +372,7 @@ limitations under the License.
 			        #end
             </form>			 
 		      </div>
-		    #end
-		   
+		    #end		   
 		    ## Now get the real content
 	 	 	  $jetspeed.setCurrentFragment($f)	   
 		    #if($f.type == "portlet")
@@ -386,12 +384,9 @@ limitations under the License.
 		#end
 	</div>
 	#set ($columnIndex = $columnIndex + 1)  
-#end
-  
+#end  
 </div>  
-  
 <br style="clear:both;"/>
-
 #if ($isRoot)
   <form name='portletform' action="" method="post">
     <input type='hidden' name='portlets'/>
