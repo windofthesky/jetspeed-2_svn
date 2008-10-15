@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.ServletContext;
 
@@ -37,13 +39,13 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.Path;
-import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.springframework.web.context.ServletContextAware;
 
 /**
@@ -590,7 +592,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 filteredList.add(path.getSegment(offset));
             }
         }
-        return filteredList;
+        SortedSet decoraters = new TreeSet();
+        decoraters.addAll(filteredList);
+        return decoraters;
     }
 
     public String getDefaultDesktopLayoutDecoration()
