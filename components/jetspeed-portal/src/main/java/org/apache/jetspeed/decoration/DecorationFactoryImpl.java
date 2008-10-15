@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.ServletContext;
 
@@ -590,7 +592,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 filteredList.add(path.getSegment(offset));
             }
         }
-        return filteredList;
+        SortedSet decoraters = new TreeSet();
+        decoraters.addAll(filteredList);
+        return decoraters;
     }
 
     public String getDefaultDesktopLayoutDecoration()
