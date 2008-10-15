@@ -62,6 +62,10 @@ public class SpringComponentManager implements ComponentManager
     public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, ServletContext servletContext,
             String appRoot, Properties initProperties)
     {
+        // Using \ characters will corrupt the path when used as (Spring expanded) variables
+        // making sure default (Java) path separators are used which somehow always work, even on Windows platform.
+        appRoot = appRoot.replace('\\', '/');
+        
         if (initProperties == null)
         {
             initProperties = new Properties();
@@ -95,6 +99,10 @@ public class SpringComponentManager implements ComponentManager
     
     public SpringComponentManager(JetspeedBeanDefinitionFilter filter, String[] bootConfigs, String[] appConfigs, String appRoot, Properties initProperties, boolean fileSystem)
     {        
+        // Using \ characters will corrupt the path when used as (Spring expanded) variables
+        // making sure default (Java) path separators are used which somehow always work, even on Windows platform.
+        appRoot = appRoot.replace('\\', '/');        
+        
         if (initProperties == null)
         {
             initProperties = new Properties();
