@@ -22,12 +22,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.impl.EhCacheImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 
 
@@ -66,7 +72,13 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
     {
         super.setUp();
         
-        cache = new FileCache(SCAN_RATE, CACHE_SIZE);
+        // initialize ehCache
+        CacheManager cacheManager = new CacheManager();
+        Cache ehPageFileCache = new Cache("ehPageFileCache", CACHE_SIZE, false, false, 0, 0);
+        cacheManager.addCache(ehPageFileCache);
+        ehPageFileCache.setCacheManager(cacheManager);       
+        
+        cache = new FileCache(new EhCacheImpl(ehPageFileCache), SCAN_RATE);
     }    
     
     /**
@@ -99,6 +111,7 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
             // load the Cache
             File directory = new File(getBaseDir() + TEST_DIRECTORY);
             File[] files = directory.listFiles();
+            int fileCount = 0;
             for (int ix=0; ix < files.length; ix++)
             {
                 if (files[ix].isDirectory() || files[ix].getName().equals(".cvsignore"))
@@ -107,11 +120,12 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
                 }
                 String testData = readFile(files[ix]);                
                 cache.put(files[ix], testData);
+                ++fileCount;
             }
 
-            assertTrue(cache.getSize() == 32);
+            assertTrue(cache.getSize() == Math.min(CACHE_SIZE, fileCount));
 
-            dumpCache(cache.getIterator());
+            dumpCache(cache.getKeys());
 
             cache.addListener(this);
 
@@ -120,9 +134,9 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
 
             Thread.sleep(2000);
 
-            assertTrue(cache.getSize() == 20);
+            assertTrue(cache.getSize() == Math.min(CACHE_SIZE, fileCount));
 
-            dumpCache(cache.getIterator());
+            dumpCache(cache.getKeys());
 
             // Reload files array to get the files back in the correct order
             // because the cache CAN have reordered them while evicting.
@@ -133,11 +147,11 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
             // Note: this is only an issue for the test itself and not for the
             // cache as such. 
 
-            Iterator it = cache.getIterator();
-            for ( int ix = 0; it.hasNext(); ix++ )
+            int ix = 0;
+            for (Object key : cache.getKeys())
             {
-                FileCacheEntry entry = (FileCacheEntry) it.next();
-                files[ix] = entry.getFile();
+                FileCacheEntry entry = (FileCacheEntry) cache.get((String) key);
+                files[ix++] = entry.getFile();            
             }
 
             String stuff = (String) cache.getDocument(files[18].getCanonicalPath());
@@ -220,11 +234,11 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
         System.out.println("entry is evicting: " + entry.getFile().getName());
     }
 
-    private void dumpCache(Iterator it)
+    private void dumpCache(List keys)
     {
-        for ( ; it.hasNext(); )
+        for (Object key : keys)
         {
-            FileCacheEntry entry = (FileCacheEntry) it.next();
+            FileCacheEntry entry = (FileCacheEntry) cache.get((String) key);
             System.out.println(entry.getFile().getName());
         }
     }
