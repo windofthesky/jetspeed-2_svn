@@ -17,15 +17,20 @@
 package org.apache.jetspeed.tools.deploy;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.Parent;
-import org.jdom.xpath.XPath;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 
 /**
  * Utilities for manipulating the web.xml deployment descriptor
@@ -38,6 +43,51 @@ import org.jdom.xpath.XPath;
  */
 public abstract class JetspeedWebApplicationRewriter
 {
+    private static class XPathNamespaceContext implements NamespaceContext
+    {
+        private String namespaceURI;
+        private String prefix;
+        
+        public XPathNamespaceContext(String prefix)
+        {
+            this(prefix,XMLConstants.XML_NS_URI);
+        }
+
+        public XPathNamespaceContext(String prefix, String namespaceURI)
+        {
+            this.prefix = prefix;
+            this.namespaceURI = namespaceURI;
+        }
+
+        public String getNamespaceURI(String prefix)
+        {
+            if (prefix == null)
+            {
+                throw new NullPointerException("Null prefix");
+            }
+            else if (this.prefix.equals(prefix))
+            {
+                return namespaceURI;
+            }
+            else if ("xml".equals(prefix))
+            {
+                return XMLConstants.XML_NS_URI;
+            }
+            return XMLConstants.NULL_NS_URI;
+        }
+
+        public String getPrefix(String namespaceURI)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @SuppressWarnings("unchecked")
+        public Iterator getPrefixes(String namespaceURI)
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+    
     public static final String JETSPEED_CONTAINER = "JetspeedContainer";
     public static final String JETSPEED_SERVLET_CLASS = "org.apache.jetspeed.container.JetspeedContainerServlet";
     public static final String JETSPEED_SERVLET_DISPLAY_NAME = "Jetspeed Container";
@@ -46,19 +96,38 @@ public abstract class JetspeedWebApplicationRewriter
     protected static final String WEB_XML_PATH = "WEB-INF/web.xml";
 
     private Document document;
+    private String namespace;
+    private String prefix;
+    private Element  root;
     private String portletApplication;
     private boolean changed = false;
     private boolean portletTaglibAdded = false;
+    private XPath xpath;
+
+    
     
     public JetspeedWebApplicationRewriter(Document doc, String portletApplication)
     {
-            this.document = doc;
-            this.portletApplication = portletApplication;
+        this(doc);
+        this.portletApplication = portletApplication;
     }
 
     public JetspeedWebApplicationRewriter(Document doc)
     {
-            this.document = doc;
+        this.document = doc;
+        this.root = doc.getDocumentElement();
+        this.namespace = root.getNamespaceURI();
+        xpath = XPathFactory.newInstance().newXPath();
+        if(namespace!= null && namespace.length() > 0)
+        {
+            prefix = NAMESPACE_PREFIX+":";
+            xpath.setNamespaceContext(new XPathNamespaceContext(NAMESPACE_PREFIX, namespace));
+        }
+        else
+        {
+            prefix = XMLConstants.DEFAULT_NS_PREFIX;
+            xpath.setNamespaceContext(new XPathNamespaceContext(XMLConstants.DEFAULT_NS_PREFIX));
+        }
     }
     
     /**
@@ -80,16 +149,15 @@ public abstract class JetspeedWebApplicationRewriter
     {
         try
         {
-            Element root = document.getRootElement();
-        
-            Object jetspeedServlet = getXPath(getJetspeedServletXPath()).selectSingleNode(document);
-            Object jetspeedServletMapping = getXPath(getJetspeedServletMappingXPath()).selectSingleNode(document);
-            Object portletTaglib = getXPath(getPortletTagLibXPath()).selectSingleNode(document);
+            Element root = document.getDocumentElement();
+            Object jetspeedServlet =xpath.evaluate(getJetspeedServletXPath(), document, XPathConstants.NODE);
+            Object jetspeedServletMapping = xpath.evaluate(getJetspeedServletMappingXPath(), document, XPathConstants.NODE);
+            Object portletTaglib = xpath.evaluate(getPortletTagLibXPath(), document, XPathConstants.NODE);
             
-            if (!document.hasRootElement())
+            if (!document.hasChildNodes())
             {
-                root = new Element("web-app");
-                document.setRootElement(root);
+                root = document.createElement("web-app");
+                document.appendChild(root);
             }
         
             if (jetspeedServlet == null)
@@ -102,12 +170,12 @@ public abstract class JetspeedWebApplicationRewriter
                 // double check for register at Init
                 if (jetspeedServlet instanceof Element)
                 {
-                    Parent jetspeedServletElement =((Element)jetspeedServlet).getParent();
-                    if (null == getXPath("js:init-param/js:param-name[contains(child::text(), \"contextName\")]").selectSingleNode(jetspeedServletElement))
+                    Element jetspeedServletElement = (Element)((Element)jetspeedServlet).getParentNode();
+                    if (null == xpath.evaluate(prefix+"init-param/"+prefix+"param-name[contains(child::text(), \"contextName\")]",jetspeedServletElement, XPathConstants.NODE))
                     {
                       insertContextNameParam((Element)jetspeedServletElement);
                     }
-                    if (null == getXPath("js:load-on-startup").selectSingleNode(jetspeedServletElement))
+                    if (null == xpath.evaluate(prefix+"load-on-startup", jetspeedServletElement, XPathConstants.NODE))
                     {
                         insertLoadOnStartup((Element) jetspeedServletElement);
                     }
@@ -136,21 +204,23 @@ public abstract class JetspeedWebApplicationRewriter
     
     protected void insertContextNameParam(Element jetspeedServletElement)
     {
-        Namespace namespace = jetspeedServletElement.getNamespace();
-        Element param2Name = new Element("param-name", namespace).addContent("contextName");
-        Element param2Value = new Element("param-value", namespace).addContent(portletApplication); 
-        Element init2Param = new Element("init-param", namespace);
-        init2Param.addContent(param2Name);
-        init2Param.addContent(param2Value);
-        jetspeedServletElement.addContent(init2Param);                    
-        
+        String namespace = jetspeedServletElement.getNamespaceURI();
+        Element init2Param = jetspeedServletElement.getOwnerDocument().createElementNS(namespace, "init-param");        
+        jetspeedServletElement.appendChild(init2Param);                    
+        Element param2Name = jetspeedServletElement.getOwnerDocument().createElementNS(namespace, "param-name");
+        param2Name.setTextContent("contextName");
+        Element param2Value = jetspeedServletElement.getOwnerDocument().createElementNS(namespace, "param-value");
+        param2Value.setTextContent(portletApplication);
+        init2Param.appendChild(param2Name);
+        init2Param.appendChild(param2Value);        
     }
     
     protected void insertLoadOnStartup(Element jetspeedServletElement)
     {
-        Namespace namespace = jetspeedServletElement.getNamespace();
-        Element loadOnStartup = new Element("load-on-startup", namespace).addContent("0");
-        jetspeedServletElement.addContent(loadOnStartup);        
+        String namespace = jetspeedServletElement.getNamespaceURI();
+        Element loadOnStartup = jetspeedServletElement.getOwnerDocument().createElementNS(namespace, "load-on-startup");
+        loadOnStartup.setTextContent("0");
+        jetspeedServletElement.appendChild(loadOnStartup);        
     }
     
     public boolean isChanged()
@@ -165,43 +235,51 @@ public abstract class JetspeedWebApplicationRewriter
      * </p>
      * 
      * @param root
-     *            JDom element representing the &lt; web-app &gt;
+     *            element representing the &lt; web-app &gt;
      * @param toInsert
-     *            JDom element to insert into the web.xml hierarchy.
+     *            element to insert into the web.xml hierarchy.
      * @param elementsBefore
      *            an array of web.xml elements that should be defined before the
      *            element we want to insert. This order should be the order
-     *            defined by the web.xml's DTD type definition.
+     *            defined by the web.xml's DTD or XSD type definition.
      */
     protected void insertElementCorrectly( Element root, Element toInsert, String[] elementsBefore )
-    throws Exception
     {
-        List allChildren = root.getChildren();
-        List elementsBeforeList = Arrays.asList(elementsBefore);
-        toInsert.detach();
-        int insertAfter = 0;
-        int count = 0;
-        for (int i = 0; i < allChildren.size(); i++)
+        NodeList allChildren = root.getChildNodes();
+        List<String> elementsBeforeList = Arrays.asList(elementsBefore);
+        Node insertBefore = null;
+        for (int i = 0; i < allChildren.getLength(); i++)
         {
-            Element element = (Element) allChildren.get(i);
-            if (elementsBeforeList.contains(element.getName()))
+            Node node = allChildren.item(i);
+            if (insertBefore == null)
             {
-                // determine the Content index of the element to insert after
-                insertAfter = root.indexOf(element);
+                insertBefore = node;
             }
-            count++;
+            if (node.getNodeType() == Node.ELEMENT_NODE)
+            {
+                if (elementsBeforeList.contains(node.getNodeName()))
+                {
+                    insertBefore = null;
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
+        if (insertBefore == null)
+        {
+            root.appendChild(toInsert);
+        }
+        else
+        {
+            root.insertBefore(toInsert, insertBefore);
+        }
+    }
     
-        insertAfter = (count == 0) ? 0 : insertAfter + 1;
-        
-        try
-        {
-            root.addContent(insertAfter, toInsert);
-        }
-        catch (ArrayIndexOutOfBoundsException e)
-        {
-            root.addContent(toInsert);
-        }
+    protected String getNamespacePrefix()
+    {
+        return prefix;
     }
     
     /**
@@ -212,31 +290,14 @@ public abstract class JetspeedWebApplicationRewriter
         return portletTaglibAdded;
     }
     
-    /**
-     * Returns the xpath containing the namespace prefix 'js' mapped to the document
-     * default namespace.
-     * 
-     * @param path
-     * @return XPath
-     * @throws JDOMException
-     */
-    protected XPath getXPath(String path) throws JDOMException
+    protected XPath getXPath()
     {
-        XPath xpath = XPath.newInstance(path);
-        Element root = document.getRootElement();
-        if(root != null)
-        {
-            if(StringUtils.isNotEmpty(root.getNamespaceURI()))
-            {
-                xpath.addNamespace(NAMESPACE_PREFIX, root.getNamespaceURI());
-            }
-        }
         return xpath;
     }
     
     /**
      * Returns the jetspeed servlet xpath.
-     * The returned path must contain the namespace prefix 'js'.
+     * The returned path must contain the namespace prefix.
      * 
      * @return jetspeed servlet xpath
      */
@@ -244,7 +305,7 @@ public abstract class JetspeedWebApplicationRewriter
     
     /**
      * Returns the jetspeed servlet mapping xpath.
-     * The returned path must contain the namespace prefix 'js'.
+     * The returned path must contain the namespace prefix.
      * 
      * @return jetspeed servlet mapping xpath
      */
@@ -252,7 +313,7 @@ public abstract class JetspeedWebApplicationRewriter
     
     /**
      * Returns the portlet taglib xpath.
-     * The returned path must contain the namespace prefix 'js'.
+     * The returned path must contain the namespace prefix.
      * 
      * @return portlet taglib xpath
      */

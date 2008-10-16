@@ -16,9 +16,10 @@
  */
 package org.apache.jetspeed.tools.deploy;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
+import javax.xml.xpath.XPathConstants;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Utilities for manipulating the web.xml deployment descriptor version 2.4
@@ -62,7 +63,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
      */
     protected String getJetspeedServletXPath()
     {
-        return JETSPEED_SERVLET_XPATH;
+        return JETSPEED_SERVLET_XPATH.replace("js:", getNamespacePrefix());
     }
     
     /**
@@ -72,7 +73,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
      */
     protected String getJetspeedServletMappingXPath()
     {
-        return JETSPEED_SERVLET_MAPPING_XPATH;
+        return JETSPEED_SERVLET_MAPPING_XPATH.replace("js:", getNamespacePrefix());
     }
 
     /**
@@ -82,7 +83,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
      */
     protected String getPortletTagLibXPath()
     {
-        return PORTLET_TAGLIB_XPATH;
+        return PORTLET_TAGLIB_XPATH.replace("js:", getNamespacePrefix());
     }
 
     /**
@@ -93,19 +94,20 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
      */
     protected void insertJetspeedServlet(Element root) throws Exception
     {
-        Namespace namespace = root.getNamespace();
-        Element jetspeedServletElement = new Element("servlet", namespace);
-        Element servletName = new Element("servlet-name", namespace).addContent(JETSPEED_CONTAINER);
-        Element servletDspName = new Element("display-name", namespace).addContent(JETSPEED_SERVLET_DISPLAY_NAME);
-        Element servletDesc = new Element("description", namespace)
-                .addContent(JETSPEED_SERVLET_DESCRIPTION);
-        Element servletClass = new Element("servlet-class", namespace)
-                .addContent(JETSPEED_SERVLET_CLASS);
-        // order is important 
-        jetspeedServletElement.addContent(servletDesc);
-        jetspeedServletElement.addContent(servletDspName);
-        jetspeedServletElement.addContent(servletName);
-        jetspeedServletElement.addContent(servletClass);
+        String namespace = root.getNamespaceURI();
+        Element jetspeedServletElement = root.getOwnerDocument().createElementNS(namespace, "servlet");
+        Element servletName = root.getOwnerDocument().createElementNS(namespace, "servlet-name");
+        servletName.setTextContent(JETSPEED_CONTAINER);
+        Element servletDspName = root.getOwnerDocument().createElementNS(namespace, "display-name");
+        servletDspName.setTextContent(JETSPEED_SERVLET_DISPLAY_NAME);
+        Element servletDesc = root.getOwnerDocument().createElementNS(namespace, "description");
+        servletDesc.setTextContent(JETSPEED_SERVLET_DESCRIPTION);
+        Element servletClass = root.getOwnerDocument().createElementNS(namespace, "servlet-class");
+        servletClass.setTextContent(JETSPEED_SERVLET_CLASS);
+        jetspeedServletElement.appendChild(servletName);
+        jetspeedServletElement.appendChild(servletDspName);
+        jetspeedServletElement.appendChild(servletDesc);
+        jetspeedServletElement.appendChild(servletClass);
         insertContextNameParam(jetspeedServletElement);
         insertLoadOnStartup(jetspeedServletElement);
         insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
@@ -119,14 +121,16 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
      */
     protected void insertJetspeedServletMapping(Element root) throws Exception
     {
-        Namespace namespace = root.getNamespace();
-        Element jetspeedServletMappingElement = new Element("servlet-mapping", namespace);
+        String namespace = root.getNamespaceURI();
+        Element jetspeedServletMappingElement = root.getOwnerDocument().createElementNS(namespace, "servlet-mapping");
         
-        Element servletMapName = new Element("servlet-name", namespace).addContent(JETSPEED_CONTAINER);
-        Element servletUrlPattern = new Element("url-pattern", namespace).addContent("/container/*");
+        Element servletMapName = root.getOwnerDocument().createElementNS(namespace, "servlet-name");
+        servletMapName.setTextContent(JETSPEED_CONTAINER);
+        Element servletUrlPattern = root.getOwnerDocument().createElementNS(namespace, "url-pattern");
+        servletUrlPattern.setTextContent("/container/*");
 
-        jetspeedServletMappingElement.addContent(servletMapName);
-        jetspeedServletMappingElement.addContent(servletUrlPattern);
+        jetspeedServletMappingElement.appendChild(servletMapName);
+        jetspeedServletMappingElement.appendChild(servletUrlPattern);
 
         insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
     }
@@ -139,19 +143,21 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
      */
     protected void insertPortletTagLib(Element root) throws Exception
     {
-        Namespace namespace = root.getNamespace();
-        Element jspConfig = (Element)getXPath(JSP_CONFIG_XPATH).selectSingleNode(root.getDocument());
-        if(jspConfig == null)
+        String namespace = root.getNamespaceURI();
+        Element jspConfig = (Element)getXPath().evaluate(JSP_CONFIG_XPATH, root.getOwnerDocument(), XPathConstants.NODE);
+        if (jspConfig == null)
         {
-            jspConfig = new Element("jsp-config", namespace);
+            jspConfig = root.getOwnerDocument().createElementNS(namespace,"jsp-config");
             insertElementCorrectly(root, jspConfig, ELEMENTS_BEFORE_JSP_CONFIG);
         }
-        Element taglib = new Element ("taglib", namespace);
-        Element taguri = new Element("taglib-uri", namespace).addContent("http://java.sun.com/portlet");
-        Element taglocation = new Element("taglib-location", namespace).addContent("/WEB-INF/tld/portlet.tld");
+        Element taglib = root.getOwnerDocument().createElementNS(namespace, "taglib");
+        Element taguri = root.getOwnerDocument().createElementNS(namespace, "taglib-uri");
+        taguri.setTextContent("http://java.sun.com/portlet");
+        Element taglocation = root.getOwnerDocument().createElementNS(namespace, "taglib-location");
+        taglocation.setTextContent("/WEB-INF/tld/portlet.tld");
         
-        taglib.addContent(taguri);
-        taglib.addContent(taglocation);
+        taglib.appendChild(taguri);
+        taglib.appendChild(taglocation);
         
         insertElementCorrectly(jspConfig, taglib, ELEMENTS_BEFORE_TAGLIB_MAPPING);
     }
