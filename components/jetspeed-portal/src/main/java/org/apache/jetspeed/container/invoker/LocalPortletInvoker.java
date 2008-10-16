@@ -37,7 +37,7 @@ import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.portlet.PortletDefinition;
 

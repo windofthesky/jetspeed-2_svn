@@ -22,7 +22,7 @@ import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.pluto.factory.PortletInvokerFactory;
 import org.apache.pluto.invoker.PortletInvoker;
 import org.apache.pluto.om.portlet.PortletDefinition;

@@ -17,7 +17,7 @@
 package org.apache.jetspeed.layout;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.Parameter;
 import org.apache.pluto.om.portlet.ParameterSet;
 import org.jmock.Mock;
@@ -38,7 +38,7 @@ public class MockPortletRegistryFactory
         Mock portletRegistryMock;
         PortletRegistry portletRegistry;
         Mock portletDefMock;
-        PortletDefinitionComposite portletDef;
+        PortletDefinition portletDef;
         Mock portletDefInitParamsMock;
         ParameterSet portletDefInitParams;
 
@@ -48,8 +48,8 @@ public class MockPortletRegistryFactory
         portletRegistryMock = new Mock(PortletRegistry.class);
         portletRegistry = (PortletRegistry) portletRegistryMock.proxy();
         
-        portletDefMock = new Mock(PortletDefinitionComposite.class);
-        portletDef = (PortletDefinitionComposite) portletDefMock.proxy();
+        portletDefMock = new Mock(PortletDefinition.class);
+        portletDef = (PortletDefinition) portletDefMock.proxy();
 
         portletDefInitParamsMock = new Mock(ParameterSet.class);
         portletDefInitParams = (ParameterSet) portletDefInitParamsMock.proxy();

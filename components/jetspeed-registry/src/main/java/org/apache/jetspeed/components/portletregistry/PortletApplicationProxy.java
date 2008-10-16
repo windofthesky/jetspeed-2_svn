@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 
 public interface PortletApplicationProxy
 {

@@ -37,7 +37,7 @@ import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.deployment.DeploymentManager;
 import org.apache.jetspeed.deployment.DeploymentStatus;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManagerResult;
 

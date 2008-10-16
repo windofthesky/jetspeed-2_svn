@@ -23,8 +23,8 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;

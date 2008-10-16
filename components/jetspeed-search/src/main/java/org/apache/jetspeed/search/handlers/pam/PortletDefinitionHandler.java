@@ -22,8 +22,8 @@ import java.util.Iterator;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.ParsedObject;
@@ -52,10 +52,10 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
     public ParsedObject parseObject(Object o)
     {
         BaseParsedObject result = null;
-        if(o instanceof PortletDefinitionComposite)
+        if(o instanceof PortletDefinition)
         {
             result = new BaseParsedObject();
-            PortletDefinitionComposite pd = (PortletDefinitionComposite)o;
+            PortletDefinition pd = (PortletDefinition)o;
             
             //need to get Locale here
             String displayNameText = pd.getDisplayNameText(JetspeedLocale.getDefaultLocale());

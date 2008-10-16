@@ -24,8 +24,6 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.ParameterDescriptionImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
@@ -34,6 +32,8 @@ import org.apache.jetspeed.om.impl.PortletInitParameterImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefDescriptionImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
@@ -185,7 +185,7 @@ public class PortletApplicationDescriptor
             while(portletDefs.hasNext())
             {
                 Object obj = portletDefs.next();
-                PortletDefinitionComposite portletDef = (PortletDefinitionComposite) obj;
+                PortletDefinition portletDef = (PortletDefinition) obj;
                 if(portletDef.getPortletIdentifier() == null)
                 {
                     portletDef.setPortletIdentifier(portletDef.getPortletName());

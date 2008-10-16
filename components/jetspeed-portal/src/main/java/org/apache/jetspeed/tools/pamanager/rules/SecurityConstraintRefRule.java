@@ -17,8 +17,8 @@
 package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Rule;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * This class helps load the portlet's metadata onto the digester stack
@@ -42,9 +42,9 @@ public class SecurityConstraintRefRule extends Rule
         {
            ((PortletApplication) obj).setJetspeedSecurityConstraint(text);
         }
-        else if (obj instanceof PortletDefinitionComposite)
+        else if (obj instanceof PortletDefinition)
         {
-            ((PortletDefinitionComposite) obj).setJetspeedSecurityConstraint(text);
+            ((PortletDefinition) obj).setJetspeedSecurityConstraint(text);
         }
     }
     

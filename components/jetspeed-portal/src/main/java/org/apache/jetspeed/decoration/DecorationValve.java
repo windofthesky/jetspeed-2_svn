@@ -38,11 +38,11 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
@@ -340,7 +340,7 @@ public class DecorationValve extends AbstractValve implements Valve
     {
         boolean fragmentSupportsActions = false;
         PortletWindow window = windowAccessor.getPortletWindow(fragment); 
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite) window.getPortletEntity().getPortletDefinition();
+        PortletDefinition portlet = (PortletDefinition) window.getPortletEntity().getPortletDefinition();
         
         if (null == portlet)
         {

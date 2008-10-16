@@ -39,10 +39,10 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.Path;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
@@ -562,7 +562,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         Iterator portlets = registry.getAllPortletDefinitions().iterator();
         while ( portlets.hasNext() )
         {
-            PortletDefinitionComposite portlet = (PortletDefinitionComposite)portlets.next();
+            PortletDefinition portlet = (PortletDefinition)portlets.next();
             PortletApplication app = (PortletApplication)portlet.getApplication();
             String appName = app.getName();
             if ( appName == null )

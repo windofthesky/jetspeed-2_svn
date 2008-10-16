@@ -26,8 +26,8 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.serializer.objects.JSApplication;
 import org.apache.jetspeed.serializer.objects.JSApplications;

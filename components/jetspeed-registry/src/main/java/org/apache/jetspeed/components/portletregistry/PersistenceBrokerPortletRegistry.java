@@ -27,8 +27,8 @@ import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.query.Criteria;
@@ -119,7 +119,7 @@ public class PersistenceBrokerPortletRegistry
         return list;
     }
 
-    public PortletDefinitionComposite getPortletDefinitionByUniqueName( String name )
+    public PortletDefinition getPortletDefinitionByUniqueName( String name )
     {
         String appName = PortletRegistryHelper.parseAppName(name);
         String portletName = PortletRegistryHelper.parsePortletName(name);
@@ -128,7 +128,7 @@ public class PersistenceBrokerPortletRegistry
         c.addEqualTo("app.name", appName);
         c.addEqualTo("name", portletName);
 
-        PortletDefinitionComposite def = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
+        PortletDefinition def = (PortletDefinition) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(PortletDefinitionImpl.class, c));
         if (def != null && def.getApplication() == null)
         {
@@ -227,7 +227,7 @@ public class PersistenceBrokerPortletRegistry
         try
         {
             getPersistenceBrokerTemplate().store(portlet);
-            ((PortletDefinitionComposite)portlet).storeChildren();
+            ((PortletDefinition)portlet).storeChildren();
         }
         catch (DataAccessException e)
         {
@@ -261,7 +261,7 @@ public class PersistenceBrokerPortletRegistry
         {
             //System.out.println("%%% portlet remote removed " + key);            
             RegistryPortletCache.cacheRemoveQuiet((String)key, (RegistryCacheObjectWrapper)element);
-            PortletDefinitionComposite pd = this.getPortletDefinitionByUniqueName((String)key);
+            PortletDefinition pd = this.getPortletDefinitionByUniqueName((String)key);
             if (listeners != null)
             {
                 for (int ix=0; ix < listeners.size(); ix++)

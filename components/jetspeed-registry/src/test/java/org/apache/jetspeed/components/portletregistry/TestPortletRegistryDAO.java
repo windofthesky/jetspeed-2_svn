@@ -33,13 +33,13 @@ import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
@@ -183,7 +183,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
-        PortletDefinitionComposite portlet = new PortletDefinitionImpl();
+        PortletDefinition portlet = new PortletDefinitionImpl();
         portlet.setPortletClass("org.apache.Portlet");
         portlet.setPortletName("Portlet 1");
         portlet.addDescription(Locale.getDefault(), "POrtlet description.");
@@ -223,7 +223,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
     {
         PortletApplication app;
         WebApplicationDefinitionImpl webApp;
-        PortletDefinitionComposite portlet;
+        PortletDefinition portlet;
 
         // Now makes sure everthing got persisted
 

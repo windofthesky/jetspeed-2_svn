@@ -20,8 +20,6 @@ import java.util.Map;
 
 import org.apache.jetspeed.request.RequestContext;
 
-import org.apache.pluto.om.portlet.ObjectID;
-
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 
  * <code>(PortletRequest.USER_INFO</code> request attribute for a specific
@@ -58,5 +56,5 @@ public interface UserInfoManager
      * @param context The request context.
      * @return The {@link PortletRequest.USER_INFO} map.
      */
-    Map<String, String> getUserInfoMap(ObjectID oid, RequestContext context);
+    Map<String, String> getUserInfoMap(String appName, RequestContext context);
 }

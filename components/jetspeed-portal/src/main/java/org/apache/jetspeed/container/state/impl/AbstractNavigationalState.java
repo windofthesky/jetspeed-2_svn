@@ -27,7 +27,7 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**

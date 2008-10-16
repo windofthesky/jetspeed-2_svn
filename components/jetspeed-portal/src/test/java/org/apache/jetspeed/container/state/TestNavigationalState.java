@@ -39,7 +39,7 @@ import org.apache.jetspeed.container.url.impl.QueryStringEncodingPortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;

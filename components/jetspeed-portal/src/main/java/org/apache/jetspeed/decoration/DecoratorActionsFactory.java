@@ -21,9 +21,9 @@ import java.util.List;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.container.PortletWindow;
@@ -34,7 +34,7 @@ public interface DecoratorActionsFactory
                     WindowState ws, Decoration decoration);
 
     List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
-                        WindowState ws, Decoration decoration, List allowedActions, PortletDefinitionComposite portlet, ContentFragment fragment, SecurityAccessController accessController);
+                        WindowState ws, Decoration decoration, List allowedActions, PortletDefinition portlet, ContentFragment fragment, SecurityAccessController accessController);
     
     /**
      * Maximize portlet window when going into edit mode

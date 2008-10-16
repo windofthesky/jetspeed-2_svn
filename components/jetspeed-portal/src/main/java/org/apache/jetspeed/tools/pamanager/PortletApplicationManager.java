@@ -32,8 +32,8 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.PermissionManager;
@@ -179,10 +179,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
         PortletApplication app = registry.getPortletApplicationByIdentifier(appName);
         if (app != null && app.getApplicationType() == PortletApplication.LOCAL)
         {
-            app.setApplicationType(PortletApplication.INTERNAL);
+            app.setApplicationType(org.apache.jetspeed.om.portlet.INTERNAL);
             registry.updatePortletApplication(app);
         }
-        startPA(contextName, "/"+contextName, dir, contextClassLoader, PortletApplication.INTERNAL);
+        startPA(contextName, "/"+contextName, dir, contextClassLoader, org.apache.jetspeed.om.portlet.INTERNAL);
         // startInternal(contextName, warStruct, paClassLoader, true);        
     }
     
@@ -325,7 +325,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				wa.setContextRoot("<portal>");
 			}
-            else if (paType == PortletApplication.INTERNAL)
+            else if (paType == org.apache.jetspeed.om.portlet.INTERNAL)
             {
                 // TODO: this is screwing up the PSML as its set all over the place to "jetspeed-layouts", not good
                 wa.setContextRoot("/" + paName);                

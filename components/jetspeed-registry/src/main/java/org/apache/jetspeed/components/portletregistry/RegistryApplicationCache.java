@@ -23,7 +23,7 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.impl.EhCacheElementImpl;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.cache.ObjectCache;

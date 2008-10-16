@@ -22,9 +22,9 @@ import java.util.Iterator;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -195,7 +195,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         else
         {
             String portletUniqueName = portletEntity.getPortletUniqueName();
-            PortletDefinitionComposite parentPortletDef = registry.getPortletDefinitionByUniqueName(portletUniqueName);
+            PortletDefinition parentPortletDef = registry.getPortletDefinitionByUniqueName(portletUniqueName);
             if(parentPortletDef != null)
             {
                 //Indication that the fragment has changed the portlet it references.

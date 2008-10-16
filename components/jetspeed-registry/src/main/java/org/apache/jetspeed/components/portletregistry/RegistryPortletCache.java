@@ -23,7 +23,7 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.impl.EhCacheElementImpl;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.cache.ObjectCache;
@@ -80,7 +80,7 @@ public class RegistryPortletCache implements ObjectCache
         CacheElement entry = new EhCacheElementImpl(oid, obj);
         oidCache.put(entry);
         
-        PortletDefinitionComposite pd = (PortletDefinitionComposite)obj;
+        PortletDefinition pd = (PortletDefinition)obj;
         DistributedCacheObject wrapper = new RegistryCacheObjectWrapper(oid, pd.getUniqueName());
         nameCache.remove(pd.getUniqueName());
         CacheElement nameEntry = nameCache.createElement(pd.getUniqueName(), wrapper);
@@ -91,7 +91,7 @@ public class RegistryPortletCache implements ObjectCache
             for (int ix=0; ix < listeners.size(); ix++)
             {
                 RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
-                listener.portletUpdated((PortletDefinitionComposite)obj);
+                listener.portletUpdated((PortletDefinition)obj);
             }
         }
     }
@@ -126,7 +126,7 @@ public class RegistryPortletCache implements ObjectCache
      */
     public synchronized static void cacheRemove(Identity oid)
     {
-        PortletDefinitionComposite pd = (PortletDefinitionComposite)cacheLookup(oid);
+        PortletDefinition pd = (PortletDefinition)cacheLookup(oid);
         if (pd == null)
             return;
         
@@ -154,7 +154,7 @@ public class RegistryPortletCache implements ObjectCache
         }
         Identity oid = wrapper.getId();
 
-        PortletDefinitionComposite pd = (PortletDefinitionComposite)cacheLookup(oid);
+        PortletDefinition pd = (PortletDefinition)cacheLookup(oid);
         if (pd == null)
             return;
      

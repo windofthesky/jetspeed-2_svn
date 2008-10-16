@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.PortalAccessor;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletObjectProxy;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -169,7 +169,7 @@ public class JetspeedPortletFactory implements PortletFactory
                 validator = (PreferencesValidator)validatorCache.get(pdId);
                 if ( validator == null )
                 {
-                    String className = ((PortletDefinitionComposite)pd).getPreferenceValidatorClassname();
+                    String className = ((PortletDefinition)pd).getPreferenceValidatorClassname();
                     if ( className != null )
                     {
                         PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();

@@ -21,9 +21,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.portlet.PreferencesValidator;
@@ -37,8 +40,6 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.common.preference.PreferencesValidatorFactory;
@@ -46,21 +47,21 @@ import org.apache.jetspeed.om.impl.DescriptionImpl;
 import org.apache.jetspeed.om.impl.DescriptionSetImpl;
 import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
 import org.apache.jetspeed.om.impl.LanguageImpl;
-import org.apache.jetspeed.om.impl.LanguageSetImpl;
 import org.apache.jetspeed.om.impl.ParameterSetImpl;
 import org.apache.jetspeed.om.impl.PortletDescriptionImpl;
 import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.HashCodeBuilder;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.LanguageSet;
-import org.apache.pluto.om.portlet.ObjectID;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.pluto.om.portlet.Parameter;
 import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.Preference;
@@ -84,7 +85,7 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  * @version $Id$
  *  
  */
-public class PortletDefinitionImpl implements PortletDefinitionComposite, PreferencesValidatorFactory, Serializable, Support, PersistenceBrokerAware
+public class PortletDefinitionImpl implements PortletDefinition, PreferencesValidatorFactory, Serializable, Support, PersistenceBrokerAware
 {
     private static PortletRegistry registry;
     private static PortletFactory  portletFactory;
@@ -95,8 +96,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     private String className;
     private String name;
     private String portletIdentifier;
-    private Collection languageSet = null;
-    private LanguageSetImpl langListWrapper = new LanguageSetImpl();
+    private List<Language> languages = null;
     private Collection parameterSet;
     private ParameterSetImpl paramListWrapper = new PortletParameterSetImpl();
     private Collection securityRoleRefSet;
@@ -148,18 +148,31 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
         }
     }
 
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getId()
-     */
-    public ObjectID getId()
+    protected ResourceBundle loadResourceBundle( Locale locale )
     {
-        if ( oid == null && id != null )
+        ResourceBundle resourceBundle = null;
+        try
         {
-            oid = new JetspeedLongObjectID(id);
+            if (getResourceBundle() != null)
+            {
+                if (getPortletClassLoader() != null)
+                {
+                    resourceBundle = ResourceBundle.getBundle(getResourceBundle(), locale, getPortletClassLoader());
+                }
+                else
+                {
+                    resourceBundle = ResourceBundle.getBundle(getResourceBundle(), locale, Thread.currentThread()
+                            .getContextClassLoader());
+                }
+            }
         }
-        return oid;
+        catch (MissingResourceException x)
+        {
+            return null;
+        }
+        return resourceBundle;
     }
-
+    
     /**
      * @see org.apache.pluto.om.portlet.PortletDefinition#getPortletClass()
      */
@@ -175,19 +188,109 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     {
         return name;
     }
+    
+    public Language getLanguage(Locale locale)
+    {
+        LanguageImpl fallback = null;
+        // ensure languages list is available;
+        getLanguages();
+        synchronized (languages)
+        {
+            for (Language l : languages)
+            {
+                LanguageImpl lang = (LanguageImpl)l;
+                if (lang.getLocale().equals(locale))
+                {
+                    if (getResourceBundle() != null && lang.getParentResourceBundle() == null)
+                    {
+                        lang.setResourceBundle(loadResourceBundle(lang.getLocale()));
+                    }
+                    return lang;
+                }
+                else if (lang.getLocale().getLanguage().equals(locale.getLanguage()))
+                {
+                    fallback = lang;
+                }
+            }
+            if ( fallback == null )
+            {
+                if ( JetspeedLocale.getDefaultLocale().equals(locale) )
+                {
+                    // no default language stored yet
+                    LanguageImpl defaultLanguage = new LanguageImpl();
+                    defaultLanguage.setLocale(locale);
+                    
+                    if ( getResourceBundle() != null )
+                    {
+                        defaultLanguage.setResourceBundle(loadResourceBundle(locale));
+                        defaultLanguage.loadDefaults();
+                        languages.add(defaultLanguage);
+                        return defaultLanguage;
+                    }
+                }
+                else
+                {
+                    return getLanguage(JetspeedLocale.getDefaultLocale());
+                }
+            }
+            
+            LanguageImpl language = new LanguageImpl();
+            language.setLocale(locale);
+            language.setTitle(fallback.getTitle());
+            language.setShortTitle(fallback.getShortTitle());
+            language.setKeywords(fallback.getKeywords());
+            if ( getResourceBundle() != null )
+            {
+              language.setResourceBundle(loadResourceBundle(locale));
+            }
+            language.loadDefaults();
+            languages.add(language);
+            return language;
+        }
+    }
+    
+    public List<Language> getLanguages()
+    {
+        if ( languages == null )
+        {
+            languages = new ArrayList<Language>();
+        }
+        return Collections.unmodifiableList(languages);
+    }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getLanguageSet()
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addLanguage(java.lang.String, java.lang.String, java.lang.String, java.util.Locale)
      */
-    public LanguageSet getLanguageSet()
+    public void addLanguage(String title, String shortTitle, String keywords, Locale locale)
     {
-        if ( languageSet != null )
+        // ensure list is available        
+        getLanguages();
+        synchronized(languages)
         {
-            langListWrapper.setInnerCollection(languageSet);
+            if (locale == null)
+            {
+                locale = JetspeedLocale.getDefaultLocale();
+            }
+            LanguageImpl lang = (LanguageImpl)getLanguage(locale);
+            boolean newLang = lang == null;
+            if (newLang)
+            {
+                lang = new LanguageImpl();
+                lang.setLocale(locale);
+            }
+            lang.setTitle(title);
+            lang.setShortTitle(shortTitle);
+            lang.setKeywords(keywords);
+            if (newLang)
+            {
+                if ( getResourceBundle() != null )
+                {
+                    lang.setResourceBundle(loadResourceBundle(locale));
+                    lang.loadDefaults();
+                    languages.add(lang);
+                }
+            }
         }
-        langListWrapper.setClassLoader(getPortletClassLoader());
-        
-        return langListWrapper;
     }
 
     /**
@@ -226,7 +329,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setPreferenceSet(org.apache.pluto.om.common.PreferenceSet)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setPreferenceSet(org.apache.pluto.om.common.PreferenceSet)
      */
     public void setPreferenceSet( PreferenceSet preferences )
     {
@@ -309,34 +412,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addLanguage(org.apache.pluto.om.common.Language)
-     */
-    public void addLanguage( Language lang )
-    {
-        if (languageSet == null)
-        {
-            languageSet = new ArrayList();
-        }
-        langListWrapper.setInnerCollection(languageSet);
-        langListWrapper.add(lang);
-    }
-    
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addLanguage(java.lang.String, java.lang.String, java.lang.String, java.util.Locale)
-     */
-    public void addLanguage(String title, String shortTitle, String keywords, Locale locale)
-    {
-        LanguageImpl lang = new LanguageImpl();
-        lang.setTitle(title);
-        lang.setShortTitle(shortTitle);
-        lang.setKeywords(keywords);
-        lang.setLocale(locale);
-        
-        addLanguage(lang);
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setContentTypeSet(org.apache.pluto.om.portlet.ContentTypeSet)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setContentTypeSet(org.apache.pluto.om.portlet.ContentTypeSet)
      */
     public void setContentTypeSet( ContentTypeSet contentTypes )
     {
@@ -344,7 +420,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameterSet(org.apache.pluto.om.common.ParameterSet)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setInitParameterSet(org.apache.pluto.om.common.ParameterSet)
      */
     public void setInitParameterSet( ParameterSet parameters )
     {
@@ -352,19 +428,11 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitSecurityRoleRefSet(org.apache.pluto.om.common.SecurityRoleRefSet)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setInitSecurityRoleRefSet(org.apache.pluto.om.common.SecurityRoleRefSet)
      */
     public void setInitSecurityRoleRefSet( SecurityRoleRefSet securityRefs )
     {
         this.securityRoleRefSet = ((SecurityRoleRefSetImpl) securityRefs).getInnerCollection();
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setLanguageSet(org.apache.pluto.om.common.LanguageSet)
-     */
-    public void setLanguageSet( LanguageSet languages )
-    {
-        this.languageSet = ((LanguageSetImpl) languages).getInnerCollection();
     }
 
     /**
@@ -410,7 +478,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      * this.userAttributeRefSet; }
      */
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String,
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setInitParameter(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
     public ParameterComposite addInitParameter( String name, String value, DescriptionSet description )
@@ -421,7 +489,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addInitParameter(java.lang.String,
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addInitParameter(java.lang.String,
      *      java.lang.String, java.lang.String, java.util.Locale)
      */
     public ParameterComposite addInitParameter( String name, String value, String description, Locale locale )
@@ -437,7 +505,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setInitParameter(java.lang.String,
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#setInitParameter(java.lang.String,
      *      java.lang.String)
      */
     public ParameterComposite addInitParameter( String name, String value )
@@ -447,7 +515,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setExpirationCache(java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#setExpirationCache(java.lang.String)
      */
     public void setExpirationCache( String cache )
     {
@@ -455,7 +523,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addContentType(org.apache.pluto.om.portlet.ContentType)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#addContentType(org.apache.pluto.om.portlet.ContentType)
      */
     public void addContentType( ContentType cType )
     {
@@ -464,7 +532,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
     
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addContentType(java.lang.String, java.lang.String[])
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addContentType(java.lang.String, java.lang.String[])
      */
     public void addContentType(String contentType, Collection modes)
     {
@@ -476,7 +544,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(java.lang.String,
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addPreference(java.lang.String,
      *      java.util.Collection)
      */
     public PreferenceComposite addPreference( String name, String[] values )
@@ -495,7 +563,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setPortletApplicationDefinition(org.apache.pluto.om.portlet.PortletApplicationDefinition)
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#setPortletApplicationDefinition(org.apache.pluto.om.portlet.PortletApplicationDefinition)
      */
     public void setPortletApplicationDefinition( PortletApplicationDefinition pad )
     {
@@ -541,7 +609,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getUniqueName()
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#getUniqueName()
      */
     public String getUniqueName()
     {
@@ -640,7 +708,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDescription(java.util.Locale,
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addDescription(java.util.Locale,
      *      java.lang.String)
      */
     public void addDescription( Locale locale, String description )
@@ -667,7 +735,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addDisplayName(java.util.Locale,
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addDisplayName(java.util.Locale,
      *      java.lang.String)
      */
     public void addDisplayName( Locale locale, String displayName )
@@ -758,7 +826,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addPreference(org.apache.pluto.om.common.Preference)
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addPreference(org.apache.pluto.om.common.Preference)
      * @param preference
      */
     public void addPreference( Preference preference )
@@ -785,7 +853,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(org.apache.pluto.om.portlet.SecurityRoleRef)
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addSecurityRoleRef(org.apache.pluto.om.portlet.SecurityRoleRef)
      */
     public void addSecurityRoleRef( SecurityRoleRef securityRef )
     {
@@ -794,7 +862,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
     
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addSecurityRoleRef(java.lang.String, java.lang.String)
      */
     public SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink)
     {
@@ -808,7 +876,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getMetadata()
+     * @see org.apache.jetspeed.om.portlet.PortletApplication#getMetadata()
      */
     public GenericMetadata getMetadata()
     {
@@ -824,7 +892,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     * @see org.apache.jetspeed.om.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
      */
     public void setMetadata( GenericMetadata metadata )
     {
@@ -892,24 +960,6 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void postLoad(Object parameter) throws Exception
     {
-        if (resourceBundle != null)
-        {
-            langListWrapper.setResources(resourceBundle);
-        }
-        
-        if (parameter instanceof ClassLoader)
-        {
-            // newly created PD from portlet.xml
-            langListWrapper.setClassLoader((ClassLoader) parameter);
-            // create supported locale languages and
-            // retrieve title, shortTitle and keywords from resourceBundle if defined
-            langListWrapper.postLoad(this.supportedLocales);
-        }
-        else
-        {
-            // loaded from persistent store
-            langListWrapper.setClassLoader(getPortletClassLoader());
-        }
     }
     
     public PreferencesValidator getPreferencesValidator()

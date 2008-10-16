@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * This interface describes the page manager event listener
@@ -42,9 +42,9 @@ public interface RegistryEventListener
      *           updated by the registry or when the
      *           state modification is otherwise detected
      *
-     * @param PortletDefinitionComposite new managed portlet definition 
+     * @param PortletDefinition new managed portlet definition 
      */
-    void portletUpdated(PortletDefinitionComposite def);
+    void portletUpdated(PortletDefinition def);
 
     /**
      * applicationRemoved - invoked when the definition of a portlet application is
@@ -58,8 +58,8 @@ public interface RegistryEventListener
      * portletUpdated - invoked when the definition of a portlet definition is
      *           removed by the registry 
      *
-     * @param PortletDefinitionComposite new managed portlet definition if known
+     * @param PortletDefinition new managed portlet definition if known
      */
-    void portletRemoved(PortletDefinitionComposite def);
+    void portletRemoved(PortletDefinition def);
     
 }

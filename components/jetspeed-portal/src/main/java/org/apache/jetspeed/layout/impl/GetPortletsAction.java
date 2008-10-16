@@ -32,8 +32,8 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
@@ -128,9 +128,9 @@ public class GetPortletsAction
         
         while (portlets.hasNext())
         {
-            PortletDefinitionComposite portlet = null;
+            PortletDefinition portlet = null;
             if (filter == null)
-                portlet = (PortletDefinitionComposite)portlets.next();
+                portlet = (PortletDefinition)portlets.next();
             else
                 portlet = this.getPortletFromParsedObject((ParsedObject)portlets.next());
             
@@ -166,7 +166,7 @@ public class GetPortletsAction
         return list;
     }
     
-    protected PortletDefinitionComposite getPortletFromParsedObject(ParsedObject po)
+    protected PortletDefinition getPortletFromParsedObject(ParsedObject po)
     {
         boolean found = false;
         String name = "";

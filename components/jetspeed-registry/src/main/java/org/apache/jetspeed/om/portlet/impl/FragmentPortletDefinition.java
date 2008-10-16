@@ -22,10 +22,10 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.preference.impl.FragmentPortletPreferenceSet;
 import org.apache.pluto.om.portlet.Language;
 import org.apache.pluto.om.portlet.LanguageSet;
@@ -54,12 +54,12 @@ import org.apache.pluto.om.servlet.ServletDefinition;
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
  */
-public class FragmentPortletDefinition implements PortletDefinitionComposite
+public class FragmentPortletDefinition implements PortletDefinition
 {
-    private final PortletDefinitionComposite portletDefinition;
+    private final PortletDefinition portletDefinition;
     private final Fragment fragment;
     
-    public FragmentPortletDefinition(PortletDefinitionComposite portletDefinition, Fragment fragment)
+    public FragmentPortletDefinition(PortletDefinition portletDefinition, Fragment fragment)
     {
         this.portletDefinition = portletDefinition;
         this.fragment = fragment;

@@ -29,7 +29,7 @@ import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;

@@ -32,11 +32,10 @@ import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 
@@ -68,9 +67,9 @@ public class MockRequestContext implements RequestContext
     private Map objects;
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
+     * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(String)
      */
-    public Map getUserInfoMap( ObjectID oid )
+    public Map getUserInfoMap( String appName )
     {
         // TODO Auto-generated method stub
         return null;

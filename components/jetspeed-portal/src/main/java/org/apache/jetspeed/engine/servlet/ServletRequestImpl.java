@@ -46,7 +46,7 @@ import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.PortletEntity;
@@ -144,7 +144,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         }
                 
         
-        PortletDefinitionComposite portletDef = (PortletDefinitionComposite)portletWindow.getPortletEntity().getPortletDefinition();
+        PortletDefinition portletDef = (PortletDefinition)portletWindow.getPortletEntity().getPortletDefinition();
         if(portletDef != null)
         {
             GenericMetadata metaData = portletDef.getMetadata();

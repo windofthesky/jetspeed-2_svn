@@ -21,15 +21,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 public class PortletDefinitionCompositeProxy implements InvocationHandler
 {
-    private PortletDefinitionComposite def = null;
+    private PortletDefinition def = null;
     private static PortletRegistry registry;
     private String name;
     
-    public PortletDefinitionCompositeProxy(PortletDefinitionComposite def)
+    public PortletDefinitionCompositeProxy(PortletDefinition def)
     {
         this.def = def;
         this.name = def.getUniqueName();
@@ -40,13 +40,13 @@ public class PortletDefinitionCompositeProxy implements InvocationHandler
         registry = r;
     }
     
-    public static PortletDefinitionComposite createProxy(
-            PortletDefinitionComposite def)
+    public static PortletDefinition createProxy(
+            PortletDefinition def)
     {
         Class[] proxyInterfaces = new Class[]
-        { PortletDefinitionComposite.class};
-        PortletDefinitionComposite proxy = (PortletDefinitionComposite) Proxy
-                .newProxyInstance(PortletDefinitionComposite.class
+        { PortletDefinition.class};
+        PortletDefinition proxy = (PortletDefinition) Proxy
+                .newProxyInstance(PortletDefinition.class
                         .getClassLoader(), proxyInterfaces,
                         new PortletDefinitionCompositeProxy(def));
         return proxy;
@@ -57,12 +57,12 @@ public class PortletDefinitionCompositeProxy implements InvocationHandler
         this.def = null;
     }
     
-    protected void setRealDefinition(PortletDefinitionComposite d)
+    protected void setRealDefinition(PortletDefinition d)
     {
         this.def = d;
     }
     
-    protected PortletDefinitionComposite getRealApplication()
+    protected PortletDefinition getRealApplication()
     {
         return def;
     }

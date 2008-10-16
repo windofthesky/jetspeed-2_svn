@@ -18,11 +18,11 @@ package org.apache.jetspeed.om.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -30,10 +30,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.jetspeed.om.common.MutableLanguage;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.portlet.Language;
 
 /**
  * 
@@ -51,18 +50,20 @@ import org.apache.pluto.om.portlet.Language;
  * @version $Id$
  *  
  */
-public class LanguageImpl extends ResourceBundle implements MutableLanguage, Serializable
+public class LanguageImpl extends ResourceBundle implements Language, Serializable
 {
+    private static final long serialVersionUID = 3817645806723304558L;
+    
     public static final String JAVAX_PORTLET_KEYWORDS = "javax.portlet.keywords";
     public static final String JAVAX_PORTLET_SHORT_TITLE = "javax.portlet.short-title";
     public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
 
-    private Set keys;
+    private Set<String> keys;
     private String title;
     private String shortTitle;
     private Locale locale;
     private String keywordStr;
-    private Collection keywords;
+    private List<String> keywords;
 
     /**
      * This field can be used by persistence tools for storing PK info Otherwise
@@ -74,14 +75,14 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
 
     public LanguageImpl()
     {
-        keys = Collections.synchronizedSet(new HashSet(3));
+        keys = Collections.synchronizedSet(new HashSet<String>(3));
         keys.add(JAVAX_PORTLET_TITLE);
         keys.add(JAVAX_PORTLET_SHORT_TITLE);
         keys.add(JAVAX_PORTLET_KEYWORDS);
         this.locale = JetspeedLocale.getDefaultLocale();
     }
     
-    public Enumeration getKeys()
+    public Enumeration<String> getKeys()
     {
         return Collections.enumeration(keys);
     }
@@ -98,7 +99,7 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
         }
         else if (key.equals(JAVAX_PORTLET_KEYWORDS))
         {
-            return getKeywordStr();
+            return getKeywords();
         }
         return null;
     }
@@ -123,7 +124,7 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
     {
         if ( parent == null && bundle != null )
         {
-            Enumeration parentKeys = bundle.getKeys();
+            Enumeration<String> parentKeys = bundle.getKeys();
             while ( parentKeys.hasMoreElements() )
             {
                 keys.add(parentKeys.nextElement());
@@ -139,7 +140,7 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
         {
             setTitle(getStringValue(bundle, JAVAX_PORTLET_TITLE, getTitle()));
             setShortTitle(getStringValue(bundle, JAVAX_PORTLET_SHORT_TITLE, getShortTitle()));
-            setKeywords(getStringValue(bundle, JAVAX_PORTLET_KEYWORDS, getKeywordStr()));
+            setKeywords(getStringValue(bundle, JAVAX_PORTLET_KEYWORDS, getKeywords()));
         }
     }
     
@@ -170,7 +171,8 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
     /**
      * @see org.apache.pluto.om.common.Language#getKeywords()
      */
-    public Iterator getKeywords()
+    @SuppressWarnings("unchecked")
+    public Iterator<String> getKeywordsIterator()
     {
         if ( keywords == null )
         {
@@ -220,16 +222,16 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
     /**
      * @see org.apache.jetspeed.om.common.LanguageComposite#setKeywords(java.util.Collection)
      */
-    public void setKeywords( Collection keywords )
+    public void setKeywords( List<String> keywords )
     {
-        this.keywords = keywords;
+        this.keywords = new ArrayList<String>(keywords);
     }
     
     public void setKeywords(String keywordStr)
     {
         if (keywords == null)
         {
-            keywords = new ArrayList();
+            keywords = new ArrayList<String>();
         }
         else
         {
@@ -247,11 +249,11 @@ public class LanguageImpl extends ResourceBundle implements MutableLanguage, Ser
         this.keywordStr = keywordStr;
     }
     
-    public String getKeywordStr()
+    public String getKeywords()
     {
         if ( keywordStr == null )
         {
-            keywordStr = StringUtils.join(getKeywords(),",");
+            keywordStr = StringUtils.join(getKeywordsIterator(),",");
         }
         return keywordStr;
     }

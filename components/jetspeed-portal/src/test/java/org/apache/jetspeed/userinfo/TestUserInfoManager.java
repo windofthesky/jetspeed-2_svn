@@ -29,7 +29,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityException;

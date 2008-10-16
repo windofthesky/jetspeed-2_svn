@@ -18,8 +18,8 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -68,7 +68,7 @@ public interface PortletRegistry
      * have a parent PortletApplicationDefinition
      * 
      */
-    PortletDefinitionComposite getPortletDefinitionByUniqueName( String name );
+    PortletDefinition getPortletDefinitionByUniqueName( String name );
 
     /**
      * Checks whether or not a portlet application with this name has all ready

@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.digester.Rule;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.xml.sax.Attributes;
 
@@ -33,7 +33,7 @@ public class PortletPreferenceRule extends Rule
 {
     
 
-    protected PortletDefinitionComposite portlet;
+    protected PortletDefinition portlet;
     
     protected String name;
     protected boolean readOnly;
@@ -53,7 +53,7 @@ public class PortletPreferenceRule extends Rule
     public void begin( String arg0, String arg1, Attributes arg2 ) throws Exception
     {
         Object peeked = digester.peek();
-        portlet = (PortletDefinitionComposite) peeked;
+        portlet = (PortletDefinition) peeked;
         portlet.setPortletApplicationDefinition((PortletApplicationDefinition) digester.getRoot());
         
         // reset properties to default values

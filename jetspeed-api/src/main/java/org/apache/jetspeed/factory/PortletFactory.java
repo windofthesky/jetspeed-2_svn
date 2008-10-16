@@ -20,7 +20,7 @@ import javax.portlet.PortletException;
 import javax.portlet.PreferencesValidator;
 import javax.servlet.ServletContext;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**

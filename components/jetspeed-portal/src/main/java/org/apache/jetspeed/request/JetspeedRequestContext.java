@@ -38,7 +38,6 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
-import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentPageImpl;
@@ -51,9 +50,6 @@ import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.LanguageSet;
-import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 

@@ -14,18 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.portlet;
+package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.pluto.om.portlet.DescriptionSet;
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.Preference;
 import org.apache.pluto.om.portlet.PreferenceSet;
@@ -34,7 +34,6 @@ import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.DisplayName;
 import org.apache.pluto.om.portlet.DisplayNameSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.SecurityRoleRef;
 import org.apache.pluto.om.portlet.SecurityRoleRefSet;
 
@@ -46,25 +45,21 @@ import org.apache.pluto.om.portlet.SecurityRoleRefSet;
  * @version $Id$
  *
  */
-public interface PortletDefinitionComposite extends PortletDefinition, Serializable
+public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDefinition, Serializable
 {
     GenericMetadata getMetadata();
     
     void setMetadata(GenericMetadata metadata);
     
-    void addLanguage(Language lang);
-    
     void addLanguage(String title, String shortTitle, String keywords, Locale locale);
-
+    
+    Language getLanguage(Locale locale);
+    
+    List<Language> getLanguages();
+    
     void addContentType(ContentType cType);
     
     void addContentType(String contentType, Collection modes);
-
-    void setLanguageSet(LanguageSet languages);
-    
-    String getResourceBundle();
-    
-    Collection getSupportedLocales();
 
     /**
      * The PreferenceSet is a collection user-defineable preferences

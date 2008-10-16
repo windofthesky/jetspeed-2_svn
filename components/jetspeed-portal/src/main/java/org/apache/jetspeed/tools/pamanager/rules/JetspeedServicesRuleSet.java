@@ -18,8 +18,8 @@ package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.RuleSetBase;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 
 /**
  * This class helps load the jetspeed portlet extension service declarations.

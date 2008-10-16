@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
 import org.apache.jetspeed.om.common.portlet.CustomWindowState;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;

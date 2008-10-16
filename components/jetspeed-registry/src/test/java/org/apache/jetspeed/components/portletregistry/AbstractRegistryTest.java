@@ -25,9 +25,9 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 
@@ -120,7 +120,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
     {
         PortletApplication app;
         WebApplicationDefinitionImpl webApp;
-        PortletDefinitionComposite portlet;
+        PortletDefinition portlet;
 
         app = null;
 

@@ -33,7 +33,7 @@ import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.deployment.impl.StandardDeploymentManager;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;

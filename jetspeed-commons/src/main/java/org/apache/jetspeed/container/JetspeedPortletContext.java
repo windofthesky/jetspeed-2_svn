@@ -29,7 +29,7 @@ import javax.portlet.PortletRequestDispatcher;
 
 import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;

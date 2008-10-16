@@ -26,8 +26,8 @@ import junit.textui.TestRunner;
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 
@@ -86,10 +86,10 @@ public class TestJetspeedPortletDescriptor extends AbstractRequestContextTestCas
         ExtendedPortletMetadata md = new ExtendedPortletMetadata(new FileReader(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml"), app); 
         md.load();
        
-        PortletDefinitionComposite def1 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_01);
-        PortletDefinitionComposite def2 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_02);
-        PortletDefinitionComposite def3 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_03);
-        PortletDefinitionComposite def4 = (PortletDefinitionComposite)app.getPortletDefinitionByName(PORTLET_04);
+        PortletDefinition def1 = (PortletDefinition)app.getPortletDefinitionByName(PORTLET_01);
+        PortletDefinition def2 = (PortletDefinition)app.getPortletDefinitionByName(PORTLET_02);
+        PortletDefinition def3 = (PortletDefinition)app.getPortletDefinitionByName(PORTLET_03);
+        PortletDefinition def4 = (PortletDefinition)app.getPortletDefinitionByName(PORTLET_04);
         
         Collection titles = app.getMetadata().getFields("title");
         Collection def1Titles = def1.getMetadata().getFields("title");

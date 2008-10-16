@@ -19,8 +19,8 @@ package org.apache.jetspeed.tools.pamanager.rules;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * This class helps load the portlet's metadata onto the digester stack
@@ -41,7 +41,7 @@ public class PortletRule extends Rule
 
     public void body(String namespace, String name, String text) throws Exception
     {
-        PortletDefinitionComposite def = (PortletDefinitionComposite) app.getPortletDefinitionByName(text);
+        PortletDefinition def = (PortletDefinition) app.getPortletDefinitionByName(text);
         digester.push(def);
     }                                                        
 }

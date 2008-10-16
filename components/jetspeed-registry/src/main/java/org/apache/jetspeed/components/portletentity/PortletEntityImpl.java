@@ -31,12 +31,12 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
@@ -72,7 +72,7 @@ public class PortletEntityImpl implements PortletEntity, PrincipalAware, RenderT
     protected Map perPrincipalPrefs = new HashMap();
     // TODO: temporary replacement for old api PortletWindowList - this should be removed too shortly
     private PortletWindow portletWindow = null;
-    private PortletDefinitionComposite portletDefinition = null;  
+    private PortletDefinition portletDefinition = null;  
     protected String portletName;
     protected String appName;
     private boolean dirty = false;
@@ -399,7 +399,7 @@ public class PortletEntityImpl implements PortletEntity, PrincipalAware, RenderT
     {
         if(composite != null)
         {
-            portletDefinition = (PortletDefinitionComposite) composite;
+            portletDefinition = (PortletDefinition) composite;
             // if the portletDefinition is modified, clear threadlocal fragmentPortletDefinition cache
             RequestContext rc = requestContextComponent.getRequestContext();
             if (rc != null)

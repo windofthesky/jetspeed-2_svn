@@ -29,7 +29,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;

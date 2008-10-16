@@ -18,7 +18,7 @@ package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Rule;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 
 
 /**

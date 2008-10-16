@@ -19,17 +19,17 @@ package org.apache.jetspeed.components.portletpreferences;
 import java.util.Iterator;
 
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 public interface PortletPreferencesProvider
 {
     void init() throws Exception;
-    public PreferenceSetComposite getPreferenceSet(PortletDefinitionComposite pd);
+    public PreferenceSetComposite getPreferenceSet(PortletDefinition pd);
     public PreferenceSetComposite getPreferenceSet(PortletEntity pe);
     public PreferenceSetComposite getPreferenceSet(PortletEntity pe, String userName);
     public Iterator<String> getUserNames(PortletEntity pe);
-    public void savePreferenceSet(PortletDefinitionComposite pd, PreferenceSetComposite preferenceSet);
+    public void savePreferenceSet(PortletDefinition pd, PreferenceSetComposite preferenceSet);
     public void savePreferenceSet(PortletEntity pe, PreferenceSetComposite preferenceSet);
     public void savePreferenceSet(PortletEntity pe, String userName, PreferenceSetComposite preferenceSet);        
 }

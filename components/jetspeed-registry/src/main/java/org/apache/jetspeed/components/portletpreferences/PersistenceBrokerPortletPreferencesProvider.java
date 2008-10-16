@@ -24,9 +24,9 @@ import java.util.Map;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
 import org.apache.jetspeed.om.preference.impl.PreferenceValueImpl;
@@ -85,7 +85,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
         return applicationName + ":" + portletName + ":" + entityOid.toString() + ":" + userName;        
     }
 
-    public PreferenceSetComposite getPreferenceSet(PortletDefinitionComposite pd)
+    public PreferenceSetComposite getPreferenceSet(PortletDefinition pd)
     {
         return getPreferenceSet(pd.getApplication().getName(), pd.getPortletName(), null, null, false);
     }
@@ -97,7 +97,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
 
     public PreferenceSetComposite getPreferenceSet(PortletEntity pe, String userName)
     {
-        PortletDefinitionComposite pd = (PortletDefinitionComposite)pe.getPortletDefinition();
+        PortletDefinition pd = (PortletDefinition)pe.getPortletDefinition();
         return getPreferenceSet(pd.getApplication().getName(), pd.getPortletName(), pe.getOid(), userName, false);
     }
 
@@ -211,7 +211,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
         };
     }
     
-    public void savePreferenceSet(PortletDefinitionComposite pd, PreferenceSetComposite preferenceSet)
+    public void savePreferenceSet(PortletDefinition pd, PreferenceSetComposite preferenceSet)
     {
         savePreferenceSet(pd.getApplication().getName(), pd.getPortletName(), null, null, null, preferenceSet);
     }
@@ -223,7 +223,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
     
     public void savePreferenceSet(PortletEntity pe, String userName, PreferenceSetComposite preferenceSet)
     {
-        PortletDefinitionComposite pd = (PortletDefinitionComposite)pe.getPortletDefinition();
+        PortletDefinition pd = (PortletDefinition)pe.getPortletDefinition();
         savePreferenceSet(pd.getApplication().getName(), pd.getPortletName(), pe.getOid(), pe.getId().toString(), userName, preferenceSet);
     }
     

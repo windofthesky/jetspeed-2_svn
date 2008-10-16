@@ -27,11 +27,11 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
@@ -96,10 +96,10 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         System.out.println("pa = " + pa.getId());
         PortletDefinitionList portlets = pa.getPortletDefinitionList(); // .get(JetspeedObjectID.createFromString(TEST_PORTLET));
         Iterator pi = portlets.iterator();
-        PortletDefinitionComposite pd = null;
+        PortletDefinition pd = null;
         while (pi.hasNext())
         {
-            pd = (PortletDefinitionComposite) pi.next();
+            pd = (PortletDefinition) pi.next();
             assertTrue("Portlet Def not found", pd.getPortletName().equals("EntityTestPortlet"));
         }
         assertNotNull("Portlet Def is null", pd);
@@ -264,7 +264,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
-        PortletDefinitionComposite portlet = new PortletDefinitionImpl();
+        PortletDefinition portlet = new PortletDefinitionImpl();
         portlet.setPortletClass("org.apache.Portlet");
         portlet.setPortletName(TEST_PORTLET);
         portlet.addDescription(Locale.getDefault(), "Portlet description.");

@@ -33,12 +33,12 @@ import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ActionValve;
@@ -263,7 +263,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         PortletEntity entity = actionWindow.getPortletEntity();
         if (entity != null)
         {
-            PortletDefinitionComposite portletDefinition = (PortletDefinitionComposite)entity.getPortletDefinition();
+            PortletDefinition portletDefinition = (PortletDefinition)entity.getPortletDefinition();
             if (portletDefinition != null)
             {
                 Collection actionList = null;
