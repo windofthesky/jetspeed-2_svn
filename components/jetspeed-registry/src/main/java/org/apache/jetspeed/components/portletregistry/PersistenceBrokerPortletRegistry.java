@@ -21,23 +21,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
-import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.springframework.dao.DataAccessException;
@@ -96,24 +91,6 @@ public class PersistenceBrokerPortletRegistry
         this.portletNameCache.addEventListener(this, false);        
     }
     
-    public Language createLanguage( Locale locale, String title, String shortTitle, String description,
-            Collection keywords ) throws RegistryException
-    {
-        try
-        {
-            MutableLanguage lc = new LanguageImpl();
-            lc.setLocale(locale);
-            lc.setTitle(title);
-            lc.setShortTitle(shortTitle);
-            lc.setKeywords(keywords);
-            return lc;
-        }
-        catch (Exception e)
-        {
-            throw new RegistryException("Unable to create language object.");
-        }
-    }
-    
     public Collection getAllPortletDefinitions()
     {
         Criteria c = new Criteria();
@@ -121,16 +98,6 @@ public class PersistenceBrokerPortletRegistry
                 QueryFactory.newQuery(PortletDefinitionImpl.class, c));
         postLoadColl(list);
         return list;
-    }
-
-    public PortletApplication getPortletApplicationById( String id )
-    {
-        Criteria c = new Criteria();
-        c.addEqualTo("id", new Long(id));
-        PortletApplication app = (PortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
-                QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
-        postLoad(app);
-        return app;
     }
 
     public PortletApplication getPortletApplication(String name)
@@ -143,16 +110,6 @@ public class PersistenceBrokerPortletRegistry
         return app;
     }
 
-    public PortletApplication getPortletApplicationByIdentifier( String identifier )
-    {
-        Criteria c = new Criteria();
-        c.addEqualTo("applicationIdentifier", identifier);
-        PortletApplication app = (PortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
-            QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
-        postLoad(app);
-        return app;
-    }
-
     public Collection getPortletApplications()
     {
         Criteria c = new Criteria();
@@ -160,22 +117,6 @@ public class PersistenceBrokerPortletRegistry
                 QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoadColl(list);
         return list;
-    }
-
-    public PortletDefinitionComposite getPortletDefinitionByIdentifier( String identifier )
-    {
-        Criteria c = new Criteria();
-        c.addEqualTo("portletIdentifier", identifier);
-        PortletDefinitionComposite def = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
-                QueryFactory.newQuery(PortletDefinitionImpl.class, c));
-        if (def != null && def.getApplication() == null)
-        {
-            final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
-            throw new IllegalStateException(msg);
-        }
-
-        postLoad(def);
-        return def;
     }
 
     public PortletDefinitionComposite getPortletDefinitionByUniqueName( String name )
@@ -199,24 +140,14 @@ public class PersistenceBrokerPortletRegistry
         return def;
     }
 
-    public boolean portletApplicationExists( String appIdentity )
+    public boolean portletApplicationExists( String name )
     {
-        return getPortletApplicationByIdentifier(appIdentity) != null;
+        return getPortletApplication(name) != null;
     }
     
-    public boolean namedPortletApplicationExists( String appName )
-    {
-        return getPortletApplication(appName) != null;
-    }
-
     public boolean portletDefinitionExists( String portletName, PortletApplication app )
     {
         return getPortletDefinitionByUniqueName(app.getName() + "::" + portletName) != null;
-    }
-
-    public boolean portletDefinitionExists( String portletIdentity )
-    {
-        return getPortletDefinitionByIdentifier(portletIdentity) != null;
     }
 
     public void registerPortletApplication( PortletApplicationDefinition newApp ) throws RegistryException
@@ -305,17 +236,6 @@ public class PersistenceBrokerPortletRegistry
         }
     }
 
-    public PortletDefinitionComposite getPortletDefinition(ObjectID id)
-    {
-        Criteria c = new Criteria();
-        c.addEqualTo("id", new Long(id.toString()));
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
-                QueryFactory.newQuery(PortletDefinitionImpl.class, c));
-        
-        postLoad(portlet);
-        return portlet;
-    }
-    
     public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
     {
     }
