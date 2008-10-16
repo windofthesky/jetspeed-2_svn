@@ -93,27 +93,16 @@ public class JetspeedDeploy implements Deploy
     public JetspeedDeploy(String inputName, String outputName, String contextName, boolean stripLoggers, String forcedVersion) throws Exception
     {
         File tempFile = null;
-        File tempPsmlDir = null;
         JarFile jin = null;
         JarOutputStream jout = null;
         FileChannel srcChannel = null;
         FileChannel dstChannel = null;
-        InputStream inputStream = null;
-        OutputStream outputStream = null; 
-        byte[] buffer = new byte[1024];
-        int len;
-        String destPath =null;
-        JetspeedDeployUtils utils = new JetspeedDeployUtils();
-        JetspeedDeployUtils.ZipObject zipObject;
-        boolean success;
+
         try
         {
             String portletApplicationName = contextName;
             tempFile = File.createTempFile(portletApplicationName, "");
             tempFile.deleteOnExit();
-            
-            tempPsmlDir = new File(tempFile.getParentFile().getPath()+"/psml");            
-            success = tempPsmlDir.mkdir();
             
 
             jin = new JarFile(inputName);
@@ -150,27 +139,6 @@ public class JetspeedDeploy implements Deploy
                     {
                         System.out.println("Found META-INF/context.xml");
                         contextXml = parseXml(source);
-                    }
-                    else if(target.startsWith("psml"))
-                    {
-                        inputStream = jin.getInputStream(src);
-                        zipObject = utils.formatZipEntryName(src);                        
-                        if(src.isDirectory())
-                        {
-                            if(!zipObject.getName().equals("psml") && zipObject.getParents().length ==1){
-                                utils.createPath(tempPsmlDir.getPath(),zipObject.getParents());    
-                            }                            
-                        }else{
-                            utils.createPath(tempPsmlDir.getPath(),zipObject.getParents());
-                            destPath = utils.getFullPath(tempPsmlDir.getPath(),zipObject.getParents(),zipObject.getName()); 
-                            outputStream = new BufferedOutputStream(new FileOutputStream(destPath));
-                            while((len = inputStream.read(buffer)) >= 0)
-                            {
-                                outputStream.write(buffer, 0, len);
-                            }
-                            inputStream.close();
-                            outputStream.close();
-                        }                   
                     }
                     else
                     {
@@ -244,7 +212,6 @@ public class JetspeedDeploy implements Deploy
             jin.close();
             jin = null;
             jout = null;
-            utils.importJetspeedObjects(tempPsmlDir.getPath());
             System.out.println("Creating war " + outputName + " ...");
             System.out.flush();
             // Now copy the new war to its destination
@@ -307,10 +274,6 @@ public class JetspeedDeploy implements Deploy
                 {
                     // ignore
                 }
-            }
-            if (tempPsmlDir != null && tempPsmlDir.exists())
-            {
-                utils.deleteDirectory(tempPsmlDir);
             }
             if (tempFile != null && tempFile.exists())
             {
