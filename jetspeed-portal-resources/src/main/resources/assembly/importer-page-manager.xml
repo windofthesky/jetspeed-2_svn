@@ -159,13 +159,13 @@
   <bean id="ImportPageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner"
     destroy-method="stopFileScanner">
     <meta key="j2:cat" value="default" />
-    <!-- Scan rate for changes in cached files on the file system -->
+    <!-- Internal cache -->
     <constructor-arg index="0">
-      <value>${page.file.cache.scanRate}</value>
+      <ref bean="internalImportPageFileCache" />
     </constructor-arg>
-    <!-- Cache size -->
+    <!-- Scan rate for changes in cached files on the file system -->
     <constructor-arg index="1">
-      <value>${page.file.cache.size}</value>
+      <value>${page.file.cache.scanRate}</value>
     </constructor-arg>
   </bean>
 

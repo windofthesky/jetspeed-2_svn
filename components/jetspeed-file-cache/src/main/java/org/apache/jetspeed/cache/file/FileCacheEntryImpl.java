@@ -18,6 +18,7 @@
 package org.apache.jetspeed.cache.file;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -27,7 +28,7 @@ import java.util.Date;
  *  @version $Id$
  */
 
-public class FileCacheEntryImpl implements FileCacheEntry
+public class FileCacheEntryImpl implements FileCacheEntry, Serializable
 {
     protected File file;
     protected Object document;

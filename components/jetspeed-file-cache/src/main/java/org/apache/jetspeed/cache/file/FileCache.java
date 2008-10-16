@@ -17,19 +17,16 @@
 
 package org.apache.jetspeed.cache.file;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 
 /**
  * FileCache keeps a cache of files up-to-date with a most simple eviction policy.
@@ -41,65 +38,38 @@ import org.apache.commons.logging.LogFactory;
  *  @version $Id$
  */
 
-public class FileCache implements java.util.Comparator
+public class FileCache
 {
     protected long scanRate = 300;  // every 5 minutes
-    protected int maxSize = 100; // maximum of 100 items
-    protected List listeners = new LinkedList();
 
     private FileCacheScanner scanner = null;
-    private Map cache = null;
+    private JetspeedCache cache = null;
 
     private final static Log log = LogFactory.getLog(FileCache.class);
 
     /**
-     * Default constructor. Use default values for scanReate and maxSize
+     * Set cache
      *
+     * @param cache the physical cache implementation
      */
-    public FileCache()
+    public FileCache(JetspeedCache cache)
     {
-        cache = Collections.synchronizedMap(new HashMap());
+        this.cache = cache;
         this.scanner = new FileCacheScanner();
         this.scanner.setDaemon(true);
     }
 
     /**
-     * Set scanRate and maxSize
+     * Set cache, scanRate and maxSize
      *
+     * @param cache the physical cache implementation
      * @param scanRate how often in seconds to refresh and evict from the cache
      * @param maxSize the maximum allowed size of the cache before eviction starts
      */
-    public FileCache(long scanRate, 
-                     int maxSize)
+    public FileCache(JetspeedCache cache, long scanRate)
     {
-        
-        cache = Collections.synchronizedMap(new HashMap());
-
+        this(cache);
         this.scanRate = scanRate;
-        this.maxSize = maxSize;
-        this.scanner = new FileCacheScanner();
-        this.scanner.setDaemon(true);
-    }
-
-    /**
-     * Set all parameters on the cache
-     *
-     * @param initialCapacity the initial size of the cache as passed to HashMap
-     * @param loadFactor how full the hash table is allowed to get before increasing
-     * @param scanRate how often in seconds to refresh and evict from the cache
-     * @param maxSize the maximum allowed size of the cache before eviction starts
-     */
-    public FileCache(int initialCapacity, 
-                     int loadFactor, 
-                     long scanRate, 
-                     int maxSize)
-    {
-        cache = Collections.synchronizedMap(new HashMap(initialCapacity, loadFactor));
-
-        this.scanRate = scanRate;
-        this.maxSize = maxSize;
-        this.scanner = new FileCacheScanner();
-        this.scanner.setDaemon(true);
     }
 
     /**
@@ -123,26 +93,6 @@ public class FileCache implements java.util.Comparator
     }
 
     /**
-     * Set the new maximum size of the cache 
-     *
-     * @param maxSize the maximum size of the cache
-     */
-    public void setMaxSize(int maxSize)
-    {
-        this.maxSize = maxSize;
-    }
-
-    /**
-     * Get the maximum size of the cache 
-     *
-     * @return the current maximum size of the cache
-     */
-    public int getMaxSize()
-    {
-        return maxSize;
-    }
-
-    /**
      * Gets an entry from the cache given a key
      *
      * @param key the key to look up the entry by
@@ -150,7 +100,15 @@ public class FileCache implements java.util.Comparator
      */
     public FileCacheEntry get(String key)
     {
-        return (FileCacheEntry) cache.get(key);
+        FileCacheEntry entry = null;
+        CacheElement element = this.cache.get(key);
+
+        if (element != null)
+        {
+            entry = (FileCacheEntry) element.getContent();
+        }
+
+        return entry;
     }
 
     /**
@@ -161,11 +119,13 @@ public class FileCache implements java.util.Comparator
      */
     public Object getDocument(String key)
     {
-        FileCacheEntry entry = (FileCacheEntry) cache.get(key);
+        FileCacheEntry entry = get(key);
+
         if (entry != null)
         {
             return entry.getDocument();
         }
+
         return null;
     }
 
@@ -176,14 +136,16 @@ public class FileCache implements java.util.Comparator
      * @param document the cached document
      */
     public void put(File file, Object document)
-        throws java.io.IOException
+            throws java.io.IOException
     {
         if(!file.exists())
         {
             throw new FileNotFoundException("File to cache: "+file.getAbsolutePath()+" does not exist.");
         }
+
         FileCacheEntry entry = new FileCacheEntryImpl(file, document);
-        cache.put(file.getCanonicalPath(), entry);
+        CacheElement element = this.cache.createElement(file.getCanonicalPath(), entry);
+        cache.put(element);
     }
 
     /**
@@ -193,15 +155,18 @@ public class FileCache implements java.util.Comparator
      * @param document the cached document
      */
     public void put(String key, Object document, File rootFile)
-        throws java.io.IOException
+            throws java.io.IOException
     {
         File file = new File(rootFile, key);
+
         if(!file.exists())
         {
             throw new FileNotFoundException("File to cache: "+file.getAbsolutePath()+" does not exist.");
         }
+
         FileCacheEntry entry = new FileCacheEntryImpl(file, document);
-        cache.put(key, entry);
+        CacheElement element = this.cache.createElement(key, entry);
+        this.cache.put(element);
     }
 
     /**
@@ -212,7 +177,8 @@ public class FileCache implements java.util.Comparator
      */
     public Object remove(String key)
     {
-        return cache.remove(key);
+        boolean removed = this.cache.remove(key);
+        return null;
     }
 
 
@@ -221,9 +187,47 @@ public class FileCache implements java.util.Comparator
      *
      * @param listener the event listener
      */
-    public void addListener(FileCacheEventListener listener)
+    public void addListener(final FileCacheEventListener listener)
     {
-        listeners.add(listener);
+        JetspeedCacheEventListener cacheEventListener = new JetspeedCacheEventListener()
+        {
+            public void notifyElementRemoved(JetspeedCache cache, boolean local, Object key, Object element)
+            {
+            }
+
+            public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
+            {
+            }
+
+            public void notifyElementChanged(JetspeedCache cache, boolean local, Object key, Object element)
+            {
+                try 
+                {
+                    listener.refresh((FileCacheEntry) element);
+                } 
+                catch (Exception e) 
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            public void notifyElementEvicted(JetspeedCache cache, boolean local, Object key, Object element)
+            {
+                try 
+                {
+                    listener.evict((FileCacheEntry) element);
+                } 
+                catch (Exception e) 
+                {
+                }
+            }
+
+            public void notifyElementExpired(JetspeedCache cache, boolean local, Object key, Object element)
+            {
+            }
+        };
+
+        this.cache.addEventListener(cacheEventListener, true);
     }
 
     /**
@@ -234,7 +238,6 @@ public class FileCache implements java.util.Comparator
     {
         try
         {
-
             this.scanner.start();
         }
         catch (java.lang.IllegalThreadStateException e)
@@ -253,122 +256,12 @@ public class FileCache implements java.util.Comparator
     }
 
     /**
-     * Evicts entries based on last accessed time stamp
-     *
-     */
-    protected void evict()        
-    {
-        synchronized (cache)
-        {
-            if (this.getMaxSize() >= cache.size())
-            {
-                return;
-            }
-    
-            List list = new LinkedList(cache.values());
-            Collections.sort(list, this);
-    
-            int count = 0;
-            int limit = cache.size() - this.getMaxSize();
-    
-            for (Iterator it = list.iterator(); it.hasNext(); )
-            {
-                if (count >= limit)
-                {
-                    break;
-                }
-    
-                FileCacheEntry entry = (FileCacheEntry) it.next();
-                String key = null;
-                try
-                {
-                    key = entry.getFile().getCanonicalPath();
-                }                    
-                catch (java.io.IOException e)
-                {
-                    log.error("Exception getting file path: ", e);
-                }
-                // notify that eviction will soon take place
-                for (Iterator lit = this.listeners.iterator(); lit.hasNext(); )
-                {
-                    FileCacheEventListener listener = 
-                        (FileCacheEventListener) lit.next();
-                    try
-                    {
-                        listener.evict(entry);
-                    }
-                    catch (Exception e1)
-                    {
-                        log.warn("Unable to evict cache entry.  "+e1.toString(), e1);
-                    }                                    
-                }
-                cache.remove(key);
-    
-                count++;
-            }        
-        }
-    }
-
-    /**
      * Evicts all entries
      *
      */
-    public void evictAll()        
+    public void evictAll()
     {
-        synchronized (cache)
-        {
-            // evict all cache entries
-            List list = new LinkedList(cache.values());
-            for (Iterator it = list.iterator(); it.hasNext(); )
-            {
-                // evict cache entry
-                FileCacheEntry entry = (FileCacheEntry) it.next();
-                // notify that eviction will soon take place
-                for (Iterator lit = this.listeners.iterator(); lit.hasNext(); )
-                {
-                    FileCacheEventListener listener = 
-                        (FileCacheEventListener) lit.next();
-                    try
-                    {
-                        listener.evict(entry);
-                    }
-                    catch (Exception e1)
-                    {
-                        log.warn("Unable to evict cache entry.  "+e1.toString(), e1);
-                    }                                    
-                }
-                // remove from cache by key
-                String key = null;
-                try
-                {
-                    key = entry.getFile().getCanonicalPath();
-                }                    
-                catch (java.io.IOException e)
-                {
-                    log.error("Exception getting file path: ", e);
-                }
-                cache.remove(key);
-            }        
-        }
-    }
-
-    /**
-     * Comparator function for sorting by last accessed during eviction
-     *
-     */
-    public int compare(Object o1, Object o2)
-    {
-        FileCacheEntry e1 = (FileCacheEntry)o1;
-        FileCacheEntry e2 = (FileCacheEntry)o2;
-        if (e1.getLastAccessed() < e2.getLastAccessed())
-        {
-            return -1;
-        }
-        else if (e1.getLastAccessed() == e2.getLastAccessed())
-        {
-            return 0;
-        }
-        return 1;
+        this.cache.clear();
     }
 
     /**
@@ -391,52 +284,42 @@ public class FileCache implements java.util.Comparator
         public void run()
         {
             boolean done = false;
-    
+
             try
             {
                 while(!done)
                 {
                     try
                     {
-                        int count = 0;
-                        Collection values = Collections.synchronizedCollection(FileCache.this.cache.values());
-                        synchronized (values)
+                        for (Object key : getKeys())
                         {
-                            for (Iterator it = values.iterator(); it.hasNext(); )
+                            CacheElement element = cache.get(key);
+                            
+                            if (element != null)
                             {
-                                FileCacheEntry entry = (FileCacheEntry) it.next();
-                                Date modified = new Date(entry.getFile().lastModified());
-        
+                                FileCacheEntry entry = (FileCacheEntry) element.getContent();
+                                File file = entry.getFile();
+                                Date modified = new Date(file.lastModified());
+                                
                                 if (modified.after(entry.getLastModified()))
-                                {                            
-                                    for (Iterator lit = FileCache.this.listeners.iterator(); lit.hasNext(); )
+                                {
+                                    FileCacheEntry updatedEntry = new FileCacheEntryImpl(file, entry.getDocument());
+                                    CacheElement updatedElement = cache.createElement(key, updatedEntry);
+                                    cache.put(updatedElement);
+                                    
+                                    if (log.isDebugEnabled())
                                     {
-                                        FileCacheEventListener listener = 
-                                            (FileCacheEventListener) lit.next();
-                                        try
-                                        {
-                                            listener.refresh(entry);
-                                        }
-                                        catch (Exception e1)
-                                        {
-                                            log.warn("Unable to refresh cached document:  "+e1.toString(), e1);
-                                        }                                    
-                                        entry.setLastModified(modified);
+                                        log.debug("page file has been updated: " + key);
                                     }
                                 }
-                                count++;
                             }
-                        }
-                        if (count > FileCache.this.getMaxSize())
-                        {
-                            FileCache.this.evict();
                         }
                     }
                     catch (Exception e)
                     {
                         log.error("FileCache Scanner: Error in iteration...", e);
                     }
-    
+                    
                     sleep(FileCache.this.getScanRate() * 1000);                
 
                     if (this.stopping)
@@ -459,19 +342,18 @@ public class FileCache implements java.util.Comparator
      *
      * @return iterator over the cache values
      */
-    public Iterator getIterator()
+    public List getKeys()
     {
-        return cache.values().iterator();
+        return cache.getKeys();
     }
 
     /**
-      * get the size of the cache
-      *
-      * @return the size of the cache
-      */
+     * get the size of the cache
+     *
+     * @return the size of the cache
+     */
     public int getSize()
     {
-        return cache.size();
+        return cache.getSize();
     }
 }
-

@@ -228,5 +228,35 @@
       <ref bean="ehPortletWindowCache" />
     </constructor-arg>
   </bean>
+  
+  <bean id="ehInternalPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <meta key="j2:cat" value="default,cache" />
+    <property name="cacheManager">
+      <ref local="cacheManager" />
+    </property>
+    <property name="cacheName" value="pageFileCache" />
+  </bean>
+  
+  <bean id="internalPageFileCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <meta key="j2:cat" value="default,cache" />
+    <constructor-arg>
+      <ref bean="ehInternalPageFileCache" />
+    </constructor-arg>
+  </bean>
+  
+  <bean id="ehInternalImportPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <meta key="j2:cat" value="default,cache" />
+    <property name="cacheManager">
+      <ref local="cacheManager" />
+    </property>
+    <property name="cacheName" value="importPageFileCache" />
+  </bean>
+  
+  <bean id="internalImportPageFileCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+    <meta key="j2:cat" value="default,cache" />
+    <constructor-arg>
+      <ref bean="ehInternalImportPageFileCache" />
+    </constructor-arg>
+  </bean>
 
 </beans>
