@@ -23,7 +23,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.information.PortletURLProvider;
 
 /**

@@ -103,7 +103,7 @@
 -->
 
    <class-descriptor
-      class="org.apache.jetspeed.om.common.portlet.MutablePortletApplication"
+      class="org.apache.jetspeed.om.common.portlet.PortletApplication"
 
    >
       <object-cache class="org.apache.jetspeed.components.portletregistry.RegistryApplicationCache"/>      

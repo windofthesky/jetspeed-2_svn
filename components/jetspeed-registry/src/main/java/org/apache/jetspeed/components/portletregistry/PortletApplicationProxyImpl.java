@@ -21,15 +21,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 
-public class MutablePortletApplicationProxy implements InvocationHandler, PortletApplicationProxy
+public class PortletApplicationProxyImpl implements InvocationHandler, PortletApplicationProxy
 {
-    private MutablePortletApplication app = null;
+    private PortletApplication app = null;
     private static PortletRegistry registry;
     private String name;
     
-    public MutablePortletApplicationProxy(MutablePortletApplication app)
+    public PortletApplicationProxyImpl(PortletApplication app)
     {
         this.app = app;
         this.name = app.getName();
@@ -40,15 +40,15 @@ public class MutablePortletApplicationProxy implements InvocationHandler, Portle
         registry = r;
     }
     
-    public static MutablePortletApplication createProxy(
-            MutablePortletApplication app)
+    public static PortletApplication createProxy(
+            PortletApplication app)
     {
         Class[] proxyInterfaces = new Class[]
-        { MutablePortletApplication.class, PortletApplicationProxy.class};
-        MutablePortletApplication proxy = (MutablePortletApplication) Proxy
-                .newProxyInstance(MutablePortletApplication.class
+        { PortletApplication.class, PortletApplicationProxy.class};
+        PortletApplication proxy = (PortletApplication) Proxy
+                .newProxyInstance(PortletApplication.class
                         .getClassLoader(), proxyInterfaces,
-                        new MutablePortletApplicationProxy(app));
+                        new PortletApplicationProxyImpl(app));
         return proxy;
     }
 
@@ -57,12 +57,12 @@ public class MutablePortletApplicationProxy implements InvocationHandler, Portle
         this.app = null;
     }
     
-    public void setRealApplication(MutablePortletApplication app)
+    public void setRealApplication(PortletApplication app)
     {
         this.app = app;
     }
     
-    public MutablePortletApplication getRealApplication()
+    public PortletApplication getRealApplication()
     {
         return app;
     }
@@ -78,7 +78,7 @@ public class MutablePortletApplicationProxy implements InvocationHandler, Portle
             }
             else if (m.getName().equals("setRealApplication"))
             {
-                setRealApplication((MutablePortletApplication)args[0]);
+                setRealApplication((PortletApplication)args[0]);
                 return null;
             }
             else

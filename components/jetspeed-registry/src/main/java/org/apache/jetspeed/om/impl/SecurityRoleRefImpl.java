@@ -25,9 +25,9 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.SecurityRoleRef;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
 
 /**
  * 
@@ -48,7 +48,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_SEC_ROLE_REF);
 
     /**
-     * @see org.apache.pluto.om.common.SecurityRoleRef#getRoleLink()
+     * @see org.apache.pluto.om.portlet.SecurityRoleRef#getRoleLink()
      */
     public String getRoleLink()
     {
@@ -56,7 +56,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @see org.apache.pluto.om.common.SecurityRoleRef#getRoleName()
+     * @see org.apache.pluto.om.portlet.SecurityRoleRef#getRoleName()
      */
     public String getRoleName()
     {
@@ -112,7 +112,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @see org.apache.pluto.om.common.SecurityRoleRef#getDescription(java.util.Locale)
+     * @see org.apache.pluto.om.portlet.SecurityRoleRef#getDescription(java.util.Locale)
      */
     public Description getDescription(Locale arg0)
     {
@@ -125,7 +125,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#addDescription(org.apache.pluto.om.common.Description)
+     * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#addDescription(org.apache.pluto.om.portlet.Description)
      */
     public void addDescription(Description description)
     {

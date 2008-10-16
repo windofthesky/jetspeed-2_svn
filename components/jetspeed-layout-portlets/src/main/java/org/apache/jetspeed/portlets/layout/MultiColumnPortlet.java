@@ -48,7 +48,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  */
@@ -963,7 +963,7 @@ public class MultiColumnPortlet extends LayoutPortlet
             String jsChangeThemeAll = request.getParameter("jsChangeThemeAll");
             if (jsChangeThemeAll != null)
             {
-                String decorators = request.getParameter("decorators");            
+                String decorators = request.getParameter("decorators");                
                 String fragment_Id = request.getParameter("fragment");
                 Iterator fragmentsIter = requestPage.getFragmentById(fragment_Id).getFragments().iterator();
                 while(fragmentsIter.hasNext())

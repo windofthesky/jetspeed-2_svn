@@ -18,7 +18,7 @@ package org.apache.jetspeed.engine.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import org.apache.pluto.factory.Factory;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Factory interface for creating HTTP Request Wrappers

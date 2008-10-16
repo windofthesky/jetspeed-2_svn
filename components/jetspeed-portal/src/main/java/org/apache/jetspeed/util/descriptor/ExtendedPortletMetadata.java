@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
 import org.apache.jetspeed.om.common.portlet.CustomWindowState;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
@@ -72,14 +72,14 @@ public class ExtendedPortletMetadata
     protected final static Log log = LogFactory.getLog(ExtendedPortletMetadata.class);
 
     protected Reader extendedMetaData;
-    protected MutablePortletApplication portletApp;
+    protected PortletApplication portletApp;
     
     /**
      * 
      * @param extendedMetaData Reader that contains the extended metadata, usually jetspeed-portlet.xml
-     * @param portletApp the MutablePortletApplication we are adding the extended metadata to.
+     * @param portletApp the PortletApplication we are adding the extended metadata to.
      */
-    public ExtendedPortletMetadata( Reader extendedMetaData, MutablePortletApplication portletApp )
+    public ExtendedPortletMetadata( Reader extendedMetaData, PortletApplication portletApp )
     {
         this.extendedMetaData = extendedMetaData;
         this.portletApp = portletApp;

@@ -18,11 +18,9 @@ package org.apache.jetspeed.components.portletentity;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -45,9 +43,7 @@ public interface PortletEntityAccessComponent
      * @param id
      * @return
      */
-	MutablePortletEntity getPortletEntity(ObjectID id);
-    
-    MutablePortletEntity getPortletEntity(String id);
+    PortletEntity getPortletEntity(String id);
     
 	/**
 	 * 
@@ -59,7 +55,7 @@ public interface PortletEntityAccessComponent
 	 * @return
 	 * @throws PortletEntityNotGeneratedException
 	 */
-	MutablePortletEntity generateEntityFromFragment(ContentFragment fragment) throws PortletEntityNotGeneratedException;
+	PortletEntity generateEntityFromFragment(ContentFragment fragment) throws PortletEntityNotGeneratedException;
        
 	/**
 	 * 
@@ -70,7 +66,7 @@ public interface PortletEntityAccessComponent
 	 * @param fragment
 	 * @return
 	 */
-	ObjectID generateEntityKey(Fragment fragment);
+	String generateEntityKey(Fragment fragment);
 
 	/**
 	 * 
@@ -81,8 +77,8 @@ public interface PortletEntityAccessComponent
 	 * @param portletDefinition
 	 * @return
 	 */
-	MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
-    MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id);
+	PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition);
+    PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id);
 	
 	/**
 	 * 
@@ -94,7 +90,7 @@ public interface PortletEntityAccessComponent
 	 * @return
 	 * @throws PortletEntityNotStoredException 
 	 */
-	MutablePortletEntity getPortletEntityForFragment(ContentFragment fragment) throws PortletEntityNotStoredException;
+	PortletEntity getPortletEntityForFragment(ContentFragment fragment) throws PortletEntityNotStoredException;
     
 	/**
 	 * 

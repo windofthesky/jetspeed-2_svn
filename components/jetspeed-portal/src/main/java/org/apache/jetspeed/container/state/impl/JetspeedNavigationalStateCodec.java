@@ -31,7 +31,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * JetspeedNavigationalStateCodec

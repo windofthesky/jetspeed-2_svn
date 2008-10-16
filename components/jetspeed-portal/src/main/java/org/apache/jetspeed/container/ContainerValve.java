@@ -25,7 +25,7 @@ import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Determines the action window in the current request If no action was found,

@@ -18,7 +18,7 @@ package org.apache.jetspeed.util;
 
 import java.io.Serializable;
 
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -80,6 +80,6 @@ public class JetspeedObjectID implements ObjectID, Serializable
      */
     public static JetspeedObjectID createPortletEntityId(PortletDefinition portletDefinition, String instanceName)
     {
-        return createFromString(portletDefinition.getName() + ":" + portletDefinition.getId().toString() + ":" + instanceName);
+        return createFromString(portletDefinition.getPortletName() + ":" + portletDefinition.getId().toString() + ":" + instanceName);
     }
 }

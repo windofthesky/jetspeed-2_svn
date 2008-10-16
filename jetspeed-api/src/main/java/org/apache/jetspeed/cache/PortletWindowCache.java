@@ -19,8 +19,8 @@ package org.apache.jetspeed.cache;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * {@link org.apache.jetspeed.cache.impl.PortletWindowCache} is an abstraction of a caching mechanism for use

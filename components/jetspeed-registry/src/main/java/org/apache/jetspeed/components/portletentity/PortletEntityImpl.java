@@ -31,8 +31,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
@@ -41,19 +40,15 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.om.preference.impl.PreferenceSetImpl;
-import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
-import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.entity.PortletApplicationEntity;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowList;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.util.StringUtils;
 
 /**
@@ -63,10 +58,10 @@ import org.apache.pluto.util.StringUtils;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PortletEntityImpl.java,v 1.9 2005/04/29 13:59:08 weaver Exp $
  */
-public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, RenderTrackable
+public class PortletEntityImpl implements PortletEntity, PrincipalAware, RenderTrackable
 {   
     private Long oid;
-    private JetspeedObjectID id;
+    private String id;
     private static PortletPreferencesProvider portletPreferencesProvider;
     private static PortletEntityAccessComponent portletEntityAccess;    
     private static PortletRegistry registry;
@@ -75,8 +70,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     protected PreferenceSetComposite pagePreferenceSet;
     protected Map perPrincipalPrefs = new HashMap();
-    private PortletApplicationEntity applicationEntity = null;
-    private PortletWindowList portletWindows = new PortletWindowListImpl();
+    // TODO: temporary replacement for old api PortletWindowList - this should be removed too shortly
+    private PortletWindow portletWindow = null;
     private PortletDefinitionComposite portletDefinition = null;  
     protected String portletName;
     protected String appName;
@@ -99,11 +94,6 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     public static final String NO_PRINCIPAL = "no-principal";
     public static final String ENTITY_DEFAULT_PRINCIPAL = "entity-default";
     
-    public ObjectID getId()
-    {
-        return id;
-    }
-
     public Long getOid()
     {
         return oid;
@@ -111,7 +101,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public void setId( String id )
     {
-        this.id = JetspeedObjectID.createFromString(id);
+        this.id = id;
     }
 
     /**
@@ -120,7 +110,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      * getPreferenceSet
      * </p>
      * 
-     * @see org.apache.pluto.om.entity.PortletEntity#getPreferenceSet()
+     * @see org.apache.jetspeed.container.PortletEntity#getPreferenceSet()
      * @return
      */
     public PreferenceSet getPreferenceSet()
@@ -251,14 +241,9 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
         return fpd;
     }
 
-    public PortletApplicationEntity getPortletApplicationEntity()
+    public void setPortletWindow(PortletWindow window)
     {
-        return applicationEntity;
-    }
-
-    public PortletWindowList getPortletWindowList()
-    {
-        return portletWindows;
+        this.portletWindow = window;
     }
 
     /**
@@ -395,7 +380,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     }
 
     /**
-     * @see org.apache.pluto.om.entity.PortletEntity#getDescription(java.util.Locale)
+     * @see org.apache.jetspeed.container.PortletEntity#getDescription(java.util.Locale)
      */
     public Description getDescription( Locale arg0 )
     {
@@ -421,8 +406,8 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
             {
                 rc.getRequest().removeAttribute(getEntityFragmentKey());
             }
-            this.appName = ((MutablePortletApplication)portletDefinition.getPortletApplicationDefinition()).getName();
-            this.portletName = portletDefinition.getName();
+            this.appName = portletDefinition.getApplication().getName();
+            this.portletName = portletDefinition.getPortletName();
         }
         else
         {
@@ -592,27 +577,18 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     {
         boolean editDefaultsMode = false;
         
-        PortletWindow curWindow = null;
-        
-        if (this.portletWindows != null)
+        if (portletWindow != null)
         {
+            RequestContext context = requestContextComponent.getRequestContext();
+            
             try
             {
-                curWindow = (PortletWindow) this.portletWindows.iterator().next();
+                PortletMode curMode = context.getPortalURL().getNavigationalState().getMode(portletWindow);
+                editDefaultsMode = (JetspeedActions.EDIT_DEFAULTS_MODE.equals(curMode));
             }
             catch (Exception e)
             {
             }
-        }
-        RequestContext context = requestContextComponent.getRequestContext();
-        
-        try
-        {
-            PortletMode curMode = context.getPortalURL().getNavigationalState().getMode(curWindow);
-            editDefaultsMode = (JetspeedActions.EDIT_DEFAULTS_MODE.equals(curMode));
-        }
-        catch (Exception e)
-        {
         }
         return editDefaultsMode;
     }

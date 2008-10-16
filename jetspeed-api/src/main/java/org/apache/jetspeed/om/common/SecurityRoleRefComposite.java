@@ -19,10 +19,10 @@ package org.apache.jetspeed.om.common;
 import java.io.Serializable;
 import java.util.Locale;
 
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefCtrl;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefCtrl;
 
 /**
  * 

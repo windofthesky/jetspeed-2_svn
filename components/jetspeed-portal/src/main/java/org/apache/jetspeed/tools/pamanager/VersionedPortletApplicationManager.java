@@ -29,7 +29,7 @@ import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
@@ -112,8 +112,8 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 //register = false;
             }
             
-            MutablePortletApplication regPA = registry.getPortletApplication(contextName);
-            MutablePortletApplication newPA = paWar.createPortletApp();
+            PortletApplication regPA = registry.getPortletApplication(contextName);
+            PortletApplication newPA = paWar.createPortletApp();
             if (regPA == null)
             {
                 System.out.println("**** New portlet app found - registration required..." + contextName);
@@ -149,7 +149,7 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
         }
     }
     
-    protected String getVersion(MutablePortletApplication pa)
+    protected String getVersion(PortletApplication pa)
     {
         String version = "";
         Collection versionList = pa.getMetadata().getFields("pa-version");

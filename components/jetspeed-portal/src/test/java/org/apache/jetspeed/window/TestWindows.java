@@ -30,14 +30,12 @@ import org.apache.jetspeed.PortletFactoryMock;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.util.JetspeedObjectID;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowList;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.jmock.Mock;
 import org.jmock.core.Invocation;
 import org.jmock.core.InvocationMatcher;
@@ -77,8 +75,7 @@ public class TestWindows extends TestCase
         super.setUp();
         entityAccessMock = new Mock(PortletEntityAccessComponent.class);
         fragMock = new Mock(Fragment.class);
-        entityMock = new Mock(MutablePortletEntity.class);
-        windowListMock = new Mock(CompositeWindowList.class);
+        entityMock = new Mock(PortletEntity.class);
         windowAccess = new PortletWindowAccessorImpl((PortletEntityAccessComponent) entityAccessMock.proxy(), PortletFactoryMock.instance, new HashMapWindowCache(),true);
     }
 
@@ -86,14 +83,11 @@ public class TestWindows extends TestCase
     {
         List windows = new ArrayList();
         ContentFragment f1 = new ContentFragmentImpl((Fragment) fragMock.proxy(), new HashMap());
-        MutablePortletEntity entity = (MutablePortletEntity) entityMock.proxy();
-        CompositeWindowList windowList = (CompositeWindowList) windowListMock.proxy();
+        PortletEntity entity = (PortletEntity) entityMock.proxy();
         entityAccessMock.expects(new InvokeAtLeastOnceMatcher()).method("getPortletEntityForFragment")
                 .withAnyArguments().will(new ReturnStub(entity));
         fragMock.expects(new InvokeAtLeastOnceMatcher()).method("getId").withNoArguments()
                 .will(new ReturnStub("frag1"));
-        entityMock.expects(new InvokeAtLeastOnceMatcher()).method("getPortletWindowList").withNoArguments().will(
-                new ReturnStub(windowList));
         entityMock.expects(new InvokeAtLeastOnceMatcher()).method("getId").withNoArguments().will(
             new ReturnStub(new JetspeedObjectID("entity1")));
 
@@ -139,11 +133,6 @@ public class TestWindows extends TestCase
         
         windowListMock.verify();         
 */
-    }
-
-    interface CompositeWindowList extends PortletWindowList, PortletWindowListCtrl
-    {
-
     }
 
     class ListAppendStub extends CustomStub

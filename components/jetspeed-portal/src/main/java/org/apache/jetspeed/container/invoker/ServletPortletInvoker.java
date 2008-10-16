@@ -39,11 +39,11 @@ import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 
 /**
  * ServletPortletInvoker invokes portlets in another web application, calling a 
@@ -196,7 +196,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             portletDefinition = this.portletDefinition;
         }
         
-        MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
+        PortletApplication app = (PortletApplication)portletDefinition.getApplication();
 
         WebApplicationDefinition webApplicationDefinition = app.getWebApplicationDefinition();
         if(webApplicationDefinition == null)
@@ -242,7 +242,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
                     servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
                     servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
                     servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
-                    servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
+                    servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getPortletName());
                     servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest) servletRequest).getContextPath());
                 }
             }
@@ -253,7 +253,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
                 servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
                 servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
                 servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
-                servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
+                servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getPortletName());
                 servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
             }
 
@@ -265,7 +265,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
                 CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
                 CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
                 CurrentWorkerContext.setAttribute(ContainerConstants.METHOD_ID, methodID);
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getName());
+                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getPortletName());
                 CurrentWorkerContext.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest) servletRequest).getContextPath());                
             }
 

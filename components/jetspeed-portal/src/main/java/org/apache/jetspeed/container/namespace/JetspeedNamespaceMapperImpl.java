@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.container.namespace;
 
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 
 /**

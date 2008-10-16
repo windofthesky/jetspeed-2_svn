@@ -19,10 +19,10 @@ package org.apache.jetspeed.components.portletregistry;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -46,16 +46,11 @@ public interface PortletRegistry
     Collection getAllPortletDefinitions();
 
     /**
-     * Retreives a PortletApplication by it's unique ObjectID.
-     * The unqiue ObjectID is generally a function of the native
-     * storage mechanism of the container whether it be auto-generated
-     * by an RDBMS, O/R tool or some other mechanism.
-     * This is different than the portlet applaiction's unique indentfier
-     * which is specified within the portlet.xml
+     * Retreives a PortletApplication by it's id.
      * @param id 
      * @return
      */
-    MutablePortletApplication getPortletApplication( ObjectID id );
+    PortletApplication getPortletApplicationById( String id );
 
     /**
      * Retreives a PortletApplication by it's unique name.  We use
@@ -64,7 +59,7 @@ public interface PortletRegistry
      * @param id 
      * @return PortletApplicationComposite
      */
-    MutablePortletApplication getPortletApplication( String name );
+    PortletApplication getPortletApplication( String name );
 
     /**
      * Locates a portlet application using it's unique <code>identifier</code> 
@@ -72,7 +67,7 @@ public interface PortletRegistry
      * @param identifier Unique id for this portlet application
      * @return portlet application matching this unique id.
      */
-    MutablePortletApplication getPortletApplicationByIdentifier( String identifier );
+    PortletApplication getPortletApplicationByIdentifier( String identifier );
 
     Collection getPortletApplications();
 
@@ -161,7 +156,7 @@ public interface PortletRegistry
      * @return boolean <code>true</code> if a portlet with this identity
      * is alreay registered, <code>false</code> if it has not.
      */
-    boolean portletDefinitionExists( String portletName, MutablePortletApplication app );
+    boolean portletDefinitionExists( String portletName, PortletApplication app );
 
     /**
      * Creates a new <code>PortletApplicationDefinition</code> 
@@ -193,6 +188,4 @@ public interface PortletRegistry
     void addRegistryListener(RegistryEventListener listener);
     
     void removeRegistryEventListner(RegistryEventListener listener);
-	
-
 }

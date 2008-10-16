@@ -18,32 +18,9 @@ package org.apache.jetspeed.om.servlet.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Locale;
+import java.util.List;
 
-import javax.servlet.ServletContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDisplayName;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
-import org.apache.jetspeed.om.impl.DescriptionImpl;
-import org.apache.jetspeed.om.impl.DescriptionSetImpl;
-import org.apache.jetspeed.om.impl.DisplayNameSetImpl;
-import org.apache.jetspeed.om.impl.WebAppDescriptionImpl;
-import org.apache.jetspeed.om.impl.WebAppDisplayNameImpl;
-import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.jetspeed.util.JetspeedLongObjectID;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.DisplayNameSet;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.servlet.ServletDefinitionList;
-import org.apache.pluto.om.common.SecurityRole;
-import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 
 /**
  * 
@@ -53,215 +30,61 @@ import org.apache.pluto.om.common.SecurityRoleSet;
  * @version $Id$
  *
  */
-public class WebApplicationDefinitionImpl implements MutableWebApplication, Serializable
+public class WebApplicationDefinitionImpl implements WebApplicationDefinition, Serializable
 {
+    private static final long serialVersionUID = 257065602152274557L;
+    
+    @SuppressWarnings("unused")
     private Long id;
-    private JetspeedLongObjectID oid;
-    private Collection displayNames = new ArrayList();
-    private DisplayNameSetImpl DNCollWrapper = new DisplayNameSetImpl();
-
-    private Collection descriptions = new ArrayList();
-    private DescriptionSetImpl descCollWrapper = new DescriptionSetImpl(DescriptionImpl.TYPE_WEB_APP);
-    private Collection securityRoles = new ArrayList();
-    private SecurityRoleSetImpl secRolesListWrapper = new SecurityRoleSetImpl();
-
+    private String name;
+    private String displayName;
+    private String description;
+    private List<String> roles = new ArrayList<String>();
+    
     private String contextRoot;
-    private ParameterSet initParameters;
-
-    private static final Log log = LogFactory.getLog(WebApplicationDefinitionImpl.class);
-
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getId()
-     */
-    public ObjectID getId()
+    
+    public String getId()
     {
-        if ( oid == null && id != null )
-        {
-            oid = new JetspeedLongObjectID(id);
-        }
-        return oid;
+        return name;
+    }
+    
+    public void setId(String id)
+    {
+        this.name = id;
     }
 
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getDisplayName()
-     */
-    public DisplayName getDisplayName(Locale locale)
+    public String getDisplayName()
     {
-
-        if (displayNames != null)
-        {
-            DNCollWrapper.setInnerCollection(displayNames);
-            return DNCollWrapper.get(locale);
-        }
-        return null;
-
+        return displayName;
     }
 
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getDescription()
-     */
-    public Description getDescription(Locale locale)
+    public String getDescription()
     {
-        if (descriptions != null)
-        {
-            descCollWrapper.setInnerCollection(descriptions);
-            return descCollWrapper.get(locale);
-        }
-        return null;
-
+        return description;
     }
 
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getInitParameterSet()
-     */
-    public ParameterSet getInitParameterSet()
-    {
-        return initParameters;
-    }
-
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getServletDefinitionList()
-     */
-    public ServletDefinitionList getServletDefinitionList()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getServletContext(javax.servlet.ServletContext)
-     */
-    public ServletContext getServletContext(ServletContext servletContext)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getContextRoot()
-     */
     public String getContextRoot()
     {
         return contextRoot;
     }
 
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinitionCtrl#setDisplayName(java.lang.String)
-     */
-    public void setDisplayNameSet(DisplayNameSet displayNames)
+    public void setDisplayName(String displayName)
     {
-        this.displayNames = ((DisplayNameSetImpl) displayNames).getInnerCollection();
+        this.displayName = displayName;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.common.servlet.WebApplicationComposite#setContextRoot(java.lang.String)
-     */
     public void setContextRoot(String contextRoot)
     {
         this.contextRoot = contextRoot;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.common.servlet.MutableWebApplication#addDescription(java.util.Locale, java.lang.String)
-     */
-    public void addDescription(Locale locale, String description)
+    public void setDescription(String description)
     {
-        if (descriptions == null)
-        {
-            descriptions = new ArrayList();
-        }
-        descCollWrapper.setInnerCollection(descriptions);
-        try
-        {
-            MutableDescription descObj = new WebAppDescriptionImpl();
-                
-            descObj.setLocale(locale);
-            descObj.setDescription(description);
-            descCollWrapper.addDescription(descObj);
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to instantiate Description implementor, " + e.toString();
-            log.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
+        this.description = description;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.common.servlet.MutableWebApplication#addDisplayName(java.util.Locale, java.lang.String)
-     */
-    public void addDisplayName(Locale locale, String name)
+    public List<String> getRoles()
     {
-        if (displayNames == null)
-        {
-            displayNames = new ArrayList();
-        }
-        DNCollWrapper.setInnerCollection(displayNames);
-        try
-        {
-            MutableDisplayName dn = new WebAppDisplayNameImpl();
-               
-            dn.setLocale(locale);
-            dn.setDisplayName(name);
-            DNCollWrapper.addDisplayName(dn);
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to instantiate DisplayName implementor, " + e.toString();
-            log.error(msg, e);
-            throw new IllegalStateException(msg);
-        }
-
+        return roles;
     }
-
-    /**
-     * @see org.apache.jetspeed.om.common.servlet.MutableWebApplication#setDescriptionSet(org.apache.pluto.om.common.DescriptionSet)
-     */
-    public void setDescriptionSet(DescriptionSet descriptions)
-    {
-        this.descriptions = ((DescriptionSetImpl) descriptions).getInnerCollection();
-    }
-
-    /**
-     *  Remove when Castor is mapped correctly
-     * @deprecated
-     * @return
-     */
-    public String getDescription()
-    {
-        Description desc = getDescription(JetspeedLocale.getDefaultLocale());
-        if (desc != null)
-        {
-            return desc.getDescription();
-        }
-        return null;
-    }
-
-    /**
-     *  Remove when Castor is mapped correctly
-     * @deprecated
-     * @param desc
-     */
-    public void setDescription(String desc)
-    {
-        addDescription(JetspeedLocale.getDefaultLocale(), desc);
-    }
-
-    /**
-     * @see org.apache.pluto.om.servlet.WebApplicationDefinition#getSecurityRoles()
-     */
-    public SecurityRoleSet getSecurityRoles()
-    {
-        secRolesListWrapper.setInnerCollection(securityRoles);
-        return secRolesListWrapper;
-    }
-    
-    /**
-     * @see org.apache.jetspeed.om.common.servlet.MutableWebApplication#addSecurityRole(org.apache.pluto.om.common.SecurityRole)
-     */
-    public void addSecurityRole(SecurityRole securityRole) 
-    {
-        secRolesListWrapper.setInnerCollection(securityRoles);
-        secRolesListWrapper.add(securityRole);
-    }    
 }

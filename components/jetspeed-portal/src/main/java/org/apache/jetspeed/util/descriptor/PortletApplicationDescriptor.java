@@ -24,7 +24,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.impl.ParameterDescriptionImpl;
@@ -39,9 +39,9 @@ import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
-import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -68,7 +68,7 @@ public class PortletApplicationDescriptor
         this.appName = appName;
     }
 
-    public MutablePortletApplication createPortletApplication()
+    public PortletApplication createPortletApplication()
     throws PortletApplicationException
     {
         return createPortletApplication(this.getClass().getClassLoader());
@@ -76,12 +76,12 @@ public class PortletApplicationDescriptor
     
     /**
      * Maps the content of the portlet application descriptor into
-     * a new <code>MutablePortletApplication object</code>
+     * a new <code>PortletApplication object</code>
      * 
-     * @return MutablePortletApplication newly created MutablePortletApplication with
+     * @return PortletApplication newly created PortletApplication with
      * all values of the portlet application descriptor mapped into it.
      */
-    public MutablePortletApplication createPortletApplication(ClassLoader classLoader)
+    public PortletApplication createPortletApplication(ClassLoader classLoader)
         throws PortletApplicationException
     {
         try
@@ -188,7 +188,7 @@ public class PortletApplicationDescriptor
                 PortletDefinitionComposite portletDef = (PortletDefinitionComposite) obj;
                 if(portletDef.getPortletIdentifier() == null)
                 {
-                    portletDef.setPortletIdentifier(portletDef.getName());
+                    portletDef.setPortletIdentifier(portletDef.getPortletName());
                 }
                 
                 ((Support)obj).postLoad(classLoader);
@@ -222,7 +222,7 @@ public class PortletApplicationDescriptor
      *            The PortletApplicationDefinition to validate
      * @throws PortletApplicationException
      */
-    public void validate(MutablePortletApplication app)
+    public void validate(PortletApplication app)
             throws PortletApplicationException
     {
         SecurityRoleSet roles = app.getWebApplicationDefinition()
@@ -248,7 +248,7 @@ public class PortletApplicationDescriptor
                 if (roles.get(roleName) == null)
                 {
                     String errorMsg = "Undefined security role " + roleName
-                            + " referenced from portlet " + portlet.getName();
+                            + " referenced from portlet " + portlet.getPortletName();
                     log.error(errorMsg);
                     throw new PortletApplicationException(errorMsg);
                 }

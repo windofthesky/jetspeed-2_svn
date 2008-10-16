@@ -56,7 +56,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
       */
       public UserAttributeRefImpl(UserAttribute userAttribute)
       {
-          this.name = userAttribute.getName();
+          this.name = userAttribute.getPortletName();
           this.description = userAttribute.getDescription();
       }
 

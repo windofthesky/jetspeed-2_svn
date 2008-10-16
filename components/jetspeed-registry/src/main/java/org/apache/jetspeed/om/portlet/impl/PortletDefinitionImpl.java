@@ -37,7 +37,7 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.MutableDisplayName;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
@@ -58,22 +58,22 @@ import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.DisplayNameSet;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.pluto.om.portlet.ObjectID;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.pluto.om.portlet.ParameterSet;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.DisplayName;
+import org.apache.pluto.om.portlet.DisplayNameSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
 import org.apache.pluto.om.servlet.ServletDefinition;
 
 /**
@@ -118,7 +118,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     protected List portletEntities;
 
     /** PortletApplicationDefinition this PortletDefinition belongs to */
-    private MutablePortletApplication app;
+    private PortletApplication app;
 
     protected long appId;
     private String expirationCache;
@@ -161,17 +161,17 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getClassName()
+     * @see org.apache.pluto.om.portlet.PortletDefinition#getPortletClass()
      */
-    public String getClassName()
+    public String getPortletClass()
     {
         return className;
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getName()
+     * @see org.apache.pluto.om.portlet.PortletDefinition#getPortletName()
      */
-    public String getName()
+    public String getPortletName()
     {
         return name;
     }
@@ -276,7 +276,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#setId(java.lang.String)
+     * @see org.apache.pluto.om.portlet.PortletDefinition#setId(java.lang.String)
      */
     public void setId( String oid )
     {
@@ -284,23 +284,23 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#setClassName(java.lang.String)
+     * @see org.apache.pluto.om.portlet.PortletDefinition#setPortletClass(java.lang.String)
      */
-    public void setClassName( String className )
+    public void setPortletClass( String className )
     {
         this.className = className;
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#setName(java.lang.String)
+     * @see org.apache.pluto.om.portlet.PortletDefinition#setPortletName(java.lang.String)
      */
-    public void setName( String name )
+    public void setPortletName( String name )
     {
         this.name = name;
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#setPortletClassLoader(java.lang.ClassLoader)
+     * @see org.apache.pluto.om.portlet.PortletDefinition#setPortletClassLoader(java.lang.ClassLoader)
      */
     public void setPortletClassLoader( ClassLoader loader )
     {
@@ -499,7 +499,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      */
     public void setPortletApplicationDefinition( PortletApplicationDefinition pad )
     {
-        app = (MutablePortletApplication) pad;
+        app = (PortletApplication) pad;
     }
 
     /**
@@ -516,7 +516,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
                 return true;
             }
             boolean sameAppId = (appId == pd.appId);
-            boolean sameName = (pd.getName() != null && name != null && pd.getName().equals(name));
+            boolean sameName = (pd.getPortletName() != null && name != null && pd.getPortletName().equals(name));
             return sameName && sameAppId;
         }
         return false;
@@ -583,7 +583,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#setDescriptions(org.apache.pluto.om.common.DescriptionSet)
+     * @see org.apache.pluto.om.portlet.PortletDefinition#setDescriptions(org.apache.pluto.om.common.DescriptionSet)
      */
     public void setDescriptions( DescriptionSet arg0 )
     {
@@ -591,7 +591,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#setDisplayNames(org.apache.pluto.om.common.DisplayNameSet)
+     * @see org.apache.pluto.om.portlet.PortletDefinition#setDisplayNames(org.apache.pluto.om.common.DisplayNameSet)
      */
     public void setDisplayNames( DisplayNameSet arg0 )
     {
@@ -708,7 +708,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
      * portletDefinition.
      * </p>
      * 
-     * @see org.apache.pluto.om.portlet.PortletDefinitionCtrl#store()
+     * @see org.apache.pluto.om.portlet.PortletDefinition#store()
      * @throws java.io.IOException
      */
     public void store() throws IOException
@@ -785,7 +785,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(org.apache.pluto.om.common.SecurityRoleRef)
+     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#addSecurityRoleRef(org.apache.pluto.om.portlet.SecurityRoleRef)
      */
     public void addSecurityRoleRef( SecurityRoleRef securityRef )
     {
@@ -808,7 +808,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getMetadata()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getMetadata()
      */
     public GenericMetadata getMetadata()
     {
@@ -824,7 +824,7 @@ public class PortletDefinitionImpl implements PortletDefinitionComposite, Prefer
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
      */
     public void setMetadata( GenericMetadata metadata )
     {

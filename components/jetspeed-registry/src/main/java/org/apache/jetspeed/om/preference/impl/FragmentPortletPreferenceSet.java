@@ -26,7 +26,7 @@ import javax.portlet.PreferencesValidator;
 
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.portlet.Preference;
 
 /**
  * This is a per-request wrapper for a PreferenceSet that allows 

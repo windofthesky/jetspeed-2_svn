@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.pluto.core.CoreUtils;
 import org.apache.pluto.core.InternalPortletRequest;
 import org.apache.pluto.core.InternalPortletResponse;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.factory.FactoryManager;
 
 /**

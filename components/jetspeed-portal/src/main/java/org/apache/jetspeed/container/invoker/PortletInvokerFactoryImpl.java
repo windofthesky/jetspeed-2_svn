@@ -22,7 +22,7 @@ import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.pluto.factory.PortletInvokerFactory;
 import org.apache.pluto.invoker.PortletInvoker;
 import org.apache.pluto.om.portlet.PortletDefinition;
@@ -104,13 +104,13 @@ public class PortletInvokerFactoryImpl
      */
     public PortletInvoker getPortletInvoker(PortletDefinition portletDefinition)
     {
-        MutablePortletApplication app = (MutablePortletApplication)portletDefinition.getPortletApplicationDefinition();
+        PortletApplication app = (PortletApplication)portletDefinition.getPortletApplicationDefinition();
         if(app == null)
         {
-        	throw new IllegalStateException("Portlet definition \""+portletDefinition.getName()+"\" is not assigned to a portlet application.");
+        	throw new IllegalStateException("Portlet definition \""+portletDefinition.getPortletName()+"\" is not assigned to a portlet application.");
         }
         
-        if (app.getApplicationType() == MutablePortletApplication.LOCAL)
+        if (app.getApplicationType() == PortletApplication.LOCAL)
         {
             LocalPortletInvoker localPortletInvoker = localPortletInvokerFactory.createInstance();
             localPortletInvoker.activate(portletFactory, portletDefinition, servletConfig);

@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.apache.pluto.om.common.ObjectID;
-
 /**
  * Node Information
  * 
@@ -152,11 +150,6 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 	public Long getId()
 	{
 		return id;
-	}
-
-	public void setId(ObjectID id)
-	{
-		this.id = new Long(id.toString());
 	}
 
 	public void setId(Long id)

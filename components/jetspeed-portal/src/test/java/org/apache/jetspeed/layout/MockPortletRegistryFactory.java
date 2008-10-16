@@ -18,8 +18,8 @@ package org.apache.jetspeed.layout;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.pluto.om.portlet.ParameterSet;
 import org.jmock.Mock;
 import org.jmock.core.Constraint;
 import org.jmock.core.InvocationMatcher;

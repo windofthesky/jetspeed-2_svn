@@ -62,7 +62,7 @@ public abstract class DisplayNameImpl implements MutableDisplayName
     }
 
     /**
-     * @see org.apache.pluto.om.common.DisplayName#getDisplayName()
+     * @see org.apache.pluto.om.portlet.DisplayName#getDisplayName()
      */
     public String getDisplayName()
     {
@@ -70,7 +70,7 @@ public abstract class DisplayNameImpl implements MutableDisplayName
     }
 
     /**
-     * @see org.apache.pluto.om.common.DisplayName#getLocale()
+     * @see org.apache.pluto.om.portlet.DisplayName#getLocale()
      */
     public Locale getLocale()
     {

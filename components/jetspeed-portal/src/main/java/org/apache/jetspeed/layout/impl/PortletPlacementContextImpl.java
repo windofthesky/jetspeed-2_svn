@@ -30,8 +30,8 @@ import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 

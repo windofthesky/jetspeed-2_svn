@@ -18,6 +18,9 @@ package org.apache.jetspeed.om.common;
 
 import java.io.Serializable;
 
+import org.apache.pluto.om.ElementFactoryList;
+import org.apache.pluto.om.portlet.Description;
+
 /**
  * <p>Interface allowing mapping of user attributes between the portal implementation
  * and the portlet attribute definition according to the Portlet specs (PLT.17.2 Accessing
@@ -41,10 +44,5 @@ public interface UserAttributeRef extends Serializable
     /** Setter for the user-attribute-ref name-link. */
     void setNameLink(String nameLink);
     
-    /** Getter for the user-attribute description. */
-    String getDescription();
-    
-    /** Setter for the user-attribute description. */
-    void setDescription(String description);
-
+    ElementFactoryList<Description> getDescriptions();
 }

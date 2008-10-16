@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 
 public interface PortletApplicationProxy
 {
-    void setRealApplication(MutablePortletApplication app);
-    MutablePortletApplication getRealApplication();
+    void setRealApplication(PortletApplication app);
+    PortletApplication getRealApplication();
 }

@@ -42,7 +42,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriterFactory;
@@ -50,9 +50,9 @@ import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
-import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
@@ -102,7 +102,7 @@ public class PortletApplicationWar
     protected String webAppContextRoot;
     protected FileSystemHelper warStruct;
     private MutableWebApplication webApp;
-    private MutablePortletApplication portletApp;
+    private PortletApplication portletApp;
     private long paChecksum;
     protected final List openedResources;
 
@@ -225,7 +225,7 @@ public class PortletApplicationWar
      * @throws IOException
      * @see org.apache.jetspeed.uitl.descriptor.PortletApplicationDescriptor
      */
-    public MutablePortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
+    public PortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
     {
         Reader portletXmlReader = getReader(PORTLET_XML_PATH);
         
@@ -278,7 +278,7 @@ public class PortletApplicationWar
         }
     }
 
-    public MutablePortletApplication createPortletApp() 
+    public PortletApplication createPortletApp() 
     throws PortletApplicationException, IOException
     {
         return createPortletApp(this.getClass().getClassLoader());
@@ -505,7 +505,7 @@ public class PortletApplicationWar
                 if (roles.get(roleName) == null)
                 {
                     String errorMsg = "Undefined security role " + roleName + " referenced from portlet "
-                            + portlet.getName();
+                            + portlet.getPortletName();
                     throw new PortletApplicationException(errorMsg);
                 }
             }

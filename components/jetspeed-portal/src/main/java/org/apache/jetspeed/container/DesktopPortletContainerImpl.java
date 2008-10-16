@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerImpl;
 import org.apache.pluto.core.InternalActionResponse;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.InformationProviderAccess;
 import org.apache.pluto.services.information.PortletURLProvider;

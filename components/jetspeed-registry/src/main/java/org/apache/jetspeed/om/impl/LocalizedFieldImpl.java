@@ -20,7 +20,7 @@ import java.util.Locale;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * LocalizedFieldImpl

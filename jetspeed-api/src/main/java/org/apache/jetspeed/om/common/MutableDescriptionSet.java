@@ -18,8 +18,8 @@ package org.apache.jetspeed.om.common;
 
 
 
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DescriptionSet;
 
 /**
  * MutableDescriptionSet

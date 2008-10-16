@@ -37,7 +37,6 @@ import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.deployment.DeploymentManager;
 import org.apache.jetspeed.deployment.DeploymentStatus;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManagerResult;
@@ -190,7 +189,7 @@ public class ManagerServlet extends HttpServlet
             writer.println("Warning: Portlet Application " + paName + " already started");
             return OK;
         }
-        else if (pa.getApplicationType() == MutablePortletApplication.LOCAL)
+        else if (pa.getApplicationType() == PortletApplication.LOCAL)
         {
             writer.println("Error: Starting LOCAL Portlet Application " + paName + " not supported");
             return ERROR_UNSUPPORTED;
@@ -244,7 +243,7 @@ public class ManagerServlet extends HttpServlet
             writer.println("Portlet Application " + paName + " already stopped");
             return OK;
         }
-        else if (pa.getApplicationType() == MutablePortletApplication.LOCAL)
+        else if (pa.getApplicationType() == PortletApplication.LOCAL)
         {
             writer.println("Error: Stopping LOCAL Portlet Application " + paName + " not supported");
             return ERROR_UNSUPPORTED;

@@ -49,9 +49,9 @@ import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.util.Enumerator;
 
 /**

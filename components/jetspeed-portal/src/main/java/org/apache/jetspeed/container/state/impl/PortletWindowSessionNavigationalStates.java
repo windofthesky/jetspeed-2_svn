@@ -30,7 +30,7 @@ import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 public class PortletWindowSessionNavigationalStates implements Serializable
 {

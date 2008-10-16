@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.util;
 
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * PortalObjectID

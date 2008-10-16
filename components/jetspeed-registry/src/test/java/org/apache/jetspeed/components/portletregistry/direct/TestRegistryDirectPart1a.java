@@ -41,7 +41,7 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
+import org.apache.pluto.om.portlet.PreferenceSetCtrl;
 
 /**
  * 
@@ -101,8 +101,8 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
-        portlet.setClassName("org.apache.Portlet");
-        portlet.setName("Portlet 1");
+        portlet.setPortletClass("org.apache.Portlet");
+        portlet.setPortletName("Portlet 1");
         portlet.addDescription(Locale.getDefault(), "Portlet description.");
         portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
 

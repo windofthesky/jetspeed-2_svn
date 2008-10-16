@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 
 
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
 
@@ -94,7 +94,7 @@ public class PortletDefinitionListImpl implements PortletDefinitionList, Seriali
         while (itr.hasNext())
         {
             PortletDefinition pd = (PortletDefinition) itr.next();
-            if (pd.getName().equals(name))
+            if (pd.getPortletName().equals(name))
             {
                 return pd;
             }

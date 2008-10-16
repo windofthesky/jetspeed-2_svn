@@ -28,7 +28,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * BaseNavigationalState

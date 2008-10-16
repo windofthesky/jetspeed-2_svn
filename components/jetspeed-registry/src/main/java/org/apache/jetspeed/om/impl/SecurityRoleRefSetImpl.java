@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
-import org.apache.pluto.om.common.SecurityRoleRefSetCtrl;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.SecurityRoleRefSetCtrl;
 
 /**
  * 
@@ -82,7 +82,7 @@ public class SecurityRoleRefSetImpl implements SecurityRoleRefSet, SecurityRoleR
     }
 
     /**
-     * @see org.apache.pluto.om.common.SecurityRoleRefSetCtrl#add(org.apache.pluto.om.common.SecurityRoleRef)
+     * @see org.apache.pluto.om.common.SecurityRoleRefSetCtrl#add(org.apache.pluto.om.portlet.SecurityRoleRef)
      */
     public SecurityRoleRef add(SecurityRoleRef securityRoleRef)
     {
@@ -105,7 +105,7 @@ public class SecurityRoleRefSetImpl implements SecurityRoleRefSet, SecurityRoleR
     }
 
     /**
-     * @see org.apache.pluto.om.common.SecurityRoleRefSetCtrl#remove(org.apache.pluto.om.common.SecurityRoleRef)
+     * @see org.apache.pluto.om.common.SecurityRoleRefSetCtrl#remove(org.apache.pluto.om.portlet.SecurityRoleRef)
      */
     public void remove(SecurityRoleRef securityRoleRef)
     {

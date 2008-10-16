@@ -38,8 +38,8 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**

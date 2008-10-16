@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * @author Scott T Weaver

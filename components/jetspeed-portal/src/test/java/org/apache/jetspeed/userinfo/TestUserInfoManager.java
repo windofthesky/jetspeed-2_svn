@@ -29,7 +29,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityException;
@@ -49,7 +49,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  */
 public class TestUserInfoManager extends AbstractRequestContextTestCase
 {
-    private MutablePortletApplication portletApp;
+    private PortletApplication portletApp;
     private UserInfoManager single;
     /** The user manager. */
     protected UserManager ums;

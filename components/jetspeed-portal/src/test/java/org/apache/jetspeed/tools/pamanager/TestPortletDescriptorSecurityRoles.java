@@ -23,15 +23,15 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.om.common.SecurityRole;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
-import org.apache.pluto.om.common.SecurityRoleSet;
+import org.apache.pluto.om.portlet.SecurityRole;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -81,7 +81,7 @@ public class TestPortletDescriptorSecurityRoles extends AbstractRequestContextTe
         File warFile = new File(getBaseDir()+"src/test/testdata/deploy/webapp");
         PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/" );
 
-        MutablePortletApplication app = paWar.createPortletApp();
+        PortletApplication app = paWar.createPortletApp();
         assertNotNull("App is null", app);
 
         MutableWebApplication webApp = paWar.createWebApp();

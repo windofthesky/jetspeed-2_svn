@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import javax.portlet.RenderResponse;
 import javax.portlet.ActionResponse;
 
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.portlet.Portlet;
 
 /**
  * The container response wrappers the servlet response and is used 
@@ -34,16 +34,16 @@ public class ContainerResponse extends HttpServletResponseWrapper
 {
     RenderResponse renderResponse;
     ActionResponse actionResponse;
-    PortletDefinition portletDef;
+    Portlet portletDef;
 
     public ContainerResponse(HttpServletResponse response,
-                             PortletDefinition portletDef)
+                             Portlet portletDef)
     {
         super(response);
         this.portletDef = portletDef;
     }
 
-    public PortletDefinition getPortletDefinition()
+    public Portlet getPortletDefinition()
     {
         return this.portletDef;
     }
@@ -67,5 +67,4 @@ public class ContainerResponse extends HttpServletResponseWrapper
     {
         this.actionResponse = actionResponse;
     }
-
 }

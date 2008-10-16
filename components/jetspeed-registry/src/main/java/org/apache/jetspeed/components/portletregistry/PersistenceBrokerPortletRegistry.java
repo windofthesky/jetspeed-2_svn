@@ -29,15 +29,15 @@ import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.springframework.dao.DataAccessException;
@@ -89,7 +89,7 @@ public class PersistenceBrokerPortletRegistry
         this.portletOidCache = portletOidCache;
         this.applicationNameCache = applicationNameCache;
         this.portletNameCache = portletNameCache;
-        MutablePortletApplicationProxy.setRegistry(this);
+        PortletApplicationProxyImpl.setRegistry(this);
         RegistryApplicationCache.cacheInit(this, applicationOidCache, applicationNameCache, listeners);
         RegistryPortletCache.cacheInit(this, portletOidCache, portletNameCache, listeners);
         this.applicationNameCache.addEventListener(this, false);
@@ -123,31 +123,31 @@ public class PersistenceBrokerPortletRegistry
         return list;
     }
 
-    public MutablePortletApplication getPortletApplication( ObjectID id )
+    public PortletApplication getPortletApplicationById( String id )
     {
         Criteria c = new Criteria();
-        c.addEqualTo("id", new Long(id.toString()));
-        MutablePortletApplication app = (MutablePortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
+        c.addEqualTo("id", new Long(id));
+        PortletApplication app = (PortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoad(app);
         return app;
     }
 
-    public MutablePortletApplication getPortletApplication(String name)
+    public PortletApplication getPortletApplication(String name)
     {
         Criteria c = new Criteria();
         c.addEqualTo("name", name);
-        MutablePortletApplication app = (MutablePortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
+        PortletApplication app = (PortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoad(app);
         return app;
     }
 
-    public MutablePortletApplication getPortletApplicationByIdentifier( String identifier )
+    public PortletApplication getPortletApplicationByIdentifier( String identifier )
     {
         Criteria c = new Criteria();
         c.addEqualTo("applicationIdentifier", identifier);
-        MutablePortletApplication app = (MutablePortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
+        PortletApplication app = (PortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
             QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoad(app);
         return app;
@@ -168,7 +168,7 @@ public class PersistenceBrokerPortletRegistry
         c.addEqualTo("portletIdentifier", identifier);
         PortletDefinitionComposite def = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(PortletDefinitionImpl.class, c));
-        if (def != null && def.getPortletApplicationDefinition() == null)
+        if (def != null && def.getApplication() == null)
         {
             final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
             throw new IllegalStateException(msg);
@@ -189,7 +189,7 @@ public class PersistenceBrokerPortletRegistry
 
         PortletDefinitionComposite def = (PortletDefinitionComposite) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(PortletDefinitionImpl.class, c));
-        if (def != null && def.getPortletApplicationDefinition() == null)
+        if (def != null && def.getApplication() == null)
         {
             final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
             throw new IllegalStateException(msg);
@@ -209,7 +209,7 @@ public class PersistenceBrokerPortletRegistry
         return getPortletApplication(appName) != null;
     }
 
-    public boolean portletDefinitionExists( String portletName, MutablePortletApplication app )
+    public boolean portletDefinitionExists( String portletName, PortletApplication app )
     {
         return getPortletDefinitionByUniqueName(app.getName() + "::" + portletName) != null;
     }
@@ -355,7 +355,7 @@ public class PersistenceBrokerPortletRegistry
         {
             //System.out.println("%%% PA remote removed " + key);
             RegistryApplicationCache.cacheRemoveQuiet((String) key, (RegistryCacheObjectWrapper)element);
-            MutablePortletApplication pa = this.getPortletApplication((String)key);
+            PortletApplication pa = this.getPortletApplication((String)key);
             if (listeners != null)
             {
                 for (int ix=0; ix < listeners.size(); ix++)

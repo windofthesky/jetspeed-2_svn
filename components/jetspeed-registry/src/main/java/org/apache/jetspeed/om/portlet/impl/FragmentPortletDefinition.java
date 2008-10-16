@@ -27,21 +27,21 @@ import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.preference.impl.FragmentPortletPreferenceSet;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.DisplayNameSet;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.pluto.om.portlet.ObjectID;
+import org.apache.pluto.om.portlet.ParameterSet;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.DisplayName;
+import org.apache.pluto.om.portlet.DisplayNameSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
 import org.apache.pluto.om.servlet.ServletDefinition;
 
 /**
@@ -135,9 +135,9 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
         return portletDefinition.addSecurityRoleRef(roleName, roleLink);
     }
 
-    public String getClassName()
+    public String getPortletClass()
     {
-        return portletDefinition.getClassName();
+        return portletDefinition.getPortletClass();
     }
 
     public ContentTypeSet getContentTypeSet()
@@ -205,9 +205,9 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
         return portletDefinition.getMetadata();
     }
 
-    public String getName()
+    public String getPortletName()
     {
-        return portletDefinition.getName();
+        return portletDefinition.getPortletName();
     }
 
     public PortletApplicationDefinition getPortletApplicationDefinition()
@@ -255,9 +255,9 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
         return portletDefinition.getUniqueName();
     }
 
-    public void setClassName(String arg0)
+    public void setPortletClass(String arg0)
     {
-        portletDefinition.setClassName(arg0);
+        portletDefinition.setPortletClass(arg0);
     }
 
     public void setContentTypeSet(ContentTypeSet contentTypes)
@@ -305,9 +305,9 @@ public class FragmentPortletDefinition implements PortletDefinitionComposite
         portletDefinition.setMetadata(metadata);
     }
 
-    public void setName(String arg0)
+    public void setPortletName(String arg0)
     {
-        portletDefinition.setName(arg0);
+        portletDefinition.setPortletName(arg0);
     }
 
     public void setPortletApplicationDefinition(PortletApplicationDefinition pad)

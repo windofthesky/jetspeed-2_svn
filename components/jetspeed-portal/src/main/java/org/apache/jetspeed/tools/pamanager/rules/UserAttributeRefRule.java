@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 
 /**
  * This class helps load the jetspeed portlet extension user attributes.
@@ -33,9 +33,9 @@ public class UserAttributeRefRule extends Rule
 {
     protected final static Log log = LogFactory.getLog(UserAttributeRefRule.class);
 
-    private MutablePortletApplication app;
+    private PortletApplication app;
 
-    public UserAttributeRefRule(MutablePortletApplication app)
+    public UserAttributeRefRule(PortletApplication app)
     {
         this.app = app;
     }

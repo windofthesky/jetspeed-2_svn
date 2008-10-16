@@ -26,7 +26,7 @@ import junit.textui.TestRunner;
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
@@ -74,7 +74,7 @@ public class TestJetspeedPortletDescriptor extends AbstractRequestContextTestCas
     {
         System.out.println("Testing loadPortletApplicationTree");
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(getBaseDir()+"src/test/testdata/deploy/portlet.xml"), "unit-test");
-        MutablePortletApplication app = pad.createPortletApplication();            
+        PortletApplication app = pad.createPortletApplication();            
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
         assertTrue("Version invalid: " + app.getVersion(), app.getVersion().equals("1.0"));

@@ -18,7 +18,7 @@ package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Rule;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 
 
 /**
@@ -28,9 +28,9 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
  */
 public class JetspeedServiceRule extends Rule
 {
-    private MutablePortletApplication app;
+    private PortletApplication app;
 
-    public JetspeedServiceRule(MutablePortletApplication app)
+    public JetspeedServiceRule(PortletApplication app)
     {
         this.app = app;
     }

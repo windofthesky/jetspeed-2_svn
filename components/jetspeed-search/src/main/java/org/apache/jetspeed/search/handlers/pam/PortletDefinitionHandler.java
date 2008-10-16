@@ -28,9 +28,9 @@ import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.Language;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DisplayName;
 
 /**
  * @author <a href="mailto: jford@apache.org">Jeremy Ford</a>
@@ -70,7 +70,7 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
             
             //TODO: this is common to PAs as well, possible refactor
             MultiHashMap fieldMap = new MultiHashMap();
-            fieldMap.put(ID, pd.getName());
+            fieldMap.put(ID, pd.getPortletName());
             
             PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
             fieldMap.put(PORTLET_APPLICATION, pa.getName()); 

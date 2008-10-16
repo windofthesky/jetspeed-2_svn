@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.request.RequestContext;
 
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 

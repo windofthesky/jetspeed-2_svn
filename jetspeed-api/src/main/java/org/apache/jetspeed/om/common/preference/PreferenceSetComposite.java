@@ -18,8 +18,8 @@ package org.apache.jetspeed.om.common.preference;
 
 import java.util.Set;
 
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
+import org.apache.pluto.om.portlet.PreferenceSet;
+import org.apache.pluto.om.portlet.PreferenceSetCtrl;
 
 /**
  * <p>

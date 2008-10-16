@@ -33,7 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.Language;
+import org.apache.pluto.om.portlet.Language;
 
 /**
  * 

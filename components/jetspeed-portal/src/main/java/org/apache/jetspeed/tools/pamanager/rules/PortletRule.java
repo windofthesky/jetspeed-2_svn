@@ -19,7 +19,7 @@ package org.apache.jetspeed.tools.pamanager.rules;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
 /**
@@ -32,9 +32,9 @@ public class PortletRule extends Rule
 {
     protected final static Log log = LogFactory.getLog(PortletRule.class);
 
-    private MutablePortletApplication app;
+    private PortletApplication app;
 
-    public PortletRule(MutablePortletApplication app)
+    public PortletRule(PortletApplication app)
     {
         this.app = app;
     }

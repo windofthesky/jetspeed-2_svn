@@ -30,14 +30,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * <p>
@@ -123,7 +123,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             return null;
         }
 
-        MutablePortletApplication pa = registry.getPortletApplication(oid);
+        PortletApplication pa = registry.getPortletApplication(oid);
         if (null == pa)
         {
             log.debug(PortletRequest.USER_INFO + " is set to null");

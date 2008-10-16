@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.om.common;
 
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.DisplayNameSet;
+import org.apache.pluto.om.portlet.DisplayName;
+import org.apache.pluto.om.portlet.DisplayNameSet;
 
 /**
  * MutableDisplayNameSet

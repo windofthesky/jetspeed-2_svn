@@ -19,7 +19,7 @@ package org.apache.jetspeed.services.information;
 import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.services.information.PortalContextProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;

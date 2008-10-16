@@ -32,10 +32,10 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Portal Request Context is associated with each request

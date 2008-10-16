@@ -270,7 +270,7 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         while (iter.hasNext())
         {
             Element set = (Element)iter.next();
-            String name = set.getAttribute("name").getName();
+            String name = set.getAttribute("name").getPortletName();
             if (name.equals("contextPath"))
             {
                 set.setText("/"+contextName);

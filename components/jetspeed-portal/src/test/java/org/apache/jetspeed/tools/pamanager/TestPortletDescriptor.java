@@ -31,17 +31,17 @@ import org.apache.jetspeed.om.common.MutableLanguage;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
+import org.apache.pluto.om.portlet.DisplayName;
+import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.pluto.om.portlet.ParameterSet;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.pluto.om.portlet.PortletDefinitionList;
@@ -95,7 +95,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
     {
         System.out.println("Testing loadPortletApplicationTree");
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(getBaseDir()+"src/test/testdata/deploy/portlet.xml"), "unit-test");
-        MutablePortletApplication app = pad.createPortletApplication();
+        PortletApplication app = pad.createPortletApplication();
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
         assertTrue("Version invalid: " + app.getVersion(), app.getVersion().equals("1.0"));
@@ -125,7 +125,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
 
     }
 
-    private void validateUserInfo(MutablePortletApplication app)
+    private void validateUserInfo(PortletApplication app)
     {
         // Portlet User Attributes
         Collection userAttributeSet = app.getUserAttributes();
@@ -133,20 +133,20 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
         while (it.hasNext())
         {
             UserAttribute userAttribute = (UserAttribute) it.next();
-            assertNotNull("User attribute name is null, ", userAttribute.getName());
-            if (userAttribute.getName().equals("user.name.given"))
+            assertNotNull("User attribute name is null, ", userAttribute.getPortletName());
+            if (userAttribute.getPortletName().equals("user.name.given"))
             {
                 assertTrue(
                     "User attribute description: " + userAttribute.getDescription(),
                     userAttribute.getDescription().equals("User Given Name"));
             }
-            if (userAttribute.getName().equals("user.name.family"))
+            if (userAttribute.getPortletName().equals("user.name.family"))
             {
                 assertTrue(
                     "User attribute description: " + userAttribute.getDescription(),
                     userAttribute.getDescription().equals("User Last Name"));
             }
-            if (userAttribute.getName().equals("user.home-info.online.email"))
+            if (userAttribute.getPortletName().equals("user.home-info.online.email"))
             {
                 assertTrue(
                     "User attribute description: " + userAttribute.getDescription(),
@@ -158,14 +158,14 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
     private void validateHelloPortlet(PortletDefinitionComposite portlet)
     {
         // Portlet Name
-        assertNotNull("Portlet.Name is null", portlet.getName());
-        assertTrue("Portlet.Name invalid: " + portlet.getName(), portlet.getName().equals("HelloPortlet"));
+        assertNotNull("Portlet.Name is null", portlet.getPortletName());
+        assertTrue("Portlet.Name invalid: " + portlet.getPortletName(), portlet.getPortletName().equals("HelloPortlet"));
 
         // Portlet Class
-        assertNotNull("Portlet.Class is null", portlet.getClassName());
+        assertNotNull("Portlet.Class is null", portlet.getPortletClass());
         assertTrue(
-            "Portlet.Class invalid: " + portlet.getClassName(),
-            portlet.getClassName().equals("org.apache.jetspeed.portlet.helloworld.HelloWorld"));
+            "Portlet.Class invalid: " + portlet.getPortletClass(),
+            portlet.getPortletClass().equals("org.apache.jetspeed.portlet.helloworld.HelloWorld"));
 
         // Expiration Cache
         assertNotNull("Portlet.Expiration is null", portlet.getExpirationCache());
@@ -185,7 +185,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
         while (it.hasNext())
         {
             ParameterComposite parameter = (ParameterComposite) it.next();
-            assertTrue("InitParam.Name invalid: " + parameter.getName(), parameter.getName().equals("hello"));
+            assertTrue("InitParam.Name invalid: " + parameter.getPortletName(), parameter.getPortletName().equals("hello"));
             assertTrue("InitParam.Value invalid: " + parameter.getValue(), parameter.getValue().equals("Hello Portlet"));
             assertTrue(
                 "InitParam.Description invalid: " + parameter.getDescription(Locale.ENGLISH),
@@ -296,7 +296,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
     {
         
         
-        MutablePortletApplication app = portletRegistry.getPortletApplication("HW_App");
+        PortletApplication app = portletRegistry.getPortletApplication("HW_App");
         if (app != null)
         {
             portletRegistry.removeApplication(app);

@@ -18,7 +18,7 @@ package org.apache.jetspeed.container;
 
 import javax.servlet.ServletContext;
 
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.PortletApp;
 
 
 
@@ -33,5 +33,5 @@ public interface InternalPortletContext
 {
     public ServletContext getServletContext();
     
-    public PortletApplicationDefinition getApplication();    
+    public PortletApp getApplication();    
 }

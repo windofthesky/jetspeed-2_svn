@@ -25,7 +25,7 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.common.DublinCore;
 import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
@@ -118,7 +118,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
     protected void verifyData(boolean afterUpdates) throws Exception
     {
-        MutablePortletApplication app;
+        PortletApplication app;
         WebApplicationDefinitionImpl webApp;
         PortletDefinitionComposite portlet;
 
@@ -158,7 +158,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
         validateDublinCore(portlet.getMetadata());
 
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet
-                .getPortletApplicationDefinition());
+                .getApplication());
         assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
         assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
         assertNotNull("description was not materialized for the portlet.", portlet.getDescription(Locale.getDefault()));

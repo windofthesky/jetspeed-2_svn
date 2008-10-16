@@ -21,7 +21,7 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.portlet.Preference;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;

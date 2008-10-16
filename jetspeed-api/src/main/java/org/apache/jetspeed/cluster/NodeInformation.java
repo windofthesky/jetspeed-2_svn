@@ -17,7 +17,6 @@
 package org.apache.jetspeed.cluster;
 
 import java.util.Date;
-import org.apache.pluto.om.common.ObjectID;
 
 /**
  * Node Information Interface
@@ -41,19 +40,11 @@ public interface NodeInformation
 	 */	
 	public void setContextName(String contextName);
 
-	
 	/**
 	 * Getter for ObjectID 
 	 * @return
 	 */
 	public Long getId();
-
-	/**
-	 * setter for ObjectID 
-	 * 
-	 * @param id
-	 */	
-	public void setId(ObjectID id);
 
 	/**
 	 * setter for ObjectID 

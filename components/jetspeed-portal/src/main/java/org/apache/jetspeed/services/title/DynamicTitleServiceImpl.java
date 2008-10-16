@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 public class DynamicTitleServiceImpl implements DynamicTitleService
 {
@@ -77,7 +77,7 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
 
         if (title == null && entity.getPortletDefinition() != null)
         {
-            title = entity.getPortletDefinition().getName();
+            title = entity.getPortletDefinition().getPortletName();
         }
         else if (title == null)
         {

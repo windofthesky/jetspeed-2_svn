@@ -28,13 +28,13 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
 import org.apache.jetspeed.userinfo.UserAttributeSource;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.jetspeed.userinfo.impl.AbstractUserInfoManagerImpl;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * Multisource User Information manager
@@ -69,7 +69,7 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
         {
             Map userInfoMap = new HashMap();
             Subject subject = context.getSubject();
-            MutablePortletApplication pa = portletRegistry
+            PortletApplication pa = portletRegistry
                     .getPortletApplication(oid);
 //System.out.println("*** PA = " + pa);            
             if (null == pa)

@@ -33,7 +33,6 @@ import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
@@ -47,8 +46,8 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <p>
@@ -343,7 +342,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         
         if (fragment != null)
         {
-            ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
+            window.getPortletEntity().setFragment(fragment);
         }
     }
 

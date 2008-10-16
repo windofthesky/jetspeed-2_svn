@@ -21,9 +21,9 @@ import javax.portlet.PortletPreferences;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.core.impl.PortletPreferencesImpl;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.pluto.om.portlet.ParameterSet;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.jetspeed.container.PortletWindow;
 
 
 public class PortletHeaderRequestImpl implements PortletHeaderRequest

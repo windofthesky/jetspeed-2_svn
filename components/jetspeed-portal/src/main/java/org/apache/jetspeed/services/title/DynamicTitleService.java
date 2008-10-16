@@ -18,7 +18,7 @@ package org.apache.jetspeed.services.title;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 
 public interface DynamicTitleService extends org.apache.pluto.services.title.DynamicTitleService

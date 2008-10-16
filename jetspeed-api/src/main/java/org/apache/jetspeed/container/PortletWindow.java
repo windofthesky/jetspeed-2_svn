@@ -14,26 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.servlet;
 
-import org.apache.pluto.om.common.SecurityRole;
-import org.apache.pluto.om.common.SecurityRoleSet;
+package org.apache.jetspeed.container;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 /**
- * MutableSecurityRoleSet
- *
- * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  *
  */
-public interface MutableSecurityRoleSet extends SecurityRoleSet
+public interface PortletWindow extends org.apache.pluto.PortletWindow
 {
-    /**
-     * Adds a SecurityRole to the set
-     *
-     * @param securityRole the security-role to be added
-     *
-     * @return the new SecurityRole
-     */
-    public SecurityRole add(SecurityRole securityRole);
+    void setId(String id);
+    PortletEntity getPortletEntity();
+    void setPortletEntity(PortletEntity entity);
+    void setPortletMode(PortletMode mode);
+    void setWindowState(WindowState state);
 }

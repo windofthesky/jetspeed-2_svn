@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceCtrl;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceCtrl;
+import org.apache.pluto.om.portlet.Description;
 
 /**
  * 

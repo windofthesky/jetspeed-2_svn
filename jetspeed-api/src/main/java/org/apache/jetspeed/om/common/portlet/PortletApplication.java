@@ -16,12 +16,15 @@
  */
 package org.apache.jetspeed.om.common.portlet;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.common.JetspeedServiceReference;
+import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
@@ -39,6 +42,20 @@ import org.apache.pluto.om.portlet.PortletDefinition;
 public interface PortletApplication extends PortletApplicationDefinition
 {
     /**
+     * The checksum on the portlet XML from the last deployment
+     *  
+     * @param checksum
+     */
+    void setChecksum(long checksum);
+    
+    /**
+     * The checksum on the portlet XML from the last deployment
+     * 
+     * @return
+     */
+    long getChecksum();
+    
+    /**
      * Returns the metadata from the extended jetspeed-portlet.xml
      * 
      * @return Jetspeed specific metadata
@@ -46,17 +63,13 @@ public interface PortletApplication extends PortletApplicationDefinition
     public GenericMetadata getMetadata();
 
     /**
-     * Gets the name of the Portlet Application.
+     * Returns the corresponding web application to this portlet application.
+     * The return value cannot be NULL.
      * 
-     * @return Name of the application
+     * @return a web application
      */
-    String getName();
+    public WebApplicationDefinition getWebApplicationDefinition();
     
-    /**
-     * @return
-     */
-    Collection getPortletDefinitions();
-
     /**
      * Finds a portlet by portlet name, searching this portlet application's collection.
      * 
@@ -69,52 +82,67 @@ public interface PortletApplication extends PortletApplicationDefinition
      * <p>Gets the collection of user attribute refs associated
      * with this portlet application.</p>
      */
-    Collection getUserAttributeRefs();
-
-    /**
-     * <p>Gets the collection of user attributes associated
-     * with this portlet application.</p>
-     */
-    Collection getUserAttributes();
+    List<UserAttributeRef> getUserAttributeRefs();
 
     String getApplicationIdentifier();
+    void setApplicationIdentifier(String identifier);
+
+    String getDescription();    
+    void setDescription(String description);
 
     /**
-     * @return
+     * Marks this application as a standard web application,
+     * stored in the web application server's web application space.
      */
-    String getDescription();
+    int WEBAPP = 0;
+
+    /**
+     * Marks this application as a LOCAL portlet application,
+     * stored in Jetspeed managed portlet application space.
+     */
+    int LOCAL = 1;
 
     /**
      * Gets the Portlet Application type.
      * Valid values are:
      * <p>
-     *      {@link MutablePortletApplication#WEBAPP} - A standard web application, stored in the web application
+     *      {@link PortletApplication#WEBAPP} - A standard web application, stored in the web application
      *               server's web application space.
      * <p>
-     *      {@link MutablePortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
+     *      {@link PortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
      * <p>
      * @return The type of portlet application.
      */
     int getApplicationType();
-    
+
+    /**
+     * Sets the Portlet Application type.
+     * Valid values are:
+     * <p>
+     *      {@link PortletApplication#WEBAPP} - A standard web application, stored in the web application
+     *               server's web application space.
+     * <p>
+     *      {@link PortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
+     * <p>
+     * @param type The type of portlet application.
+     */
+    void setApplicationType(int type);
+
     /**
      * Gets a collection of all Jetspeed Services allowed for this application.
      * 
      * @see org.apache.jetspeed.om.common.JetspeedServiceReference
      * @return The collection of services of type <code>JetspeedServiceReference</code>.
      */
-    Collection getJetspeedServices();
-    
-    Collection getCustomPortletModes();        
-    Collection getCustomWindowStates();
+    List<JetspeedServiceReference> getJetspeedServices();
     
     PortletMode getMappedPortletMode(PortletMode mode);
     WindowState getMappedWindowState(WindowState state);
     PortletMode getCustomPortletMode(PortletMode mode);
     WindowState getCustomWindowState(WindowState state);
         
-    Collection getSupportedPortletModes();
-    Collection getSupportedWindowStates();
+    List<PortletMode> getSupportedPortletModes();
+    List<WindowState> getSupportedWindowStates();
     
     /**
      * <p>
@@ -134,6 +162,23 @@ public interface PortletApplication extends PortletApplicationDefinition
      *                  the Jetspeed Security Constraints 
      */    
     String getJetspeedSecurityConstraint();    
+    
+    /**
+     * <p>
+     * Set the Jetspeed Security Constraint reference for this portlet application.
+     * This security constraint name references a Jetspeed-specific Security Constraint.
+     * Security Constraints are not Java Security Permissions, but a 
+     * Jetspeed specific way of securing portlets, also known as PSML constraints.
+     * See the <i>page.security</i> file for examples of defining security constraint definitions.
+     * If the portlet application does not define a constraint, then no security constraints
+     * will be applied to this portlet. Security constraints for a portlet are normally
+     * checking during the render process of a portlet.
+     * </p>
+     * 
+     * @param constraint The name of the Security Definition defined in 
+     *                  the Jetspeed Security Constraints 
+     */
+    void setJetspeedSecurityConstraint(String constraint);
     
     /**
      * Returns true if the portlet application is a layout application

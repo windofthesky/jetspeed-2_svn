@@ -33,8 +33,8 @@ import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.common.preference.PreferencesValidatorFactory;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.Description;
 
 /**
  * @version $Id$

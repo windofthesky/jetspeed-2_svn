@@ -19,7 +19,7 @@ package org.apache.jetspeed.container.url.impl;
 import javax.portlet.PortletURL;
 
 import org.apache.pluto.factory.PortletURLFactory;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Jetspeed implementation of the Pluto PortalURLFactory

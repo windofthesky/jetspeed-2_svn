@@ -196,7 +196,7 @@ public class JetspeedPortletFactory implements PortletFactory
                         }
                         catch (Exception e)
                         {
-                            String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pd.getName();
+                            String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pd.getPortletName();
                             log.error(msg,e);
                         }
                     }
@@ -243,7 +243,7 @@ public class JetspeedPortletFactory implements PortletFactory
  
             try
             {
-              Class clazz = paCl.loadClass(pd.getClassName());
+              Class clazz = paCl.loadClass(pd.getPortletClass());
               try
             {
                 Thread.currentThread().setContextClassLoader(paCl);
@@ -253,11 +253,11 @@ public class JetspeedPortletFactory implements PortletFactory
                 
                 if (this.portletProxyUsed && !PortletObjectProxy.isPortletObjectProxied())
                 {
-                    portlet = new JetspeedPortletProxyInstance(pd.getName(), (Portlet)clazz.newInstance(), this.autoSwitchEditDefaultsModeToEditMode, this.autoSwitchConfigMode, this.customConfigModePortletUniqueName);
+                    portlet = new JetspeedPortletProxyInstance(pd.getPortletName(), (Portlet)clazz.newInstance(), this.autoSwitchEditDefaultsModeToEditMode, this.autoSwitchConfigMode, this.customConfigModePortletUniqueName);
                 }
                 else
                 {
-                    portlet = new JetspeedPortletInstance(pd.getName(), (Portlet)clazz.newInstance());
+                    portlet = new JetspeedPortletInstance(pd.getPortletName(), (Portlet)clazz.newInstance());
                 }
             }
               finally
@@ -267,7 +267,7 @@ public class JetspeedPortletFactory implements PortletFactory
             }
             catch (Exception e)
             {
-                String msg = "Cannot create Portlet instance "+pd.getClassName()+" for Portlet Application "+pa.getName();
+                String msg = "Cannot create Portlet instance "+pd.getPortletClass()+" for Portlet Application "+pa.getName();
                 log.error(msg,e);
                 throw new UnavailableException(msg);
             }
@@ -289,7 +289,7 @@ public class JetspeedPortletFactory implements PortletFactory
             }
             catch (PortletException e1)
             {
-                log.error("Failed to initialize Portlet "+pd.getClassName()+" for Portlet Application "+pa.getName(), e1);
+                log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+pa.getName(), e1);
                 throw e1;
             }            
             portletCache.put(pdId, portlet);
@@ -301,8 +301,8 @@ public class JetspeedPortletFactory implements PortletFactory
         }
         catch (Throwable e)
         {
-            log.error("PortletFactory: Failed to load portlet "+pd.getClassName(), e);
-            throw new UnavailableException( "Failed to load portlet " + pd.getClassName() +": "+e.toString());
+            log.error("PortletFactory: Failed to load portlet "+pd.getPortletClass(), e);
+            throw new UnavailableException( "Failed to load portlet " + pd.getPortletClass() +": "+e.toString());
         }
         return portlet;
     }

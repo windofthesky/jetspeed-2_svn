@@ -23,9 +23,9 @@ import java.util.Iterator;
 
 //TODO: import org.apache.jetspeed.exception.JetspeedRuntimeException;
 import org.apache.jetspeed.om.common.ParameterComposite;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.ParameterSetCtrl;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.pluto.om.portlet.ParameterSet;
+import org.apache.pluto.om.portlet.ParameterSetCtrl;
 
 /**
  * 
@@ -71,7 +71,7 @@ public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl
         while (itr.hasNext())
         {
             Parameter p = (Parameter) itr.next();
-            if (p.getName().equals(name))
+            if (p.getPortletName().equals(name))
             {
                 return p;
             }
@@ -86,7 +86,7 @@ public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl
     public Parameter add(String name, String value)
     {
         ParameterComposite p = newParameterInstance();
-        p.setName(name);
+        p.setPortletName(name);
         p.setValue(value);
         add(p);
         return p;
@@ -102,7 +102,7 @@ public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl
         while (itr.hasNext())
         {
             Parameter p = (Parameter) itr.next();
-            if (p.getName().equals(name))
+            if (p.getPortletName().equals(name))
             {
                 removeMe = p;
                 break;

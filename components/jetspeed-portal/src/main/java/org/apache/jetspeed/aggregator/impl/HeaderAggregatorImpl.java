@@ -49,7 +49,7 @@ import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * HeaderAggregator builds the content required to render a page of portlets.
@@ -1119,7 +1119,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                     Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
                     if ( portlet != null && portlet instanceof SupportsHeaderPhase )
                     {
-                        log.debug( "renderHeaderFragment: " + pd.getName() + " supports header phase" );
+                        log.debug( "renderHeaderFragment: " + pd.getPortletName() + " supports header phase" );
                         
                         HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
                         PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );

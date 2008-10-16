@@ -33,7 +33,7 @@ import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
@@ -45,7 +45,7 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
+import org.apache.pluto.om.portlet.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
@@ -184,8 +184,8 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
-        portlet.setClassName("org.apache.Portlet");
-        portlet.setName("Portlet 1");
+        portlet.setPortletClass("org.apache.Portlet");
+        portlet.setPortletName("Portlet 1");
         portlet.addDescription(Locale.getDefault(), "POrtlet description.");
         portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
 
@@ -221,7 +221,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
     protected void verifyData(boolean afterUpdates) throws Exception
     {
-        MutablePortletApplication app;
+        PortletApplication app;
         WebApplicationDefinitionImpl webApp;
         PortletDefinitionComposite portlet;
 
@@ -266,7 +266,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         validateDublinCore(portlet.getMetadata());
 
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet
-                .getPortletApplicationDefinition());
+                .getApplication());
         assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
         assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
         assertNotNull("description was not materialized for the portlet.", portlet.getDescription(Locale.getDefault()));

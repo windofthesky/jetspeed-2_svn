@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.portlet.PortletRequest;
 
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.portlet.Portlet;
 
 /**
  * The container request wrappers the servlet request and is used 
@@ -31,17 +31,17 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class ContainerRequest extends HttpServletRequestWrapper
 {
-    protected PortletDefinition portletDef;
+    protected Portlet portletDef;
     protected PortletRequest portletRequest;
 
     public ContainerRequest(HttpServletRequest httpRequest, 
-                            PortletDefinition portletDef)
+                            Portlet portletDef)
     {
         super(httpRequest);
         this.portletDef = portletDef;
     }
 
-    public PortletDefinition getPortletDefinition()
+    public Portlet getPortletDefinition()
     {
         return this.portletDef;
     }
@@ -55,6 +55,5 @@ public class ContainerRequest extends HttpServletRequestWrapper
     {
         this.portletRequest = portletRequest;
     }
-
 }
 

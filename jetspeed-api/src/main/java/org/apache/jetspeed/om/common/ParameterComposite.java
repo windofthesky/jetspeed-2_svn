@@ -19,9 +19,9 @@ package org.apache.jetspeed.om.common;
 import java.io.Serializable;
 import java.util.Locale;
 
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterCtrl;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.Parameter;
+import org.apache.pluto.om.portlet.ParameterCtrl;
 
 /**
  * 

@@ -17,7 +17,7 @@
 package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Rule;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
 /**
@@ -28,9 +28,9 @@ import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
  */
 public class SecurityConstraintRefRule extends Rule
 {
-    private MutablePortletApplication app = null;
+    private PortletApplication app = null;
 
-    public SecurityConstraintRefRule(MutablePortletApplication app)
+    public SecurityConstraintRefRule(PortletApplication app)
     {
         this.app = app;
     }
@@ -38,9 +38,9 @@ public class SecurityConstraintRefRule extends Rule
     public void body(String namespace, String name, String text) throws Exception
     {
         Object obj = digester.peek();
-        if (obj instanceof MutablePortletApplication)
+        if (obj instanceof PortletApplication)
         {
-           ((MutablePortletApplication) obj).setJetspeedSecurityConstraint(text);
+           ((PortletApplication) obj).setJetspeedSecurityConstraint(text);
         }
         else if (obj instanceof PortletDefinitionComposite)
         {

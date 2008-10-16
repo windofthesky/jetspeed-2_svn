@@ -19,7 +19,7 @@ package org.apache.jetspeed.engine.core;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 

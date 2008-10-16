@@ -76,13 +76,13 @@ public class FailedToStorePortletDefinitionException extends RegistryException
     
     public FailedToStorePortletDefinitionException( PortletDefinition portlet, Throwable nested )
     {        
-        this("Unable to store portlet definition "+portlet.getName()+".  Reason: "+nested.toString(), nested);
+        this("Unable to store portlet definition "+portlet.getPortletName()+".  Reason: "+nested.toString(), nested);
      
     }
     
     public FailedToStorePortletDefinitionException( PortletDefinition portlet, String reason )
     {        
-        this("Unable to store portlet definition "+portlet.getName()+".  Resaon: "+reason);     
+        this("Unable to store portlet definition "+portlet.getPortletName()+".  Resaon: "+reason);     
     }
 
 }

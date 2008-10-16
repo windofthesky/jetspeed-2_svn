@@ -18,17 +18,17 @@ package org.apache.jetspeed.container;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.pluto.om.portlet.InitParam;
+import org.apache.pluto.om.portlet.Portlet;
 
 /**
  * Implements the Portlet API Portlet Config class
@@ -42,17 +42,17 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
     // private static final Log log = LogFactory.getLog(JetspeedPortletConfig.class);
     
     private PortletContext portletContext;
-    private PortletDefinition portletDefinition;
+    private Portlet portlet;
 
-    public JetspeedPortletConfig(PortletContext portletContext, PortletDefinition portletEntity)
+    public JetspeedPortletConfig(PortletContext portletContext, Portlet portletEntity)
     {
         this.portletContext = portletContext;
-        this.portletDefinition = portletEntity;
+        this.portlet = portletEntity;
     }
 
     public String getPortletName()
     {
-        return portletDefinition.getName();
+        return portlet.getName();
     }
 
     public PortletContext getPortletContext()
@@ -62,6 +62,7 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     public ResourceBundle getResourceBundle(Locale locale)
     {
+        portlet.getSupportedLocales()
         LanguageSet languageSet = portletDefinition.getLanguageSet();
         
         Language lang = languageSet.get(locale);
@@ -82,50 +83,46 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
             throw new IllegalArgumentException("Required parameter name is null");
         }
         //if (log.isDebugEnabled()) log.debug("Getting init parameter for: " + name);
-        ParameterSet parameters = portletDefinition.getInitParameterSet();
-        Parameter param = parameters.get(name);
-
-        if (param != null)
+        for (InitParam param : portlet.getInitParams())
         {
-            // if (log.isDebugEnabled()) log.debug("Param: [[name," + name + "], [value, " + param.getValue() + "]]");
-            return param.getValue();
+            if (param.getParamName().equals(name))
+            {
+                return param.getParamValue();
+            }
         }
-
         return null;
     }
 
-    public Enumeration getInitParameterNames()
+    public Enumeration<String> getInitParameterNames()
     {
-        return new java.util.Enumeration()
+        return new java.util.Enumeration<String>()
         {
-            private ParameterSet parameters = portletDefinition.getInitParameterSet();
-            private Iterator iterator = parameters.iterator();
+            private Iterator<InitParam> iterator = portlet.getInitParams().iterator();
 
             public boolean hasMoreElements()
             {
                 return iterator.hasNext();
             }
 
-            public Object nextElement()
+            public String nextElement()
             {
                 if (iterator.hasNext())
-                    return ((Parameter) iterator.next()).getName();
-                else
-                    return null;
+                {
+                    return iterator.next().getParamName();
+                }
+                return null;
             }
         };
-
     }
 
-    public void setPortletDefinition(PortletDefinition pd)
+    public void setPortletDefinition(Portlet pd)
     {
-        this.portletDefinition = pd;        
+        this.portlet = pd;        
     }
     
     //  internal portlet config implementation
-    public PortletDefinition getPortletDefinition()
+    public Portlet getPortletDefinition()
     {
-        return portletDefinition;
+        return portlet;
     }
-
 }

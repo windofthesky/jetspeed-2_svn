@@ -25,8 +25,8 @@ import java.util.Locale;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
@@ -100,7 +100,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         while (pi.hasNext())
         {
             pd = (PortletDefinitionComposite) pi.next();
-            assertTrue("Portlet Def not found", pd.getName().equals("EntityTestPortlet"));
+            assertTrue("Portlet Def not found", pd.getPortletName().equals("EntityTestPortlet"));
         }
         assertNotNull("Portlet Def is null", pd);
 
@@ -109,7 +109,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(TEST_ENTITY));
         ContentFragment f1 = new ContentFragmentTestImpl((Fragment) mockf1.proxy(), new HashMap());
 
-        MutablePortletEntity entity = entityAccess
+        PortletEntity entity = entityAccess
                 .generateEntityFromFragment(new ContentFragmentTestImpl(f1, new HashMap()));
         PreferenceSetComposite prefs = (PreferenceSetComposite) entity.getPreferenceSet();
         prefs.remove("pref1");
@@ -206,7 +206,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 
         assertNull(pref2);
         
-        MutablePortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
+        PortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
         assertNotNull("entity's portlet ", entity2.getPortletDefinition());
         mockf1.verify();
@@ -215,7 +215,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
         ContentFragment f2 = new ContentFragmentTestImpl((Fragment) mockf2.proxy(), new HashMap());
 
-        MutablePortletEntity entity5 = entityAccess.newPortletEntityInstance(pd);
+        PortletEntity entity5 = entityAccess.newPortletEntityInstance(pd);
 
         System.out.println("before storing entity: " + entity5.getId());
 
@@ -223,7 +223,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         System.out.println("store done: " + entity5.getId());
         mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(entity5.getId().toString()));
 
-        MutablePortletEntity entity6 = entityAccess.getPortletEntityForFragment(f2);
+        PortletEntity entity6 = entityAccess.getPortletEntityForFragment(f2);
         assertNotNull(entity6);
         System.out.println("reget : " + entity6.getId());
 
@@ -234,7 +234,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
     {
 
         JetspeedObjectID objId = JetspeedObjectID.createFromString(TEST_ENTITY);
-        MutablePortletEntity entity = entityAccess.getPortletEntity(objId);
+        PortletEntity entity = entityAccess.getPortletEntity(objId);
         System.out.println("entity == " + entity);
 
         if (entity != null)
@@ -265,8 +265,8 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
-        portlet.setClassName("org.apache.Portlet");
-        portlet.setName(TEST_PORTLET);
+        portlet.setPortletClass("org.apache.Portlet");
+        portlet.setPortletName(TEST_PORTLET);
         portlet.addDescription(Locale.getDefault(), "Portlet description.");
         portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
 

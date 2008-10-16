@@ -51,7 +51,7 @@ public class UserAttributeImpl implements UserAttribute
     private String name;
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttribute#getName()
+     * @see org.apache.jetspeed.om.common.UserAttribute#getPortletName()
      */
     public String getName()
     {
@@ -59,7 +59,7 @@ public class UserAttributeImpl implements UserAttribute
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttribute#setName(java.lang.String)
+     * @see org.apache.jetspeed.om.common.UserAttribute#setPortletName(java.lang.String)
      */
     public void setName(String name)
     {

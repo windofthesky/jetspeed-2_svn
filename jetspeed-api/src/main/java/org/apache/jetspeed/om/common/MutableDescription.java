@@ -18,7 +18,7 @@ package org.apache.jetspeed.om.common;
 
 import java.util.Locale;
 
-import org.apache.pluto.om.common.Description;
+import org.apache.pluto.om.portlet.Description;
 
 /**
  * MutableDescription

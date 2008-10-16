@@ -28,8 +28,8 @@ import org.apache.jetspeed.om.common.MutableDescription;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DescriptionSet;
+import org.apache.pluto.om.portlet.Description;
+import org.apache.pluto.om.portlet.DescriptionSet;
 
 
 /**
@@ -52,7 +52,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     private static final Log log = LogFactory.getLog(ParameterImpl.class);
 
     /**
-     * @see org.apache.pluto.om.common.Parameter#getName()
+     * @see org.apache.pluto.om.common.Parameter#getPortletName()
      */
     public String getName()
     {
@@ -68,7 +68,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     }
 
     /**
-     * @see org.apache.pluto.om.common.ParameterCtrl#setName(java.lang.String)
+     * @see org.apache.pluto.om.common.ParameterCtrl#setPortletName(java.lang.String)
      */
     public void setName(String name)
     {

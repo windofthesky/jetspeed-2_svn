@@ -32,7 +32,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
@@ -44,9 +44,8 @@ import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.om.common.SecurityRole;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.entity.PortletEntityCtrl;
+import org.apache.pluto.om.portlet.SecurityRole;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -167,7 +166,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        startPA(contextName, "/"+contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
+        startPA(contextName, "/"+contextName, warStruct, paClassLoader, PortletApplication.LOCAL);
 	}
 
     public void startInternalApplication(String contextName) throws RegistryException
@@ -177,13 +176,13 @@ public class PortletApplicationManager implements PortletApplicationManagement
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();        
         DirectoryHelper dir = new DirectoryHelper(webinf);
         String appName = (contextName.startsWith("/")) ? contextName.substring(1) : contextName;
-        MutablePortletApplication app = registry.getPortletApplicationByIdentifier(appName);
-        if (app != null && app.getApplicationType() == MutablePortletApplication.LOCAL)
+        PortletApplication app = registry.getPortletApplicationByIdentifier(appName);
+        if (app != null && app.getApplicationType() == PortletApplication.LOCAL)
         {
-            app.setApplicationType(MutablePortletApplication.INTERNAL);
+            app.setApplicationType(PortletApplication.INTERNAL);
             registry.updatePortletApplication(app);
         }
-        startPA(contextName, "/"+contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
+        startPA(contextName, "/"+contextName, dir, contextClassLoader, PortletApplication.INTERNAL);
         // startInternal(contextName, warStruct, paClassLoader, true);        
     }
     
@@ -202,7 +201,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            startPA(contextName, contextPath, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
+            startPA(contextName, contextPath, warStruct, paClassLoader, PortletApplication.WEBAPP);
         }
         finally
         {
@@ -214,7 +213,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public void stopLocalPortletApplication(String contextName)
 		throws RegistryException
 	{
-		stopPA(contextName, MutablePortletApplication.LOCAL);
+		stopPA(contextName, PortletApplication.LOCAL);
 	}
 
 	public void stopPortletApplication(String contextName)
@@ -224,7 +223,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            stopPA(contextName, MutablePortletApplication.WEBAPP);
+            stopPA(contextName, PortletApplication.WEBAPP);
         }
         finally
         {
@@ -239,7 +238,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            MutablePortletApplication pa = null;
+            PortletApplication pa = null;
             
             try
             {
@@ -297,8 +296,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
-	protected MutablePortletApplication registerPortletApplication(PortletApplicationWar paWar,
-		MutablePortletApplication oldPA, int paType, ClassLoader paClassLoader)
+	protected PortletApplication registerPortletApplication(PortletApplicationWar paWar,
+		PortletApplication oldPA, int paType, ClassLoader paClassLoader)
 		throws RegistryException
 	{
 		if (oldPA != null)
@@ -307,7 +306,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			oldPA = null;
 		}
 
-		MutablePortletApplication pa		 = null;
+		PortletApplication pa		 = null;
 		boolean					  registered = false;
 		String					  paName     = paWar.getPortletApplicationName();
 
@@ -322,11 +321,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			MutableWebApplication wa = paWar.createWebApp();
 			paWar.validate();
 
-			if (paType == MutablePortletApplication.LOCAL)
+			if (paType == PortletApplication.LOCAL)
 			{
 				wa.setContextRoot("<portal>");
 			}
-            else if (paType == MutablePortletApplication.INTERNAL)
+            else if (paType == PortletApplication.INTERNAL)
             {
                 // TODO: this is screwing up the PSML as its set all over the place to "jetspeed-layouts", not good
                 wa.setContextRoot("/" + paName);                
@@ -349,7 +348,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         Iterator peItr = portletEntites.iterator();
                         while(peItr.hasNext())
                         {
-                            PortletEntityCtrl portletEntity = (PortletEntityCtrl) peItr.next();
+                            PortletEntity portletEntity = (PortletEntity) peItr.next();
                             portletEntity.setPortletDefinition(pd);
                         }
                     }
@@ -415,7 +414,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				try
 				{
-					unregisterPortletApplication(pa, (paType == MutablePortletApplication.LOCAL));
+					unregisterPortletApplication(pa, (paType == PortletApplication.LOCAL));
 				}
 				catch (Exception re)
 				{
@@ -486,7 +485,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
 
 			// try to get the PA from database by context name
-			MutablePortletApplication pa = registry.getPortletApplication(contextName);
+			PortletApplication pa = registry.getPortletApplication(contextName);
 
             if (pa != null)
             {
@@ -687,7 +686,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	protected void stopPA(String contextName, int paType)
 		throws RegistryException
 	{
-		MutablePortletApplication pa = null;
+		PortletApplication pa = null;
         
         try
         {
@@ -713,7 +712,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	
-	protected void updateSearchEngine(boolean remove,MutablePortletApplication pa )
+	protected void updateSearchEngine(boolean remove,PortletApplication pa )
 	{
 		if (searchEngine != null)
 		{
@@ -732,7 +731,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 		
 	}
-	protected void unregisterPortletApplication(MutablePortletApplication pa,
+	protected void unregisterPortletApplication(PortletApplication pa,
 		boolean purgeEntityInfo)
 		throws RegistryException
 	{

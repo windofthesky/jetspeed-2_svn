@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceCtrl;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceCtrl;
 
 /**
  * 

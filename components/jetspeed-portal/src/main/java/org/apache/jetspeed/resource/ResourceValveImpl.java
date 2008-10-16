@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
@@ -38,7 +37,7 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <p>
@@ -88,7 +87,7 @@ public class ResourceValveImpl extends AbstractValve
                         log.error("Failed to refresh resource window.", e);
                     }
                 }
-                ((MutablePortletEntity)resourceWindow.getPortletEntity()).setFragment(fragment);
+                resourceWindow.getPortletEntity().setFragment(fragment);
                 HttpServletResponse response = request.getResponse();
                 HttpServletRequest requestForWindow = request.getRequestForWindow(resourceWindow);
                 requestForWindow.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);

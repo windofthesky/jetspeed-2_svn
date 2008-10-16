@@ -30,7 +30,7 @@ import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.factory.PortletObjectAccess;
 import org.apache.pluto.invoker.PortletInvoker;
 import org.apache.pluto.invoker.PortletInvokerAccess;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 
 /**

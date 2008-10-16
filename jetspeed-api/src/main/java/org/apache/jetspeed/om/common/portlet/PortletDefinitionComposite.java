@@ -23,21 +23,20 @@ import java.util.Locale;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.pluto.om.common.DescriptionSet;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.DisplayNameSet;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.common.PreferenceSet;
-import org.apache.pluto.om.common.SecurityRoleRef;
-import org.apache.pluto.om.common.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.DescriptionSet;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.pluto.om.portlet.ParameterSet;
+import org.apache.pluto.om.portlet.Preference;
+import org.apache.pluto.om.portlet.PreferenceSet;
 import org.apache.pluto.om.portlet.ContentType;
 import org.apache.pluto.om.portlet.ContentTypeSet;
+import org.apache.pluto.om.portlet.DisplayName;
+import org.apache.pluto.om.portlet.DisplayNameSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
+import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.om.portlet.SecurityRoleRefSet;
 
 /**
  * 
@@ -47,7 +46,7 @@ import org.apache.pluto.om.portlet.PortletDefinitionCtrl;
  * @version $Id$
  *
  */
-public interface PortletDefinitionComposite extends PortletDefinition, PortletDefinitionCtrl, Serializable
+public interface PortletDefinitionComposite extends PortletDefinition, Serializable
 {
     GenericMetadata getMetadata();
     

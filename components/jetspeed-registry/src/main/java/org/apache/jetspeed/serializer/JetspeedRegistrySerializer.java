@@ -25,8 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.search.SearchEngine;
@@ -41,9 +40,8 @@ import org.apache.jetspeed.serializer.objects.JSNVPElements;
 import org.apache.jetspeed.serializer.objects.JSPortlet;
 import org.apache.jetspeed.serializer.objects.JSPortlets;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
-import org.apache.pluto.om.common.Preference;
+import org.apache.pluto.om.portlet.Preference;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionList;
 
 /**
  * JetspeedRegistrySerializer - Registry component serializer
@@ -150,7 +148,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         while (it.hasNext())
         {
             JSApplication app = (JSApplication) it.next();
-            MutablePortletApplication portletApp = registry.getPortletApplication(app.getName());
+            PortletApplication portletApp = registry.getPortletApplication(app.getName());
             if (portletApp != null)
             {
                 importPA(app, portletApp, settings, log);
@@ -158,7 +156,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    void importPA(JSApplication app, MutablePortletApplication pa, Map settings, Log log) throws SerializerException
+    void importPA(JSApplication app, PortletApplication pa, Map settings, Log log) throws SerializerException
     {
 
         System.out.println("--processed PA " + pa.getName() + " with id=" + pa.getId());
@@ -187,7 +185,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         while (it.hasNext())
         {
             JSEntity entity = (JSEntity) it.next();
-            MutablePortletEntity portletEntity = entityAccess.getPortletEntity(entity.getId());
+            PortletEntity portletEntity = entityAccess.getPortletEntity(entity.getId());
             if (portletEntity == null)
             {
                 portletEntity = entityAccess.newPortletEntityInstance(pd, entity.getId());
@@ -206,7 +204,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private void importEntityPref(JSEntity entity, MutablePortletEntity portletEntity, Map settings, Log log)
+    private void importEntityPref(JSEntity entity, PortletEntity portletEntity, Map settings, Log log)
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
@@ -277,7 +275,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         {
             try
             {
-                MutablePortletApplication pa = (MutablePortletApplication) list.next();
+                PortletApplication pa = (PortletApplication) list.next();
                 // PortletApplicationDefinition pa =
                 // (PortletApplicationDefinition)list.next();
                 JSApplication app = exportPA(pa, settings, log);
@@ -294,14 +292,13 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private JSApplication exportPA(MutablePortletApplication pa, Map settings, Log log) throws SerializerException
+    private JSApplication exportPA(PortletApplication pa, Map settings, Log log) throws SerializerException
     {
         /**
          * while more PAs for each portletDef
          * list:entityMan:getPortletEntity(pd)
          */
-        PortletDefinitionList portletList = pa.getPortletDefinitionList(); // .get(JetspeedObjectID.createFromString(TEST_PORTLET));
-        Iterator pi = portletList.iterator();
+        Iterator pi = pa.getPortlets().iterator();
         PortletDefinition pd = null;
 
         JSPortlets portlets = new JSPortlets();
@@ -313,11 +310,11 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 JSPortlet p = exportPD(pd, settings, log);
                 if (p != null)
                 {
-                    log.debug("--processed PA " + pa.getName() + " with pd=" + pd.getName());
+                    log.debug("--processed PA " + pa.getName() + " with pd=" + pd.getPortletName());
                     portlets.add(p);
                 }
                 else
-                    log.debug("--processed PA " + pa.getName() + " with NULL pd=" + pd.getName());
+                    log.debug("--processed PA " + pa.getName() + " with NULL pd=" + pd.getPortletName());
 
             }
             catch (Exception e)
@@ -359,7 +356,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
 
             while (list.hasNext())
             {
-                MutablePortletEntity entity = (MutablePortletEntity) list.next();
+                PortletEntity entity = (PortletEntity) list.next();
                 JSEntity jsEntity = exportEntityPref(entity, settings, log);
                 if (jsEntity != null)
                     entities.add(jsEntity);
@@ -368,8 +365,8 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
             if (!entities.isEmpty())
             {
                 JSPortlet portlet = new JSPortlet();
-                portlet.setName(pd.getName());
-                log.debug("-----exporting for PD=" + pd.getName());
+                portlet.setName(pd.getPortletName());
+                log.debug("-----exporting for PD=" + pd.getPortletName());
                 portlet.setEntities(entities);
                 return portlet;
             }
@@ -382,7 +379,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    JSEntity exportEntityPref(MutablePortletEntity entity, Map settings, Log log)
+    JSEntity exportEntityPref(PortletEntity entity, Map settings, Log log)
     {
         JSEntity jsEntity = null;
         

@@ -29,7 +29,7 @@ import javax.portlet.PortletRequestDispatcher;
 
 import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -50,12 +50,12 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
     public static final String LOCAL_PA_ROOT = "/WEB-INF/apps";
 
     private ServletContext servletContext;
-    private MutablePortletApplication application;
+    private PortletApplication application;
 
     public JetspeedPortletContext(ServletContext servletContext, PortletApplicationDefinition application)
     {
         this.servletContext = servletContext;
-        this.application = (MutablePortletApplication)application;
+        this.application = (PortletApplication)application;
     }
 
     public int getMajorVersion()
@@ -257,7 +257,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         return servletContext.getServletContextName();
     }
 
-    private String localizePath(String path, MutablePortletApplication app)
+    private String localizePath(String path, PortletApplication app)
     {
         if (path == null)
         {
@@ -266,7 +266,7 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         return path;
         // TODO: local PA with own/extra resource paths support
 /*        
-        if (app.getApplicationType() == MutablePortletApplication.WEBAPP)
+        if (app.getApplicationType() == PortletApplication.WEBAPP)
         {
             return path;
         }

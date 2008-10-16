@@ -51,11 +51,11 @@ import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.om.portlet.Language;
+import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -313,7 +313,7 @@ public class JetspeedRequestContext implements RequestContext
      * getRequestForWindow
      * </p>
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.jetspeed.container.PortletWindow)
      * @param window
      * @return
      */
@@ -339,7 +339,7 @@ public class JetspeedRequestContext implements RequestContext
      * getResponseForWindow
      * </p>
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.jetspeed.container.PortletWindow)
      * @param window
      * @return
      */
@@ -563,8 +563,8 @@ public class JetspeedRequestContext implements RequestContext
         {
             MutableLanguage languageCtl = new LanguageImpl();
             languageCtl.setLocale(locale);
-            languageCtl.setShortTitle(portlet.getName());
-            languageCtl.setTitle(portlet.getName());
+            languageCtl.setShortTitle(portlet.getPortletName());
+            languageCtl.setTitle(portlet.getPortletName());
             language = languageCtl;
         }
 

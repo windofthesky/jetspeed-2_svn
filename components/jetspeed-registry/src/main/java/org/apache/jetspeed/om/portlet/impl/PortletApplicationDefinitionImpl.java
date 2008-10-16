@@ -37,13 +37,10 @@ import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
 import org.apache.jetspeed.om.common.portlet.CustomWindowState;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
-import org.apache.jetspeed.util.JetspeedLongObjectID;
-import org.apache.pluto.om.common.ObjectID;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinitionList;
 import org.apache.pluto.om.servlet.WebApplicationDefinition;
 
 /**
@@ -53,7 +50,7 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  * @version $Id$
  * @since 1.0
  */
-public class PortletApplicationDefinitionImpl implements MutablePortletApplication, Serializable, Support
+public class PortletApplicationDefinitionImpl implements PortletApplication, Serializable, Support
 { 
     /**
      * Unique id of the application.  This serves as the primary key in database
@@ -96,7 +93,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     
     private PortletDefinitionListImpl listWrapper = new PortletDefinitionListImpl();
 
-    private int applicationType = MutablePortletApplication.WEBAPP;
+    private int applicationType = PortletApplication.WEBAPP;
     
     private String checksum = "0";
     private long checksumLong = -1;
@@ -136,7 +133,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.Application#getName()
+     * @see org.apache.jetspeed.om.common.Application#getPortletName()
      */
     public String getName()
     {
@@ -144,7 +141,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.Application#setName(String)
+     * @see org.apache.jetspeed.om.common.Application#setPortletName(String)
      */
     public void setName(String name)
     {
@@ -200,7 +197,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setWebApplicationDefinition(org.apache.pluto.om.servlet.WebApplicationDefinition)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setWebApplicationDefinition(org.apache.pluto.om.servlet.WebApplicationDefinition)
      */
     public void setWebApplicationDefinition(WebApplicationDefinition wad)
     {
@@ -209,7 +206,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addPortletDefinition(org.apache.pluto.om.portlet.PortletDefinition)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addPortletDefinition(org.apache.pluto.om.portlet.PortletDefinition)
      */
     public void addPortletDefinition(PortletDefinition pd)
     {
@@ -218,7 +215,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getPortletDefinitions()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getPortletDefinitions()
      */
     public Collection getPortletDefinitions()
     {
@@ -226,7 +223,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getPortletDefinitionByName(java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getPortletDefinitionByName(java.lang.String)
      */
     public PortletDefinition getPortletDefinitionByName(String name)
     {
@@ -235,7 +232,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setPortletDefinitionList(org.apache.pluto.om.portlet.PortletDefinitionList)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setPortletDefinitionList(org.apache.pluto.om.portlet.PortletDefinitionList)
      */
     public void setPortletDefinitionList(PortletDefinitionList portlets)
     {
@@ -243,7 +240,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setUserAttributeRefs(java.util.Collection)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setUserAttributeRefs(java.util.Collection)
      */
     public void setUserAttributeRefs(Collection userAttributeRefs)
     {
@@ -251,7 +248,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getUserAttributeRefs()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getUserAttributeRefs()
      */
     public Collection getUserAttributeRefs()
     {
@@ -259,7 +256,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addUserAttributeRef(org.apache.jetspeed.om.common.UserAttributeRef)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addUserAttributeRef(org.apache.jetspeed.om.common.UserAttributeRef)
      */
     public void addUserAttributeRef(UserAttributeRef userAttributeRef)
     {
@@ -267,7 +264,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addUserAttribute(org.apache.jetspeed.om.common.UserAttribute)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addUserAttribute(org.apache.jetspeed.om.common.UserAttribute)
      */
     public void addUserAttribute(UserAttribute userAttribute)
     {
@@ -275,7 +272,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
     
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addUserAttribute(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addUserAttribute(java.lang.String, java.lang.String)
      */
     public void addUserAttribute(String userName, String description)
     {
@@ -286,7 +283,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
     
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setUserAttributes(java.util.Collection)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setUserAttributes(java.util.Collection)
      */
     public void setUserAttributes(Collection userAttributes)
     {
@@ -294,7 +291,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /** 
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getUserAttributes()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getUserAttributes()
      */
     public Collection getUserAttributes()
     {
@@ -302,7 +299,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setApplicationIdentifier(java.lang.String)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setApplicationIdentifier(java.lang.String)
      */
     public void setApplicationIdentifier(String applicationIdentifier)
     {
@@ -310,7 +307,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getApplicationIdentifier()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getApplicationIdentifier()
      */
     public String getApplicationIdentifier()
     {
@@ -318,7 +315,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setApplicationType(int)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setApplicationType(int)
      */
     public void setApplicationType(int type)
     {
@@ -326,7 +323,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getApplicationType()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getApplicationType()
      */
     public int getApplicationType()
     {
@@ -334,7 +331,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#getMetadata()
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getMetadata()
      */
     public GenericMetadata getMetadata()
     {
@@ -350,7 +347,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
      */
     public void setMetadata(GenericMetadata metadata)
     {
@@ -382,7 +379,7 @@ public class PortletApplicationDefinitionImpl implements MutablePortletApplicati
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.MutablePortletApplication#addJetspeedService(org.apache.jetspeed.om.common.JetspeedServiceReference)
+     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addJetspeedService(org.apache.jetspeed.om.common.JetspeedServiceReference)
      */
     public void addJetspeedService(JetspeedServiceReference service)
     {

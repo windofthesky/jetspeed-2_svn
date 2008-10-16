@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 
 import org.xml.sax.Attributes;
@@ -61,9 +61,9 @@ public class LocalizedFieldRule extends Rule
             return;
         }
         GenericMetadata metadata = null;
-        if (obj instanceof MutablePortletApplication)
+        if (obj instanceof PortletApplication)
         {
-            metadata = ((MutablePortletApplication) obj).getMetadata();
+            metadata = ((PortletApplication) obj).getMetadata();
         }
         if (obj instanceof PortletDefinitionComposite)
         {
@@ -123,9 +123,9 @@ public class LocalizedFieldRule extends Rule
                 return;
             }
             GenericMetadata metadata = null;
-            if (obj instanceof MutablePortletApplication)
+            if (obj instanceof PortletApplication)
             {
-                metadata = ((MutablePortletApplication) obj).getMetadata();
+                metadata = ((PortletApplication) obj).getMetadata();
             }
             if (obj instanceof PortletDefinitionComposite)
             {

@@ -161,7 +161,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         app.setName("MyApp");
         PortletDefinitionImpl portlet = new PortletDefinitionImpl();
         portlet.setPortletApplicationDefinition(app);
-        portlet.setName("TestPortlet");
+        portlet.setPortletName("TestPortlet");
         portlet.setPortletApplicationDefinition(app);
         long elapsedTime = 123;
         statistics.logPortletAccess(request, portlet.getUniqueName(), "401",
@@ -211,7 +211,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
             app.setName("MyApp");
             PortletDefinitionImpl portlet = new PortletDefinitionImpl();
             portlet.setPortletApplicationDefinition(app);
-            portlet.setName("TestPortlet");
+            portlet.setPortletName("TestPortlet");
             portlet.setPortletApplicationDefinition(app);
             long elapsedTime = 123 + i;
             //System.out.println("logging something, number "+i);

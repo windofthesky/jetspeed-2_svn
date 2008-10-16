@@ -32,14 +32,14 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.pluto.om.common.Parameter;
+import org.apache.pluto.om.portlet.Parameter;
 
 /**
  * Get Portlets retrieves the portlet list available to the current subject
@@ -138,12 +138,12 @@ public class GetPortletsAction
                 continue;
             
             // Do not display Jetspeed Layout Applications
-            MutablePortletApplication pa = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+            PortletApplication pa = (PortletApplication)portlet.getApplication();
             if (pa.isLayoutApplication())
                 continue;
                  
             // SECURITY filtering
-            String uniqueName = pa.getName() + "::" + portlet.getName();
+            String uniqueName = pa.getName() + "::" + portlet.getPortletName();
             if (securityAccessController.checkPortletAccess(portlet, JetspeedActions.MASK_VIEW))
             {
                 Parameter param = portlet.getInitParameterSet().get(PORTLET_ICON);

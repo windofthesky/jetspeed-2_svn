@@ -26,7 +26,7 @@ import javax.portlet.PortletMode;
 import org.apache.pluto.services.information.DynamicInformationProvider;
 import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.pluto.services.information.ResourceURLProvider;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.information.PortletURLProvider;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.container.state.NavigationalState;
@@ -170,7 +170,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
      * getPortletActionProvider
      * </p>
      * 
-     * @see org.apache.pluto.services.information.DynamicInformationProvider#getPortletActionProvider(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.pluto.services.information.DynamicInformationProvider#getPortletActionProvider(org.apache.jetspeed.container.PortletWindow)
      * @param arg0
      * @return
      */
@@ -184,7 +184,7 @@ public class DynamicInformationProviderImpl implements DynamicInformationProvide
      * getResourceURLProvider
      * </p>
      * 
-     * @see org.apache.pluto.services.information.DynamicInformationProvider#getResourceURLProvider(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.pluto.services.information.DynamicInformationProvider#getResourceURLProvider(org.apache.jetspeed.container.PortletWindow)
      * @param arg0
      * @return
      */

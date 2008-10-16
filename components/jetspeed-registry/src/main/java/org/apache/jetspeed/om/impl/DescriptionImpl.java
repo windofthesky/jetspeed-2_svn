@@ -87,7 +87,7 @@ public abstract class DescriptionImpl implements MutableDescription
     }
 
     /**
-     * @see org.apache.jetspeed.om.registry.Description#getDescription()
+     * @see org.apache.jetspeed.om.registry.Description#getDescriptions()
      */
     public String getDescription()
     {
@@ -95,7 +95,7 @@ public abstract class DescriptionImpl implements MutableDescription
     }
 
     /**
-     * @see org.apache.pluto.om.common.Description#getLocale()
+     * @see org.apache.pluto.om.portlet.Description#getLocale()
      */
     public Locale getLocale()
     {

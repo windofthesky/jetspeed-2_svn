@@ -17,7 +17,7 @@
 package org.apache.jetspeed.services.information;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.information.ResourceURLProvider;
 
 /**

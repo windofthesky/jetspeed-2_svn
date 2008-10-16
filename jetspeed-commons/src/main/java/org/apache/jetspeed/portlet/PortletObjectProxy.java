@@ -47,8 +47,8 @@ import javax.portlet.UnavailableException;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.pluto.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 
@@ -307,7 +307,7 @@ public class PortletObjectProxy extends BaseObjectProxy
             ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
             
             PortletDefinitionComposite portletDef = (PortletDefinitionComposite) registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
-            MutablePortletApplication portletApp = (MutablePortletApplication) portletDef.getPortletApplicationDefinition();
+            PortletApplication portletApp = (PortletApplication) portletDef.getApplication();
             WebApplicationDefinition webAppDef = portletApp.getWebApplicationDefinition();
             String portletAppName = webAppDef.getContextRoot();
             ServletContext portletAppContext = portalAppContext.getContext(portletAppName);

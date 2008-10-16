@@ -31,16 +31,13 @@ import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.util.ArgUtil;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Portlet Window Accessor Implementation
@@ -91,7 +88,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         {
             // remove from cache if invalid entity
             checkPortletWindowEntity(found);
-            ((PortletWindowCtrl)found).setPortletEntity(entity);
+            found.setPortletEntity(entity);
             return found;
         }
         
@@ -169,7 +166,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         PortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment);
         if(portletEntity != null)
         {
-            ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
+            portletWindow.setPortletEntity(portletEntity);
             // if not a valid entity, remove window from cache
             checkPortletWindowEntity(portletWindow);
         }
@@ -185,7 +182,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         PortletWindow portletWindow = new PortletWindowImpl(fragment.getId());
         boolean temporaryWindow = false;
                 
-        MutablePortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment);
+        PortletEntity portletEntity = entityAccessor.getPortletEntityForFragment(fragment);
         if (portletEntity == null)
         {
             log.info("No portlet entity defined for fragment ID "+fragment.getId()+" attempting to auto-generate...");
@@ -217,7 +214,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
                 throw new FailedToCreateWindowException("Unable to generate portlet entity.");
             }
         }
-        ((PortletWindowCtrl) portletWindow).setPortletEntity(portletEntity);
+        portletWindow.setPortletEntity(portletEntity);
         
         if ( !temporaryWindow )
         {
@@ -261,9 +258,9 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
     {
         return pe != null
                 && pe.getPortletDefinition() != null
-                && pe.getPortletDefinition().getPortletApplicationDefinition() != null
+                && pe.getPortletDefinition().getApplication() != null
                 && portletFactory.isPortletApplicationRegistered((PortletApplication) pe.getPortletDefinition()
-                        .getPortletApplicationDefinition());
+                        .getApplication());
     }
     
     public Set getPortletWindows()
@@ -287,7 +284,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
             portletFactory.updatePortletConfig(def);
     }
 
-    protected void removeForPortletApplication(MutablePortletApplication app)
+    protected void removeForPortletApplication(PortletApplication app)
     {
         Iterator windows  = getPortletWindows().iterator();
         while(windows.hasNext())
@@ -296,7 +293,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         	PortletDefinitionComposite pd =  (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();            
         	 if (pd != null)
              {
-                 MutablePortletApplication windowApp = (MutablePortletApplication)pd.getPortletApplicationDefinition();            
+                 PortletApplication windowApp = (PortletApplication)pd.getApplication();            
                  if (app.getName().equals(windowApp.getName()))
                  {
                      removeWindow(window);
@@ -305,7 +302,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
         }
     }
     
-    public void applicationRemoved(MutablePortletApplication app)
+    public void applicationRemoved(PortletApplication app)
     {
         if (app != null)
         {
@@ -314,7 +311,7 @@ public class PortletWindowAccessorImpl implements PortletWindowAccessor, Registr
     }
 
  
-    public void applicationUpdated(MutablePortletApplication app)
+    public void applicationUpdated(PortletApplication app)
     {
         if (app != null)
         {

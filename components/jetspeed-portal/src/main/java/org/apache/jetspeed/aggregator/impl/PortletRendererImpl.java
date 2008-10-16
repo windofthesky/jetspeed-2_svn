@@ -47,7 +47,6 @@ import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredExcept
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
@@ -56,8 +55,8 @@ import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <h4>PortletRendererService <br />
@@ -448,7 +447,7 @@ public class PortletRendererImpl implements PortletRenderer
         }
 
         PortletEntity portletEntity = portletWindow.getPortletEntity();
-        ((MutablePortletEntity)portletEntity).setFragment(fragment);
+        portletEntity.setFragment(fragment);
         
         ((PortletWindowImpl) portletWindow).setInstantlyRendered(fragment.isInstantlyRendered());
 

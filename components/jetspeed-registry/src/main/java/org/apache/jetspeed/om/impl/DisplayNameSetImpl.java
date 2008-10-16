@@ -24,7 +24,7 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.common.MutableDisplayNameSet;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.DisplayName;
+import org.apache.pluto.om.portlet.DisplayName;
 /**
  * DisplayNameSetImpl
  * 

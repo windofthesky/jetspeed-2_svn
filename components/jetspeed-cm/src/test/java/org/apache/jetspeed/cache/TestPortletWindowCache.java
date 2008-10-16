@@ -26,9 +26,9 @@ import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.impl.EhCacheImpl;
 import org.apache.jetspeed.cache.impl.EhPortletWindowCache;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.pluto.PortletWindowID;
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.jmock.core.stub.VoidStub;
@@ -60,8 +60,8 @@ public class TestPortletWindowCache extends MockObjectTestCase
         cacheMock = mock(Ehcache.class);
         windowMock = mock(SerializablePortletWindow.class);
         entityMock = mock(PortletEntity.class);
-        oidMock = mock(ObjectID.class);
-        entityOidMock = (Mock) mock(ObjectID.class);
+        oidMock = mock(PortletWindowID.class);
+        entityOidMock = (Mock) mock(PortletWindowID.class);
     }    
 
     public void testSimplePutAndGet()
@@ -69,7 +69,7 @@ public class TestPortletWindowCache extends MockObjectTestCase
 
         PortletWindow window = (PortletWindow) windowMock.proxy();
         Element element = new Element(WINDOW_ID, window);
-        ObjectID oid = (ObjectID) oidMock.proxy();
+        PortletWindowID wid = (PortletWindowID) oidMock.proxy();
         ObjectID entityOid = (ObjectID) entityOidMock.proxy();
         entityOidMock.expects(atLeastOnce()).method("toString").will(returnValue(ENTITY_ID));
         oidMock.expects(atLeastOnce()).method("toString").will(returnValue(WINDOW_ID));

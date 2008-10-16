@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.pluto.om.common.Language;
+import org.apache.pluto.om.portlet.Language;
 
 /**
  * 

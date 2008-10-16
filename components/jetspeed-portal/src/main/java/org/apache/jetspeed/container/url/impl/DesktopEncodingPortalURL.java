@@ -29,9 +29,9 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -192,8 +192,8 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         		buffer.append( "?entity=" ).append( pe.getId() );
             
         		PortletDefinition portlet = pe.getPortletDefinition();
-        		MutablePortletApplication app = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-        		String uniqueName = app.getName() + "::" + portlet.getName();
+        		PortletApplication app = (PortletApplication)portlet.getApplication();
+        		String uniqueName = app.getName() + "::" + portlet.getPortletName();
         		buffer.append( "&portlet=" ).append( uniqueName );
             }
         }

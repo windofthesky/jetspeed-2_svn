@@ -30,7 +30,7 @@ import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
+import org.apache.pluto.om.portlet.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
@@ -75,14 +75,14 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
     // impl not complete
     public void xtestProxy() throws Exception
     {
-        MutablePortletApplication app = portletRegistry.getPortletApplication("PA-001");
-        MutablePortletApplication cached = MutablePortletApplicationProxy.createProxy(app);
-        if (cached instanceof MutablePortletApplication)
+        PortletApplication app = portletRegistry.getPortletApplication("PA-001");
+        PortletApplication cached = PortletApplicationProxyImpl.createProxy(app);
+        if (cached instanceof PortletApplication)
             System.out.println("ISA Mutable");
         if (cached instanceof PortletApplicationProxy)
             System.out.println("ISA Mutable Proxy");
         PortletApplicationProxy proxy = (PortletApplicationProxy)cached;
-        MutablePortletApplication two = proxy.getRealApplication();
+        PortletApplication two = proxy.getRealApplication();
         proxy.setRealApplication(two);
         System.out.println("Two is " + two);
         assertEquals(app, two);
@@ -91,14 +91,14 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
     public void testCache() throws Exception
     {
         assertNotNull(portletRegistry);
-        MutablePortletApplication one = portletRegistry.getPortletApplication("PA-001");
-        MutablePortletApplication two = portletRegistry.getPortletApplication("PA-001");
+        PortletApplication one = portletRegistry.getPortletApplication("PA-001");
+        PortletApplication two = portletRegistry.getPortletApplication("PA-001");
         assertEquals(one, two);
         PortletDefinitionComposite def = portletRegistry.getPortletDefinitionByUniqueName("PA-001::Portlet-1");
         assertNotNull(def);
         assertEquals(def.getPortletApplicationDefinition(), one);
         assertEquals(def, two.getPortletDefinitions().iterator().next());
-        MutablePortletApplication o = (MutablePortletApplication)portletRegistry.getPortletApplications().iterator().next();
+        PortletApplication o = (PortletApplication)portletRegistry.getPortletApplications().iterator().next();
         assertEquals(one, o);
         assertEquals(portletRegistry.getAllPortletDefinitions().iterator().next(), def);
     }
@@ -133,8 +133,8 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
 
         PortletDefinitionComposite portlet = new PortletDefinitionImpl();
-        portlet.setClassName("org.apache.Portlet");
-        portlet.setName("Portlet-1");
+        portlet.setPortletClass("org.apache.Portlet");
+        portlet.setPortletName("Portlet-1");
         portlet.addDescription(Locale.getDefault(), "POrtlet description.");
         portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
 

@@ -22,7 +22,7 @@ import org.apache.commons.digester.RuleSetBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 
 /**
@@ -34,9 +34,9 @@ public class UserAttributeRefRuleSet extends RuleSetBase
 {
     protected final static Log log = LogFactory.getLog(UserAttributeRefRuleSet.class);
 
-    private MutablePortletApplication app;
+    private PortletApplication app;
 
-    public UserAttributeRefRuleSet(MutablePortletApplication app)
+    public UserAttributeRefRuleSet(PortletApplication app)
     {
         this.app = app;
     }
