@@ -29,14 +29,13 @@ import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.jetspeed.om.portlet.impl.SupportsImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
@@ -120,9 +119,9 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
         portlet.addLanguage(registry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1", "This is Portlet 1",
                 null));
 
-        ContentTypeComposite html = new ContentTypeImpl();
+        ContentTypeComposite html = new SupportsImpl();
         html.setContentType("html/text");
-        ContentTypeComposite wml = new ContentTypeImpl();
+        ContentTypeComposite wml = new SupportsImpl();
         html.addPortletMode(new PortletMode(MODE_EDIT));
         html.addPortletMode(new PortletMode(MODE_VIEW));
         html.addPortletMode(new PortletMode(MODE_HELP));

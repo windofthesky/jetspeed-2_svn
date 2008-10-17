@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -32,9 +33,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.ContentTypeSet;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.portlet.SupportsHeaderPhase;
@@ -51,6 +49,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.pluto.om.portlet.Supports;
 
 /**
  * PortletObjectProxy
@@ -98,10 +97,10 @@ public class PortletObjectProxy extends BaseObjectProxy
     private PortletInstance customConfigModePortletInstance;
     private boolean genericPortletInvocable;
     private Method portletDoEditMethod;
-    private ContentTypeSet portletContentTypeSet;
     private boolean autoSwitchEditDefaultsModeToEditMode;
     private boolean autoSwitchConfigMode;
     private String customConfigModePortletUniqueName;
+    private List<Supports> supports;
     
     public static Object createProxy(Object proxiedObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
     {
@@ -277,22 +276,30 @@ public class PortletObjectProxy extends BaseObjectProxy
     
     private boolean isSupportingEditDefaultsMode(GenericPortlet portlet)
     {
-        if (this.portletContentTypeSet == null)
+        if (supports == null)
         {
             try
             {
                 JetspeedPortletConfig config = (JetspeedPortletConfig) portlet.getPortletConfig();
                 PortletDefinition portletDef = config.getPortletDefinition();
-                this.portletContentTypeSet = portletDef.getContentTypeSet();
+                this.supports = portletDef.getSupports();
             }
             catch (Exception e)
             {
             }
         }
         
-        if (this.portletContentTypeSet != null)
+        if (supports != null)
         {
-            return this.portletContentTypeSet.supportsPortletMode(JetspeedActions.EDIT_DEFAULTS_MODE);
+            String pm = JetspeedActions.EDIT_DEFAULTS_MODE.toString();
+            for (Supports s : supports)
+            {
+                if (s.getPortletModes().contains(pm))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         
         return false;

@@ -18,17 +18,18 @@ package org.apache.jetspeed.container;
 
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
+import javax.xml.namespace.QName;
 
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.LanguageSet;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.pluto.om.portlet.InitParam;
-import org.apache.pluto.om.portlet.Portlet;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
  * Implements the Portlet API Portlet Config class
@@ -42,9 +43,9 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
     // private static final Log log = LogFactory.getLog(JetspeedPortletConfig.class);
     
     private PortletContext portletContext;
-    private Portlet portlet;
+    private PortletDefinition portlet;
 
-    public JetspeedPortletConfig(PortletContext portletContext, Portlet portletEntity)
+    public JetspeedPortletConfig(PortletContext portletContext, PortletDefinition portletEntity)
     {
         this.portletContext = portletContext;
         this.portlet = portletEntity;
@@ -52,7 +53,7 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     public String getPortletName()
     {
-        return portlet.getName();
+        return portlet.getPortletName();
     }
 
     public PortletContext getPortletContext()
@@ -62,17 +63,12 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
 
     public ResourceBundle getResourceBundle(Locale locale)
     {
-        portlet.getSupportedLocales()
-        LanguageSet languageSet = portletDefinition.getLanguageSet();
+        Language lang = portlet.getLanguage(locale);
         
-        Language lang = languageSet.get(locale);
-                                                                                
         if (lang == null)
         {
-            Locale defaultLocale = languageSet.getDefaultLocale();
-            lang = languageSet.get(defaultLocale);
+            lang = portlet.getLanguage(JetspeedLocale.getDefaultLocale());
         }
-        
         return lang.getResourceBundle();
     }
 
@@ -115,14 +111,49 @@ public class JetspeedPortletConfig implements PortletConfig, InternalPortletConf
         };
     }
 
-    public void setPortletDefinition(Portlet pd)
+    public void setPortletDefinition(PortletDefinition pd)
     {
         this.portlet = pd;        
     }
     
     //  internal portlet config implementation
-    public Portlet getPortletDefinition()
+    public PortletDefinition getPortletDefinition()
     {
         return portlet;
+    }
+
+    public Map<String, String[]> getContainerRuntimeOptions()
+    {
+        return null;
+    }
+
+    public String getDefaultNamespace()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Enumeration<QName> getProcessingEventQNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Enumeration<String> getPublicRenderParameterNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Enumeration<QName> getPublishingEventQNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Enumeration<Locale> getSupportedLocales()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

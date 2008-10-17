@@ -429,14 +429,13 @@
       </collection-descriptor>
 
       <collection-descriptor
-         name="contentTypes"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
+         name="supports"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.SupportsImpl"
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
          proxy="false"
       >
-
          <inverse-foreignkey field-ref="portletId"/>
       </collection-descriptor>
 
@@ -546,45 +545,40 @@
 
    </class-descriptor>
 
-<!--
-   - C O N T E N T    T Y P E
- -->
-    <class-descriptor
-      class="org.apache.jetspeed.om.common.portlet.ContentTypeComposite"
-
-   >
-      <extent-class class-ref="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl" />
-   </class-descriptor>
-
-
-
    <class-descriptor
-      class="org.apache.jetspeed.om.portlet.impl.ContentTypeImpl"
-      table="PORTLET_CONTENT_TYPE"
+      class="org.apache.jetspeed.om.portlet.impl.SupportsImpl"
+      table="PORTLET_SUPPORTS"
    >
      <field-descriptor
          name="contentTypeId"
-         column="CONTENT_TYPE_ID"
+         column="SUPPORTS_ID"
          jdbc-type="BIGINT"
          primarykey="true"
          autoincrement="true"
+         access="anonymous"
       />
       <field-descriptor
          name="portletId"
          column="PORTLET_ID"
          jdbc-type="BIGINT"
-
+         access="anonymous"
       />
       <field-descriptor
-         name="contentType"
-         column="CONTENT_TYPE"
+         name="mimeType"
+         column="MIME_TYPE"
          jdbc-type="VARCHAR"
       />
       <field-descriptor
          name="portletModes"
          column="MODES"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoPortletModeFieldConversion"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
+      />
+      <field-descriptor
+         name="windowStates"
+         column="STATES"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
       />
    </class-descriptor>
 

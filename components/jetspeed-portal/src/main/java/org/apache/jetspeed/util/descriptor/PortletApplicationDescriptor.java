@@ -34,7 +34,7 @@ import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.jetspeed.om.portlet.impl.SupportsImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
@@ -126,7 +126,7 @@ public class PortletApplicationDescriptor
             digester.addBeanPropertySetter("portlet-app/portlet/init-param/description", "description");
             digester.addSetNext("portlet-app/portlet/init-param/description", "addDescription");
 
-            digester.addObjectCreate("portlet-app/portlet/supports", ContentTypeImpl.class);
+            digester.addObjectCreate("portlet-app/portlet/supports", SupportsImpl.class);
             digester.addBeanPropertySetter("portlet-app/portlet/supports/mime-type", "contentType");
             digester.addCallMethod("portlet-app/portlet/supports/portlet-mode", "addPortletMode", 0);
             digester.addSetNext("portlet-app/portlet/supports", "addContentType");

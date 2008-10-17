@@ -27,14 +27,10 @@ import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.preference.impl.FragmentPortletPreferenceSet;
-import org.apache.pluto.om.portlet.Language;
-import org.apache.pluto.om.portlet.LanguageSet;
 import org.apache.pluto.om.portlet.ObjectID;
 import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.Preference;
 import org.apache.pluto.om.portlet.PreferenceSet;
-import org.apache.pluto.om.portlet.ContentType;
-import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.Description;
 import org.apache.pluto.om.portlet.DescriptionSet;
 import org.apache.pluto.om.portlet.DisplayName;
@@ -63,16 +59,6 @@ public class FragmentPortletDefinition implements PortletDefinition
     {
         this.portletDefinition = portletDefinition;
         this.fragment = fragment;
-    }
-
-    public void addContentType(ContentType cType)
-    {
-        portletDefinition.addContentType(cType);
-    }
-
-    public void addContentType(String contentType, Collection modes)
-    {
-        portletDefinition.addContentType(contentType, modes);
     }
 
     public void addDescription(Locale locale, String description)
@@ -105,11 +91,6 @@ public class FragmentPortletDefinition implements PortletDefinition
         return portletDefinition.addInitParameter(name, value);
     }
 
-    public void addLanguage(Language lang)
-    {
-        portletDefinition.addLanguage(lang);
-    }
-
     public void addLanguage(String title, String shortTitle, String keywords, Locale locale)
     {
         portletDefinition.addLanguage(title, shortTitle, keywords, locale);
@@ -138,11 +119,6 @@ public class FragmentPortletDefinition implements PortletDefinition
     public String getPortletClass()
     {
         return portletDefinition.getPortletClass();
-    }
-
-    public ContentTypeSet getContentTypeSet()
-    {
-        return portletDefinition.getContentTypeSet();
     }
 
     public Description getDescription(Locale arg0)
@@ -193,11 +169,6 @@ public class FragmentPortletDefinition implements PortletDefinition
     public SecurityRoleRefSet getInitSecurityRoleRefSet()
     {
         return portletDefinition.getInitSecurityRoleRefSet();
-    }
-
-    public LanguageSet getLanguageSet()
-    {
-        return portletDefinition.getLanguageSet();
     }
 
     public GenericMetadata getMetadata()
@@ -260,11 +231,6 @@ public class FragmentPortletDefinition implements PortletDefinition
         portletDefinition.setPortletClass(arg0);
     }
 
-    public void setContentTypeSet(ContentTypeSet contentTypes)
-    {
-        portletDefinition.setContentTypeSet(contentTypes);
-    }
-
     public void setDescriptions(DescriptionSet arg0)
     {
         portletDefinition.setDescriptions(arg0);
@@ -293,11 +259,6 @@ public class FragmentPortletDefinition implements PortletDefinition
     public void setInitSecurityRoleRefSet(SecurityRoleRefSet securityRefs)
     {
         portletDefinition.setInitSecurityRoleRefSet(securityRefs);
-    }
-
-    public void setLanguageSet(LanguageSet languages)
-    {
-        portletDefinition.setLanguageSet(languages);
     }
 
     public void setMetadata(GenericMetadata metadata)

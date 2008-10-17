@@ -62,12 +62,11 @@ import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.jetspeed.om.portlet.Language;
+import org.apache.pluto.om.ElementFactoryList;
 import org.apache.pluto.om.portlet.Parameter;
 import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.Preference;
 import org.apache.pluto.om.portlet.PreferenceSet;
-import org.apache.pluto.om.portlet.ContentType;
-import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.Description;
 import org.apache.pluto.om.portlet.DescriptionSet;
 import org.apache.pluto.om.portlet.DisplayName;
@@ -75,6 +74,7 @@ import org.apache.pluto.om.portlet.DisplayNameSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.SecurityRoleRef;
 import org.apache.pluto.om.portlet.SecurityRoleRefSet;
+import org.apache.pluto.om.portlet.Supports;
 import org.apache.pluto.om.servlet.ServletDefinition;
 
 /**
@@ -113,8 +113,7 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
     private String resourceBundle;
     private ArrayList supportedLocales;
 
-    private Collection contentTypes;
-    private ContentTypeSetImpl ctListWrapper = new ContentTypeSetImpl();
+    private List<Supports> supports;
     protected List portletEntities;
 
     /** PortletApplicationDefinition this PortletDefinition belongs to */
@@ -336,13 +335,43 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
         this.preferenceSet = (PreferenceSetComposite) preferences;
     }
 
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getContentTypeSet()
-     */
-    public ContentTypeSet getContentTypeSet()
+    
+    public Supports getSupports(String mimeType)
     {
-        ctListWrapper.setInnerCollection(contentTypes);
-        return ctListWrapper;
+        for (Supports s : getSupports())
+        {
+            if (s.getMimeType().equals(mimeType))
+            {
+                return s;
+            }
+        }
+        return null;
+    }
+    
+    public ElementFactoryList<Supports> getSupports()
+    {
+        if (supports == null || !(supports instanceof ElementFactoryList))
+        {
+            ElementFactoryList<Supports> lf = 
+                new ElementFactoryList<Supports>( new ElementFactoryList.Factory<Supports>()
+                {
+                    public Class<? extends Supports> getElementClass()
+                    {
+                        return SupportsImpl.class;
+                    }
+
+                    public Supports newElement()
+                    {
+                        return new SupportsImpl();
+                    }
+                }); 
+            if (supports != null)
+            {
+                lf.addAll(supports);
+            }
+            supports = lf;
+        }
+        return (ElementFactoryList<Supports>)supports;
     }
 
     /**
@@ -409,14 +438,6 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
     {
       // no-op: ClassLoader is only stored in the PortletFactory
       ;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setContentTypeSet(org.apache.pluto.om.portlet.ContentTypeSet)
-     */
-    public void setContentTypeSet( ContentTypeSet contentTypes )
-    {
-        this.contentTypes = ((ContentTypeSetImpl) contentTypes).getInnerCollection();
     }
 
     /**
@@ -520,27 +541,6 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
     public void setExpirationCache( String cache )
     {
         expirationCache = cache;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#addContentType(org.apache.pluto.om.portlet.ContentType)
-     */
-    public void addContentType( ContentType cType )
-    {
-        ctListWrapper.setInnerCollection(contentTypes);
-        ctListWrapper.addContentType(cType);
-    }
-    
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletDefinition#addContentType(java.lang.String, java.lang.String[])
-     */
-    public void addContentType(String contentType, Collection modes)
-    {
-        ContentTypeImpl ct = new ContentTypeImpl();
-        ct.setContentType(contentType);
-        ct.setPortletModes(modes);
-        
-        addContentType(ct);
     }
 
     /**

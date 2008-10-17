@@ -24,18 +24,11 @@ import java.util.Locale;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.pluto.om.portlet.DescriptionSet;
 import org.apache.jetspeed.om.portlet.Language;
-import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.Preference;
-import org.apache.pluto.om.portlet.PreferenceSet;
-import org.apache.pluto.om.portlet.ContentType;
-import org.apache.pluto.om.portlet.ContentTypeSet;
 import org.apache.pluto.om.portlet.DisplayName;
-import org.apache.pluto.om.portlet.DisplayNameSet;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.om.portlet.SecurityRoleRef;
-import org.apache.pluto.om.portlet.SecurityRoleRefSet;
 
 /**
  * 
@@ -57,10 +50,6 @@ public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDe
     
     List<Language> getLanguages();
     
-    void addContentType(ContentType cType);
-    
-    void addContentType(String contentType, Collection modes);
-
     /**
      * The PreferenceSet is a collection user-defineable preferences
      * that this portlet can use to process its logic.
@@ -70,8 +59,6 @@ public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDe
     void setPreferenceSet(PreferenceSet preferences);
 
     void setInitParameterSet(ParameterSet parameters);
-
-    void setContentTypeSet(ContentTypeSet contentTypes);
 
     void setInitSecurityRoleRefSet(SecurityRoleRefSet securityRefs);
     
