@@ -17,9 +17,11 @@
 package org.apache.jetspeed.layout.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
@@ -70,7 +72,7 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements AjaxA
     {
         boolean success = true;
         String status = "success";
-        String userName = requestContext.getUserPrincipal().toString();
+        String userName = requestContext.getUserPrincipal().getName();
         Map settings = new HashMap();
         String exportFileName = getUserFolder(userName, false) + pathSeprator + "ldapExport.xml";
         try
@@ -147,40 +149,35 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements AjaxA
     private boolean cleanUserFolder(String userName)
     {
         boolean success = false;
+        
         synchronized (this)
         {
+            File zipFile = new File(pageRoot + pathSeprator + userName + ".zip");
+            
+            if (zipFile.isFile())
+                zipFile.delete();
+            
             String folder = getUserFolder(userName, false);
-            File dir = new File(pageRoot + pathSeprator + userName + ".zip");
-            if (dir.exists())
-                dir.delete();
-            dir = new File(folder);
-            if (dir.exists())
+            File dir = new File(folder);
+            
+            if (dir.isDirectory())
             {
-                success = deleteDir(dir);
+                try
+                {
+                    FileUtils.cleanDirectory(dir);
+                    success = true;
+                }
+                catch (IOException e)
+                {
+                }
             }
-            success = dir.mkdir();
+            else
+            {
+                success = dir.mkdir();
+            }
         }
+        
         return success;
-    }
-
-    private boolean deleteDir(File dir)
-    {
-        if (dir.exists())
-        {
-            File[] files = dir.listFiles();
-            for (int i = 0; i < files.length; i++)
-            {
-                if (files[i].isDirectory())
-                {
-                    deleteDir(files[i]);
-                }
-                else
-                {
-                    files[i].delete();
-                }
-            }
-        }
-        return (dir.delete());
     }
 
     private String getUserFolder(String userName, boolean fullPath)
