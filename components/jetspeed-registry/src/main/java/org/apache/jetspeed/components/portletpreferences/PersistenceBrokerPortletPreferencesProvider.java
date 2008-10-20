@@ -17,8 +17,10 @@
 package org.apache.jetspeed.components.portletpreferences;
 
 import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.jetspeed.cache.CacheElement;
@@ -186,30 +188,23 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
         return new PreferenceSetImpl(prefs);
     }
     
-    public Iterator<String> getUserNames(MutablePortletEntity pe)
+    public Collection<String> getUserNames(MutablePortletEntity pe)
     {
+        Collection<String> userNames = new LinkedList<String>();
+        
         Criteria c = new Criteria();
         c.addEqualTo("entityId", pe.getId());
         final ReportQueryByCriteria q = QueryFactory.newReportQuery(PreferenceValueImpl.class, c, true);
-        q.setAttributes(new String[]{"userName"});        
+        q.setAttributes(new String[]{"userName"});
 
-        return new Iterator<String>(){
-            private final Iterator<Object[]> iterator = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(q);
-            public boolean hasNext()
-            {
-                return iterator.hasNext();
-            }
-
-            public String next()
-            {
-                return (String)iterator.next()[0];
-            }
-
-            public void remove()
-            {
-                throw new UnsupportedOperationException();
-            }
-        };
+        Iterator<Object[]> iterator = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(q);
+        
+        while (iterator.hasNext())
+        {
+            userNames.add((String)iterator.next()[0]);
+        }
+        
+        return userNames;
     }
     
     public void savePreferenceSet(PortletDefinitionComposite pd, PreferenceSetComposite preferenceSet)
