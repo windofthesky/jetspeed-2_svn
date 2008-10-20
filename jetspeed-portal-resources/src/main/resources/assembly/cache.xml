@@ -25,6 +25,20 @@
     -->
   </bean>
 
+  <!-- Page File Cache -->
+  <bean id="PageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner"
+    destroy-method="stopFileScanner">
+    <meta key="j2:cat" value="default,cache" />
+    <!-- Internal cache -->
+    <constructor-arg index="0">
+      <ref bean="internalPageFileCache" />
+    </constructor-arg>
+    <!-- Scan rate for changes in cached files on the file system -->
+    <constructor-arg index="1">
+      <value>${page.file.cache.scanRate}</value>
+    </constructor-arg>
+  </bean>
+  
   <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
     configuration in cacheManager.xml -->
   <bean id="ehPortletContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">

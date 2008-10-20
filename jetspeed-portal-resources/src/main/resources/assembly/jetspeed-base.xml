@@ -36,18 +36,4 @@
     </constructor-arg>
   </bean>
 
-  <!-- Page File Cache -->
-  <bean id="PageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner"
-    destroy-method="stopFileScanner">
-    <meta key="j2:cat" value="default,base" />
-    <!-- Internal cache -->
-    <constructor-arg index="0">
-      <ref bean="internalPageFileCache" />
-    </constructor-arg>
-    <!-- Scan rate for changes in cached files on the file system -->
-    <constructor-arg index="1">
-      <value>${page.file.cache.scanRate}</value>
-    </constructor-arg>
-  </bean>
-
 </beans>
