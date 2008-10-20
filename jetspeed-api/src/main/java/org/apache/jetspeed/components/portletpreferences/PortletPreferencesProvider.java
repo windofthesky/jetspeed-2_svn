@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.Iterator;
+import java.util.Collection;
 
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
@@ -28,7 +28,7 @@ public interface PortletPreferencesProvider
     public PreferenceSetComposite getPreferenceSet(PortletDefinition pd);
     public PreferenceSetComposite getPreferenceSet(PortletEntity pe);
     public PreferenceSetComposite getPreferenceSet(PortletEntity pe, String userName);
-    public Iterator<String> getUserNames(PortletEntity pe);
+    public Collection<String> getUserNames(MutablePortletEntity pe);
     public void savePreferenceSet(PortletDefinition pd, PreferenceSetComposite preferenceSet);
     public void savePreferenceSet(PortletEntity pe, PreferenceSetComposite preferenceSet);
     public void savePreferenceSet(PortletEntity pe, String userName, PreferenceSetComposite preferenceSet);        

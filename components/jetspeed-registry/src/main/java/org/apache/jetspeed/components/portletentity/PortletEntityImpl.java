@@ -208,7 +208,7 @@ public class PortletEntityImpl implements PortletEntity, PrincipalAware, RenderT
         // (becuase the PortletApplication has yet to be registered).
         if(this.portletDefinition == null)
         {
-            PortletDefinition pd = registry.getPortletDefinitionByIdentifier(getPortletUniqueName());
+            PortletDefinition pd = registry.getPortletDefinitionByUniqueName(getPortletUniqueName());
             if ( pd != null )
             {
               // only store a really found PortletDefinition

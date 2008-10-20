@@ -287,13 +287,14 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
             catch (Exception e)
             {
                 throw new SerializerException(SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create(new String[] {
-                        "PortletApplicationDefinition", e.getMessage() }));
+                        "PortletApplicationDefinition", e.getMessage() }), e);
             }
         }
     }
 
     private JSApplication exportPA(PortletApplication pa, Map settings, Log log) throws SerializerException
     {
+        JSApplication jsApplication = null;
         /**
          * while more PAs for each portletDef
          * list:entityMan:getPortletEntity(pd)
@@ -302,12 +303,14 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         PortletDefinition pd = null;
 
         JSPortlets portlets = new JSPortlets();
+        
         while (pi.hasNext())
         {
             try
             {
                 pd = (PortletDefinition) pi.next();
                 JSPortlet p = exportPD(pd, settings, log);
+                
                 if (p != null)
                 {
                     log.debug("--processed PA " + pa.getName() + " with pd=" + pd.getPortletName());
@@ -315,68 +318,63 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 }
                 else
                     log.debug("--processed PA " + pa.getName() + " with NULL pd=" + pd.getPortletName());
-
             }
             catch (Exception e)
             {
                 throw new SerializerException(SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create(new String[] {
-                        "PortletDefinition", e.getMessage() }));
+                        "PortletDefinition", e.getMessage() }), e);
             }
         }
+        
         if (!portlets.isEmpty())
         {
-            JSApplication app = new JSApplication();
+            jsApplication = new JSApplication();
             log.debug("--exporting PA " + pa.getName() + " with id=" + pa.getId());
-            app.setID(pa.getId().toString());
-            app.setName(pa.getName());
-            app.setPortlets(portlets);
-            return app;
+            jsApplication.setID(pa.getId().toString());
+            jsApplication.setName(pa.getName());
+            jsApplication.setPortlets(portlets);
         }
-        return null;
+        
+        return jsApplication;
     }
 
     private JSPortlet exportPD(PortletDefinition pd, Map settings, Log log) throws SerializerException
     {
+        JSPortlet jsPortlet = null;
+        
         try
         {
             Collection col = entityAccess.getPortletEntities(pd);
+            
             if ((col == null) || (col.size() == 0))
                 return null;
-            Iterator list = null;
-            try
-            {
-                list = col.iterator();
-            }
-            catch (Exception e)
-            {
-                throw new SerializerException(SerializerException.GET_EXISTING_OBJECTS.create(new String[] {
-                        "entityAccess", e.getMessage() }));
-            }
+
             JSEntities entities = new JSEntities();
 
-            while (list.hasNext())
+            for (Object item : col)
             {
-                PortletEntity entity = (PortletEntity) list.next();
+                PortletEntity entity = (PortletEntity) item;
                 JSEntity jsEntity = exportEntityPref(entity, settings, log);
+                
                 if (jsEntity != null)
                     entities.add(jsEntity);
-
             }
+            
             if (!entities.isEmpty())
             {
-                JSPortlet portlet = new JSPortlet();
-                portlet.setName(pd.getPortletName());
+                jsPortlet = new JSPortlet();
+                jsPortlet.setName(pd.getPortletName());
                 log.debug("-----exporting for PD=" + pd.getPortletName());
-                portlet.setEntities(entities);
-                return portlet;
+                jsPortlet.setEntities(entities);
             }
-            return null;
         }
         catch (Exception e)
         {
             throw new SerializerException(SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create(new String[] {
-                    "Entity", e.getMessage() }));
+                    "Entity", e.getMessage() }), e);
         }
+        
+        return jsPortlet;
     }
 
     JSEntity exportEntityPref(PortletEntity entity, Map settings, Log log)
@@ -389,19 +387,22 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
             JSEntityPreferences entityPreferences = new JSEntityPreferences();
-            Iterator<String> userNames = prefsProvider.getUserNames(entity);
-            while (userNames.hasNext())
+            Collection<String> userNames = prefsProvider.getUserNames(entity);
+            
+            for (String userName : userNames)
             {
-                String userName = userNames.next();
-                PreferenceSetComposite preferenceSet = prefsProvider.getPreferenceSet(entity, userNames.next());
+                PreferenceSetComposite preferenceSet = prefsProvider.getPreferenceSet(entity, userName);
+                
                 JSEntityPreference userPreference = new JSEntityPreference();
                 userPreference.setName(userName);
                 Iterator<Preference> preferences = preferenceSet.iterator();
                 JSNVPElements v = new JSNVPElements();
+                
                 while (preferences.hasNext())
                 {
                     Preference p = preferences.next();
                     Iterator<String> values = p.getValues();
+                    
                     while (values.hasNext())
                     {
                         JSNVPElement element = new JSNVPElement();
@@ -410,11 +411,13 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                         v.add(element);
                     }
                 }
+                
                 if (v.size() > 0)
                 {
                     userPreference.setPreferences(v);
                     entityPreferences.add(userPreference);
                 }
+                
                 if (!entityPreferences.isEmpty())
                 {
                     log.debug("processed preferences for entity=" + entity.getId());
@@ -422,6 +425,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 }
             }
         }
+        
         return jsEntity;
     }
 }
