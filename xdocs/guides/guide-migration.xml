@@ -380,6 +380,26 @@
             </tr>
           </table>
         </subsection>
+        <subsection name="Removed Foreign Key">
+            <table>
+                <tr>
+                    <th>Table</th>                
+                    <th>Name</th>
+                    <th>Column(s)</th>                    
+                    <th>Referencing table</th>
+                    <th>Referencing column(s)</th>
+                    <th>Cascade</th>
+                </tr>
+                <tr>
+                    <td>PORTLET_PREFERENCE_VALUE</td> 
+                    <td>FK_PORTLET_ENTITY</td>
+                    <td>ENTITY_ID</td>
+                    <td>PORTLET_ENTITY</td>
+                    <td>ID</td>
+                    <td>CASCADE DELETE</td>
+                </tr>
+            </table>
+        </subsection>                         
       </section>    
 	  <section name="Data Migrating from Jetspeed 2.1.2 to 2.1.3">
 	    <p>The following tables describe database schema changes from version 2.1.2 to version 2.1.3.                                  
