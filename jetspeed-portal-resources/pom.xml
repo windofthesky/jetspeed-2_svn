@@ -63,7 +63,9 @@
                 <!-- DB2v7 -->
                 <param>db2</param>
                 <param>db2v8</param>
+                <!-- 
                 <param>mssql</param>
+                -->
                 <param>sapdb</param>
               </databases>
               <!-- optional platform and table specific parameters, currently only supported for mysql
