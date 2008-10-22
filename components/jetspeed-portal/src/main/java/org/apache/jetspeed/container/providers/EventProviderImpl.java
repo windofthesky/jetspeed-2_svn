@@ -14,18 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.engine.servlet;
+package org.apache.jetspeed.container.providers;
 
-import javax.servlet.http.HttpServletResponse;
-import org.apache.pluto.factory.Factory;
+import java.io.Serializable;
+
+import javax.xml.namespace.QName;
+
+import org.apache.pluto.EventContainer;
+import org.apache.pluto.spi.EventProvider;
 
 /**
- * Factory interface for creating HTTP Request Wrappers
- *
+ * TODO: 2.2 implement 
+ * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: $
  */
-public interface ServletResponseFactory extends Factory
+public class EventProviderImpl implements EventProvider, Cloneable
 {
-    public HttpServletResponse getServletResponse(HttpServletResponse response);
+    public EventProviderImpl()
+    {}
+    
+    public void fireEvents(EventContainer eventContainer)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void registerToFireEvent(QName name, Serializable value)
+            throws IllegalArgumentException
+    {
+        throw new UnsupportedOperationException();
+    }
 }

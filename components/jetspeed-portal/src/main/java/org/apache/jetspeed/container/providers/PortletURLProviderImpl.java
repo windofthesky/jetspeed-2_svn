@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.services.information;
+package org.apache.jetspeed.container.providers;
 
 import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
-import org.apache.pluto.services.information.PortletURLProvider;
+import org.apache.pluto.PortletWindow;
+import org.apache.pluto.spi.PortletURLProvider;
 
 /**
  * Provides access to the Portal URL manipulation 
- * 
+ * TODO: 2.2 implement Portlet API 2.0 features: see methods below throwing UnsupportedOperationException
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
@@ -84,5 +85,45 @@ public class PortletURLProviderImpl implements PortletURLProvider
     public String toString()
     {
         return url.createPortletURL(portletWindow,parameters,mode,state,action,secure);
+    }
+
+    public String[] getPrivateRenderParameters(String name)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public String[] getPublicRenderParameters(String name)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isResourceServing()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isSecureSupported()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void savePortalURL(HttpServletRequest request)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setAction(boolean isAction)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setPublicRenderParameters(Map parameters)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setResourceServing(boolean isResourceServing)
+    {
+        throw new UnsupportedOperationException();
     }
 }

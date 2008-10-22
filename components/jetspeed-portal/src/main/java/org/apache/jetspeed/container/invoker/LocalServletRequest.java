@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @author <a href="">David Gurney</a>
  * @version $Id: $
+ * @deprecated delete me
  */
 public class LocalServletRequest extends HttpServletRequestWrapper
 {

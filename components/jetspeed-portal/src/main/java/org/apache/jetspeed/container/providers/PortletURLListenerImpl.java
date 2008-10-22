@@ -14,41 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.engine.servlet;
+package org.apache.jetspeed.container.providers;
 
-import java.util.Map;
+import javax.portlet.BaseURL;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletResponse;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.spi.PortletURLListener;
 
 /**
- * Factory implementation for creating HTTP Response Wrappers
+ * TODO: 2.2 implement 
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: ServletResponseFactoryImpl.java 185962 2004-03-08 01:03:33Z
- *          jford $
+ * @version $Id: $
  */
-public class ServletResponseFactoryImpl implements ServletResponseFactory
+public class PortletURLListenerImpl implements PortletURLListener
 {
-
-    public void init(ServletConfig config, Map properties) throws Exception
+    public PortletURLListenerImpl()
+    {}
+    
+    public void callListener(PortletApplicationDefinition portletApp, BaseURL baseURL, boolean isAction, boolean isResource)
     {
-    }
-
-    public void destroy() throws Exception
-    {
-    }
-
-    public HttpServletResponse getServletResponse(HttpServletResponse response)
-    {
-        if (!(response instanceof ServletResponseImpl))
-        {
-            return new ServletResponseImpl(response);            
-        }
-        else
-        {
-            return response;
-        }
+        throw new UnsupportedOperationException();        
     }
 
 }

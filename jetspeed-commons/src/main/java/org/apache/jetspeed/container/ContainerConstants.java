@@ -35,4 +35,8 @@ public class ContainerConstants
     public final static Integer METHOD_RENDER = new Integer(1);
     public final static Integer METHOD_ACTION = new Integer(3);
     public final static Integer METHOD_NOOP = new Integer(5);
+    public final static Integer METHOD_RESOURCE = new Integer(6);
+    public final static Integer METHOD_EVENT = new Integer(7);
+    public final static Integer METHOD_ADMIN = new Integer(8);
+    
 }

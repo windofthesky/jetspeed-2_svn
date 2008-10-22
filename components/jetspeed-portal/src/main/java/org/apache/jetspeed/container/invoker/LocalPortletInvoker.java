@@ -30,8 +30,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletRequestContext;
@@ -40,6 +38,7 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.spi.FilterManager;
 
 /**
  * LocalPortletInvoker invokes local (internal) portlet applications.
@@ -58,8 +57,6 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  */
 public class LocalPortletInvoker implements JetspeedPortletInvoker
 {
-    private final static Log log = LogFactory.getLog(LocalPortletInvoker.class);
-
     protected PortletFactory portletFactory;
     protected ServletContext jetspeedContext;
     protected ServletConfig jetspeedConfig;
@@ -99,42 +96,6 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         activated = false;
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.pluto.invoker.PortletInvoker#action(javax.portlet.ActionRequest, javax.portlet.ActionResponse)
-     */
-    public void action(ActionRequest request, ActionResponse response)
-        throws PortletException, IOException
-    {
-        invoke(request, response, ContainerConstants.METHOD_ACTION);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.pluto.invoker.PortletInvoker#render(javax.portlet.RenderRequest, javax.portlet.RenderResponse)
-     */
-    public void render(RenderRequest request, RenderResponse response)
-        throws PortletException, IOException
-    {
-        invoke(request, response, ContainerConstants.METHOD_RENDER);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.pluto.invoker.PortletInvoker#load(javax.portlet.PortletRequest, javax.portlet.RenderResponse)
-     */
-    public void load(PortletRequest request, RenderResponse response)
-        throws PortletException
-    {
-        try
-        {
-            invoke(request, response, ContainerConstants.METHOD_NOOP);
-        }
-        catch (IOException e)
-        {
-            log.error("LocalPortletInvokerImpl.load() - Error while dispatching portlet.", e);
-            throw new PortletException(e);
-        }
-    }
-    
-    
     /**
      * Invokes the specific request denoted by the <code>method</code> parameter on a portlet.
      * The portlet is invoked with a direct method call on the portlet. It is not invoked in another web application.
@@ -146,22 +107,17 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
      * @throws PortletException
      * @throws IOException
      */
-    protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer method)
+    public void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer method, FilterManager filter)
             throws PortletException, IOException
     {
         ClassLoader paClassLoader = portletFactory
-                .getPortletApplicationClassLoader((PortletApplication) portletDefinition
-                        .getPortletApplicationDefinition());
+                .getPortletApplicationClassLoader((PortletApplication) portletDefinition.getApplication());
         PortletInstance portletInstance = portletFactory.getPortletInstance(jetspeedContext, portletDefinition);
-
         if (method == ContainerConstants.METHOD_NOOP)
         {
             return;
         }
-
-        // gather all required data from request and response
         ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
-
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try
         {

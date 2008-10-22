@@ -17,7 +17,6 @@
 package org.apache.jetspeed.engine.servlet;
 
 import javax.servlet.http.HttpServletRequest;
-import org.apache.pluto.factory.Factory;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -26,7 +25,7 @@ import org.apache.jetspeed.container.PortletWindow;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface ServletRequestFactory extends Factory
+public interface ServletRequestFactory 
 {
     public HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window);
 }

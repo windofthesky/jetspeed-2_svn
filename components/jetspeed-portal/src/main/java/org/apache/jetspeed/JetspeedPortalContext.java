@@ -62,20 +62,17 @@ public class JetspeedPortalContext implements PortalContext
      */
     private String applicationRoot;
     
-    private final String portalInfo;
+    private String portalInfo;
 
-    public JetspeedPortalContext(Engine engine, PortalConfiguration configuration, String applicationRoot)
+    public JetspeedPortalContext()
     {
-        this.engine = engine;
+    }
+    
+    public JetspeedPortalContext(PortalConfiguration configuration, String applicationRoot)
+    {
         this.configuration = configuration;
         this.applicationRoot = applicationRoot;
-             
-        portalInfo = configuration.getString(PORTAL_NAME_ATTR) + "/" + configuration.getString(PORTAL_VERSION_ATTR);
-        
-        // Inititalize supported portlet modes and window states
-        String[] supportedModes = configuration.getStringArray(SUPPORTED_PORTLETMODE_ATTR);
-        String[] supportedStates = configuration.getStringArray(SUPPORTED_WINDOWSTATE_ATTR);
-        new JetspeedActions(supportedModes, supportedStates);
+        initialize();
     }
 
     // ------------------------------------------------------------------------
@@ -110,6 +107,17 @@ public class JetspeedPortalContext implements PortalContext
     public void setConfiguration(PortalConfiguration configuration)
     {
         this.configuration = configuration;
+        initialize();
+    }
+    
+    protected void initialize()
+    {
+        portalInfo = configuration.getString(PORTAL_NAME_ATTR) + "/" + configuration.getString(PORTAL_VERSION_ATTR);
+        
+        // Inititalize supported portlet modes and window states
+        String[] supportedModes = configuration.getStringArray(SUPPORTED_PORTLETMODE_ATTR);
+        String[] supportedStates = configuration.getStringArray(SUPPORTED_WINDOWSTATE_ATTR);
+        new JetspeedActions(supportedModes, supportedStates);        
     }
 
     /**
@@ -140,6 +148,11 @@ public class JetspeedPortalContext implements PortalContext
     public Engine getEngine()
     {
         return this.engine;
+    }
+    
+    public void setEngine(Engine engine)
+    {
+        this.engine = engine;
     }
 
     /**

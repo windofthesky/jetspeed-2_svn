@@ -28,6 +28,8 @@ import org.apache.pluto.services.information.PortletActionProvider;
 import org.apache.pluto.services.information.ResourceURLProvider;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.services.information.PortletURLProvider;
+import org.apache.jetspeed.container.providers.PortletURLProviderImpl;
+import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.engine.core.PortletActionProviderImpl;
@@ -36,6 +38,7 @@ import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.Jetspeed;
 
 /**
+ * * TODO: 2.2 delete this, its removed from pluto
  * Provides dynamic information to Pluto Container:
  * 
  * 1.  getPortletURL

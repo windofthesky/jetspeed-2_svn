@@ -41,17 +41,16 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
-import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperFactory;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletEntity;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.util.Enumerator;
 
 /**
@@ -90,14 +89,11 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
     // this should be re-created when it is called for the first time or when some attributes are added/modified/removed.
     private Map cachedAttributes;
 
-    public ServletRequestImpl( HttpServletRequest servletRequest, PortletWindow window )
+    public ServletRequestImpl(HttpServletRequest servletRequest, PortletWindow window, JetspeedNamespaceMapper namespaceMapper)
     {
         super(servletRequest);
-        nameSpaceMapper = ((JetspeedNamespaceMapperFactory) Jetspeed.getComponentManager().getComponent(
-                org.apache.pluto.util.NamespaceMapper.class)).getJetspeedNamespaceMapper();
+        this.nameSpaceMapper = namespaceMapper;
         this.portletWindow = window;        
-        
-        
         String encoding = (String) servletRequest.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
         boolean decode = servletRequest.getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
                 && encoding != null;
@@ -500,7 +496,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
 
                 if (null != portletAppDef)
                 {
-                    value = context.getUserInfoMap(portletAppDef.getId());
+                    value = context.getUserInfoMap(portletAppDef.getName());
                     if (log.isDebugEnabled() && (null != value))
                         log.debug(PortletRequest.USER_INFO + " map size: " + ((Map) value).size());
                 }

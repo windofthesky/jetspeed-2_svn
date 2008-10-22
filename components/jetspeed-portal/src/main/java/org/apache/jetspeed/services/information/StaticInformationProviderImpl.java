@@ -25,6 +25,7 @@ import org.apache.pluto.services.information.PortalContextProvider;
 import org.apache.pluto.services.information.StaticInformationProvider;
 
 /**
+ * TODO: 2.2 delete this, its removed from pluto
  * Provides static information to Pluto Container:
  * 
  * 1. PortletDefinition - given a unique registry id, 

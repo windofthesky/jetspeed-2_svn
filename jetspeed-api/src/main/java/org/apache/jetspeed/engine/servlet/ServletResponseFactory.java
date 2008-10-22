@@ -14,44 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.services.information;
+package org.apache.jetspeed.engine.servlet;
 
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
-import org.apache.pluto.services.information.ResourceURLProvider;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * <p>
- * ResourceURLProviderImpl
- * </p>
- * 
- * 
- * @
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
- * @version $ $
+ * Factory interface for creating HTTP Request Wrappers
  *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
  */
-public class ResourceURLProviderImpl implements ResourceURLProvider
+public interface ServletResponseFactory 
 {
-    private String stringUrl = "";
-
-    public ResourceURLProviderImpl(RequestContext context, PortletWindow portletWindow)
-    {
-    }
-
-    public void setAbsoluteURL(String path)
-    {
-        stringUrl = path;
-    }
-
-    public void setFullPath(String path)
-    {
-        stringUrl = path;
-    }
-
-    public String toString()
-    {
-        return stringUrl;
-    }
-
+    public HttpServletResponse getServletResponse(HttpServletResponse response);
 }

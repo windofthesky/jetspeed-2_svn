@@ -19,7 +19,7 @@ package org.apache.jetspeed.container.invoker;
 /**
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
- *
+ * @deprecated delete me
  */
 public class LocalPortletInvokerFactory 
 {

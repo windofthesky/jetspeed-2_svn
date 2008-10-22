@@ -31,6 +31,7 @@ import org.apache.pluto.services.information.StaticInformationProvider;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 
 /**
+ * * TODO: 2.2 delete this, its removed from pluto
  * Factory class for getting Information Provider access
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>

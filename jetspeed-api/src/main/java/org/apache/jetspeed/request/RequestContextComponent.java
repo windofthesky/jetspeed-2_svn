@@ -20,6 +20,10 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
+import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.jetspeed.userinfo.UserInfoManager;
+
 
 /**
  * RequestContextComponent
@@ -55,5 +59,10 @@ public interface RequestContextComponent
      */
     RequestContext getRequestContext(HttpServletRequest request);    
     RequestContext getRequestContext();    
+    
+    
+    ServletRequestFactory getServletRequestFactory();
+    ServletResponseFactory getServletResponseFactory();
+    UserInfoManager getUserInfoManager();
     
 }

@@ -17,22 +17,15 @@
 package org.apache.jetspeed.container;
 
 import java.io.IOException;
-import java.util.Map;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerImpl;
-import org.apache.pluto.core.InternalActionResponse;
-import org.apache.jetspeed.container.PortletWindow;
-import org.apache.pluto.services.information.DynamicInformationProvider;
-import org.apache.pluto.services.information.InformationProviderAccess;
-import org.apache.pluto.services.information.PortletURLProvider;
-
 import org.apache.jetspeed.desktop.JetspeedDesktop;
+import org.apache.pluto.OptionalContainerServices;
+import org.apache.pluto.PortletContainer;
+import org.apache.pluto.RequiredContainerServices;
+import org.apache.pluto.core.PortletContainerImpl;
 
 /**
  * Desktop Portlet Container implementation. This implementation 
@@ -49,8 +42,11 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
     private String desktopActionPipelinePath = null;
     private String desktopRenderPipelinePath = null;
     
-    public DesktopPortletContainerImpl( String desktopPipelinePath, String desktopActionPipelinePath, String desktopRenderPipelinePath )
+    public DesktopPortletContainerImpl(String containerName,
+            RequiredContainerServices requiredServices, OptionalContainerServices optionalServices, 
+            String desktopPipelinePath, String desktopActionPipelinePath, String desktopRenderPipelinePath)
     {
+        super(containerName, requiredServices, optionalServices);
         if ( desktopPipelinePath == null || desktopPipelinePath.length() == 0 )
             desktopPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_PIPELINE_PATH;
         if ( desktopPipelinePath.charAt( 0 ) != '/' )
@@ -76,21 +72,13 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
         this.desktopActionPipelinePath = desktopActionPipelinePath;
         this.desktopRenderPipelinePath = desktopRenderPipelinePath;
     }
-
-    /**
-     * This redirect does not redirect, instead returns the redirect URL in the response
-     */
-    protected void redirect(String location, PortletWindow portletWindow,
-            HttpServletRequest servletRequest,
-            HttpServletResponse servletResponse,
-            InternalActionResponse _actionResponse) throws IOException
+    
+    protected void redirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse, String location) throws IOException    
     {
     	String encoding = servletRequest.getParameter( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER );
-        boolean requestHasDesktopEncoding = false;
     	boolean requestIsDesktopAjax = false;
         if ( encoding != null && encoding.equals( JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE ) )
         {   // used in cases where action request cannot be made via ajax (e.g. form has <input type=file/> element)
-        	requestHasDesktopEncoding = true;
         	requestIsDesktopAjax = true;
         	String ajaxOverride = servletRequest.getParameter( JetspeedDesktop.DESKTOP_AJAX_REQUEST_PARAMETER );
         	if ( ajaxOverride != null && ajaxOverride.equals( "false" ) )
@@ -98,66 +86,8 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
         		requestIsDesktopAjax = false;
         	}
         }
-    	
-        if (location == null && _actionResponse != null)
-        {
-            DynamicInformationProvider provider = InformationProviderAccess
-                    .getDynamicProvider(servletRequest);
 
-            // TODO: don't send changes in case of exception -> PORTLET:SPEC:17
-
-            PortletMode portletMode = provider.getPortletMode(portletWindow);
-            WindowState windowState = provider.getWindowState(portletWindow);
-
-            // get the changings of this portlet entity that might be set during
-            // action handling
-            // change portlet mode
-            if (_actionResponse.getChangedPortletMode() != null)
-            {
-                portletMode = _actionResponse.getChangedPortletMode();
-                InformationProviderAccess.getDynamicProvider(servletRequest)
-                        .getPortletActionProvider(portletWindow)
-                        .changePortletMode(portletMode);
-            }
-            // change window state
-            if (_actionResponse.getChangedWindowState() != null)
-            {
-                windowState = _actionResponse.getChangedWindowState();
-                InformationProviderAccess.getDynamicProvider(servletRequest)
-                        .getPortletActionProvider(portletWindow)
-                        .changePortletWindowState(windowState);
-            }
-            // get render parameters
-            Map renderParameter = _actionResponse.getRenderParameters();
-
-            PortletURLProvider redirectURL = provider
-                    .getPortletURLProvider(portletWindow);
-
-            if (provider.getPortletMode(portletWindow) != null)
-            {
-                redirectURL.setPortletMode(portletMode);
-            }
-            if (provider.getWindowState(portletWindow) != null)
-            {
-                redirectURL.setWindowState(windowState);
-            }
-            if (servletRequest.isSecure())
-            {
-                redirectURL.setSecure(); // TBD
-            }
-            
-            if ( requestHasDesktopEncoding && ! requestIsDesktopAjax )
-            {   // add parameter to tell DesktopEncodingPortalURL that it should not add extra desktop parameters (e.g. entity and portlet)
-            	renderParameter.put( JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER, Boolean.TRUE );
-            }
-
-            redirectURL.clearParameters();
-            redirectURL.setParameters(renderParameter);
-            
-            location = servletResponse
-                    .encodeRedirectURL(redirectURL.toString());
-        }
-
+        // TODO: 2.2 is this still necessary?
         javax.servlet.http.HttpServletResponse redirectResponse = servletResponse;
         while (redirectResponse instanceof javax.servlet.http.HttpServletResponseWrapper)
         {
@@ -176,8 +106,7 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
             location = location.replaceAll( this.desktopRenderPipelinePath, this.desktopPipelinePath);
             redirectResponse.sendRedirect(location);
         }
-        // System.out.println("+++ >>>> location is " + location);
-        
+        System.out.println("+++ >>>> DESKTOP REDIRECT: location is " + location);        
     }
-
+    
 }

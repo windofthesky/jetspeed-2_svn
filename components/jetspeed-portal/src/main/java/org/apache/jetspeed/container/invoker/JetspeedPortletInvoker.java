@@ -16,21 +16,25 @@
  */
 package org.apache.jetspeed.container.invoker;
 
+import java.io.IOException;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.pluto.invoker.PortletInvoker;
 import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.spi.FilterManager;
 
 /**
- * JetspeedPortletInvoker extends Pluto's portlet invoker and extends it
- * with lifecycle management. Portlet Invokers can be pooled, and activated
- * and passivated per request cycle.
+ * JetspeedPortletInvoker extends Pluto's portlet invoker model and extends it
+ * with lifecycle management. 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface JetspeedPortletInvoker extends PortletInvoker
+public interface JetspeedPortletInvoker 
 {
     /**
      * Activating an invoker makes it ready to invoke portlets.
@@ -42,20 +46,7 @@ public interface JetspeedPortletInvoker extends PortletInvoker
      * @param containerServlet
      */
     void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig);
-
-    /**
-     * Activating an invoker makes it ready to invoke portlets.
-     * If an invoker's state is not activated, it can not invoke.
-     * This second signature allows for activating with an extra property.
-     * 
-     * @param portletFactory The factory to get access to the portlet being invoked.
-     * @param portletDefinition The portlet's definition that is being invoked.
-     * @param servletConfig The servlet configuration of the portal. 
-     * @param property Implementation specific property
-     * @param containerServlet
-     */
-    void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig, String property);
-    
+   
     /**
      * Passivates an invoker, freeing it back to the invoker pool.
      * If an invoker's state is passivated, it cannot be used to invoke portlets.
@@ -67,4 +58,17 @@ public interface JetspeedPortletInvoker extends PortletInvoker
      * @return True if the current state of the invoker is 'activated' otherwise false.
      */
     boolean isActivated();
+
+    /**
+     * Invoke a method
+     * @param portletRequest
+     * @param portletResponse
+     * @param method
+     * @param filter
+     * @throws PortletException
+     * @throws IOException
+     */
+    void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer method, FilterManager filter)
+        throws PortletException, IOException;
+    
 }

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.pluto.factory.Factory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 

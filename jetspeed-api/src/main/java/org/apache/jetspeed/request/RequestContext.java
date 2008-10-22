@@ -382,7 +382,7 @@ public interface RequestContext
      * @param appName The portlet application name.
      * @return The PortletRequest.USER_INFO map.
      */
-    Map getUserInfoMap(String appName);
+    Map<String, String> getUserInfoMap(String appName);
     
     /**
      * 
@@ -445,6 +445,6 @@ public interface RequestContext
      * @return a Map of request context objects
      * @since 2.1.2
      */
-    Map getObjects();
+    Map<String, Object> getObjects();
 }
 

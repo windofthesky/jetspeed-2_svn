@@ -64,7 +64,7 @@ public class PersistenceBrokerPortletRegistry
     private JetspeedCache applicationNameCache = null;
     private JetspeedCache portletNameCache = null;
     private Map nameCache = new HashMap(); // work in progress (switch to JetspeedCache)
-    private List listeners = new ArrayList();
+    private List<RegistryEventListener> listeners = new ArrayList<RegistryEventListener>();
     
     // for testing purposes only: no need for the portletFactory then
     public PersistenceBrokerPortletRegistry(String repositoryPath)
@@ -293,7 +293,7 @@ public class PersistenceBrokerPortletRegistry
         this.listeners.add(listener);
     }
 
-    public void removeRegistryEventListner(RegistryEventListener listener)
+    public void removeRegistryEventListener(RegistryEventListener listener)
     {
         this.listeners.remove(listener);
     }

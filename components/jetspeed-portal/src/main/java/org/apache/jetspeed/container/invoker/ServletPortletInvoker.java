@@ -18,13 +18,9 @@ package org.apache.jetspeed.container.invoker;
 
 import java.io.IOException;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -35,15 +31,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.spi.FilterManager;
 
 /**
  * ServletPortletInvoker invokes portlets in another web application, calling a 
@@ -81,13 +78,8 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
      * to find the real servlet request or servlet response.
      */
     protected PortletRequestResponseUnwrapper requestResponseUnwrapper;
-
-    public ServletPortletInvoker()
-    {
-        this(new DefaultPortletRequestResponseUnwrapper());
-    }
     
-    public ServletPortletInvoker(PortletRequestResponseUnwrapper requestResponseUnwrapper)
+    public ServletPortletInvoker(PortletRequestResponseUnwrapper requestResponseUnwrapper, String servletMappingName)
     {
         this.requestResponseUnwrapper = requestResponseUnwrapper;
     }
@@ -120,50 +112,6 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         activated = true;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
-     */
-    public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig, String servletMappingName)
-    {
-        this.servletMappingName = servletMappingName;
-        activate(portletFactory, portletDefinition, servletConfig);
-    }
-
-    /**
-     *
-     * @param request
-     * @param response
-     * @throws PortletException
-     */
-    public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException
-    {
-        invoke(request, response, ContainerConstants.METHOD_RENDER);
-    }
-
-    /**
-     *
-     */
-    public void action(ActionRequest request, ActionResponse response) throws PortletException, IOException
-    {
-        invoke(request, response, ContainerConstants.METHOD_ACTION);
-    }
-
-    /**
-     *
-     */
-    public void load(PortletRequest request, RenderResponse response) throws PortletException
-    {
-        try
-        {
-            invoke(request, response, ContainerConstants.METHOD_NOOP);
-        }
-        catch (IOException e)
-        {
-            log.error("ServletPortletInvokerImpl.load() - Error while dispatching portlet.", e);
-            throw new PortletException(e);
-        }
-    }
-
     /**
      * Creates a servlet request dispatcher to dispatch to another web application to render the portlet.
      * NOTE: this method requires that your container supports cross-context dispatching.
@@ -175,7 +123,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
      * @throws PortletException
      * @throws IOException
      */
-    protected void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer methodID)
+    public void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer methodID, FilterManager filter)
         throws PortletException, IOException
     {
         // In case of parallel mode, the portletDefinition member is not thread-safe.

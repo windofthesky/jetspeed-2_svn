@@ -76,7 +76,10 @@ public class JetspeedEngine implements Engine
     public JetspeedEngine(PortalConfiguration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )
     {
         this.componentManager = componentManager;
-        this.context = new JetspeedPortalContext(this, configuration, applicationRoot);
+        this.context = (PortalContext)componentManager.getComponent("PortalContext");
+        this.context.setEngine(this);
+        this.context.setConfiguration(configuration);
+        this.context.setApplicationRoot(applicationRoot);
         this.config = config;
         context.setApplicationRoot(applicationRoot);
         context.setConfiguration(configuration);           
@@ -86,7 +89,6 @@ public class JetspeedEngine implements Engine
         
         // Make these availble as beans to Spring
         componentManager.addComponent("Engine", this);
-        componentManager.addComponent("PortalContext", context);
         componentManager.addComponent("PortalConfiguration", configuration);
     }  
     

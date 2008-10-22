@@ -117,5 +117,5 @@ public interface PortletRegistry
 	
     void addRegistryListener(RegistryEventListener listener);
     
-    void removeRegistryEventListner(RegistryEventListener listener);
+    void removeRegistryEventListener(RegistryEventListener listener);
 }

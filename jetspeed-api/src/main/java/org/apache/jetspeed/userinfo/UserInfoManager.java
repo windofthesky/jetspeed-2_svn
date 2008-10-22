@@ -19,6 +19,7 @@ package org.apache.jetspeed.userinfo;
 import java.util.Map;
 
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.spi.optional.UserInfoService;
 
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 
@@ -47,7 +48,7 @@ import org.apache.jetspeed.request.RequestContext;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public interface UserInfoManager
+public interface UserInfoManager extends UserInfoService
 {
     
     /**

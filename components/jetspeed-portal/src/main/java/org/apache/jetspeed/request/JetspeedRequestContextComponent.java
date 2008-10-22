@@ -28,6 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
+import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
+import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -38,58 +40,32 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
  */
 public class JetspeedRequestContextComponent implements RequestContextComponent
 {
-    private String contextClassName = null;
-    private Class contextClass = null;
-    /** The user info manager. */
+    ServletRequestFactory requestFactory;
+    ServletResponseFactory responseFactory;
     private UserInfoManager userInfoMgr;
     private ThreadLocal tlRequestContext = new ThreadLocal();
-    private Map requestContextObjects;
+    private Map<String, Object> requestContextObjects;
     
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
 
-    public JetspeedRequestContextComponent(String contextClassName)
-    {
-        this.contextClassName = contextClassName;
-        this.requestContextObjects = new HashMap();
-    }
 
-    public JetspeedRequestContextComponent(String contextClassName, 
-                                           UserInfoManager userInfoMgr)
-    {
-        this.contextClassName = contextClassName;
-        this.userInfoMgr = userInfoMgr;
-        this.requestContextObjects = new HashMap();        
-    }
-
-    public JetspeedRequestContextComponent(String contextClassName, 
+    public JetspeedRequestContextComponent(ServletRequestFactory requestFactory, ServletResponseFactory responseFactory, 
             UserInfoManager userInfoMgr,
-            Map requestContextObjects)
+            Map<String, Object> requestContextObjects)
     {
-        this.contextClassName = contextClassName;
+        this.requestFactory = requestFactory;
+        this.responseFactory = responseFactory;
         this.userInfoMgr = userInfoMgr;
         this.requestContextObjects = requestContextObjects;        
     }
     
-    public RequestContext create(HttpServletRequest req, HttpServletResponse resp, ServletConfig config)
+    public RequestContext create(HttpServletRequest request, HttpServletResponse response, ServletConfig config)
     {
         RequestContext context = null;
 
         try
         {
-            if (null == contextClass)
-            {
-                contextClass = Class.forName(contextClassName);
-            }
-
-            Constructor constructor =
-                contextClass.getConstructor(
-                    new Class[] {
-                        HttpServletRequest.class,
-                        HttpServletResponse.class,
-                        ServletConfig.class,
-                        UserInfoManager.class,
-                        Map.class});
-            context = (RequestContext) constructor.newInstance(new Object[] { req, resp, config, userInfoMgr, requestContextObjects});
+            context = new JetspeedRequestContext(this, request, response, config, requestContextObjects);
                     
         }
         catch (Exception e)
@@ -142,4 +118,18 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
         return rc;
     }
 
+    public ServletRequestFactory getServletRequestFactory()
+    {
+        return this.requestFactory;
+    }
+    
+    public ServletResponseFactory getServletResponseFactory()
+    {
+        return this.responseFactory;
+    }
+    
+    public UserInfoManager getUserInfoManager()
+    {
+        return this.userInfoMgr;
+    }
 }
