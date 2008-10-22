@@ -117,7 +117,7 @@ public class JetspeedPortletFactory implements PortletFactory
             synchronized (classLoaderMap)
             {
                 unregisterPortletApplication(pa);
-                classLoaderMap.put(pa.getId(), cl);
+                classLoaderMap.put(pa.getName(), cl);
             }
     }
     
@@ -127,19 +127,18 @@ public class JetspeedPortletFactory implements PortletFactory
         {
             synchronized (portletCache)
             {
-                ClassLoader cl = (ClassLoader) classLoaderMap.remove(pa.getId());
+                ClassLoader cl = (ClassLoader) classLoaderMap.remove(pa.getName());
                 if (cl != null)
                 {
                     ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
 
-                    Iterator portletDefinitions = pa.getPortletDefinitions().iterator();
-                    while (portletDefinitions.hasNext())
+                    HashMap instanceCache = (HashMap)portletCache.remove(pa.getName());
+                    if (instanceCache != null)
                     {
-                        PortletDefinition pd = (PortletDefinition) portletDefinitions.next();
-                        String pdId = pd.getId().toString();
-                        Portlet portlet = (Portlet) portletCache.remove(pdId);
-                        if (portlet != null)
+                        Iterator instances = instanceCache.values().iterator();
+                        while (instances.hasNext())
                         {
+                            Portlet portlet = (Portlet)instances.next();
                             try
                             {
                                 Thread.currentThread().setContextClassLoader(cl);
@@ -150,8 +149,8 @@ public class JetspeedPortletFactory implements PortletFactory
                                 Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                             }
                         }
-                        validatorCache.remove(pdId);
                     }
+                    validatorCache.remove(pa.getName());
                 }
             }
         }
@@ -162,21 +161,22 @@ public class JetspeedPortletFactory implements PortletFactory
         PreferencesValidator validator = null;
         try
         {
-            String pdId = pd.getId().toString();
+            String paName = ((PortletApplication)pd.getPortletApplicationDefinition()).getName();
+            String pdName = pd.getName();
             
             synchronized (validatorCache)
             {
-                validator = (PreferencesValidator)validatorCache.get(pdId);
+                HashMap instanceCache = (HashMap)validatorCache.get(paName);
+                validator = instanceCache != null ? (PreferencesValidator)instanceCache.get(pdName) : null;
                 if ( validator == null )
                 {
                     String className = ((PortletDefinitionComposite)pd).getPreferenceValidatorClassname();
                     if ( className != null )
                     {
-                        PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
-                        ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId());
+                        ClassLoader paCl = (ClassLoader)classLoaderMap.get(paName);
                         if ( paCl == null )
                         {
-                            throw new UnavailableException("Portlet Application "+pa.getName()+" not available");
+                            throw new UnavailableException("Portlet Application "+paName+" not available");
                         }
                         
                         ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -187,7 +187,12 @@ public class JetspeedPortletFactory implements PortletFactory
                             {
                                 Thread.currentThread().setContextClassLoader(paCl);
                                 validator = (PreferencesValidator)clazz.newInstance();
-                                validatorCache.put(pdId, validator);
+                                if (instanceCache == null)
+                                {
+                                    instanceCache = new HashMap();
+                                    validatorCache.put(paName, instanceCache);
+                                }
+                                instanceCache.put(pdName, validator);
                             }
                             finally
                             {
@@ -196,7 +201,7 @@ public class JetspeedPortletFactory implements PortletFactory
                         }
                         catch (Exception e)
                         {
-                            String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pd.getName();
+                            String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pdName;
                             log.error(msg,e);
                         }
                     }
@@ -220,23 +225,25 @@ public class JetspeedPortletFactory implements PortletFactory
     public PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException
     {
         PortletInstance portlet = null;
-        String pdId = pd.getId().toString();
         PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
+        String paName = pa.getName();
+        String pdName = pd.getName();
 
         try
         {                        
           synchronized (portletCache)
           {
-            portlet = (PortletInstance)portletCache.get(pdId);
+            HashMap instanceCache = (HashMap)portletCache.get(paName);
+            portlet = instanceCache != null ? (PortletInstance)instanceCache.get(pdName) : null;
             if (null != portlet)
             {
                 return portlet;
             }
             
-            ClassLoader paCl = (ClassLoader)classLoaderMap.get(pa.getId());
+            ClassLoader paCl = (ClassLoader)classLoaderMap.get(paName);
             if ( paCl == null )
             {
-                throw new UnavailableException("Portlet Application "+pa.getName()+" not available");
+                throw new UnavailableException("Portlet Application "+paName+" not available");
             }
             
             ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -253,11 +260,11 @@ public class JetspeedPortletFactory implements PortletFactory
                 
                 if (this.portletProxyUsed && !PortletObjectProxy.isPortletObjectProxied())
                 {
-                    portlet = new JetspeedPortletProxyInstance(pd.getName(), (Portlet)clazz.newInstance(), this.autoSwitchEditDefaultsModeToEditMode, this.autoSwitchConfigMode, this.customConfigModePortletUniqueName);
+                    portlet = new JetspeedPortletProxyInstance(pdName, (Portlet)clazz.newInstance(), this.autoSwitchEditDefaultsModeToEditMode, this.autoSwitchConfigMode, this.customConfigModePortletUniqueName);
                 }
                 else
                 {
-                    portlet = new JetspeedPortletInstance(pd.getName(), (Portlet)clazz.newInstance());
+                    portlet = new JetspeedPortletInstance(pdName, (Portlet)clazz.newInstance());
                 }
             }
               finally
@@ -267,7 +274,7 @@ public class JetspeedPortletFactory implements PortletFactory
             }
             catch (Exception e)
             {
-                String msg = "Cannot create Portlet instance "+pd.getClassName()+" for Portlet Application "+pa.getName();
+                String msg = "Cannot create Portlet instance "+pd.getClassName()+" for Portlet Application "+paName;
                 log.error(msg,e);
                 throw new UnavailableException(msg);
             }
@@ -280,7 +287,7 @@ public class JetspeedPortletFactory implements PortletFactory
               try
               {
                 Thread.currentThread().setContextClassLoader(paCl);
-            portlet.init(portletConfig);            
+                portlet.init(portletConfig);            
               }
               finally
               {
@@ -289,10 +296,15 @@ public class JetspeedPortletFactory implements PortletFactory
             }
             catch (PortletException e1)
             {
-                log.error("Failed to initialize Portlet "+pd.getClassName()+" for Portlet Application "+pa.getName(), e1);
+                log.error("Failed to initialize Portlet "+pd.getClassName()+" for Portlet Application "+paName, e1);
                 throw e1;
             }            
-            portletCache.put(pdId, portlet);
+            if (instanceCache == null)
+            {
+                instanceCache = new HashMap();
+                portletCache.put(paName, instanceCache);
+            }
+            instanceCache.put(pdName, portlet);
           }
         }
         catch (PortletException pe)
@@ -311,13 +323,17 @@ public class JetspeedPortletFactory implements PortletFactory
     {
         if (pd != null)
         {
-            //System.out.println("$$$$ updating portlet config for " + pd.getName());
-            String key = pd.getId().toString();
-            PortletInstance instance = (PortletInstance)portletCache.get(key);
-            if (instance != null)
+            synchronized (portletCache)
             {
-                JetspeedPortletConfig config = (JetspeedPortletConfig)instance.getConfig();
-                config.setPortletDefinition(pd);
+                //System.out.println("$$$$ updating portlet config for " + pd.getName());
+                String key = pd.getId().toString();
+                HashMap instanceCache = (HashMap)portletCache.get(((PortletApplication)pd.getPortletApplicationDefinition()).getName());
+                PortletInstance instance = instanceCache != null ? (PortletInstance)instanceCache.get(pd.getName()) : null;
+                if (instance != null)
+                {
+                    JetspeedPortletConfig config = (JetspeedPortletConfig)instance.getConfig();
+                    config.setPortletDefinition(pd);
+                }
             }
         }
     }
@@ -328,7 +344,7 @@ public class JetspeedPortletFactory implements PortletFactory
         {
           if ( pa != null )
         {
-              return (ClassLoader)classLoaderMap.get(pa.getId());
+              return (ClassLoader)classLoaderMap.get(pa.getName());
         }
           return null;
         }
