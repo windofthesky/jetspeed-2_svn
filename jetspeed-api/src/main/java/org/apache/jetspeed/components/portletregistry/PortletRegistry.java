@@ -35,7 +35,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  */
 public interface PortletRegistry
 {
-    Collection getAllPortletDefinitions();
+    Collection<PortletDefinition> getAllPortletDefinitions();
 
     /**
      * Retreives a PortletApplication by it's unique name.  We use
@@ -46,7 +46,7 @@ public interface PortletRegistry
      */
     PortletApplication getPortletApplication( String name );
 
-    Collection getPortletApplications();
+    Collection<PortletApplication> getPortletApplications();
 
     /**
      * unique name is a string formed by the combination of a portlet's

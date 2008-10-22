@@ -21,6 +21,8 @@ import javax.portlet.PreferencesValidator;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.internal.InternalPortletContext;
 import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
@@ -32,6 +34,7 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * 
  * @version $Id$
  *  
  */
@@ -44,4 +47,5 @@ public interface PortletFactory
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
     PreferencesValidator getPreferencesValidator(PortletDefinition pd );
     void updatePortletConfig(PortletDefinition pd);
+    InternalPortletContext getPortletContext(PortletApplication pa)  throws PortletContainerException;
 }

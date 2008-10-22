@@ -48,7 +48,7 @@ public class JetspeedOptionalPlutoServices implements OptionalContainerServices
     public JetspeedOptionalPlutoServices(NamespaceMapper namespaceMapper, PortalAdministrationService adminService,
             PortletEnvironmentService environmentService, PortletInfoService portletInfoService,
             UserInfoService userInfoService, RequestAttributeService requestAttributeService,
-            PortletInvokerService invokerService)
+            PortletInvokerService invokerService, PortletRegistryService registryService, PortletPreferencesService preferencesService)
     {
         this.namespaceMapper = namespaceMapper;
         this.adminService = adminService;
@@ -57,6 +57,8 @@ public class JetspeedOptionalPlutoServices implements OptionalContainerServices
         this.userInfoService = userInfoService;
         this.requestAttributeService = requestAttributeService;
         this.invokerService = invokerService;
+        this.registryService = registryService;
+        this.preferencesService = preferencesService;
     }
     
     public NamespaceMapper getNamespaceMapper()

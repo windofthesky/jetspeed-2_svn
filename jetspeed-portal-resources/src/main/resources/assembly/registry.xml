@@ -21,14 +21,15 @@
   <!-- Portlet Factory -->
   <bean id="portletFactory" class="org.apache.jetspeed.factory.JetspeedPortletFactory">
     <meta key="j2:cat" value="default,registry" />
+    <constructor-arg index='0'><ref bean='ServletConfig'/></constructor-arg>
     <!-- If the following constructor-arg is set to true, 
       proxy instances will switch config mode to built-in custom config mode portlet. -->
-    <constructor-arg index="0">
+    <constructor-arg index="1">
       <value>${supported.portletmode.autoswitch.config}</value>
     </constructor-arg>
     <!-- If the following constructor-arg is set to true, 
       proxy instances will switch edit_defaults mode to edit mode automatically for portlets not supporting edit_defaults mode. -->
-    <constructor-arg index="1">
+    <constructor-arg index="2">
       <value>${supported.portletmode.autoswitch.edit_defaults}</value>
     </constructor-arg>
     <!-- Surrogate portlet for config modes. -->

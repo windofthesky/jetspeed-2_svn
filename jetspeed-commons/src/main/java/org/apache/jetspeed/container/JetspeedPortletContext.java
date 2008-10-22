@@ -21,11 +21,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import javax.servlet.ServletContext;
-import javax.servlet.RequestDispatcher;
-
-import javax.portlet.PortletContext;
 import javax.portlet.PortletRequestDispatcher;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.dispatcher.JetspeedRequestDispatcher;
 import org.apache.jetspeed.om.common.JetspeedServiceReference;
@@ -42,7 +40,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedPortletContext implements PortletContext, InternalPortletContext
+public class JetspeedPortletContext implements org.apache.pluto.internal.InternalPortletContext
 {
     /**
      * The path to the Local Portlet Apps directory
@@ -281,5 +279,21 @@ public class JetspeedPortletContext implements PortletContext, InternalPortletCo
         String result = pathBuffer.toString();
         return result;
 */        
+    }
+
+    public String getApplicationName()
+    {
+        return this.application.getName();
+    }
+
+    public PortletApplicationDefinition getPortletApplicationDefinition()
+    {
+        return this.application;
+    }
+
+    public Enumeration<String> getContainerRuntimeOptions()
+    {
+        // TODO: 2.2
+        return null;
     }
 }

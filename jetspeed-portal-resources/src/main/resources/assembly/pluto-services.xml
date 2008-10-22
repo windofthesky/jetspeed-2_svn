@@ -118,7 +118,8 @@ limitations under the License.
       <constructor-arg><ref bean="org.apache.pluto.services.UserInfoService"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.pluto.services.RequestAttributeService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
-	<!--  TODO: preferences, registry -->
+      <constructor-arg><ref bean="org.apache.pluto.services.PlutoRegistryServiceAdaptor"/></constructor-arg>            
+	<!--  TODO: preferences -->
     </bean>
     
     <bean id="org.apache.pluto.services.NamespaceMapper"
@@ -158,8 +159,11 @@ limitations under the License.
         <constructor-arg index="3"><ref bean="PortletRequestResponseUnwrapper"/></constructor-arg>
     </bean>
 
-
-
-
-    
+    <bean id="org.apache.pluto.services.PlutoRegistryServiceAdaptor"
+          class="org.apache.jetspeed.components.portletregistry.PlutoRegistryAdaptor">          
+	    <meta key="j2:cat" value="default" />
+	    <constructor-arg index="0"><ref bean="portletFactory" /></constructor-arg>         
+        <constructor-arg index="1"><ref bean="portletRegistry"/></constructor-arg>
+    </bean>
+        
 </beans>
