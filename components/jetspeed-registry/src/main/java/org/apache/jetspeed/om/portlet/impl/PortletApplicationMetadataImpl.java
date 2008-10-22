@@ -18,8 +18,8 @@ package org.apache.jetspeed.om.portlet.impl;
 
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.impl.GenericMetadataImpl;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 
 /**
  * 

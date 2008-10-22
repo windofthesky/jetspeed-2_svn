@@ -18,8 +18,8 @@ package org.apache.jetspeed.portalsite.impl;
 
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.portalsite.MenuSeparator;
 
 /**

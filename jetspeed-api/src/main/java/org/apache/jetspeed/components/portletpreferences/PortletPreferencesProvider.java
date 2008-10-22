@@ -16,20 +16,12 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.Collection;
-
-import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
-
-public interface PortletPreferencesProvider
+/**
+ * 
+ * @version $Id$
+ *
+ */
+public interface PortletPreferencesProvider extends org.apache.pluto.spi.optional.PortletPreferencesService
 {
     void init() throws Exception;
-    public PreferenceSetComposite getPreferenceSet(PortletDefinition pd);
-    public PreferenceSetComposite getPreferenceSet(PortletEntity pe);
-    public PreferenceSetComposite getPreferenceSet(PortletEntity pe, String userName);
-    public Collection<String> getUserNames(MutablePortletEntity pe);
-    public void savePreferenceSet(PortletDefinition pd, PreferenceSetComposite preferenceSet);
-    public void savePreferenceSet(PortletEntity pe, PreferenceSetComposite preferenceSet);
-    public void savePreferenceSet(PortletEntity pe, String userName, PreferenceSetComposite preferenceSet);        
 }

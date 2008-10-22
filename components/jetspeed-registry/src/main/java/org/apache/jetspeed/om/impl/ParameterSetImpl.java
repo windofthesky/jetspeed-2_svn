@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 //TODO: import org.apache.jetspeed.exception.JetspeedRuntimeException;
-import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.pluto.om.portlet.Parameter;
 import org.apache.pluto.om.portlet.ParameterSet;
 import org.apache.pluto.om.portlet.ParameterSetCtrl;
@@ -85,7 +85,7 @@ public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl
      */
     public Parameter add(String name, String value)
     {
-        ParameterComposite p = newParameterInstance();
+        InitParam p = newParameterInstance();
         p.setPortletName(name);
         p.setValue(value);
         add(p);
@@ -134,7 +134,7 @@ public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl
      */
     public boolean add(Object o)
     {
-        ParameterComposite p = (ParameterComposite) o;
+        InitParam p = (InitParam) o;
 
         return innerCollection.add(p);
     }
@@ -153,7 +153,7 @@ public abstract class ParameterSetImpl implements ParameterSet, ParameterSetCtrl
      * Creates a Parameter class this Collection will be working with.
      * <br>
      */
-    protected abstract ParameterComposite newParameterInstance();
+    protected abstract InitParam newParameterInstance();
 
     /**
      * @return

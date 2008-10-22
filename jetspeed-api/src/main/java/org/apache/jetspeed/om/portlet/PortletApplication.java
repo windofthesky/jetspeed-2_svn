@@ -16,17 +16,15 @@
  */
 package org.apache.jetspeed.om.portlet;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.xml.namespace.QName;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 
 /**
@@ -39,8 +37,58 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PortletApplication extends PortletApplicationDefinition
+public interface PortletApplication extends PortletApplicationDefinition, Serializable
 {
+    /*
+     * All Pluto PortletApplicationDefinition interface overrides for
+     * which there is a specialized/extended Jetspeed interface
+     * to ensure the proper type casting.
+     * 
+     * @see org.apache.pluto.om.portlet.PortletApplicationDefinition
+     */
+    PortletDefinition getPortlet(String name);
+    List<PortletDefinition> getPortlets();
+    PortletDefinition addPortlet(String name);
+
+    List<EventDefinition> getEventDefinitions();
+    EventDefinition addEventDefinition(String name);
+    EventDefinition addEventDefinition(QName qname);
+    
+    PublicRenderParameter getPublicRenderParameter(String identifier);
+    List<PublicRenderParameter> getPublicRenderParameters();
+    PublicRenderParameter addPublicRenderParameter(String name, String identifier);
+    PublicRenderParameter addPublicRenderParameter(QName qname, String identifier);
+
+    CustomPortletMode getCustomPortletMode(String name);
+    List<CustomPortletMode> getCustomPortletModes();
+    CustomPortletMode addCustomPortletMode(String name);
+    
+    CustomWindowState getCustomWindowState(String name);
+    List<CustomWindowState> getCustomWindowStates();
+    CustomWindowState addCustomWindowState(String name);
+    
+    UserAttribute getUserAttribute(String name);
+    List<UserAttribute> getUserAttributes();
+    UserAttribute addUserAttribute(String name);
+    
+    List<SecurityConstraint> getSecurityConstraints();
+    SecurityConstraint addSecurityConstraint(String transportGuarantee);
+    
+    Filter getFilter(String filterName);
+    List<Filter> getFilters();
+    Filter addFilter(String filterName);
+
+    FilterMapping getFilterMapping(String filterName);
+    List<FilterMapping> getFilterMappings();
+    FilterMapping addFilterMapping(String filterName);
+
+    List<Listener> getListeners();
+    Listener addListener(String listenerClass);
+
+    ContainerRuntimeOption getContainerRuntimeOption(String name);
+    List<ContainerRuntimeOption> getContainerRuntimeOptions();
+    ContainerRuntimeOption addContainerRuntimeOption(String name);
+    
     /**
      * The checksum on the portlet XML from the last deployment
      *  
@@ -57,6 +105,7 @@ public interface PortletApplication extends PortletApplicationDefinition
     
     /**
      * Returns the metadata from the extended jetspeed-portlet.xml
+     * The return value cannot be NULL
      * 
      * @return Jetspeed specific metadata
      */
@@ -69,23 +118,16 @@ public interface PortletApplication extends PortletApplicationDefinition
      * @return a web application
      */
     public WebApplicationDefinition getWebApplicationDefinition();
+
+
     
+    UserAttributeRef getUserAttributeRef(String name);
     /**
-     * Finds a portlet by portlet name, searching this portlet application's collection.
-     * 
-     * @param name The portlet name.
-     * @return A Portlet Definition
-     */
-    PortletDefinition getPortletDefinitionByName(String name);
-    
-    /**
-     * <p>Gets the collection of user attribute refs associated
+     * <p>Gets the list of user attribute refs associated
      * with this portlet application.</p>
      */
     List<UserAttributeRef> getUserAttributeRefs();
-
-    String getApplicationIdentifier();
-    void setApplicationIdentifier(String identifier);
+    UserAttributeRef addUserAttributeRef(String name);
 
     String getDescription();    
     void setDescription(String description);
@@ -116,32 +158,20 @@ public interface PortletApplication extends PortletApplicationDefinition
     int getApplicationType();
 
     /**
-     * Sets the Portlet Application type.
-     * Valid values are:
-     * <p>
-     *      {@link PortletApplication#WEBAPP} - A standard web application, stored in the web application
-     *               server's web application space.
-     * <p>
-     *      {@link PortletApplication#LOCAL} - A local portlet application stored within Jetspeed's web application.
-     * <p>
-     * @param type The type of portlet application.
-     */
-    void setApplicationType(int type);
-
-    /**
      * Gets a collection of all Jetspeed Services allowed for this application.
      * 
-     * @see org.apache.jetspeed.om.common.JetspeedServiceReference
+     * @see org.apache.jetspeed.om.portlet.JetspeedServiceReference
      * @return The collection of services of type <code>JetspeedServiceReference</code>.
      */
     List<JetspeedServiceReference> getJetspeedServices();
-    
+    void addJetspeedServiceReference(String name);
+
     PortletMode getMappedPortletMode(PortletMode mode);
     WindowState getMappedWindowState(WindowState state);
     PortletMode getCustomPortletMode(PortletMode mode);
     WindowState getCustomWindowState(WindowState state);
         
-    List<PortletMode> getSupportedPortletModes();
+    List<PortletMode> getSupportedPortletModes();    
     List<WindowState> getSupportedWindowStates();
     
     /**
@@ -187,6 +217,5 @@ public interface PortletApplication extends PortletApplicationDefinition
      * 
      * @return true when this app is a Jetspeed layout application
      */
-    boolean isLayoutApplication();
-    
+    boolean isLayoutApplication();    
 }

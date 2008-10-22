@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.preference.impl.FragmentPortletPreferenceSet;
 import org.apache.pluto.om.portlet.ObjectID;
@@ -76,17 +76,17 @@ public class FragmentPortletDefinition implements PortletDefinition
         portletDefinition.addDisplayName(locale, displayName);
     }
 
-    public ParameterComposite addInitParameter(String name, String value, DescriptionSet description)
+    public InitParam addInitParameter(String name, String value, DescriptionSet description)
     {
         return portletDefinition.addInitParameter(name, value, description);
     }
 
-    public ParameterComposite addInitParameter(String name, String value, String description, Locale locale)
+    public InitParam addInitParameter(String name, String value, String description, Locale locale)
     {
         return portletDefinition.addInitParameter(name, value, description, locale);
     }
 
-    public ParameterComposite addInitParameter(String name, String value)
+    public InitParam addInitParameter(String name, String value)
     {
         return portletDefinition.addInitParameter(name, value);
     }

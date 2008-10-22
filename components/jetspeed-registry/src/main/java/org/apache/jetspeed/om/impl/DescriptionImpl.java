@@ -19,7 +19,7 @@ package org.apache.jetspeed.om.impl;
 import java.util.Locale;
 
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.jetspeed.om.common.MutableDescription;
+import org.apache.jetspeed.om.portlet.Description;
 
 /**
  * DescriptionImpl
@@ -27,13 +27,13 @@ import org.apache.jetspeed.om.common.MutableDescription;
  * Basic Implementation of the <code>MutableDescription</code>
  * interface.
  * 
- * @see org.apache.jetspeed.om.common.MutableDescription
+ * @see org.apache.jetspeed.om.portlet.Description
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public abstract class DescriptionImpl implements MutableDescription 
+public abstract class DescriptionImpl implements Description 
 {
 
     private String description;
@@ -78,7 +78,7 @@ public abstract class DescriptionImpl implements MutableDescription
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.MutableDescription#setLocale(java.util.Locale)
+     * @see org.apache.jetspeed.om.portlet.Description#setLocale(java.util.Locale)
      */
     public void setLocale(Locale locale)
     {

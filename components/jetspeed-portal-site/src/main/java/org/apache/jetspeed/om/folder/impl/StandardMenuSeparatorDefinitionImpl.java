@@ -19,7 +19,7 @@ package org.apache.jetspeed.om.folder.impl;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
-import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * This abstract class implements the menu separator definition

@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.portlet;
 
 import java.util.Locale;
-
-import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * LocalizedField
@@ -39,9 +37,4 @@ public interface LocalizedField
     
     public String getValue();
     public void setValue(String value);
-    
-    /**
-     * 
-     */
-    public ObjectID getId();
 }

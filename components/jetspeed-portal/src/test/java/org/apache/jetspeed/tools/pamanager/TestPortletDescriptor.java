@@ -28,10 +28,10 @@ import junit.textui.TestRunner;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.DirectoryHelper;
@@ -184,7 +184,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
         int count = 0;
         while (it.hasNext())
         {
-            ParameterComposite parameter = (ParameterComposite) it.next();
+            InitParam parameter = (InitParam) it.next();
             assertTrue("InitParam.Name invalid: " + parameter.getPortletName(), parameter.getPortletName().equals("hello"));
             assertTrue("InitParam.Value invalid: " + parameter.getValue(), parameter.getValue().equals("Hello Portlet"));
             assertTrue(

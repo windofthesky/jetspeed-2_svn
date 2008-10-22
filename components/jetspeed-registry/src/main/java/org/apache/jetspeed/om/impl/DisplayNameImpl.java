@@ -19,7 +19,7 @@ package org.apache.jetspeed.om.impl;
 import java.util.Locale;
 
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.jetspeed.om.common.MutableDisplayName;
+import org.apache.jetspeed.om.portlet.DisplayName;
 
 /**
  * DisplayNameImpl
@@ -28,7 +28,7 @@ import org.apache.jetspeed.om.common.MutableDisplayName;
  * @version $Id$
  *
  */
-public abstract class DisplayNameImpl implements MutableDisplayName
+public abstract class DisplayNameImpl implements DisplayName
 {
     private String displayName;
     private Locale locale;
@@ -78,7 +78,7 @@ public abstract class DisplayNameImpl implements MutableDisplayName
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.MutableDisplayName#setDisplayName(java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.DisplayName#setDisplayName(java.lang.String)
      */
     public void setDisplayName(String displayName)
     {
@@ -86,7 +86,7 @@ public abstract class DisplayNameImpl implements MutableDisplayName
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.MutableDisplayName#setLocale(java.util.Locale)
+     * @see org.apache.jetspeed.om.portlet.DisplayName#setLocale(java.util.Locale)
      */
     public void setLocale(Locale locale)
     {

@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 
 /**
  * GenericMetadataImpl

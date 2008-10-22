@@ -16,7 +16,7 @@
 */
 package org.apache.jetspeed.components.portletregistry;
 
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * <p>

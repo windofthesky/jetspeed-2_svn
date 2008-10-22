@@ -14,18 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.portlet;
+package org.apache.jetspeed.om.portlet;
 
-import java.security.Principal;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
+ * 
+ * @version $Id$
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public interface PrincipalAware
+public interface InitParam extends org.apache.pluto.om.portlet.InitParam, Serializable
 {
-    Principal  getPrincipal();   
-
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
 }

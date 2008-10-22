@@ -18,7 +18,7 @@ package org.apache.jetspeed.om.portlet.impl;
 
 import javax.portlet.PortletMode;
 
-import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
+import org.apache.jetspeed.om.portlet.CustomPortletMode;
 
 public class CustomPortletModeImpl implements CustomPortletMode
 {

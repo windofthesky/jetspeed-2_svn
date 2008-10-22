@@ -17,7 +17,7 @@
 package org.apache.jetspeed.om.impl;
 
 import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
 
 /**
  * <p>User attribute ref implementation.</p>
@@ -26,11 +26,6 @@ import org.apache.jetspeed.om.common.UserAttributeRef;
  */
 public class UserAttributeRefImpl implements UserAttributeRef
 {
-
-    /** The application id. */
-    protected long appId;
-    protected long id;    
-    
     /**
      * <p>Default constructor.</p>
      */
@@ -56,14 +51,14 @@ public class UserAttributeRefImpl implements UserAttributeRef
       */
       public UserAttributeRefImpl(UserAttribute userAttribute)
       {
-          this.name = userAttribute.getPortletName();
+          this.name = userAttribute.getName();
           this.description = userAttribute.getDescription();
       }
 
     private String name;
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttributeRef#getName()
+     * @see org.apache.jetspeed.om.portlet.UserAttributeRef#getName()
      */
     public String getName()
     {
@@ -71,7 +66,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttributeRef#setName(java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.UserAttributeRef#setName(java.lang.String)
      */
     public void setName(String name)
     {
@@ -81,7 +76,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
     private String nameLink;
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttributeRef#getNameLink()
+     * @see org.apache.jetspeed.om.portlet.UserAttributeRef#getNameLink()
      */
     public String getNameLink()
     {
@@ -89,7 +84,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttributeRef#setNameLink(java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.UserAttributeRef#setNameLink(java.lang.String)
      */
     public void setNameLink(String nameLink)
     {
@@ -99,7 +94,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
     private String description;
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttributeRef#getDescription()
+     * @see org.apache.jetspeed.om.portlet.UserAttributeRef#getDescription()
      */
     public String getDescription()
     {
@@ -107,7 +102,7 @@ public class UserAttributeRefImpl implements UserAttributeRef
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.UserAttributeRef#setDescription(java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.UserAttributeRef#setDescription(java.lang.String)
      */
     public void setDescription(String description)
     {

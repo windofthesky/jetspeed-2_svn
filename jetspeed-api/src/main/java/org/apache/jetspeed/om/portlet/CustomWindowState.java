@@ -14,15 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.portlet;
+package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
 
-import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
-public interface CustomPortletMode extends Serializable
+/**
+ * 
+ * @version $Id$
+ *
+ */
+public interface CustomWindowState extends org.apache.pluto.om.portlet.CustomWindowState, Serializable
 {
-    PortletMode getCustomMode();
-    PortletMode getMappedMode();
-    String getDescription();
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
+    
+    WindowState getCustomState();
+    WindowState getMappedState();
 }

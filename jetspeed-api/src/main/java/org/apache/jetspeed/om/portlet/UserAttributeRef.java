@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
-
-import org.apache.pluto.om.ElementFactoryList;
-import org.apache.pluto.om.portlet.Description;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>Interface allowing mapping of user attributes between the portal implementation
@@ -35,14 +34,13 @@ public interface UserAttributeRef extends Serializable
     /** Getter for the user-attribute-ref name. */
     String getName();
     
-    /** Setter for the user-attribute-ref name. */
-    void setName(String name);
-    
     /** Getter for the user-attribute-ref name-link. */
     String getNameLink();
     
     /** Setter for the user-attribute-ref name-link. */
     void setNameLink(String nameLink);
     
-    ElementFactoryList<Description> getDescriptions();
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
 }

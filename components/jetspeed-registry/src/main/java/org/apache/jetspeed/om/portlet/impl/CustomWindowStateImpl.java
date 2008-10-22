@@ -18,7 +18,7 @@ package org.apache.jetspeed.om.portlet.impl;
 
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.om.common.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.CustomWindowState;
 
 public class CustomWindowStateImpl implements CustomWindowState
 {

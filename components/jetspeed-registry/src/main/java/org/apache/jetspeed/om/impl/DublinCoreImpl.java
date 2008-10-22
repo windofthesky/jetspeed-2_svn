@@ -18,8 +18,8 @@ package org.apache.jetspeed.om.impl;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.DublinCore;
-import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.portlet.DublinCore;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * DublinCoreImpl

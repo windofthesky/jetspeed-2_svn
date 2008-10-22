@@ -45,8 +45,8 @@ import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -492,7 +492,7 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                     entityID = entity.getId().toString();
                 }
                 PortletApplicationDefinition portletAppDef = entity.getPortletDefinition()
-                        .getPortletApplicationDefinition();
+                        .getApplication();
 
                 if (null != portletAppDef)
                 {

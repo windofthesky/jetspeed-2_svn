@@ -35,10 +35,6 @@ import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvi
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.MutableDisplayName;
-import org.apache.jetspeed.om.common.ParameterComposite;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.common.preference.PreferenceComposite;
 import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
@@ -53,6 +49,10 @@ import org.apache.jetspeed.om.impl.PortletDisplayNameImpl;
 import org.apache.jetspeed.om.impl.PortletParameterSetImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefImpl;
 import org.apache.jetspeed.om.impl.SecurityRoleRefSetImpl;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.HashCodeBuilder;
@@ -502,9 +502,9 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
      * @see org.apache.jetspeed.om.common.portlet.PortletDefinition#setInitParameter(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
-    public ParameterComposite addInitParameter( String name, String value, DescriptionSet description )
+    public InitParam addInitParameter( String name, String value, DescriptionSet description )
     {
-        ParameterComposite pc = addInitParameter(name, value);
+        InitParam pc = addInitParameter(name, value);
         pc.setDescriptionSet(description);
         return pc;
     }
@@ -513,9 +513,9 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
      * @see org.apache.jetspeed.om.portlet.PortletDefinition#addInitParameter(java.lang.String,
      *      java.lang.String, java.lang.String, java.util.Locale)
      */
-    public ParameterComposite addInitParameter( String name, String value, String description, Locale locale )
+    public InitParam addInitParameter( String name, String value, String description, Locale locale )
     {
-        ParameterComposite param = addInitParameter(name, value);
+        InitParam param = addInitParameter(name, value);
         param.addDescription(locale, description);
         return param;
     }
@@ -529,10 +529,10 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
      * @see org.apache.jetspeed.om.portlet.PortletDefinition#setInitParameter(java.lang.String,
      *      java.lang.String)
      */
-    public ParameterComposite addInitParameter( String name, String value )
+    public InitParam addInitParameter( String name, String value )
     {
         paramListWrapper.setInnerCollection(parameterSet);
-        return (ParameterComposite) paramListWrapper.add(name, value);
+        return (InitParam) paramListWrapper.add(name, value);
     }
 
     /**
@@ -718,7 +718,7 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
             descriptions = new ArrayList();
         }
         descListWrapper.setInnerCollection(descriptions);
-        MutableDescription descObj = new PortletDescriptionImpl();
+        Description descObj = new PortletDescriptionImpl();
         descObj.setLocale(locale);
         descObj.setDescription(description);
         descListWrapper.addDescription(descObj);
@@ -745,7 +745,7 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
             displayNames = new ArrayList();
         }
         DNListWrapper.setInnerCollection(displayNames);
-        MutableDisplayName dn = new PortletDisplayNameImpl();
+        DisplayName dn = new PortletDisplayNameImpl();
         dn.setLocale(locale);
         dn.setDisplayName(displayName);
         DNListWrapper.addDisplayName(dn);
@@ -892,7 +892,7 @@ public class PortletDefinitionImpl implements PortletDefinition, PreferencesVali
     }
 
     /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
+     * @see org.apache.jetspeed.om.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.portlet.GenericMetadata)
      */
     public void setMetadata( GenericMetadata metadata )
     {

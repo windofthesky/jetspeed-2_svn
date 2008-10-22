@@ -25,7 +25,7 @@ import junit.textui.TestRunner;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
+import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;

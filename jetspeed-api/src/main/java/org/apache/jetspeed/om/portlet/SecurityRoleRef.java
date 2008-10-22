@@ -14,25 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.preference;
+package org.apache.jetspeed.om.portlet;
 
-import java.util.Set;
-
-import org.apache.pluto.om.portlet.PreferenceSet;
-import org.apache.pluto.om.portlet.PreferenceSetCtrl;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * <p>
- * PreferenceSetComposite
- * </p>
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PreferenceSetComposite extends PreferenceSet, PreferenceSetCtrl
+public interface SecurityRoleRef extends org.apache.pluto.om.portlet.SecurityRoleRef, Serializable
 {
-    Set getNames();
-
-    int size();
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
 }

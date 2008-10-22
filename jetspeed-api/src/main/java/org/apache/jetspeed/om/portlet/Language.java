@@ -17,20 +17,18 @@
 
 package org.apache.jetspeed.om.portlet;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import org.apache.pluto.om.portlet.PortletInfo;
 
 /**
  * @version $Id$
  *
  */
-public interface Language extends PortletInfo
+public interface Language extends PortletInfo, Serializable
 {
     Locale getLocale();
     void setKeywords(List<String> keywords);
-    public void setLocale(Locale locale);    
     ResourceBundle getResourceBundle();
 }

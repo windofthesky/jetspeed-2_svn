@@ -46,8 +46,8 @@ import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.common.LocalizedField;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.RequestContext;
@@ -258,10 +258,7 @@ public class PortletRendererImpl implements PortletRenderer
     {
         if (portletDefinition == null)
             return 0;
-        String expiration = portletDefinition.getExpirationCache();
-        if (expiration == null)
-            return 0;
-        return Integer.parseInt(expiration);
+        return portletDefinition.getExpirationCache();
     }
     
     /**

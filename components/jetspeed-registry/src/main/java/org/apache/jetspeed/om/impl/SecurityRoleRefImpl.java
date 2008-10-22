@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.SecurityRoleRefComposite;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.portlet.Description;
@@ -37,7 +37,7 @@ import org.apache.pluto.om.portlet.SecurityRoleRef;
  * @version $Id$
  *
  */
-public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializable
+public class SecurityRoleRefImpl implements SecurityRoleRef, Serializable
 {
 
     protected long id;
@@ -125,7 +125,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#addDescription(org.apache.pluto.om.portlet.Description)
+     * @see org.apache.jetspeed.om.portlet.SecurityRoleRef#addDescription(org.apache.pluto.om.portlet.Description)
      */
     public void addDescription(Description description)
     {
@@ -150,7 +150,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#setDescriptionSet(org.apache.pluto.om.common.DescriptionSet)
+     * @see org.apache.jetspeed.om.common.SecurityRoleRef#setDescriptionSet(org.apache.pluto.om.common.DescriptionSet)
      */
     public void setDescriptionSet(DescriptionSet descriptions)
     {
@@ -167,7 +167,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
      */
     public void setDescription(String arg0)
     {
-        MutableDescription descObj =new SecurityRoleRefDescriptionImpl();
+        Description descObj =new SecurityRoleRefDescriptionImpl();
             
         
         descObj.setLocale(JetspeedLocale.getDefaultLocale());
@@ -176,7 +176,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRefComposite, Serializab
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.SecurityRoleRefComposite#getDescriptionSet()
+     * @see org.apache.jetspeed.om.common.SecurityRoleRef#getDescriptionSet()
      */
     public DescriptionSet getDescriptionSet()
     {

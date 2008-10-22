@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.om.common;
+package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
 
@@ -31,12 +31,4 @@ public interface JetspeedServiceReference extends Serializable
      * @return
      */
     String getName();
-
-    /**
-     * The name of the Jetspeed Component Service as defined in the component assembly.
-     * 
-     * @param name
-     */
-    void setName(String name);
-        
 }

@@ -22,9 +22,9 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
 
 /**
  * <p> Common user info management support

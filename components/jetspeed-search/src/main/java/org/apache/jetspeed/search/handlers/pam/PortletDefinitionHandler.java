@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.commons.collections.MultiHashMap;
-import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.search.AbstractObjectHandler;

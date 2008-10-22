@@ -17,18 +17,10 @@
 package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.ParameterComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.portlet.Language;
-import org.apache.pluto.om.portlet.Preference;
-import org.apache.pluto.om.portlet.DisplayName;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.SecurityRoleRef;
+import javax.xml.namespace.QName;
 
 /**
  * 
@@ -41,85 +33,47 @@ import org.apache.pluto.om.portlet.SecurityRoleRef;
 public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDefinition, Serializable
 {
     PortletApplication getApplication();
+    InitParam getInitParam(String paramName);
+    List<InitParam> getInitParams();
+    InitParam addInitParam(String paramName);
     
+    PortletInfo getPortletInfo();
+
+    Preferences getPortletPreferences();
+
+    List<EventDefinitionReference> getSupportedProcessingEvents();
+    EventDefinitionReference addSupportedProcessingEvent(QName qname);
+    EventDefinitionReference addSupportedProcessingEvent(String name);
+    
+    List<EventDefinitionReference> getSupportedPublishingEvents();
+    EventDefinitionReference addSupportedPublishingEvent(QName qname);
+    EventDefinitionReference addSupportedPublishingEvent(String name);
+    
+    SecurityRoleRef getSecurityRoleRef(String roleName);
+    List<SecurityRoleRef> getSecurityRoleRefs();
+    SecurityRoleRef addSecurityRoleRef(String roleName);
+
+    Supports getSupports(String mimeType);
+    List<Supports> getSupports();
+    Supports addSupports(String mimeType);
+
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
+
+    DisplayName getDisplayName(Locale locale);
+    List<DisplayName> getDisplayNames();
+    DisplayName addDisplayName(String lang);
     GenericMetadata getMetadata();
-    
-    void setMetadata(GenericMetadata metadata);
-    
-    void addLanguage(String title, String shortTitle, String keywords, Locale locale);
+
+    ContainerRuntimeOption getContainerRuntimeOption(String name);
+    List<ContainerRuntimeOption> getContainerRuntimeOptions();
+    ContainerRuntimeOption addContainerRuntimeOption(String name);
     
     Language getLanguage(Locale locale);
-    
     List<Language> getLanguages();
+    Language addLanguage(Locale locale);
     
-    /**
-     * The PreferenceSet is a collection user-defineable preferences
-     * that this portlet can use to process its logic.
-     * 
-     * @param preferences
-     */
-    void setPreferenceSet(PreferenceSet preferences);
-
-    void setInitParameterSet(ParameterSet parameters);
-
-    void setInitSecurityRoleRefSet(SecurityRoleRefSet securityRefs);
-    
-    /**
-     * Convenience method for directly adding init parameters
-     * to this <code>PortletDefinition.</code>.  This has the
-     * same affect as 
-     * <code>((ParameterSetCtrl)PortletDefinition.getInitParamaterSet()).add()</code>
-     * @param name Name of parameter to set
-     * @param value new value of said parameter
-     * @return ParameterComposite newly created parameter
-     */
-    ParameterComposite addInitParameter(String name, String value);
-
-    /**
-     * Same as <code>setInitParameter(name, title) plus allows a
-     * description to inlcuded.
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplicationComposite#addInitParameter(java.lang.String, java.lang.String)
-     * @param name Name of parameter to set
-     * @param value new value of the parameter
-     * @param DescriptionSet containing locale-specific descriptions of the parameter
-     * @return ParameterComposite newly created parameter
-     */
-    ParameterComposite addInitParameter(String name, String value, DescriptionSet description);
-
-    /**
-     * Same as <code>setInitParameter(name, title) plus allows you 
-     * to define one initial localized desription.
-     * 
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplicationComposite#addInitParameter(java.lang.String, java.lang.String)
-     * @param name Name of parameter to set
-     * @param value new value of the parameter
-     * @param description A description for this parameter
-     * @param locale The locale the description
-     * @return ParameterComposite newly created parameter
-     */
-    ParameterComposite addInitParameter(String name, String value, String description, Locale locale);
-
-    /**
-     * Setter for setting expiration cache time for this portlet     
-     */
-    void setExpirationCache(String cache);
-
-    void setPortletApplicationDefinition(PortletApplicationDefinition pad);
-
-    /**
-     * @obsolete use #getPreferenceSet.add(String, String[])
-     */
-    PreferenceComposite addPreference(String name, String[] values);
-
-    /**
-     * @obsolete use #getPreferenceSet.add(String, String[])
-     */
-    void addPreference(Preference preference);
-
-    void setPortletIdentifier(String portletIndentifier);
-
-    String getPortletIdentifier();
-
     /**
      * A portlet's unique name is a string formed by the combination of a portlet's
      * unique within it's parent application plus the parent application's
@@ -154,44 +108,8 @@ public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDe
      */
     String getDescriptionText(Locale locale);
 
-    void addDescription(Locale locale, String description);
-    
-    DescriptionSet getDescriptionSet();
-
-    void addDisplayName(Locale locale, String displayName);
-
-    /**
-     * 
-     * <p>
-     * addDisplayName
-     * </p>
-     * 
-     * @param displayName
-     *
-     */
-    void addDisplayName(DisplayName displayName);
-    
-    DisplayNameSet getDisplayNameSet();
-
     String getPreferenceValidatorClassname();
-
     void setPreferenceValidatorClassname(String classname);
-
-    /**
-     * 
-     * <p>
-     * addSecurityRoleRef
-     * </p>
-     * 
-     * Adds the <code>securityRef</code> to the existing
-     * set of SecurityRoleRefs of this PortletDefinition
-     * 
-     * @param securityRef SecurityRoleRef to add.
-     *
-     */
-    void addSecurityRoleRef(SecurityRoleRef securityRef);
-    
-    SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink);
 
     /**
      * <p>

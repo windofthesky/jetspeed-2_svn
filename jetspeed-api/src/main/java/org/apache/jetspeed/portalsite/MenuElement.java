@@ -18,7 +18,7 @@ package org.apache.jetspeed.portalsite;
 
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * This interface describes common features of portal-site

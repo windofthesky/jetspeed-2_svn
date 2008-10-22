@@ -21,8 +21,9 @@ import org.apache.commons.digester.Rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
 
 /**
  * This class helps load the jetspeed portlet extension user attributes.
@@ -42,7 +43,19 @@ public class UserAttributeRefRule extends Rule
 
     public void end(String namespace, String name) throws Exception
     {
-        UserAttributeRef userAttributeRef = (UserAttributeRef) digester.peek(0);
-        app.addUserAttributeRef(userAttributeRef);
+        UserAttributeRef uar1 = (UserAttributeRef) digester.peek(0);
+        UserAttributeRef uar2 = app.addUserAttributeRef(uar1.getName());
+        if (uar1.getNameLink() != null)
+        {
+            uar2.setNameLink(uar1.getNameLink());
+        }
+        if (uar1.getDescriptions() != null)
+        {
+            for (Description d : uar1.getDescriptions())
+            {
+                Description target = uar2.addDescription(d.getLang());
+                target.setDescription(d.getDescription());
+            }
+        }
     }
 }

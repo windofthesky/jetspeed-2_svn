@@ -14,31 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.common.preference;
+package org.apache.jetspeed.om.portlet;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
+
+import javax.portlet.PortletMode;
 
 /**
- * PreferenceValue
- * <br />
- * Represents an individual value for a preference which could
- * either be the default preferences from a portlet's deployment descriptor
- * or a preference value for a specific user.  This class should only be
- * accessed by Jetspeed internals as Preference values are really
- * only String values.  The use of preference value objects helps
- * facilitate the use object relational tools in terms of persistence operations. 
  * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public interface PreferenceValue
+public interface CustomPortletMode extends org.apache.pluto.om.portlet.CustomPortletMode, Serializable
 {
-    /**
-     * @return
-     */
-    public abstract String getValue();
-    /**
-     * @param string
-     */
-    public abstract void setValue(String string);   
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
     
+    PortletMode getCustomMode();
+    PortletMode getMappedMode();
 }

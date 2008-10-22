@@ -19,8 +19,8 @@ package org.apache.jetspeed.om.folder.impl;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**

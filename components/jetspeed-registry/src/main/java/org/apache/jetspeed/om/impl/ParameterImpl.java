@@ -24,8 +24,8 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.MutableDescription;
-import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.portlet.Description;
@@ -35,7 +35,7 @@ import org.apache.pluto.om.portlet.DescriptionSet;
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  */
-public class ParameterImpl implements ParameterComposite, Serializable
+public class ParameterImpl implements InitParam, Serializable
 {
 
     private String name;
@@ -133,7 +133,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.ParameterComposite#addDescription(java.util.Locale, java.lang.String)
+     * @see org.apache.jetspeed.om.portlet.InitParam#addDescription(java.util.Locale, java.lang.String)
      */
     public void addDescription(Locale locale, String desc)
     {
@@ -144,7 +144,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
         descCollWrapper.setInnerCollection(descriptions);
         try
         {
-            MutableDescription descObj = new ParameterDescriptionImpl();
+            Description descObj = new ParameterDescriptionImpl();
                 
 			descObj.setLocale(locale);
 			descObj.setDescription(desc);
@@ -202,7 +202,7 @@ public class ParameterImpl implements ParameterComposite, Serializable
     }
 
     /**
-     * @see org.apache.jetspeed.om.common.ParameterComposite#getDescriptionSet()
+     * @see org.apache.jetspeed.om.common.InitParam#getDescriptionSet()
      */
     public DescriptionSet getDescriptionSet()
     {

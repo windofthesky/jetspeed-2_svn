@@ -30,18 +30,16 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
-import org.apache.jetspeed.om.common.portlet.CustomWindowState;
 import org.apache.jetspeed.om.impl.UserAttributeImpl;
+import org.apache.jetspeed.om.portlet.CustomPortletMode;
+import org.apache.jetspeed.om.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 
 /**
  *
@@ -52,47 +50,32 @@ import org.apache.pluto.om.servlet.WebApplicationDefinition;
  */
 public class PortletApplicationDefinitionImpl implements PortletApplication, Serializable, Support
 { 
-    /**
-     * Unique id of the application.  This serves as the primary key in database
-     * and in any caching of this object.
-     */
-    private Long id;
-    
-    private JetspeedLongObjectID oid;
-    
     /** Holds value of property name. */
     private String name;
 
     /** Holds value of property version. */
     private String version;
 
-    /** Holds the optional application identifier from the portlet.xml */
-    private String applicationIdentifier;
-
     /** WebApplication property */
     private transient WebApplicationDefinition webApplication;
-    /** PK of this Portlet Application's Web Application */
-    protected long webApplicationId;
     
     /** Metadata property */
     private Collection metadataFields = null;
 
     /** Metadata property */
-    private Collection services = new ArrayList();
+    private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
     
     /** Description */
     private String description;
 
-    private Collection portlets;
-
     /** User attribute refs collection. */
-    private Collection userAttributeRefs;
+    private List<UserAttributeRefImpl> userAttributeRefs;
     
     /** User attributes collection. */
     private Collection userAttributes;
     
-    private PortletDefinitionListImpl listWrapper = new PortletDefinitionListImpl();
-
+    protected List<PortletDefinition> portlets;
+    
     private int applicationType = PortletApplication.WEBAPP;
     
     private String checksum = "0";
@@ -113,23 +96,11 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
-        portlets = new ArrayList();
+        portlets = new ArrayList<PortletDefinition>();
         userAttributes = new ArrayList();        
         userAttributeRefs = new ArrayList();
         customPortletModes = new ArrayList();
         customWindowStates = new ArrayList();
-    }
-
-    /**
-     * @see org.apache.pluto.om.portlet.PortletApplicationDefinition#getId()
-     */
-    public ObjectID getId()
-    {
-        if ( oid == null && id != null )
-        {
-            oid = new JetspeedLongObjectID(id);
-        }
-        return oid;
     }
 
     /**
@@ -172,12 +143,42 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return webApplication;
     }
 
-    /**
-     * @see org.apache.pluto.om.portlet.PortletApplicationDefinition#getPortletDefinitionList()
-     */
-    public PortletDefinitionList getPortletDefinitionList()
+    public PortletDefinition getPortlet(String portletName)
     {
-        return new PortletDefinitionListImpl(portlets);
+        for (PortletDefinition pd : getPortlets())
+        {
+            if (pd.getPortletName().equals(portletName))
+            {
+                return pd;
+            }
+        }
+        return null;
+    }
+
+    public ElementFactoryList<PortletDefinition> getPortlets()
+    {
+        if (portlets == null || !(portlets instanceof ElementFactoryList))
+        {
+            ElementFactoryList<PortletDefinition> lf = 
+                new ElementFactoryList<PortletDefinition>( new ElementFactoryList.Factory<PortletDefinition>()
+                {
+                    public Class<? extends PortletDefinition> getElementClass()
+                    {
+                        return PortletDefinitionImpl.class;
+                    }
+
+                    public PortletDefinition newElement()
+                    {
+                        return new PortletDefinitionImpl();
+                    }
+                }); 
+            if (portlets != null)
+            {
+                lf.addAll(portlets);
+            }
+            portlets = lf;
+        }
+        return (ElementFactoryList<PortletDefinition>)portlets;
     }
 
     /**
@@ -205,72 +206,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     }
 
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#addPortletDefinition(org.apache.pluto.om.portlet.PortletDefinition)
-     */
-    public void addPortletDefinition(PortletDefinition pd)
-    {
-       ((PortletDefinition) pd).setPortletApplicationDefinition(this);
-        portlets.add(pd);
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getPortletDefinitions()
-     */
-    public Collection getPortletDefinitions()
-    {
-        return portlets;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getPortletDefinitionByName(java.lang.String)
-     */
-    public PortletDefinition getPortletDefinitionByName(String name)
-    {
-    	listWrapper.setInnerCollection(portlets);
-        return listWrapper.get(name);
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setPortletDefinitionList(org.apache.pluto.om.portlet.PortletDefinitionList)
-     */
-    public void setPortletDefinitionList(PortletDefinitionList portlets)
-    {
-        this.portlets = ((PortletDefinitionListImpl) portlets).getInnerCollection();
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#setUserAttributeRefs(java.util.Collection)
-     */
-    public void setUserAttributeRefs(Collection userAttributeRefs)
-    {
-        this.userAttributeRefs = userAttributeRefs;
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getUserAttributeRefs()
-     */
-    public Collection getUserAttributeRefs()
-    {
-        return this.userAttributeRefs;
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#addUserAttributeRef(org.apache.jetspeed.om.common.UserAttributeRef)
-     */
-    public void addUserAttributeRef(UserAttributeRef userAttributeRef)
-    {
-        userAttributeRefs.add(userAttributeRef);
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addUserAttribute(org.apache.jetspeed.om.common.UserAttribute)
-     */
-    public void addUserAttribute(UserAttribute userAttribute)
-    {
-        userAttributes.add(userAttribute);
-    }
-    
     /** 
      * @see org.apache.jetspeed.om.portlet.PortletApplication#addUserAttribute(java.lang.String, java.lang.String)
      */
@@ -282,38 +217,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         userAttributes.add(userAttribute);
     }
     
-    /** 
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#setUserAttributes(java.util.Collection)
-     */
-    public void setUserAttributes(Collection userAttributes)
-    {
-        this.userAttributes = userAttributes;
-    }
-
-    /** 
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getUserAttributes()
-     */
-    public Collection getUserAttributes()
-    {
-        return this.userAttributes;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#setApplicationIdentifier(java.lang.String)
-     */
-    public void setApplicationIdentifier(String applicationIdentifier)
-    {
-        this.applicationIdentifier = applicationIdentifier;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getApplicationIdentifier()
-     */
-    public String getApplicationIdentifier()
-    {
-        return this.applicationIdentifier;
-    }
-
     /**
      * @see org.apache.jetspeed.om.portlet.PortletApplication#setApplicationType(int)
      */
@@ -346,46 +249,14 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return metadata;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.common.GenericMetadata)
-     */
-    public void setMetadata(GenericMetadata metadata)
-    {
-        this.metadataFields = metadata.getFields();     
-    }
-
-    /**
-     * @return
-     */
-    protected Collection getMetadataFields()
-    {
-        return metadataFields;
-    }
-
-    /**
-     * @param collection
-     */
-    protected void setMetadataFields(Collection metadataFields)
-    {
-        this.metadataFields = metadataFields;
-    }
-
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getJetspeedServices()
      */
-    public Collection getJetspeedServices()
+    public List<JetspeedServiceReference> getJetspeedServices()
     {
         return services;
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#addJetspeedService(org.apache.jetspeed.om.common.JetspeedServiceReference)
-     */
-    public void addJetspeedService(JetspeedServiceReference service)
-    {
-        services.add(service);
-    }
-
     public long getChecksum()
     {
         if(checksumLong == -1)
@@ -406,14 +277,13 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
      */
     public void postLoad(Object parameter) throws Exception
     {
-        Iterator portletDefinitions = getPortletDefinitions().iterator();
-        while (portletDefinitions.hasNext())
+        for (PortletDefinition pd : portlets)
         {
-            ((Support) portletDefinitions.next()).postLoad(this);
+            ((Support)pd).postLoad(this);
         }
     }
 
-    public Collection getCustomPortletModes()
+    public List<CustomPortletMode> getCustomPortletModes()
     {
         return customPortletModes;
     }

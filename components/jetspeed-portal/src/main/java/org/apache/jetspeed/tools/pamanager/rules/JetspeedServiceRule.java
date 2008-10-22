@@ -17,7 +17,7 @@
 package org.apache.jetspeed.tools.pamanager.rules;
 
 import org.apache.commons.digester.Rule;
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
+import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 
 
@@ -38,6 +38,6 @@ public class JetspeedServiceRule extends Rule
     public void end(String namespace, String name) throws Exception
     {
         JetspeedServiceReference service = (JetspeedServiceReference) digester.peek(0);
-        app.addJetspeedService(service);
+        app.addJetspeedServiceReference(service.getName());
     }
 }

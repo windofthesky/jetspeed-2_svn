@@ -18,7 +18,7 @@
 package org.apache.jetspeed.container;
 
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * @version $Id$

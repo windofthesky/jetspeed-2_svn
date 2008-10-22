@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.om.impl;
 
-import org.apache.jetspeed.om.common.ParameterComposite;
+import org.apache.jetspeed.om.portlet.InitParam;
 
 
 /**
@@ -38,7 +38,7 @@ public class ServletParameterSetImpl extends ParameterSetImpl
         super();
     }
 
-    protected ParameterComposite newParameterInstance()
+    protected InitParam newParameterInstance()
     {
         try
         {

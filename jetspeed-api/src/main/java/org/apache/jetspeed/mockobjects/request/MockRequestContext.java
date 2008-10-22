@@ -36,7 +36,7 @@ import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 
 

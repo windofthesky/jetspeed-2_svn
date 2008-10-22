@@ -17,7 +17,7 @@
 package org.apache.jetspeed.om.impl;
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.pluto.om.portlet.ObjectID;

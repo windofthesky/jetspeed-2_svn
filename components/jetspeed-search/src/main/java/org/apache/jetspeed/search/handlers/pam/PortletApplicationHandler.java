@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.collections.MultiHashMap;
-import org.apache.jetspeed.om.common.LocalizedField;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;

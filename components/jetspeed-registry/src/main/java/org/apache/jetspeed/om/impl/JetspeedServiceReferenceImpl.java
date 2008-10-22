@@ -16,7 +16,7 @@
 */
 package org.apache.jetspeed.om.impl;
 
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
+import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 
 /**
  * Defines Jetspeed services supported by a portlet application.
