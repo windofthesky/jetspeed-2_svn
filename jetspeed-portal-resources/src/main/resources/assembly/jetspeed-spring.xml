@@ -151,4 +151,9 @@
     </constructor-arg>
   </bean>
 
+  <bean id="org.apache.pluto.services.title.DynamicTitleService" name="DynamicTitleService"
+    class="org.apache.jetspeed.services.title.DynamicTitleServiceImpl">
+    <meta key="j2:cat" value="default" />
+  </bean>
+
 </beans>
