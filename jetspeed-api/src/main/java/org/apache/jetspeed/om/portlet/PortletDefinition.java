@@ -40,6 +40,8 @@ import org.apache.pluto.om.portlet.SecurityRoleRef;
  */
 public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDefinition, Serializable
 {
+    PortletApplication getApplication();
+    
     GenericMetadata getMetadata();
     
     void setMetadata(GenericMetadata metadata);

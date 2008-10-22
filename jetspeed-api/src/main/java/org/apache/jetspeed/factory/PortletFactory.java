@@ -21,9 +21,10 @@ import javax.portlet.PreferencesValidator;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.internal.InternalPortletContext;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
  * <p>
@@ -45,7 +46,7 @@ public interface PortletFactory
     boolean isPortletApplicationRegistered(PortletApplication pa);
     ClassLoader getPortletApplicationClassLoader(PortletApplication pa);
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
-    PreferencesValidator getPreferencesValidator(PortletDefinition pd );
+    PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
-    InternalPortletContext getPortletContext(PortletApplication pa)  throws PortletContainerException;
+    InternalPortletContext getPortletContext(PortletApplicationDefinition pa)  throws PortletContainerException;
 }
