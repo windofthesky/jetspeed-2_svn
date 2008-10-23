@@ -33,6 +33,7 @@ public interface PortletEntity extends org.apache.pluto.PortletEntity
     // TODO: temporary replacement for old api PortletWindowList - this should be removed too shortly
     void setPortletWindow(PortletWindow window);
 
+    PortletDefinition getPortletDefinition();
     void setPortletDefinition(PortletDefinition portletDefinition);
 
     String getPortletUniqueName();
