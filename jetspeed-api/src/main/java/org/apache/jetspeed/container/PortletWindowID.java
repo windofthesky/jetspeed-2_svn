@@ -19,21 +19,10 @@ package org.apache.jetspeed.container;
 
 import java.io.Serializable;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
-import org.apache.pluto.PortletWindowID;
-
 /**
  * @version $Id$
  *
  */
-public interface PortletWindow extends org.apache.pluto.PortletWindow, Serializable
+public interface PortletWindowID  extends org.apache.pluto.PortletWindowID, Serializable
 {
-    public PortletWindowID getId();
-    void setId(String id);
-    PortletEntity getPortletEntity();
-    void setPortletEntity(PortletEntity entity);
-    void setPortletMode(PortletMode mode);
-    void setWindowState(WindowState state);
 }
