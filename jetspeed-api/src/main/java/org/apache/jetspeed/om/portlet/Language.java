@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 public interface Language extends PortletInfo, Serializable
 {
     Locale getLocale();
-    void setKeywords(List<String> keywords);
+    List<String> getKeywordList();
+    void addKeyword(String keyword);
     ResourceBundle getResourceBundle();
 }
