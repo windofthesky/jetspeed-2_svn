@@ -22,15 +22,13 @@ import java.io.Serializable;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.pluto.PortletWindowID;
-
 /**
  * @version $Id$
  *
  */
 public interface PortletWindow extends org.apache.pluto.PortletWindow, Serializable
 {
-    public PortletWindowID getId();
+    PortletWindowID getId();
     void setId(String id);
     PortletEntity getPortletEntity();
     void setPortletEntity(PortletEntity entity);
