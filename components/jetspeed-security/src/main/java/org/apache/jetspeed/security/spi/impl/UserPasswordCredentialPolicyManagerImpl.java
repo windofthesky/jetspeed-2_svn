@@ -123,6 +123,8 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
             credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
             credential.setLastAuthenticationDate(new Timestamp(new Date().getTime()));
             update = true;
+        }else{
+            credential.setAuthenticationFailures(credential.getAuthenticationFailures()+1);
         }
         
         return update;
