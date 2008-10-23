@@ -44,7 +44,7 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -239,7 +239,7 @@ public class RenderingJobImpl implements RenderingJob
                     PortletDefinition curPortletDefinition = (PortletDefinition)
                         CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
                     
-                    if (!oldPortletDefinition.getId().equals(curPortletDefinition.getId())) {
+                    if (!oldPortletDefinition.isSameIdentity(curPortletDefinition)) {
                         curEntity.setPortletDefinition(curPortletDefinition);
                     }
                 }

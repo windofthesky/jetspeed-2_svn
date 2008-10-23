@@ -48,7 +48,7 @@ import org.apache.jetspeed.portlet.PortletHeaderResponse;
 import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -1113,9 +1113,9 @@ public class HeaderAggregatorImpl implements PageAggregator
             {
                 PortletWindow portletWindow = getPortletWindowAccessor().getPortletWindow( fragment );
                 PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
-                if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getPortletApplicationDefinition() ) )
+                if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
                 {
-                    String portletApplicationContextPath = pd.getPortletApplicationDefinition().getWebApplicationDefinition().getContextRoot();
+                    String portletApplicationContextPath = pd.getApplication().getWebApplicationDefinition().getContextRoot();
                     Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
                     if ( portlet != null && portlet instanceof SupportsHeaderPhase )
                     {
