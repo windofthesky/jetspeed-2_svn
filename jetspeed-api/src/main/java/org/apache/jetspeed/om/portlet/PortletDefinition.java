@@ -162,4 +162,11 @@ public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDe
      * the portletDefinition store() method
      * */
     void storeChildren();
+    
+    /**
+     * Check if this instance its persistent identity has changed
+     * @param other
+     * @return true only if the internal identities are the same
+     */
+    boolean isSameIdentity(PortletDefinition other);
 }
