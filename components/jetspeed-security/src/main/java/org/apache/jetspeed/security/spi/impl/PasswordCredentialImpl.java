@@ -125,7 +125,7 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
         this.password = password;
     }
     
-    public void synchronize(PasswordCredential pwc)
+    public void synchronize(UserCredential pwc)
     {
         throw new UnsupportedOperationException();
     }
