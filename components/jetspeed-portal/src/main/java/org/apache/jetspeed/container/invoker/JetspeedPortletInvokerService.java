@@ -42,7 +42,23 @@ import org.apache.pluto.spi.FilterManager;
 import org.apache.pluto.spi.optional.PortletInvokerService;
 
 /**
- * Implements Pluto's portlet invoker service interface.
+ * <p>
+ * Implements Pluto's portlet invoker service interfacem creating portlet invokers based on the servlet context.
+ * This class is part of the contract between Pluto and the Jetspeed Portal 
+ * The Pluto container uses portlet invokers to abstract access to portlets.
+ * An invoker interfaces defines which actions are performed between the portal and container,
+ * namely action, render and optionally load. 
+ * </p>
+ * <p>
+ * The Jetspeed portlet invoker services supports two kinds of invokers: local and servlet.
+ * Local portlet invokers call portlets located in the same web applications.
+ * With local invokers, a simple java method invocation is called on the portlet.
+ * Servlet portlet invokers call portlets located in another web application.
+ * With servlet invokers, the servlet request dispatcher is used to call methods on the portlet. 
+ * </p>
+ * 
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id: PortletInvokerFactoryImpl.java 706843 2008-10-22 01:34:10Z taylor $
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $

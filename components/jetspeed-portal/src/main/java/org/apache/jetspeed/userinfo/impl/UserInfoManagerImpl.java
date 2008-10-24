@@ -28,7 +28,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
@@ -38,8 +37,6 @@ import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.PortletWindow;
 
 /**
  * <p>
@@ -225,20 +222,6 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
         {
             userInfoMapCache = Collections.synchronizedMap(new HashMap());
         }
-    }
-
-    /**
-     * For Pluto 2.0
-     */
-    public Map<String, String> getUserInfo(PortletRequest request, PortletWindow window) throws PortletContainerException
-    {
-        String remoteUser = request.getRemoteUser(); 
-        if ( remoteUser != null ) 
-        {
-            return Collections.EMPTY_MAP;
-        }
-        RequestContext requestContext=(RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        return this.getUserInfoMap(window.getPortletEntity().getPortletDefinition().getApplication().getName(), requestContext);        
     }
 
 }

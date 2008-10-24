@@ -24,7 +24,6 @@ import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.providers.PortletURLProviderImpl;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletWindow;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.spi.EventProvider;
 import org.apache.pluto.spi.FilterManager;
@@ -58,15 +57,15 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
     }
 
     public PortletURLProvider getPortletURLProvider(HttpServletRequest request,
-            PortletWindow portletWindow)
+            org.apache.pluto.PortletWindow portletWindow)
     {
         RequestContext rc = (RequestContext) request
                 .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        return new PortletURLProviderImpl(rc, portletWindow);
+        return new PortletURLProviderImpl(rc, (org.apache.jetspeed.container.PortletWindow)portletWindow);
     }
 
     public ResourceURLProvider getResourceURLProvider(
-            HttpServletRequest request, PortletWindow portletWindow)
+            HttpServletRequest request, org.apache.pluto.PortletWindow portletWindow)
     {
         RequestContext rc = (RequestContext) request
                 .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
@@ -80,7 +79,7 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
         
 
     public EventProvider getEventProvider(HttpServletRequest request,
-            PortletWindow portletWindow)
+            org.apache.pluto.PortletWindow portletWindow)
     {   
         return eventProvider;
     }
@@ -113,7 +112,7 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
      * use.
      */
     public void setTitle(HttpServletRequest request,
-            PortletWindow portletWindow, String titleArg)
+            org.apache.pluto.PortletWindow portletWindow, String titleArg)
     {
         // TODO: 2.2 jetspeed uses a title service        
         String title = null;
@@ -130,7 +129,7 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
                         + "::window.id::" + portletWindow.getId(), title);        
     }
 
-    protected final String getTitleFromPortletDefinition(PortletWindow window,
+    protected final String getTitleFromPortletDefinition(org.apache.pluto.PortletWindow window,
             HttpServletRequest request)
     {
         String title = null;

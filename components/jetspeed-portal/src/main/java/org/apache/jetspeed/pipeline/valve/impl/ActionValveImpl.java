@@ -30,8 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
@@ -46,8 +48,6 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <p>
@@ -144,7 +144,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 //PortletMessagingImpl msg = new PortletMessagingImpl(windowAccessor);
                 
                 requestForWindow.setAttribute("JETSPEED_ACTION", request);
-                container.processPortletAction(
+                container.doAction(
                     actionWindow,
                     requestForWindow,
                     response);

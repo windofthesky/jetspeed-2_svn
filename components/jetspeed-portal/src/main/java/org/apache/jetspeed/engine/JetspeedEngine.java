@@ -39,9 +39,6 @@ import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.factory.Factory;
-import org.apache.pluto.services.ContainerService;
-import org.apache.pluto.services.factory.FactoryManagerService;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 
@@ -176,7 +173,7 @@ public class JetspeedEngine implements Engine
                     .getComponent(PortletContainer.class);
             if (container != null)
             {
-                container.shutdown();
+                container.destroy();
             }
     
             componentManager.stop();
@@ -295,44 +292,4 @@ public class JetspeedEngine implements Engine
     {
         return this.componentManager;
     }
-    /**
-     * <p>
-     * getFactory
-     * </p>
-     *
-     * @see org.apache.pluto.services.factory.FactoryManagerService#getFactory(java.lang.Class)
-     * @param theClass
-     * @return
-     */
-    public Factory getFactory( Class theClass )
-    {        
-        return (Factory) getComponentManager().getComponent(theClass);
-    }
-    /**
-     * <p>
-     * getContainerService
-     * </p>
-     *
-     * @see org.apache.pluto.services.PortletContainerEnvironment#getContainerService(java.lang.Class)
-     * @param service
-     * @return
-     */
-    public ContainerService getContainerService( Class service )
-    {
-        if(service.equals(FactoryManagerService.class))
-        {
-            return this;
-        }
-
-        try
-        {
-            return (ContainerService) getComponentManager().getComponent(service);
-        }
-        catch (NoSuchBeanDefinitionException e)
-        {
-            log.warn("No ContainerService defined for "+service.getName());
-            return null;
-        }
-    }
-
 }

@@ -24,8 +24,6 @@ import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.factory.Factory;
-import org.apache.pluto.services.ContainerService;
 
 /**
  * @version $Id$
@@ -85,15 +83,5 @@ public class MockJetspeedEngine implements Engine
 
     public void start() throws JetspeedException
     {
-    }
-
-    public Factory getFactory(Class theClass)
-    {
-        return null;
-    }
-
-    public ContainerService getContainerService(Class service)
-    {
-        return null;
     }
 }

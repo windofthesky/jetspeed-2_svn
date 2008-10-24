@@ -33,8 +33,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
 import org.apache.jetspeed.userinfo.UserAttributeSource;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.jetspeed.userinfo.impl.AbstractUserInfoManagerImpl;
-import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * Multisource User Information manager
@@ -56,22 +54,14 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
 
     private PortletRegistry portletRegistry;
    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.userinfo.UserInfoManager#getUserInfoMap(org.apache.pluto.om.common.ObjectID,
-     *      org.apache.jetspeed.request.RequestContext)
-     */
-    public Map getUserInfoMap(ObjectID oid, RequestContext context)
+    public Map getUserInfoMap(String appName, RequestContext context)
     {
 
         try
         {
             Map userInfoMap = new HashMap();
             Subject subject = context.getSubject();
-            PortletApplication pa = portletRegistry
-                    .getPortletApplication(oid);
-//System.out.println("*** PA = " + pa);            
+            PortletApplication pa = portletRegistry.getPortletApplication(appName);
             if (null == pa)
             {
                 log.debug(PortletRequest.USER_INFO + " is set to null");
@@ -116,4 +106,5 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
     {
         this.portletRegistry = portletRegistry;
     }
+
 }

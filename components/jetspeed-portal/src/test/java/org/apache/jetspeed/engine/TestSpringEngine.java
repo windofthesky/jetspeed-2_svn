@@ -43,7 +43,6 @@ import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.RdbmsPolicy;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.services.information.StaticInformationProvider;
 
 /**
  * <p>
@@ -68,7 +67,7 @@ public class TestSpringEngine extends AbstractEngineTest
                                      UserInfoManager.class, RequestContextComponent.class, PortletWindowAccessor.class,
                                      PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
                                      "deploymentManager", "portletFactory", ServletConfig.class, 
-                                     StaticInformationProvider.class, "NavigationalStateCodec", "PortalURL", "NavigationalStateComponent"};
+                                      "NavigationalStateCodec", "PortalURL", "NavigationalStateComponent"};
     }
     
     public static Test suite()

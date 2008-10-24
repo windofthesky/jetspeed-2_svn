@@ -22,9 +22,9 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletWindow;
 import org.apache.pluto.spi.PortletURLProvider;
 
 /**
