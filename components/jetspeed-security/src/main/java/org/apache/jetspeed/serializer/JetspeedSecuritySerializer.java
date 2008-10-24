@@ -31,17 +31,19 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
 import org.apache.jetspeed.serializer.objects.JSGroup;
 import org.apache.jetspeed.serializer.objects.JSNVPElement;
@@ -49,6 +51,7 @@ import org.apache.jetspeed.serializer.objects.JSNVPElements;
 import org.apache.jetspeed.serializer.objects.JSPermission;
 import org.apache.jetspeed.serializer.objects.JSPermissions;
 import org.apache.jetspeed.serializer.objects.JSPrincipal;
+import org.apache.jetspeed.serializer.objects.JSPrincipalAssociation;
 import org.apache.jetspeed.serializer.objects.JSRole;
 import org.apache.jetspeed.serializer.objects.JSSecurityAttributes;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
@@ -142,9 +145,10 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         {
             try
             {
-                log.info("collecting users/roles/groups");
+                log.info("collecting principals and principal associations");
                 ExportRefs refs = new ExportRefs();
                 exportJetspeedPrincipals(refs, snapshot, settings, log);
+                exportJetspeedPrincipalAssociations(refs, snapshot, settings, log);
                 
                 if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
                 {
@@ -163,12 +167,14 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USERS))
         {
-            log.info("creating users/roles/groups and permissions");
+            log.info("creating principals and permissions");
             try
             {
                 SynchronizationStateAccess.setSynchronizing(Boolean.TRUE);
                 ImportRefs refs = new ImportRefs();
                 recreateJetspeedPrincipals(refs, snapshot, settings, log);
+                recreateJetspeedPrincipalAssociations(refs, snapshot, settings, log);
+                
                 if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
                 {
                     log.info("creating permissions");
@@ -481,27 +487,26 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                                 + e.getLocalizedMessage());
                     }
                     
-                    // TODO: private, public credential??
-//                    // credentials
-//                    Subject subject = userManager.getSubject(user);
-//                    List<Credential> listTemp = jsuser.getPrivateCredentials();
-//                    if ((listTemp != null) && (listTemp.size() > 0))
-//                    {
-//                        Iterator<Credential> _itTemp = listTemp.iterator();
-//                        while (_itTemp.hasNext())
-//                        {
-//                            subject.getPrivateCredentials().add(_itTemp.next());
-//                        }
-//                    }
-//                    listTemp = jsuser.getPublicCredentials();
-//                    if ((listTemp != null) && (listTemp.size() > 0))
-//                    {
-//                        Iterator<Credential> _itTemp = listTemp.iterator();
-//                        while (_itTemp.hasNext())
-//                        {
-//                            subject.getPublicCredentials().add(_itTemp.next());
-//                        }
-//                    }
+                    // credentials
+                    Subject subject = userManager.getSubject(user);
+                    List<Credential> listTemp = jsuser.getPrivateCredentials();
+                    if ((listTemp != null) && (listTemp.size() > 0))
+                    {
+                        Iterator<Credential> _itTemp = listTemp.iterator();
+                        while (_itTemp.hasNext())
+                        {
+                            subject.getPrivateCredentials().add(_itTemp.next());
+                        }
+                    }
+                    listTemp = jsuser.getPublicCredentials();
+                    if ((listTemp != null) && (listTemp.size() > 0))
+                    {
+                        Iterator<Credential> _itTemp = listTemp.iterator();
+                        while (_itTemp.hasNext())
+                        {
+                            subject.getPublicCredentials().add(_itTemp.next());
+                        }
+                    }
                     
                     JSSecurityAttributes attributes = jsuser.getInfoAttributes();
                     if (attributes != null)
@@ -537,6 +542,38 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         log.debug("recreateUsers - done");
     }
 
+    private void recreateJetspeedPrincipalAssociations(ImportRefs refs, JSSnapshot snapshot, Map settings, Log log)
+            throws SerializerException
+    {
+        log.debug("recreateJetspeedPrincipalAssociations");
+        
+        Map<String, JetspeedPrincipalType> principalTypes = this.principalManagerProvider.getPrincipalTypeMap();
+        JetspeedPrincipalManager principalManager = null;
+        JetspeedPrincipalManager fromPrincipalManager = null;
+        JetspeedPrincipal from = null;
+        JetspeedPrincipal to = null;
+        
+        try
+        {
+            for (JSPrincipalAssociation jsAssoc : snapshot.getPrincipalAssociations())
+            {
+                principalManager = this.principalManagerProvider.getManager(principalTypes.get(jsAssoc.getToType()));
+                to = principalManager.getPrincipal(jsAssoc.getToName());
+                fromPrincipalManager = this.principalManagerProvider.getManager(principalTypes.get(jsAssoc.getFromType()));
+                from = fromPrincipalManager.getPrincipal(jsAssoc.getFromName());
+                principalManager.addAssociation(from, to, jsAssoc.getName());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { "User",
+                    e.getMessage() }));
+        }
+        
+        log.debug("recreateJetspeedPrincipalAssociations - done");
+    }
+    
     /**
      * recreates all permissions from the current snapshot
      * 
@@ -746,12 +783,52 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
+    private void exportJetspeedPrincipalAssociations(ExportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SecurityException, SerializerException
+    {
+        Map<String, JetspeedPrincipalType> principalTypes = this.principalManagerProvider.getPrincipalTypeMap();
+        Map<String, JetspeedPrincipalType> copiedPrincipalTypes = new HashMap<String, JetspeedPrincipalType>(principalTypes);
+        JetspeedPrincipalManager principalManager = null;
+        JetspeedPrincipalManager otherPrincipalManager = null;
+        
+        for (String principalTypeName : principalTypes.keySet())
+        {
+            principalManager = this.principalManagerProvider.getManager(this.principalManagerProvider.getPrincipalType(principalTypeName));
+            
+            for (JetspeedPrincipal principal : principalManager.getPrincipals(""))
+            {
+                for (JetspeedPrincipalAssociationType assocType : principalManager.getAssociationTypes())
+                {
+                    for (String otherPrincipalTypeName : copiedPrincipalTypes.keySet())
+                    {
+                        otherPrincipalManager = this.principalManagerProvider.getManager(this.principalManagerProvider.getPrincipalType(otherPrincipalTypeName));
+                        
+                        for (JetspeedPrincipal toPrincipal : otherPrincipalManager.getAssociatedFrom(principal.getName(), principal.getType(), assocType.getAssociationName()))
+                        {
+                            JSPrincipalAssociation jsAssoc = createJSPrincipalAssociation(assocType, principal, toPrincipal);
+                            snapshot.addPrincipalAssociation(jsAssoc);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private JSPrincipalAssociation createJSPrincipalAssociation(JetspeedPrincipalAssociationType assocType, JetspeedPrincipal from, JetspeedPrincipal to)
+    {
+        JSPrincipalAssociation jsAssoc = new JSPrincipalAssociation();
+        jsAssoc.setName(assocType.getAssociationName());
+        jsAssoc.setFromType(from.getType().getName());
+        jsAssoc.setFromName(from.getName());
+        jsAssoc.setToType(to.getType().getName());
+        jsAssoc.setToName(to.getName());
+        return jsAssoc;
+    }
+    
     /**
      * extract all permissions from the current environment
      * 
      * @throws SerializerException
      */
-    // TODO: uncomment and fix after permission refactoring
     private void exportPermissions(ExportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException, SecurityException
     {
         for (JetspeedPermission perm : pm.getPermissions())
@@ -765,9 +842,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                 
                 for (JetspeedPrincipal principal : pm.getPrincipals(perm))
                 {
-                    JetspeedPrincipalType principalType = principal.getType();
+                    String principalTypeName = principal.getType().getName();
                     
-                    if (JetspeedPrincipalType.ROLE.equals(principalType))
+                    if (JetspeedPrincipalType.ROLE.equals(principalTypeName))
                     {
                         JSPrincipal _tempRole = (JSPrincipal) this.getObjectBehindPath(refs.roleMap, principal.getName());
                         
@@ -776,7 +853,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                             _js.addRole(_tempRole);
                         }
                     }
-                    else if (JetspeedPrincipalType.GROUP.equals(principalType))
+                    else if (JetspeedPrincipalType.GROUP.equals(principalTypeName))
                     {
                         JSPrincipal _tempGroup = (JSPrincipal) this.getObjectBehindPath(refs.groupMap, principal.getName());
                         
@@ -785,7 +862,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                             _js.addGroup(_tempGroup);
                         }
                     }
-                    else if (JetspeedPrincipalType.USER.equals(principalType))
+                    else if (JetspeedPrincipalType.USER.equals(principalTypeName))
                     {
                         JSPrincipal _tempUser = (JSPrincipal) this.getObjectBehindPath(refs.userMap, principal.getName());
                         
@@ -795,6 +872,8 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         }
                     }                    
                 }
+                
+                snapshot.getPermissions().add(_js);
             }
             catch (Exception e)
             {
@@ -837,7 +916,39 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         return base.replaceFirst(excess, "").trim();
     }
     
-    private JSPrincipal createJSPrincipal(JetspeedPrincipal principal)
+    /**
+     * Add the credentials to the JSUser object.
+     * <p>
+     * If the credential provided is a PasswordCredential, userid and password
+     * are extracted and set explcitely
+     * 
+     * @param isPublic
+     *            public or private credential
+     * @param newUser
+     *            the JS user object reference
+     * @param credential
+     *            the credential object
+     */
+
+    private void addJSPrincipalCredentials(boolean isPublic, JSPrincipal newPrincipal, Credential credential)
+    {
+        if (credential == null)
+            return;
+        if (credential instanceof PasswordCredential)
+        {
+            PasswordCredential pw = (PasswordCredential) credential;
+            char [] pwdChars = (pw.getPassword() != null ? pw.getPassword().toCharArray() : null);
+            newPrincipal.setCredential(pw.getUserName(), pwdChars, pw.getExpirationDate(), pw.isEnabled(), 
+                                      pw.isExpired(), pw.isUpdateRequired());
+            return;
+        }
+        else if (isPublic)
+            newPrincipal.addPublicCredential(credential);
+        else
+            newPrincipal.addPrivateCredential(credential);
+    }
+    
+    private JSPrincipal createJSPrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         JSPrincipal _jsPrincipal = new JSPrincipal();
         _jsPrincipal.setPrincipal(principal);
@@ -847,7 +958,32 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         _jsPrincipal.setEnabled(principal.isEnabled());
         _jsPrincipal.setReadonly(principal.isReadOnly());
         _jsPrincipal.setRemovable(principal.isRemovable());
+        
+        if (JetspeedPrincipalType.USER.equals(principal.getType()))
+        {
+            Credential credential = userManager.getPasswordCredential((User) principal);
+            Subject subject = userManager.getSubject((User) principal);
+            
+            if (credential != null)
+            {
+                addJSPrincipalCredentials(true, _jsPrincipal, credential);
+            }
+            
+            for (Object o : subject.getPublicCredentials())
+            {
+                credential = (Credential)o;
+                addJSPrincipalCredentials(true, _jsPrincipal, credential);
+            }
+            
+            for (Object o : subject.getPrivateCredentials())
+            {
+                credential = (Credential)o;
+                addJSPrincipalCredentials(false, _jsPrincipal, credential);
+            }
+        }
+        
         _jsPrincipal.setSecurityAttributes(principal.getSecurityAttributes().getAttributeMap());
+        
         return _jsPrincipal;
     }
 

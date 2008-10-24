@@ -61,6 +61,8 @@ public class JSSnapshot implements JetspeedSerializedData
     private JSPrincipals users;
     
     private JSUsers oldUsers;
+    
+    private JSPrincipalAssociations principalAssociations;
 
     private JSPermissions permissions;
 
@@ -95,6 +97,7 @@ public class JSSnapshot implements JetspeedSerializedData
         oldGroups = new JSGroups();
         users = new JSPrincipals(JetspeedPrincipalType.USER);
         oldUsers = new JSUsers();
+        principalAssociations = new JSPrincipalAssociations();
         permissions = new JSPermissions();
         rules = new JSProfilingRules();
         applications = new JSApplications();
@@ -289,6 +292,21 @@ public class JSSnapshot implements JetspeedSerializedData
     public JSUsers getOldUsers()
     {
         return oldUsers;
+    }
+    
+    public void setPrincipalAssociations(JSPrincipalAssociations principalAssociations)
+    {
+        this.principalAssociations = principalAssociations;
+    }
+    
+    public JSPrincipalAssociations getPrincipalAssociations()
+    {
+        return this.principalAssociations;
+    }
+    
+    public void addPrincipalAssociation(JSPrincipalAssociation jsPrincipalAssociation)
+    {
+        this.principalAssociations.add(jsPrincipalAssociation);
     }
 
     /**
@@ -530,6 +548,10 @@ public class JSSnapshot implements JetspeedSerializedData
                 {
                     xml.add(g.getUsers());
                 }
+                if ( !g.getPrincipalAssociations().isEmpty() )
+                {
+                    xml.add(g.getPrincipalAssociations());
+                }
                 if ( !g.getPermissions().isEmpty() )
                 {
                     xml.add(g.getPermissions());
@@ -616,6 +638,8 @@ public class JSSnapshot implements JetspeedSerializedData
                             g.users = jsps;
                         }
                     }
+                    else if (o1 instanceof JSPrincipalAssociations)
+                        g.principalAssociations = (JSPrincipalAssociations) o1;
                     else if (o1 instanceof JSPermissions)
                         g.permissions = (JSPermissions) o1;
                     else if (o1 instanceof JSProfilingRules)
