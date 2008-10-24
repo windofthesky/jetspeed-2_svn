@@ -309,7 +309,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
             // Make sure existing entities are refreshed with the most
             // recent PortletDefintion.
-            for (PortletDefinition pd : pa.getPortlets()))
+            for (PortletDefinition pd : pa.getPortlets())
             {
                 Collection portletEntites = entityAccess.getPortletEntities(pd);
                 if(portletEntites != null && portletEntites.size() > 0)

@@ -41,7 +41,6 @@ public class PortletRule extends Rule
     {
         PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) digester.getRoot();
         digester.push(app.addPortletDefinition());
-);
     }
     /**
      * <p>
