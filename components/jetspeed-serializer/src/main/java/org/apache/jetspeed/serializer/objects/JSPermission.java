@@ -16,9 +16,8 @@
  */
 package org.apache.jetspeed.serializer.objects;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
@@ -75,49 +74,24 @@ public class JSPermission
 	{
 	}
 
-	private String append(JSRole rule)
-	{
-		return rule.getName();
-	}
-
-	private String append(JSGroup group)
-	{
-		return group.getName();
-	}
-
-	private String append(JSUser user)
-	{
-		return user.getName();
-	}
-
-	private String append(Object s)
-	{
-		if (s instanceof JSRole)
-			return append((JSRole) s);
-		if (s instanceof JSGroup)
-			return append((JSGroup) s);
-		if (s instanceof JSUser)
-			return append((JSUser) s);
-
-		return s.toString();
-	}
-
 	private String putTokens(List<JSPrincipal> _list)
 	{
 		if ((_list == null) || (_list.size() == 0))
 			return "";
+		
 		boolean _start = true;
-		Iterator _it = _list.iterator();
 		StringBuffer _sb = new StringBuffer();
-		while (_it.hasNext())
+		
+		for (JSPrincipal jsPrincipal : _list)
 		{
 			if (!_start)
 				_sb.append(',');
 			else
 				_start = false;
 
-			_sb.append(append(_it.next()));
+			_sb.append(jsPrincipal.getName());
 		}
+		
 		return _sb.toString();
 	}
 
@@ -150,7 +124,7 @@ public class JSPermission
 	 * @param groups
 	 *            The groups to set.
 	 */
-	public void setGroups(ArrayList groups)
+	public void setGroups(List<JSPrincipal> groups)
 	{
 		this.groups = groups;
 	}
@@ -218,7 +192,7 @@ public class JSPermission
 	 * @param users
 	 *            The users to set.
 	 */
-	public void setUsers(ArrayList users)
+	public void setUsers(List<JSPrincipal> users)
 	{
 		this.users = users;
 	}

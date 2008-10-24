@@ -18,6 +18,7 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.security.Principal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -330,5 +331,53 @@ public class JSPrincipal
     public void setRules(JSPrincipalRules rules)
     {
         this.rules = rules;
+    }
+    
+    /**
+     * @return Returns the privateCredentials.
+     */
+    public List<Credential> getPrivateCredentials()
+    {
+        return privateCredentials;
+    }
+
+    /**
+     * @param privateCredentials
+     *            The privateCredentials to set.
+     */
+    public void setPrivateCredentials(List<Credential> privateCredentials)
+    {
+        this.privateCredentials = privateCredentials;
+    }
+
+    /**
+     * @return Returns the publicCredentials.
+     */
+    public List<Credential> getPublicCredentials()
+    {
+        return publicCredentials;
+    }
+
+    /**
+     * @param publicCredentials
+     *            The publicCredentials to set.
+     */
+    public void setPublicCredentials(List<Credential> publicCredentials)
+    {
+        this.publicCredentials = publicCredentials;
+    }
+    
+    public void addPublicCredential(Credential o)
+    {
+        if (publicCredentials == null) 
+            publicCredentials = new ArrayList<Credential>();
+        publicCredentials.add(o);
+    }
+
+    public void addPrivateCredential(Credential o)
+    {
+        if (privateCredentials == null) 
+            privateCredentials = new ArrayList<Credential>();
+        privateCredentials.add(o);
     }
 }
