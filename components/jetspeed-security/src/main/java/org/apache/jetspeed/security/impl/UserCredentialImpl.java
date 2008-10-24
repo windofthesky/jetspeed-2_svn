@@ -47,7 +47,7 @@ public class UserCredentialImpl implements UserCredential
         synchronize(pwc);
     }
     
-    public void synchronize(PasswordCredential pwc)
+    public void synchronize(UserCredential pwc)
     {
         this.authenticationFailures = pwc.getAuthenticationFailures();
         this.creationDate = pwc.getCreationDate();

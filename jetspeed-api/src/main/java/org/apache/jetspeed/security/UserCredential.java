@@ -42,7 +42,7 @@ public interface UserCredential extends Credential
      * </p>
      * @param pwc the underlying PasswordCredential for this UserCredential
      */
-    void synchronize(PasswordCredential pwc);
+    void synchronize(UserCredential pwc);
     
     boolean isUpdateAllowed();
     
