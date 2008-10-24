@@ -18,22 +18,25 @@ package org.apache.jetspeed.dispatcher;
 
 import java.io.IOException;
 
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.RenderResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.PortletException;
 
 import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
-import org.apache.pluto.core.impl.RenderRequestImpl;
-import org.apache.pluto.core.impl.RenderResponseImpl;
+import org.apache.pluto.internal.InternalRenderRequest;
+import org.apache.pluto.internal.InternalRenderResponse;
 
 /**
  * Implements the Portlet API Request Dispatcher to dispatch to portlets
- *
+ * TODO: 2.2 may or may not deprecrate, look into extending Pluto's PortletRequestDispatcherImp
+ * 
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
@@ -58,8 +61,9 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
         HttpServletResponse servletResponse = null;
         try
         {
-            servletRequest = (HttpServletRequest) ((RenderRequestImpl) request).getRequest();
-            servletResponse = (HttpServletResponse) ((RenderResponseImpl) response).getResponse();
+            // TODO: 2.2 Might want to use Pluto Container's InternalImplConverter instead
+            servletRequest = ((InternalRenderRequest)request).getHttpServletRequest();
+            servletResponse = ((InternalRenderResponse)response).getHttpServletResponse();
             
             if ( servletRequest instanceof PortletDispatcherIncludeAware )
             {
@@ -114,5 +118,19 @@ public class JetspeedRequestDispatcher implements PortletRequestDispatcher
             }
             
         }
+    }
+
+    public void forward(PortletRequest request, PortletResponse response)
+            throws PortletException, IOException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void include(PortletRequest request, PortletResponse response)
+            throws PortletException, IOException
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

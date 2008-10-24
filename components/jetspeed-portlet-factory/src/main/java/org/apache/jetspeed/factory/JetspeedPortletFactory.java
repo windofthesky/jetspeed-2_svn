@@ -24,22 +24,24 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.UnavailableException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.container.InternalPortletConfig;
+import org.apache.jetspeed.container.InternalPortletContext;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletContext;
-import org.apache.jetspeed.container.PortalAccessor;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletObjectProxy;
 import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.internal.InternalPortletContext;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.internal.impl.PortletRequestDispatcherImpl;
 
 /**
  * <p>
@@ -122,8 +124,8 @@ public class JetspeedPortletFactory implements PortletFactory
             unregisterPortletApplication(pa);            
             ServletContext servletContext = jetspeedConfig.getServletContext();
             ServletContext portletAppContext = servletContext.getContext(pa.getName());
-            InternalPortletContext context = new JetspeedPortletContext(portletAppContext, pa);      
-            classLoaderMap.put(pa.getName(), new PortletFactoryInfo(cl, context));
+            InternalPortletContext context = this.createPortletContext(portletAppContext, pa);      
+            classLoaderMap.put(pa.getName(), new PortletFactoryInfo(cl, context)); // // TODO: 2.2 need to get servletConfig in registration process
         }
     }
 
@@ -295,8 +297,8 @@ public class JetspeedPortletFactory implements PortletFactory
                         log.error(msg, e);
                         throw new UnavailableException(msg);
                     }
-                    PortletContext portletContext = PortalAccessor.createPortletContext(servletContext, pa);
-                    PortletConfig portletConfig = PortalAccessor.createPortletConfig(portletContext, pd);
+                    PortletContext portletContext = this.createPortletContext(servletContext, pa);
+                    PortletConfig portletConfig = this.createPortletConfig(null, portletContext, pd); // TODO: 2.2 need to get servletConfig in registration process
                     try
                     {
                         try
@@ -371,7 +373,7 @@ public class JetspeedPortletFactory implements PortletFactory
         return getPortletApplicationClassLoader(pa) != null;
     }
 
-    public InternalPortletContext getPortletContext(PortletApplicationDefinition pad)
+    public org.apache.pluto.internal.InternalPortletContext getPortletContext(PortletApplication pad)
         throws PortletContainerException
     {
         PortletFactoryInfo info = classLoaderMap.get(pad.getName());
@@ -382,4 +384,19 @@ public class JetspeedPortletFactory implements PortletFactory
         throw new PortletContainerException("App context not found for application " + pad.getName());
     }
 
+    public InternalPortletContext createPortletContext(ServletContext servletContext, PortletApplication application)
+    {
+        return new JetspeedPortletContext(servletContext, application, this);        
+    }
+    
+    public InternalPortletConfig createPortletConfig(ServletConfig servletConfig, PortletContext portletContext, PortletDefinition pd)
+    {
+        return new JetspeedPortletConfig(servletConfig, portletContext, pd);        
+    }
+    
+    public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher)
+    {
+        // return new JetspeedRequestDispatcher(requestDispatcher);
+        return new PortletRequestDispatcherImpl(requestDispatcher);
+    }    
 }

@@ -36,9 +36,9 @@ public class BaseObjectProxy implements InvocationHandler
     {
     	try 
         {
-    	    hashCodeMethod = Object.class.getMethod("hashCode", null);
+    	    hashCodeMethod = Object.class.getMethod("hashCode", (Class [])null);
     	    equalsMethod = Object.class.getMethod("equals", new Class [] { Object.class });
-    	    toStringMethod = Object.class.getMethod("toString", null);
+    	    toStringMethod = Object.class.getMethod("toString", (Class [])null);
         } 
         catch (NoSuchMethodException e) 
         {

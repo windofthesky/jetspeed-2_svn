@@ -18,6 +18,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+<!-- DST:  moved to pluto-services.xml -->
   <bean id="JetspeedNamespaceMapper" class="org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
@@ -25,10 +26,12 @@
     </constructor-arg>
   </bean>
 
+<!-- DST:  replaced by org.apache.pluto.services.PortletInvokerService -->
   <bean id="LocalPortletInvokerFactory" class="org.apache.jetspeed.container.invoker.LocalPortletInvokerFactory">
     <meta key="j2:cat" value="default" />
   </bean>
 
+<!-- DST:  replaced by org.apache.pluto.services.PortletInvokerService -->
   <bean id="ServletPortletInvokerFactory" class="org.apache.jetspeed.container.invoker.ServletPortletInvokerFactory">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">

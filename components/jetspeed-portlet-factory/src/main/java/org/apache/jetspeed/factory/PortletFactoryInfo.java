@@ -16,7 +16,8 @@
  */
 package org.apache.jetspeed.factory;
 
-import org.apache.pluto.internal.InternalPortletContext;
+import org.apache.jetspeed.container.InternalPortletContext;
+
 
 class PortletFactoryInfo
 {

@@ -16,22 +16,17 @@
  */
 package org.apache.jetspeed.container;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
- * Portlet Config Factory
+ * This interface defines the internal methods used on the Portlet Config.
+ * 
  *
- * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PortletConfigFactory
+public interface InternalPortletConfig extends org.apache.pluto.internal.InternalPortletConfig
 {
-    public static PortletConfig createPortletConfig(PortletContext portletContext,PortletDefinition portletDefinition)
-    {
-        return new JetspeedPortletConfig(portletContext, portletDefinition);
-    }
-
+     PortletDefinition getPortletDefinition();
+     void setPortletDefinition(PortletDefinition pd);
 }
