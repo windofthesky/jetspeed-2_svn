@@ -19,7 +19,6 @@ package org.apache.jetspeed.request;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -51,7 +50,8 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -523,34 +523,33 @@ public class JetspeedRequestContext implements RequestContext
         // {
         //     return language;
         // }
-        LanguageSet languageSet = portlet.getLanguageSet();
-        Language language = languageSet.get(locale);
+        
+        Language language = portlet.getLanguage(locale);
 
         Enumeration locales = request.getLocales();
         while (locales.hasMoreElements() && language == null)
         {
             Locale aLocale = (Locale) locales.nextElement();
-            language = languageSet.get(aLocale);
+            language = portlet.getLanguage(aLocale);
         }
 
-        Iterator langItr = languageSet.iterator();
-        if (langItr.hasNext() && language == null)
+        if (!portlet.getLanguages().isEmpty())
         {
-            language = (Language) langItr.next();
+            language = portlet.getLanguages().get(0);
         }
         
         if (language == null)
         {
-            language = languageSet.get(languageSet.getDefaultLocale());
+            language = portlet.getLanguage(JetspeedLocale.getDefaultLocale());
         }
 
         if (language == null)
         {
-            MutableLanguage languageCtl = new LanguageImpl();
-            languageCtl.setLocale(locale);
-            languageCtl.setShortTitle(portlet.getPortletName());
-            languageCtl.setTitle(portlet.getPortletName());
-            language = languageCtl;
+            LanguageImpl lang = new LanguageImpl();
+            lang.setLocale(locale);
+            lang.setShortTitle(portlet.getPortletName());
+            lang.setTitle(portlet.getPortletName());
+            language = lang;
         }
 
         // languageMap.put(portlet, language);

@@ -50,7 +50,7 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.pluto.om.portlet.Supports;
+import org.apache.jetspeed.om.portlet.Supports;
 
 /**
  * Assigns decorations and page actions to all of the portlet Fragments within

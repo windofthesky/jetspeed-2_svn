@@ -19,11 +19,9 @@ package org.apache.jetspeed.util.descriptor;
 import java.io.Reader;
 
 import org.apache.commons.digester.Digester;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
-import org.apache.jetspeed.om.servlet.impl.SecurityRoleImpl;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
-import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
  * Utilities for manipulating the web.xml deployment descriptor
@@ -61,7 +59,7 @@ public class WebApplicationDescriptor
      *                  The display name of the web application
      * @return The Java object tree representing web.xml
      */
-    public MutableWebApplication createWebApplication() throws PortletApplicationException
+    public WebApplicationDefinition createWebApplication() throws PortletApplicationException
     {
         try
         {
@@ -79,7 +77,7 @@ public class WebApplicationDescriptor
                     
             digester.addObjectCreate("web-app", WebApplicationDefinitionImpl.class);
 
-            digester.addObjectCreate("web-app/security-role", SecurityRoleImpl.class);
+            digester.addCallMethod("web-app/security-role", "addRole", 0);
             digester.addBeanPropertySetter("web-app/security-role/description", "description");
             digester.addBeanPropertySetter("web-app/security-role/role-name", "roleName");
             digester.addSetNext("web-app/security-role", "addSecurityRole");
@@ -88,7 +86,7 @@ public class WebApplicationDescriptor
 
             wd.setContextRoot(contextRoot);
             //wd.addDescription(locale, displayName);
-            wd.addDescription(JetspeedLocale.getDefaultLocale(), contextRoot);
+            wd.setDescription(contextRoot);
             return wd;
 
         }

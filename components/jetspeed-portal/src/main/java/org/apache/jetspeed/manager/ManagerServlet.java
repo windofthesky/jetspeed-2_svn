@@ -166,7 +166,7 @@ public class ManagerServlet extends HttpServlet
         while (iter.hasNext())
         {
             pa = (PortletApplication) iter.next();
-            writer.println(pa.getId() + ":" + pa.getName() + ":" + pa.getWebApplicationDefinition().getContextRoot()
+            writer.println(pa.getName() + ":" + pa.getWebApplicationDefinition().getContextRoot()
                            + ":" + (portletFactory.isPortletApplicationRegistered(pa) ? "ACTIVE" : "INACTIVE"));
         }
         return OK;

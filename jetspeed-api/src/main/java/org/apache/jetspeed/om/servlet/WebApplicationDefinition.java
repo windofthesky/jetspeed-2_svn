@@ -35,6 +35,7 @@ public interface WebApplicationDefinition
     void setDescription(String description);
     
     List<String> getRoles();
+    void addRole(String role);
     
     String getContextRoot();
     void setContextRoot(String contextRoot);

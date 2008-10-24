@@ -44,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriterFactory;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
@@ -184,7 +185,7 @@ public class PortletApplicationWar
      * @throws IOException
      * @see org.apache.jetspeed.util.descriptor.WebApplicationDescriptor
      */
-    public MutableWebApplication createWebApp() throws PortletApplicationException, IOException
+    public WebApplicationDefinition createWebApp() throws PortletApplicationException, IOException
     {
         Reader webXmlReader = getReader(WEB_XML_PATH);
 
@@ -225,7 +226,7 @@ public class PortletApplicationWar
      * @throws IOException
      * @see org.apache.jetspeed.uitl.descriptor.PortletApplicationDescriptor
      */
-    public PortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
+    public PortletApplication createPortletApp(ClassLoader classLoader, WebApplicationDefinition wa, int paType) throws PortletApplicationException, IOException
     {
         Reader portletXmlReader = getReader(PORTLET_XML_PATH);
         

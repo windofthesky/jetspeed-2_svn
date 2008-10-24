@@ -202,7 +202,7 @@ public class JetspeedPortalContext implements PortalContext
         PortletRequestContext ctx = PortletRequestContext.getContext();
         if ( ctx != null )
         {
-            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getPortletApplicationDefinition());
+            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getApplication());
             return pa.getSupportedPortletModes();
         }
         return JetspeedActions.getStandardPortletModes();
@@ -226,7 +226,7 @@ public class JetspeedPortalContext implements PortalContext
         PortletRequestContext ctx = PortletRequestContext.getContext();
         if ( ctx != null )
         {
-            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getPortletApplicationDefinition());
+            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getApplication());
             return pa.getSupportedWindowStates();
         }
         return JetspeedActions.getStandardWindowStates();

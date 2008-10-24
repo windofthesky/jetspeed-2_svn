@@ -69,7 +69,7 @@ public abstract class AbstractUserInfoManagerImpl
                         UserAttributeRef currentAttributeRef = (UserAttributeRef) attrRefsIter.next();
                         if (null != currentAttributeRef)
                         {
-                            if ((currentAttribute.getPortletName()).equals(currentAttributeRef.getNameLink()))
+                            if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
                             {
                                 if (log.isDebugEnabled())
                                     log.debug("Linking user attribute ref: [[name, " + currentAttribute.getPortletName()

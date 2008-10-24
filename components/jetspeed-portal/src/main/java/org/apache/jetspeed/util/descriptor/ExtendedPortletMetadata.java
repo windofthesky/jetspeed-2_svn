@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.portlet.CustomPortletMode;
 import org.apache.jetspeed.om.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
@@ -135,14 +136,17 @@ public class ExtendedPortletMetadata
                 Iterator mappedModesIter = mappedPortletModes.iterator();
                 while ( mappedModesIter.hasNext() )
                 {
-                    CustomPortletModeImpl mappedMode = (CustomPortletModeImpl)mappedModesIter.next();
+                    CustomPortletMode mappedMode = (CustomPortletMode)mappedModesIter.next();
                     if (!mappedMode.getMappedMode().equals(mappedMode.getCustomMode()))
                     {
                         int index = customModes.indexOf(mappedMode);
                         if ( index > -1 )
                         {
                             CustomPortletMode customMode = (CustomPortletMode)customModes.get(index);
-                            mappedMode.setDescription(customMode.getDescription());
+                            for (Description d : customMode.getDescriptions())
+                            {
+                                mappedMode.addDescription(d.getLang()).setDescription(d.getDescription());
+                            }
                             customModes.set(index,mappedMode);
                         }
                     }
@@ -163,7 +167,10 @@ public class ExtendedPortletMetadata
                         if ( index > -1 )
                         {
                             CustomWindowState customState = (CustomWindowState)customStates.get(index);
-                            mappedState.setDescription(customState.getDescription());
+                            for (Description d : customState.getDescriptions())
+                            {
+                                mappedState.addDescription(d.getLang()).setDescription(d.getDescription());
+                            }
                             customStates.set(index,mappedState);
                         }
                     }

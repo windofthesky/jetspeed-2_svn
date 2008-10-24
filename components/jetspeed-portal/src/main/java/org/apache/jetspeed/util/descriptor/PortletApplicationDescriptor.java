@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.portlet.impl.SupportsImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
 import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.pluto.om.portlet.SecurityRoleRef;
 import org.apache.pluto.om.portlet.SecurityRoleRefSet;
@@ -68,7 +69,7 @@ public class PortletApplicationDescriptor
         this.appName = appName;
     }
 
-    public PortletApplication createPortletApplication()
+    public PortletApplication createPortletApplication(WebApplicationDefinition wa)
     throws PortletApplicationException
     {
         return createPortletApplication(this.getClass().getClassLoader());
@@ -81,7 +82,7 @@ public class PortletApplicationDescriptor
      * @return PortletApplication newly created PortletApplication with
      * all values of the portlet application descriptor mapped into it.
      */
-    public PortletApplication createPortletApplication(ClassLoader classLoader)
+    public PortletApplication createPortletApplication(ClassLoader classLoader, WebApplicationDefinition wa)
         throws PortletApplicationException
     {
         try

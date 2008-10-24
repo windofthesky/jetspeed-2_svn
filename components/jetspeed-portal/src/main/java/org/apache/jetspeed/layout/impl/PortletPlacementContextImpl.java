@@ -30,9 +30,8 @@ import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.pluto.om.portlet.Parameter;
-import org.apache.pluto.om.portlet.ParameterSet;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 
 /**
@@ -806,7 +805,6 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
     		String sizesVal = layoutFragment.getProperty( "sizes" );
     		String layoutName = layoutFragment.getName();
     		layoutName = ( (layoutName != null && layoutName.length() > 0) ? layoutName : (String)null );
-    		ParameterSet paramSet = null;
     		PortletDefinition portletDef = null;
     		if ( sizesVal == null || sizesVal.length() == 0 )
     		{
@@ -816,12 +814,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
     				portletDef = registry.getPortletDefinitionByUniqueName( layoutName );
                     if ( portletDef != null )
                     {
-                    	paramSet = portletDef.getInitParameterSet();
-                    	if ( paramSet != null )
-                    	{
-                    		Parameter sizesParam = paramSet.get( "sizes" );
-                    		sizesVal = ( sizesParam == null ) ? null : sizesParam.getValue();
-                    	}
+                        InitParam sizesParam = portletDef.getInitParam( "sizes" );
+                        sizesVal = ( sizesParam == null ) ? null : sizesParam.getParamValue();
                     }
     			}
     		}
@@ -849,7 +843,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 				if ( ! suppressErrorLogging && columnCount <= 0 )
 					log.error( "getColumnCountAndSizes invalid columnCount - " + layoutFragment.getId() + " / " + layoutName + " count=" + columnCount + " sizes=" + sizesVal );
 			}
-			else if ( paramSet == null )
+			else if ( portletDef == null || portletDef.getInitParams().isEmpty() )
 			{
 				if ( ! suppressErrorLogging )
 				{
@@ -863,8 +857,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 			}
 			else
 			{
-				Parameter colsParam = paramSet.get( "columns" );
-				String colsParamVal = ( colsParam == null ) ? null : colsParam.getValue();
+				InitParam colsParam = portletDef.getInitParam( "columns" );
+				String colsParamVal = ( colsParam == null ) ? null : colsParam.getParamValue();
 				if ( colsParamVal != null && colsParamVal.length() > 0 )
 				{
 					try

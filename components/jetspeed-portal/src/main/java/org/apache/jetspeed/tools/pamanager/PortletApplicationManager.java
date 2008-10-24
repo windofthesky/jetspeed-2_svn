@@ -32,7 +32,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
@@ -44,9 +44,8 @@ import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.om.portlet.SecurityRole;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * PortletApplicationManager
@@ -169,23 +168,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
         startPA(contextName, "/"+contextName, warStruct, paClassLoader, PortletApplication.LOCAL);
 	}
 
-    public void startInternalApplication(String contextName) throws RegistryException
-    {
-        checkStarted();
-        File webinf = new File (appRoot);
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();        
-        DirectoryHelper dir = new DirectoryHelper(webinf);
-        String appName = (contextName.startsWith("/")) ? contextName.substring(1) : contextName;
-        PortletApplication app = registry.getPortletApplicationByIdentifier(appName);
-        if (app != null && app.getApplicationType() == PortletApplication.LOCAL)
-        {
-            app.setApplicationType(org.apache.jetspeed.om.portlet.INTERNAL);
-            registry.updatePortletApplication(app);
-        }
-        startPA(contextName, "/"+contextName, dir, contextClassLoader, org.apache.jetspeed.om.portlet.INTERNAL);
-        // startInternal(contextName, warStruct, paClassLoader, true);        
-    }
-    
 	public void startPortletApplication(String contextName, FileSystemHelper warStruct,
 		ClassLoader paClassLoader)
 		throws RegistryException
@@ -312,45 +294,31 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
 		try
 		{
-			log.info("Loading portlet.xml...." + paName);
-			pa = paWar.createPortletApp(paClassLoader);
-			pa.setApplicationType(paType);
+            // load the web.xml
+            log.info("Loading web.xml...." + paName);
+            WebApplicationDefinition wa = paWar.createWebApp();
+            paWar.validate();
 
-			// load the web.xml
-			log.info("Loading web.xml...." + paName);
-			MutableWebApplication wa = paWar.createWebApp();
-			paWar.validate();
+			log.info("Loading portlet.xml...." + paName);
+			pa = paWar.createPortletApp(paClassLoader, wa, paType);
 
 			if (paType == PortletApplication.LOCAL)
 			{
 				wa.setContextRoot("<portal>");
 			}
-            else if (paType == org.apache.jetspeed.om.portlet.INTERNAL)
-            {
-                // TODO: this is screwing up the PSML as its set all over the place to "jetspeed-layouts", not good
-                wa.setContextRoot("/" + paName);                
-            }
 
-			pa.setWebApplicationDefinition(wa);
-            
             // Make sure existing entities are refreshed with the most
             // recent PortletDefintion.
-            Collection portletDefs = pa.getPortletDefinitions();
-            if(portletDefs != null && portletDefs.size() > 0)
+            for (PortletDefinition pd : pa.getPortlets()))
             {
-                Iterator pdItr = portletDefs.iterator();
-                while(pdItr.hasNext())
+                Collection portletEntites = entityAccess.getPortletEntities(pd);
+                if(portletEntites != null && portletEntites.size() > 0)
                 {
-                    PortletDefinition pd = (PortletDefinition) pdItr.next();
-                    Collection portletEntites = entityAccess.getPortletEntities(pd);
-                    if(portletEntites != null && portletEntites.size() > 0)
+                    Iterator peItr = portletEntites.iterator();
+                    while(peItr.hasNext())
                     {
-                        Iterator peItr = portletEntites.iterator();
-                        while(peItr.hasNext())
-                        {
-                            PortletEntity portletEntity = (PortletEntity) peItr.next();
-                            portletEntity.setPortletDefinition(pd);
-                        }
+                        PortletEntity portletEntity = (PortletEntity) peItr.next();
+                        portletEntity.setPortletDefinition(pd);
                     }
                 }
             }
@@ -381,21 +349,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
             // grant default permissions to portlet application
 			grantDefaultPermissions(paName);
             
-            if ( autoCreateRoles && roleManager != null && pa.getWebApplicationDefinition().getSecurityRoles() != null )
+            if ( autoCreateRoles && roleManager != null && pa.getWebApplicationDefinition().getRoles() != null )
             {
                 try
                 {
-                    Iterator rolesIter = pa.getWebApplicationDefinition().getSecurityRoles().iterator();
-                    SecurityRole sr;
-                    while ( rolesIter.hasNext() )
-                    {
-                        sr = (SecurityRole)rolesIter.next();
-                        if ( !roleManager.roleExists(sr.getRoleName()) )
+                    for (String sr : pa.getWebApplicationDefinition().getRoles())
+                        if ( !roleManager.roleExists(sr) )
                         {
-                            roleManager.addRole(sr.getRoleName());
-                            log.info("AutoCreated role: "+sr.getRoleName()+" from portlet application "+paName+" its web definition");
+                            roleManager.addRole(sr);
+                            log.info("AutoCreated role: "+sr+" from portlet application "+paName+" its web definition");
                         }
-                    }
                 }
                 catch (SecurityException sex)
                 {
@@ -719,13 +682,13 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			if (remove)
 			{
 				searchEngine.remove(pa);
-				searchEngine.remove(pa.getPortletDefinitions());
+				searchEngine.remove(pa.getPortlets());
 				log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
 			}
 			else
 			{
 			    searchEngine.add(pa);
-                searchEngine.add(pa.getPortletDefinitions());
+                searchEngine.add(pa.getPortlets());
                 log.info("Registered the portlet application in the search engine... " + pa.getName());
 			}
 		}
@@ -739,11 +702,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		updateSearchEngine(true,pa);
 		log.info("Remove all registry entries defined for portlet application " + pa.getName());
 
-		Iterator portlets = pa.getPortletDefinitions().iterator();
-
-		while (portlets.hasNext())
+		for (PortletDefinition portletDefinition : pa.getPortlets())
 		{
-			PortletDefinition portletDefinition = (PortletDefinition) portlets.next();
 			Iterator		  entities = entityAccess.getPortletEntities(portletDefinition)
 													 .iterator();
 

@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.digester.Rule;
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.jetspeed.om.portlet.Preference;
 import org.xml.sax.Attributes;
 
 /**
@@ -54,7 +52,6 @@ public class PortletPreferenceRule extends Rule
     {
         Object peeked = digester.peek();
         portlet = (PortletDefinition) peeked;
-        portlet.setPortletApplicationDefinition((PortletApplicationDefinition) digester.getRoot());
         
         // reset properties to default values
         // as the same instance of this rule can be used multiple times
@@ -76,8 +73,15 @@ public class PortletPreferenceRule extends Rule
      */
     public void end( String arg0, String arg1 ) throws Exception
     {       
-        PreferenceComposite pref = (PreferenceComposite)((PreferenceSetComposite)portlet.getPreferenceSet()).add(name,values);
-        pref.setReadOnly(Boolean.toString(readOnly));
+        Preference p = portlet.getPortletPreferences().addPreference(name);
+        if (values != null)
+        {
+            for (String val : values)
+            {
+                p.addValue(val);
+            }
+        }
+        p.setReadOnly(readOnly);
         digester.pop();
     }
     

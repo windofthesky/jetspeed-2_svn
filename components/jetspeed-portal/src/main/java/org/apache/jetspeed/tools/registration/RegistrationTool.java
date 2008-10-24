@@ -22,7 +22,7 @@ import java.io.FileReader;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
 import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
@@ -106,10 +106,9 @@ public class RegistrationTool
     throws Exception
     {
         WebApplicationDescriptor wad = new WebApplicationDescriptor(new FileReader(webappDescriptor), "/" + appName);
-        MutableWebApplication webapp = wad.createWebApplication();
+        WebApplicationDefinition webapp = wad.createWebApplication();
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(appDescriptor), appName);        
-        PortletApplication app = pad.createPortletApplication();                
-        app.setWebApplicationDefinition(webapp);
+        PortletApplication app = pad.createPortletApplication(webapp);                
         ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(extendedDescriptor), app);
         extMetaData.load();        
         registry.registerPortletApplication(app);

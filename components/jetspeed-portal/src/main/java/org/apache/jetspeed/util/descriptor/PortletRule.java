@@ -18,7 +18,6 @@ package org.apache.jetspeed.util.descriptor;
 
 import org.apache.commons.digester.Rule;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.xml.sax.Attributes;
 
 /**
@@ -40,10 +39,9 @@ public class PortletRule extends Rule
      */
     public void begin( String arg0, String arg1, Attributes arg2 ) throws Exception
     {
-        PortletDefinitionImpl portlet = new PortletDefinitionImpl();
         PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) digester.getRoot();
-        app.addPortletDefinition(portlet);
-        digester.push(portlet);
+        digester.push(app.addPortletDefinition());
+);
     }
     /**
      * <p>
