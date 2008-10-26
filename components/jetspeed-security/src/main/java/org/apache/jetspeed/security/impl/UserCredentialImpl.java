@@ -20,7 +20,6 @@ package org.apache.jetspeed.security.impl;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.UserCredential;
 
 /**
@@ -42,7 +41,7 @@ public class UserCredentialImpl implements UserCredential
     private boolean updateAllowed;
     private boolean updateRequired;
     
-    public UserCredentialImpl(PasswordCredential pwc)
+    public UserCredentialImpl(UserCredential pwc)
     {
         synchronize(pwc);
     }
