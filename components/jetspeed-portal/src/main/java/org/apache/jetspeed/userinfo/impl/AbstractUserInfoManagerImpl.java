@@ -80,7 +80,7 @@ public abstract class AbstractUserInfoManagerImpl
                             if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
                             {
                                 if (log.isDebugEnabled())
-                                    log.debug("Linking user attribute ref: [[name, " + currentAttribute.getPortletName()
+                                    log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
                                             + "], [linked name, " + currentAttributeRef.getName() + "]]");
                                 linkedUserAttributes.add(currentAttributeRef);
                                 linkedAttribute = true;
@@ -112,9 +112,9 @@ public abstract class AbstractUserInfoManagerImpl
     public Map<String, String> getUserInfo(PortletRequest request, PortletWindow window) throws PortletContainerException
     {
         String remoteUser = request.getRemoteUser(); 
-        if ( remoteUser != null ) 
+        if ( remoteUser == null ) 
         {
-            return Collections.EMPTY_MAP;
+            return null;
         }
         RequestContext requestContext=(RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         return this.getUserInfoMap(window.getPortletEntity().getPortletDefinition().getApplication().getName(), requestContext);        
