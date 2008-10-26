@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserCredential;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
