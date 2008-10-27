@@ -63,36 +63,36 @@ public class JetspeedActions
     public static final String MAXIMIZE = WindowState.MAXIMIZED.toString();
     public static final String SOLO = SOLO_STATE.toString();
     
-    private static final List standardPortletModes;
-    private static final List standardWindowStates;
+    private static final List<PortletMode> standardPortletModes;
+    private static final List<WindowState> standardWindowStates;
    
     static
     {
-        ArrayList list = new ArrayList(3);
+        ArrayList<PortletMode> list = new ArrayList<PortletMode>(3);
         list.add(PortletMode.VIEW);
         list.add(PortletMode.EDIT);
         list.add(PortletMode.HELP);
         standardPortletModes = Collections.unmodifiableList(list);
-        list = new ArrayList(3);
-        list.add(WindowState.NORMAL);
-        list.add(WindowState.MINIMIZED);
-        list.add(WindowState.MAXIMIZED);
-        standardWindowStates = Collections.unmodifiableList(list);
+        ArrayList<WindowState> list2 = new ArrayList<WindowState>(3);
+        list2.add(WindowState.NORMAL);
+        list2.add(WindowState.MINIMIZED);
+        list2.add(WindowState.MAXIMIZED);
+        standardWindowStates = Collections.unmodifiableList(list2);
     }
 
     private static JetspeedActions instance = new JetspeedActions(new String[]{}, new String[]{});
         
-    private final List extendedPortletModes;
-    private final List extendedWindowStates;
-    private final Map actionsMap;
+    private final List<PortletMode> extendedPortletModes;
+    private final List<WindowState> extendedWindowStates;
+    private final Map<String,Integer> actionsMap;
     private final Object[] actions;
     
-    public static List getStandardPortletModes()
+    public static List<PortletMode> getStandardPortletModes()
     {
         return standardPortletModes;
     }
     
-    public static List getStandardWindowStates()
+    public static List<WindowState> getStandardWindowStates()
     {
         return standardWindowStates;
     }
@@ -101,9 +101,9 @@ public class JetspeedActions
     {
         int index = 0;
         
-        ArrayList actionsList = new ArrayList();
+        ArrayList<Object> actionsList = new ArrayList<Object>();
         
-        actionsMap = new HashMap();
+        actionsMap = new HashMap<String,Integer>();
         
         actionsMap.put(WindowState.MINIMIZED.toString(),new Integer(index++));
         actionsList.add(WindowState.MINIMIZED);
@@ -118,7 +118,7 @@ public class JetspeedActions
         actionsMap.put(PortletMode.HELP.toString(),new Integer(index++));
         actionsList.add(PortletMode.HELP);
         
-        ArrayList list = new ArrayList();
+        ArrayList<WindowState> list = new ArrayList<WindowState>();
         
         for (int i=0; index < 32 && i<supportedWindowStates.length; i++) 
         {
@@ -136,7 +136,7 @@ public class JetspeedActions
         }
         extendedWindowStates = Collections.unmodifiableList(list);
         
-        list = new ArrayList();
+        ArrayList<PortletMode> list2 = new ArrayList<PortletMode>();
         
         for (int i=0; index < 32 && i<supportedPortletModes.length; i++) 
         {
@@ -145,26 +145,26 @@ public class JetspeedActions
             {
                 actionsMap.put(mode.toString(), new Integer(index++));
                 actionsList.add(mode);
-                list.add(mode);
+                list2.add(mode);
             }
             else if (!standardPortletModes.contains(mode))
             {
                 throw new IllegalArgumentException("PortletMode "+mode+" already defined as extended PortletMode or WindowState");
             }
         }
-        extendedPortletModes = Collections.unmodifiableList(list);
+        extendedPortletModes = Collections.unmodifiableList(list2);
         
         actions = actionsList.toArray();
         
         instance = this;
     }
 
-    public static List getExtendedPortletModes()
+    public static List<PortletMode> getExtendedPortletModes()
     {
         return instance.extendedPortletModes;
     }
     
-    public static List getExtendedWindowStates()
+    public static List<WindowState> getExtendedWindowStates()
     {
         return instance.extendedWindowStates;
     }
