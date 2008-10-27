@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,56 +32,71 @@ import org.apache.jetspeed.om.portlet.UserDataConstraint;
  */
 public class SecurityConstraintImpl implements SecurityConstraint, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.SecurityConstraint#addDisplayName(java.lang.String)
-     */
-    public DisplayName addDisplayName(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.SecurityConstraint#getDisplayName(java.util.Locale)
-     */
+    protected UserDataConstraint userDataConstraint;
+    protected List<String> portletNames;
+    protected List<DisplayName> displayNames;
+    
     public DisplayName getDisplayName(Locale locale)
     {
-        // TODO Auto-generated method stub
+        for (DisplayName d : getDisplayNames())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.SecurityConstraint#getDisplayNames()
-     */
+    
     public List<DisplayName> getDisplayNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (displayNames == null)
+        {
+            displayNames = new ArrayList<DisplayName>();
+        }
+        return displayNames;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.SecurityConstraint#getUserDataConstraint()
-     */
-    public UserDataConstraint getUserDataConstraint()
+    
+    public DisplayName addDisplayName(String lang)
     {
-        // TODO Auto-generated method stub
-        return null;
+        DisplayNameImpl d = new DisplayNameImpl();
+        d.setLang(lang);
+        if (getDisplayName(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+        }
+        getDisplayNames();
+        displayNames.add(d);
+        return d;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.SecurityConstraint#addPortletName(java.lang.String)
-     */
-    public void addPortletName(String portletName)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.SecurityConstraint#getPortletNames()
-     */
     public List<String> getPortletNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (portletNames == null)
+        {
+            portletNames = new ArrayList<String>();
+        }
+        return portletNames;
+    }
+    
+    public void addPortletName(String portletName)
+    {
+        for (String name : getPortletNames())
+        {
+            if (name.equals(portletName))
+            {
+                throw new IllegalArgumentException("Portlet name: "+name+" already defined");
+            }
+        }
+        portletNames.add(portletName);        
+    }
+
+    public UserDataConstraint getUserDataConstraint()
+    {
+        if (userDataConstraint == null)
+        {
+            userDataConstraint = new UserDataConstraintImpl();
+        }
+        return userDataConstraint;
     }
 }

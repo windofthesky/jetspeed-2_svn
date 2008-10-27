@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,39 +31,50 @@ import org.apache.jetspeed.om.portlet.UserDataConstraint;
  */
 public class UserDataConstraintImpl implements UserDataConstraint, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.UserDataConstraint#addDescription(java.lang.String)
-     */
-    public Description addDescription(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.UserDataConstraint#getDescription(java.util.Locale)
-     */
+    private String transportGuarantee;
+    protected List<Description> descriptions;
+    
     public Description getDescription(Locale locale)
     {
-        // TODO Auto-generated method stub
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.UserDataConstraint#getDescriptions()
-     */
+    
     public List<Description> getDescriptions()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl();
+        d.setLang(lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.UserDataConstraint#getTransportGuarantee()
-     */
     public String getTransportGuarantee()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return transportGuarantee;
+    }
+
+    public void setTransportGuarantee(String value)
+    {
+        transportGuarantee = value;
     }
 }

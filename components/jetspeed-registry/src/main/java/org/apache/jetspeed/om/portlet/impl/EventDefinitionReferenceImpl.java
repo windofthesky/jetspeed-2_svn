@@ -29,30 +29,33 @@ import org.apache.jetspeed.om.portlet.EventDefinitionReference;
  */
 public class EventDefinitionReferenceImpl implements EventDefinitionReference, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinitionReference#getName()
-     */
-    public String getName()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinitionReference#getQName()
-     */
+    protected QName qname;
+    protected String name;
+    
     public QName getQName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return qname;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinitionReference#getQualifiedName(java.lang.String)
-     */
+    public void setQName(QName value)
+    {
+        qname = value;
+        name = null;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String value)
+    {
+        name = value;
+        qname = null;
+    }
+
     public QName getQualifiedName(String defaultNamespace)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return qname != null ? qname : name != null ? new QName(defaultNamespace, name) : null;
     }
 }

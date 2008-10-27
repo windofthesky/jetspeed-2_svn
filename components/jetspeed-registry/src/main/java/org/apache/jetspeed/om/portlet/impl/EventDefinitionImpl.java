@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,91 +33,95 @@ import org.apache.jetspeed.om.portlet.EventDefinition;
  */
 public class EventDefinitionImpl implements EventDefinition, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.EventDefinition#addDescription(java.lang.String)
-     */
-    public Description addDescription(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.EventDefinition#getDescription(java.util.Locale)
-     */
+    protected String name;
+    protected QName qname;
+    protected String valueType;
+    protected List<QName> aliases;
+    protected List<Description> descriptions;
+    
     public Description getDescription(Locale locale)
     {
-        // TODO Auto-generated method stub
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.EventDefinition#getDescriptions()
-     */
+    
     public List<Description> getDescriptions()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#addAlias(javax.xml.namespace.QName)
-     */
-    public void addAlias(QName name)
+    
+    public Description addDescription(String lang)
     {
-        // TODO Auto-generated method stub
+        DescriptionImpl d = new DescriptionImpl();
+        d.setLang(lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#getAliases()
-     */
-    public List<QName> getAliases()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#getName()
-     */
-    public String getName()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#getQName()
-     */
     public QName getQName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return qname;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#getQualifiedName(java.lang.String)
-     */
-    public QName getQualifiedName(String defaultNamespace)
+    public void setQName(QName value)
     {
-        // TODO Auto-generated method stub
-        return null;
+        qname = value;
+        name = null;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#getValueType()
-     */
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String value)
+    {
+        name = value;
+        qname = null;
+    }
+
+    public List<QName> getAliases()
+    {
+        if (aliases == null)
+        {
+            aliases = new ArrayList<QName>();
+        }
+        return aliases;
+    }
+    
+    public void addAlias(QName alias)
+    {
+        // TODO: check for duplicates
+        getAliases().add(alias);
+    }
+
     public String getValueType()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return valueType;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.EventDefinition#setValueType(java.lang.String)
-     */
-    public void setValueType(String valueType)
+    public void setValueType(String value)
     {
-        // TODO Auto-generated method stub
+        valueType = value;
+    }
+
+    public QName getQualifiedName(String defaultNamespace)
+    {
+        return qname != null ? qname : name != null ? new QName(defaultNamespace, name) : null;
     }
 }

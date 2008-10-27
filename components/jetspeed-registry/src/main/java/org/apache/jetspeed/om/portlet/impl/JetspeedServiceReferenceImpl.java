@@ -36,20 +36,13 @@ public class JetspeedServiceReferenceImpl implements JetspeedServiceReference
         this.name = name;
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.JetspeedServiceReference#getName()
-     */
     public String getName()
     {
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.JetspeedServiceReference#setName(java.lang.String)
-     */
     public void setName(String name)
     {
         this.name = name;
     }
-
 }

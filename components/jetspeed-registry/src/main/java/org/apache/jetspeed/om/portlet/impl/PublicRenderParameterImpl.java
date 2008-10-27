@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,74 +33,88 @@ import org.apache.jetspeed.om.portlet.PublicRenderParameter;
  */
 public class PublicRenderParameterImpl implements PublicRenderParameter, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.PublicRenderParameter#addDescription(java.lang.String)
-     */
-    public Description addDescription(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.PublicRenderParameter#getDescription(java.util.Locale)
-     */
-    public Description getDescription(Locale locale)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.PublicRenderParameter#getDescriptions()
-     */
-    public List<Description> getDescriptions()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.PublicRenderParameter#addAlias(javax.xml.namespace.QName)
-     */
-    public void addAlias(QName alias)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.PublicRenderParameter#getAliases()
-     */
-    public List<QName> getAliases()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.PublicRenderParameter#getIdentifier()
-     */
+    protected String identifier;
+    protected QName qname;
+    protected String name;
+    protected List<QName> alias;
+    protected List<Description> descriptions;
+    
     public String getIdentifier()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return identifier;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.PublicRenderParameter#getName()
-     */
-    public String getName()
+    public void setIdentifier(String value)
     {
-        // TODO Auto-generated method stub
-        return null;
+        identifier = value;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.PublicRenderParameter#getQName()
-     */
     public QName getQName()
     {
-        // TODO Auto-generated method stub
+        return qname;
+    }
+
+    public void setQName(QName value)
+    {
+        qname = value;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String value)
+    {
+        name = value;
+    }
+
+    public List<QName> getAliases()
+    {
+        if (alias == null)
+        {
+            alias = new ArrayList<QName>();
+        }
+        return alias;
+    }
+
+    public void addAlias(QName alias)
+    {
+        // TODO: check duplicates
+        getAliases().add(alias);
+    }
+    
+    public Description getDescription(Locale locale)
+    {
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
+    }
+    
+    public List<Description> getDescriptions()
+    {
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl();
+        d.setLang(lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,127 +33,147 @@ import org.apache.jetspeed.om.portlet.InitParam;
  */
 public class FilterImpl implements Filter, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#addDescription(java.lang.String)
-     */
-    public Description addDescription(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#addDisplayName(java.lang.String)
-     */
-    public DisplayName addDisplayName(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#addInitParam(java.lang.String)
-     */
-    public InitParam addInitParam(String paramName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#getDescription(java.util.Locale)
-     */
+    protected String filterName;
+    protected String filterClass;
+    protected List<String> lifecycle;
+    protected List<InitParam> initParam;
+    protected List<Description> descriptions;
+    protected List<DisplayName> displayNames;
+    
     public Description getDescription(Locale locale)
     {
-        // TODO Auto-generated method stub
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#getDescriptions()
-     */
+    
     public List<Description> getDescriptions()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl();
+        d.setLang(lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#getDisplayName(java.util.Locale)
-     */
     public DisplayName getDisplayName(Locale locale)
     {
-        // TODO Auto-generated method stub
+        for (DisplayName d : getDisplayNames())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#getDisplayNames()
-     */
+    
     public List<DisplayName> getDisplayNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (displayNames == null)
+        {
+            displayNames = new ArrayList<DisplayName>();
+        }
+        return displayNames;
     }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#getInitParam(java.lang.String)
-     */
-    public InitParam getInitParam(String paramName)
+    
+    public DisplayName addDisplayName(String lang)
     {
-        // TODO Auto-generated method stub
-        return null;
+        DisplayNameImpl d = new DisplayNameImpl();
+        d.setLang(lang);
+        if (getDisplayName(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+        }
+        getDisplayNames();
+        displayNames.add(d);
+        return d;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.portlet.Filter#getInitParams()
-     */
-    public List<InitParam> getInitParams()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Filter#addLifecycle(java.lang.String)
-     */
-    public void addLifecycle(String lifecycle)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Filter#getFilterClass()
-     */
-    public String getFilterClass()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Filter#getFilterName()
-     */
     public String getFilterName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return filterName;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Filter#getLifecycles()
-     */
+    public void setFilterName(String value)
+    {
+        filterName = value;
+    }
+
+    public String getFilterClass()
+    {
+        return filterClass;
+    }
+
+    public void setFilterClass(String value)
+    {
+        filterClass = value;
+    }
+
     public List<String> getLifecycles()
     {
-        // TODO Auto-generated method stub
+        if (lifecycle == null)
+        {
+            lifecycle = new ArrayList<String>();
+        }
+        return lifecycle;
+    }
+    
+    public void addLifecycle(String name)
+    {
+        // TODO: check valid name and duplicates
+        getLifecycles().add(name);
+    }
+    
+    public InitParam getInitParam(String name)
+    {
+        for (InitParam param : getInitParams())
+        {
+            if (param.getParamName().equals(name))
+            {
+                return param;
+            }
+        }
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Filter#setFilterClass(java.lang.String)
-     */
-    public void setFilterClass(String filterClass)
+    public List<InitParam> getInitParams()
     {
-        // TODO Auto-generated method stub
+        if (initParam == null)
+        {
+            initParam = new ArrayList<InitParam>();
+        }
+        return initParam;
+    }
+    
+    public InitParam addInitParam(String paramName)
+    {
+        if (getInitParam(paramName) != null)
+        {
+            throw new IllegalArgumentException("Init parameter: "+paramName+" already defined");
+        }
+        InitParamImpl param = new InitParamImpl();
+        param.setParamName(paramName);
+        getInitParams();
+        initParam.add(param);
+        return param;
     }
 }

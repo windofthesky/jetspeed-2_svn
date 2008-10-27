@@ -18,6 +18,7 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.portlet.FilterMapping;
@@ -28,29 +29,31 @@ import org.apache.jetspeed.om.portlet.FilterMapping;
  */
 public class FilterMappingImpl implements FilterMapping, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.FilterMapping#addPortletName(java.lang.String)
-     */
-    public void addPortletName(String portletName)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.FilterMapping#getFilterName()
-     */
+    protected String filterName;
+    protected List<String> portletName;
+    
     public String getFilterName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return filterName;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.FilterMapping#getPortletNames()
-     */
+    public void setFilterName(String value)
+    {
+        filterName = value;
+    }
+
     public List<String> getPortletNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (portletName == null)
+        {
+            portletName = new ArrayList<String>();
+        }
+        return portletName;
+    }
+    
+    public void addPortletName(String name)
+    {
+        // TODO: check for duplicates
+        getPortletNames().add(name);
     }
 }

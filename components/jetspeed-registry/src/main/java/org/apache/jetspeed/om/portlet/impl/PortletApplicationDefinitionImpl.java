@@ -58,57 +58,56 @@ import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
  */
 public class PortletApplicationDefinitionImpl implements PortletApplication, Serializable, Support
 { 
-    /** Holds value of property name. */
-    private String name;
-
+    private int applicationType = PortletApplication.WEBAPP;
+    
+    private String checksum = "0";
+    private long checksumLong = -1;
+    
     /** Holds value of property version. */
     private String version;
+
+    /** Holds value of property name. */
+    private String name;
 
     /** WebApplication property */
     private transient WebApplicationDefinition webApplication;
     
     /** Metadata property */
     private Collection metadataFields = null;
-
-    /** Metadata property */
-    private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
     
     /** Description */
     private String description;
 
-    /** User attribute refs collection. */
-    private List<UserAttributeRefImpl> userAttributeRefs;
+    private String resourceBundle;
+    private String defaultNamespace;
     
-    /** User attributes collection. */
-    private Collection userAttributes;
+    private String jetspeedSecurityConstraint;
     
-    protected List<PortletDefinition> portlets;
+    private List<PortletDefinition> portlets;
+    private List<EventDefinition> eventDefinitions;
+    private List<PublicRenderParameter> publicRenderParameters;
+    private List<CustomPortletMode> customPortletModes;
+    private List<CustomWindowState> customWindowStates;
+    private List<UserAttribute> userAttributes;
+    private List<SecurityConstraint> securityConstraints;
+    private List<Filter> filters;
+    private List<FilterMapping> filterMappings;
+    private List<Listener> listeners;
+    private List<ContainerRuntimeOption> containerRuntimeOptions;
+
+    private List<UserAttributeRef> userAttributeRefs;
+    private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
     
-    private int applicationType = PortletApplication.WEBAPP;
-    
-    private String checksum = "0";
-    private long checksumLong = -1;
-    
-    private List customPortletModes;
-    private List customWindowStates;
-    
-    private String jetspeedSecurityConstraint = null;
-    
-    private transient Map supportedCustomModes;
-    private transient Map supportedCustomStates;
-    private transient Map mappedCustomModes;
-    private transient Map mappedCustomStates;    
+    private transient Map<PortletMode,PortletMode> supportedCustomModes;
+    private transient Map<WindowState,WindowState> supportedCustomStates;
+    private transient Map<PortletMode,PortletMode> mappedCustomModes;
+    private transient Map<WindowState,WindowState> mappedCustomStates;    
     private transient List<PortletMode> supportedPortletModes;
     private transient List<WindowState> supportedWindowStates;
     
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
-        portlets = new ArrayList<PortletDefinition>();
-        userAttributes = new ArrayList();        
-        userAttributeRefs = new ArrayList();
-        customPortletModes = new ArrayList<PortletMode>();
-        customWindowStates = new ArrayList<WindowState>();
     }
 
     /**
@@ -144,51 +143,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     }
 
     /**
-     * @return
-     */
-    public WebApplicationDefinition getWebApplicationDefinition()
-    {
-        return webApplication;
-    }
-
-    public PortletDefinition getPortlet(String portletName)
-    {
-        for (PortletDefinition pd : getPortlets())
-        {
-            if (pd.getPortletName().equals(portletName))
-            {
-                return pd;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return
-     */
-    public String getDescription()
-    {
-        return description;
-    }
-
-    /**
-     * @param string
-     */
-    public void setDescription(String string)
-    {
-        description = string;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#setWebApplicationDefinition(org.apache.pluto.om.servlet.WebApplicationDefinition)
-     */
-    public void setWebApplicationDefinition(WebApplicationDefinition wad)
-    {
-        this.webApplication = wad;
-
-    }
-
-    /**
      * @see org.apache.jetspeed.om.portlet.PortletApplication#setApplicationType(int)
      */
     public void setApplicationType(int type)
@@ -204,30 +158,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return applicationType;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getMetadata()
-     */
-    public GenericMetadata getMetadata()
-    {
-    	if(metadataFields == null)
-        {
-            metadataFields = new ArrayList();
-        }
-    	
-    	GenericMetadata metadata = new PortletApplicationMetadataImpl();
-    	metadata.setFields(metadataFields);
-        
-        return metadata;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.PortletApplication#getJetspeedServices()
-     */
-    public List<JetspeedServiceReference> getJetspeedServices()
-    {
-        return services;
-    }
-    
     public long getChecksum()
     {
         if(checksumLong == -1)
@@ -243,63 +173,195 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         this.checksum = Long.toString(checksum);
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.Support#postLoad(java.lang.Object)
+    public String getDefaultNamespace()
+    {
+        return defaultNamespace;
+    }
+
+    public void setDefaultNamespace(String defaultNamespace)
+    {
+        this.defaultNamespace = defaultNamespace;
+    }
+
+    public String getResourceBundle()
+    {
+        return resourceBundle;
+    }
+
+    public void setResourceBundle(String resourceBundle)
+    {
+        this.resourceBundle = resourceBundle;
+    }
+    
+    public String getJetspeedSecurityConstraint()
+    {
+        return this.jetspeedSecurityConstraint;
+    }
+
+    public void setJetspeedSecurityConstraint(String constraint)
+    {
+        this.jetspeedSecurityConstraint = constraint;
+    }
+    
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String string)
+    {
+        description = string;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.portlet.PortletApplication#getMetadata()
      */
-    public void postLoad(Object parameter) throws Exception
+    public GenericMetadata getMetadata()
     {
-        for (PortletDefinition pd : portlets)
+        if(metadataFields == null)
         {
-            ((Support)pd).postLoad(this);
+            metadataFields = new ArrayList();
         }
+        
+        GenericMetadata metadata = new PortletApplicationMetadataImpl();
+        metadata.setFields(metadataFields);
+        
+        return metadata;
+    }
+    
+    public WebApplicationDefinition getWebApplicationDefinition()
+    {
+        return webApplication;
     }
 
-    public List<CustomPortletMode> getCustomPortletModes()
+    public void setWebApplicationDefinition(WebApplicationDefinition wad)
     {
-        return customPortletModes;
-    }
-    
-    public void addCustomPortletMode(CustomPortletMode customPortletMode)
-    {
-        // clear transient cache
-        supportedPortletModes = null;
-        supportedCustomModes = null;
-        mappedCustomModes = null;
-        
-        if ( !customPortletModes.contains(customPortletMode) )
-        {
-            customPortletModes.add(customPortletMode);
-        }
-    }
-    
-    public void setCustomPortletModes(Collection customPortletModes)
-    {
-        // clear transient cache
-        supportedPortletModes = null;
-        supportedCustomModes = null;
-        mappedCustomModes = null;
+        this.webApplication = wad;
 
-        this.customPortletModes.clear();
-        
-        if ( customPortletModes != null )
-        {
-            this.customPortletModes.addAll(customPortletModes);
-        }
     }
     
-    public PortletMode getMappedPortletMode(PortletMode mode)
+    public PortletDefinition getPortlet(String portletName)
     {
-        if ( JetspeedActions.getStandardPortletModes().contains(mode) )
+        for (PortletDefinition pd : getPortlets())
         {
-            return mode;
-        }
-        else if ( getSupportedPortletModes().contains(mode) )
-        {
-            return (PortletMode)mappedCustomModes.get(mode);
+            if (pd.getPortletName().equals(portletName))
+            {
+                return pd;
+            }
         }
         return null;
     }
-    
+
+    public List<PortletDefinition> getPortlets()
+    {
+        if (portlets == null)
+        {
+            portlets = new ArrayList<PortletDefinition>();
+        }
+        return portlets;
+    }
+
+    public PortletDefinition addPortlet(String name)
+    {
+        if (getPortlet(name) != null)
+        {
+            throw new IllegalArgumentException("Portlet with name: "+name+" already defined");
+        }
+        PortletDefinitionImpl portlet = new PortletDefinitionImpl();
+        portlet.setPortletName(name);
+        portlet.setPortletApplication(this);
+        portlets.add(portlet);
+        return portlet;
+    }
+
+    public List<EventDefinition> getEventDefinitions()
+    {
+        if (eventDefinitions == null)
+        {
+            eventDefinitions = new ArrayList<EventDefinition>();
+        }
+        return eventDefinitions;
+    }
+
+    public EventDefinition addEventDefinition(String name)
+    {
+        // TODO: check duplicates (complication: set of qname and name)
+        EventDefinitionImpl ed = new EventDefinitionImpl();
+        ed.setName(name);
+        getEventDefinitions().add(ed);
+        return ed;
+    }
+
+    public EventDefinition addEventDefinition(QName qname)
+    {
+        // TODO: check duplicates (complication: set of qname and name)
+        EventDefinitionImpl ed = new EventDefinitionImpl();
+        ed.setQName(qname);
+        getEventDefinitions().add(ed);
+        return ed;
+    }
+
+    public PublicRenderParameter getPublicRenderParameter(String identifier)
+    {
+        for (PublicRenderParameter p : getPublicRenderParameters())
+        {
+            if (p.getIdentifier().equals(identifier))
+            {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public List<PublicRenderParameter> getPublicRenderParameters()
+    {
+        if (publicRenderParameters == null)
+        {
+            publicRenderParameters = new ArrayList<PublicRenderParameter>();
+        }
+        return publicRenderParameters;
+    }
+
+    public PublicRenderParameter addPublicRenderParameter(String name, String identifier)
+    {
+        if (getPublicRenderParameter(identifier) != null)
+        {
+            throw new IllegalArgumentException("PublicRenderParameter with identifier: "+identifier+" already defined");
+        }
+        // TODO: check duplicates on name|qname?
+        PublicRenderParameterImpl p = new PublicRenderParameterImpl();
+        p.setName(name);
+        p.setIdentifier(identifier);
+        publicRenderParameters.add(p);
+        return p;        
+    }
+
+    public PublicRenderParameter addPublicRenderParameter(QName qname, String identifier)
+    {
+        if (getPublicRenderParameter(identifier) != null)
+        {
+            throw new IllegalArgumentException("PublicRenderParameter with identifier: "+identifier+" already defined");
+        }
+        // TODO: check duplicates on name|qname?
+        PublicRenderParameterImpl p = new PublicRenderParameterImpl();
+        p.setQName(qname);
+        p.setIdentifier(identifier);
+        publicRenderParameters.add(p);
+        return p;        
+    }
+
+    public CustomPortletMode getCustomPortletMode(String name)
+    {
+        for (CustomPortletMode cpm : getCustomPortletModes())
+        {
+            if (cpm.getPortletMode().equalsIgnoreCase(name))
+            {
+                return cpm;
+            }
+        }
+        return null;
+    }
+
     public PortletMode getCustomPortletMode(PortletMode mode)
     {
         if (JetspeedActions.getStandardPortletModes().contains(mode))
@@ -315,79 +377,45 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;            
     }
     
-    public List<PortletMode> getSupportedPortletModes()
+    public List<CustomPortletMode> getCustomPortletModes()
     {
-        if ( supportedPortletModes == null )
+        if (customPortletModes == null)
         {
-            ArrayList list = new ArrayList(JetspeedActions.getStandardPortletModes());
-            supportedCustomModes = new HashMap();
-            mappedCustomModes = new HashMap();
-            
-            if ( customPortletModes.size() > 0 )
-            {
-                Iterator iter = customPortletModes.iterator();
-                while ( iter.hasNext() )
-                {
-                    CustomPortletMode customMode = (CustomPortletMode)iter.next();
-                    if ( !list.contains(customMode.getCustomMode()) && JetspeedActions.getExtendedPortletModes().contains(customMode.getMappedMode()) )
-                    {
-                        list.add(customMode.getCustomMode());
-                        supportedCustomModes.put(customMode.getMappedMode(), customMode.getCustomMode());
-                        mappedCustomModes.put(customMode.getCustomMode(), customMode.getMappedMode());
-                    }
-                }
-            }
-            supportedPortletModes = Collections.unmodifiableList(list);
+            customPortletModes = new ArrayList<CustomPortletMode>();
         }
-        return supportedPortletModes;
+        return customPortletModes;
     }
     
-    public List<CustomWindowState> getCustomWindowStates()
+    public CustomPortletMode addCustomPortletMode(String name)
     {
-        return customWindowStates;
-    }
-    
-    public void addCustomWindowState(CustomWindowState customWindowState)
-    {
-        // clear transient cache
-        supportedWindowStates = null;
-        supportedCustomStates = null;
-        mappedCustomStates = null;
+        if (getCustomPortletMode(name) != null)
+        {
+            throw new IllegalArgumentException("Custom PortletMode with mode name: "+name+" already defined");
+        }
         
-        if ( !customWindowStates.contains(customWindowState) )
-        {
-            customWindowStates.add(customWindowState);
-        }
-    }
-    
-    public void setCustomWindowStates(Collection customWindowStates)
-    {
         // clear transient cache
-        supportedWindowStates = null;
-        supportedCustomStates = null;
-        mappedCustomStates = null;
-
-        this.customWindowStates.clear();
-
-        if ( customWindowStates != null )
-        {
-            this.customWindowStates.addAll(customWindowStates);
-        }
+        supportedPortletModes = null;
+        supportedCustomModes = null;
+        mappedCustomModes = null;
+        
+        CustomPortletModeImpl cpm = new CustomPortletModeImpl();
+        cpm.setPortletMode(name);
+        customPortletModes.add(cpm);
+        return cpm;        
     }
-    
-    public WindowState getMappedWindowState(WindowState state)
+
+    public CustomWindowState getCustomWindowState(String name)
     {
-        if (JetspeedActions.getStandardWindowStates().contains(state) )
+        for (CustomWindowState cws : getCustomWindowStates())
         {
-            return state;
-        }
-        else if ( getSupportedWindowStates().contains(state) )
-        {
-            return (WindowState)mappedCustomStates.get(state);
+            if (cws.getWindowState().equalsIgnoreCase(name))
+            {
+                return cws;
+            }
         }
         return null;
     }
-    
+
     public WindowState getCustomWindowState(WindowState state)
     {
         if (JetspeedActions.getStandardWindowStates().contains(state))
@@ -403,26 +431,70 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;            
     }
     
+    public List<CustomWindowState> getCustomWindowStates()
+    {
+        if (customWindowStates == null)
+        {
+            customWindowStates = new ArrayList<CustomWindowState>();
+        }
+        return customWindowStates;
+    }
+    
+    public CustomWindowState addCustomWindowState(String name)
+    {
+        if (getCustomWindowState(name) != null)
+        {
+            throw new IllegalArgumentException("Custom WindowState with state name: "+name+" already defined");
+        }
+
+        // clear transient cache
+        supportedWindowStates = null;
+        supportedCustomStates = null;
+        mappedCustomStates = null;
+        
+        CustomWindowStateImpl cws = new CustomWindowStateImpl();
+        cws.setWindowState(name);
+        customWindowStates.add(cws);
+        return cws;        
+    }
+
+    public List<PortletMode> getSupportedPortletModes()
+    {
+        if ( supportedPortletModes == null )
+        {
+            ArrayList<PortletMode> list = new ArrayList<PortletMode>(JetspeedActions.getStandardPortletModes());
+            supportedCustomModes = new HashMap<PortletMode,PortletMode>();
+            mappedCustomModes = new HashMap<PortletMode,PortletMode>();
+            
+            for (CustomPortletMode customMode : getCustomPortletModes())
+            {
+                if ( !list.contains(customMode.getCustomMode()) && JetspeedActions.getExtendedPortletModes().contains(customMode.getMappedMode()) )
+                {
+                    list.add(customMode.getCustomMode());
+                    supportedCustomModes.put(customMode.getMappedMode(), customMode.getCustomMode());
+                    mappedCustomModes.put(customMode.getCustomMode(), customMode.getMappedMode());
+                }
+            }
+            supportedPortletModes = Collections.unmodifiableList(list);
+        }
+        return supportedPortletModes;
+    }
+    
     public List<WindowState> getSupportedWindowStates()
     {
         if ( supportedWindowStates == null )
         {
-            ArrayList list = new ArrayList(JetspeedActions.getStandardWindowStates());
-            supportedCustomStates = new HashMap();
-            mappedCustomStates = new HashMap();
+            ArrayList<WindowState> list = new ArrayList<WindowState>(JetspeedActions.getStandardWindowStates());
+            supportedCustomStates = new HashMap<WindowState,WindowState>();
+            mappedCustomStates = new HashMap<WindowState,WindowState>();
             
-            if ( customWindowStates.size() > 0 )
+            for (CustomWindowState customState : getCustomWindowStates())
             {
-                Iterator iter = customWindowStates.iterator();
-                while ( iter.hasNext() )
+                if ( !list.contains(customState.getCustomState()) && JetspeedActions.getExtendedWindowStates().contains(customState.getMappedState()) )
                 {
-                    CustomWindowState customState = (CustomWindowState)iter.next();
-                    if ( !list.contains(customState.getCustomState()) && JetspeedActions.getExtendedWindowStates().contains(customState.getMappedState()) )
-                    {
-                        list.add(customState.getCustomState());
-                        supportedCustomStates.put(customState.getMappedState(),customState.getCustomState());
-                        mappedCustomStates.put(customState.getCustomState(),customState.getMappedState());
-                    }
+                    list.add(customState.getCustomState());
+                    supportedCustomStates.put(customState.getMappedState(),customState.getCustomState());
+                    mappedCustomStates.put(customState.getCustomState(),customState.getMappedState());
                 }
             }
             supportedWindowStates = Collections.unmodifiableList(list);
@@ -430,22 +502,262 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return supportedWindowStates;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getJetspeedSecurityConstraint()
-     */
-    public String getJetspeedSecurityConstraint()
+    public PortletMode getMappedPortletMode(PortletMode mode)
     {
-        return this.jetspeedSecurityConstraint;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setJetspeedSecurityConstraint(java.lang.String)
-     */
-    public void setJetspeedSecurityConstraint(String constraint)
-    {
-        this.jetspeedSecurityConstraint = constraint;
+        if ( JetspeedActions.getStandardPortletModes().contains(mode) )
+        {
+            return mode;
+        }
+        else if ( getSupportedPortletModes().contains(mode) )
+        {
+            return (PortletMode)mappedCustomModes.get(mode);
+        }
+        return null;
     }
     
+    public WindowState getMappedWindowState(WindowState state)
+    {
+        if (JetspeedActions.getStandardWindowStates().contains(state) )
+        {
+            return state;
+        }
+        else if ( getSupportedWindowStates().contains(state) )
+        {
+            return (WindowState)mappedCustomStates.get(state);
+        }
+        return null;
+    }
+    
+    public UserAttribute getUserAttribute(String name)
+    {
+        for (UserAttribute ua : getUserAttributes())
+        {
+            if (ua.getName().equals(name))
+            {
+                return ua;
+            }
+        }
+        return null;
+    }
+
+    public List<UserAttribute> getUserAttributes()
+    {
+        if (userAttributes == null)
+        {
+            userAttributes = new ArrayList<UserAttribute>();
+        }
+        return userAttributes;
+    }
+
+    public UserAttribute addUserAttribute(String name)
+    {
+        if (getUserAttribute(name) != null)
+        {
+            throw new IllegalArgumentException("User attribute with name: "+name+" already defined");
+        }
+        UserAttributeImpl ua = new UserAttributeImpl();
+        ua.setName(name);
+        userAttributes.add(ua);
+        return ua;        
+    }
+
+    public UserAttributeRef getUserAttributeRef(String name)
+    {
+        for (UserAttributeRef uar : getUserAttributeRefs())
+        {
+            if (uar.getName().equals(name))
+            {
+                return uar;
+            }
+        }
+        return null;
+    }
+
+    public List<UserAttributeRef> getUserAttributeRefs()
+    {
+        if (userAttributeRefs == null)
+        {
+            userAttributeRefs = new ArrayList<UserAttributeRef>();
+        }
+        return userAttributeRefs;
+    }
+
+    public UserAttributeRef addUserAttributeRef(String name)
+    {
+        if (getUserAttributeRef(name) != null)
+        {
+            throw new IllegalArgumentException("User attribute reference with name: "+name+" already defined");
+        }
+        UserAttributeRefImpl uar = new UserAttributeRefImpl();
+        uar.setName(name);
+        userAttributeRefs.add(uar);
+        return uar;        
+    }
+
+    public List<SecurityConstraint> getSecurityConstraints()
+    {
+        if (securityConstraints == null)
+        {
+            securityConstraints = new ArrayList<SecurityConstraint>();
+        }
+        return securityConstraints;
+    }
+
+    public SecurityConstraint addSecurityConstraint(String transportGuarantee)
+    {
+        SecurityConstraintImpl sc = new SecurityConstraintImpl();
+        ((UserDataConstraintImpl)sc.getUserDataConstraint()).setTransportGuarantee(transportGuarantee);
+        getSecurityConstraints();
+        securityConstraints.add(sc);
+        return sc;        
+    }
+
+    public Filter getFilter(String filterName)
+    {
+        for (Filter f : getFilters())
+        {
+            if (f.getFilterName().equals(name))
+            {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    public List<Filter> getFilters()
+    {
+        if (filters == null)
+        {
+            filters = new ArrayList<Filter>();
+        }
+        return filters;
+    }
+
+    public Filter addFilter(String filterName)
+    {
+        if (getFilter(name) != null)
+        {
+            throw new IllegalArgumentException("Filter with name: "+name+" already defined");
+        }
+        FilterImpl f = new FilterImpl();
+        f.setFilterName(name);
+        filters.add(f);
+        return f;        
+    }
+
+    public FilterMapping getFilterMapping(String filterName)
+    {
+        for (FilterMapping f : getFilterMappings())
+        {
+            if (f.getFilterName().equals(name))
+            {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    public List<FilterMapping> getFilterMappings()
+    {
+        if (filterMappings == null)
+        {
+            filterMappings = new ArrayList<FilterMapping>();
+        }
+        return filterMappings;
+    }
+
+    public FilterMapping addFilterMapping(String filterName)
+    {
+        if (getFilterMapping(name) != null)
+        {
+            throw new IllegalArgumentException("Filtermapping for filter: "+name+" already defined");
+        }
+        FilterMappingImpl fm = new FilterMappingImpl();
+        fm.setFilterName(name);
+        filterMappings.add(fm);
+        return fm;        
+    }
+
+    public List<Listener> getListeners()
+    {
+        if (listeners == null)
+        {
+            listeners = new ArrayList<Listener>();
+        }
+        return listeners;
+    }
+
+    public Listener addListener(String listenerClass)
+    {
+        for (Listener l : getListeners())
+        {
+            if (l.getListenerClass().equals(listenerClass))
+            {
+                throw new IllegalArgumentException("Listener of class: "+listenerClass+" already defined");
+            }
+        }
+        ListenerImpl l = new ListenerImpl();
+        l.setListenerClass(listenerClass);
+        listeners.add(l);
+        return l;        
+    }
+
+    public ContainerRuntimeOption getContainerRuntimeOption(String name)
+    {
+        for (ContainerRuntimeOption cro : getContainerRuntimeOptions())
+        {
+            if (cro.getName().equals(name))
+            {
+                return cro;
+            }
+        }
+        return null;
+    }
+
+    public List<ContainerRuntimeOption> getContainerRuntimeOptions()
+    {
+        if (containerRuntimeOptions == null)
+        {
+            containerRuntimeOptions = new ArrayList<ContainerRuntimeOption>();
+        }
+        return containerRuntimeOptions;
+    }
+
+    public ContainerRuntimeOption addContainerRuntimeOption(String name)
+    {
+        if (getContainerRuntimeOption(name) != null)
+        {
+            throw new IllegalArgumentException("Container runtime option with name: "+name+" already defined");
+        }
+        ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl();
+        cro.setName(name);
+        containerRuntimeOptions.add(cro);
+        return cro;        
+    }
+
+    public List<JetspeedServiceReference> getJetspeedServices()
+    {
+        if (services == null)
+        {
+            this.services = new ArrayList<JetspeedServiceReference>();
+        }
+        return services;
+    }
+    
+    public void addJetspeedServiceReference(String name)
+    {
+        for (JetspeedServiceReference ref : getJetspeedServices())
+        {
+            if (ref.getName().equals(name))
+            {
+                throw new IllegalArgumentException("Jetspeed service: "+name+" already defined");
+            }
+        }
+        JetspeedServiceReferenceImpl ref = new JetspeedServiceReferenceImpl();
+        ref.setName(name);
+        services.add(ref);
+    }
+
     public boolean isLayoutApplication()
     {
         if (this.getMetadata() != null)
@@ -462,225 +774,14 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return false;
      }
 
-    public ContainerRuntimeOption addContainerRuntimeOption(String name)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.common.Support#postLoad(java.lang.Object)
+     */
+    public void postLoad(Object parameter) throws Exception
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public CustomPortletMode addCustomPortletMode(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public CustomWindowState addCustomWindowState(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EventDefinition addEventDefinition(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EventDefinition addEventDefinition(QName qname)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Filter addFilter(String filterName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public FilterMapping addFilterMapping(String filterName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void addJetspeedServiceReference(String name)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public Listener addListener(String listenerClass)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PortletDefinition addPortlet(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PublicRenderParameter addPublicRenderParameter(String name, String identifier)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PublicRenderParameter addPublicRenderParameter(QName qname, String identifier)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SecurityConstraint addSecurityConstraint(String transportGuarantee)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public UserAttribute addUserAttribute(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public UserAttributeRef addUserAttributeRef(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public ContainerRuntimeOption getContainerRuntimeOption(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<ContainerRuntimeOption> getContainerRuntimeOptions()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public CustomPortletMode getCustomPortletMode(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public CustomWindowState getCustomWindowState(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<EventDefinition> getEventDefinitions()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Filter getFilter(String filterName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public FilterMapping getFilterMapping(String filterName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<FilterMapping> getFilterMappings()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Filter> getFilters()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Listener> getListeners()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<PortletDefinition> getPortlets()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PublicRenderParameter getPublicRenderParameter(String identifier)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<PublicRenderParameter> getPublicRenderParameters()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<SecurityConstraint> getSecurityConstraints()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public UserAttribute getUserAttribute(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public UserAttributeRef getUserAttributeRef(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<UserAttributeRef> getUserAttributeRefs()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<UserAttribute> getUserAttributes()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getDefaultNamespace()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getResourceBundle()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void setDefaultNamespace(String defaultNamespace)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void setResourceBundle(String resourceBundle)
-    {
-        // TODO Auto-generated method stub
-        
+        for (PortletDefinition pd : portlets)
+        {
+            ((Support)pd).postLoad(this);
+        }
     }
 }

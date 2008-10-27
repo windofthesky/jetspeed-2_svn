@@ -18,12 +18,13 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.pluto.om.portlet.Description;
-import org.apache.pluto.om.portlet.DisplayName;
-import org.apache.pluto.om.portlet.Listener;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.Listener;
 
 /**
  * @version $Id$
@@ -31,66 +32,86 @@ import org.apache.pluto.om.portlet.Listener;
  */
 public class ListenerImpl implements Listener, Serializable
 {
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#addDescription(java.lang.String)
-     */
-    public Description addDescription(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    protected String listenerClass;
+    protected List<Description> descriptions;
+    protected List<DisplayName> displayNames;
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#addDisplayName(java.lang.String)
-     */
-    public DisplayName addDisplayName(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#getDescription(java.util.Locale)
-     */
-    public Description getDescription(Locale locale)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#getDescriptions()
-     */
-    public List<? extends Description> getDescriptions()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#getDisplayName(java.util.Locale)
-     */
-    public DisplayName getDisplayName(Locale locale)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#getDisplayNames()
-     */
-    public List<? extends DisplayName> getDisplayNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.portlet.Listener#getListenerClass()
-     */
+    
     public String getListenerClass()
     {
-        // TODO Auto-generated method stub
+        return listenerClass;
+    }
+
+    public void setListenerClass(String listenerClass)
+    {
+        this.listenerClass = listenerClass;
+    }
+
+    public Description getDescription(Locale locale)
+    {
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
         return null;
+    }
+    
+    public List<Description> getDescriptions()
+    {
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl();
+        d.setLang(lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
+    }
+
+    public DisplayName getDisplayName(Locale locale)
+    {
+        for (DisplayName d : getDisplayNames())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    public List<DisplayName> getDisplayNames()
+    {
+        if (displayNames == null)
+        {
+            displayNames = new ArrayList<DisplayName>();
+        }
+        return displayNames;
+    }
+    
+    public DisplayName addDisplayName(String lang)
+    {
+        DisplayNameImpl d = new DisplayNameImpl();
+        d.setLang(lang);
+        if (getDisplayName(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+        }
+        getDisplayNames();
+        displayNames.add(d);
+        return d;
     }
 }
