@@ -22,8 +22,8 @@ import org.apache.commons.digester.RuleSetBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
 
 /**
  * This class helps load the jetspeed portlet extension user attributes.

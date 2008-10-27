@@ -20,7 +20,6 @@ package org.apache.jetspeed.om.portlet;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * @version $Id$
@@ -30,6 +29,5 @@ public interface Language extends PortletInfo, Serializable
 {
     Locale getLocale();
     List<String> getKeywordList();
-    void addKeyword(String keyword);
-    ResourceBundle getResourceBundle();
+    void setKeywords(String keywords);
 }

@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.impl;
+package org.apache.jetspeed.om.portlet.impl;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.util.HashCodeBuilder;
-import org.apache.jetspeed.util.JetspeedLongObjectID;
-import org.apache.pluto.om.portlet.ObjectID;
 
 /**
  * LocalizedFieldImpl
@@ -36,9 +34,6 @@ public class LocalizedFieldImpl implements LocalizedField
     protected String value;
     protected String name;
     protected Locale locale;
-    
-    protected long parentId;
-    protected JetspeedLongObjectID id;
     
     public LocalizedFieldImpl()
     {
@@ -81,14 +76,6 @@ public class LocalizedFieldImpl implements LocalizedField
     public void setValue(String value)
     {
         this.value = value;        
-    }
-
-    /**
-     * 
-     */
-    public ObjectID getId()
-    {
-        return id;
     }
 
     public void setLanguage(String language)

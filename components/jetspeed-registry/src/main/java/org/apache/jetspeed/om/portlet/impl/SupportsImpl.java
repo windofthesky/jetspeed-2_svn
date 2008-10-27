@@ -38,9 +38,6 @@ public class SupportsImpl implements Supports, Serializable
     {
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     public boolean equals(Object obj)
     {
         if (obj != null && obj instanceof Supports)
@@ -50,9 +47,6 @@ public class SupportsImpl implements Supports, Serializable
         return false;
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
     public int hashCode()
     {
         HashCodeBuilder hasher = new HashCodeBuilder(27, 87);
@@ -78,5 +72,25 @@ public class SupportsImpl implements Supports, Serializable
     public void setMimeType(String mimeType)
     {
         this.mimeType = mimeType;
+    }
+
+    public void addPortletMode(String portletMode)
+    {
+        portletMode = portletMode.toLowerCase();
+        if (portletModes.contains(portletMode))
+        {
+            throw new IllegalArgumentException("PortletMode "+portletMode+" already defined");
+        }
+        portletModes.add(portletMode);
+    }
+
+    public void addWindowState(String windowState)
+    {
+        windowState = windowState.toLowerCase();
+        if (windowStates.contains(windowState))
+        {
+            throw new IllegalArgumentException("WindowState "+windowState+" already defined");
+        }
+        windowStates.add(windowState);
     }
 }

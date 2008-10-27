@@ -19,6 +19,7 @@ package org.apache.jetspeed.om.portlet;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.xml.namespace.QName;
 
@@ -73,6 +74,8 @@ public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDe
     Language getLanguage(Locale locale);
     List<Language> getLanguages();
     Language addLanguage(Locale locale);
+    
+    ResourceBundle getResourceBundle(Locale locale);
     
     /**
      * A portlet's unique name is a string formed by the combination of a portlet's

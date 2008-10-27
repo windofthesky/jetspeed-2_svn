@@ -23,11 +23,11 @@ import java.util.Locale;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
-import org.apache.jetspeed.om.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.DublinCore;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 

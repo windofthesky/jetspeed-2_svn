@@ -38,7 +38,6 @@ import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
-import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.portlet.Language;
@@ -52,6 +51,7 @@ import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.impl.LanguageImpl;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -525,34 +525,21 @@ public class JetspeedRequestContext implements RequestContext
         // }
         
         Language language = portlet.getLanguage(locale);
-
-        Enumeration locales = request.getLocales();
-        while (locales.hasMoreElements() && language == null)
-        {
-            Locale aLocale = (Locale) locales.nextElement();
-            language = portlet.getLanguage(aLocale);
-        }
-
-        if (!portlet.getLanguages().isEmpty())
-        {
-            language = portlet.getLanguages().get(0);
-        }
         
         if (language == null)
         {
-            language = portlet.getLanguage(JetspeedLocale.getDefaultLocale());
-        }
-
+            Enumeration locales = request.getLocales();
+            while (language == null && locales.hasMoreElements())
+            {
+                Locale aLocale = (Locale) locales.nextElement();
+                language = portlet.getLanguage(aLocale);
+            }
+        }     
         if (language == null)
         {
-            LanguageImpl lang = new LanguageImpl();
-            lang.setLocale(locale);
-            lang.setShortTitle(portlet.getPortletName());
-            lang.setTitle(portlet.getPortletName());
-            language = lang;
+            // defaultLocale will always be present, even if not persistent
+            language = portlet.getLanguage(JetspeedLocale.getDefaultLocale());
         }
-
-        // languageMap.put(portlet, language);
         return language;
     }
 

@@ -23,8 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
 
-import org.apache.jetspeed.om.impl.GenericMetadataImpl;
 import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.om.portlet.impl.GenericMetadataImpl;
 import org.apache.jetspeed.util.ArgUtil;
 
 /**

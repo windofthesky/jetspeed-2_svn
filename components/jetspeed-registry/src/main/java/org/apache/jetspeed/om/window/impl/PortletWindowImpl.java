@@ -23,7 +23,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.pluto.PortletWindowID;
+import org.apache.jetspeed.container.PortletWindowID;
 
 /**
  * <P>
@@ -54,7 +54,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serial
     public PortletWindowImpl()
     {
         super();
-    }
+    }    
 
     /**
     * Returns the identifier of this portlet instance window as object id

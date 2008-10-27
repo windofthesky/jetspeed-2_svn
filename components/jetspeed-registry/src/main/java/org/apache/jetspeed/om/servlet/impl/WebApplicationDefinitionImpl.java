@@ -87,4 +87,13 @@ public class WebApplicationDefinitionImpl implements WebApplicationDefinition, S
     {
         return roles;
     }
+    
+    public void addRole(String role)
+    {
+        if (roles.contains(role))
+        {
+            throw new IllegalArgumentException("Role "+role+" already defined");
+        }
+        roles.add(role);
+    }
 }

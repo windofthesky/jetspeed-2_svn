@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.jetspeed.om.impl;
+package org.apache.jetspeed.om.portlet.impl;
 
 import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 
@@ -26,8 +26,6 @@ import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 public class JetspeedServiceReferenceImpl implements JetspeedServiceReference
 {
     private String name;
-    private long appId;
-    private long id;
     
     public JetspeedServiceReferenceImpl()
     {        

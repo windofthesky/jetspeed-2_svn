@@ -5,32 +5,50 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.impl;
+
+package org.apache.jetspeed.om.portlet.impl;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 
 /**
- * <p>
- * PortletAppDescriptionImpl
- * </p>
- * 
- * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  *
  */
-public class PortletAppDescriptionImpl extends DescriptionImpl
+public class ContainerRuntimeOptionImpl implements ContainerRuntimeOption, Serializable
 {
-	/**
-	* Tells OJB which class to use to materialize.  
-	*/
-	protected String ojbConcreteClass = PortletAppDescriptionImpl.class.getName();
-	
+    protected String name;
+    protected List<String> values = new ArrayList<String>();
+    
+    public String getName()
+    {
+        return name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
+    public void addValue(String value)
+    {
+        values.add(value);
+    }
+
+    public List<String> getValues()
+    {
+        return values;
+    }
 }

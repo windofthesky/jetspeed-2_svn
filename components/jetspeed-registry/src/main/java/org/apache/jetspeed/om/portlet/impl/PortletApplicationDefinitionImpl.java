@@ -28,16 +28,24 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.CustomPortletMode;
 import org.apache.jetspeed.om.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.EventDefinition;
+import org.apache.jetspeed.om.portlet.Filter;
+import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
+import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PublicRenderParameter;
+import org.apache.jetspeed.om.portlet.SecurityConstraint;
+import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 
@@ -90,8 +98,8 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private transient Map supportedCustomStates;
     private transient Map mappedCustomModes;
     private transient Map mappedCustomStates;    
-    private transient Collection supportedPortletModes;
-    private transient Collection supportedWindowStates;
+    private transient List<PortletMode> supportedPortletModes;
+    private transient List<WindowState> supportedWindowStates;
     
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
@@ -99,8 +107,8 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         portlets = new ArrayList<PortletDefinition>();
         userAttributes = new ArrayList();        
         userAttributeRefs = new ArrayList();
-        customPortletModes = new ArrayList();
-        customWindowStates = new ArrayList();
+        customPortletModes = new ArrayList<PortletMode>();
+        customWindowStates = new ArrayList<WindowState>();
     }
 
     /**
@@ -155,32 +163,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
-    public ElementFactoryList<PortletDefinition> getPortlets()
-    {
-        if (portlets == null || !(portlets instanceof ElementFactoryList))
-        {
-            ElementFactoryList<PortletDefinition> lf = 
-                new ElementFactoryList<PortletDefinition>( new ElementFactoryList.Factory<PortletDefinition>()
-                {
-                    public Class<? extends PortletDefinition> getElementClass()
-                    {
-                        return PortletDefinitionImpl.class;
-                    }
-
-                    public PortletDefinition newElement()
-                    {
-                        return new PortletDefinitionImpl();
-                    }
-                }); 
-            if (portlets != null)
-            {
-                lf.addAll(portlets);
-            }
-            portlets = lf;
-        }
-        return (ElementFactoryList<PortletDefinition>)portlets;
-    }
-
     /**
      * @return
      */
@@ -206,17 +188,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     }
 
-    /** 
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#addUserAttribute(java.lang.String, java.lang.String)
-     */
-    public void addUserAttribute(String userName, String description)
-    {
-        UserAttributeImpl userAttribute = new UserAttributeImpl();
-        userAttribute.setName(userName);
-        userAttribute.setDescription(description);
-        userAttributes.add(userAttribute);
-    }
-    
     /**
      * @see org.apache.jetspeed.om.portlet.PortletApplication#setApplicationType(int)
      */
@@ -344,7 +315,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;            
     }
     
-    public Collection getSupportedPortletModes()
+    public List<PortletMode> getSupportedPortletModes()
     {
         if ( supportedPortletModes == null )
         {
@@ -366,12 +337,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
                     }
                 }
             }
-            supportedPortletModes = Collections.unmodifiableCollection(list);
+            supportedPortletModes = Collections.unmodifiableList(list);
         }
         return supportedPortletModes;
     }
     
-    public Collection getCustomWindowStates()
+    public List<CustomWindowState> getCustomWindowStates()
     {
         return customWindowStates;
     }
@@ -432,7 +403,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;            
     }
     
-    public Collection getSupportedWindowStates()
+    public List<WindowState> getSupportedWindowStates()
     {
         if ( supportedWindowStates == null )
         {
@@ -454,7 +425,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
                     }
                 }
             }
-            supportedWindowStates = Collections.unmodifiableCollection(list);
+            supportedWindowStates = Collections.unmodifiableList(list);
         }
         return supportedWindowStates;
     }
@@ -490,4 +461,226 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         return false;
      }
+
+    public ContainerRuntimeOption addContainerRuntimeOption(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CustomPortletMode addCustomPortletMode(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CustomWindowState addCustomWindowState(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public EventDefinition addEventDefinition(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public EventDefinition addEventDefinition(QName qname)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Filter addFilter(String filterName)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public FilterMapping addFilterMapping(String filterName)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void addJetspeedServiceReference(String name)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public Listener addListener(String listenerClass)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PortletDefinition addPortlet(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PublicRenderParameter addPublicRenderParameter(String name, String identifier)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PublicRenderParameter addPublicRenderParameter(QName qname, String identifier)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public SecurityConstraint addSecurityConstraint(String transportGuarantee)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public UserAttribute addUserAttribute(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public UserAttributeRef addUserAttributeRef(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ContainerRuntimeOption getContainerRuntimeOption(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<ContainerRuntimeOption> getContainerRuntimeOptions()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CustomPortletMode getCustomPortletMode(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CustomWindowState getCustomWindowState(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<EventDefinition> getEventDefinitions()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Filter getFilter(String filterName)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public FilterMapping getFilterMapping(String filterName)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<FilterMapping> getFilterMappings()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Filter> getFilters()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Listener> getListeners()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<PortletDefinition> getPortlets()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PublicRenderParameter getPublicRenderParameter(String identifier)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<PublicRenderParameter> getPublicRenderParameters()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<SecurityConstraint> getSecurityConstraints()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public UserAttribute getUserAttribute(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public UserAttributeRef getUserAttributeRef(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<UserAttributeRef> getUserAttributeRefs()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<UserAttribute> getUserAttributes()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getDefaultNamespace()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getResourceBundle()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setDefaultNamespace(String defaultNamespace)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setResourceBundle(String resourceBundle)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

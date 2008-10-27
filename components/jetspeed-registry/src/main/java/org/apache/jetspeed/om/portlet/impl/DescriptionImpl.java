@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.impl;
+package org.apache.jetspeed.om.portlet.impl;
 
 import java.util.Locale;
 
@@ -24,7 +24,7 @@ import org.apache.jetspeed.om.portlet.Description;
 /**
  * DescriptionImpl
  * <br>
- * Basic Implementation of the <code>MutableDescription</code>
+ * Implementation of the <code>Description</code>
  * interface.
  * 
  * @see org.apache.jetspeed.om.portlet.Description
@@ -33,80 +33,44 @@ import org.apache.jetspeed.om.portlet.Description;
  * @version $Id$
  *
  */
-public abstract class DescriptionImpl implements Description 
+public class DescriptionImpl implements Description 
 {
+    protected String value;
+    protected String lang = null;
+    protected Locale locale = null;
 
-    private String description;
-    private Locale locale;
-    
-	protected long parentId;
-    
-	protected long id;
-
-	/**
-	* Tells OJB which class to use to materialize.  
-	*/
-	protected String ojbConcreteClass = DescriptionImpl.class.getName();
-    
- 
-
-
-
-
-    public DescriptionImpl()
-    {
-        super();
-        // always init to default locale
-        locale = JetspeedLocale.getDefaultLocale();
-    }
-
-    public DescriptionImpl(Locale locale, String description)
-    {
-        this();
-        this.locale = locale;
-        this.description = description;
-        
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.registry.Description#setDescription(java.lang.String)
-     */
-    public void setDescription(String description)
-    {
-        this.description = description;
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.portlet.Description#setLocale(java.util.Locale)
-     */
-    public void setLocale(Locale locale)
-    {
-        this.locale = locale;
-
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.registry.Description#getDescriptions()
-     */
     public String getDescription()
     {
-        return description;
+        return value;
     }
 
-    /**
-     * @see org.apache.pluto.om.portlet.Description#getLocale()
-     */
+    public void setDescription(String value)
+    {
+        this.value = value;
+    }
+
+    public String getLang()
+    {
+        return lang == null ? JetspeedLocale.getDefaultLocale().toString() : lang;
+    }
+
+    public void setLang(String value)
+    {
+        lang = value;
+        deriveLocale();
+    }
+    
     public Locale getLocale()
     {
-        return locale;
+        return locale == null ? deriveLocale() : locale;
     }
-
-    public void setLanguage(String lang)
+    
+    protected Locale deriveLocale()
     {
-        String[] localeArray = lang.split("[-|_]");
+        String lang = this.getLang();
         String country = "";
         String variant = "";
+        String[] localeArray = lang.split("[-|_]");
         for (int i = 0; i < localeArray.length; i++)
         {
             if (i == 0)
@@ -122,7 +86,7 @@ public abstract class DescriptionImpl implements Description
                 variant = localeArray[i];
             }
         }
-        this.locale = new Locale(lang, country, variant);
+        locale = new Locale(lang, country, variant);
+        return locale;
     }
-
 }
