@@ -42,6 +42,7 @@ import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.EventDefinition;
 import org.apache.jetspeed.om.portlet.EventDefinitionReference;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.InitParam;
@@ -53,10 +54,12 @@ import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.descriptors.portlet.EventDefinitionReferenceType;
+import org.apache.pluto.descriptors.portlet.SecurityRoleRefType;
+import org.apache.pluto.descriptors.portlet.SupportsType;
 import org.apache.jetspeed.om.portlet.Language;
 
 /**
@@ -73,7 +76,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     private static PortletFactory  portletFactory;
     private static PortletPreferencesProvider portletPreferencesProvider;
 
-    private PortletApplication application;
+    private PortletApplication app;
     
     private Long id;
 
@@ -81,22 +84,52 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     protected String portletClass;
     protected String resourceBundle;
     protected String preferenceValidatorClassname;
+    private Integer expirationCache;
+    private String cacheScope;
+
+    /** Metadata property */    
+    private Collection metadataFields;
+
+    private String jetspeedSecurityConstraint;
     
-    private List<Language> languages = null;
-    private Map<Locale,ResourceBundle> resourceBundles = new HashMap<Locale, ResourceBundle>();
+    private List<Description> descriptions;
+    private List<DisplayName> displayNames;
+    private List<InitParam> initParams;
+    private List<EventDefinitionReference> supportedProcessingEvents;
+    private List<EventDefinitionReference> supportedPublishingEvents;
+    private List<SecurityRoleRef> securityRoleRefs;
+    private List<Supports> supports;
+    private List<String> supportedLocales;
+    private List<Language> languages;
+    private List<ContainerRuntimeOption> containerRuntimeOptions;    
+    private List<String> supportedPublicRenderParameters;
+
+    private transient Map<Locale,ResourceBundle> resourceBundles = new HashMap<Locale, ResourceBundle>();
     
     protected List portletEntities;
 
-    /** PortletApplicationDefinition this PortletDefinition belongs to */
-    private PortletApplication app;
+    public static void setPortletRegistry(PortletRegistry registry)
+    {
+        PortletDefinitionImpl.registry = registry;
+    }
 
-    /** Metadata property */    
-    private Collection metadataFields = null;
+    public static void setPortletFactory(PortletFactory portletFactory)
+    {
+        PortletDefinitionImpl.portletFactory = portletFactory;
+    }
 
-    private String jetspeedSecurityConstraint = null;
-    
+    public static void setPortletPreferencesProvider(PortletPreferencesProvider portletPreferencesProvider)
+    {
+        PortletDefinitionImpl.portletPreferencesProvider = portletPreferencesProvider;
+    }
+
     public PortletDefinitionImpl()
     {
+    }
+
+    protected ClassLoader getPortletClassLoader()
+    {
+        return portletFactory.getPortletApplicationClassLoader(app);
     }
 
     protected ResourceBundle loadResourceBundle( Locale locale )
@@ -125,24 +158,51 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return resourceBundle;
     }
     
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getPortletClass()
-     */
-    public String getPortletClass()
+    public PortletApplication getApplication()
     {
-        return portletClass;
+        return app;
+    }
+    
+    public void setApplication(PortletApplication app)
+    {
+        this.app = app;
     }
 
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getPortletName()
-     */
     public String getPortletName()
     {
         return portletName;
     }
     
+    public void setPortletName( String name )
+    {
+        this.portletName = name;
+    }
+
+    public String getPortletClass()
+    {
+        return portletClass;
+    }
+
+    public void setPortletClass(String portletClass)
+    {
+        this.portletClass = portletClass;
+    }
+
+    public Preferences getPortletPreferences()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ResourceBundle getResourceBundle(Locale locale)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public Language getLanguage(Locale locale)
     {
+        // TODO Auto-generated method stub
         return null;
     }
     
@@ -170,81 +230,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return l;
     }
     
-    public ResourceBundle getResourceBundle(Locale locale)
-    {
-        return null;
-    }
-
-    public PortletApplication getPortletApplicationDefinition()
-    {
-        return app;
-    }
-
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#getPortletClassLoader()
-     */
-    public ClassLoader getPortletClassLoader()
-    {
-        return portletFactory.getPortletApplicationClassLoader(app);
-    }
-
-    /**
-     * @see org.apache.pluto.om.portlet.PortletDefinition#setPortletName(java.lang.String)
-     */
-    public void setPortletName( String name )
-    {
-        this.portletName = name;
-    }
-
-    public void setPortletApplication( PortletApplication pa )
-    {
-        app = (PortletApplication) pa;
-    }
-
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals( Object obj )
-    {
-        if (obj != null && obj.getClass().equals(getClass()))
-        {
-            PortletDefinitionImpl pd = (PortletDefinitionImpl) obj;
-            boolean sameId = (id != null && pd.id != null && id.equals(pd.id));
-            if (sameId)
-            {
-                return true;
-            }
-//            boolean sameAppId = (appId == pd.appId);
-            boolean sameName = (pd.getPortletName() != null && portletName != null && pd.getPortletName().equals(portletName));
-            return sameName;// && sameAppId;
-        }
-        return false;
-    }
-
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode()
-    {
-        HashCodeBuilder hasher = new HashCodeBuilder(1, 3);
-        hasher.append(portletName);
-        if (app != null)
-        {
-//            if ( getId() != null )
-//            {
-//              hasher.append(getId().toString());
-//            }
-            hasher.append(app.getName());
-        }
-        return hasher.toHashCode();
-    }
-
     /**
      * @see org.apache.jetspeed.om.portlet.PortletDefinition#getUniqueName()
      */
     public String getUniqueName()
     {
-        if (app != null && portletName != null)
+        if (app != null && app.getName() != null && portletName != null)
         {
             return app.getName() + "::" + portletName;
         }
@@ -266,71 +257,25 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     public String getDescriptionText( Locale locale )
     {
         Description desc = getDescription(locale);
-        if (desc != null)
-        {
-            return desc.getDescription();
-        }
-        return null;
+        return desc != null ? desc.getDescription() : null;
     }
     
-    /**
-     * <p>
-     * store will attempt to perform an atomic persistence call against this
-     * portletDefinition.
-     * </p>
-     * 
-     * @see org.apache.pluto.om.portlet.PortletDefinition#store()
-     * @throws java.io.IOException
-     */
-    public void store() throws IOException
+    public String getDisplayNameText(Locale locale)
     {
-        try
-        {
-            registry.savePortletDefinition(this);
-        }
-        catch (RegistryException e)
-        {
-            IOException ioe = new IOException("Failed to store portlet definition: "+e.getMessage());
-            ioe.initCause(e);
-        }
+        DisplayName dn = getDisplayName(locale);
+        return dn != null ? dn.getDisplayName() : null;
     }
 
-    public void storeChildren()
-    {
-//        if (preferenceSet != null)
-//        {
-//            portletPreferencesProvider.savePreferenceSet(this, preferenceSet);
-//        }
-    }
-
-    /**
-     * <p>
-     * getPreferenceValidatorClassname
-     * </p>
-     * 
-     * @return
-     */
     public String getPreferenceValidatorClassname()
     {
         return preferenceValidatorClassname;
     }
 
-    /**
-     * <p>
-     * setPreferenceValidatorClassname
-     * </p>
-     * 
-     * @param string
-     *  
-     */
     public void setPreferenceValidatorClassname( String string )
     {
         preferenceValidatorClassname = string;
     }
 
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#getMetadata()
-     */
     public GenericMetadata getMetadata()
     {
         if (metadataFields == null)
@@ -342,14 +287,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         metadata.setFields(metadataFields);
 
         return metadata;
-    }
-
-    /**
-     * @see org.apache.jetspeed.om.portlet.PortletApplication#setMetadata(org.apache.jetspeed.om.portlet.GenericMetadata)
-     */
-    public void setMetadata( GenericMetadata metadata )
-    {
-        this.metadataFields = metadata.getFields();
     }
 
     /**
@@ -384,32 +321,94 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         resourceBundle = string;
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.Support#postLoad(java.lang.Object)
-     */
-    public void postLoad(Object parameter) throws Exception
-    {
-    }
-    
-    public PreferencesValidator getPreferencesValidator()
-    {
-        return portletFactory.getPreferencesValidator(this);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#getJetspeedSecurityConstraint()
-     */
     public String getJetspeedSecurityConstraint()
     {
         return this.jetspeedSecurityConstraint;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite#setJetspeedSecurityConstraint(java.lang.String)
-     */
     public void setJetspeedSecurityConstraint(String constraint)
     {
         this.jetspeedSecurityConstraint = constraint;
+    }
+    
+    public boolean isSameIdentity(PortletDefinition other)
+    {
+        Long otherId = null;
+        if (other != null && other instanceof PortletDefinitionImpl)
+        {
+            otherId = ((PortletDefinitionImpl)other).id;
+        }
+        return id != null && otherId != null && id.equals(otherId);
+    }
+
+    public boolean equals( Object obj )
+    {
+        if (obj != null && obj.getClass().equals(getClass()))
+        {
+            PortletDefinitionImpl pd = (PortletDefinitionImpl) obj;
+            boolean sameId = id != null && pd.id != null && id.equals(pd.id);
+            if (sameId)
+            {
+                return true;
+            }
+            String otherAppName = pd.getApplication() != null ? pd.getApplication().getName() : null;
+            boolean sameAppName = (app != null && app.getName() != null && otherAppName != null && app.getName().equals(otherAppName));
+            return sameAppName && (pd.getPortletName() != null && portletName != null && pd.getPortletName().equals(portletName));
+        }
+        return false;
+    }
+
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        HashCodeBuilder hasher = new HashCodeBuilder(1, 3);
+        hasher.append(portletName);
+        if ( id != null )
+        {
+          hasher.append(id.toString());
+        }
+        if (app != null)
+        {
+            hasher.append(app.getName());
+        }
+        return hasher.toHashCode();
+    }
+
+    /**
+     * <p>
+     * store will attempt to perform an atomic persistence call against this
+     * portletDefinition.
+     * </p>
+     * 
+     * @see org.apache.pluto.om.portlet.PortletDefinition#store()
+     * @throws java.io.IOException
+     */
+    public void store() throws IOException
+    {
+        try
+        {
+            registry.savePortletDefinition(this);
+        }
+        catch (RegistryException e)
+        {
+            IOException ioe = new IOException("Failed to store portlet definition: "+e.getMessage());
+            ioe.initCause(e);
+        }
+    }
+
+    public void storeChildren()
+    {
+// TODO        
+//        if (preferenceSet != null)
+//        {
+//            portletPreferencesProvider.savePreferenceSet(this, preferenceSet);
+//        }
+    }
+
+    public void postLoad(Object parameter) throws Exception
+    {
     }
     
     //
@@ -444,247 +443,334 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
     }
     
-
-    public static void setPortletRegistry(PortletRegistry registry)
-    {
-        PortletDefinitionImpl.registry = registry;
-    }
-
-    public static void setPortletFactory(PortletFactory portletFactory)
-    {
-        PortletDefinitionImpl.portletFactory = portletFactory;
-    }
-
-    public static void setPortletPreferencesProvider(PortletPreferencesProvider portletPreferencesProvider)
-    {
-        PortletDefinitionImpl.portletPreferencesProvider = portletPreferencesProvider;
-    }
-
-    public ContainerRuntimeOption addContainerRuntimeOption(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Description addDescription(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public DisplayName addDisplayName(String lang)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public InitParam addInitParam(String paramName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SecurityRoleRef addSecurityRoleRef(String roleName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EventDefinitionReference addSupportedProcessingEvent(QName qname)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EventDefinitionReference addSupportedProcessingEvent(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EventDefinitionReference addSupportedPublishingEvent(QName qname)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EventDefinitionReference addSupportedPublishingEvent(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Supports addSupports(String mimeType)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PortletApplication getApplication()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public ContainerRuntimeOption getContainerRuntimeOption(String name)
     {
-        // TODO Auto-generated method stub
+        for (ContainerRuntimeOption cro : getContainerRuntimeOptions())
+        {
+            if (cro.getName().equals(name))
+            {
+                return cro;
+            }
+        }
         return null;
     }
 
     public List<ContainerRuntimeOption> getContainerRuntimeOptions()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (containerRuntimeOptions == null)
+        {
+            containerRuntimeOptions = new ArrayList<ContainerRuntimeOption>();
+        }
+        return containerRuntimeOptions;
     }
 
-    public Description getDescription(Locale locale)
+    public ContainerRuntimeOption addContainerRuntimeOption(String name)
     {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Description> getDescriptions()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public DisplayName getDisplayName(Locale locale)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getDisplayNameText(Locale locale)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<DisplayName> getDisplayNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public InitParam getInitParam(String paramName)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<InitParam> getInitParams()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PortletInfo getPortletInfo()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Preferences getPortletPreferences()
-    {
-        // TODO Auto-generated method stub
-        return null;
+        if (getContainerRuntimeOption(name) != null)
+        {
+            throw new IllegalArgumentException("Container runtime option with name: "+name+" already defined");
+        }
+        ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl();
+        cro.setName(name);
+        containerRuntimeOptions.add(cro);
+        return cro;        
     }
 
     public SecurityRoleRef getSecurityRoleRef(String roleName)
     {
-        // TODO Auto-generated method stub
+        for (SecurityRoleRef ref : getSecurityRoleRefs())
+        {
+            if (ref.getRoleName().equals(roleName))
+            {
+                return ref;
+            }
+        }
         return null;
     }
 
     public List<SecurityRoleRef> getSecurityRoleRefs()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (securityRoleRefs == null)
+        {
+            securityRoleRefs = new ArrayList<SecurityRoleRef>();
+        }
+        return securityRoleRefs;
     }
-
-    public List<EventDefinitionReference> getSupportedProcessingEvents()
+    
+    public SecurityRoleRef addSecurityRoleRef(String roleName)
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (getSecurityRoleRef(roleName) != null)
+        {
+            throw new IllegalArgumentException("Security role reference for role: "+roleName+" already defined");
+        }
+        SecurityRoleRefImpl srr = new SecurityRoleRefImpl();
+        srr.setRoleName(roleName);
+        securityRoleRefs.add(srr);
+        return srr;        
     }
-
-    public List<EventDefinitionReference> getSupportedPublishingEvents()
+    
+    public PortletInfo getPortletInfo()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return getLanguage(JetspeedLocale.getDefaultLocale());
     }
 
     public Supports getSupports(String mimeType)
     {
-        // TODO Auto-generated method stub
+        for (Supports s : getSupports())
+        {
+            if (s.getMimeType().equals(mimeType))
+            {
+                return s;
+            }
+        }
         return null;
     }
-
+    
     public List<Supports> getSupports()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (supports == null)
+        {
+            supports = new ArrayList<Supports>();
+        }
+        return supports;
     }
-
-    public boolean isSameIdentity(PortletDefinition other)
+    
+    public Supports addSupports(String mimeType)
     {
-        // TODO Auto-generated method stub
-        return false;
+        if (getSupports(mimeType) != null)
+        {
+            throw new IllegalArgumentException("Supports for mime type: "+mimeType+" already defined");
+        }
+        SupportsImpl s = new SupportsImpl();
+        s.setMimeType(mimeType);
+        supports.add(s);
+        return s;        
     }
-
-    public void addSupportedLocale(String lang)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void addSupportedPublicRenderParameter(String identifier)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public String getCacheScope()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public int getExpirationCache()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
+    
     public List<String> getSupportedLocales()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (supportedLocales == null)
+        {
+            supportedLocales = new ArrayList<String>();
+        }
+        return supportedLocales;
+    }
+    
+    public void addSupportedLocale(String lang)
+    {
+        for (String l : getSupportedLocales())
+        {
+            if (l.equals(lang))
+            {
+                throw new IllegalArgumentException("Supported locale: "+lang+" already defined");
+            }
+        }
+        supportedLocales.add(lang);    
     }
 
     public List<String> getSupportedPublicRenderParameters()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (supportedPublicRenderParameters == null)
+        {
+            supportedPublicRenderParameters = new ArrayList<String>();
+        }
+        return supportedPublicRenderParameters;
+    }
+    
+    public void addSupportedPublicRenderParameter(String identifier)
+    {
+        for (String ident : getSupportedPublicRenderParameters())
+        {
+            if (ident.equals(identifier))
+            {
+                throw new IllegalArgumentException("Support for public render parameter with identifier: "+identifier+" already defined");
+            }
+        }
+        supportedPublicRenderParameters.add(identifier);
+    }
+
+
+    /**
+     * Caching scope, allowed values are "private" indicating that the content should not be shared across users and
+     * "public" indicating that the content may be shared across users. The default value if not present is "private".
+     */
+    public String getCacheScope()
+    {
+        return cacheScope != null ? cacheScope : "private";
     }
 
     public void setCacheScope(String cacheScope)
     {
-        // TODO Auto-generated method stub
-        
+        this.cacheScope = cacheScope;
     }
 
-    public void setExpirationCache(int expirationCache)
+    public int getExpirationCache()
     {
-        // TODO Auto-generated method stub
-        
+        return expirationCache != null ? expirationCache.intValue() : 0;
     }
 
-    public void setPortletClass(String portletClass)
+    public void setExpirationCache(int value)
     {
-        // TODO Auto-generated method stub
-        
+        expirationCache = new Integer(value);
     }
+
+    public Description getDescription(Locale locale)
+    {
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    public List<Description> getDescriptions()
+    {
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl();
+        d.setLang(lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
+    }
+
+    public DisplayName getDisplayName(Locale locale)
+    {
+        for (DisplayName d : getDisplayNames())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    public List<DisplayName> getDisplayNames()
+    {
+        if (displayNames == null)
+        {
+            displayNames = new ArrayList<DisplayName>();
+        }
+        return displayNames;
+    }
+    
+    public DisplayName addDisplayName(String lang)
+    {
+        DisplayNameImpl d = new DisplayNameImpl();
+        d.setLang(lang);
+        if (getDisplayName(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+        }
+        getDisplayNames();
+        displayNames.add(d);
+        return d;
+    }
+
+    public InitParam getInitParam(String name)
+    {
+        for (InitParam param : getInitParams())
+        {
+            if (param.getParamName().equals(name))
+            {
+                return param;
+            }
+        }
+        return null;
+    }
+
+    public List<InitParam> getInitParams()
+    {
+        if (initParams == null)
+        {
+            initParams = new ArrayList<InitParam>();
+        }
+        return initParams;
+    }
+    
+    public InitParam addInitParam(String paramName)
+    {
+        if (getInitParam(paramName) != null)
+        {
+            throw new IllegalArgumentException("Init parameter: "+paramName+" already defined");
+        }
+        InitParamImpl param = new InitParamImpl();
+        param.setParamName(paramName);
+        getInitParams();
+        initParams.add(param);
+        return param;
+    }
+    
+    public List<EventDefinitionReference> getSupportedProcessingEvents()
+    {
+        if (supportedProcessingEvents == null)
+        {
+            supportedProcessingEvents = new ArrayList<EventDefinitionReference>();            
+        }
+        return supportedProcessingEvents;
+    }
+
+    public EventDefinitionReference addSupportedProcessingEvent(QName qname)
+    {
+        // TODO: check duplicates
+        getSupportedProcessingEvents();
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
+        edr.setQName(qname);
+        supportedProcessingEvents.add(edr);
+        return edr;
+    }
+    
+    public EventDefinitionReference addSupportedProcessingEvent(String name)
+    {
+        // TODO check duplicates
+        getSupportedProcessingEvents();
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
+        edr.setName(name);
+        supportedProcessingEvents.add(edr);
+        return edr;
+    }
+        
+    public List<EventDefinitionReference> getSupportedPublishingEvents()
+    {
+        if (supportedPublishingEvents == null)
+        {
+            supportedPublishingEvents = new ArrayList<EventDefinitionReference>();            
+        }
+        return supportedPublishingEvents;
+    }
+
+    public EventDefinitionReference addSupportedPublishingEvent(QName qname)
+    {
+        // TODO: check duplicates
+        getSupportedPublishingEvents();
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
+        edr.setQName(qname);
+        supportedPublishingEvents.add(edr);
+        return edr;
+    }
+    
+    public EventDefinitionReference addSupportedPublishingEvent(String name)
+    {
+        // TODO check duplicates
+        getSupportedPublishingEvents();
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
+        edr.setName(name);
+        supportedPublishingEvents.add(edr);
+        return edr;
+    }       
 }

@@ -36,7 +36,7 @@ public class FilterImpl implements Filter, Serializable
     protected String filterName;
     protected String filterClass;
     protected List<String> lifecycle;
-    protected List<InitParam> initParam;
+    protected List<InitParam> initParams;
     protected List<Description> descriptions;
     protected List<DisplayName> displayNames;
     
@@ -157,11 +157,11 @@ public class FilterImpl implements Filter, Serializable
 
     public List<InitParam> getInitParams()
     {
-        if (initParam == null)
+        if (initParams == null)
         {
-            initParam = new ArrayList<InitParam>();
+            initParams = new ArrayList<InitParam>();
         }
-        return initParam;
+        return initParams;
     }
     
     public InitParam addInitParam(String paramName)
@@ -173,7 +173,7 @@ public class FilterImpl implements Filter, Serializable
         InitParamImpl param = new InitParamImpl();
         param.setParamName(paramName);
         getInitParams();
-        initParam.add(param);
+        initParams.add(param);
         return param;
     }
 }

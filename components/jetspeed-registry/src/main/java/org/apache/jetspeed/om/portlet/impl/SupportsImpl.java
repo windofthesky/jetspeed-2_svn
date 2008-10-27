@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.util.HashCodeBuilder;
-import org.apache.pluto.om.portlet.Supports;
+import org.apache.jetspeed.om.portlet.Supports;
 
 /**
  * @version $Id$
