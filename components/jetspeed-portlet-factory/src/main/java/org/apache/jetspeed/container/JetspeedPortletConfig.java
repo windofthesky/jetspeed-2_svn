@@ -18,6 +18,8 @@ package org.apache.jetspeed.container;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
@@ -53,6 +55,12 @@ public class JetspeedPortletConfig extends PortletConfigImpl implements PortletC
         return (PortletDefinition)portlet;
     }
     
+    @Override
+    public ResourceBundle getResourceBundle(Locale locale)
+    {
+        return getPortletDefinition().getResourceBundle(locale);
+    }
+
     private List<String> DUMMY_CONFIGURATION = new LinkedList<String>(); // TODO: 2.2 implement
     
     protected List<String> getSupportedContainerRuntimeOptions()
