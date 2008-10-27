@@ -78,6 +78,10 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
      */
     long getChecksum();
     
+    long getRevision();
+    
+    void setRevision(long revision);
+    
     /**
      * <p>
      * Get the Jetspeed Security Constraint reference for this portlet application.

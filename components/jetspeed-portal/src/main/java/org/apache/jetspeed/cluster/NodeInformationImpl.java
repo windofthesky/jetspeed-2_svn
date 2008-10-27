@@ -33,7 +33,7 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 {
 	static final long serialVersionUID = -598265530537353219L;
 
-	private Long id;
+	private Long revision;
 	private String contextName;
 	private Date lastDeployDate = null;
 	private static final int CompressVersion = 1;
@@ -52,7 +52,7 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 	private void writeObject(ObjectOutputStream out) throws IOException
 	{
 		out.writeByte(CompressVersion);
-		out.writeLong(id.longValue());
+		out.writeLong(revision.longValue());
 		out.writeUTF(contextName);
 		if (lastDeployDate == null)
 			out.writeByte(0);
@@ -70,10 +70,10 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 	private void readObject(ObjectInputStream in) throws IOException,
 			ClassNotFoundException
 	{
-		int version = in.readByte();
+		in.readByte();
 		// do changes here if version dependant
 
-		id = new Long(in.readLong());
+		revision = new Long(in.readLong());
 		contextName = in.readUTF();
 		int dateSet = in.readByte();
 		
@@ -118,7 +118,7 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 	public String toString()
 	{
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("id= " + this.id.longValue());
+		buffer.append("revision= " + this.revision.longValue());
 		buffer.append("; contextName= " + this.getContextName());
 		buffer.append("; lastDeployDate= " + this.getContextName());
 		if (this.lastDeployDate != null)
@@ -147,19 +147,19 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 		this.contextName = contextName;
 	}
 
-	public Long getId()
+	public Long getRevision()
 	{
-		return id;
+		return revision;
 	}
 
-	public void setId(Long id)
+	public void setRevision(Long revision)
 	{
-		this.id = id;
+		this.revision = revision;
 	}
 
-	public void setId(long id)
+	public void setRevision(long revision)
 	{
-		this.id = new Long(id);
+		this.revision = new Long(revision);
 	}
 
 	public Date getLastDeployDate()
@@ -171,5 +171,4 @@ public class NodeInformationImpl implements NodeInformation, Serializable
 	{
 		this.lastDeployDate = lastDeployDate;
 	}
-
 }

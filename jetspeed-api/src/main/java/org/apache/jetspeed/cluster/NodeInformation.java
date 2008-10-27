@@ -36,28 +36,28 @@ public interface NodeInformation
 	/**
 	 * setter for context name
 	 * 
-	 * @param id
+	 * @param contextName
 	 */	
 	public void setContextName(String contextName);
 
 	/**
-	 * Getter for ObjectID 
+	 * Getter for revision 
 	 * @return
 	 */
-	public Long getId();
+	public Long getRevision();
 
 	/**
-	 * setter for ObjectID 
+	 * setter for revision 
 	 * 
-	 * @param id
+	 * @param revision
 	 */	
-	public void setId(Long id);
+	public void setRevision(Long revision);
 	/**
-	 * setter for ObjectID 
+	 * setter for revision 
 	 * 
-	 * @param id
+	 * @param revision
 	 */	
-	public void setId(long id);
+	public void setRevision(long revision);
 
 	/**
 	 * Getter for Last Deploy Date

@@ -47,6 +47,9 @@ import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
+import org.apache.ojb.broker.PersistenceBrokerException;
 
 /**
  *
@@ -55,12 +58,13 @@ import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
  * @version $Id$
  * @since 1.0
  */
-public class PortletApplicationDefinitionImpl implements PortletApplication, Serializable, Support
+public class PortletApplicationDefinitionImpl implements PortletApplication, Serializable, Support, PersistenceBrokerAware
 { 
     private int applicationType = PortletApplication.WEBAPP;
     
     private String checksum = "0";
     private long checksumLong = -1;
+    private long revision;
     
     /** Holds value of property version. */
     private String version;
@@ -171,6 +175,16 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         this.checksumLong = checksum;
         this.checksum = Long.toString(checksum);
     }
+
+    public long getRevision()
+    {
+        return revision;
+    }
+
+    public void setRevision(long revision)
+    {
+        this.revision = revision;
+    }
     
     public String getDefaultNamespace()
     {
@@ -268,7 +282,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         PortletDefinitionImpl portlet = new PortletDefinitionImpl();
         portlet.setPortletName(name);
-        portlet.setPortletApplication(this);
+        portlet.setApplication(this);
         portlets.add(portlet);
         return portlet;
     }
@@ -782,5 +796,36 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             ((Support)pd).postLoad(this);
         }
+    }
+
+    /// PersistenceBrokerAware interface implementation
+    public void afterDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterLookup(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void afterUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeDelete(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+    }
+
+    public void beforeInsert(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        revision++;
+    }
+
+    public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
+    {
+        revision++;
     }
 }

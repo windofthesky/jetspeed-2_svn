@@ -282,8 +282,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		PortletApplication oldPA, int paType, ClassLoader paClassLoader)
 		throws RegistryException
 	{
+	    long revision = 0;
 		if (oldPA != null)
 		{
+		    revision = oldPA.getRevision();
 			unregisterPortletApplication(oldPA, false);
 			oldPA = null;
 		}
@@ -301,6 +303,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
 			log.info("Loading portlet.xml...." + paName);
 			pa = paWar.createPortletApp(paClassLoader, wa, paType);
+			if (revision > 0)
+			{
+			    pa.setRevision(revision);
+			}
 
 			if (paType == PortletApplication.LOCAL)
 			{
@@ -344,7 +350,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			// and add to the current node info
             if (nodeManager != null)
             {            
-                nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
+                nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
             }
             // grant default permissions to portlet application
 			grantDefaultPermissions(paName);
@@ -502,7 +508,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                     {
                         log.debug("Re-register existing portlet application " + contextName + ".");
                     }
-            		int status = nodeManager.checkNode(new Long(pa.getId().toString()), pa.getName());
+            		int status = nodeManager.checkNode(new Long(pa.getRevision()), pa.getName());
         			boolean reregister = false;
         			boolean deploy = false;
         			switch (status)
@@ -583,7 +589,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         					// and add to the current node info
         					try
         					{
-        						nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
+        						nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
         					} catch (Exception e)
         					{
         					    log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
