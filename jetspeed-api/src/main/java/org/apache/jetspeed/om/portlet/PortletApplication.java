@@ -39,99 +39,6 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  */
 public interface PortletApplication extends PortletApplicationDefinition, Serializable
 {
-    /*
-     * All Pluto PortletApplicationDefinition interface overrides for
-     * which there is a specialized/extended Jetspeed interface
-     * to ensure the proper type casting.
-     * 
-     * @see org.apache.pluto.om.portlet.PortletApplicationDefinition
-     */
-    PortletDefinition getPortlet(String name);
-    List<PortletDefinition> getPortlets();
-    PortletDefinition addPortlet(String name);
-
-    List<EventDefinition> getEventDefinitions();
-    EventDefinition addEventDefinition(String name);
-    EventDefinition addEventDefinition(QName qname);
-    
-    PublicRenderParameter getPublicRenderParameter(String identifier);
-    List<PublicRenderParameter> getPublicRenderParameters();
-    PublicRenderParameter addPublicRenderParameter(String name, String identifier);
-    PublicRenderParameter addPublicRenderParameter(QName qname, String identifier);
-
-    CustomPortletMode getCustomPortletMode(String name);
-    List<CustomPortletMode> getCustomPortletModes();
-    CustomPortletMode addCustomPortletMode(String name);
-    
-    CustomWindowState getCustomWindowState(String name);
-    List<CustomWindowState> getCustomWindowStates();
-    CustomWindowState addCustomWindowState(String name);
-    
-    UserAttribute getUserAttribute(String name);
-    List<UserAttribute> getUserAttributes();
-    UserAttribute addUserAttribute(String name);
-    
-    List<SecurityConstraint> getSecurityConstraints();
-    SecurityConstraint addSecurityConstraint(String transportGuarantee);
-    
-    Filter getFilter(String filterName);
-    List<Filter> getFilters();
-    Filter addFilter(String filterName);
-
-    FilterMapping getFilterMapping(String filterName);
-    List<FilterMapping> getFilterMappings();
-    FilterMapping addFilterMapping(String filterName);
-
-    List<Listener> getListeners();
-    Listener addListener(String listenerClass);
-
-    ContainerRuntimeOption getContainerRuntimeOption(String name);
-    List<ContainerRuntimeOption> getContainerRuntimeOptions();
-    ContainerRuntimeOption addContainerRuntimeOption(String name);
-    
-    /**
-     * The checksum on the portlet XML from the last deployment
-     *  
-     * @param checksum
-     */
-    void setChecksum(long checksum);
-    
-    /**
-     * The checksum on the portlet XML from the last deployment
-     * 
-     * @return
-     */
-    long getChecksum();
-    
-    /**
-     * Returns the metadata from the extended jetspeed-portlet.xml
-     * The return value cannot be NULL
-     * 
-     * @return Jetspeed specific metadata
-     */
-    public GenericMetadata getMetadata();
-
-    /**
-     * Returns the corresponding web application to this portlet application.
-     * The return value cannot be NULL.
-     * 
-     * @return a web application
-     */
-    public WebApplicationDefinition getWebApplicationDefinition();
-
-
-    
-    UserAttributeRef getUserAttributeRef(String name);
-    /**
-     * <p>Gets the list of user attribute refs associated
-     * with this portlet application.</p>
-     */
-    List<UserAttributeRef> getUserAttributeRefs();
-    UserAttributeRef addUserAttributeRef(String name);
-
-    String getDescription();    
-    void setDescription(String description);
-
     /**
      * Marks this application as a standard web application,
      * stored in the web application server's web application space.
@@ -158,21 +65,18 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
     int getApplicationType();
 
     /**
-     * Gets a collection of all Jetspeed Services allowed for this application.
-     * 
-     * @see org.apache.jetspeed.om.portlet.JetspeedServiceReference
-     * @return The collection of services of type <code>JetspeedServiceReference</code>.
+     * The checksum on the portlet XML from the last deployment
+     *  
+     * @param checksum
      */
-    List<JetspeedServiceReference> getJetspeedServices();
-    void addJetspeedServiceReference(String name);
-
-    PortletMode getMappedPortletMode(PortletMode mode);
-    WindowState getMappedWindowState(WindowState state);
-    PortletMode getCustomPortletMode(PortletMode mode);
-    WindowState getCustomWindowState(WindowState state);
-        
-    List<PortletMode> getSupportedPortletModes();    
-    List<WindowState> getSupportedWindowStates();
+    void setChecksum(long checksum);
+    
+    /**
+     * The checksum on the portlet XML from the last deployment
+     * 
+     * @return
+     */
+    long getChecksum();
     
     /**
      * <p>
@@ -210,6 +114,82 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
      */
     void setJetspeedSecurityConstraint(String constraint);
     
+    String getDescription();    
+    void setDescription(String description);
+
+    /**
+     * Returns the corresponding web application to this portlet application.
+     * The return value cannot be NULL.
+     * 
+     * @return a web application
+     */
+    public WebApplicationDefinition getWebApplicationDefinition();
+
+    /**
+     * Returns the metadata from the extended jetspeed-portlet.xml
+     * The return value cannot be NULL
+     * 
+     * @return Jetspeed specific metadata
+     */
+    public GenericMetadata getMetadata();
+
+    PortletDefinition getPortlet(String name);
+    List<PortletDefinition> getPortlets();
+    PortletDefinition addPortlet(String name);
+
+    List<EventDefinition> getEventDefinitions();
+    EventDefinition addEventDefinition(String name);
+    EventDefinition addEventDefinition(QName qname);
+    
+    PublicRenderParameter getPublicRenderParameter(String identifier);
+    List<PublicRenderParameter> getPublicRenderParameters();
+    PublicRenderParameter addPublicRenderParameter(String name, String identifier);
+    PublicRenderParameter addPublicRenderParameter(QName qname, String identifier);
+    
+    CustomPortletMode getCustomPortletMode(String name);
+    PortletMode getCustomPortletMode(PortletMode mode);
+    List<CustomPortletMode> getCustomPortletModes();
+    CustomPortletMode addCustomPortletMode(String name);
+    
+    CustomWindowState getCustomWindowState(String name);
+    WindowState getCustomWindowState(WindowState state);
+    List<CustomWindowState> getCustomWindowStates();
+    CustomWindowState addCustomWindowState(String name);
+    
+    List<PortletMode> getSupportedPortletModes();    
+    List<WindowState> getSupportedWindowStates();
+    PortletMode getMappedPortletMode(PortletMode mode);
+    WindowState getMappedWindowState(WindowState state);
+        
+    UserAttribute getUserAttribute(String name);
+    List<UserAttribute> getUserAttributes();
+    UserAttribute addUserAttribute(String name);
+    
+    UserAttributeRef getUserAttributeRef(String name);
+    List<UserAttributeRef> getUserAttributeRefs();
+    UserAttributeRef addUserAttributeRef(String name);
+    
+    List<SecurityConstraint> getSecurityConstraints();
+    SecurityConstraint addSecurityConstraint(String transportGuarantee);
+    
+    Filter getFilter(String filterName);
+    List<Filter> getFilters();
+    Filter addFilter(String filterName);
+
+    FilterMapping getFilterMapping(String filterName);
+    List<FilterMapping> getFilterMappings();
+    FilterMapping addFilterMapping(String filterName);
+
+    List<Listener> getListeners();
+    Listener addListener(String listenerClass);
+
+    ContainerRuntimeOption getContainerRuntimeOption(String name);
+    List<ContainerRuntimeOption> getContainerRuntimeOptions();
+    ContainerRuntimeOption addContainerRuntimeOption(String name);
+    
+    List<JetspeedServiceReference> getJetspeedServices();
+    void addJetspeedServiceReference(String name);
+
     /**
      * Returns true if the portlet application is a layout application
      * Layouts are not "general" portlets, but instead used to group together
