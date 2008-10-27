@@ -32,6 +32,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
@@ -195,27 +196,41 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         }
         AbstractBaseElement documentImpl = (AbstractBaseElement)document;
         documentImpl.setHandlerFactory(handlerFactory);
-        if (systemUpdate){
-        	// on system update: temporarily turn off security
-            documentImpl.setPermissionsEnabled(false);
-            documentImpl.setConstraintsEnabled(false);
-        } else {
-            documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
-            documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
-        }
-        documentImpl.marshalling();
-        
-        // marshal page to disk
-        String fileName = path;        
-        if (!fileName.endsWith(this.documentType))
-        {
-            fileName = path + this.documentType;
-        }
-        File f = new File(this.documentRootDir, fileName);
-        Writer writer = null;
-
+        String absolutePath = "";
+        Writer writer = null;        
         try
         {
+            // JS2-903: move try up to ensure no backdoors to disabling security
+            if (systemUpdate)
+            {
+            	// on system update: temporarily turn off security
+                documentImpl.setPermissionsEnabled(false);
+                documentImpl.setConstraintsEnabled(false);
+            } 
+            else 
+            {
+                try
+                {
+                    // JS2-903: fragments are getting stripped out on write if the current user does not have edit access to write to the file
+                    document.checkAccess(JetspeedActions.EDIT);
+                }
+                catch (SecurityException se)
+                {
+                    throw new FailedToUpdateDocumentException("Insufficient Access: no edit access, cannot write.");
+                }
+                documentImpl.setPermissionsEnabled(false);
+                documentImpl.setConstraintsEnabled(false);            
+            }
+            documentImpl.marshalling();
+            
+            // marshal page to disk
+            String fileName = path;        
+            if (!fileName.endsWith(this.documentType))
+            {
+                fileName = path + this.documentType;
+            }
+            File f = new File(this.documentRootDir, fileName);
+            absolutePath = f.getAbsolutePath();
             // marshal: use SAX II handler to filter document XML for
             // page and folder menu definition menu elements ordered
             // polymorphic collection to strip artifical <menu-element>
@@ -303,34 +318,33 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         }
         catch (MarshalException e)
         {
-            log.error("Could not marshal the file " + f.getAbsolutePath(), e);
+            log.error("Could not marshal the file " + absolutePath, e);
             throw new FailedToUpdateDocumentException(e);
         }
         catch (ValidationException e)
         {
-            log.error("Document " + f.getAbsolutePath() + " is not valid", e);
+            log.error("Document " + absolutePath + " is not valid", e);
             throw new FailedToUpdateDocumentException(e);
         }
         catch (IOException e)
         {
-            log.error("Could not save the file " + f.getAbsolutePath(), e);
+            log.error("Could not save the file " + absolutePath, e);
             throw new FailedToUpdateDocumentException(e);
         }
         catch (Exception e)
         {
-            log.error("Error while saving  " + f.getAbsolutePath(), e);
+            log.error("Error while saving  " + absolutePath, e);
             throw new FailedToUpdateDocumentException(e);
         }
         finally
         {
-            if (systemUpdate){
-            	// restore permissions / constraints
-            	documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
-                documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
-            }
+        	// restore permissions / constraints
+        	documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+            documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
         	try
             {
-                writer.close();
+        	    if (writer != null)
+        	        writer.close();
             }
             catch (IOException e)
             {
