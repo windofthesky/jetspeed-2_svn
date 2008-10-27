@@ -408,6 +408,7 @@ public class JetspeedSecurityPersistenceManager
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("user.name", userName);
+        criteria.addEqualTo("user.enabled",true);
         criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
         Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
         PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBrokerTemplate().getObjectByQuery(query);
