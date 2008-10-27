@@ -21,10 +21,10 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import org.w3c.dom.Element;
 
-import org.apache.pluto.spi.RequestPropertyProvider;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.pluto.spi.RequestPropertyProvider;
+import org.w3c.dom.Element;
 
 /**
  * TODO: 2.2 implement 
@@ -38,21 +38,21 @@ public class RequestPropertyProviderImpl implements RequestPropertyProvider
     {}
     
     public Map getProperties(HttpServletRequest request,
-            PortletWindow portletWindow)
+            org.apache.pluto.PortletWindow portletWindow)
     {
         // TODO: currently this method returns an empty map.
         return Collections.EMPTY_MAP;
     }
 
     public void setProperty(HttpServletRequest request,
-            PortletWindow portletWindow, String property, String value)
+            org.apache.pluto.PortletWindow portletWindow, String property, String value)
     {
         request.setAttribute(property + portletWindow.getId().getStringId()
                 + "__str", value);
     }
 
     public void addProperty(HttpServletRequest request,
-            PortletWindow portletWindow, String property, String value)
+            org.apache.pluto.PortletWindow portletWindow, String property, String value)
     {
         if (request
                 .getAttribute(property + portletWindow.getId().getStringId()) == null)
@@ -74,7 +74,7 @@ public class RequestPropertyProviderImpl implements RequestPropertyProvider
     }
 
     public void addProperty(HttpServletRequest request,
-            PortletWindow portletWindow, String property, Element value)
+            org.apache.pluto.PortletWindow portletWindow, String property, Element value)
     {
         if (request
                 .getAttribute(property + portletWindow.getId().getStringId()) == null)
@@ -96,8 +96,8 @@ public class RequestPropertyProviderImpl implements RequestPropertyProvider
 
     }
 
-    public void addProperty(HttpServletRequest request,
-            PortletWindow portletWindow, Cookie cookie)
+    public void addCookieProperty(HttpServletRequest request,
+            org.apache.pluto.PortletWindow portletWindow, Cookie cookie)
     {
         if (request.getAttribute(portletWindow.getId().getStringId() + "__coo") == null)
         {
@@ -118,13 +118,12 @@ public class RequestPropertyProviderImpl implements RequestPropertyProvider
         }
     }
 
-    public Cookie[] getPropertyCookie(HttpServletRequest request,
-            PortletWindow portletWindow)
+    public Cookie[] getCookieProperty(HttpServletRequest request,
+            org.apache.pluto.PortletWindow portletWindow)
     {
         return (Cookie[]) request.getAttribute(portletWindow.getId()
                 .getStringId()
-                + "__coo");
+                + "__coo"); 
     }
-    
-    
+
 }
