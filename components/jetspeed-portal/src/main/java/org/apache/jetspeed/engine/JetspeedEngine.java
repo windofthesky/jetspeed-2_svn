@@ -188,26 +188,21 @@ public class JetspeedEngine implements Engine
     public void service( RequestContext context ) throws JetspeedException
     {        
         long start = System.currentTimeMillis();
-        String targetPipeline = context
-                .getRequestParameter(PortalReservedParameters.PIPELINE);
+        String targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
         if (null == targetPipeline)
         {
-            targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
-            if (null == targetPipeline)
+            String pipelineKey = context.getRequest().getServletPath();                    
+            if (null != pipelineKey)
             {
-                String pipelineKey = context.getRequest().getServletPath();                    
-                if (null != pipelineKey)
-                {
-                    if (pipelineKey.equals("/portal"))
-                        targetPipeline = this.defaultPipelineName;
-                    else
-                        targetPipeline = (String)pipelineMapper.get(pipelineKey); 
-                    // System.out.println("pipeline = " + targetPipeline);
-                }
-                else
-                {
+                if (pipelineKey.equals("/portal"))
                     targetPipeline = this.defaultPipelineName;
-                }
+                else
+                    targetPipeline = (String)pipelineMapper.get(pipelineKey); 
+                // System.out.println("pipeline = " + targetPipeline);
+            }
+            else
+            {
+                targetPipeline = this.defaultPipelineName;
             }
         }
         Pipeline pipeline = null;
