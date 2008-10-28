@@ -76,7 +76,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private transient WebApplicationDefinition webApplication;
     
     /** Metadata property */
-    private Collection metadataFields = null;
+    private Collection<GenericMetadata> metadataFields = null;
     
     /** Description */
     private String description;
@@ -233,7 +233,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     {
         if(metadataFields == null)
         {
-            metadataFields = new ArrayList();
+            metadataFields = new ArrayList<GenericMetadata>();
         }
         
         GenericMetadata metadata = new PortletApplicationMetadataImpl();
@@ -345,7 +345,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         PublicRenderParameterImpl p = new PublicRenderParameterImpl();
         p.setName(name);
         p.setIdentifier(identifier);
-        publicRenderParameters.add(p);
+        getPublicRenderParameters().add(p);
         return p;        
     }
 
@@ -359,7 +359,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         PublicRenderParameterImpl p = new PublicRenderParameterImpl();
         p.setQName(qname);
         p.setIdentifier(identifier);
-        publicRenderParameters.add(p);
+        getPublicRenderParameters().add(p);
         return p;        
     }
 
@@ -413,7 +413,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         
         CustomPortletModeImpl cpm = new CustomPortletModeImpl();
         cpm.setPortletMode(name);
-        customPortletModes.add(cpm);
+        getCustomPortletModes().add(cpm);
         return cpm;        
     }
 
@@ -467,7 +467,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         
         CustomWindowStateImpl cws = new CustomWindowStateImpl();
         cws.setWindowState(name);
-        customWindowStates.add(cws);
+        getCustomWindowStates().add(cws);
         return cws;        
     }
 
@@ -570,7 +570,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         UserAttributeImpl ua = new UserAttributeImpl();
         ua.setName(name);
-        userAttributes.add(ua);
+        getUserAttributes().add(ua);
         return ua;        
     }
 
@@ -603,7 +603,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         UserAttributeRefImpl uar = new UserAttributeRefImpl();
         uar.setName(name);
-        userAttributeRefs.add(uar);
+        getUserAttributeRefs().add(uar);
         return uar;        
     }
 
@@ -621,7 +621,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         SecurityConstraintImpl sc = new SecurityConstraintImpl();
         ((UserDataConstraintImpl)sc.getUserDataConstraint()).setTransportGuarantee(transportGuarantee);
         getSecurityConstraints();
-        securityConstraints.add(sc);
+        getSecurityConstraints().add(sc);
         return sc;        
     }
 
@@ -654,7 +654,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         FilterImpl f = new FilterImpl();
         f.setFilterName(name);
-        filters.add(f);
+        getFilters().add(f);
         return f;        
     }
 
@@ -687,7 +687,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         FilterMappingImpl fm = new FilterMappingImpl();
         fm.setFilterName(name);
-        filterMappings.add(fm);
+        getFilterMappings().add(fm);
         return fm;        
     }
 
@@ -711,7 +711,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         ListenerImpl l = new ListenerImpl();
         l.setListenerClass(listenerClass);
-        listeners.add(l);
+        getListeners().add(l);
         return l;        
     }
 
@@ -744,7 +744,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl();
         cro.setName(name);
-        containerRuntimeOptions.add(cro);
+        getContainerRuntimeOptions().add(cro);
         return cro;        
     }
 
@@ -768,7 +768,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         JetspeedServiceReferenceImpl ref = new JetspeedServiceReferenceImpl();
         ref.setName(name);
-        services.add(ref);
+        getJetspeedServices().add(ref);
     }
 
     public boolean isLayoutApplication()

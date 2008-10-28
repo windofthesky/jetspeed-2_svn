@@ -27,6 +27,7 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -62,10 +63,10 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
     public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry, 
             PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
             PermissionManager permissionManager, SearchEngine searchEngine,  RoleManager roleManager,
-            List permissionRoles, /* node manager, */ String appRoot)
+            List<String> permissionRoles, /* node manager, */ String appRoot, ExtendedDescriptorService descriptorService)
     {
         super(portletFactory, registry, entityAccess, windowAccess, permissionManager, 
-                searchEngine, roleManager, permissionRoles, null, appRoot); 
+                searchEngine, roleManager, permissionRoles, null, appRoot, descriptorService); 
                
     }
     
@@ -92,7 +93,7 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
         PortletApplicationWar paWar = null;
         try
         {
-            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum);
+            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum, this.descriptorService);
             try
             {
                 if (paClassLoader == null)
@@ -112,7 +113,7 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 //register = false;
             }
             
-            PortletApplication regPA = registry.getPortletApplication(contextName);
+            PortletApplication regPA = registry.getPortletApplication(contextName); 
             PortletApplication newPA = paWar.createPortletApp();
             if (regPA == null)
             {

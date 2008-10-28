@@ -30,10 +30,13 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityNotDeletedException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.PermissionManager;
@@ -44,9 +47,6 @@ import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.spi.optional.PortletAppDescriptorService;
 
 /**
  * PortletApplicationManager
@@ -79,7 +79,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected boolean started;
     protected String appRoot;
     protected NodeManager nodeManager;
-    protected PortletAppDescriptorService descriptorService;
+    protected ExtendedDescriptorService descriptorService;
     
     /**
 	 * Creates a new PortletApplicationManager object.
@@ -88,7 +88,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List<String> permissionRoles, NodeManager nodeManager, String appRoot,
-        PortletAppDescriptorService descriptorService)
+        ExtendedDescriptorService descriptorService)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
@@ -300,12 +300,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		try
 		{
             // load the web.xml
-            log.info("Loading web.xml...." + paName);
-            WebApplicationDefinition wa = paWar.createWebApp();
-            paWar.validate();
-
-			log.info("Loading portlet.xml...." + paName);
-			pa = paWar.createPortletApp(paClassLoader, wa, paType);
+            log.info("Loading portlet.xml and web.xml...." + paName);
+			pa = paWar.createPortletApp(paClassLoader);
+			WebApplicationDefinition wa = paWar.getWebApp();
 			if (revision > 0)
 			{
 			    pa.setRevision(revision);
@@ -639,20 +636,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
             throw new RegistryException(msg);
         }
-		finally
-		{
-			if (paWar != null)
-			{
-				try
-				{
-					paWar.close();
-				}
-				catch (IOException e)
-				{
-				    log.error("Failed to close PA WAR for " + contextName, e);
-				}
-			}
-		}
 	}
 
 	protected void stopPA(String contextName, int paType)
