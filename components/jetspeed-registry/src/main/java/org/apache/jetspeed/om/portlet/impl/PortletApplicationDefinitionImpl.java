@@ -283,7 +283,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         PortletDefinitionImpl portlet = new PortletDefinitionImpl();
         portlet.setPortletName(name);
         portlet.setApplication(this);
-        portlets.add(portlet);
+        getPortlets().add(portlet);
         return portlet;
     }
 

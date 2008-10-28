@@ -119,6 +119,7 @@ limitations under the License.
       <constructor-arg><ref bean="org.apache.pluto.services.RequestAttributeService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.pluto.services.PlutoRegistryServiceAdaptor"/></constructor-arg>            
+      <constructor-arg><ref bean="org.apache.pluto.services.DescriptorService"/></constructor-arg>
 	<!--  TODO: preferences -->
     </bean>
     
@@ -165,5 +166,10 @@ limitations under the License.
 	    <constructor-arg index="0"><ref bean="portletFactory" /></constructor-arg>         
         <constructor-arg index="1"><ref bean="portletRegistry"/></constructor-arg>
     </bean>
+    
+    <bean id="org.apache.pluto.services.DescriptorService"
+    		class="org.apache.jetspeed.descriptor.ExtendedDescriptorService">
+	    <meta key="j2:cat" value="default" />
+	</bean>    		
         
 </beans>

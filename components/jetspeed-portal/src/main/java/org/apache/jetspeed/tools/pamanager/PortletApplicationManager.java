@@ -46,6 +46,7 @@ import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.spi.optional.PortletAppDescriptorService;
 
 /**
  * PortletApplicationManager
@@ -67,7 +68,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected RoleManager           roleManager;
     protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
-    protected List                  permissionRoles;
+    protected List<String>          permissionRoles;
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
     /**
      * holds the max number of retries in case of unsuccessful PA start
@@ -78,6 +79,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected boolean started;
     protected String appRoot;
     protected NodeManager nodeManager;
+    protected PortletAppDescriptorService descriptorService;
     
     /**
 	 * Creates a new PortletApplicationManager object.
@@ -85,7 +87,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
-        RoleManager roleManager, List permissionRoles, NodeManager nodeManager, String appRoot)
+        RoleManager roleManager, List<String> permissionRoles, NodeManager nodeManager, String appRoot,
+        PortletAppDescriptorService descriptorService)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
@@ -426,7 +429,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
             // create PA  from war (file) structure
             // paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName, checksum);
-            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum);
+            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum, this.descriptorService);
             try
             {
                 if (paClassLoader == null)
@@ -746,10 +749,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
         try
         {
             // create a default permission for this portlet app, granting configured roles to the portlet application 
-            Iterator roles = permissionRoles.iterator();
-            while (roles.hasNext())
+            for (String roleName : permissionRoles)
             {
-                String roleName = (String)roles.next();
                 Role userRole = roleManager.getRole(roleName);
                 if (userRole != null)
                 {
@@ -772,10 +773,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
     {
         try
         {
-            Iterator roles = permissionRoles.iterator();
-            while (roles.hasNext())
+            for (String roleName : permissionRoles)
             {
-                String roleName = (String)roles.next();
                 Role userRole = roleManager.getRole(roleName);
                 if (userRole != null)
                 {

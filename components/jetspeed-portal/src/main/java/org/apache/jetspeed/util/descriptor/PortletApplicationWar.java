@@ -42,7 +42,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
@@ -52,13 +52,8 @@ import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.pluto.om.portlet.SecurityRoleRef;
-import org.apache.pluto.om.portlet.SecurityRoleRefSet;
-import org.apache.pluto.om.portlet.SecurityRoleSet;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.apache.pluto.spi.optional.PortletAppDescriptorService;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -102,10 +97,11 @@ public class PortletApplicationWar
     protected String paName;
     protected String webAppContextRoot;
     protected FileSystemHelper warStruct;
-    private MutableWebApplication webApp;
+    private WebApplicationDefinition webApp;
     private PortletApplication portletApp;
     private long paChecksum;
     protected final List openedResources;
+    protected ExtendedDescriptorService descriptorService;
 
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
@@ -123,12 +119,12 @@ public class PortletApplicationWar
      * @param webAppContextRoot
      *            context root relative to the servlet container of this app
      */
-    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot )
+    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, ExtendedDescriptorService descriptorService)
     {
-        this(warStruct, paName, webAppContextRoot, 0);
+        this(warStruct, paName, webAppContextRoot, 0, descriptorService);
     }
 
-    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, long paChecksum )
+    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, long paChecksum, ExtendedDescriptorService descriptorService)
     {
         validatePortletApplicationName(paName);
 
@@ -137,6 +133,7 @@ public class PortletApplicationWar
         this.openedResources = new ArrayList();
         this.warStruct = warStruct;
         this.paChecksum = paChecksum;
+        this.descriptorService = descriptorService;
     }
     
     public long getPortletApplicationChecksum() throws IOException
@@ -188,7 +185,6 @@ public class PortletApplicationWar
     public WebApplicationDefinition createWebApp() throws PortletApplicationException, IOException
     {
         Reader webXmlReader = getReader(WEB_XML_PATH);
-
         try
         {
             WebApplicationDescriptor webAppDescriptor = new WebApplicationDescriptor(webXmlReader, webAppContextRoot);
@@ -228,12 +224,12 @@ public class PortletApplicationWar
      */
     public PortletApplication createPortletApp(ClassLoader classLoader, WebApplicationDefinition wa, int paType) throws PortletApplicationException, IOException
     {
-        Reader portletXmlReader = getReader(PORTLET_XML_PATH);
-        
+        InputStream portletXmlStream = getInputStream(PORTLET_XML_PATH);        
         try
         {
-            PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
-            portletApp = paDescriptor.createPortletApplication(classLoader);
+            PortletApplication pa = this.descriptorService.read(portletXmlStream);
+//            PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
+//            portletApp = paDescriptor.createPortletApplication(classLoader);
             // validate(portletApplication);
             Reader extMetaDataXml = null;
             try
@@ -272,9 +268,9 @@ public class PortletApplicationWar
         }
         finally
         {
-            if (portletXmlReader != null)
+            if (portletXmlStream != null)
             {
-                portletXmlReader.close();
+                portletXmlStream.close();
             }
         }
     }
@@ -427,7 +423,7 @@ public class PortletApplicationWar
         {
             target.copyFrom(warStruct.getRootDirectory());
 
-            return new PortletApplicationWar(target, paName, webAppContextRoot, paChecksum);
+            return new PortletApplicationWar(target, paName, webAppContextRoot, paChecksum, this.descriptorService);
 
         }
         catch (IOException e)
