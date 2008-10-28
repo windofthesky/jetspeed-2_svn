@@ -97,7 +97,7 @@ public class ResourceValveImpl extends AbstractValve
                 request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
                 request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, resourceWindow);
                 BufferedHttpServletResponse bufferedResponse = new BufferedHttpServletResponse(response);
-                container.renderPortlet(resourceWindow, requestForWindow, bufferedResponse);
+                container.doRender(resourceWindow, requestForWindow, bufferedResponse);
                 bufferedResponse.flush(response);
             }
             catch (PortletContainerException e)

@@ -39,7 +39,7 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.spi.FilterManager;
 
 /**
