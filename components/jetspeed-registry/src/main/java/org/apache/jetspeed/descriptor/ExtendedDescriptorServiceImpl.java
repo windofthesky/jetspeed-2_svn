@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.xml.namespace.QName;
+
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.EventDefinition;
@@ -104,8 +106,8 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             jcpm.setPortalManaged(cpm.isPortalManaged());
             for (org.apache.pluto.om.portlet.Description desc : cpm.getDescriptions())
             {
-                Description jdesc = jcpm.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jcpm.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }            
         }
         for (org.apache.pluto.om.portlet.CustomWindowState cws : pa.getCustomWindowStates())
@@ -113,19 +115,30 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             CustomWindowState jcws = jpa.addCustomWindowState(cws.getWindowState());
             for (org.apache.pluto.om.portlet.Description desc : cws.getDescriptions())
             {
-                Description jdesc = jcws.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jcws.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }            
         }        
         for (org.apache.pluto.om.portlet.EventDefinition ed : pa.getEventDefinitions())
         {
-            EventDefinition jed = jpa.addEventDefinition(ed.getName());
+            EventDefinition jed = null;
+            if (ed.getQName() != null)
+            {
+                jed = jpa.addEventDefinition(ed.getQName());
+            }
+            else
+            {
+                jed =jpa.addEventDefinition(ed.getName());
+            }
             jed.setValueType(ed.getValueType());
-            // TODO: 2.2 - aliases, qnames ?
+            for (QName alias : ed.getAliases())
+            {
+                jed.addAlias(alias);
+            }
             for (org.apache.pluto.om.portlet.Description desc : ed.getDescriptions())
             {
-                Description jdesc = jed.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jed.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }                        
         }
         for (org.apache.pluto.om.portlet.FilterMapping fm : pa.getFilterMappings())
@@ -142,13 +155,13 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             jf.setFilterClass(f.getFilterClass());
             for (org.apache.pluto.om.portlet.Description desc : f.getDescriptions())
             {
-                Description jdesc = jf.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jf.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }                                   
             for (org.apache.pluto.om.portlet.DisplayName dn : f.getDisplayNames())
             {
-                DisplayName jdn = jf.addDisplayName(dn.getDisplayName());
-                // TODO: 2.2 - lang, locale
+                DisplayName jdn = jf.addDisplayName(dn.getLang());
+                jdn.setDisplayName(dn.getDisplayName());
             }
             for (org.apache.pluto.om.portlet.InitParam ip : f.getInitParams())
             {
@@ -156,8 +169,8 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
                 jip.setParamValue(ip.getParamValue());
                 for (org.apache.pluto.om.portlet.Description desc : ip.getDescriptions())
                 {
-                    Description jdesc = jip.addDescription(desc.getDescription());
-                    // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                    Description jdesc = jip.addDescription(desc.getLang());
+                    jdesc.setDescription(desc.getDescription());
                 }                                        
             }
             for (String lc : f.getLifecycles())
@@ -170,33 +183,43 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             Listener jl = jpa.addListener(l.getListenerClass());
             for (org.apache.pluto.om.portlet.Description desc : l.getDescriptions())
             {
-                Description jdesc = jl.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jl.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }                                        
             for (org.apache.pluto.om.portlet.DisplayName dn : l.getDisplayNames())
             {
-                DisplayName jdn = jl.addDisplayName(dn.getDisplayName());
-                // TODO: 2.2 - lang, locale
+                DisplayName jdn = jl.addDisplayName(dn.getLang());
+                jdn.setDisplayName(dn.getDisplayName());
             }
         }
         for (org.apache.pluto.om.portlet.PublicRenderParameter prd : pa.getPublicRenderParameters())
-        {
-            
-            PublicRenderParameter jprp = jpa.addPublicRenderParameter(prd.getName(), prd.getIdentifier());
+        {            
+            PublicRenderParameter jprp = null;
+            if (prd.getQName() != null)
+            {
+                jprp = jpa.addPublicRenderParameter(prd.getQName(), prd.getIdentifier());
+            }
+            else
+            {
+                jprp = jpa.addPublicRenderParameter(prd.getName(), prd.getIdentifier());
+            }
+            for (QName alias : prd.getAliases())
+            {
+                jprp.addAlias(alias);
+            }
             for (org.apache.pluto.om.portlet.Description desc : prd.getDescriptions())
             {
-                Description jdesc = jprp.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
-            }                                        
-            // TODO: 2.2 aliases, qname
+                Description jdesc = jprp.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
+            }
         }
         for (org.apache.pluto.om.portlet.SecurityConstraint sc :  pa.getSecurityConstraints())
         {
             SecurityConstraint jsc = jpa.addSecurityConstraint(sc.getUserDataConstraint().getTransportGuarantee());
             for (org.apache.pluto.om.portlet.DisplayName dn : sc.getDisplayNames())
             {
-                DisplayName jdn = jsc.addDisplayName(dn.getDisplayName());
-                // TODO: 2.2 - lang, locale
+                DisplayName jdn = jsc.addDisplayName(dn.getLang());
+                jdn.setDisplayName(dn.getDisplayName());
             }
             for (String portletName : sc.getPortletNames())
             {
@@ -208,8 +231,8 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             UserAttribute jua = jpa.addUserAttribute(ua.getName());
             for (org.apache.pluto.om.portlet.Description desc : ua.getDescriptions())
             {
-                Description jdesc = jua.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jua.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }                                                    
         }
         return jpa;
@@ -231,13 +254,13 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
         }
         for (org.apache.pluto.om.portlet.Description desc : pd.getDescriptions())
         {
-            Description jdesc = jpd.addDescription(desc.getDescription());
-            // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+            Description jdesc = jpd.addDescription(desc.getLang());
+            jdesc.setDescription(desc.getDescription());
         }                        
         for (org.apache.pluto.om.portlet.DisplayName dn : pd.getDisplayNames())
         {
-            DisplayName jdn = jpd.addDisplayName(dn.getDisplayName());
-            // TODO: 2.2 - lang, locale
+            DisplayName jdn = jpd.addDisplayName(dn.getLang());
+            jdn.setDisplayName(dn.getDisplayName());
         }
         for (org.apache.pluto.om.portlet.InitParam ip : pd.getInitParams())
         {
@@ -245,11 +268,10 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             jip.setParamValue(ip.getParamValue());
             for (org.apache.pluto.om.portlet.Description desc : ip.getDescriptions())
             {
-                Description jdesc = jip.addDescription(desc.getDescription());
-                // TODO: 2.2 - there is no setLang or setLocale, not sure if there is a good reason
+                Description jdesc = jip.addDescription(desc.getLang());
+                jdesc.setDescription(desc.getDescription());
             }                                        
         }
-        // TODO: 2.2 still relevant? jpd.addLanguage()
         for (org.apache.pluto.om.portlet.SecurityRoleRef srr : pd.getSecurityRoleRefs())
         {
             SecurityRoleRef jsrr = jpd.addSecurityRoleRef(srr.getRoleName());
@@ -259,11 +281,17 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
         {
             jpd.addSupportedLocale(locale);
         }
+        // TODO: jpd.addLanguage()
         for (org.apache.pluto.om.portlet.EventDefinitionReference ed : pd.getSupportedProcessingEvents())
         {
-            jpd.addSupportedProcessingEvent(ed.getName());
-            //EventDefinitionReference jedr = jpd.addSupportedProcessingEvent(ed.getName());
-            // TODO: 2.2 qname
+            if (ed.getQName() != null)
+            {
+                jpd.addSupportedProcessingEvent(ed.getQName());
+            }
+            else
+            {
+                jpd.addSupportedProcessingEvent(ed.getName());
+            }
         }
         for (String sprd : pd.getSupportedPublicRenderParameters())
         {
@@ -271,9 +299,14 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
         }
         for (org.apache.pluto.om.portlet.EventDefinitionReference ed : pd.getSupportedPublishingEvents())
         {
-            jpd.addSupportedPublishingEvent(ed.getName());
-            //EventDefinitionReference jedr = jpd.addSupportedProcessingEvent(ed.getName());
-            // TODO: 2.2 qname
+            if (ed.getQName() != null)
+            {
+                jpd.addSupportedPublishingEvent(ed.getQName());
+            }
+            else
+            {
+                jpd.addSupportedPublishingEvent(ed.getName());
+            }
         }
         for (org.apache.pluto.om.portlet.Supports supports : pd.getSupports())
         {

@@ -57,6 +57,7 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
     public void setQName(QName value)
     {
         qname = value;
+        name = null;
     }
 
     public String getName()
@@ -67,6 +68,7 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
     public void setName(String value)
     {
         name = value;
+        qname = null;
     }
 
     public List<QName> getAliases()
