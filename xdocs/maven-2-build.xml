@@ -18,231 +18,297 @@
 <document>
 	<properties>
 		<title>
-			Building Jetspeed 2.1.x from Source with Maven-2
+			Building Jetspeed 2.2 from Source with Maven-2
 		</title>
-		<subtitle>How-to for Building from Source with Maven-2 and Jetspeed 2.1.x</subtitle>
+		<subtitle>How-to for Building from Source with Maven-2 and Jetspeed 2.2</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="Ate Douma" email="ate@apache.org" />
+			<person name="Woonsan Ko" email="woonsan@apache.org" />
 		</authors>
 	</properties>
 	<body>
-		<section name="Building Jetspeed 2.1.x from Source with Maven-2">
-			<subsection name="Overview">
-            <p>
-           The Maven2 build support is currently under development and is co-resident with the existing Maven1 build scripts and sources. 
-           The general strategy is to make heavy use of Ant from within the Maven2 build or as Ant Tasks/Ant Maven2 Plugins if required. 
-           For this reason, the Maven2 build can be found in the pom.xml and build.xml files throughout the Jetspeed2 source tree. 
-           As with the Maven1 build, it is a multi-module build, primarily following the J2 component and application subprojects. 
-           There are also two Maven2 build specific top level subprojects: ant-tasks and maven-archetypes.            
-            </p>
-            <p>
-            The development team is actively keeping both environments up to date, 
-            but the Maven2 build modifications may lag behind newly committed changes. 
-            At the moment, Maven2 does not build all LDAP related artifacts and it does not build the uberjar/classworlds executable jar files 
-            for the deploy tool. Otherwise it is generally complete, (at least AFAIK).
-            </p>
-            <p>
-            Maven 2.0.4 and the accompanying Ant artifact tasks are now being used for this effort, 
-            with an upgraded surefire plugin version, (2.1.3). If you wish to use the Maven2 build, 
-            please ensure that maven 2.0.4 is installed and in your path.
-             Due to modifications in the pom.xml files, earlier versions of maven will not work correctly.
-             </p>
-			</subsection>
-			<subsection name="Future Directions: 2.2">
-				<p>This Maven2 build will be deprecated in 2.2, and replaced with a new Maven2 build.
-				The Maven1 build will be completely dropped in 2.2
-				</p>
-			</subsection>
-			<subsection name="The first step in using Maven2">
-			<p>The first step in using the Maven2 build is to either:
-				<ul>
-				<li>copy the settings.xml.sample to ~/.m2/settings.xml</li>
-      			<li>--or--</li>
-                <li>encorporate the settings in this file into your existing Maven2 configuration.</li>
-                </ul>
-            </p>
+		<section name="Simple Guide to Jetspeed Demo Portal Build &amp; Deployment">
+            <subsection name="Overview">
+                <p>With Maven2 and Jetspeed Maven Plugins, you can build Jetspeed 2.2 and deploy Jetspeed Demo Portal very easily. In most cases, just following this section could be enough to build and deploy Jetspeed 2.2.</p>
+                <p>You need the following prerequisites:
+                    <ul>
+                        <li>Java Development Kit 1.5</li>
+                        <li><a class="externalLink" href="http://maven.apache.org/">Apache Maven</a> 2.0.9 or higher</li>
+                        <li><a class="externalLink" href="http://tomcat.apache.org/">Apache Tomcat</a> 5.5.26 or higher</li>
+                        <li>
+                            With a SVN client tool, you can checkout the sources from here:
+                            <a href='http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk/' target='_blank'>http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk/</a>
+                        </li>
+                    </ul>
+                </p>
             </subsection>
-			<subsection name="Properties Customization">
-			<p>
-	Once in place, please customize the properties as one would have done for Maven1 using build.properties. 
-	The properties are preconfigured for embedded Derby, so more changes are required if another database solution is to be used. 
-	To complete this step, ensure that the proper jetspeed database active profile is uncommented for your database in
-	 the &lt;activeProfiles&gt; element <b>jetspeed-db-drivers-path</b> should be selected for all non-embedded databases. 
-	 This setting is needed to execute Jetspeed component tests.			
-			</p>
-			</subsection>
-			<subsection name="Repository Relocation">
-			<p>
-While the default location of the settings.xml file should not be changed, (e.g. ~/.m2/settings.xml), 
-one can relocate the repository using the &lt;localRepository&gt; element in the settings.xml file. 
-See the settings.xml.sample file for an example. 
-Note that the repository path must be an absolute path and not contain any property expressions.			
-			</p>
-			</subsection>
-			<subsection name="Overview of current Jetspeed2 Maven2 commands">
-			<p>
-			Here is a quick summary of the current Jetspeed2 Maven2 build commands, 
-			(most of these commands can be executed at the root of the J2 source tree or at lower levels to perform partial builds/deployments):
-			</p>
-<table>
-<tbody><tr>
-<td>
-<p> <strong><tt>commands</tt></strong> </p>
-</td>
-<td>
+            <subsection name="Configuring your environment">
+                <p>
+                    All the settings needed during the build (and the jetspeed-demo Portal deployment) are isolated in one single file in the root folder
+                    of the project: <strong><code>jetspeed-mvn-setttings.xml</code></strong>.
+                </p>
+                <p>
+                    To make it easy to create your own jetspeed-mvn-settings.xml, a sample file, <strong><code>jetspeed-mvn-setttings-sample.xml</code></strong>
+                    is provided which you can simply copy to <strong><code>jetspeed-mvn-setttings.xml</code></strong> and modify only
+                    the properties you'll need.
+                </p>
+                <p>
+                    The <strong><code>jetspeed-mvn-setttings-sample.xml</code></strong> provides a default configuration using an Embbedded Derby database, and if that
+                    suites you, probably the only changes needed will be for the location of the Derby database(s) and the deployment target directory for the
+                    jetspeed-demo Portal:
+                    <div class="source"><pre>&lt;properties&gt;
+    ...
+    &lt;!-- Your Tomcat Installation Path --&gt;
+    &lt;org.apache.jetspeed.server.home>/home/demo/tomcat-5.5&lt;/org.apache.jetspeed.server.home&gt;
 
-<p> <strong><tt>explanation</tt></strong> </p>
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>mvn</tt></strong> </p>
-</td>
-<td>
-<p> performs base build and installs J2 artifacts in the Maven2 repository, (install is the default Maven2 goal for this build)</p>
+    &lt;!-- Production jdbc driver artifact properties --&gt;
+    &lt;org.apache.jetspeed.production.jdbc.driver.groupId&gt;org.apache.derby&lt;/org.apache.jetspeed.production.jdbc.driver.groupId&gt;
+    &lt;org.apache.jetspeed.production.jdbc.driver.artifactId&gt;derby&lt;/org.apache.jetspeed.production.jdbc.driver.artifactId&gt;
+    &lt;org.apache.jetspeed.production.jdbc.driver.version&gt;10.3.2.1&lt;/org.apache.jetspeed.production.jdbc.driver.version&gt;
+    
+    &lt;!-- Production database name, JDBC url, JDBC driver name and connection information --&gt;
+    &lt;org.apache.jetspeed.production.database.default.name&gt;derby&lt;/org.apache.jetspeed.production.database.default.name&gt;
+    &lt;org.apache.jetspeed.production.database.url&gt;jdbc:derby:/tmp/derby/productiondb;create=true&lt;/org.apache.jetspeed.production.database.url&gt;
+    &lt;org.apache.jetspeed.production.database.driver&gt;org.apache.derby.jdbc.EmbeddedDriver&lt;/org.apache.jetspeed.production.database.driver&gt;
+    &lt;org.apache.jetspeed.production.database.user&gt;&lt;/org.apache.jetspeed.production.database.user&gt;
+    &lt;org.apache.jetspeed.production.database.password&gt;&lt;/org.apache.jetspeed.production.database.password&gt;
+    ...
+&lt;/properties&gt;</pre>
+                    </div>
+                </p>
+                <p>
+                    <em>Note: depending on your database platform, the value of 'org.apache.jetspeed.production.database.default.name' property can be one of the followings:</em>
+                    <ul>
+                        <li>db2</li>
+                        <li>db2v8</li>
+                        <li>derby</li>
+                        <li>mssql</li>
+                        <li>mysql</li>
+                        <li>mysql5</li>
+                        <li>oracle9</li>
+                        <li>oracle10</li>
+                        <li>postgresql</li>
+                        <li>sapdb</li>
+                    </ul>
+                </p>
+                <p>
+                    The following <strong><code>jetspeed-mvn-settings.xml</code></strong> provides a sample configuration using a MySQL database.
+                    <div class="source"><pre>&lt;properties&gt;
+    ...
+    &lt;!-- Your Tomcat Installation Path --&gt;
+    &lt;org.apache.jetspeed.server.home>/home/demo/tomcat-5.5&lt;/org.apache.jetspeed.server.home&gt;
 
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>mvn -P test</tt></strong> </p>
-</td>
-<td>
-<p> performs base build and includes execution of test cases, (includes test database setup) </p>
-</td>
-</tr>
-
-<tr>
-<td>
-<p> <strong><tt>mvn -P tomcat</tt></strong> </p>
-</td>
-<td>
-<p> performs base build and deploys to Tomcat app server, (includes prodution database setup). Other app servers will be supported in the future, (see below for details)</p>
-</td>
-</tr>
-<tr>
-<td>
-
-<p> <strong><tt>mvn clean</tt></strong> </p>
-</td>
-<td>
-<p> cleans all build target directories </p>
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>other commands</tt></strong> </p>
-
-</td>
-<td>
-<p> explanation </p>
-</td>
-</tr>
-</tbody></table>						
-<p><i>Please note that the Maven2 repositories used by default with this build are generally saturated and the Jetspeed2 Maven2 
-repository does not yet contain a full mirror of the artifacts required to build Jetspeed2. If you experience download or connection failures,
- simply restart the build by issuing your last command again to retry.
- </i></p>			
-		</subsection>
-		<subsection name='Additional Notes'>
-		<ul>
-		<li><b>mvn -P test</b> and <b>mvn -Dmaven.test.skip=false</b> are equivalent.</li>
-		<li><b>mvn -P test -Dtest=MyTest</b> will execute a single test or matching tests if Ant wildcards are used. </li>		
-		<li>Due to forking bugs in the Surefire Maven2 test runner plugin, test output, (e.g. System.out.println()), is not echoed to the build shell. If you wish to see console output for component tests, temporarily comment out the &lt;forkMode&gt;
-		 elements in the components/pom.xml and the components pom.xml and run single tests. Note: the forking is required to run multiple tests. 
-        </li>
-        <li><p> The <strong><tt>-o</tt></strong> offline option can be specified with the commands documented here to force Maven2 to use only the local repository. This can be invaluable in the event the main Maven2 repositories are down and the build insists upon validating a missing or troublesome POM. </p>
-       </li>
-		</ul>
-		<p>
-		</p>
-		</subsection>	
-		</section>
+    &lt;!-- Production jdbc driver artifact properties --&gt;
+    &lt;org.apache.jetspeed.production.jdbc.driver.groupId&gt;mysql&lt;/org.apache.jetspeed.production.jdbc.driver.groupId&gt;
+    &lt;org.apache.jetspeed.production.jdbc.driver.artifactId&gt;mysql-connector-java&lt;/org.apache.jetspeed.production.jdbc.driver.artifactId&gt;
+    &lt;org.apache.jetspeed.production.jdbc.driver.version&gt;5.1.6&lt;/org.apache.jetspeed.production.jdbc.driver.version&gt;
+    
+    &lt;!-- Production database name, JDBC url, JDBC driver name and connection information --&gt;
+    &lt;org.apache.jetspeed.production.database.default.name&gt;mysql5&lt;/org.apache.jetspeed.production.database.default.name&gt;
+    &lt;org.apache.jetspeed.production.database.url&gt;jdbc:mysql://localhost:3306/j2&lt;/org.apache.jetspeed.production.database.url&gt;
+    &lt;org.apache.jetspeed.production.database.driver&gt;com.mysql.jdbc.Driver&lt;/org.apache.jetspeed.production.database.driver&gt;
+    &lt;org.apache.jetspeed.production.database.user&gt;j2&lt;/org.apache.jetspeed.production.database.user&gt;
+    &lt;org.apache.jetspeed.production.database.password&gt;j2&lt;/org.apache.jetspeed.production.database.password&gt;
+    ...
+&lt;/properties&gt;</pre>
+                    </div>
+                </p>
+            </subsection>
+            <subsection name="Optional: Building and Installing Jetspeed-2 Maven Plugins">
+                <p>
+                    If, and only if, no (full) build has been done yet, a subset of the build has to be performed <em>once</em> first:
+                    <div class="source"><pre>$mvn install -P init</pre>
+                    </div>
+                </p>
+                <p>
+                    This will ensure the required Jetspeed-2 Maven plugins are build and installed as well as the jetspeed-portal-resources artifact.
+                </p>
+            </subsection>
+            <subsection name="Building Jetspeed-2">
+                <p>
+                    Performing a full build of all the Jetspeed-2 components, as well as the jetspeed-demo Portal is plain Maven-2 simple:
+                    <div class="source"><pre>$mvn install</pre>
+                    </div>
+                </p>
+            </subsection>
+            <subsection name="Deploying the jetspeed-demo Portal">
+                <p>
+                    This requires downloading and installing your own <a class="externalLink" href="http://tomcat.apache.org">Tomcat</a>
+                    (<em>for Jetspeed-2.2 at least version 5.5.26 is now required!</em>)<br />
+                    Once you've installed Tomcat, adjust the <strong><code>org.apache.jetspeed.server.home</code></strong> property
+                    in the jetspeed-mvn-settings.xml file to point at the installation directory.
+                </p>
+                <p>
+                    You can deploy the Jetspeed Demo Portal to your Tomcat installation by using the following command:
+                    <div class="source"><pre>$mvn org.apache.portals.jetspeed-2:jetspeed-mvn-maven-plugin:mvn -Dtarget=demo</pre>
+                    </div>
+                    You can shorten the above command by adding the Jetspeed Maven Plugin's groupId to the list of groupIds searched by default.
+                    To do this, you need to add the following to your ${user.home}/.m2/settings.xml file:
+                    <div class="source"><pre>&lt;settings xmlns="http://maven.apache.org/POM/4.0.0"&gt;
+  &lt;pluginGroups&gt;
+    &lt;!-- add the following line to shorten the command invoking the Jetspeed Maven Plugin. --&gt;
+    &lt;pluginGroup&gt;org.apache.portals.jetspeed-2&lt;/pluginGroup&gt;
+  &lt;/pluginGroups&gt;
+&lt;/settings&gt;</pre></div>
+                    Now you can use a shorter command like the following:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo</pre>
+                    </div>
+                </p>
+                <p>
+                    Start your Tomcat:
+                    <div class="source"><pre>$ $TOMCAT_HOME/bin/catalina.sh run</pre>
+                    </div>
+                </p>
+                <p>
+                    Use the jetspeed-demo Portal:
+                    <a class="externalLink" href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a>
+                </p>
+                <p>
+                    For login, use one of the following username/password combinations: admin/admin, user/user, jetspeed/jetspeed
+                </p>
+            </subsection>
+        </section>
 		<section name='Maven Profiles'>
-<p>the following profiles are optional and can be supplied when building/deploying to Tomcat </p>
-<div>
-<table>
-
-<tbody><tr>
-<td>
-<p> <strong><tt>mvn -P tomcat,min</tt></strong> </p>
-</td>
-<td>
-<p> specified that only the administrative portlets be deployed along with a minimal set of PSML pages.</p>
-</td>
-</tr>
-<tr>
-<td>
-
-<p> <strong><tt>mvn -P tomcat,full</tt></strong> </p>
-</td>
-<td>
-<p> at the moment, this is the same as the default build: deploys a full J2 set of portlets and PSML pages.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>mvn -P tomcat,nodb</tt></strong> </p>
-
-</td>
-<td>
-<p> specifies that configuration of the production database should be skipped.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>mvn -P tomcat,hot</tt></strong> </p>
-</td>
-<td>
-
-<p> indicates that a portlet app, component, or content should be directly written to the deployed Jetspeed2 webapp.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>mvn -P tomcat,dbpsml</tt></strong> </p>
-</td>
-<td>
-<p> specifies portal build and database deployment/import to include configuration of database PSML.</p>
-
-</td>
-</tr>
-<tr>
-<td>
-<p> <strong><tt>mvn -P prod</tt></strong> </p>
-</td>
-<td>
-<p> executes deployment to application server specified in settings.xml, (see below).</p>
-</td>
-</tr>
-
-</tbody></table>
-</div>
-<p>Currently, only Tomcat 5 and Tomcat 5.5 application servers are supported by this build. More platforms are to be supported in the near future. To do so, additional deployment profiles and new app-servers Ant deployment build files will need to be added. See the following files for details: </p>
-<ul>
-<li><p> <tt>pom.xml</tt>, </p>
-</li>
-<li><p> <tt>app-servers/tomcat-build.xml</tt>, </p>
-</li>
-<li><p> <tt>maven-archetypes/portal/src/archetype/archetype-resources/pom.xml</tt>, and </p>
-
-</li>
-<li><p> <tt>maven-archetypes/portal/src/archetype/archetype-resources/app-servers/tomcat-build.xml</tt>. </p>
-</li>
-</ul>		
-		<subsection name='Use case for some additional profiles:'>
-<p>Some of the additional profiles make sense to preconfigure in your settings.xml, (see the settings.xml.sample file for syntax) </p>
-<ul>
-<li><p> <tt>org.apache.jetspeed.env.deploy.target</tt>, application server to deploy to. Setting this property allows one to use the generic <strong><tt>prod</tt></strong> profile. </p>
-
-</li>
-<li><p> <tt>org.apache.jetspeed.env.deploy.type</tt>, set to <tt>full</tt> or <tt>min</tt>. Takes the place of the <strong><tt>full</tt></strong> and <strong><tt>min</tt></strong> profiles. </p>
-</li>
-
-<li><p> <tt>org.apache.jetspeed.env.deploy.db.psml</tt>, set to <tt>true</tt> or <tt>false</tt>. Equivalent to using <strong><tt>dbpsml</tt></strong> if enabled. </p>
-</li>
-</ul>		
-		</subsection>
+            <p>The following profiles can be supplied when building </p>
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p> <strong><tt>mvn -P all</tt></strong> </p>
+                            </td>
+                            <td>
+                                <p> specified that all modules (the API, plugins, portal resources, commons, components and applications) be built.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p> <strong><tt>mvn -P init</tt></strong> </p>
+                            </td>
+                            <td>
+                                <p> specified some modules to be initialized first (the API, plugins and portal resources) </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p> <strong><tt>mvn -P test</tt></strong> </p>
+                            </td>
+                            <td>
+                                <p> specified that all modules (the API, plugins, portal resources, commons, components and applications) be built, with the property setting, <b>-Dmaven.test.skip=false</b></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    		<subsection name='Additional Notes'>
+        		<ul>
+            		<li><b>mvn -P test</b> and <b>mvn -Dmaven.test.skip=false</b> are equivalent.</li>
+            		<li><b>mvn -P test -Dtest=MyTest</b> will execute a single test or matching tests if Ant wildcards are used. </li>		
+            		<li>Due to forking bugs in the Surefire Maven2 test runner plugin, test output, (e.g. System.out.println()), is not echoed to the build shell. If you wish to see console output for component tests, temporarily comment out the &lt;forkMode&gt;
+            		 elements in the components/pom.xml and the components pom.xml and run single tests. Note: the forking is required to run multiple tests. 
+                    </li>
+                    <li><p> The <strong><tt>-o</tt></strong> offline option can be specified with the commands documented here to force Maven2 to use only the local repository. This can be invaluable in the event the main Maven2 repositories are down and the build insists upon validating a missing or troublesome POM. </p>
+                   </li>
+        		</ul>
+    		</subsection>	
 		</section>
+        <section name="More detailed building options">
+            <subsection name="Overview">
+                <p>With the new jetspeed-mvn  plugin, building the Jetspeed-2 Portal itself from source as well as building and deploying the default jetspeed-demo portal is now extremely easy.</p>
+                <p>In most cases, just following the first section could be enough, but because Jetspeed Maven Plugins provide many optional tasks, you can make use of those useful options.</p>
+            </subsection>
+            <subsection name="Running the test-cases during a build">
+                <p>By default, running test-cases is disabled for Jetspeed-2 because it is very time-consuming and also requires the setup and initialization of a dedicated test database <strong><em>every time!</em></strong> </p>
+                <p>But if you are a Jetspeed committer or otherwise would like to run the test-cases anyway, the following command is used to setup and initialize the test database:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=testdb</pre>
+                    </div>
+                </p>
+                <p>Thereafter, enabling the test-cases during a build is done by using profile <strong><code>test</code></strong>:
+                    <div class="source"><pre>$mvn install -P test</pre>
+                    </div>
+                </p>
+                <p>But, to make it even a little more easier, another jetspeed:mvn target is provided which already combines the above two steps in one:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=test-install</pre>
+                    </div>
+                </p>
+                <em>Note: Running the test-cases requires (and only for this) the proper configuration of the org.apache.jetspeed.test.database.* properties in jetspeed-mvn-settings.xml</em>
+            </subsection>
+            <subsection name="Initializing the production database">
+                <p>The production database configuration provided by the Jetspeed-2 Portal project itself is primarly intended to be used by the developers using the jetspeed-demo Portal.</p>
+                <p>Manual initializing or reinitializing of the production database is done using the following command:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=proddb</pre>
+                    </div>
+                </p>
+                <p>The above command however will only created the required database tables, not seed it with (demo) data, for which the following command is needed:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo-seed</pre>
+                    </div>
+                </p>
+                <p>As the above two commands usually goes together, the following command can be used instead to automatically invoke both: 
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo-db</pre>
+                    </div>
+                </p>
+            </subsection>
+            <subsection name="Using the Jetspeed Demo Portal">
+                <p>The jetspeed-demo Portal is an example custom Portal project used by the Jetspeed-2 committers for development and testing, but can of course also be used as real "demo" for other purposes.</p>
+                <p>The full setup and usage of the jetspeed-demo Portal requires the following steps: </p>
+                <table>
+                    <tr>
+                        <th>Task</th>
+                        <th>Command</th>
+                    </tr>
+                    <tr>
+                        <td>building and installing the jetspeed-demo war</td>
+                        <td>
+                            <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo-install</pre></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>database initialization and seeding</td>
+                        <td>
+                            <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo-db</pre></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>setting up a (clean) Tomcat server</td>
+                        <td>
+                            This requires downloading and installing your own <a class="externalLink" href="http://tomcat.apache.org/">Tomcat</a> (for Jetspeed-2.2 at least version 5.5.26 is now required!)
+Once you've installed Tomcat, adjust the <strong><code>org.apache.jetspeed.server.home property</code></strong> in the jetspeed-mvn-settings.xml file to point at the installation directory. 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>deploying the jetspeed-demo Portal</td>
+                        <td>
+                            <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo-deploy</pre></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>performing everything above (except Tomcat installation) with a single command instead</td>
+                        <td>
+                            <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo</pre></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>starting Tomcat</td>
+                        <td>
+                            <div class="source"><pre>$ $TOMCAT_HOME/bin/catalina.sh run</pre></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Using the jetspeed-demo Portal</td>
+                        <td>
+                            <p><a class="externalLink" href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a></p>
+                            <p>For login, use one of the following username/password combinations: admin/admin, user/user, jetspeed/jetspeed</p>
+                        </td>
+                    </tr>
+                </table>
+                <p>There is one optional feature for building and deploying the jetspeed-demo Portal: storing and using PSML in the database. This requires using an additional profile, dbpsml, during building the jetspeed-demo war as well as slightly different jetspeed:mvn targets to execute. To execute all of that with one command, use:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=demo-dbpsml</pre>
+                    </div>
+                    instead of using the -Dtarget=demo as shown above.
+                </p>
+                <p>Further detail of the different jetspeed:mvn targets and configurations used for the dbpsml demo can be found in the jetspeed-mvn-plugin configuration within the root pom.xml.</p>
+            </subsection>
+        </section>
 	</body>
 </document>
