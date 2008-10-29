@@ -141,6 +141,37 @@
                     <div class="source"><pre>spring.filter.key = portal.ldap</pre></div>
                 </p>
             </subsection>
+            <subsection name="Spring Filter Keys and Dynamic Bean Aliasing">
+                <p>Because the ids of every beans must be unique within the BeanFactory or ApplicationContext the bean is hosted in, we cannot use same bean id for several different beans.</p>
+                <p>For example, there could be two options to choose page manager bean component: xml-based page manager or database-based page manager. If some other beans should refer the filtered page manager, they should be grouped in a same category as the filtered page manager. So, there should be many redundant bean definitions which make the maintenance very difficult.</p>
+                <p>Therefore, Jetspeed provides a way to alias beans dynamically with spring bean filtering solution.
+                In the following example, the first two bean definitions do not have id, but they have the same <strong><code>j2:alias</code></strong> meta data value. Jetspeed custom BeanFactory register the alias(es) dynamically according to this meta data.
+                Finally, the last bean definition can refer the selected bean by using the alias, <strong><code>org.apache.jetspeed.page.PageManager</code></strong>.
+                    <div class="source"><pre>&lt;bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean"&gt;
+  &lt;meta key="j2:cat" value="xmlPageManager" /&gt;
+  &lt;meta key="j2:alias" value="org.apache.jetspeed.page.PageManager" /&gt;
+  &lt;property name="targetBeanName" value="xmlPageManager" /&gt;
+&lt;/bean&gt;
+
+&lt;bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean"&gt;
+  &lt;meta key="j2:cat" value="dbPageManager" /&gt;
+  &lt;meta key="j2:alias" value="org.apache.jetspeed.page.PageManager" /&gt;
+  &lt;property name="targetBeanName" value="dbPageManager" /&gt;
+&lt;/bean&gt;
+
+&lt;bean id="org.apache.jetspeed.portalsite.PortalSite" name="portalSite"
+  class="org.apache.jetspeed.portalsite.impl.PortalSiteImpl"&gt;
+  &lt;meta key="j2:cat" value="default" /&gt;
+  &lt;constructor-arg index="0"&gt;
+    &lt;ref bean="org.apache.jetspeed.page.PageManager" /&gt;
+  &lt;/constructor-arg&gt;
+&lt;/bean&gt;</pre>
+                    </div>
+                </p>
+                <p>
+                    <em>Note: multiple alias names can set to j2:alias meta data value by a string separated by comma or space.</em>
+                </p>
+            </subsection>
         </section>        
 	</body>
 </document>
