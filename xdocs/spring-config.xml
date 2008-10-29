@@ -169,7 +169,7 @@
                     </div>
                 </p>
                 <p>
-                    <em>Note: multiple alias names can set to j2:alias meta data value by a string separated by comma or space.</em>
+                    <em>Note: multiple alias names can be set to j2:alias meta data value by a string separated by comma or space.</em>
                 </p>
             </subsection>
         </section>        
