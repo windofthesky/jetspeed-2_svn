@@ -120,7 +120,7 @@ limitations under the License.
       <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.pluto.services.PlutoRegistryServiceAdaptor"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.pluto.services.DescriptorService"/></constructor-arg>
-	<!--  TODO: preferences -->
+      <constructor-arg><ref bean="org.apache.pluto.services.PreferencesService"/></constructor-arg>
     </bean>
     
     <bean id="org.apache.pluto.services.NamespaceMapper"

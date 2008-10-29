@@ -150,35 +150,33 @@ limitations under the License.
         </unique>
     </table>
     
+   <!-- 
+      Preferences
+    -->    
     <table name="PORTLET_PREFERENCE">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="DTYPE" required="true" size="10" type="VARCHAR"/>
         <column name="APPLICATION_NAME" required="true" size="80" type="VARCHAR"/>
         <column name="PORTLET_NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="ENTITY_ID" type="VARCHAR" size="80"/>
+        <column name="USER_NAME"  size="80" type="VARCHAR"/>
         <column name="NAME" required="true" size="254" type="VARCHAR"/>
-        
-      <!-- non-unique index on APPLICATION_NAME,PORTLET_NAME shouldn't be needed as its already
-           "covered" by unique index on APPLICATION_NAME,PORTLET_NAME,NAME
-        <index name="IX_PORTLET_PREFERENCE">
-            <index-column name="APPLICATION_NAME"/>
-            <index-column name="PORTLET_NAME"/>
-        </index>        
-      -->
+        <column name="READONLY" required="true" type="BOOLEANINT"/>        
         <unique name="UIX_PORTLET_PREFERENCE">
+          <unique-column name="DTYPE"/>
           <unique-column name="APPLICATION_NAME"/>
           <unique-column name="PORTLET_NAME"/>
+          <unique-column name="ENTITY_ID"/>
+          <unique-column name="USER_NAME"/>
           <unique-column name="NAME"/>
         </unique>        
 
     </table>
 
     <table name="PORTLET_PREFERENCE_VALUE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PREF_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="IDX" primaryKey="true" required="true" type="SMALLINT"/>
-        <column name="ENTITY_OID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="USER_NAME" primaryKey="true" required="true" size="80" type="VARCHAR"/>
-        <column name="ENTITY_ID" type="VARCHAR" size="80"/>
-        <column name="READONLY" required="true" type="BOOLEANINT"/>
-        <column name="NULL_VALUE" required="true" type="BOOLEANINT"/>
         <column name="PREF_VALUE" size="4000" type="VARCHAR"/>
 
         <index name="IX_PREFS_PREF_ID">

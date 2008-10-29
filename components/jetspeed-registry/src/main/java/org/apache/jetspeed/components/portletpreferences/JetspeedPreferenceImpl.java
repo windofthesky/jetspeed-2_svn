@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,21 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
+import org.apache.pluto.internal.InternalPortletPreference;
+import org.apache.pluto.internal.impl.PortletPreferenceImpl;
+
 /**
+ * <p>
+ * Jetspeed Portlet Preference object, internal representation
+ * </p>
  * 
- * @version $Id$
- *
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id: $
  */
-public interface PortletPreferencesProvider extends org.apache.pluto.spi.optional.PortletPreferencesService
+public class JetspeedPreferenceImpl extends PortletPreferenceImpl implements InternalPortletPreference
 {
-    public void preloadApplicationPreferences(String portletApplicationName);
-    public void preloadAllEntities();    
+    public JetspeedPreferenceImpl(String name, String[] values)
+    {
+        super(name, values);
+    }
 }

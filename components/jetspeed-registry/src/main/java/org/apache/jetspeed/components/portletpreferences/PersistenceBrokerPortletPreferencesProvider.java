@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
+
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletEntity;
@@ -36,6 +38,9 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.PortletWindow;
+import org.apache.pluto.internal.InternalPortletPreference;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -86,7 +91,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
     {
         return applicationName + ":" + portletName + ":" + entityOid.toString() + ":" + userName;        
     }
-
+    
     public PreferenceSetComposite getPreferenceSet(PortletDefinition pd)
     {
         return getPreferenceSet(pd.getApplication().getName(), pd.getPortletName(), null, null, false);
@@ -103,6 +108,27 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
         return getPreferenceSet(pd.getApplication().getName(), pd.getPortletName(), pe.getOid(), userName, false);
     }
 
+    public Map<String, InternalPortletPreference> getDefaultPreferences(
+            PortletWindow portletWindow,
+            PortletRequest request)
+    throws PortletContainerException
+    {
+        String applicationName = portletWindow.getPortletEntity().getPortletDefinition().getApplication().getName();        
+        String portletName = portletWindow.getPortletEntity().getPortletDefinition().getPortletName();
+        this.getPreferenceSetKey(applicationName, portletName, portletWindow.getPortletEntity(), null);
+    }
+     
+    public Map<String, InternalPortletPreference> getStoredPreferences(
+            PortletWindow portletWindow,
+            PortletRequest request)
+    throws PortletContainerException
+    {
+        String applicationName = portletWindow.getPortletEntity().getPortletDefinition().getApplication().getName();        
+        String portletName = portletWindow.getPortletEntity().getPortletDefinition().getPortletName();
+        this.getPreferenceSetKey(applicationName, portletName, , null);
+        
+    }
+    
     private PreferenceSetImpl getPreferenceSet(String applicationName, String portletName, Long entityOid, String userName, boolean forUpdate)
     {
         if (entityOid == null)
@@ -181,6 +207,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
             }
             else
             {
+                // FIXME: i know we are not using this but it seems we are putting a NULL cacheKey
                 preferenceCache.put(preferenceCache.createElement(cacheKey, prefs));
             }
         }
@@ -346,4 +373,20 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
     public void preloadAllEntities()
     {
     }
+    
+    /**
+     * Stores the portlet references to the persistent storage.
+     * @param portletWindow  the portlet window.
+     * @param request  the portlet request.
+     * @param preferences  the portlet preferences to store.
+     * @throws PortletContainerException  if fail to store preferences.
+     */
+    public void store(PortletWindow portletWindow,
+                      PortletRequest request,
+                      Map<String, InternalPortletPreference> preferences)
+    throws PortletContainerException
+    {
+        // TODO: 2.2 implement
+    }
+   
 }

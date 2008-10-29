@@ -1153,9 +1153,26 @@
 
    <!--
    - P O R T L E T   P R E F E R E N C E S
-   -->
+  CREATE TABLE PORTLET_PREFERENCE
+(
+	ID INTEGER NOT NULL,
+    DTYPE VARCHAR(20) NOT NULL,
+    APP_NAME VARCHAR(80) NOT NULL,
+	PORTLET_NAME VARCHAR(80) NOT NULL,
+	NAME VARCHAR(128) NOT NULL,
+	USER_NAME VARCHAR(80),
+	ENTITY_ID VARCHAR(80),
+	PRIMARY KEY (ID)
+);
+CREATE UNIQUE INDEX UIX_PORTLET_PREFERENCE ON PORTLET_PREFERENCE (APP_NAME, PORTLET_NAME, NAME, USER_NAME, ENTITY_ID);
+CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME);
+
+        row-reader="org.apache.jetspeed.components.portletpreferences.PreferencesRowReader" 
+  
+   -->       
+
   <class-descriptor
-      class="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
+      class="org.apache.jetspeed.components.portletpreferences.DatabasePreference"
       table="PORTLET_PREFERENCE"
   >
       <documentation>Represents a Portlet Preference definition.</documentation>
@@ -1167,6 +1184,14 @@
           autoincrement="true"
       >
       </field-descriptor>
+     <field-descriptor
+          name="dtype"
+          column="DTYPE"
+          jdbc-type="VARCHAR"
+          nullable="false"
+          length="10"
+      >
+      </field-descriptor>      
       <field-descriptor
           name="applicationName"
           column="APPLICATION_NAME"
@@ -1189,46 +1214,6 @@
           jdbc-type="VARCHAR"
           nullable="false"
           length="254"
-      >
-      </field-descriptor>
-  </class-descriptor>
-
-  <class-descriptor
-      class="org.apache.jetspeed.om.preference.impl.PreferenceValueImpl"
-      table="PORTLET_PREFERENCE_VALUE"
-  >
-      <documentation>Represents a Portlet Preference value.</documentation>
-      <field-descriptor
-          name="prefId"
-          column="PREF_ID"
-          jdbc-type="BIGINT"
-          primarykey="true"
-      >
-      </field-descriptor>
-      <reference-descriptor
-          name="preference"
-          class-ref="org.apache.jetspeed.om.preference.impl.PreferenceImpl"
-          auto-retrieve="false"
-          auto-update="none"
-          auto-delete="none"
-      >
-          <foreignkey field-ref="prefId"/>
-      </reference-descriptor>
-      
-      <field-descriptor
-          name="index"
-          column="IDX"
-          jdbc-type="SMALLINT"
-          nullable="false"
-          primarykey="true"
-      >
-      </field-descriptor>
-      <field-descriptor
-          name="entityOid"
-          column="ENTITY_OID"
-          jdbc-type="BIGINT"
-          nullable="false"
-          primarykey="true"
       >
       </field-descriptor>
       <field-descriptor
@@ -1255,15 +1240,49 @@
           conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
           nullable="false"
       >
-      </field-descriptor>      
+      </field-descriptor>
+      
+      <collection-descriptor
+          name="values"
+          element-class-ref="org.apache.jetspeed.components.portletpreferences.DatabasePreferenceValue"
+          auto-retrieve="true"
+          auto-update="object"
+          auto-delete="object"
+      >
+          <inverse-foreignkey field-ref="prefId"/>
+      </collection-descriptor>
+                  
+  </class-descriptor>
+    
+   <class-descriptor
+      class="org.apache.jetspeed.components.portletpreferences.DatabasePreferenceValue"
+      table="PORTLET_PREFERENCE_VALUE"
+  >
+      <documentation>Represents a Portlet Preference value.</documentation>
       <field-descriptor
-          name="nullValue"
-          column="NULL_VALUE"
-          jdbc-type="INTEGER"
-          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-          nullable="false"
+          name="id"
+          column="ID"
+          jdbc-type="BIGINT"
+          primarykey="true"
+          autoincrement="true"
+      >
+      </field-descriptor>
+      <field-descriptor
+          name="prefId"
+          column="PREF_ID"
+          jdbc-type="BIGINT"
+          primarykey="true"
       >
       </field-descriptor>      
+      
+      <field-descriptor
+          name="index"
+          column="IDX"
+          jdbc-type="SMALLINT"
+          nullable="false"
+          primarykey="true"
+      >
+      </field-descriptor>
       <field-descriptor
           name="value"
           column="PREF_VALUE"
@@ -1271,10 +1290,10 @@
           nullable="true"
           length="4000"
       >
-      </field-descriptor>      
-
+      </field-descriptor>
+                  
+                  
   </class-descriptor>
-
 
   <!--
    - S E C U R T I T Y   R O L E   R E F
