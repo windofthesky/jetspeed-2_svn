@@ -104,9 +104,9 @@
 
             <dependencies>
               <dependency>
-                <groupId>${pom.groupId}</groupId>
+                <groupId>${groupId}</groupId>
                 <artifactId>${parentArtifactId}-pa</artifactId>
-                <version>${pom.version}</version>
+                <version>${version}</version>
                 <type>war</type>
               </dependency>
 
