@@ -29,6 +29,7 @@ import javax.portlet.ValidatorException;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -36,7 +37,6 @@ import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.PortletWindow;
 import org.apache.pluto.internal.InternalPortletPreference;
 import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.spi.optional.PortletPreferencesService;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -56,23 +56,26 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     protected static final String DISCRIMINATOR_USER = "user";
     protected static final String KEY_SEPARATOR = ":";
     
+    private PortletFactory portletFactory;
     /**
      * Cache elements are stored as element type JetspeedPreferencesMap
      */
     private JetspeedCache preferenceCache;
     private List<String> preloadedApplications = null;
-    private boolean preloadEntities = false;    
+    private boolean preloadEntities = false;
+    
 
-    public PortletPreferencesServiceImpl(JetspeedCache preferenceCache)
+    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache)
             throws ClassNotFoundException
     {
+        this.portletFactory = portletFactory;
         this.preferenceCache = preferenceCache;
     }
     
-    public PortletPreferencesServiceImpl(JetspeedCache preferenceCache, List<String> apps, boolean preloadEntities)
+    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, List<String> apps, boolean preloadEntities)
     throws ClassNotFoundException
     {
-        this(preferenceCache);
+        this(portletFactory, preferenceCache);
         this.preloadedApplications = apps;
         this.preloadEntities = preloadEntities;
     }
@@ -134,7 +137,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         String appName = window.getPortletEntity().getPortletDefinition().getApplication().getName();
         String portletName = window.getPortletEntity().getPortletDefinition().getPortletName();
         String entityId = window.getId().getStringId(); // TODO: 2.2 - FIXME: think we need to add entity.getId()
-        String userName = request.getRemoteUser();
+        String userName = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if (userName == null)
         {
             userName = "guest"; // TODO: 2.2 might not wanna do this, might wanna throw exception
@@ -178,7 +181,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         String appName = window.getPortletEntity().getPortletDefinition().getApplication().getName();
         String portletName = window.getPortletEntity().getPortletDefinition().getPortletName();
         String entityId = window.getId().getStringId(); // TODO: 2.2 - FIXME: think we need to add entity.getId()
-        String userName = request.getRemoteUser();
+        String userName = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if (userName == null)
         {
             userName = "guest"; // TODO: 2.2 might not wanna do this, might wanna throw exception
@@ -267,8 +270,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     public PreferencesValidator getPreferencesValidator(PortletDefinition pd)
             throws ValidatorException
     {
-        // TODO: 2.2 go get the preferences validator
-        return null;
+        return portletFactory.getPreferencesValidator((org.apache.jetspeed.om.portlet.PortletDefinition)pd);
     }
 
     private String getPorletPreferenceKey(String applicationName, String portletName)

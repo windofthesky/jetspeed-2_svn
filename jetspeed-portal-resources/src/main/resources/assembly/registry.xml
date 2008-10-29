@@ -93,6 +93,9 @@
           
       <meta key="j2:cat" value="default,registry" />          
     <constructor-arg index="0">
+      <ref bean="portletFactory" />
+    </constructor-arg>
+    <constructor-arg index="1">
       <ref bean="preferencesCache" />
     </constructor-arg>
     </bean>
