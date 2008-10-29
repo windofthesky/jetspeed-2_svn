@@ -79,7 +79,7 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-capability/index.html"><code>Capabilities</code></a></td>
+            <td><a href="../components/jetspeed-capability/index.html"><code>Capabilities</code></a></td>
             <td>The <code>Capabilities</code> components maps clients to supported mime types and media types.
             It creates a <code>CapabilityMap</code> that is used through the portal engine to render the
             portal content for the targetted client.</td>
@@ -94,11 +94,11 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-cm/index.html"><code>ComponentManager</code></a></td>
+            <td><a href="../components/jetspeed-cm/index.html"><code>ComponentManager</code></a></td>
             <td>The <code>ComponentManager</code> provides a generic layer of abstraction on top of the component framework
             being used.  The default <code>ComponentManager</code> implementation in Jetspeed-2 is the 
             <code>SpringComponentManager</code>.  More information can be found in the 
-            <a href="../multiproject/jetspeed-cm/index.html"><code>ComponentManager</code> documentation</a>.</td>
+            <a href="../components/jetspeed-cm/index.html"><code>ComponentManager</code> documentation</a>.</td>
           </tr>
 		</table><br/>
 		<table>
@@ -110,14 +110,14 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-deploy-tools/deploy-tools.html"><code>JetspeedDeploy</code></a></td>
+            <td><a href="../components/jetspeed-deploy-tools/deploy-tools.html"><code>JetspeedDeploy</code></a></td>
             <td><code>JetspeedDeploy</code> prepares portlet applications prior to being deployed in Jetspeed-2.  More information can be found in the 
-            <a href="../multiproject/jetspeed-deploy-tools/deploy-tools.html"><code>JetspeedDeploy</code> documentation</a>.</td>
+            <a href="../components/jetspeed-deploy-tools/deploy-tools.html"><code>JetspeedDeploy</code> documentation</a>.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-deploy-tools/index.html"><code>DeploymentManager</code></a></td>
+            <td><a href="../components/jetspeed-deploy-tools/index.html"><code>DeploymentManager</code></a></td>
             <td>The <code>DeploymentManager</code> listens for new portal assets (portlets, decorators) to be deployed.  An overview of how deployment
-            works in Jetspeed-2 can be found <a href="../multiproject/jetspeed-deploy-tools/index.html">here</a>.</td>
+            works in Jetspeed-2 can be found <a href="../components/jetspeed-deploy-tools/index.html">here</a>.</td>
           </tr>
 		</table><br/>
 		<table>
@@ -129,7 +129,7 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-portal/pipeline.html"><code>Pipeline</code></a></td>
+            <td><a href="../components/jetspeed-portal/pipeline.html"><code>Pipeline</code></a></td>
             <td>The <code>Pipeline</code> orchestrates the <code>Valve</code> that are performing atomic operation on a
             Jetspeed-2 request.</td>
           </tr>
@@ -143,7 +143,7 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-prefs/index.html"><code>PreferencesProvider</code></a></td>
+            <td><a href="../components/jetspeed-prefs/index.html"><code>PreferencesProvider</code></a></td>
             <td>The <code>PreferencesProvider</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
           </tr>
 		</table><br/>
@@ -156,11 +156,11 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-rdbms/index.html"><code>ConnectionRepositoryEntry</code></a></td>
+            <td><a href="../components/jetspeed-rdbms/index.html"><code>ConnectionRepositoryEntry</code></a></td>
             <td>The <code>ConnectionRepositoryEntry</code> exposes Jetspeed-2 implementation of the <code>java.util.Preferences</code> API.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-rdbms/dao.html"><code>InitablePersistenceBrokerDaoSupport</code></a></td>
+            <td><a href="../components/jetspeed-rdbms/dao.html"><code>InitablePersistenceBrokerDaoSupport</code></a></td>
             <td><code>InitablePersistenceBrokerDaoSupport</code> provides data access and persistence support for Jetspeed-2.</td>
           </tr>
 		</table><br/>
@@ -173,25 +173,25 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-security/arch.html"><code>DefaultLoginModule</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>RdbmsPolicy</code></a><br/></td>
+            <td><a href="../components/jetspeed-security/arch.html"><code>DefaultLoginModule</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>RdbmsPolicy</code></a><br/></td>
             <td>Jetspeed-2 default implementation for <a href="http://java.sun.com/products/jaas/">JAAS services</a>.  Jetspeed-2 leverages JAAS as 
             a generic security standard framework to expose security functionality to the portal engine.  The JAAS services
             leverage Jetspeed-2 coarsed grained services for which specific implementations are provided through Jetspeed-2 security SPI.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-security/arch.html"><code>UserManager</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>RoleManager</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>GroupManager</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>PermissionManager</code></a></td>
+            <td><a href="../components/jetspeed-security/arch.html"><code>UserManager</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>RoleManager</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>GroupManager</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>PermissionManager</code></a></td>
             <td>Coarsed grained security components exposing Jetspeed-2 security management APIs.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-security/arch.html"><code>UserSecurityHandler</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>CredentialHandler</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>GroupSecurityHandler</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>RoleSecurityHandler</code></a><br/>
-            <a href="../multiproject/jetspeed-security/arch.html"><code>SecurityMappingHandler</code></a></td>
+            <td><a href="../components/jetspeed-security/arch.html"><code>UserSecurityHandler</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>CredentialHandler</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>GroupSecurityHandler</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>RoleSecurityHandler</code></a><br/>
+            <a href="../components/jetspeed-security/arch.html"><code>SecurityMappingHandler</code></a></td>
             <td>Fined grained Jetspeed-2 security SPI components exposing a specific implementation to the Jetspeed-2
             security engine.  This mechanism provides a flexible framework for supporting multiple security implementation
             without having to impact the higher level security services.</td>
@@ -206,12 +206,12 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-search/index.html"><code>SearchEngine</code></a></td>
+            <td><a href="../components/jetspeed-search/index.html"><code>SearchEngine</code></a></td>
             <td><code>SearchEngine</code> provides the integration with the <a href="http://lucene.apache.org/">Apache Lucene</a> search
             engine.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-search/index.html"><code>HandlerFactory</code></a></td>
+            <td><a href="../components/jetspeed-search/index.html"><code>HandlerFactory</code></a></td>
             <td>The <code>HandlerFactory</code> exposes the documents handlers to the <code>SearchEngine</code>.</td>
           </tr>
 		</table><br/>
@@ -224,18 +224,18 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-statistics/index.html"><code>PortalStatistics</code></a></td>
+            <td><a href="../components/jetspeed-statistics/index.html"><code>PortalStatistics</code></a></td>
             <td><code>PortalStatistics</code> exposes the Jetspeed-2 data collection API for data collection and data
             retrieval.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-statistics/index.html"><code>BatchedStatistics</code></a></td>
+            <td><a href="../components/jetspeed-statistics/index.html"><code>BatchedStatistics</code></a></td>
             <td><code>BatchedStatistics</code> is responsible for the batch collection of statistics data given
             a time to flush period.</td>
           </tr>
           <tr>
-            <td><a href="../multiproject/jetspeed-statistics/aggregation.html"><code>AggregateStatistics</code></a><br/>
-            <a href="../multiproject/jetspeed-statistics/aggregation.html"><code>StatisticsQueryCriteria</code></a></td>
+            <td><a href="../components/jetspeed-statistics/aggregation.html"><code>AggregateStatistics</code></a><br/>
+            <a href="../components/jetspeed-statistics/aggregation.html"><code>StatisticsQueryCriteria</code></a></td>
             <td><code>AggregateStatistics</code> interacts with the <code>PortalStatistics</code> component to provide
             aggregate portal data for a specific event and search criteria provided by <code>StatisticsQueryCriteria</code>.</td>
           </tr>   

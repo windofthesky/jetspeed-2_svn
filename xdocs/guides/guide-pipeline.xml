@@ -31,7 +31,7 @@
 			<br/>
 			In Jetspeed-2 request are processed through a series of <code>Valve</code> assembled together as a
 			pipeline.  For detailed information about Jetspeed-2 pipeline, 
-			<a href="../multiproject/jetspeed-portal/pipeline.html">click here</a>.
+			<a href="../components/jetspeed-portal/pipeline.html">click here</a>.
 			</p>
 		</section>
 
