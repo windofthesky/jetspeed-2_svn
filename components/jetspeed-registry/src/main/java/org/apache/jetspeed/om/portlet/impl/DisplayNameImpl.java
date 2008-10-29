@@ -52,35 +52,11 @@ public class DisplayNameImpl implements DisplayName
     public void setLang(String value)
     {
         lang = value;
-    }
-
-    public Locale getLocale()
-    {
-        return locale == null ? deriveLocale() : locale;
+        locale = JetspeedLocale.convertStringToLocale(lang);
     }
     
-    protected Locale deriveLocale()
+    public Locale getLocale()
     {
-        String lang = this.getLang();
-        String country = "";
-        String variant = "";
-        String[] localeArray = lang.split("[-|_]");
-        for (int i = 0; i < localeArray.length; i++)
-        {
-            if (i == 0)
-            {
-                lang = localeArray[i];
-            }
-            else if (i == 1)
-            {
-                country = localeArray[i];
-            }
-            else if (i == 2)
-            {
-                variant = localeArray[i];
-            }
-        }
-        locale = new Locale(lang, country, variant);
-        return locale;
+        return locale == null ? locale = JetspeedLocale.convertStringToLocale(lang) : locale;
     }
 }

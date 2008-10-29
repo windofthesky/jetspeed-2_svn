@@ -82,45 +82,30 @@ public class JetspeedLocale
      * @param localeString
      * @return
      */
-    public static Locale convertStringToLocale(String localeString)
+    public static Locale convertStringToLocale(String lang)
     {
-        if (localeString == null)
+        if (lang == null)
         {
             return null;
         }
-        StringTokenizer tokenizer = new StringTokenizer(localeString, DELIM);
-
-        String language = tokenizer.nextToken().trim();
-        String country = null;
-        String variant = null;
-        if (tokenizer.hasMoreTokens())
+        String country = "";
+        String variant = "";
+        String[] localeArray = lang.split("[-|_]");
+        for (int i = 0; i < localeArray.length; i++)
         {
-            country = tokenizer.nextToken().trim();
+            if (i == 0)
+            {
+                lang = localeArray[i];
+            }
+            else if (i == 1)
+            {
+                country = localeArray[i];
+            }
+            else if (i == 2)
+            {
+                variant = localeArray[i];
+            }
         }
-
-        if (tokenizer.hasMoreTokens())
-        {
-            variant = tokenizer.nextToken().trim();
-        }
-
-        if (country != null && language != null && variant != null)
-        {
-            return new Locale(language, country, variant);
-        }
-        else if (country != null && language != null)
-        {
-            return new Locale(language, country);
-        }
-        else if (language != null)
-        {
-            return new Locale(language, ""); // JDK 1.3 compatibility
-        }
-        else
-        {
-            return null;
-        }
-
+        return new Locale(lang, country, variant);
     }
-
-
 }

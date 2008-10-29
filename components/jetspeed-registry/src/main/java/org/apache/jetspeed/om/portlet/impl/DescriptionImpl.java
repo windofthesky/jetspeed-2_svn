@@ -57,36 +57,11 @@ public class DescriptionImpl implements Description
     public void setLang(String value)
     {
         lang = value;
-        deriveLocale();
+        locale = JetspeedLocale.convertStringToLocale(lang);
     }
     
     public Locale getLocale()
     {
-        return locale == null ? deriveLocale() : locale;
-    }
-    
-    protected Locale deriveLocale()
-    {
-        String lang = this.getLang();
-        String country = "";
-        String variant = "";
-        String[] localeArray = lang.split("[-|_]");
-        for (int i = 0; i < localeArray.length; i++)
-        {
-            if (i == 0)
-            {
-                lang = localeArray[i];
-            }
-            else if (i == 1)
-            {
-                country = localeArray[i];
-            }
-            else if (i == 2)
-            {
-                variant = localeArray[i];
-            }
-        }
-        locale = new Locale(lang, country, variant);
-        return locale;
+        return locale == null ? locale = JetspeedLocale.convertStringToLocale(lang) : locale;
     }
 }

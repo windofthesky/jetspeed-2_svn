@@ -19,6 +19,8 @@ package org.apache.jetspeed.descriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,6 +35,7 @@ import org.apache.jetspeed.om.portlet.EventDefinition;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -42,6 +45,8 @@ import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.impl.CustomPortletModeImpl;
+import org.apache.jetspeed.om.portlet.impl.CustomWindowStateImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.MetadataType;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Portlet;
@@ -51,6 +56,7 @@ import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
 import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriterFactory;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl;
 import org.apache.pluto.om.portlet.CustomPortletMode;
 import org.apache.pluto.om.portlet.CustomWindowState;
@@ -295,11 +301,22 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             SecurityRoleRef jsrr = jpd.addSecurityRoleRef(srr.getRoleName());
             jsrr.setRoleLink(srr.getRoleLink());
         }
+        
+        boolean defaultLocaleProcessed = false;
         for (String locale : pd.getSupportedLocales())
         {
             jpd.addSupportedLocale(locale);
+            if (addLanguage(jpd, JetspeedLocale.convertStringToLocale(locale)).equals(JetspeedLocale.getDefaultLocale()))
+            {
+                defaultLocaleProcessed = true;
+            }                        
         }
-        // TODO: jpd.addLanguage()
+        if (!defaultLocaleProcessed)
+        {
+            addLanguage(jpd, JetspeedLocale.getDefaultLocale());
+            defaultLocaleProcessed = true;
+        }
+        
         for (org.apache.pluto.om.portlet.EventDefinitionReference ed : pd.getSupportedProcessingEvents())
         {
             if (ed.getQName() != null)
@@ -340,12 +357,33 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
         }
     }
     
+    protected Language addLanguage(PortletDefinition jpd, Locale locale)
+    {
+        ResourceBundle bundle = jpd.getResourceBundle(locale);
+        Language l = jpd.addLanguage(locale);
+        String value = bundle.getString(Language.JAVAX_PORTLET_TITLE);
+        if (!value.equals(""))
+        {
+            l.setTitle(value);
+        }
+        value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
+        if (!value.equals(""))
+        {
+            l.setShortTitle(value);
+        }
+        value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
+        if (!value.equals(""))
+        {
+            l.setKeywords(value);
+        }
+        return l;
+    }
+    
     public void readExtended(InputStream in, PortletApplication app) throws IOException
     {
         try
         {
-            JAXBContext jc = JAXBContext
-                    .newInstance("org.apache.jetspeed.om.portlet.jetspeed.jaxb");
+            JAXBContext jc = JAXBContext.newInstance("org.apache.jetspeed.om.portlet.jetspeed.jaxb");
             Unmarshaller u = jc.createUnmarshaller();
             PortletApp pa = (PortletApp) u.unmarshal(in);
             app.setJetspeedSecurityConstraint(pa.getSecurityConstraintRef());
@@ -355,11 +393,10 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             }
             for (MetadataType m : pa.getMetadata())
             {
-                // TODO: 2.2 metadata
-                // ??? app.getMetadata().addField(locale, name, value);
-                System.out.println("metadata: " + m.getMetadataName());
-                System.out.println("    lang: " + m.getLang());
-                System.out.println("   value: " + m.getContent());
+                if (m.getContent() != null)
+                {
+                    app.getMetadata().addField(JetspeedLocale.convertStringToLocale(m.getLang()), m.getMetadataName(), m.getContent());
+                }
             }
             for (Portlet p : pa.getPortlets())
             {
@@ -369,36 +406,43 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
                     pd.setJetspeedSecurityConstraint(p.getSecurityConstraintRef());
                     for (MetadataType m : p.getMetadata())
                     {
-                        // TODO: 2.2 metadata 
-                        System.out.println("  metadata: " + m.getMetadataName());
-                        System.out.println("      lang: " + m.getLang());
-                        System.out.println("     value: " + m.getContent());
+                        if (m.getContent() != null)
+                        {
+                            pd.getMetadata().addField(JetspeedLocale.convertStringToLocale(m.getLang()), m.getMetadataName(), m.getContent());
+                        }
                     }
                 }
             }
             
             for (org.apache.jetspeed.om.portlet.jetspeed.jaxb.CustomPortletMode cpm : pa.getCustomPortletModes())
             {
-                // TODO: 2.2
-//                System.out.println("  cpm name: " + cpm.getName());
-//                System.out.println("    mapped: " + cpm.getMappedName());
-//                System.out.println("      desc: " + cpm.getDescription());
+                if (cpm.getName() != null && cpm.getMappedName() != null && !cpm.getName().equals(cpm.getMappedName()))
+                {
+                    CustomPortletMode jcpm = app.getCustomPortletMode(cpm.getMappedName());
+                    if (jcpm != null && app.getCustomPortletMode(cpm.getName()) == null)
+                    {
+                        ((CustomPortletModeImpl)jcpm).setMappedName(cpm.getMappedName());
+                    }
+                }
             }
             for (org.apache.jetspeed.om.portlet.jetspeed.jaxb.CustomWindowState cws : pa.getCustomWindowStates())
             {
-                // TODO: 2.2
-//                System.out.println("  cws name: " + cws.getName());
-//                System.out.println("    mapped: " + cws.getMappedName());
-//                System.out.println("      desc: " + cws.getDescription());
+                if (cws.getName() != null && cws.getMappedName() != null && !cws.getName().equals(cws.getMappedName()))
+                {
+                    CustomWindowState jcws = app.getCustomWindowState(cws.getMappedName());
+                    if (jcws != null && app.getCustomWindowState(cws.getName()) == null)
+                    {
+                        ((CustomWindowStateImpl)jcws).setMappedName(cws.getMappedName());
+                    }
+                }
             }
             for (org.apache.jetspeed.om.portlet.jetspeed.jaxb.UserAttributeRef ref : pa.getUserAttributeRefs())
             {
                 UserAttributeRef jref = app.addUserAttributeRef(ref.getName());
                 jref.setNameLink(ref.getNameLink());
-                Description desc = jref.addDescription(ref.getDescription());
-                // TODO: 2.2 desscription processing
+                Description desc = jref.addDescription("en");
+                desc.setDescription(ref.getDescription());
             }
-            
         }
         catch (JAXBException je)
         {

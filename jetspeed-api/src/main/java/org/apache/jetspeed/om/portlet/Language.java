@@ -27,6 +27,10 @@ import java.util.Locale;
  */
 public interface Language extends PortletInfo, Serializable
 {
+    public static final String JAVAX_PORTLET_TITLE = "javax.portlet.title";
+    public static final String JAVAX_PORTLET_SHORT_TITLE = "javax.portlet.short-title";
+    public static final String JAVAX_PORTLET_KEYWORDS = "javax.portlet.keywords";
+    
     Locale getLocale();
     List<String> getKeywordList();
     void setKeywords(String keywords);

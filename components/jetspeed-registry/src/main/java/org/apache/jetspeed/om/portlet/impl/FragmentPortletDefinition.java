@@ -16,29 +16,26 @@
  */
 package org.apache.jetspeed.om.portlet.impl;
 
-import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import javax.xml.namespace.QName;
+
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.EventDefinitionReference;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.preference.impl.FragmentPortletPreferenceSet;
-import org.apache.pluto.om.portlet.ObjectID;
-import org.apache.pluto.om.portlet.ParameterSet;
-import org.apache.pluto.om.portlet.Preference;
-import org.apache.pluto.om.portlet.PreferenceSet;
-import org.apache.pluto.om.portlet.Description;
-import org.apache.pluto.om.portlet.DescriptionSet;
-import org.apache.pluto.om.portlet.DisplayName;
-import org.apache.pluto.om.portlet.DisplayNameSet;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.SecurityRoleRef;
-import org.apache.pluto.om.portlet.SecurityRoleRefSet;
-import org.apache.pluto.om.servlet.ServletDefinition;
+import org.apache.jetspeed.om.portlet.PortletInfo;
+import org.apache.jetspeed.om.portlet.Preferences;
+import org.apache.jetspeed.om.portlet.SecurityRoleRef;
+import org.apache.jetspeed.om.portlet.Supports;
 
 /**
  * Per-request wrapper for a PortletDefinition that allows for
@@ -61,74 +58,99 @@ public class FragmentPortletDefinition implements PortletDefinition
         this.fragment = fragment;
     }
 
-    public void addDescription(Locale locale, String description)
+    public ContainerRuntimeOption addContainerRuntimeOption(String name)
     {
-        portletDefinition.addDescription(locale, description);
+        return portletDefinition.addContainerRuntimeOption(name);
     }
 
-    public void addDisplayName(DisplayName displayName)
+    public Description addDescription(String lang)
     {
-        portletDefinition.addDisplayName(displayName);
+        return portletDefinition.addDescription(lang);
     }
 
-    public void addDisplayName(Locale locale, String displayName)
+    public DisplayName addDisplayName(String lang)
     {
-        portletDefinition.addDisplayName(locale, displayName);
+        return portletDefinition.addDisplayName(lang);
     }
 
-    public InitParam addInitParameter(String name, String value, DescriptionSet description)
+    public InitParam addInitParam(String paramName)
     {
-        return portletDefinition.addInitParameter(name, value, description);
+        return portletDefinition.addInitParam(paramName);
     }
 
-    public InitParam addInitParameter(String name, String value, String description, Locale locale)
+    public Language addLanguage(Locale locale)
     {
-        return portletDefinition.addInitParameter(name, value, description, locale);
+        return portletDefinition.addLanguage(locale);
     }
 
-    public InitParam addInitParameter(String name, String value)
+    public SecurityRoleRef addSecurityRoleRef(String roleName)
     {
-        return portletDefinition.addInitParameter(name, value);
+        return portletDefinition.addSecurityRoleRef(roleName);
     }
 
-    public void addLanguage(String title, String shortTitle, String keywords, Locale locale)
+    public void addSupportedLocale(String lang)
     {
-        portletDefinition.addLanguage(title, shortTitle, keywords, locale);
+        portletDefinition.addSupportedLocale(lang);
     }
 
-    public void addPreference(Preference preference)
+    public EventDefinitionReference addSupportedProcessingEvent(QName qname)
     {
-        portletDefinition.addPreference(preference);
+        return portletDefinition.addSupportedProcessingEvent(qname);
     }
 
-    public PreferenceComposite addPreference(String name, String[] values)
+    public EventDefinitionReference addSupportedProcessingEvent(String name)
     {
-        return portletDefinition.addPreference(name, values);
+        return portletDefinition.addSupportedProcessingEvent(name);
     }
 
-    public void addSecurityRoleRef(SecurityRoleRef securityRef)
+    public void addSupportedPublicRenderParameter(String identifier)
     {
-        portletDefinition.addSecurityRoleRef(securityRef);
+        portletDefinition.addSupportedPublicRenderParameter(identifier);
     }
 
-    public SecurityRoleRef addSecurityRoleRef(String roleName, String roleLink)
+    public EventDefinitionReference addSupportedPublishingEvent(QName qname)
     {
-        return portletDefinition.addSecurityRoleRef(roleName, roleLink);
+        return portletDefinition.addSupportedPublishingEvent(qname);
     }
 
-    public String getPortletClass()
+    public EventDefinitionReference addSupportedPublishingEvent(String name)
     {
-        return portletDefinition.getPortletClass();
+        return portletDefinition.addSupportedPublishingEvent(name);
     }
 
-    public Description getDescription(Locale arg0)
+    public Supports addSupports(String mimeType)
     {
-        return portletDefinition.getDescription(arg0);
+        return portletDefinition.addSupports(mimeType);
     }
 
-    public DescriptionSet getDescriptionSet()
+    public PortletApplication getApplication()
     {
-        return portletDefinition.getDescriptionSet();
+        return portletDefinition.getApplication();
+    }
+
+    public String getCacheScope()
+    {
+        return portletDefinition.getCacheScope();
+    }
+
+    public ContainerRuntimeOption getContainerRuntimeOption(String name)
+    {
+        return portletDefinition.getContainerRuntimeOption(name);
+    }
+
+    public List<ContainerRuntimeOption> getContainerRuntimeOptions()
+    {
+        return portletDefinition.getContainerRuntimeOptions();
+    }
+
+    public Description getDescription(Locale locale)
+    {
+        return portletDefinition.getDescription(locale);
+    }
+
+    public List<Description> getDescriptions()
+    {
+        return portletDefinition.getDescriptions();
     }
 
     public String getDescriptionText(Locale locale)
@@ -136,14 +158,14 @@ public class FragmentPortletDefinition implements PortletDefinition
         return portletDefinition.getDescriptionText(locale);
     }
 
-    public DisplayName getDisplayName(Locale arg0)
+    public DisplayName getDisplayName(Locale locale)
     {
-        return portletDefinition.getDisplayName(arg0);
+        return portletDefinition.getDisplayName(locale);
     }
 
-    public DisplayNameSet getDisplayNameSet()
+    public List<DisplayName> getDisplayNames()
     {
-        return portletDefinition.getDisplayNameSet();
+        return portletDefinition.getDisplayNames();
     }
 
     public String getDisplayNameText(Locale locale)
@@ -151,24 +173,34 @@ public class FragmentPortletDefinition implements PortletDefinition
         return portletDefinition.getDisplayNameText(locale);
     }
 
-    public String getExpirationCache()
+    public int getExpirationCache()
     {
         return portletDefinition.getExpirationCache();
     }
 
-    public ObjectID getId()
+    public InitParam getInitParam(String paramName)
     {
-        return portletDefinition.getId();
+        return portletDefinition.getInitParam(paramName);
     }
 
-    public ParameterSet getInitParameterSet()
+    public List<InitParam> getInitParams()
     {
-        return portletDefinition.getInitParameterSet();
+        return portletDefinition.getInitParams();
     }
 
-    public SecurityRoleRefSet getInitSecurityRoleRefSet()
+    public String getJetspeedSecurityConstraint()
     {
-        return portletDefinition.getInitSecurityRoleRefSet();
+        return portletDefinition.getJetspeedSecurityConstraint();
+    }
+
+    public Language getLanguage(Locale locale)
+    {
+        return portletDefinition.getLanguage(locale);
+    }
+
+    public List<Language> getLanguages()
+    {
+        return portletDefinition.getLanguages();
     }
 
     public GenericMetadata getMetadata()
@@ -176,29 +208,24 @@ public class FragmentPortletDefinition implements PortletDefinition
         return portletDefinition.getMetadata();
     }
 
+    public String getPortletClass()
+    {
+        return portletDefinition.getPortletClass();
+    }
+
+    public PortletInfo getPortletInfo()
+    {
+        return portletDefinition.getPortletInfo();
+    }
+
     public String getPortletName()
     {
         return portletDefinition.getPortletName();
     }
 
-    public PortletApplicationDefinition getPortletApplicationDefinition()
+    public Preferences getPortletPreferences()
     {
-        return portletDefinition.getPortletApplicationDefinition();
-    }
-
-    public ClassLoader getPortletClassLoader()
-    {
-        return portletDefinition.getPortletClassLoader();
-    }
-
-    public String getPortletIdentifier()
-    {
-        return portletDefinition.getPortletIdentifier();
-    }
-
-    public PreferenceSet getPreferenceSet()
-    {
-        return new FragmentPortletPreferenceSet((PreferenceSetComposite) portletDefinition.getPreferenceSet(), fragment);
+//        return new FragmentPortletPreferenceSet((PreferenceSetComposite) portletDefinition.getPreferenceSet(), fragment);
     }
 
     public String getPreferenceValidatorClassname()
@@ -211,14 +238,49 @@ public class FragmentPortletDefinition implements PortletDefinition
         return portletDefinition.getResourceBundle();
     }
 
-    public ServletDefinition getServletDefinition()
+    public ResourceBundle getResourceBundle(Locale locale)
     {
-        return portletDefinition.getServletDefinition();
+        return portletDefinition.getResourceBundle(locale);
     }
 
-    public Collection getSupportedLocales()
+    public SecurityRoleRef getSecurityRoleRef(String roleName)
+    {
+        return portletDefinition.getSecurityRoleRef(roleName);
+    }
+
+    public List<SecurityRoleRef> getSecurityRoleRefs()
+    {
+        return portletDefinition.getSecurityRoleRefs();
+    }
+
+    public List<String> getSupportedLocales()
     {
         return portletDefinition.getSupportedLocales();
+    }
+
+    public List<EventDefinitionReference> getSupportedProcessingEvents()
+    {
+        return portletDefinition.getSupportedProcessingEvents();
+    }
+
+    public List<String> getSupportedPublicRenderParameters()
+    {
+        return portletDefinition.getSupportedPublicRenderParameters();
+    }
+
+    public List<EventDefinitionReference> getSupportedPublishingEvents()
+    {
+        return portletDefinition.getSupportedPublishingEvents();
+    }
+
+    public List<Supports> getSupports()
+    {
+        return portletDefinition.getSupports();
+    }
+
+    public Supports getSupports(String mimeType)
+    {
+        return portletDefinition.getSupports(mimeType);
     }
 
     public String getUniqueName()
@@ -226,69 +288,29 @@ public class FragmentPortletDefinition implements PortletDefinition
         return portletDefinition.getUniqueName();
     }
 
-    public void setPortletClass(String arg0)
+    public boolean isSameIdentity(PortletDefinition other)
     {
-        portletDefinition.setPortletClass(arg0);
+        return portletDefinition.isSameIdentity(other);
     }
 
-    public void setDescriptions(DescriptionSet arg0)
+    public void setCacheScope(String cacheScope)
     {
-        portletDefinition.setDescriptions(arg0);
+        portletDefinition.setCacheScope(cacheScope);
     }
 
-    public void setDisplayNames(DisplayNameSet arg0)
+    public void setExpirationCache(int expirationCache)
     {
-        portletDefinition.setDisplayNames(arg0);
+        portletDefinition.setExpirationCache(expirationCache);
     }
 
-    public void setExpirationCache(String cache)
+    public void setJetspeedSecurityConstraint(String constraint)
     {
-        portletDefinition.setExpirationCache(cache);
+        portletDefinition.setJetspeedSecurityConstraint(constraint);
     }
 
-    public void setId(String arg0)
+    public void setPortletClass(String portletClass)
     {
-        portletDefinition.setId(arg0);
-    }
-
-    public void setInitParameterSet(ParameterSet parameters)
-    {
-        portletDefinition.setInitParameterSet(parameters);
-    }
-
-    public void setInitSecurityRoleRefSet(SecurityRoleRefSet securityRefs)
-    {
-        portletDefinition.setInitSecurityRoleRefSet(securityRefs);
-    }
-
-    public void setMetadata(GenericMetadata metadata)
-    {
-        portletDefinition.setMetadata(metadata);
-    }
-
-    public void setPortletName(String arg0)
-    {
-        portletDefinition.setPortletName(arg0);
-    }
-
-    public void setPortletApplicationDefinition(PortletApplicationDefinition pad)
-    {
-        portletDefinition.setPortletApplicationDefinition(pad);
-    }
-
-    public void setPortletClassLoader(ClassLoader arg0)
-    {
-        portletDefinition.setPortletClassLoader(arg0);
-    }
-
-    public void setPortletIdentifier(String portletIndentifier)
-    {
-        portletDefinition.setPortletIdentifier(portletIndentifier);
-    }
-
-    public void setPreferenceSet(PreferenceSet preferences)
-    {
-        portletDefinition.setPreferenceSet(preferences);
+        portletDefinition.setPortletClass(portletClass);
     }
 
     public void setPreferenceValidatorClassname(String classname)
@@ -296,23 +318,15 @@ public class FragmentPortletDefinition implements PortletDefinition
         portletDefinition.setPreferenceValidatorClassname(classname);
     }
 
-    public void store() throws IOException
+    public void setResourceBundle(String resourceBundle)
     {
-        portletDefinition.store();
+        portletDefinition.setResourceBundle(resourceBundle);
     }
 
     public void storeChildren()
     {
         portletDefinition.storeChildren();
     }
-    
-    public String getJetspeedSecurityConstraint()
-    {
-        return portletDefinition.getJetspeedSecurityConstraint();
-    }
 
-    public void setJetspeedSecurityConstraint(String constraint)
-    {
-        portletDefinition.setJetspeedSecurityConstraint(constraint);
-    }
+    
 }

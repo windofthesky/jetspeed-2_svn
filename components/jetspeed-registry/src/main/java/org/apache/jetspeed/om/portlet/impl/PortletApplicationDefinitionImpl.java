@@ -40,6 +40,7 @@ import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.Listener;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
@@ -76,7 +77,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private transient WebApplicationDefinition webApplication;
     
     /** Metadata property */
-    private Collection<GenericMetadata> metadataFields = null;
+    private Collection<LocalizedField> metadataFields = null;
     
     /** Description */
     private String description;
@@ -233,7 +234,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     {
         if(metadataFields == null)
         {
-            metadataFields = new ArrayList<GenericMetadata>();
+            metadataFields = new ArrayList<LocalizedField>();
         }
         
         GenericMetadata metadata = new PortletApplicationMetadataImpl();
