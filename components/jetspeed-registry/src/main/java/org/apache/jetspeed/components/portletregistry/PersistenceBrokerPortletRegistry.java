@@ -34,7 +34,6 @@ import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.springframework.dao.DataAccessException;
 
 /**

@@ -16,6 +16,10 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+
+
 /**
  * 
  * @version $Id$
@@ -25,4 +29,8 @@ public interface PortletPreferencesProvider extends org.apache.pluto.spi.optiona
 {
     public void preloadApplicationPreferences(String portletApplicationName);
     public void preloadAllEntities();    
+    public void storeDefaults(PortletDefinition pd);
+    public void storeDefaults(PortletApplication app);
+    
+
 }

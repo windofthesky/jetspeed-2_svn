@@ -41,6 +41,11 @@ public class JetspeedPreferencesMap implements Map<String, InternalPortletPrefer
     public JetspeedPreferencesMap()
     {
     }
+
+    public JetspeedPreferencesMap(Map<String, InternalPortletPreference> copy)
+    {
+        this.putAll(copy);
+    }
     
     public void clear()
     {

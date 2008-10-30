@@ -97,7 +97,8 @@
     </constructor-arg>
     <constructor-arg index="1">
       <ref bean="preferencesCache" />
-    </constructor-arg>
+    </constructor-arg>    
+    <property name="useEntityPreferences" ><value>true</value></property>
     </bean>
 
   <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" parent="baseTransactionProxy"

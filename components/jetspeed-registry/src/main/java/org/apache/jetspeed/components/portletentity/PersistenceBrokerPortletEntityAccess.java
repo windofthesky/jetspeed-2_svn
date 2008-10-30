@@ -25,12 +25,10 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
@@ -324,7 +322,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         try
         {
             getPersistenceBrokerTemplate().store(portletEntity);
-            ((PortletEntity)portletEntity).storeChildren();
         }
         catch (Exception e)
         {

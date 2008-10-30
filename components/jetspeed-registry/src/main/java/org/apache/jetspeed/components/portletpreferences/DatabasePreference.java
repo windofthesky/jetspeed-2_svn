@@ -18,8 +18,6 @@ package org.apache.jetspeed.components.portletpreferences;
 
 import java.util.Collection;
 
-import org.apache.jetspeed.om.preference.impl.PreferenceImpl;
-
 /**
  * <p>
  * The database representation of a preference object

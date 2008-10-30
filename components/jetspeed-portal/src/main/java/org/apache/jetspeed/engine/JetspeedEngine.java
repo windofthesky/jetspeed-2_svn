@@ -25,7 +25,6 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalConfiguration;
@@ -39,7 +38,6 @@ import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 
 /**
