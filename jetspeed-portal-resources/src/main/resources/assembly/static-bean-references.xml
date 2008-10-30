@@ -62,17 +62,6 @@
     </property>
   </bean>
 
-  <bean id="_portletEntityImplRequestContextComponentInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="className" value="org.apache.jetspeed.components.portletentity.PortletEntityImpl" />
-    <property name="methodName" value="setRequestContextComponent" />
-    <property name="typeName" value="org.apache.jetspeed.request.RequestContextComponent" />
-    <property name="value">
-      <ref bean="org.apache.jetspeed.request.RequestContextComponent" />
-    </property>
-  </bean>
-
   <bean id="_abstractBaseElementInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,xmlPageManager,pageSerializer" />
