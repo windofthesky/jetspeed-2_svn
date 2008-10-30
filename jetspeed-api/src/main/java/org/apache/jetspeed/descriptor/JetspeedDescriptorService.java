@@ -18,42 +18,22 @@ package org.apache.jetspeed.descriptor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.pluto.spi.optional.PortletAppDescriptorService;
-
 
 /**
- * Extends Pluto Descriptor service for loading portlet applications in a Jetspeed format.
- * Additionally, has two APIs to load extended Jetspeed descriptor information (jetspeed-portlet.xml) 
+ * Jetspeed Descriptor service for loading portlet applications in a Jetspeed format.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public interface ExtendedDescriptorService extends PortletAppDescriptorService
+public interface JetspeedDescriptorService
 {
-    /**
-     * Create a new portlet application definition
-     */
-    PortletApplication createPortletApplicationDefinition();
-    
     /**
      * Retrieve the PortletApp deployment descriptor
      * (portlet.xml).
      * @return Object representation of the descriptor.
      * @throws IOException if an IO error occurs.
      */
-    PortletApplication read(InputStream in) throws IOException;
-
-    /**
-     * Write the PortletApp deployment descriptor
-     * (portlet.xml).
-     * @param portletDescriptor
-     * @param out
-     * @throws IOException if an IO error occurs.
-     */
-    void write(PortletApplication portletDescriptor, OutputStream out) throws IOException;
-
-    void readExtended(InputStream in, PortletApplication app) throws IOException;
+    PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws IOException;
 }

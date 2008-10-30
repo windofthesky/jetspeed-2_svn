@@ -45,6 +45,12 @@
     <meta key="j2:cat" value="default" />
   </bean>
 
+  <bean id="org.apache.jetspeed.descriptor.JetspeedDescriptorService"
+        class="org.apache.jetspeed.descriptor.ExtendedDescriptorServiceImpl">
+      <meta key="j2:cat" value="default"/>
+      <constructor-arg><bean class="org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl"/></constructor-arg>
+  </bean>       
+
   <bean id="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" init-method="start"
     destroy-method="stop">
     <meta key="j2:cat" value="default" />
@@ -84,7 +90,7 @@
       <value>${applicationRoot}</value>
     </constructor-arg>
 
-    <constructor-arg><ref bean="org.apache.pluto.services.DescriptorService"/></constructor-arg>
+    <constructor-arg><ref bean="org.apache.jetspeed.descriptor.JetspeedDescriptorService"/></constructor-arg>
 
     <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
       <property name="autoCreateRoles"><value>true</value></property>

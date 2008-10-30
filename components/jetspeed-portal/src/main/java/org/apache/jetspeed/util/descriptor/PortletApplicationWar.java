@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
+import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.SecurityRole;
@@ -85,7 +85,7 @@ public class PortletApplicationWar
     
     private PortletApplication portletApp;
     private long paChecksum;
-    protected ExtendedDescriptorService descriptorService;
+    protected JetspeedDescriptorService descriptorService;
 
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
@@ -103,12 +103,12 @@ public class PortletApplicationWar
      * @param webAppContextRoot
      *            context root relative to the servlet container of this app
      */
-    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, ExtendedDescriptorService descriptorService)
+    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, JetspeedDescriptorService descriptorService)
     {
         this(warStruct, paName, webAppContextRoot, 0, descriptorService);
     }
 
-    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, long paChecksum, ExtendedDescriptorService descriptorService)
+    public PortletApplicationWar( FileSystemHelper warStruct, String paName, String webAppContextRoot, long paChecksum, JetspeedDescriptorService descriptorService)
     {
         validatePortletApplicationName(paName);
 
@@ -167,6 +167,7 @@ public class PortletApplicationWar
      */
     public PortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
     {
+        InputStream webXmlStream = getInputStream(WEB_XML_PATH);
         InputStream portletXmlStream = getInputStream(PORTLET_XML_PATH);
         InputStream extStream = null;
         try
@@ -179,19 +180,17 @@ public class PortletApplicationWar
         }
         try
         {
-            portletApp = descriptorService.read(portletXmlStream);
-            if (extStream != null)
-            {
-                descriptorService.readExtended(extStream, portletApp);
-            }
-            // TODO 2.2: load/parse web.xml and merge descriptions/display-names/roles/locale-encoding-mapping-list elements
-            //           within the pa, see Portlet Spec 2.0, PLT.25.1
+            portletApp = descriptorService.read(webXmlStream, portletXmlStream, extStream);
             validate();
             portletApp.setChecksum(paChecksum);
             return portletApp;
         }
         finally
         {
+            if (webXmlStream != null)
+            {
+                webXmlStream.close();
+            }
             if (portletXmlStream != null)
             {
                 portletXmlStream.close();

@@ -32,7 +32,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
+import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -79,7 +79,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected boolean started;
     protected String appRoot;
     protected NodeManager nodeManager;
-    protected ExtendedDescriptorService descriptorService;
+    protected JetspeedDescriptorService descriptorService;
     
     /**
 	 * Creates a new PortletApplicationManager object.
@@ -88,7 +88,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List<String> permissionRoles, NodeManager nodeManager, String appRoot,
-        ExtendedDescriptorService descriptorService)
+        JetspeedDescriptorService descriptorService)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;

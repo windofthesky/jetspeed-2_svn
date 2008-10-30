@@ -27,7 +27,7 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
+import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -63,7 +63,7 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
     public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry, 
             PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
             PermissionManager permissionManager, SearchEngine searchEngine,  RoleManager roleManager,
-            List<String> permissionRoles, /* node manager, */ String appRoot, ExtendedDescriptorService descriptorService)
+            List<String> permissionRoles, /* node manager, */ String appRoot, JetspeedDescriptorService descriptorService)
     {
         super(portletFactory, registry, entityAccess, windowAccess, permissionManager, 
                 searchEngine, roleManager, permissionRoles, null, appRoot, descriptorService); 

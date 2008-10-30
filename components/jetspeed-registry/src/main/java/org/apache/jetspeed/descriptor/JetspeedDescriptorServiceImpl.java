@@ -18,7 +18,6 @@ package org.apache.jetspeed.descriptor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -51,45 +50,39 @@ import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Portlet;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.PortletApp;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Service;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl;
 import org.apache.pluto.om.portlet.CustomPortletMode;
 import org.apache.pluto.om.portlet.CustomWindowState;
 import org.apache.pluto.om.portlet.Description;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.services.PortletAppDescriptorService;
 
 /**
- * Extends Pluto Descriptor service for loading portlet applications in a Jetspeed format.
- * Additionally, has two APIs to load extended Jetspeed descriptor information (jetspeed-portlet.xml) 
+ * Jetspeed Descriptor service for loading portlet applications in a Jetspeed format.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceImpl implements ExtendedDescriptorService
+public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
 {
-    public PortletApplication createPortletApplicationDefinition()
+    private PortletAppDescriptorService plutoDescriptorService;
+    
+    public JetspeedDescriptorServiceImpl(PortletAppDescriptorService plutoDescriptorService)
     {
-        // TODO Auto-generated method stub
-        return null;
+        this.plutoDescriptorService = plutoDescriptorService;
     }
-
-    public PortletApplication read(InputStream in) throws IOException
+    
+    public PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws IOException
     {
-        PortletApplicationDefinition pad = super.read(in);
-        // TODO: do extended processing here 
-        return upgrade(pad);
-    }
-
-    public void write(PortletApplication portletDescriptor, OutputStream out)
-            throws IOException
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void write(PortletApplicationDefinition portletDescriptor,
-            OutputStream out) throws IOException
-    {
-        throw new UnsupportedOperationException();
+        // TODO: do web.xml loading here
+        PortletApplicationDefinition pad = plutoDescriptorService.read(portletDescriptor);
+        // TODO 2.2: do web.xml merge descriptions/display-names/roles/locale-encoding-mapping-list elements
+        //           within the pa, see Portlet Spec 2.0, PLT.25.1
+        PortletApplication pa = upgrade(pad);
+        if (jetspeedPortletDescriptor != null)
+        {
+            loadJetspeedPortletDescriptor(pa, jetspeedPortletDescriptor);
+        }
+        return pa;
     }
 
     protected PortletApplication upgrade(PortletApplicationDefinition pa)
@@ -369,7 +362,7 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
         return l;
     }
     
-    public void readExtended(InputStream in, PortletApplication app) throws IOException
+    protected void loadJetspeedPortletDescriptor(PortletApplication app, InputStream in) throws IOException
     {
         try
         {
