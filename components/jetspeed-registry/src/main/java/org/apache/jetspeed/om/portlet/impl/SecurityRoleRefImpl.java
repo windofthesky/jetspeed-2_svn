@@ -107,8 +107,7 @@ public class SecurityRoleRefImpl implements SecurityRoleRef, Serializable
     
     public Description addDescription(String lang)
     {
-        DescriptionImpl d = new DescriptionImpl();
-        d.setLang(lang);
+        DescriptionImpl d = new DescriptionImpl(this, lang);
         if (getDescription(d.getLocale()) != null)
         {
             throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");

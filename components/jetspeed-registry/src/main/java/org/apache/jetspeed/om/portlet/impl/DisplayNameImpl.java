@@ -30,10 +30,22 @@ import org.apache.jetspeed.om.portlet.DisplayName;
  */
 public class DisplayNameImpl implements DisplayName
 {
+    protected String owner;
     protected String value;
     protected String lang = null;
     protected Locale locale = null;
 
+    public DisplayNameImpl()
+    {
+    }
+    
+    public DisplayNameImpl(Object owner, String lang)
+    {
+        this.owner = owner.getClass().getName();
+        lang = value;
+        locale = JetspeedLocale.convertStringToLocale(lang);
+    }
+    
     public String getDisplayName()
     {
         return value;
@@ -49,12 +61,6 @@ public class DisplayNameImpl implements DisplayName
         return lang == null ? JetspeedLocale.getDefaultLocale().toString() : lang;
     }
 
-    public void setLang(String value)
-    {
-        lang = value;
-        locale = JetspeedLocale.convertStringToLocale(lang);
-    }
-    
     public Locale getLocale()
     {
         return locale == null ? locale = JetspeedLocale.convertStringToLocale(lang) : locale;

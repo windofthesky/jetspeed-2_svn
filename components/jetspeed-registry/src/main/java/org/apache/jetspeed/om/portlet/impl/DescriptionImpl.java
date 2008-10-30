@@ -35,9 +35,22 @@ import org.apache.jetspeed.om.portlet.Description;
  */
 public class DescriptionImpl implements Description 
 {
+    protected String owner;
     protected String value;
     protected String lang = null;
     protected Locale locale = null;
+    
+    public DescriptionImpl()
+    {
+        
+    }
+    
+    public DescriptionImpl(Object owner, String lang)
+    {
+        this.owner = owner.getClass().getName();
+        lang = value;
+        locale = JetspeedLocale.convertStringToLocale(lang);
+    }
 
     public String getDescription()
     {
@@ -54,12 +67,6 @@ public class DescriptionImpl implements Description
         return lang == null ? JetspeedLocale.getDefaultLocale().toString() : lang;
     }
 
-    public void setLang(String value)
-    {
-        lang = value;
-        locale = JetspeedLocale.convertStringToLocale(lang);
-    }
-    
     public Locale getLocale()
     {
         return locale == null ? locale = JetspeedLocale.convertStringToLocale(lang) : locale;

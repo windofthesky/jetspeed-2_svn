@@ -63,8 +63,7 @@ public class FilterImpl implements Filter, Serializable
     
     public Description addDescription(String lang)
     {
-        DescriptionImpl d = new DescriptionImpl();
-        d.setLang(lang);
+        DescriptionImpl d = new DescriptionImpl(this, lang);
         if (getDescription(d.getLocale()) != null)
         {
             throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
@@ -97,8 +96,7 @@ public class FilterImpl implements Filter, Serializable
     
     public DisplayName addDisplayName(String lang)
     {
-        DisplayNameImpl d = new DisplayNameImpl();
-        d.setLang(lang);
+        DisplayNameImpl d = new DisplayNameImpl(this, lang);
         if (getDisplayName(d.getLocale()) != null)
         {
             throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
