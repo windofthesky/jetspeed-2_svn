@@ -16,13 +16,10 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
-import org.apache.pluto.om.portlet.Preference;
-import org.apache.pluto.om.portlet.PreferenceCtrl;
 
 /**
  * FragmentPreferenceImpl
@@ -30,7 +27,7 @@ import org.apache.pluto.om.portlet.PreferenceCtrl;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, FragmentPreference
+public class FragmentPreferenceImpl implements FragmentPreference
 {
     private int id;
     private String name;
@@ -123,38 +120,6 @@ public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, Fragm
                 preferenceValues.addAll(values);
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.common.Preference#getValues()
-     */
-    public Iterator getValues()
-    {
-        return getValueList().iterator();
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.common.Preference#isValueSet()
-     */
-    public boolean isValueSet()
-    {
-        return !getValueList().isEmpty();
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.common.PreferenceCtrl#setValues(java.util.List)
-     */
-    public void setValues(List values)
-    {
-        setValueList(values);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.om.common.PreferenceCtrl#setReadOnly(java.lang.String)
-     */
-    public void setReadOnly(String readOnly)
-    {
-        setReadOnly(new Boolean(readOnly).booleanValue());
     }
 
     /* (non-Javadoc)
