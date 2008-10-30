@@ -16,12 +16,9 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.pluto.om.portlet.Preference;
-import org.apache.pluto.om.portlet.PreferenceCtrl;
 
 /**
  * 
@@ -31,7 +28,7 @@ import org.apache.pluto.om.portlet.PreferenceCtrl;
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
  */
-public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, FragmentPreference
+public class FragmentPreferenceImpl implements FragmentPreference
 {
     private String name;
     private List values;
@@ -57,35 +54,13 @@ public class FragmentPreferenceImpl implements Preference, PreferenceCtrl, Fragm
         this.readOnly = readOnly;
     }
     
-    public void setReadOnly(String arg0)
-    {
-        readOnly = new Boolean(arg0).booleanValue();        
-    }
-    
-    public Iterator getValues()
-    {
-        return getValueList().iterator();
-    }
-    
     public List getValueList()
     {
         return this.values;
     }
     
-    public void setValues(List values)
+    public void setValueList(List values)
     {
         this.values = values;
     }
-    
-    public void setValueList(List values)
-    {
-        setValues(values);
-    }
-
-    public boolean isValueSet()
-    {
-        return values != null && values.size() > 0;
-    }
-
-
 }
