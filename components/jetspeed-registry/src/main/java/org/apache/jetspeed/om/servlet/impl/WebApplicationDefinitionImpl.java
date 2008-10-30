@@ -34,25 +34,12 @@ public class WebApplicationDefinitionImpl implements WebApplicationDefinition, S
 {
     private static final long serialVersionUID = 257065602152274557L;
     
-    @SuppressWarnings("unused")
-    private Long id;
-    private String name;
     private String displayName;
     private String description;
     private List<String> roles = new ArrayList<String>();
     
     private String contextRoot;
     
-    public String getId()
-    {
-        return name;
-    }
-    
-    public void setId(String id)
-    {
-        this.name = id;
-    }
-
     public String getDisplayName()
     {
         return displayName;

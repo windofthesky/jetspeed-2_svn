@@ -25,9 +25,6 @@ import java.util.List;
  */
 public interface WebApplicationDefinition
 {
-    String getId();
-    void setId(String id);
-    
     String getDisplayName();
     void setDisplayName(String displayName);
     
