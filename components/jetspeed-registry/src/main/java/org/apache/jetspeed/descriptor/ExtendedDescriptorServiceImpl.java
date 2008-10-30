@@ -26,8 +26,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.DisplayName;
@@ -52,20 +50,12 @@ import org.apache.jetspeed.om.portlet.jetspeed.jaxb.MetadataType;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Portlet;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.PortletApp;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Service;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriter;
-import org.apache.jetspeed.tools.deploy.JetspeedWebApplicationRewriterFactory;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl;
 import org.apache.pluto.om.portlet.CustomPortletMode;
 import org.apache.pluto.om.portlet.CustomWindowState;
 import org.apache.pluto.om.portlet.Description;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Extends Pluto Descriptor service for loading portlet applications in a Jetspeed format.
@@ -449,59 +439,4 @@ public class ExtendedDescriptorServiceImpl extends PortletAppDescriptorServiceIm
             throw new IOException(je.getMessage());
         }
     }
-        
-    public WebApplicationDefinition readServletDescriptor(InputStream is) throws IOException
-    {
-        Document doc = this.parseXml(is);        
-        JetspeedWebApplicationRewriterFactory rewriterFactory = new JetspeedWebApplicationRewriterFactory();        
-        try
-        {
-            JetspeedWebApplicationRewriter rewriter = rewriterFactory.getInstance(doc);
-            // TODO: 2.2 implement this, get the security roles
-//          digester.addCallMethod("web-app/security-role", "addRole", 0);
-//          digester.addBeanPropertySetter("web-app/security-role/description", "description");
-//          digester.addBeanPropertySetter("web-app/security-role/role-name", "roleName");
-            WebApplicationDefinition webapp = new WebApplicationDefinitionImpl();
-//          webapp.setContextRoot(contextRoot);
-//          webapp.setDescription(contextRoot);            
-            return webapp;
-        }
-        catch (Exception e)
-        {
-            throw new IOException(e.getMessage());
-        }
-    }
-    
-    protected Document parseXml(InputStream source) throws IOException
-    {
-        try
-        {
-            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-            domFactory.setNamespaceAware(true); 
-            DocumentBuilder builder = domFactory.newDocumentBuilder();
-            builder.setEntityResolver(new EntityResolver()
-            {
-                public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId) throws SAXException,
-                                java.io.IOException
-                {
-                    if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
-                    {
-                        return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
-                    }
-                    if (systemId.equals("http://java.sun.com/dtd/web-app_2_4.dtd"))
-                    {
-                        return new InputSource(getClass().getResourceAsStream("web-app_2_4.dtd"));
-                    }
-                    return null;
-                }
-            });
-            Document document = builder.parse(source);
-            return document;
-        }
-        catch (Exception e)
-        {
-            throw new IOException(e.toString());
-        }
-    }
-        
 }

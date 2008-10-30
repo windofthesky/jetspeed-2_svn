@@ -168,8 +168,7 @@ public class FilterImpl implements Filter, Serializable
         {
             throw new IllegalArgumentException("Init parameter: "+paramName+" already defined");
         }
-        InitParamImpl param = new InitParamImpl();
-        param.setParamName(paramName);
+        InitParamImpl param = new InitParamImpl(this, paramName);
         getInitParams();
         initParams.add(param);
         return param;

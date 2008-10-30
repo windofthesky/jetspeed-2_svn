@@ -37,7 +37,6 @@ import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.spi.FilterManager;
@@ -146,12 +145,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         
         PortletApplication app = (PortletApplication)portletDefinition.getApplication();
 
-        WebApplicationDefinition webApplicationDefinition = app.getWebApplicationDefinition();
-        if(webApplicationDefinition == null)
-        {
-        	throw new IllegalStateException("Portlet application "+app.getName()+ " has no associated web application.");
-        }
-        String portletApplicationName = webApplicationDefinition.getContextRoot();
+        String portletApplicationName = app.getContextRoot();
 
         ServletContext appContext = jetspeedContext.getContext(portletApplicationName);
         if (null == appContext)

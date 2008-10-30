@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
@@ -83,7 +83,6 @@ public class PortletApplicationWar
     protected String webAppContextRoot;
     protected FileSystemHelper warStruct;
     
-    private WebApplicationDefinition webApp;
     private PortletApplication portletApp;
     private long paChecksum;
     protected ExtendedDescriptorService descriptorService;
@@ -156,54 +155,6 @@ public class PortletApplicationWar
     /**
      * 
      * <p>
-     * createWebApp
-     * </p>
-     * Creates a web applicaiton object based on the values in this WAR's
-     * WEB-INF/web.xml
-     * 
-     * @return @throws
-     *         PortletApplicationException
-     * @throws IOException
-     * @see org.apache.jetspeed.util.descriptor.WebApplicationDescriptor
-     */
-    public WebApplicationDefinition createWebApp() throws PortletApplicationException, IOException
-    {
-        InputStream stream = getInputStream(WEB_XML_PATH);
-        try
-        {
-//            WebApplicationDescriptor webAppDescriptor = new WebApplica dtionDescriptor(webXmlReader, webAppContextRoot);
-//            webApp = webAppDescriptor.createWebApplication();
-//            return webApp;
-//            JetspeedWebApplicationRewriterFactory rewriterFactory = new JetspeedWebApplicationRewriterFactory();
-//            JetspeedWebApplicationRewriter rewriter = rewriterFactory.getInstance(doc);
-//            rewriter.getSecurityRoles();
-            return descriptorService.readServletDescriptor(stream);
-        }
-        catch (Exception e)
-        {
-            throw new PortletApplicationException("Failed to read web.xml descriptor: " + e);
-        }
-        finally
-        {
-            try
-            {
-                if (stream != null)
-                {
-                    stream.close();
-                }
-            }
-            catch (IOException e1)
-            {
-                e1.printStackTrace();
-            }
-        }
-        
-
-    }
-
-    /**
-     * 
-     * <p>
      * createPortletApp
      * </p>
      * Creates a portlet application object based of the WAR file's
@@ -233,7 +184,8 @@ public class PortletApplicationWar
             {
                 descriptorService.readExtended(extStream, portletApp);
             }
-            webApp = createWebApp();
+            // TODO 2.2: load/parse web.xml and merge descriptions/display-names/roles/locale-encoding-mapping-list elements
+            //           within the pa, see Portlet Spec 2.0, PLT.25.1
             validate();
             portletApp.setChecksum(paChecksum);
             return portletApp;
@@ -396,13 +348,12 @@ public class PortletApplicationWar
      */
     public void validate() throws PortletApplicationException
     {
-        if (portletApp == null || webApp == null)
+        if (portletApp == null)
         {
             throw new IllegalStateException(
-                    "createWebApp() and createPortletApp() must be called before invoking validate()");
+                    "createPortletApp() must be called before invoking validate()");
         }
 
-        List<String> roles = webApp.getRoles();
         List<PortletDefinition> portlets = portletApp.getPortlets();
         for (PortletDefinition portlet : portlets)
         {
@@ -413,7 +364,16 @@ public class PortletApplicationWar
                 {
                     roleName = roleRef.getRoleName();
                 }
-                if (roles.contains(roleName) == false)
+                boolean found = false;
+                for (SecurityRole role : portletApp.getSecurityRoles())
+                {
+                    if (role.getName().equals(roleName))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
                 {
                     String errorMsg = "Undefined security role " + roleName + " referenced from portlet "
                             + portlet.getPortletName();
@@ -504,12 +464,6 @@ public class PortletApplicationWar
         return warStruct;
     }
 
-    public WebApplicationDefinition getWebApp()
-    {
-        return webApp;
-    }
-
-    
     public PortletApplication getPortletApp()
     {
         return portletApp;

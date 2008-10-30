@@ -29,7 +29,6 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 
 /**
  * @author scott
@@ -126,7 +125,6 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
         app = registry.getPortletApplication("App_1");
 
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         portlet = (PortletDefinitionImpl) app.getPortletDefinitionByName("Portlet 1");
 
         assertNotNull("Failed to reteive portlet application", app);
@@ -138,7 +136,6 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
         System.out.println("services is " + services);
 
         assertNotNull("Failed to reteive portlet application via registry", registry.getPortletApplication("App_1"));
-        assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         if (!afterUpdates)
         {
@@ -159,8 +156,8 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet
                 .getApplication());
-        assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
-        assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
+        assertNotNull("French description was not materialized for the app.", app.getDescription(Locale.FRENCH));
+        assertNotNull("French display name was not materialized for the app.", app.getDisplayName(Locale.FRENCH));
         assertNotNull("description was not materialized for the portlet.", portlet.getDescription(Locale.getDefault()));
         assertNotNull("display name was not materialized for the portlet.", portlet.getDisplayName(Locale.getDefault()));
         assertNotNull("\"testparam\" portlet parameter was not saved", portlet.getInitParameterSet().get("testparam"));
@@ -184,17 +181,11 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
         app = registry.getPortletApplication("App_1");
 
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        assertNotNull("Web app was not located by query.", webApp);
-        webApp.addDescription(Locale.getDefault(), "Web app description");
-
-        webApp = null;
+        app.addDescription(Locale.getDefault().toString()).setDescription("Web app description");
 
         app = registry.getPortletApplication("App_1");
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
 
-        assertNotNull("Web app was not located by query.", webApp);
-        assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.FRENCH));
+        assertNotNull("App did NOT persist its description", app.getDescription(Locale.FRENCH));
 
     }
 

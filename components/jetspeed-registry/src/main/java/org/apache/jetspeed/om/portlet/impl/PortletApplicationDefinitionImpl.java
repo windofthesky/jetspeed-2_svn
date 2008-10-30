@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -34,6 +35,8 @@ import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.CustomPortletMode;
 import org.apache.jetspeed.om.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.EventDefinition;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
@@ -45,9 +48,9 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
+import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -72,10 +75,9 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     /** Holds value of property name. */
     private String name;
-
-    /** WebApplication property */
-    private transient WebApplicationDefinition webApplication;
     
+    private String contextRoot;
+
     /** Metadata property */
     private Collection<LocalizedField> metadataFields = null;
     
@@ -87,6 +89,9 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     
     private String jetspeedSecurityConstraint;
     
+    private List<Description> descriptions;
+    private List<DisplayName> displayNames;
+    private List<SecurityRole> roles;
     private List<PortletDefinition> portlets;
     private List<EventDefinition> eventDefinitions;
     private List<PublicRenderParameter> publicRenderParameters;
@@ -187,6 +192,16 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         this.revision = revision;
     }
     
+    public void setContextRoot(String contextRoot)
+    {
+        this.contextRoot = contextRoot;
+    }
+    
+    public String getContextRoot()
+    {
+        return contextRoot;
+    }
+    
     public String getDefaultNamespace()
     {
         return defaultNamespace;
@@ -243,15 +258,94 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return metadata;
     }
     
-    public WebApplicationDefinition getWebApplicationDefinition()
+    public Description getDescription(Locale locale)
     {
-        return webApplication;
+        for (Description d : getDescriptions())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    public List<Description> getDescriptions()
+    {
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl(this, lang);
+        if (getDescription(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+        }
+        getDescriptions();
+        descriptions.add(d);
+        return d;
     }
 
-    public void setWebApplicationDefinition(WebApplicationDefinition wad)
+    public DisplayName getDisplayName(Locale locale)
     {
-        this.webApplication = wad;
+        for (DisplayName d : getDisplayNames())
+        {
+            if (d.getLocale().equals(locale))
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    public List<DisplayName> getDisplayNames()
+    {
+        if (displayNames == null)
+        {
+            displayNames = new ArrayList<DisplayName>();
+        }
+        return displayNames;
+    }
+    
+    public DisplayName addDisplayName(String lang)
+    {
+        DisplayNameImpl d = new DisplayNameImpl(this, lang);
+        if (getDisplayName(d.getLocale()) != null)
+        {
+            throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+        }
+        getDisplayNames();
+        displayNames.add(d);
+        return d;
+    }
 
+    public List<SecurityRole> getSecurityRoles()
+    {
+        if (roles == null)
+        {
+            roles = new ArrayList<SecurityRole>();
+        }
+        return roles;
+    }
+    
+    public SecurityRole addSecurityRole(String name)
+    {
+        for (SecurityRole role : getSecurityRoles())
+        {
+            if (role.getName().equals(name))
+            {
+                throw new IllegalArgumentException("Security Role "+name+" already defined");
+            }
+        }
+        SecurityRoleImpl role = new SecurityRoleImpl();
+        role.setName(name);
+        roles.add(role);
+        return role;
     }
     
     public PortletDefinition getPortlet(String portletName)

@@ -47,7 +47,6 @@ import org.apache.jetspeed.container.InternalPortletConfig;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Supports;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 
@@ -315,8 +314,7 @@ public class PortletObjectProxy extends BaseObjectProxy
             
             PortletDefinition portletDef = (PortletDefinition) registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
             PortletApplication portletApp = (PortletApplication) portletDef.getApplication();
-            WebApplicationDefinition webAppDef = portletApp.getWebApplicationDefinition();
-            String portletAppName = webAppDef.getContextRoot();
+            String portletAppName = portletApp.getContextRoot();
             ServletContext portletAppContext = portalAppContext.getContext(portletAppName);
             
             setPortletObjectProxied(true);

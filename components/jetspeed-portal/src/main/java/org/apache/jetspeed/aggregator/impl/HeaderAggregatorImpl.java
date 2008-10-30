@@ -1115,7 +1115,7 @@ public class HeaderAggregatorImpl implements PageAggregator
                 PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
                 if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
                 {
-                    String portletApplicationContextPath = pd.getApplication().getWebApplicationDefinition().getContextRoot();
+                    String portletApplicationContextPath = pd.getApplication().getContextRoot();
                     Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
                     if ( portlet != null && portlet instanceof SupportsHeaderPhase )
                     {

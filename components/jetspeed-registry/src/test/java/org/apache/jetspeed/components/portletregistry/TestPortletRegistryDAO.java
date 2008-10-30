@@ -42,7 +42,6 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.UserAttributeImpl;
 import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.pluto.om.portlet.PreferenceSetCtrl;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
@@ -232,7 +231,6 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
         assertNotNull(app);
 
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
         portlet = (PortletDefinitionImpl) app.getPortletDefinitionByName("Portlet 1");
 
         assertNotNull("Failed to reteive portlet application", app);
@@ -245,7 +243,6 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
         assertNotNull("Failed to reteive portlet application via registry", portletRegistry
                 .getPortletApplication("App_1"));
-        assertNotNull("Web app was not saved along with the portlet app.", webApp);
         assertNotNull("Portlet was not saved along with the portlet app.", app.getPortletDefinitionByName("Portlet 1"));
         if (!afterUpdates)
         {
@@ -266,8 +263,8 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
         assertNotNull("Portlet Application was not set in the portlet defintion.", portlet
                 .getApplication());
-        assertNotNull("French description was not materialized for the web app.", webApp.getDescription(Locale.FRENCH));
-        assertNotNull("French display name was not materialized for the web app.", webApp.getDisplayName(Locale.FRENCH));
+        assertNotNull("French description was not materialized for the app.", app.getDescription(Locale.FRENCH));
+        assertNotNull("French display name was not materialized for the app.", app.getDisplayName(Locale.FRENCH));
         assertNotNull("description was not materialized for the portlet.", portlet.getDescription(Locale.getDefault()));
         assertNotNull("display name was not materialized for the portlet.", portlet.getDisplayName(Locale.getDefault()));
         assertNotNull("\"testparam\" portlet parameter was not saved", portlet.getInitParameterSet().get("testparam"));
@@ -285,22 +282,14 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         }
         assertEquals("\"preference 1\" did not have 2 values.", 2, valueCount);
 
-        // Pull out our Web app and add a Description to it
-        webApp = null;
+        app = portletRegistry.getPortletApplication("App_1");
+
+        assertNotNull("Web app was not located by query.", webApp);
+        app.addDescription(Locale.getDefault().toString()).setDescription("Web app description");
 
         app = portletRegistry.getPortletApplication("App_1");
 
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-        assertNotNull("Web app was not located by query.", webApp);
-        webApp.addDescription(Locale.getDefault(), "Web app description");
-
-        webApp = null;
-
-        app = portletRegistry.getPortletApplication("App_1");
-        webApp = (WebApplicationDefinitionImpl) app.getWebApplicationDefinition();
-
-        assertNotNull("Web app was not located by query.", webApp);
-        assertNotNull("Web app did NOT persist its description", webApp.getDescription(Locale.FRENCH));
+        assertNotNull("App did NOT persist its description", app.getDescription(Locale.FRENCH));
 
     }
 

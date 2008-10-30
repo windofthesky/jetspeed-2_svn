@@ -764,8 +764,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         {
             throw new IllegalArgumentException("Init parameter: "+paramName+" already defined");
         }
-        InitParamImpl param = new InitParamImpl();
-        param.setParamName(paramName);
+        InitParamImpl param = new InitParamImpl(this, paramName);
         getInitParams();
         initParams.add(param);
         return param;

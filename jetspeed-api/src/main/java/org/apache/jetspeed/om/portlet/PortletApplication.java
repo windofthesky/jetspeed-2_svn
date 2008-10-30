@@ -18,12 +18,12 @@ package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.xml.namespace.QName;
 
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 
@@ -39,6 +39,9 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  */
 public interface PortletApplication extends PortletApplicationDefinition, Serializable
 {
+    String getContextRoot();
+    void setContextRoot(String contextRoot);
+    
     /**
      * Marks this application as a standard web application,
      * stored in the web application server's web application space.
@@ -118,17 +121,17 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
      */
     void setJetspeedSecurityConstraint(String constraint);
     
-    String getDescription();    
-    void setDescription(String description);
+    Description getDescription(Locale locale);
+    List<Description> getDescriptions();
+    Description addDescription(String lang);
 
-    /**
-     * Returns the corresponding web application to this portlet application.
-     * The return value cannot be NULL.
-     * 
-     * @return a web application
-     */
-    public WebApplicationDefinition getWebApplicationDefinition();
-
+    DisplayName getDisplayName(Locale locale);
+    List<DisplayName> getDisplayNames();
+    DisplayName addDisplayName(String lang);
+    
+    List<SecurityRole> getSecurityRoles();
+    SecurityRole addSecurityRole(String name);
+    
     /**
      * Returns the metadata from the extended jetspeed-portlet.xml
      * The return value cannot be NULL

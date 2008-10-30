@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
 import org.apache.pluto.spi.optional.PortletAppDescriptorService;
 
 
@@ -57,7 +56,4 @@ public interface ExtendedDescriptorService extends PortletAppDescriptorService
     void write(PortletApplication portletDescriptor, OutputStream out) throws IOException;
 
     void readExtended(InputStream in, PortletApplication app) throws IOException;
- 
-    public WebApplicationDefinition readServletDescriptor(InputStream is) throws IOException;
-    
 }

@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.jetspeed.om.servlet;
+package org.apache.jetspeed.om.portlet;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @version $Id$
  *
  */
-public interface WebApplicationDefinition
+public interface SecurityRole
 {
-    String getDisplayName();
-    void setDisplayName(String displayName);
-    
-    String getDescription();
-    void setDescription(String description);
-    
-    List<String> getRoles();
-    void addRole(String role);
-    
-    String getContextRoot();
-    void setContextRoot(String contextRoot);
+    String getName();
+
+    Description getDescription(Locale locale);
+    List<? extends Description> getDescriptions();
+    Description addDescription(String lang);
 }

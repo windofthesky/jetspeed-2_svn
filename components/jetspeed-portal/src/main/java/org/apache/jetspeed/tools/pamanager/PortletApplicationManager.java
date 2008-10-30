@@ -36,7 +36,7 @@ import org.apache.jetspeed.descriptor.ExtendedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.servlet.WebApplicationDefinition;
+import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.PermissionManager;
@@ -302,7 +302,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
             // load the web.xml
             log.info("Loading portlet.xml and web.xml...." + paName);
 			pa = paWar.createPortletApp(paClassLoader);
-			WebApplicationDefinition wa = paWar.getWebApp();
 			if (revision > 0)
 			{
 			    pa.setRevision(revision);
@@ -310,7 +309,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
 			if (paType == PortletApplication.LOCAL)
 			{
-				wa.setContextRoot("<portal>");
+				pa.setContextRoot("<portal>");
 			}
 
             // Make sure existing entities are refreshed with the most
@@ -355,15 +354,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
             // grant default permissions to portlet application
 			grantDefaultPermissions(paName);
             
-            if ( autoCreateRoles && roleManager != null && pa.getWebApplicationDefinition().getRoles() != null )
+            if ( autoCreateRoles && roleManager != null && pa.getSecurityRoles() != null )
             {
                 try
                 {
-                    for (String sr : pa.getWebApplicationDefinition().getRoles())
-                        if ( !roleManager.roleExists(sr) )
+                    for (SecurityRole sr : pa.getSecurityRoles())
+                        if ( !roleManager.roleExists(sr.getName()) )
                         {
-                            roleManager.addRole(sr);
-                            log.info("AutoCreated role: "+sr+" from portlet application "+paName+" its web definition");
+                            roleManager.addRole(sr.getName());
+                            log.info("AutoCreated role: "+sr.getName()+" from portlet application "+paName+" its web definition");
                         }
                 }
                 catch (SecurityException sex)
