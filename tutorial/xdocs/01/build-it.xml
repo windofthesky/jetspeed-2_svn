@@ -37,21 +37,17 @@ cd /JetspeedTraining/workspace/jetexpress
 # Windows
 cd \JetspeedTraining\workspace\jetexpress  	 
 
-mvn -P tomcat,min
+mvn install
+mvn jetspeed:mvn -Dtarget=proddb
+mvn jetspeed:mvn -Dtarget=deploy
      ]]>
 	</source> 
       <p>
-      <i>Please take note that there is no space between the comma and the word <b>min</b></i>
-      </p>
-      <p>
-      We are building a <b>min</b> (minimal) deployment. The Min deployment only creates a Jetspeed core portal and a Jetspeed Admin portlet application (j2-admin).
-      When the build process completes, you should see the message <b>BUILD SUCCESSFUL</b> at the end of a large amount of build logging information      
+      We are building jetexpress(Customized jetspeed portal) and portlet application. When the build process completes, you should see the message <b>BUILD SUCCESSFUL</b> at the end of a large amount of build logging information      
       The portal is built into a temp directory named <i>target</i> found directory under your <i>jetexpress</i> project directory.
-      As well as building, the <i>tomcat,min</i> goals also:
       </p>
       <ul>
-       <li>deploys Jetspeed to the Tomcat application server. If you are following the training material,
-      the Tomcat directory is located under <i>/JetspeedTraining/tomcat-express/</i></li>
+       <li>Above command will deploy the deploys Jetexpress and create database on defined location and database, as specified in last step</li>
       <li>creates the Jetspeed core schema tables in the Derby database</li>
       <li>populates the database with a minimal set of portal information, including default roles, groups, profiles, and administrative users</li>
       </ul>

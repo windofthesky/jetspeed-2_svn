@@ -31,7 +31,7 @@
       </p>
 	 <source>
 	 <![CDATA[
-cd tomcat-express
+cd $server_home
 cd bin
 # Windows
 startup.bat

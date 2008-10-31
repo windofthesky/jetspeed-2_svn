@@ -36,23 +36,42 @@ cd /JetspeedTraining/workspace
 # Windows
 cd \JetspeedTraining\workspace
 
-mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 
-                     -DarchetypeArtifactId=portal-archetype 
-                     -DarchetypeVersion=2.1.3 
+mvn archetype:generate -DarchetypeGroupId=org.apache.portals.jetspeed-2 
+                     -DarchetypeArtifactId=jetspeed-archetype 
+                     -DarchetypeVersion=2.2-SNAPSHOT 
                      -DgroupId=org.apache.portals.tutorials
                      -DartifactId=jetexpress
-                     -Dversion=1.0
+                     -Dversion=1.0                     
      ]]>
 	</source> 
 	  <p>
 	  <b>Paste into Command Line:</b>
-	  <input id='genapp' size="80" value="mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1.3 -DgroupId=org.apache.portals.tutorials -DartifactId=jetexpress -Dversion=1.0"/>	  
+	  <input id='genapp' size="80" value="mvn archetype:generate -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=jetspeed-archetype -DarchetypeVersion=2.2-SNAPSHOT -DgroupId=org.apache.portals.tutorials -DartifactId=jetexpress -Dversion=1.0"/>	  
 	  </p>
       <p>      
-       A directory named <b>jetexpress</b> under <i>/JetspeedTraining/workspace</i> should have been created.
+       A directory named <b>jetexpress</b> under <i>/JetspeedTraining/workspace</i> should have been created. This command will also create and sample portlet application, you can use this to create your own portlet and deployed with you customized jetspeed portal server.
        Notice that <b>jetexpress</b> will be the name of your portal, not <b>jetspeed</b>. The idea is that you 
        can create a customized portal based upon Jetspeed, but with a different name, customized to meet your organization requirements.
       </p>	
+      <p>
+      Now jetspeed maven plugin have created an customized portal server and portlet applicaiton for you. Jetspeed need an database to run, so you need to specify the tomcat location where you want to deploy you 
+      portal and database on which jetspeed would be running. you will find an <b>jetspeed-mvn-settings.xml</b> in your workspace. You need to edit <i>jetspeed-mvn-settings.xml</i>.
+      You will found server home and other database fields. you should change this according to your requirements.
+       
+      <source>
+      <![CDATA[
+org.apache.jetspeed.server.home
+org.apache.jetspeed.production.database.default.name
+org.apache.jetspeed.production.jdbc.driver.groupId
+org.apache.jetspeed.production.jdbc.driver.artifactId
+org.apache.jetspeed.production.jdbc.driver.version
+org.apache.jetspeed.production.database.driver
+org.apache.jetspeed.production.database.url
+org.apache.jetspeed.production.database.user
+org.apache.jetspeed.production.database.password
+ ]]>
+      </source>
+      </p>
 	  <p>
 	    <a href='first-steps.html'>Previous</a> <a href='build-it.html'>Next</a>
 	  </p>            
