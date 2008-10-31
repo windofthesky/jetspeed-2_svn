@@ -33,7 +33,6 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.page.impl.FragmentPreferenceValue;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -164,12 +163,11 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                     entityMap = new JetspeedPreferencesMap();                 
                     for (FragmentPreference fragmentPref : fragmentPrefs)
                     {                  
-                        List<FragmentPreferenceValue> fragmentValues = fragmentPref.getValueList();
-                        String[] entityValues = new String[fragmentValues.size()];
+                        String[] entityValues = new String[fragmentPref.getValueList().size()];
                         int ix = 0;
-                        for (FragmentPreferenceValue fragmentValue : fragmentValues)
+                        for (Object value : fragmentPref.getValueList())
                         {
-                            entityValues[ix] = fragmentValue.getValue();
+                            entityValues[ix] = (String)value;
                             ix++;
                         }
                         JetspeedPreferenceImpl preference = new JetspeedPreferenceImpl(fragmentPref.getName(), entityValues);
