@@ -18,13 +18,23 @@ package org.apache.jetspeed.descriptor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.DisplayName;
@@ -38,6 +48,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
+import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.UserAttribute;
@@ -55,6 +66,12 @@ import org.apache.pluto.om.portlet.CustomWindowState;
 import org.apache.pluto.om.portlet.Description;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.services.PortletAppDescriptorService;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Jetspeed Descriptor service for loading portlet applications in a Jetspeed format.
@@ -64,20 +81,66 @@ import org.apache.pluto.services.PortletAppDescriptorService;
  */
 public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
 {
+    private static class XPathNamespaceContext implements NamespaceContext
+    {
+        private String namespaceURI;
+        private String prefix;
+        
+        public XPathNamespaceContext(String prefix)
+        {
+            this(prefix,XMLConstants.XML_NS_URI);
+        }
+
+        public XPathNamespaceContext(String prefix, String namespaceURI)
+        {
+            this.prefix = prefix;
+            this.namespaceURI = namespaceURI;
+        }
+
+        public String getNamespaceURI(String prefix)
+        {
+            if (prefix == null)
+            {
+                throw new NullPointerException("Null prefix");
+            }
+            else if (this.prefix.equals(prefix))
+            {
+                return namespaceURI;
+            }
+            else if ("xml".equals(prefix))
+            {
+                return XMLConstants.XML_NS_URI;
+            }
+            return XMLConstants.NULL_NS_URI;
+        }
+
+        public String getPrefix(String namespaceURI)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @SuppressWarnings("unchecked")
+        public Iterator getPrefixes(String namespaceURI)
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private static final String NAMESPACE_PREFIX = "js";
+    
     private PortletAppDescriptorService plutoDescriptorService;
+    DocumentBuilderFactory domFactory;
     
     public JetspeedDescriptorServiceImpl(PortletAppDescriptorService plutoDescriptorService)
     {
         this.plutoDescriptorService = plutoDescriptorService;
     }
     
-    public PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws IOException
+    public PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws Exception
     {
-        // TODO: do web.xml loading here
         PortletApplicationDefinition pad = plutoDescriptorService.read(portletDescriptor);
-        // TODO 2.2: do web.xml merge descriptions/display-names/roles/locale-encoding-mapping-list elements
-        //           within the pa, see Portlet Spec 2.0, PLT.25.1
         PortletApplication pa = upgrade(pad);
+        loadWebDescriptor(pa, webDescriptor);
         if (jetspeedPortletDescriptor != null)
         {
             loadJetspeedPortletDescriptor(pa, jetspeedPortletDescriptor);
@@ -85,13 +148,159 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         return pa;
     }
 
+    protected void loadWebDescriptor(PortletApplication pa, InputStream webDescriptor) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException
+    {
+        if (domFactory == null)
+        {
+            domFactory = DocumentBuilderFactory.newInstance();
+            domFactory.setNamespaceAware(true);
+        }
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        
+        builder.setEntityResolver(new EntityResolver()
+        {
+            public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId) throws SAXException,
+                            java.io.IOException
+            {
+                if (systemId.equals("http://java.sun.com/dtd/web-app_2_3.dtd"))
+                {
+                    return new InputSource(getClass().getResourceAsStream("web-app_2_3.dtd"));
+                }
+                return null;
+            }
+        });
+        
+        Document document = builder.parse(webDescriptor);
+        Element root = document.getDocumentElement();
+        String namespace = root.getNamespaceURI();
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        String prefix;
+        
+        if(namespace!= null && namespace.length() > 0)
+        {
+            prefix = NAMESPACE_PREFIX+":";
+            xpath.setNamespaceContext(new XPathNamespaceContext(NAMESPACE_PREFIX, namespace));
+        }
+        else
+        {
+            prefix = XMLConstants.DEFAULT_NS_PREFIX;
+            xpath.setNamespaceContext(new XPathNamespaceContext(XMLConstants.DEFAULT_NS_PREFIX));
+        }
+        
+        NodeList nodes;
+        Element element;
+        
+        // retrieve display-name entries
+        nodes = (NodeList)xpath.evaluate("/"+prefix+"web-app/"+prefix+"display-name", document, XPathConstants.NODESET);
+        if (nodes != null)
+        {
+            DisplayName d;
+            for (int i = 0, size = nodes.getLength(); i < size; i++)
+            {
+                element = (Element)nodes.item(i);
+                String lang = element.getAttributeNS(XMLConstants.XML_NS_URI, "lang");
+                if (lang == null)
+                {
+                    lang = "en";
+                }
+                d = pa.getDisplayName(JetspeedLocale.convertStringToLocale(lang));
+                if (d == null)
+                {
+                    d = pa.addDisplayName(lang);
+                }
+                // else: overwrite display-name with last found entry
+                
+                d.setDisplayName(element.getTextContent().trim());
+            }
+        }
+
+        // retrieve description entries
+        nodes = (NodeList)xpath.evaluate("/"+prefix+"web-app/"+prefix+"description", document, XPathConstants.NODESET);
+        if (nodes != null)
+        {
+            Description d;
+            for (int i = 0, size = nodes.getLength(); i < size; i++)
+            {
+                element = (Element)nodes.item(i);
+                String lang = element.getAttributeNS(XMLConstants.XML_NS_URI, "lang");
+                if (lang == null)
+                {
+                    lang = "en";
+                }
+                d = pa.getDescription(JetspeedLocale.convertStringToLocale(lang));
+                if (d == null)
+                {
+                    d = pa.addDescription(lang);
+                }
+                // else: overwrite description with last found entry
+                
+                d.setDescription(element.getTextContent().trim());
+            }
+        }
+        
+        // retrieve security-role
+        nodes = (NodeList)xpath.evaluate("/"+prefix+"web-app/"+prefix+"security-role", document, XPathConstants.NODESET);
+        if (nodes != null)
+        {
+            NodeList children;
+            String roleName;
+            SecurityRole r;
+            Description d;
+            for (int i = 0, nsize = nodes.getLength(); i < nsize; i++)
+            {
+                element = (Element)nodes.item(i);
+                children = element.getElementsByTagName("role-name");
+                if (children != null && children.getLength() != 0)
+                {
+                    roleName = children.item(0).getTextContent().trim();
+                    if (roleName.length() > 0)
+                    {
+                        r = null;
+                        for (SecurityRole sr : pa.getSecurityRoles())
+                        {
+                            if (sr.getName().equals(roleName))
+                            {
+                                r = sr;
+                                break;
+                            }
+                        }
+                        if (r == null)
+                        {
+                            r = pa.addSecurityRole(roleName);
+                        }
+                        // else: overwrite or merge existing descriptions with those of this last found entry
+                        
+                        children = element.getElementsByTagName("description");
+                        if (children != null)
+                        {
+                            for (int j = 0, csize = children.getLength(); j < csize; j++)
+                            {
+                                element = (Element)children.item(j);
+                                String lang = element.getAttributeNS(XMLConstants.XML_NS_URI, "lang");
+                                if (lang == null)
+                                {
+                                    lang = "en";
+                                }
+                                if (r.getDescription(JetspeedLocale.convertStringToLocale(lang)) == null)
+                                {
+                                    d = r.addDescription(lang);
+                                    d.setDescription(element.getTextContent());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // TODO 2.2: retrieve locale-encoding-mapping-list, see Portlet Spec 2.0, PLT.25.1
+    }
+    
     protected PortletApplication upgrade(PortletApplicationDefinition pa)
     {
         PortletApplication jpa = new PortletApplicationDefinitionImpl();
         jpa.setDefaultNamespace(pa.getDefaultNamespace());
-        //pa.setDescription(pad.get) // TODO: 2.2 should we get this from the web.xml (as well as <display-name> and <security-role>
-        // not upgradable: checksum, revision
-        jpa.setName(pa.getName());
         jpa.setResourceBundle(pa.getResourceBundle());
         jpa.setVersion(pa.getVersion());
         for (org.apache.pluto.om.portlet.PortletDefinition pd : pa.getPortlets())

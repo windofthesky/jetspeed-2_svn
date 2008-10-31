@@ -61,21 +61,9 @@ import org.apache.pluto.om.portlet.SecurityRoleRef;
  */
 public class PortletApplicationWar
 {
-    protected static final String WEB_XML_STRING = 
-            "<?xml version='1.0' encoding='ISO-8859-1'?>" +
-            "<!DOCTYPE web-app " +
-            "PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN' " + 
-           "'http://java.sun.com/dtd/web-app_2_3.dtd'>\n" +
-            "<web-app></web-app>";
-
     public static final String PORTLET_XML_PATH = "WEB-INF/portlet.xml";
     public static final String WEB_XML_PATH = "WEB-INF/web.xml";
     public static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
-
-    protected static final int MAX_BUFFER_SIZE = 1024;
-
-    public static final String JETSPEED_SERVLET_XPATH = "/web-app/servlet/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
-    public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/web-app/servlet-mapping/servlet-name[contains(child::text(), \"JetspeedContainer\")]";
 
     protected static final Log log = LogFactory.getLog("deployment");
 
@@ -86,12 +74,6 @@ public class PortletApplicationWar
     private PortletApplication portletApp;
     private long paChecksum;
     protected JetspeedDescriptorService descriptorService;
-
-    protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
-            "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
-    protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"icon", "display-name",
-            "description", "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
-            "servlet-mapping"};
 
     /**
      * @param warFile
@@ -162,10 +144,10 @@ public class PortletApplicationWar
      * 
      * @return @throws
      *         PortletApplicationException
-     * @throws IOException
+     * @throws Exception
      * @see org.apache.jetspeed.uitl.descriptor.PortletApplicationDescriptor
      */
-    public PortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
+    public PortletApplication createPortletApp(ClassLoader classLoader) throws Exception
     {
         InputStream webXmlStream = getInputStream(WEB_XML_PATH);
         InputStream portletXmlStream = getInputStream(PORTLET_XML_PATH);
@@ -182,6 +164,8 @@ public class PortletApplicationWar
         {
             portletApp = descriptorService.read(webXmlStream, portletXmlStream, extStream);
             validate();
+            portletApp.setName(paName);
+            portletApp.setContextRoot(webAppContextRoot);
             portletApp.setChecksum(paChecksum);
             return portletApp;
         }
@@ -202,8 +186,7 @@ public class PortletApplicationWar
         }
     }
 
-    public PortletApplication createPortletApp() 
-    throws PortletApplicationException, IOException
+    public PortletApplication createPortletApp() throws Exception
     {
         return createPortletApp(this.getClass().getClassLoader());
     }

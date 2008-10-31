@@ -299,9 +299,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
 		try
 		{
-            // load the web.xml
-            log.info("Loading portlet.xml and web.xml...." + paName);
+            log.info("Loading deployment descriptors for "+paName+" ....");
 			pa = paWar.createPortletApp(paClassLoader);
+            pa.setApplicationType(paType);
 			if (revision > 0)
 			{
 			    pa.setRevision(revision);

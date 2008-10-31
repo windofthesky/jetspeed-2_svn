@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.descriptor;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -33,7 +32,7 @@ public interface JetspeedDescriptorService
      * Retrieve the PortletApp deployment descriptor
      * (portlet.xml).
      * @return Object representation of the descriptor.
-     * @throws IOException if an IO error occurs.
+     * @throws Exception if an loading or parsing error occurs.
      */
-    PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws IOException;
+    PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws Exception;
 }

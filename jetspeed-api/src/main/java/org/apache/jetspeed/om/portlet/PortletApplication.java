@@ -66,6 +66,7 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
      * @return The type of portlet application.
      */
     int getApplicationType();
+    void setApplicationType(int type);
 
     /**
      * The checksum on the portlet XML from the last deployment
