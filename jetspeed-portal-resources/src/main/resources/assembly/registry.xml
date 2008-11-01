@@ -108,7 +108,7 @@
     </property>
 
     <property name="target">
-      <ref bean="PortletPreferencesProviderImpl" />
+      <ref bean="org.apache.pluto.services.PreferencesService" />
     </property>
     <property name="transactionAttributes">
       <props>

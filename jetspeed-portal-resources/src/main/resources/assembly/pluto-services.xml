@@ -113,7 +113,7 @@ limitations under the License.
       <constructor-arg><ref bean="org.apache.pluto.services.RequestAttributeService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.pluto.services.PlutoRegistryServiceAdaptor"/></constructor-arg>            
-      <constructor-arg><ref bean="org.apache.pluto.services.PreferencesService"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider"/></constructor-arg>
     </bean>
     
     <bean id="org.apache.pluto.services.NamespaceMapper"
