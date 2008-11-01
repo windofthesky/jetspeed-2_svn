@@ -41,10 +41,12 @@ import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.EventDefinitionReference;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PortletInfo;
+import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.om.portlet.Supports;
@@ -53,7 +55,7 @@ import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.jetspeed.om.portlet.Language;
+import org.apache.pluto.internal.InternalPortletPreference;
 
 /**
  * 
@@ -95,7 +97,8 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     private List<Language> languages;
     private List<ContainerRuntimeOption> containerRuntimeOptions;    
     private List<String> supportedPublicRenderParameters;
-
+    private Preferences descriptorPreferences = new PreferencesImpl();    
+    
     private transient Map<Locale,InlinePortletResourceBundle> resourceBundles = new HashMap<Locale, InlinePortletResourceBundle>();
     
     protected List portletEntities;
@@ -180,12 +183,33 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         this.portletClass = portletClass;
     }
 
+    public void setDescriptorPreferences(Preferences descriptorPreferences)
+    {
+        this.descriptorPreferences = descriptorPreferences;
+    }
+    
+    public Preferences getDescriptorPreferences()
+    {
+        return this.descriptorPreferences;
+    }
+
     public Preferences getPortletPreferences()
     {
-        // TODO Auto-generated method stub
+        if (this.portletPreferencesProvider == null)
+        {
+            
+        }
+        Map<String, InternalPortletPreference> prefMap = this.portletPreferencesProvider.getDefaultPreferences(this);
+        // TODO: 2.2 either write a new class or reuse Pluto's PortletPreferencesImpl.java
         return null;
     }
 
+    public Preference addDescriptorPreference(String name)
+    {
+        return descriptorPreferences.addPreference(name);
+    }       
+    
+    
     public ResourceBundle getResourceBundle(Locale locale)
     {
         InlinePortletResourceBundle bundle = resourceBundles.get(locale);
@@ -826,5 +850,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         edr.setName(name);
         supportedPublishingEvents.add(edr);
         return edr;
-    }       
+    }
+
 }

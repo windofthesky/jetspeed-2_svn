@@ -18,14 +18,13 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
+import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -33,7 +32,6 @@ import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -62,13 +60,13 @@ public class PersistenceBrokerPortletRegistry
     private JetspeedCache portletOidCache = null;
     private JetspeedCache applicationNameCache = null;
     private JetspeedCache portletNameCache = null;
-    private Map nameCache = new HashMap(); // work in progress (switch to JetspeedCache)
     private List<RegistryEventListener> listeners = new ArrayList<RegistryEventListener>();
+    private PortletPreferencesProvider preferenceService;
     
     // for testing purposes only: no need for the portletFactory then
-    public PersistenceBrokerPortletRegistry(String repositoryPath)
+    public PersistenceBrokerPortletRegistry(String repositoryPath, PortletPreferencesProvider preferenceService)
     {
-        this(repositoryPath, null, null, null, null);
+        this(repositoryPath, null, null, null, null, preferenceService);
     }
     
     /**
@@ -76,7 +74,7 @@ public class PersistenceBrokerPortletRegistry
      */
     public PersistenceBrokerPortletRegistry(String repositoryPath,
             JetspeedCache applicationOidCache, JetspeedCache portletOidCache, 
-            JetspeedCache applicationNameCache, JetspeedCache portletNameCache)
+            JetspeedCache applicationNameCache, JetspeedCache portletNameCache, PortletPreferencesProvider preferenceService)
     {
         super(repositoryPath);
         this.applicationOidCache = applicationOidCache;
@@ -88,12 +86,13 @@ public class PersistenceBrokerPortletRegistry
         RegistryPortletCache.cacheInit(this, portletOidCache, portletNameCache, listeners);
         this.applicationNameCache.addEventListener(this, false);
         this.portletNameCache.addEventListener(this, false);        
+        this.preferenceService = preferenceService;
     }
     
-    public Collection getAllPortletDefinitions()
+    public Collection<PortletDefinition> getAllPortletDefinitions()
     {
         Criteria c = new Criteria();
-        Collection list = getPersistenceBrokerTemplate().getCollectionByQuery(
+        Collection<PortletDefinition> list = getPersistenceBrokerTemplate().getCollectionByQuery(
                 QueryFactory.newQuery(PortletDefinitionImpl.class, c));
         postLoadColl(list);
         return list;
@@ -109,10 +108,10 @@ public class PersistenceBrokerPortletRegistry
         return app;
     }
 
-    public Collection getPortletApplications()
+    public Collection<PortletApplication> getPortletApplications()
     {
         Criteria c = new Criteria();
-        Collection list = getPersistenceBrokerTemplate().getCollectionByQuery(
+        Collection<PortletApplication> list = getPersistenceBrokerTemplate().getCollectionByQuery(
                 QueryFactory.newQuery(PortletApplicationDefinitionImpl.class, c));
         postLoadColl(list);
         return list;
@@ -124,11 +123,10 @@ public class PersistenceBrokerPortletRegistry
         String portletName = PortletRegistryHelper.parsePortletName(name);
 
         Criteria c = new Criteria();
-    // TODO: 2.2 something failing here    c.addEqualTo("app.name", appName);
+// TODO: 2.2 Fix me        c.addEqualTo("app.name", appName);
         c.addEqualTo("name", portletName);
-
         PortletDefinition def = (PortletDefinition) getPersistenceBrokerTemplate().getObjectByQuery(
-                QueryFactory.newQuery(PortletDefinitionImpl.class, c));
+        QueryFactory.newQuery(PortletDefinitionImpl.class, c));
         if (def != null && def.getApplication() == null)
         {
             final String msg = "getPortletDefinitionByIdentifier() returned a PortletDefinition that has no parent PortletApplication.";
@@ -149,19 +147,19 @@ public class PersistenceBrokerPortletRegistry
         return getPortletDefinitionByUniqueName(app.getName() + "::" + portletName) != null;
     }
 
-    public void registerPortletApplication( PortletApplicationDefinition newApp ) throws RegistryException
+    public void registerPortletApplication(PortletApplication newApp) throws RegistryException
     {
         getPersistenceBrokerTemplate().store(newApp);
+        this.preferenceService.storeDefaults(newApp);
     }
 
-    public void removeApplication( PortletApplicationDefinition app ) throws RegistryException
+    public void removeApplication(PortletApplication app) throws RegistryException
     {
         getPersistenceBrokerTemplate().delete(app);
-        
-        // TODO: remove PortletPreferences and then what scope: everything (default, global and entity prefs) or only default (portlet scope)?
+        this.preferenceService.removeDefaults(app);
     }
 
-    public void updatePortletApplication( PortletApplicationDefinition app ) throws RegistryException
+    public void updatePortletApplication(PortletApplication app) throws RegistryException
     {
         getPersistenceBrokerTemplate().store(app);
 

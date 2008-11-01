@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
  * <p>
@@ -93,16 +92,16 @@ public interface PortletRegistry
      * within the Portal.          
      * @param newApp
      */
-    void registerPortletApplication( PortletApplicationDefinition newApp ) throws RegistryException;
+    void registerPortletApplication( PortletApplication newApp ) throws RegistryException;
 
-    void removeApplication( PortletApplicationDefinition app ) throws RegistryException;
+    void removeApplication( PortletApplication app ) throws RegistryException;
 
     /**
      * Makes any changes to the <code>PortletApplicationDefinition</code>
      * persistent.
      * @param app
      */
-    void updatePortletApplication( PortletApplicationDefinition app ) throws RegistryException;
+    void updatePortletApplication( PortletApplication app ) throws RegistryException;
     
     /**
      * 

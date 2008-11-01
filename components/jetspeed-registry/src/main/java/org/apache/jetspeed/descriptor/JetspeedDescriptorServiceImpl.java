@@ -46,6 +46,7 @@ import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.SecurityRole;
@@ -460,6 +461,17 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         jpd.setExpirationCache(pd.getExpirationCache());
         jpd.setPortletClass(pd.getPortletClass());
         jpd.setResourceBundle(pd.getResourceBundle());
+        jpd.getDescriptorPreferences().setPreferencesValidator(pd.getPortletPreferences().getPreferencesValidator());
+        for (org.apache.pluto.om.portlet.Preference preference : pd.getPortletPreferences().getPortletPreferences())
+        {
+            Preference jpref = jpd.getDescriptorPreferences().addPreference(preference.getName());
+            jpref.setReadOnly(preference.isReadOnly());
+            for (String value : preference.getValues())
+            {
+                jpref.addValue(value);
+            }
+            
+        }        
         for (org.apache.pluto.om.portlet.ContainerRuntimeOption cro : pd.getContainerRuntimeOptions())
         {
             ContainerRuntimeOption jcro = jpd.addContainerRuntimeOption(cro.getName());

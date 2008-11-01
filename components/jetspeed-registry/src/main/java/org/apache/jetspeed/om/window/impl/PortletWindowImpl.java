@@ -21,6 +21,7 @@ import java.io.Serializable;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
@@ -121,7 +122,8 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serial
 
     public PortletMode getPortletMode()
     {
-        return portletMode;
+        // TODO: 2.2 this works, but we might want to better wire things in
+        return Jetspeed.getCurrentRequestContext().getPortalURL().getNavigationalState().getMode(this);
     }
 
     public void setPortletMode(PortletMode portletMode)
@@ -131,7 +133,8 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serial
 
     public WindowState getWindowState()
     {
-        return windowState;
+        // TODO: 2.2 this works, but we might want to better wire things in
+        return Jetspeed.getCurrentRequestContext().getPortalURL().getNavigationalState().getState(this);
     }
 
     public void setWindowState(WindowState windowState)

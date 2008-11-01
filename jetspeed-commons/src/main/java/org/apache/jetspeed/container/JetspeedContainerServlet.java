@@ -252,9 +252,9 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                // TODO: 2.2 actionRequest.init(, request);                
                 // inject the current request into the actionRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
                 ((HttpServletRequestWrapper)((HttpServletRequestWrapper)actionRequest).getRequest()).setRequest(request);
-
                 portlet.processAction(actionRequest, actionResponse);
             }
             else if (method == ContainerConstants.METHOD_RENDER)
@@ -271,7 +271,9 @@ public class JetspeedContainerServlet extends HttpServlet
                 {
                     renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                     renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                }                
+
+                }
+                // TODO: 2.2 renderRequest.init(, request);               
                 // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
                 ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
                 portlet.render(renderRequest, renderResponse);

@@ -41,7 +41,8 @@ public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDe
     PortletInfo getPortletInfo();
 
     Preferences getPortletPreferences();
-
+    Preferences getDescriptorPreferences();
+    Preference addDescriptorPreference(String name);
     List<EventDefinitionReference> getSupportedProcessingEvents();
     EventDefinitionReference addSupportedProcessingEvent(QName qname);
     EventDefinitionReference addSupportedProcessingEvent(String name);

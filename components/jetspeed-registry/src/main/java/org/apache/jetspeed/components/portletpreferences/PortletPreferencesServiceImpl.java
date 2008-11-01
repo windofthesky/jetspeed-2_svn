@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -113,42 +115,15 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             throws PortletContainerException
     {
         PortletWindow window = (PortletWindow)pw;
-        String appName = window.getPortletEntity().getPortletDefinition().getApplication().getName();
-        String portletName = window.getPortletEntity().getPortletDefinition().getPortletName();        
+        org.apache.jetspeed.om.portlet.PortletDefinition pd = window.getPortletEntity().getPortletDefinition();
         String entityId = window.getPortletEntity().getId();
-        String defaultsCacheKey = getPorletPreferenceKey(appName, portletName);
-        JetspeedPreferencesMap defaultsMap;         
-        // first search in cache        
-        CacheElement cachedDefaults = preferenceCache.get(defaultsCacheKey);        
-        if (cachedDefaults != null)
-        {
-            defaultsMap = (JetspeedPreferencesMap)cachedDefaults.getContent();
-        }            
-        else
-        {
-            // not found in cache, lookup in database
-            JetspeedPreferencesMap map = new JetspeedPreferencesMap(); 
-            Criteria c = new Criteria();
-            c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-            c.addEqualTo("applicationName", appName);
-            c.addEqualTo("portletName", portletName);                
-            QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-            Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
-            while (preferences.hasNext())
-            {
-                DatabasePreference preference = preferences.next();            
-                JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
-                value.setReadOnly(preference.isReadOnly());
-                map.put(preference.getName(), value);
-            }
-            preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));
-            defaultsMap = map;
-        }
-        
+        Map<String, InternalPortletPreference> defaultsMap = this.getDefaultPreferences(pd);
         // retrieve entity preferences
         if (useEntityPreferences)
         {
             JetspeedPreferencesMap entityMap = null;
+            String appName = pd.getApplication().getName();
+            String portletName = pd.getPortletName();
             String entityCacheKey = this.getEntityPreferenceKey(appName, portletName, entityId);
             CacheElement cachedEntity = preferenceCache.get(entityCacheKey);        
             if (cachedEntity != null)
@@ -442,7 +417,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     
     public void storeDefaults(org.apache.jetspeed.om.portlet.PortletDefinition pd)
     {
-        Preferences preferences = pd.getPortletPreferences();
+        Preferences preferences = pd.getDescriptorPreferences();
+        String defaultsCacheKey = getPorletPreferenceKey(pd.getApplication().getName(), pd.getPortletName());            
+        JetspeedPreferencesMap map = new JetspeedPreferencesMap(); 
         for (Preference preference : preferences.getPortletPreferences())
         {
             DatabasePreference dbPref = new DatabasePreference();
@@ -459,17 +436,23 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
                 dbValue.setIndex(index);
                 dbValue.setValue(value);
+                dbPref.getPreferenceValues().add(dbValue);
                 index++;
-            }
+                
+            }                       
+            JetspeedPreferenceImpl cached = new JetspeedPreferenceImpl(dbPref.getName(), dbPref.getValues());
+            cached.setReadOnly(dbPref.isReadOnly());
+            map.put(preference.getName(), cached);
             getPersistenceBrokerTemplate().store(dbPref);
-            
         }
+        preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));                    
     }
 
     public  Map<String, InternalPortletPreference>  retrieveEntityPreferences(PortletWindow window, PortletRequest request)
     {
         // TODO: 2.2 implement - need to better look at use cases for edit defaults mode
-        return new JetspeedPreferencesMap(); 
+        // we are currently not storing entity preferences in the database. 
+        throw new UnsupportedOperationException();
     }
     
     public void storeEntityPreferences(PortletWindow pw, PortletRequest request,
@@ -477,6 +460,69 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             throws PortletContainerException
     {
         // TODO: 2.2 implement - need to better look at use cases for edit defaults mode
+        // we are currently not storing entity preferences in the database. 
+        throw new UnsupportedOperationException();
     }
 
+
+    public void removeDefaults(org.apache.jetspeed.om.portlet.PortletDefinition pd)
+    {
+        Criteria c = new Criteria();
+        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
+        c.addEqualTo("applicationName", pd.getApplication().getName());
+        c.addEqualTo("portletName", pd.getPortletName());                
+        QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+        getPersistenceBrokerTemplate().deleteByQuery(query);
+        String defaultsCacheKey = getPorletPreferenceKey(pd.getApplication().getName(), pd.getPortletName());            
+        preferenceCache.remove(defaultsCacheKey);
+    }
+
+
+    public void removeDefaults(PortletApplication app)
+    {
+        Criteria c = new Criteria();
+        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
+        c.addEqualTo("applicationName", app.getName());
+        QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+        getPersistenceBrokerTemplate().deleteByQuery(query);
+        for (PortletDefinition pd : app.getPortlets())
+        {
+            String defaultsCacheKey = getPorletPreferenceKey(pd.getApplication().getName(), pd.getPortletName());            
+            preferenceCache.remove(defaultsCacheKey);            
+        }
+    }
+
+    public Map<String, InternalPortletPreference> getDefaultPreferences(org.apache.jetspeed.om.portlet.PortletDefinition pd)
+    {
+        String appName = pd.getApplication().getName();
+        String portletName = pd.getPortletName();        
+        String defaultsCacheKey = getPorletPreferenceKey(appName, portletName);
+        JetspeedPreferencesMap defaultsMap;         
+        // first search in cache        
+        CacheElement cachedDefaults = preferenceCache.get(defaultsCacheKey);        
+        if (cachedDefaults != null)
+        {
+            defaultsMap = (JetspeedPreferencesMap)cachedDefaults.getContent();
+        }            
+        else
+        {
+            // not found in cache, lookup in database
+            JetspeedPreferencesMap map = new JetspeedPreferencesMap(); 
+            Criteria c = new Criteria();
+            c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
+            c.addEqualTo("applicationName", appName);
+            c.addEqualTo("portletName", portletName);                
+            QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+            Collection<DatabasePreference> preferences = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            for (DatabasePreference preference : preferences)
+            {
+                JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
+                value.setReadOnly(preference.isReadOnly());
+                map.put(preference.getName(), value);
+            }
+            preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));
+            defaultsMap = map;
+        }
+        return defaultsMap;
+    }
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -118,6 +119,10 @@ public class DatabasePreference
 
     public Collection<DatabasePreferenceValue> getPreferenceValues()
     {
+        if (values == null)
+        {
+            values = new ArrayList<DatabasePreferenceValue>();
+        }
         return values;
     }
 
