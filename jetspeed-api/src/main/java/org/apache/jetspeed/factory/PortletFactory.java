@@ -16,19 +16,14 @@
  */
 package org.apache.jetspeed.factory;
 
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-import org.apache.jetspeed.container.InternalPortletConfig;
-import org.apache.jetspeed.container.InternalPortletContext;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.PortletContainerException;
 
 /**
  * <p>
@@ -52,9 +47,5 @@ public interface PortletFactory
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
     PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
-    org.apache.pluto.internal.InternalPortletContext getPortletContext(PortletApplication pa)  throws PortletContainerException;
-    // TODO: 2.2 refactor following 3 interfaces to a more common factory interface
-    InternalPortletContext createPortletContext(ServletContext servletContext, PortletApplication application);
-    InternalPortletConfig createPortletConfig(ServletConfig config, PortletContext portletContext, PortletDefinition pd);    
     PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher);
 }

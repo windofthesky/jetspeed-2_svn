@@ -25,6 +25,7 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalConfiguration;
@@ -71,10 +72,7 @@ public class JetspeedEngine implements Engine
     public JetspeedEngine(PortalConfiguration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )
     {
         this.componentManager = componentManager;
-        this.context = (PortalContext)componentManager.getComponent("PortalContext");
-        this.context.setEngine(this);
-        this.context.setConfiguration(configuration);
-        this.context.setApplicationRoot(applicationRoot);
+        this.context = new JetspeedPortalContext(this, configuration, applicationRoot);
         this.config = config;
         context.setApplicationRoot(applicationRoot);
         context.setConfiguration(configuration);           
@@ -84,6 +82,7 @@ public class JetspeedEngine implements Engine
         
         // Make these availble as beans to Spring
         componentManager.addComponent("Engine", this);
+        componentManager.addComponent("PortalContext", context);
         componentManager.addComponent("PortalConfiguration", configuration);
     }  
     

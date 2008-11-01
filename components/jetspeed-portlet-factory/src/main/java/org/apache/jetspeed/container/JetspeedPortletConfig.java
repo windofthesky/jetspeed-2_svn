@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
-import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.internal.impl.PortletConfigImpl;
@@ -39,9 +38,9 @@ import org.apache.pluto.internal.impl.PortletConfigImpl;
 public class JetspeedPortletConfig extends PortletConfigImpl implements PortletConfig, InternalPortletConfig
 {
     
-    public JetspeedPortletConfig(ServletConfig servletConfig, PortletContext portletContext, PortletDefinition portlet)
+    public JetspeedPortletConfig(PortletContext portletContext, PortletDefinition portlet)
     {
-        super(servletConfig, portletContext, portlet, portlet.getApplication());
+        super(portletContext, portlet, portlet.getApplication());
     }
 
     public void setPortletDefinition(PortletDefinition pd)

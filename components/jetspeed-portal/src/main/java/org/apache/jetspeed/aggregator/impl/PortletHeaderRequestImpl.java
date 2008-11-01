@@ -22,7 +22,6 @@ import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.core.impl.PortletPreferencesImpl;
 import org.apache.jetspeed.container.PortletWindow;
 
 
@@ -47,7 +46,8 @@ public class PortletHeaderRequestImpl implements PortletHeaderRequest
     
     public PortletPreferences getPreferences()
     {
-        return new PortletPreferencesImpl(org.apache.pluto.Constants.METHOD_NOOP, this.portletWindow.getPortletEntity());
+        return null;
+//        return new PortletPreferencesImpl(org.apache.pluto.Constants.METHOD_NOOP, this.portletWindow.getPortletEntity());
     }
     
     public String getInitParameter( String name )

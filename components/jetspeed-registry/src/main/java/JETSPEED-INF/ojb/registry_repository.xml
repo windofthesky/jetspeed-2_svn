@@ -438,7 +438,7 @@
    - L A N G U A G E
 -->
    <class-descriptor
-      class="org.apache.jetspeed.om.impl.LanguageImpl"
+      class="org.apache.jetspeed.om.portlet.impl.LanguageImpl"
       table="LANGUAGE"
    >
       <field-descriptor

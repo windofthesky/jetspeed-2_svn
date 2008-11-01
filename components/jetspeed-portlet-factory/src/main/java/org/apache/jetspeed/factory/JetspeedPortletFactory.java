@@ -28,19 +28,15 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.UnavailableException;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.container.InternalPortletConfig;
-import org.apache.jetspeed.container.InternalPortletContext;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletObjectProxy;
-import org.apache.pluto.PortletContainerException;
 import org.apache.pluto.internal.impl.PortletRequestDispatcherImpl;
 
 /**
@@ -83,12 +79,9 @@ public class JetspeedPortletFactory implements PortletFactory
 
     private String customConfigModePortletUniqueName;
 
-    private ServletConfig jetspeedConfig;
-    
-    public JetspeedPortletFactory(ServletConfig jetspeedConfig, boolean autoSwitchConfigMode,
+    public JetspeedPortletFactory(boolean autoSwitchConfigMode,
             boolean autoSwitchEditDefaultsModeToEditMode)
     {
-        this.jetspeedConfig = jetspeedConfig;
         this.portletCache = Collections.synchronizedMap(new HashMap<String, Map<String, PortletInstance>>());
         this.validatorCache = Collections.synchronizedMap(new HashMap<String, Map<String, PreferencesValidator>>());
         this.classLoaderMap = Collections.synchronizedMap(new HashMap<String, PortletFactoryInfo>());
@@ -122,10 +115,7 @@ public class JetspeedPortletFactory implements PortletFactory
         synchronized (classLoaderMap)
         {
             unregisterPortletApplication(pa);            
-            ServletContext servletContext = jetspeedConfig.getServletContext();
-            ServletContext portletAppContext = servletContext.getContext(pa.getName());
-            InternalPortletContext context = this.createPortletContext(portletAppContext, pa);      
-            classLoaderMap.put(pa.getName(), new PortletFactoryInfo(cl, context)); // // TODO: 2.2 need to get servletConfig in registration process
+            classLoaderMap.put(pa.getName(), new PortletFactoryInfo(cl, null)); // TODO 2.2: determine if PortletFactoryInfo is still needed
         }
     }
 
@@ -189,7 +179,7 @@ public class JetspeedPortletFactory implements PortletFactory
                             ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
                             try
                             {
-                                Class clazz = paCl.loadClass(className);
+                                Class<?> clazz = paCl.loadClass(className);
                                 try
                                 {
                                     Thread.currentThread().setContextClassLoader(paCl);
@@ -260,7 +250,7 @@ public class JetspeedPortletFactory implements PortletFactory
                     ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
                     try
                     {
-                        Class clazz = paCl.loadClass(pd.getPortletClass());
+                        Class<?> clazz = paCl.loadClass(pd.getPortletClass());
                         try
                         {
                             Thread.currentThread().setContextClassLoader(paCl);
@@ -297,8 +287,8 @@ public class JetspeedPortletFactory implements PortletFactory
                         log.error(msg, e);
                         throw new UnavailableException(msg);
                     }
-                    PortletContext portletContext = this.createPortletContext(servletContext, pa);
-                    PortletConfig portletConfig = this.createPortletConfig(null, portletContext, pd); // TODO: 2.2 need to get servletConfig in registration process
+                    PortletContext portletContext = new JetspeedPortletContext(servletContext, pa, this);                    
+                    PortletConfig portletConfig = new JetspeedPortletConfig(portletContext, pd); 
                     try
                     {
                         try
@@ -373,27 +363,6 @@ public class JetspeedPortletFactory implements PortletFactory
         return getPortletApplicationClassLoader(pa) != null;
     }
 
-    public org.apache.pluto.internal.InternalPortletContext getPortletContext(PortletApplication pad)
-        throws PortletContainerException
-    {
-        PortletFactoryInfo info = classLoaderMap.get(pad.getName());
-        if (info != null)
-        {
-            return info.getContext();
-        }
-        throw new PortletContainerException("App context not found for application " + pad.getName());
-    }
-
-    public InternalPortletContext createPortletContext(ServletContext servletContext, PortletApplication application)
-    {
-        return new JetspeedPortletContext(servletContext, application, this);        
-    }
-    
-    public InternalPortletConfig createPortletConfig(ServletConfig servletConfig, PortletContext portletContext, PortletDefinition pd)
-    {
-        return new JetspeedPortletConfig(servletConfig, portletContext, pd);        
-    }
-    
     public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher)
     {
         // return new JetspeedRequestDispatcher(requestDispatcher);

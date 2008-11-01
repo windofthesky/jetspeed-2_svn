@@ -68,8 +68,9 @@ public class JetspeedPortalContext implements PortalContext
     {
     }
     
-    public JetspeedPortalContext(PortalConfiguration configuration, String applicationRoot)
+    public JetspeedPortalContext(Engine engine, PortalConfiguration configuration, String applicationRoot)
     {
+        this.engine = engine;
         this.configuration = configuration;
         this.applicationRoot = applicationRoot;
         initialize();
@@ -150,11 +151,6 @@ public class JetspeedPortalContext implements PortalContext
         return this.engine;
     }
     
-    public void setEngine(Engine engine)
-    {
-        this.engine = engine;
-    }
-
     /**
      * Returns the engine attribute with the given name, or null if there is no attribute by that name.
      *

@@ -19,6 +19,7 @@ package org.apache.jetspeed.container.services;
 import org.apache.pluto.NamespaceMapper;
 import org.apache.pluto.OptionalContainerServices;
 import org.apache.pluto.spi.optional.PortalAdministrationService;
+import org.apache.pluto.spi.optional.PortletContextService;
 import org.apache.pluto.spi.optional.PortletEnvironmentService;
 import org.apache.pluto.spi.optional.PortletInfoService;
 import org.apache.pluto.spi.optional.PortletInvokerService;
@@ -94,6 +95,11 @@ public class JetspeedOptionalPlutoServices implements OptionalContainerServices
     public PortletRegistryService getPortletRegistryService()
     {
         return registryService;
+    }
+
+    public PortletContextService getPortletContextService()
+    {
+        return null;
     }
 
     public RequestAttributeService getRequestAttributeService()

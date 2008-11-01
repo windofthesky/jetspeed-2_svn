@@ -47,7 +47,7 @@ limitations under the License.
       <constructor-arg><ref bean="org.apache.pluto.services.CCPPProfileService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.ContainerInvocationService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.ContainerCallbackProviders"/></constructor-arg>
-      <constructor-arg><ref bean="org.apache.pluto.services.PortalContext"/></constructor-arg>
+      <constructor-arg><ref bean="PortalContext"/></constructor-arg>
     </bean>
     
     <bean id="CCPPProfileService"
@@ -59,12 +59,6 @@ limitations under the License.
 	      class='org.apache.pluto.core.ContainerInvocationServiceImpl'>
       <meta key="j2:cat" value="default" />	      
 	</bean>
-
-    <bean id="org.apache.pluto.services.PortalContext" name="PortalContext"
-          class="org.apache.jetspeed.JetspeedPortalContext">
-      <meta key="j2:cat" value="default" />          
-    </bean>
-	
 
     <!-- ====================================================== -->
     <!-- Pluto Container Callbacks                              -->
@@ -154,7 +148,7 @@ limitations under the License.
           class="org.apache.jetspeed.container.invoker.JetspeedPortletInvokerService">          
 	    <meta key="j2:cat" value="default" />
 	    <constructor-arg index="0"><ref bean="javax.servlet.ServletConfig" /></constructor-arg>
-	    <constructor-arg index="1"><ref bean="org.apache.pluto.services.PortalContext" /></constructor-arg>
+	    <constructor-arg index="1"><ref bean="PortalContext" /></constructor-arg>
 	    <constructor-arg index="2"><ref bean="portletFactory" /></constructor-arg>         
         <constructor-arg index="3"><ref bean="PortletRequestResponseUnwrapper"/></constructor-arg>
     </bean>
@@ -162,8 +156,7 @@ limitations under the License.
     <bean id="org.apache.pluto.services.PlutoRegistryServiceAdaptor"
           class="org.apache.jetspeed.components.portletregistry.PlutoRegistryAdaptor">          
 	    <meta key="j2:cat" value="default" />
-	    <constructor-arg index="0"><ref bean="portletFactory" /></constructor-arg>         
-        <constructor-arg index="1"><ref bean="portletRegistry"/></constructor-arg>
+        <constructor-arg><ref bean="portletRegistry"/></constructor-arg>
     </bean>
     
 </beans>

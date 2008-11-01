@@ -30,7 +30,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.ContainerConstants;
@@ -82,7 +81,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         this.servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);                                
     }
    
-    public void action(ServletContext context, ActionRequest request,
+    public void action(ActionRequest request,
             ActionResponse response, PortletWindow window, FilterManager filter)
             throws IOException, PortletException
     {
@@ -90,7 +89,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         invoker.invoke(request, response, ContainerConstants.METHOD_ACTION, filter);
     }
 
-    public void admin(ServletContext context, PortletRequest request,
+    public void admin(PortletRequest request,
             PortletResponse response, PortletWindow window) throws IOException,
             PortletException
     {
@@ -98,7 +97,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         invoker.invoke(request, response, ContainerConstants.METHOD_ADMIN, null);        
     }
 
-    public void event(ServletContext context, EventRequest request,
+    public void event(EventRequest request,
             EventResponse response, PortletWindow window, FilterManager filter)
             throws IOException, PortletException
     {
@@ -106,7 +105,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         invoker.invoke(request, response, ContainerConstants.METHOD_EVENT, filter);
     }
 
-    public void load(ServletContext context, PortletRequest request,
+    public void load(PortletRequest request,
             PortletResponse response, PortletWindow window) throws IOException,
             PortletException
     {
@@ -114,7 +113,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         invoker.invoke(request, response, ContainerConstants.METHOD_NOOP, null);
     }   
     
-    public void render(ServletContext context, RenderRequest request,
+    public void render(RenderRequest request,
             RenderResponse response, PortletWindow window, FilterManager filter)
             throws IOException, PortletException
     {
@@ -122,7 +121,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         invoker.invoke(request, response, ContainerConstants.METHOD_RENDER, filter);
     }
 
-    public void serveResource(ServletContext context, ResourceRequest request,
+    public void serveResource(ResourceRequest request,
             ResourceResponse response, PortletWindow window, FilterManager filter)
             throws IOException, PortletException
     {
