@@ -81,6 +81,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     public ServletPortletInvoker(PortletRequestResponseUnwrapper requestResponseUnwrapper, String servletMappingName)
     {
         this.requestResponseUnwrapper = requestResponseUnwrapper;
+        this.servletMappingName = servletMappingName;
     }
 
     /* (non-Javadoc)

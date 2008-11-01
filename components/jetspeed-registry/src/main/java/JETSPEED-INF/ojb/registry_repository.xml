@@ -676,6 +676,13 @@
       class="org.apache.jetspeed.components.portletentity.PortletEntityImpl"
       table="PORTLET_ENTITY"
    >
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="VARCHAR"
+         autoincrement="true"
+         length="80"
+      />
 
         <field-descriptor
          name="oid"
@@ -697,15 +704,6 @@
          name="portletName"
          column="PORTLET_NAME"
          jdbc-type="VARCHAR"
-         length="80"
-      />
-
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="VARCHAR"
-         autoincrement="true"
-         conversion="org.apache.jetspeed.util.ojb.ObjectIDtoStringFieldConversion"
          length="80"
       />
 
