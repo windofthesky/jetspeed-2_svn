@@ -100,6 +100,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.permissionRoles    = permissionRoles;
         this.nodeManager		= nodeManager;
         this.appRoot            = appRoot;
+        this.descriptorService  = descriptorService;
 	}
     
     public void start()

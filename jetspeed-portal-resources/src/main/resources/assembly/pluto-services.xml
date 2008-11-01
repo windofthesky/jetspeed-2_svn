@@ -41,7 +41,7 @@ limitations under the License.
     <!-- Declare Pluto Service Accessors, Required              -->
     <!-- ====================================================== -->
 
-    <bean id="org.apache.pluto.services.RequiredContainerServices"
+    <bean id="org.apache.pluto.services.RequiredPlutoServices"
           class="org.apache.jetspeed.container.services.JetspeedRequiredPlutoServices">
       <meta key="j2:cat" value="default" />          
       <constructor-arg><ref bean="org.apache.pluto.services.CCPPProfileService"/></constructor-arg>
@@ -50,12 +50,12 @@ limitations under the License.
       <constructor-arg><ref bean="PortalContext"/></constructor-arg>
     </bean>
     
-    <bean id="CCPPProfileService"
+    <bean id="org.apache.pluto.services.CCPPProfileService"
     	  class="org.apache.pluto.core.DummyCCPPProfileServiceImpl">
       <meta key="j2:cat" value="default" />    	  
     </bean>
 
-	<bean id='ContainerInvocationService'
+	<bean id='org.apache.pluto.services.ContainerInvocationService'
 	      class='org.apache.pluto.core.ContainerInvocationServiceImpl'>
       <meta key="j2:cat" value="default" />	      
 	</bean>
@@ -102,7 +102,7 @@ limitations under the License.
     <!-- Declare Pluto Service Accessors, Optional              -->
     <!-- ====================================================== -->
 
-    <bean id="org.apache.pluto.services.OptionalContainerServices"
+    <bean id="org.apache.pluto.services.OptionalPlutoServices"
           class="org.apache.jetspeed.container.services.JetspeedOptionalPlutoServices">
       <meta key="j2:cat" value="default" />          
       <constructor-arg><ref bean="org.apache.pluto.services.NamespaceMapper"/></constructor-arg>
@@ -138,7 +138,7 @@ limitations under the License.
     </bean>
 
     <bean id="org.apache.pluto.services.RequestAttributeService"
-          class="org.apache.pluto.core.RequestAttributeService">
+          class="org.apache.pluto.core.DefaultRequestAttributeService">
       <meta key="j2:cat" value="default" />          
       <constructor-arg><ref bean="org.apache.pluto.services.NamespaceMapper"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.UserInfoService"/></constructor-arg>                      

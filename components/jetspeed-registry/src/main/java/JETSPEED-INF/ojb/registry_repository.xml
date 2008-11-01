@@ -31,12 +31,13 @@
          primarykey="true"
          autoincrement="true"
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
+         access="anonymous"
       />
       <field-descriptor
          name="parentId"
          column="OBJECT_ID"
          jdbc-type="BIGINT"
-
+         access="anonymous"
       />
 
       <field-descriptor
@@ -70,12 +71,13 @@
          primarykey="true"
          autoincrement="true"
          conversion="org.apache.jetspeed.util.ojb.ObjectIDtoLongFieldConversion"
+         access="anonymous"
       />
       <field-descriptor
          name="parentId"
          column="OBJECT_ID"
          jdbc-type="BIGINT"
-
+         access="anonymous"
       />
 
       <field-descriptor
@@ -251,7 +253,7 @@
       </collection-descriptor>
 
      <collection-descriptor
-       name="securityRoles"
+       name="roles"
        element-class-ref="org.apache.jetspeed.om.portlet.impl.SecurityRoleImpl"
        auto-delete="false"
          auto-update = "true"
@@ -283,12 +285,12 @@
       />
 
       <field-descriptor
-         name="name"
+         name="portletName"
          column="NAME"
          jdbc-type="VARCHAR"
       />
       <field-descriptor
-         name="className"
+         name="portletClass"
          column="CLASS_NAME"
          jdbc-type="VARCHAR"
       />
@@ -303,7 +305,7 @@
        <field-descriptor
          name="expirationCache"
          column="EXPIRATION_CACHE"
-         jdbc-type="VARCHAR"
+         jdbc-type="INTEGER"
       />
 
       <field-descriptor
@@ -352,7 +354,7 @@
          auto-retrieve = "true"
          proxy="false"
       >
-          <inverse-foreignkey field-ref="parentId"/>
+          <inverse-foreignkey field-ref="ownerId"/>
       </collection-descriptor>
 
 
@@ -389,7 +391,7 @@
          auto-retrieve = "true"         
       >
 
-         <inverse-foreignkey field-ref="parentId"/>
+         <inverse-foreignkey field-ref="ownerId"/>
       </collection-descriptor>
 
 
@@ -413,7 +415,7 @@
          auto-update = "true"
          auto-retrieve = "true"
       >
-         <inverse-foreignkey field-ref="parentId"/>
+         <inverse-foreignkey field-ref="ownerId"/>
 
       </collection-descriptor>
 
@@ -928,7 +930,7 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
 
       <field-descriptor
          name="name"
-         column="ROLE_NAME"
+         column="NAME"
          jdbc-type="VARCHAR"
       />
 

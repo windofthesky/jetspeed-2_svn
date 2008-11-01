@@ -78,12 +78,6 @@
     <constructor-arg>
       <value>${portal.name}Desktop</value>
     </constructor-arg>
-    <constructor-arg>
-      <ref bean="ServletConfig" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="Engine" />
-    </constructor-arg>
     <property name="requestFactory">
       <ref bean="ServletRequestFactory" />
     </property>

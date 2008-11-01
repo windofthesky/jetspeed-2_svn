@@ -34,7 +34,7 @@ import org.w3c.dom.Element;
  */
 public class RequestPropertyProviderImpl implements RequestPropertyProvider
 {
-    public RequestPropertyProviderImpl(HttpServletRequest request, PortletWindow portletWindow) 
+    public RequestPropertyProviderImpl() 
     {}
     
     public Map getProperties(HttpServletRequest request,

@@ -333,6 +333,7 @@
     <xerces.version>2.3.0</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
     <asm.version>2.2</asm.version>
+    <ccpp.version>1.0</ccpp.version>
     <commonj.version>1.1</commonj.version>
   </properties>
 
@@ -581,6 +582,11 @@
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>${javax.servlet.jsp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.ccpp</groupId>
+        <artifactId>ccpp</artifactId>
+        <version>${ccpp.version}</version>
       </dependency>
 
       <!-- Pluto Container -->
@@ -1208,6 +1214,11 @@
         <artifactId>jsp-api</artifactId>
         <scope>provided</scope>
       </dependency>
+    <dependency>
+      <groupId>javax.ccpp</groupId>
+      <artifactId>ccpp</artifactId>
+      <scope>provided</scope>
+    </dependency>
       <dependency>
         <groupId>org.apache.pluto</groupId>
         <artifactId>pluto-container-api</artifactId>

@@ -36,7 +36,7 @@ import org.apache.jetspeed.om.portlet.Description;
 public class DescriptionImpl implements Description 
 {
     protected String owner;
-    protected String value;
+    protected String description;
     protected String lang = null;
     protected Locale locale = null;
     
@@ -48,18 +48,18 @@ public class DescriptionImpl implements Description
     public DescriptionImpl(Object owner, String lang)
     {
         this.owner = owner.getClass().getName();
-        lang = value;
+        this.lang = lang;
         locale = JetspeedLocale.convertStringToLocale(lang);
     }
 
     public String getDescription()
     {
-        return value;
+        return description;
     }
 
     public void setDescription(String value)
     {
-        this.value = value;
+        this.description = value;
     }
 
     public String getLang()

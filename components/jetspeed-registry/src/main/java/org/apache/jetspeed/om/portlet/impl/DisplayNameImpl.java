@@ -31,7 +31,7 @@ import org.apache.jetspeed.om.portlet.DisplayName;
 public class DisplayNameImpl implements DisplayName
 {
     protected String owner;
-    protected String value;
+    protected String displayName;
     protected String lang = null;
     protected Locale locale = null;
 
@@ -42,18 +42,18 @@ public class DisplayNameImpl implements DisplayName
     public DisplayNameImpl(Object owner, String lang)
     {
         this.owner = owner.getClass().getName();
-        lang = value;
+        this.lang = lang;
         locale = JetspeedLocale.convertStringToLocale(lang);
     }
     
     public String getDisplayName()
     {
-        return value;
+        return displayName;
     }
 
     public void setDisplayName(String value)
     {
-        this.value = value;
+        this.displayName = value;
     }
 
     public String getLang()

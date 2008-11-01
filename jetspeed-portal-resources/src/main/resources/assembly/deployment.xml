@@ -46,7 +46,7 @@
   </bean>
 
   <bean id="org.apache.jetspeed.descriptor.JetspeedDescriptorService"
-        class="org.apache.jetspeed.descriptor.ExtendedDescriptorServiceImpl">
+        class="org.apache.jetspeed.descriptor.JetspeedDescriptorServiceImpl">
       <meta key="j2:cat" value="default"/>
       <constructor-arg><bean class="org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl"/></constructor-arg>
   </bean>       
