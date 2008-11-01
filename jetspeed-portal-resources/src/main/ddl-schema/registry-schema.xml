@@ -191,7 +191,6 @@ limitations under the License.
         <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_SECURITY_ROLE_REF_1" onDelete="cascade">                        
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>            
         </foreign-key>
-        -->                                                   
     </table> 
 
     <!--
