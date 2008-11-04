@@ -32,28 +32,19 @@
 			<p>
 				It is expected that the user is familiar with both the
 				<a href="http://maven.apache.org">Apache Maven</a>
-				project management tool and the
-				<a href="http://ant.apache.org">Apache Ant</a>
-				scripting utility.
+				project management tool.
 			</p>
-			<ul>
-				<li>
-					<a href="http://ant.apache.org/bindownload.cgi">
-						Ant 1.5
-					</a>
-					or higher
-				</li>
 				<li>
 					<a
-						href="http://maven.apache.org/start/download.html">
-						Maven 1.0.2
+						href="http://maven.apache.org/download.html">
+						Maven 2.x.x
 					</a>
 				</li>
 				<li>Java 1.4.2_02 or higher</li>
 				<li>
 					Servlet 2.4 Engine:
 					<ul>
-						<li>Tomcat 5.5.x</li> 
+						<li>Tomcat 5.5.26</li> 
 						<li>Jetty</li>
 						<li>Websphere 6.0</li>
 						<li>Geronimo</li>
@@ -68,7 +59,7 @@
 		<section name='1. Get Maven Ready'>
 			<p>
 				If you have not already done so, download and install
-				<a href="http://maven.apache.org/maven-1.x">Maven</a>
+				<a href="http://maven.apache.org/">Maven2</a>
 				.
 			</p>
 		</section>
@@ -106,7 +97,7 @@
 				greater. Successful Jetspeed 2 portal applications have
 				been deployed using:
 				<ul>
-					<li>Tomcat 5.5.8 or higher</li>
+					<li>Tomcat 5.5.26 or higher</li>
 					<li>Jetty</li>
 					<li>Websphere</li>
 					<li>Geronimo</li>
