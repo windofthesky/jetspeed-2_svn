@@ -71,6 +71,23 @@
         <item name="Portlets Community" href="portlets-community.html" />
         <item name="How to Help?" href="how-to-help.html" />
     </menu>
+
+    <menu name="Jetspeed-2 Maven Plugin">
+        <item name="Introduction" href="maven/index.html" />
+        <item name="The need for a custom Maven lifecycle" href="maven/the-need-for-a-custom-lifecycle.html" />
+        <item name="Structure of Jetspeed Portal Projects" href="maven/project-structure.html" />
+        <item name="Jetspeed Portal Resources" href="maven/jetspeed-portal-resources.html" />
+        <item name="Jetspeed Maven Plugins Overview" href="maven/jetspeed-maven-plugins.html" />
+          <!--
+          <item name="Using jetspeed:mvn" href="maven/jetspeed-mvn-plugin.html" />
+          <item name="Using jetspeed-unpack:unpack" href="maven/jetspeed-unpack-plugin.html" />
+          <item name="Using jetspeed-db:init" href="maven/jetspeed-db-init-plugin.html" />
+          <item name="Using jetspeed-db:ddl" href="maven/jetspeed-db-ddl-plugin.html" />
+          <item name="Using jetspeed-deploy:deploy" href="maven/jetspeed-deploy-plugin.html" />
+          -->
+        <item name="Using the Jetspeed Archetype" href="maven/jetspeed-archetype.html" />
+    </menu>
+    
     <menu name="Support"> 	
         <item name="Mailing List" href="mail-lists.html" />
         <item name="Bug Database" href="issue-tracking.html" />
