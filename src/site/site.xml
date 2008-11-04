@@ -15,14 +15,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project name="Maven">
+<project name="Jetspeed 2">
   <bannerLeft>
-    <name>Maven</name>
-    <src>http://maven.apache.org/images/apache-maven-project.png</src>
-    <href>http://maven.apache.org/</href>
+    <name>Apache Software Foundation</name>
+    <src>http://portals.apache.org/images/apache-portals.gif</src>
+    <href>http://portals.apache.org/</href>
   </bannerLeft>
   <bannerRight>
-    <src>http://maven.apache.org/images/maven-small.gif</src>
+    <name>Jetspeed 2 Enterprise Portal</name>
+    <src>http://portals.apache.org/images/Jetspeed_blue_med.png</src>
+    <href>http://portals.apache.org/jetspeed-2</href>
   </bannerRight>
   <body>
   
@@ -45,6 +47,9 @@
         <item name="From Source with Maven-1 (deprecated)" href="getting-started-source.html" />
         <item name="From Maven-1 Plugin (deprecated)" href="getting-started-binary.html" />
         <item name="From Eclipse" href="jetspeed-eclipse.html" />            
+    </menu>
+    <menu name="Configuring Jetspeed-2">
+        <item name="Configuring Jetspeed 2.2 Components" href="spring-config.html" />
     </menu>
     <menu name="Get Jetspeed-2">
         <item name="Download" href="download.html" />

@@ -18,7 +18,7 @@
 <document>
 	<properties>
 		<title>
-			Configuring Jetspeed 2.2
+			Configuring Jetspeed 2.2 Components
 		</title>
 		<subtitle>How-to configure Jetspeed 2.2 Portal</subtitle>
 		<authors>
@@ -27,7 +27,7 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="Overview">
+		<section name="Configuring Jetspeed 2.2 Components">
             <p>Jetspeed provides very flexible ways for specific configuration settings.</p>
             <p>Jetspeed components are initially loaded from <strong><code>/WEB-INF/assembly/</code></strong> folder, while the default configuration properties are loaded from <strong><code>/WEB-INF/conf/jetspeed.properties.</code></strong></p>
             <p>The initial/default configurations can be overrided through the <strong><code>/WEB-INF/assembly/override/</code></strong> folder, while overrides/additional values can be provided through the <strong><code>/WEB-INF/conf/override.properties.</code></strong></p>
