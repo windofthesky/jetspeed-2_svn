@@ -91,7 +91,7 @@
 				during installation.
 			</p>
 		</section>
-		<section name="3 Servlet Engines">
+		<section name="3. Servlet Engines">
 			<p>
 				In theory, Jetspeed 2 portals can be run under any
 				servlet container supporting the 2.4 specification or
@@ -120,7 +120,7 @@
 						<![CDATA[
 <tomcat-users>
   <role rolename="manager"/>
-    <user username="j2deployer" password="xxxxx" roles="manager"/>
+  <user username="j2deployer" password="xxxxx" roles="manager"/>
 </tomcat-users>]]>
 					</source>
 					<i>
