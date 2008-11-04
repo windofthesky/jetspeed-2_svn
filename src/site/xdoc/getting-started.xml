@@ -41,7 +41,7 @@
 						Maven 2.0.9
 					</a>
 				</li>
-				<li>Java 1.4.2_02 or higher</li>
+				<li>Java 1.5 or higher</li>
 				<li>
 					Servlet 2.4 Engine:
 					<ul>
