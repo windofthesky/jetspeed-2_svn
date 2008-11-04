@@ -45,8 +45,6 @@
     <menu name="Building">
         <item name="From Source with Maven-2" href="maven-2-build.html" />
         <item name="From Maven-2 Plugin" href="maven-2-custom.html" />    	    
-        <item name="From Source with Maven-1 (deprecated)" href="getting-started-source.html" />
-        <item name="From Maven-1 Plugin (deprecated)" href="getting-started-binary.html" />
         <item name="From Eclipse" href="jetspeed-eclipse.html" />            
     </menu>
     <menu name="Configuring Jetspeed-2">

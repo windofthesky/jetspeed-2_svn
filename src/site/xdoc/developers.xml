@@ -1,20 +1,18 @@
 <?xml version="1.0"?>
-<!--
-	Licensed to the Apache Software Foundation (ASF) under one or more
-	contributor license agreements.  See the NOTICE file distributed with
-	this work for additional information regarding copyright ownership.
-	The ASF licenses this file to You under the Apache License, Version 2.0
-	(the "License"); you may not use this file except in compliance with
-	the License.  You may obtain a copy of the License at
-	
-	http://www.apache.org/licenses/LICENSE-2.0
-	
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
--->
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
 <document>
 	<properties>
 		<title>Jetspeed for Developers</title>
@@ -26,78 +24,98 @@
 	</properties>
 	<body>
 		<section name="Jetspeed For Developers">
+			<p> When developing with Jetspeed, you may be creating portlet
+				applications, or building and creating extensions to the Jetspeed
+				portal. If you ar going to be creating portlet applications, check
+				out this fine e-book for an overall guide to writing portlets:</p>
+			<ul>
+				<li>
+					<a href='http://www.manning.com/hepper/' target='_blank'>Portlets
+						and Apache Portals Book</a>
+				</li>
+			</ul>
+			<h2>Custom Building with Maven2 and Eclipse</h2>
 			<p>
-When developing with Jetspeed, you may be creating portlet applications, or building and creating extensions to the Jetspeed portal.
-If you ar going to be creating portlet applications, check out this fine e-book for an overall guide to writing portlets:
+				If you have never used Maven before, the easiest build option for
+				you may be to build with the Ant-Eclipse Build. This build allows
+				you to build a custom portal with Ant. We also provide a custom
+				installer builder. For your portlet applications, we provide Eclipse
+				WTP support. Although the actual programming tutorial is incomplete,
+				the tutorial describing building with Ant and Eclipse is completed.
+				For version 2.1.3, this is the recommended
+				<b>quickest</b>
+				build for getting custom projects up and running in no time.
 			</p>
-<ul>
-<li><a href='http://www.manning.com/hepper/' target='_blank'>Portlets and Apache Portals Book</a></li>
-</ul>
-
-<h2>Custom Building with Ant and Eclipse</h2>
-<p>If you have never used Maven before, the easiest build option for you may be to build with the Ant-Eclipse Build.
-This build allows you to build a custom portal with Ant. We also provide a custom installer builder.
-For your portlet applications, we provide Eclipse WTP support. Although the actual programming tutorial is incomplete, the tutorial describing 
-building with Ant and Eclipse is completed. For version 2.1.3, this is the recommended <b>quickest</b>  build for getting custom projects up and running in no time.
-</p>
-<li><a href='http://portals.apache.org/tutorials/jetspeed-2-ant/' target='_blank'>Jetspeed Tutorial - Building a Custom Portal with Ant and Eclipse</a></li>
-
-<h2>Custom Building with Maven Plugins</h2>
-<p>Jetspeed 2.1 can be built with either Maven-1 or Maven-2.
-You can actually build your own portal without the Jetspeed source. 
-You will want to customize your Jetspeed build, overriding the skins and themes, adding your own portlet applications and perhaps overriding
-key components of the portal. To do so, we provide three custom build frameworks: one with Maven-1, the second with Maven-2, the third and newest with Ant and Eclipse.
-With the custom build, you can easily build and create your own Jetspeed powered portal without ever building Jetspeed itself.</p>
-<p>
-Many developers still prefer Maven-1. If you are new to Maven, then maybe its best to go with the new version (2).
-</p>
-<h3>Maven-2 Custom build</h3>
-<ul>
-<li><a href='http://portals.apache.org/tutorials/jetspeed-2/' target='_blank'>Jetspeed Tutorial - Building a Custom Portal with the Maven-2 Plugin</a></li>
-<li><a href='maven-2-custom.html' target='_blank'>Building a Custom Portal with the Maven-2 Plugin</a></li>
-</ul>
-<h3>Maven-1 Custom build (deprecated)</h3>
-<ul>
-<li><a href='getting-started-binary.html' target='_blank'>Building a Custom Portal with the Maven-1 Plugin</a></li>
-<li><a href='j2-maven-plugin.html' target='_blank'>Maven-1 Plugin Documentation</a></li>
-</ul>
-<h3>Future Directions: Jetspeed 2.2</h3>
-<p>With the next major release version 2.2, the current Maven2 build will be deprecated, and replaced with a new Maven2 build.
-The Maven1 build will be completely dropped.
-</p>
-<h2>Building from Source</h2>
-<p>If you need to build the source, here are the guides:</p>
-<ul>
-<li><a href='maven-2-build.html' target='_blank'>Building Jetspeed from Source with Maven-2</a></li>
-<li><a href='getting-started-binary.html' target='_blank'>Building Jetspeed Source with Maven-1</a></li>
-
-</ul>
-<p>
-Jetspeed is built from the command line with Maven. However, you can still develop, compile, debug, remote debug, all from within Eclipse.
-Eclipse is a good tool for developing portlet applications as well as Jetspeed extensions.
-</p>
-<ul>
-<li><a href='jetspeed-eclipse.html' target='_blank'>Developing with Eclipse</a></li>
-</ul>
-<p>
-To get the binary installation of an official Jetspeed release, go here:
-</p>
-<ul>
-<li><a href='download.html' target='_blank'>Getting the Binary Installer</a></li>
-</ul>
-<p>
-You can checkout from the SVN HEAD from here:
-</p>
-<ul>
-<li><a href='http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/' target='_blank'>Checking out the Source Code from Subversion</a></li>
-</ul>
-<p>
-Get your Javadocs here:
-</p>
-<ul>
-<li><a href='http://www.bluesunrise.com/portlet-api/index.html' target='_blank'>Portlet API Docs</a></li>
-<li><a href='http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html' target='_blank'>Jetspeed API Docs</a></li>
-</ul>			
+			<li>
+				<a href='http://portals.apache.org/tutorials/jetspeed-2-ant/'
+					target='_blank'>Jetspeed Tutorial - Building a Custom Portal with
+					Ant and Eclipse</a>
+			</li>
+			<h2>Custom Building with Maven Plugins</h2>
+			<p>Jetspeed 2.1 can be built with Maven-2.
+				You can actually build your own portal without the Jetspeed source.
+				You will want to customize your Jetspeed build, overriding the skins
+				and themes, adding your own portlet applications and perhaps
+				overriding key components of the portal. To do so, we provide two most popular build frameworks e.g maven2 and Ant with eclipse.
+				With the custom build, you can easily build and create your own Jetspeed powered portal
+				without ever building Jetspeed itself.</p>
+			<h3>Maven-2 Custom build</h3>
+			<ul>
+				<li>
+					<a href='http://portals.apache.org/tutorials/jetspeed-2/' target='_blank'>
+						Jetspeed Tutorial - Building a Custom Portal with the Maven-2
+						Plugin</a>
+				</li>
+				<li>
+					<a href='maven-2-custom.html' target='_blank'>Building a Custom
+						Portal with the Maven-2 Plugin</a>
+				</li>
+			</ul>
+			<h2>Building from Source</h2>
+			<p>If you need to build the source, here are the guides:</p>
+			<ul>
+				<li>
+					<a href='maven-2-build.html' target='_blank'>Building Jetspeed
+						from Source with Maven-2</a>
+				</li>
+			</ul>
+			<p> Jetspeed is built from the command line with Maven. However, you
+				can still develop, compile, debug, remote debug, all from within
+				Eclipse. Eclipse is a good tool for developing portlet applications
+				as well as Jetspeed extensions.</p>
+			<ul>
+				<li>
+					<a href='jetspeed-eclipse.html' target='_blank'>Developing with
+						Eclipse</a>
+				</li>
+			</ul>
+			<p> To get the binary installation of an official Jetspeed release,
+				go here:</p>
+			<ul>
+				<li>
+					<a href='download.html' target='_blank'>Getting the Binary
+						Installer</a>
+				</li>
+			</ul>
+			<p> You can checkout from the SVN HEAD from here:</p>
+			<ul>
+				<li>
+					<a href='http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk/'
+						target='_blank'>Checking out the Source Code from Subversion</a>
+				</li>
+			</ul>
+			<p> Get your Javadocs here:</p>
+			<ul>
+				<li>
+					<a href='http://www.bluesunrise.com/portlet-api/index.html'
+						target='_blank'>Portlet API Docs</a>
+				</li>
+				<li>
+					<a
+						href='http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html'
+						target='_blank'>Jetspeed API Docs</a>
+				</li>
+			</ul>
 		</section>
 	</body>
 </document>

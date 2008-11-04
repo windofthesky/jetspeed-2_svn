@@ -34,10 +34,11 @@
 				<a href="http://maven.apache.org">Apache Maven</a>
 				project management tool.
 			</p>
+			<ul>
 				<li>
 					<a
 						href="http://maven.apache.org/download.html">
-						Maven 2.x.x
+						Maven 2.0.9
 					</a>
 				</li>
 				<li>Java 1.4.2_02 or higher</li>
