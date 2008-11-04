@@ -191,6 +191,13 @@ table {
 #banner {
 	height: 93px;
 	background: url(../images/banner.jpg);
+}
+
+#bannerLeft img {
+    margin: 8px 8px 0px 8px;
+}
+
+#bannerRight img {
     margin: 8px 8px 0px 8px;
 }
 
