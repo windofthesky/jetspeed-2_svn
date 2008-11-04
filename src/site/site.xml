@@ -18,12 +18,12 @@
 <project name="Jetspeed 2">
   <bannerLeft>
     <name>Apache Software Foundation</name>
-    <src>http://portals.apache.org/images/apache-portals.gif</src>
+    <src>images/apache-portals.gif</src>
     <href>http://portals.apache.org/</href>
   </bannerLeft>
   <bannerRight>
     <name>Jetspeed 2 Enterprise Portal</name>
-    <src>http://portals.apache.org/images/Jetspeed_blue_med.png</src>
+    <src>images/Jetspeed_blue_med.png</src>
     <href>http://portals.apache.org/jetspeed-2</href>
   </bannerRight>
   <body>
