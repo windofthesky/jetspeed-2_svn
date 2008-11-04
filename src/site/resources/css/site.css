@@ -191,6 +191,7 @@ table {
 #banner {
 	height: 93px;
 	background: url(../images/banner.jpg);
+    margin: 8px 8px 0px 8px;
 }
 
 #navcolumn ul {
