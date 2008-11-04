@@ -33,7 +33,9 @@
   <description>
     Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML.
   </description>
+  <!-- Comment out for site-plugin not to change the absolute urls starting with the following url to a relative urls. 
   <url>http://portals.apache.org/jetspeed-2</url>
+  -->
 
   <organization>
     <name>Apache Software Foundation</name>
