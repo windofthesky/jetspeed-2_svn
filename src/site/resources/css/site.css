@@ -111,6 +111,7 @@ p {
 
 #leftColumn {
 	margin: 10px 0 10px 0;
+    background-color: #fff;
 	border-top-color: #ccc;
 	border-top-style: solid;
 	border-top-width: 1px;
@@ -122,6 +123,12 @@ p {
 	border-bottom-width: 1px;
 	padding-right: 5px;
 	padding-left: 5px;
+    width: 18%;
+}
+
+#bodyColumn {
+  margin-right: 1.5em;
+  margin-left: 20%;
 }
 
 #navcolumn h5 {
@@ -193,12 +200,8 @@ table {
 	background: url(../images/banner.jpg);
 }
 
-#bannerLeft img {
-    margin: 8px 8px 0px 8px;
-}
-
-#bannerRight img {
-    margin: 8px 8px 0px 8px;
+#bannerLeft img, #bannerRight img {
+  margin: 8px;
 }
 
 #navcolumn ul {
@@ -217,6 +220,12 @@ table {
 	border: solid #ccc 1px;
 	margin: 6px 0px 0px 0px;
 	padding: 10px 40px 10px 40px;
+}
+
+.section h2 {
+    background-color: #fff;
+    border: 0px;
+    padding-left: 0px;
 }
 
 .subsection {

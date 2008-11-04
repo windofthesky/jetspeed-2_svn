@@ -16,6 +16,7 @@
     limitations under the License.
 -->
 <project name="Jetspeed 2">
+  <publishDate format="d MMMM yyyy"/>
   <bannerLeft>
     <name>Apache Software Foundation</name>
     <src>images/apache-portals.gif</src>
