@@ -159,14 +159,6 @@
 						<![CDATA[
 mvn archetype:generate -DarchetypeGroupId=org.apache.portals.jetspeed-2 -DarchetypeArtifactId=jetspeed-archetype -DarchetypeVersion=2.2-SNAPSHOT -DgroupId=org.apache.portals.tutorials -DartifactId=express-demo -Dversion=1.0]]>
 					</source>
-					<i>
-						This maven goal actually executes several
-						subgoals which are further described in the
-						<a href="j2-maven-plugin.html">
-							maven-plugin documentation
-						</a>
-						itself.
-					</i>
 				</p>
 			</subsection>
 			<subsection
@@ -347,12 +339,12 @@ mvn install]]>
 					console:
 					<source>
 						<![CDATA[
-						mvn jetspeed:mvn -Dtarget=proddb
+						mvn jetspeed:mvn -Dtarget=demo
 						]]>
 					</source>
 					<i>
 						Note: the
-						<a href="j2-maven-plugin.html">
+						<a href="maven-2-build.html">
 							maven-plugin documentation
 						</a>
 						described other goals you can use to customize

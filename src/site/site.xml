@@ -46,7 +46,6 @@
     </menu>
     <menu name="Building">
         <item name="From Source with Maven-2" href="maven-2-build.html" />
-        <item name="From Maven-2 Plugin" href="maven-2-custom.html" />    	    
         <item name="From Eclipse" href="jetspeed-eclipse.html" />            
     </menu>
     <menu name="Configuring Jetspeed-2">
@@ -61,7 +60,6 @@
         <item name="Jetspeed Tutorial - Maven-2 Custom Build" href="http://portals.apache.org/tutorials/jetspeed-2/" />
         <item name="Jetspeed Tutorial - Ant Custom Build (incomplete)" href="http://portals.apache.org/tutorials/jetspeed-2-ant/" />
         <item name="Jetspeed-2 API" href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html" />
-        <item name="Jetspeed-2 Plugin" href="j2-maven-plugin.html" />    		
     </menu>
     <menu name="About Jetspeed-2">
         <item name="For Jetspeed-1 Users" href="j1-users.html" />

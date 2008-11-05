@@ -256,7 +256,7 @@
           compared to the standard Maven Invoker Plugin and uses the same Maven API and components (the shared maven-invoker component).
         </p>
         <p>
-          A full description and configuration definition for the jetspeed:mvn plugin is provided on the <a href="jetspeed-mvn-plugin.html">Using jetspeed:mvn</a>
+          A full description and configuration definition for the jetspeed:mvn plugin is provided on the <a href="jetspeed-maven-plugins.html">Using jetspeed:mvn</a>
           page. And example usages are also available from the "Examples" menu item to the left.
         </p>
       </subsection>

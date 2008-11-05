@@ -48,7 +48,7 @@
         <p>
           This root project will contain one or more modules, defined as subprojects, which in turn will have this root project defined as their parent
           project. This way, all artifacts will be buildable and installable as a whole directly from the root project, and (Jetspeed) integration tasks
-          can be executed from anywhere within this project structure (using the <a href="jetspeed-mvn-plugin.html">jetspeed:mvn plugin</a>).
+          can be executed from anywhere within this project structure (using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn plugin</a>).
         </p>
         <p>
           In addition to the "standard" pom.xml, one or more custom jetspeed-mvn-(target name)-pom.xml Maven project files can be defined for the super project,
@@ -57,7 +57,7 @@
         <p>
           The custom jetspeed property files and custom jetspeed-settings.xml will serve a default and fallback configuration which will be automatically
           looked up through the project parent chain if a sub project doesn't provide these by itself when performing sub project specific integration tasks
-          using the <a href="jetspeed-mvn-plugin.html">jetspeed:mvn</a> Maven plugin.
+          using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn</a> Maven plugin.
         </p>
       </subsection>
       <subsection name="The portal sub project">
@@ -73,7 +73,7 @@
         </p>
         <p>
           Custom jetspeed property files and a custom jetspeed-settings.xml defined within a subproject can be used to override other defined files higher up
-          the project parent chain when performing sub project specific integration tasks using the <a href="jetspeed-mvn-plugin.hyml">jetspeed:mvn</a> Maven plugin.
+          the project parent chain when performing sub project specific integration tasks using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn</a> Maven plugin.
         </p>
         <p>
           For building the custom Jetspeed Portal war artifact, the war overlay mechanism is used in the pom.xml, using the Jetspeed-2 provided jetspeed application
@@ -103,8 +103,8 @@
         <p>
           One typical use-case where additional integration tasks might be needed is when the portlet application defines and makes use of a custom database
           backend (or likewise: ldap, JCR etc.) which might need to be setup/created/upgraded or whatever. If an appropriate Maven plugin is available for performing
-          such an integration task (e.g. like the <a href="jetspeed-db-init-plugin.html">jetspeed-db:init plugin</a>), standardizing and automating the execution of such
-          tasks using the <a href="jetspeed-mvn-plugin.html">jetspeed:mvn plugin</a> will be very easy.
+          such an integration task (e.g. like the <a href="jetspeed-maven-plugins.html">jetspeed-db:init plugin</a>), standardizing and automating the execution of such
+          tasks using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn plugin</a> will be very easy.
         </p>
         <p>
           Like with the portal project, custom jetspeed property files and a custom jetspeed-settings.xml defined within a subproject can be used to override other defined

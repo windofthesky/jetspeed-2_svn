@@ -82,7 +82,7 @@
           coordinates of the intended plugin goal.
         </p>
         <p>
-          For the Jetspeed-2 Maven Plugins, this would mean for example for invoking the <a href="jetspeed-mvn-plugin.html">jetspeed:mvn</a> plugin something like:
+          For the Jetspeed-2 Maven Plugins, this would mean for example for invoking the <a href="jetspeed-maven-plugins.html">jetspeed:mvn</a> plugin something like:
           <source>$mvn org.apache.portals.jetspeed-2:jetspeed:mvn -Dtarget=demo</source>
         </p>
         <p>

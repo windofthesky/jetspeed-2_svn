@@ -49,7 +49,7 @@
         </ul>
       </p>
       <p>
-        Both the <a href="jetspeed-unpack-plugin.html">jetspeed-unpack:unpack</a> and <a href="jetspeed-db-init-plugin.html">jetspeed-db:init</a> plugin can unpack selected resources
+        Both the <a href="jetspeed-maven-plugins.html">jetspeed-unpack:unpack</a> and <a href="jetspeed-maven-plugins.html">jetspeed-db:init</a> plugin can unpack selected resources
         from resource archives for which commonly the jetspeed-portal-resources artifact is used.
       </p>
     </section>
