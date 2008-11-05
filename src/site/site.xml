@@ -30,10 +30,10 @@
   <body>
   
     <links>
-      <item name="Jetspeed-1" href="http://portals.apache.org/jetspeed-1" target="_nw"/>
-      <item name="Jetspeed-2.1.3" href="http://portals.apache.org/jetspeed-2/jetspeed-2.1.3" target="_nw"/>
-      <item name="Jetspeed-2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
-      <item name="Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
+      <item name="Applications" href="http://portals.apache.org/applications/" target="_nw"/>
+      <item name="Jetspeed-2.1.3" href="http://portals.apache.org/jetspeed-2.1.3/" target="_nw"/>
+      <item name="Jetspeed-2" href="http://portals.apache.org/jetspeed-2/" target="_nw"/>
+      <item name="Bridges" href="http://portals.apache.org/bridges/" target="_nw"/>
       <!-- TODO: During build, pdf docs need to be generated. 
       <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
       -->
@@ -57,9 +57,10 @@
     </menu>
     <menu name="Documentation">
         <item name="Documentation Guides" href="guides/index.html" />
+        <item name="New Security for 2.2" href="new-security.html"/>
         <item name="Jetspeed Tutorial - Maven-2 Custom Build" href="http://portals.apache.org/tutorials/jetspeed-2/" />
         <item name="Jetspeed Tutorial - Ant Custom Build (incomplete)" href="http://portals.apache.org/tutorials/jetspeed-2-ant/" />
-        <item name="Jetspeed-2 API" href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html" />
+        <item name="Jetspeed-2 API" href="http://portals.apache.org/jetspeed-2/apidocs/index.html" />
     </menu>
     <menu name="About Jetspeed-2">
         <item name="For Jetspeed-1 Users" href="j1-users.html" />
