@@ -211,8 +211,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                     d = pa.addDisplayName(lang);
                 }
                 // else: overwrite display-name with last found entry
-                
-                d.setDisplayName(element.getTextContent().trim());
+                d.setDisplayName(element.getFirstChild().getNodeValue().trim());
             }
         }
 
@@ -236,7 +235,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 }
                 // else: overwrite description with last found entry
                 
-                d.setDescription(element.getTextContent().trim());
+                d.setDescription(element.getFirstChild().getNodeValue().trim());
             }
         }
         
@@ -254,7 +253,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 children = element.getElementsByTagName("role-name");
                 if (children != null && children.getLength() != 0)
                 {
-                    roleName = children.item(0).getTextContent().trim();
+                    roleName = children.item(0).getFirstChild().getNodeValue().trim();
                     if (roleName.length() > 0)
                     {
                         r = null;
@@ -286,7 +285,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                                 if (r.getDescription(JetspeedLocale.convertStringToLocale(lang)) == null)
                                 {
                                     d = r.addDescription(lang);
-                                    d.setDescription(element.getTextContent());
+                                    d.setDescription(element.getFirstChild().getNodeValue());
                                 }
                             }
                         }
