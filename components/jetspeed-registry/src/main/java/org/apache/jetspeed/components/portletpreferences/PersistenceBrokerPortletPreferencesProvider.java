@@ -304,6 +304,7 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
                 }
             }
         }
+        
         for (String name : current.getNames())
         {
             currentPref = current.get(name);
@@ -312,12 +313,14 @@ public class PersistenceBrokerPortletPreferencesProvider extends PersistenceBrok
             c.addEqualTo("entityOid", entityOid);
             c.addEqualTo("userName", userName);
             getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(PreferenceValueImpl.class, c));
-            
-            c = new Criteria();
-            c.addEqualTo("prefId", new Long(currentPref.getId()));
-            Criteria c2 = new Criteria();
-            c2.addNotExists(QueryFactory.newQuery(PreferenceValueImpl.class, c));
-            getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(PreferenceImpl.class, c2));
+
+// Commenting out for now, This model will not be valid in new Pluto 2.0 preferences solutions            
+//            c = new Criteria();
+//            c.addEqualTo("prefId", new Long(currentPref.getId()));
+//            Criteria c2 = new Criteria();
+//            c2.addEqualTo("id", new Long(currentPref.getId()));
+//            c2.addNotExists(QueryFactory.newQuery(PreferenceValueImpl.class, c));
+//            getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(PreferenceImpl.class, c2));
         }
         String cacheKey = getPreferenceSetKey(applicationName, portletName, entityOid, userName);
         preferenceCache.remove(cacheKey);
