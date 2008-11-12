@@ -18,7 +18,6 @@
 package org.apache.jetspeed.util;
 
 import java.util.Locale;
-import java.util.StringTokenizer;
 
 /**
  * Class to set and get Locale settings for Jetspeed.
@@ -107,5 +106,5 @@ public class JetspeedLocale
             }
         }
         return new Locale(lang, country, variant);
-    }
+    }    
 }

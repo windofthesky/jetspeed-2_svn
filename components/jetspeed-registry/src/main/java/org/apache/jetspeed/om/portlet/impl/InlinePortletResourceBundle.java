@@ -41,12 +41,13 @@ class InlinePortletResourceBundle extends ListResourceBundle
         contents = new Object[][]{ { Constants.TITLE_KEY, deriveValue(parent, Constants.TITLE_KEY, title) },
                                    { Constants.SHORT_TITLE_KEY, deriveValue(parent, Constants.SHORT_TITLE_KEY, shortTitle) },
                                    { Constants.KEYWORDS_KEY, deriveValue(parent, Constants.KEYWORDS_KEY, keywords) }};
+        setParent(parent);
     }
     
-    private static String deriveValue(ResourceBundle parent, String key, String defaultValue)
+    private static String deriveValue(ResourceBundle parent, String key, String leadingValue)
     {
-        String value = defaultValue;
-        if (parent != null)
+        String value = leadingValue;
+        if (value == null && parent != null)            
         {
             try
             {

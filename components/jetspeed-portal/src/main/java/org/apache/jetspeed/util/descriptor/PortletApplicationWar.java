@@ -162,7 +162,7 @@ public class PortletApplicationWar
         }
         try
         {
-            portletApp = descriptorService.read(webXmlStream, portletXmlStream, extStream);
+            portletApp = descriptorService.read(webXmlStream, portletXmlStream, extStream, classLoader);
             validate();
             portletApp.setName(paName);
             portletApp.setContextRoot(webAppContextRoot);

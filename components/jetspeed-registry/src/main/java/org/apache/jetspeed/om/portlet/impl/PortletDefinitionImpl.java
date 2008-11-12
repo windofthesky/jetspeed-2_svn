@@ -195,11 +195,11 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 
     public Preferences getPortletPreferences()
     {
-        if (this.portletPreferencesProvider == null)
+        if (PortletDefinitionImpl.portletPreferencesProvider == null)
         {
             
         }
-        Map<String, InternalPortletPreference> prefMap = this.portletPreferencesProvider.getDefaultPreferences(this);
+        Map<String, InternalPortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.getDefaultPreferences(this);
         // TODO: 2.2 either write a new class or reuse Pluto's PortletPreferencesImpl.java
         return null;
     }
@@ -213,18 +213,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     public ResourceBundle getResourceBundle(Locale locale)
     {
         InlinePortletResourceBundle bundle = resourceBundles.get(locale);
-        if (bundle == null && getResourceBundle() == null)
-        {
-            bundle = resourceBundles.get(JetspeedLocale.getDefaultLocale());
-            if (bundle == null)
-            {
-                // setting up default resource bundle
-                Language l = getLanguage(JetspeedLocale.getDefaultLocale());
-                bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords());
-                resourceBundles.put(JetspeedLocale.getDefaultLocale(), bundle);
-            }
-            resourceBundles.put(locale, bundle);
-        }
         if (bundle == null)
         {
             Language l = getLanguage(locale);
@@ -233,10 +221,14 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
                 // always returns a default language
                 l = getLanguage(JetspeedLocale.getDefaultLocale());
             }
-            ResourceBundle loadedBundle = loadResourceBundle(locale);
-            if (loadedBundle == null)
+            ResourceBundle loadedBundle = null;
+            if (getResourceBundle() != null)
             {
-                loadedBundle = loadResourceBundle(JetspeedLocale.getDefaultLocale());
+                loadedBundle = loadResourceBundle(locale);
+                if (loadedBundle == null && !l.equals(JetspeedLocale.getDefaultLocale()))
+                {
+                    loadedBundle = loadResourceBundle(JetspeedLocale.getDefaultLocale());
+                }
             }
             if (loadedBundle != null)
             {
@@ -312,6 +304,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
         // clear resourceBundle cache
         resourceBundles.clear();
+        // ensure languages exist
+        if ( languages == null )
+        {
+            languages = new ArrayList<Language>();
+        }
+        
         for (Language l : languages)
         {
             if (l.getLocale().equals(locale))

@@ -474,7 +474,6 @@
          name="keywords"
          column="KEYWORDS"
          jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.CSVtoCollectionFieldConversion"
       />
 
       <field-descriptor

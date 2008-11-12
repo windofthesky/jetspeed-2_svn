@@ -66,6 +66,7 @@ import org.apache.pluto.om.portlet.CustomPortletMode;
 import org.apache.pluto.om.portlet.CustomWindowState;
 import org.apache.pluto.om.portlet.Description;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.om.portlet.PortletInfo;
 import org.apache.pluto.services.PortletAppDescriptorService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -137,10 +138,20 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         this.plutoDescriptorService = plutoDescriptorService;
     }
     
-    public PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor) throws Exception
+    public PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor, ClassLoader paClassLoader) throws Exception
     {
         PortletApplicationDefinition pad = plutoDescriptorService.read(portletDescriptor);
-        PortletApplication pa = upgrade(pad);
+        PortletApplication pa = null;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            Thread.currentThread().setContextClassLoader(paClassLoader);
+            pa = upgrade(pad);
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(cl);
+        }
         loadWebDescriptor(pa, webDescriptor);
         if (jetspeedPortletDescriptor != null)
         {
@@ -211,7 +222,8 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                     d = pa.addDisplayName(lang);
                 }
                 // else: overwrite display-name with last found entry
-                d.setDisplayName(element.getFirstChild().getNodeValue().trim());
+                
+                d.setDisplayName(element.getTextContent().trim());
             }
         }
 
@@ -235,7 +247,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 }
                 // else: overwrite description with last found entry
                 
-                d.setDescription(element.getFirstChild().getNodeValue().trim());
+                d.setDescription(element.getTextContent().trim());
             }
         }
         
@@ -253,7 +265,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 children = element.getElementsByTagName("role-name");
                 if (children != null && children.getLength() != 0)
                 {
-                    roleName = children.item(0).getFirstChild().getNodeValue().trim();
+                    roleName = children.item(0).getTextContent().trim();
                     if (roleName.length() > 0)
                     {
                         r = null;
@@ -285,7 +297,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                                 if (r.getDescription(JetspeedLocale.convertStringToLocale(lang)) == null)
                                 {
                                     d = r.addDescription(lang);
-                                    d.setDescription(element.getFirstChild().getNodeValue());
+                                    d.setDescription(element.getTextContent());
                                 }
                             }
                         }
@@ -299,7 +311,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
     
     protected PortletApplication upgrade(PortletApplicationDefinition pa)
     {
-        PortletApplication jpa = new PortletApplicationDefinitionImpl();
+        PortletApplication jpa = new PortletApplicationDefinitionImpl();        
         jpa.setDefaultNamespace(pa.getDefaultNamespace());
         jpa.setResourceBundle(pa.getResourceBundle());
         jpa.setVersion(pa.getVersion());
@@ -505,19 +517,15 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             jsrr.setRoleLink(srr.getRoleLink());
         }
         
-        boolean defaultLocaleProcessed = false;
+        addLanguage(jpd, pd.getPortletInfo(), JetspeedLocale.getDefaultLocale());
         for (String locale : pd.getSupportedLocales())
         {
             jpd.addSupportedLocale(locale);
-            if (addLanguage(jpd, JetspeedLocale.convertStringToLocale(locale)).equals(JetspeedLocale.getDefaultLocale()))
+            Locale l = JetspeedLocale.convertStringToLocale(locale);
+            if (!l.equals(JetspeedLocale.getDefaultLocale()))
             {
-                defaultLocaleProcessed = true;
-            }                        
-        }
-        if (!defaultLocaleProcessed)
-        {
-            addLanguage(jpd, JetspeedLocale.getDefaultLocale());
-            defaultLocaleProcessed = true;
+                addLanguage(jpd, pd.getPortletInfo(), l);
+            }
         }
         
         for (org.apache.pluto.om.portlet.EventDefinitionReference ed : pd.getSupportedProcessingEvents())
@@ -560,23 +568,43 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         }
     }
     
-    protected Language addLanguage(PortletDefinition jpd, Locale locale)
-    {
-        ResourceBundle bundle = jpd.getResourceBundle(locale);
+    protected Language addLanguage(PortletDefinition jpd, PortletInfo info, Locale locale)
+    {        
         Language l = jpd.addLanguage(locale);
+        // first *not* initializing the language yet with the default PortletInfo
+        // so getResourceBundle(locale) will create one using the potentially provided values from the loaded resource bundle (if any)
+        ResourceBundle bundle = jpd.getResourceBundle(locale);
         String value = bundle.getString(Language.JAVAX_PORTLET_TITLE);
-        if (!value.equals(""))
+        if (value.equals(""))
         {
+            // resourceBundle didn't provide a title, initialize with the PortletInfo default (if any)
+            l.setTitle(info.getTitle());
+        }
+        else
+        {
+            // initialize with the value provided by the resource bundle
             l.setTitle(value);
         }
         value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
-        if (!value.equals(""))
+        if (value.equals(""))
         {
+            // resourceBundle didn't provide a short title, initialize with the PortletInfo default (if any)
+            l.setShortTitle(info.getShortTitle());
+        }
+        else
+        {
+            // initialize with the value provided by the resource bundle
             l.setShortTitle(value);
         }
         value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
-        if (!value.equals(""))
+        if (value.equals(""))
         {
+            // resourceBundle didn't provide keywords, initialize with the PortletInfo default (if any)
+            l.setKeywords(info.getKeywords());
+        }
+        else
+        {
+            // initialize with the value provided by the resource bundle
             l.setKeywords(value);
         }
         return l;
