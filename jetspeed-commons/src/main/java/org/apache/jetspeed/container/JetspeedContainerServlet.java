@@ -26,7 +26,6 @@ import java.util.TimerTask;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.Portlet;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.UnavailableException;
@@ -40,12 +39,14 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.session.PortalSessionsManager;
+import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
+import org.apache.pluto.internal.InternalPortletRequest;
 
 /**
  * Jetspeed Container entry point.
@@ -216,7 +217,7 @@ public class JetspeedContainerServlet extends HttpServlet
     {
         String portletName = null;
         Integer method = ContainerConstants.METHOD_NOOP;
-        Portlet portlet = null;
+        PortletInstance portlet = null;
         boolean destroyPortlet = false;
         boolean isParallelMode = false;
         
@@ -238,12 +239,12 @@ public class JetspeedContainerServlet extends HttpServlet
             }
             if (isParallelMode)
             {
-                portlet = (Portlet) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET);
+                portlet = (PortletInstance) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET);
                 portletName = (String) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_NAME);
             }
             else
             {
-                portlet = (Portlet)request.getAttribute(ContainerConstants.PORTLET);
+                portlet = (PortletInstance)request.getAttribute(ContainerConstants.PORTLET);
                 portletName = (String)request.getAttribute(ContainerConstants.PORTLET_NAME);
                 request.removeAttribute(ContainerConstants.PORTLET);
             }
@@ -252,9 +253,9 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                // TODO: 2.2 actionRequest.init(, request);                
+                ((InternalPortletRequest)actionRequest).init(portlet.getConfig().getPortletContext(), request);
                 // inject the current request into the actionRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
-                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)actionRequest).getRequest()).setRequest(request);
+//                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)actionRequest).getRequest()).setRequest(request);
                 portlet.processAction(actionRequest, actionResponse);
             }
             else if (method == ContainerConstants.METHOD_RENDER)
@@ -273,9 +274,9 @@ public class JetspeedContainerServlet extends HttpServlet
                     renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
 
                 }
-                // TODO: 2.2 renderRequest.init(, request);               
                 // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
-                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
+                ((InternalPortletRequest)renderRequest).init(portlet.getConfig().getPortletContext(), request);
+//                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
                 portlet.render(renderRequest, renderResponse);
             }
 

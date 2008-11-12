@@ -29,6 +29,8 @@ import javax.portlet.UnavailableException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.ContainerConstants;
@@ -38,6 +40,7 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.internal.InternalPortletRequest;
 import org.apache.pluto.spi.FilterManager;
 
 /**
@@ -117,7 +120,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         {
             return;
         }
-        ServletRequest servletRequest = ((javax.servlet.http.HttpServletRequestWrapper) portletRequest).getRequest();
+        HttpServletRequest servletRequest = (HttpServletRequest)((HttpServletRequestWrapper) portletRequest).getRequest();
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         try
         {
@@ -132,6 +135,8 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
                     .setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
 
             Thread.currentThread().setContextClassLoader(paClassLoader);
+            
+            ((InternalPortletRequest)portletRequest).init(portletInstance.getConfig().getPortletContext(), servletRequest);
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
