@@ -41,7 +41,9 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private WindowState state = null;
     private boolean action = false;
     private boolean secure = false;
-    private Map parameters = null;
+    private Map<String, String[]> privateParameters = null;
+    private Map<String, String[]> publicParameters = null;
+    private boolean resource = false;
 
     private PortalURL url;
     
@@ -62,11 +64,6 @@ public class PortletURLProviderImpl implements PortletURLProvider
         this.state = state;
     }
 
-    public void setAction()
-    {
-        action = true;
-    }
-
     public void setSecure()
     {
         secure = true;
@@ -74,56 +71,60 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public void clearParameters()
     {
-        // not used, handled by JetspeedNavigationalStateCodec itself
-    }
-
-    public void setParameters(Map parameters)
-    {
-        this.parameters = parameters;
+        // TODO: old comment "not used, handled by JetspeedNavigationalStateCodec itself" ???
+        privateParameters = null;
     }
 
     public String toString()
     {
-        return url.createPortletURL(portletWindow,parameters,mode,state,action,secure);
+        // TODO: handle publicParameters, resource url, resourceID, cacheability (last two needs to be added to the PortletURLPRovider interface)
+        return url.createPortletURL(portletWindow,privateParameters,mode,state,action,secure);
+    }
+    
+    public void setParameters(Map parameters)
+    {
+        this.privateParameters = parameters;
     }
 
     public String[] getPrivateRenderParameters(String name)
     {
-        throw new UnsupportedOperationException();
+        return privateParameters != null ? privateParameters.get(name) : null;
     }
 
     public String[] getPublicRenderParameters(String name)
     {
-        throw new UnsupportedOperationException();
+        // TODO
+        return null;
     }
 
     public boolean isResourceServing()
     {
-        throw new UnsupportedOperationException();
+        return resource;
     }
 
     public boolean isSecureSupported()
     {
-        throw new UnsupportedOperationException();
+        // TODO: review logic in Pluto PortletURLProviderImpl and PortletContainerImpl usage of this method (seems wrong...).
+        return false;
     }
 
     public void savePortalURL(HttpServletRequest request)
     {
-        throw new UnsupportedOperationException();
+        // TODO: what should be done here?
     }
 
     public void setAction(boolean isAction)
     {
-        throw new UnsupportedOperationException();
+        action = isAction;
     }
 
     public void setPublicRenderParameters(Map parameters)
     {
-        throw new UnsupportedOperationException();
+        // TODO        
     }
 
     public void setResourceServing(boolean isResourceServing)
     {
-        throw new UnsupportedOperationException();
+        resource = isResourceServing;
     }
 }

@@ -34,7 +34,8 @@ public class PortletURLListenerImpl implements PortletURLListener
     
     public void callListener(PortletApplicationDefinition portletApp, BaseURL baseURL, boolean isAction, boolean isResource)
     {
-        throw new UnsupportedOperationException();        
+        // TODO
+        //throw new UnsupportedOperationException();        
     }
 
 }
