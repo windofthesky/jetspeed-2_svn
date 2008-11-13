@@ -44,21 +44,26 @@ public class ResourceURLProviderImpl implements ResourceURLProvider
     public ResourceURLProviderImpl(RequestContext context,
             PortletWindow portletWindow)
     {
-        this.base = context.getPortalURL().getBaseURL();
+        // this.base = context.getPortalURL().getBaseURL();
     }
 
     public void setAbsoluteURL(String path)
     {
+        // stringUrl = base + path;
         stringUrl = path;
     }
 
     public void setFullPath(String path)
     {
-        stringUrl = base + path;
+        stringUrl = path;
     }
 
     public String toString()
     {
+/*      TODO: review if we actually do need the Pluto solution
+              currently this breaks if using relative paths only
+              as then base == "" resulting in a MalformedURLException
+              
         URL url = null;
 
         if (!"".equals(stringUrl))
@@ -74,6 +79,8 @@ public class ResourceURLProviderImpl implements ResourceURLProvider
             }
         }
         return ((url == null) ? "" : url.toString());
+*/        
+        return stringUrl;
     }
 
 }
