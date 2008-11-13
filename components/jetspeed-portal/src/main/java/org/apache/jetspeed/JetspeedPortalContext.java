@@ -62,6 +62,8 @@ public class JetspeedPortalContext implements PortalContext
      */
     private String applicationRoot;
     
+    private String contextPath;
+    
     private String portalInfo;
 
     public JetspeedPortalContext()
@@ -139,6 +141,16 @@ public class JetspeedPortalContext implements PortalContext
     public void setApplicationRoot(String applicationRoot)
     {
         this.applicationRoot = applicationRoot;
+    }
+    
+    public String getContextPath()
+    {
+        return contextPath;
+    }
+    
+    public void setContextPath(String contextPath)
+    {
+        this.contextPath = contextPath;
     }
 
     /**

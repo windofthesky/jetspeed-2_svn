@@ -223,6 +223,8 @@ implements JetspeedEngineConstants, HttpSessionListener
         {
             if (firstDoGet)
             {
+                // initialize the Portal context path
+                engine.getContext().setContextPath(request.getContextPath());
                 // Mark that we're done.
                 firstDoGet = false;
             }

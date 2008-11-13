@@ -27,6 +27,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  */
 public interface InternalPortletConfig extends org.apache.pluto.internal.InternalPortletConfig
 {
-     PortletDefinition getPortletDefinition();
-     void setPortletDefinition(PortletDefinition pd);
+    InternalPortletContext getPortletContext();
+    PortletDefinition getPortletDefinition();
+    void setPortletDefinition(PortletDefinition pd);
 }

@@ -55,6 +55,17 @@ public interface PortalContext extends javax.portlet.PortalContext
      */
     public void setApplicationRoot(String applicationRoot);
     
+    /**
+     * @return the web context path where the Jetspeed Portal is running
+     */
+    public String getContextPath();
+    
+    /**
+     * Sets the web context path where the Jetspeed Portal is running
+     * @param contextPath
+     */
+    public void setContextPath(String contextPath);
+    
     public boolean isPortletModeAllowed(PortletMode mode);
     public boolean isWindowStateAllowed(WindowState state);
 }

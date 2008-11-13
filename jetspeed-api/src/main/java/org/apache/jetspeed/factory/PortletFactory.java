@@ -22,6 +22,7 @@ import javax.portlet.PreferencesValidator;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 
@@ -40,6 +41,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  */
 public interface PortletFactory
 {
+    void setPortalContext(PortalContext portalContext);
     void registerPortletApplication(PortletApplication pa, ClassLoader paClassLoader);
     void unregisterPortletApplication(PortletApplication pa);
     boolean isPortletApplicationRegistered(PortletApplication pa);

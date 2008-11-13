@@ -37,8 +37,7 @@ import org.apache.pluto.internal.impl.PortletConfigImpl;
  */
 public class JetspeedPortletConfig extends PortletConfigImpl implements PortletConfig, InternalPortletConfig
 {
-    
-    public JetspeedPortletConfig(PortletContext portletContext, PortletDefinition portlet)
+    public JetspeedPortletConfig(InternalPortletContext portletContext, PortletDefinition portlet)
     {
         super(portletContext, portlet, portlet.getApplication());
     }
@@ -68,4 +67,8 @@ public class JetspeedPortletConfig extends PortletConfigImpl implements PortletC
         return DUMMY_CONFIGURATION;
     }
     
+    public InternalPortletContext getPortletContext()
+    {
+        return (InternalPortletContext)super.getPortletContext();
+    }
 }

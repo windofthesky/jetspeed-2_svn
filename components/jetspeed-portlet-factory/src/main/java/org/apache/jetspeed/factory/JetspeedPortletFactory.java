@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.Portlet;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
@@ -32,6 +30,9 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.container.InternalPortletConfig;
+import org.apache.jetspeed.container.InternalPortletContext;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -58,6 +59,7 @@ public class JetspeedPortletFactory implements PortletFactory
     private Map<String, Map<String, PortletInstance>> portletCache;
     private Map<String, Map<String, PreferencesValidator>> validatorCache;
     private final Map<String, PortletFactoryInfo> classLoaderMap;
+    private PortalContext portalContext;
 
     /**
      * Flag whether this factory will create proxy instances for actual portlet
@@ -88,6 +90,11 @@ public class JetspeedPortletFactory implements PortletFactory
         this.autoSwitchConfigMode = autoSwitchConfigMode;
         this.autoSwitchEditDefaultsModeToEditMode = autoSwitchEditDefaultsModeToEditMode;
         this.portletProxyUsed = (this.autoSwitchConfigMode || this.autoSwitchEditDefaultsModeToEditMode);
+    }
+    
+    public void setPortalContext(PortalContext portalContext)
+    {
+        this.portalContext = portalContext;
     }
 
     public void setPortletProxyUsed(boolean portletProxyUsed)
@@ -287,8 +294,8 @@ public class JetspeedPortletFactory implements PortletFactory
                         log.error(msg, e);
                         throw new UnavailableException(msg);
                     }
-                    PortletContext portletContext = new JetspeedPortletContext(servletContext, pa, this);                    
-                    PortletConfig portletConfig = new JetspeedPortletConfig(portletContext, pd); 
+                    InternalPortletContext portletContext = new JetspeedPortletContext(portalContext, servletContext, pa, this);                    
+                    InternalPortletConfig portletConfig = new JetspeedPortletConfig(portletContext, pd); 
                     try
                     {
                         try

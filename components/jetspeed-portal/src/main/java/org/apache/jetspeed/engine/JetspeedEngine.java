@@ -32,6 +32,7 @@ import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.administration.PortalConfigurationImpl;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -115,8 +116,9 @@ public class JetspeedEngine implements Engine
             ClassHelper.setClassLoader(ploader2);
             
             //Start the ComponentManager
-            componentManager.start();               
+            componentManager.start();
             pipelineMapper = (Map)componentManager.getComponent("pipeline-map");
+            ((PortletFactory)componentManager.getComponent("portletFactory")).setPortalContext(context);
             try
             {
                 statistics = (PortalStatistics)componentManager.getComponent("PortalStatistics");

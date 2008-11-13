@@ -25,6 +25,7 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -49,10 +50,12 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
     public static final String LOCAL_PA_ROOT = "/WEB-INF/apps";
 
     protected PortletFactory factory;
+    protected PortalContext portalContext;
     
-    public JetspeedPortletContext(ServletContext servletContext, PortletApplication application, PortletFactory factory)
+    public JetspeedPortletContext(PortalContext portalContext, ServletContext servletContext, PortletApplication application, PortletFactory factory)
     {
         super(servletContext, (PortletApplicationDefinition)application);
+        this.portalContext = portalContext;
         this.factory = factory;
     }
 
@@ -188,4 +191,15 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
         return (PortletApplication)this.portletApp;
     }
     
+    public String getContextPath()
+    {
+        if (getApplicationDefinition().getApplicationType() == PortletApplication.WEBAPP)
+        {
+            return super.getContextPath();
+        }
+        else
+        {
+            return portalContext.getContextPath();
+        }
+    }
 }
