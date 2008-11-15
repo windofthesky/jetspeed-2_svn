@@ -66,6 +66,11 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serial
     {
         return this;
     }
+
+    public String toString()
+    {
+        return getStringId();
+    }
     
     public String getStringId()
     {
