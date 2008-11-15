@@ -288,6 +288,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
                 dbValue.setIndex(index);
                 dbValue.setValue(value);
+                dbPref.getPreferenceValues().add(dbValue);                
                 index++;
             }
             getPersistenceBrokerTemplate().store(dbPref);
@@ -303,6 +304,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 dbValue.setIndex(index);
                 dbValue.setValue(value);
                 index++;
+                dbPref.getPreferenceValues().add(dbValue);
             }            
             getPersistenceBrokerTemplate().store(dbPref);            
         }        
