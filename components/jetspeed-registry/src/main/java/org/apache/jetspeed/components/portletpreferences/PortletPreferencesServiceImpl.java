@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -501,7 +500,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         String defaultsCacheKey = getPorletPreferenceKey(appName, portletName);
         JetspeedPreferencesMap defaultsMap;         
         // first search in cache        
-        CacheElement cachedDefaults = preferenceCache.get(defaultsCacheKey);        
+        CacheElement cachedDefaults = preferenceCache.get(defaultsCacheKey);
         if (cachedDefaults != null)
         {
             defaultsMap = (JetspeedPreferencesMap)cachedDefaults.getContent();
@@ -515,9 +514,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             c.addEqualTo("applicationName", appName);
             c.addEqualTo("portletName", portletName);                
             QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-            Collection<DatabasePreference> preferences = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-            for (DatabasePreference preference : preferences)
+            Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
+            while (preferences.hasNext())
             {
+                DatabasePreference preference = preferences.next();
                 JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
                 value.setReadOnly(preference.isReadOnly());
                 map.put(preference.getName(), value);
