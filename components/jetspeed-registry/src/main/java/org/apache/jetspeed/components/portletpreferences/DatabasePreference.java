@@ -128,6 +128,13 @@ public class DatabasePreference
 
     public String[] getValues()
     {
+        if (values.size() == 0)
+        {
+            String[] result = new String[1];
+            result[0] = null;
+            return result;
+            
+        }
         String[] result = new String[values.size()];
         int index = 0;
         for (DatabasePreferenceValue value : this.getPreferenceValues())
