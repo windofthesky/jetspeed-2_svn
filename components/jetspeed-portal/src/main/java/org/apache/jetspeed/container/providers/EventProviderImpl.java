@@ -36,12 +36,14 @@ public class EventProviderImpl implements EventProvider, Cloneable
     
     public void fireEvents(EventContainer eventContainer)
     {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
+        // TODO: 2.2 implement 
     }
 
     public void registerToFireEvent(QName name, Serializable value)
             throws IllegalArgumentException
     {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
+        // TODO: 2.2 implement         
     }
 }
