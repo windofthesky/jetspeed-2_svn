@@ -195,13 +195,25 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 
     public Preferences getPortletPreferences()
     {
+        System.out.println(">>> Getting prefs ");
         if (PortletDefinitionImpl.portletPreferencesProvider == null)
         {
-            
+            return new PreferencesImpl();            
         }
-        Map<String, InternalPortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.getDefaultPreferences(this);
-        // TODO: 2.2 either write a new class or reuse Pluto's PortletPreferencesImpl.java
-        return null;
+        Map<String, InternalPortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.getDefaultPreferences(this);        
+        Preferences preferences = new PreferencesImpl();
+        List<Preference> list = preferences.getPortletPreferences();
+        for (InternalPortletPreference pref : prefMap.values())
+        {
+            Preference p = preferences.addPreference(pref.getName());
+            p.setReadOnly(pref.isReadOnly());
+            for (String s : pref.getValues())
+            {
+                p.addValue(s);
+            }
+            list.add(p);
+        }
+        return preferences;
     }
 
     public Preference addDescriptorPreference(String name)
