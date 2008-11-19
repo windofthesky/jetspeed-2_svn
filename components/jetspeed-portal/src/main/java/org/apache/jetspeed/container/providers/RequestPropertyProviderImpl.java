@@ -37,10 +37,9 @@ public class RequestPropertyProviderImpl implements RequestPropertyProvider
     public RequestPropertyProviderImpl() 
     {}
     
-    public Map getProperties(HttpServletRequest request,
+    public Map<String, String[]> getProperties(HttpServletRequest request,
             org.apache.pluto.PortletWindow portletWindow)
     {
-        // TODO: currently this method returns an empty map.
         return Collections.EMPTY_MAP;
     }
 

@@ -222,6 +222,17 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         }
     }
 
+    public Map<String, String[]> getParameterMap(PortletWindow window)
+    {
+        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+        if ( state != null && state.getParametersMap() != null )
+        {
+            return state.getParametersMap();
+        }
+        else
+            return null;
+    }
+    
     public PortletWindow getPortletWindowOfAction()
     {
         return requestStates.getActionWindow();

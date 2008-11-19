@@ -253,6 +253,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
                 ((InternalPortletRequest)actionRequest).init(portlet.getConfig().getPortletContext(), request);
+                ((InternalPortletRequest)actionRequest).setIncluded(true);                    
                 // inject the current request into the actionRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
 //                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)actionRequest).getRequest()).setRequest(request);
                 portlet.processAction(actionRequest, actionResponse);

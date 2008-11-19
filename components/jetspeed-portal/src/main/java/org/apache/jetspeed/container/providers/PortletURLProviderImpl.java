@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.container.providers;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -52,6 +53,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
         this.portletWindow = portletWindow;
         
         url = context.getPortalURL();
+        privateParameters = url.getNavigationalState().getParameterMap(portletWindow);
     }
 
     public void setPortletMode(PortletMode mode)
@@ -127,4 +129,17 @@ public class PortletURLProviderImpl implements PortletURLProvider
     {
         resource = isResourceServing;
     }
+
+    public Map<String, String[]> getRenderParameters()
+    {
+        if (this.privateParameters == null)
+            this.privateParameters = new HashMap<String, String[]>();
+        return this.privateParameters;
+    }
+
+    public Map<String, String[]> parseRenderParameters(Map<String, String[]> parentMap, String queryString)
+    {
+        return this.privateParameters;
+    }
+    
 }

@@ -138,6 +138,8 @@ public interface NavigationalState
     
     String[] getParameterValues(PortletWindow window, String parameterName);
 
+    Map<String, String[]> getParameterMap(PortletWindow window);
+    
     PortletWindow getPortletWindowOfAction();
     
     PortletWindow getPortletWindowOfResource();

@@ -27,10 +27,11 @@ public class TestPortletPreferencesProvider extends
     private static MockJetspeedEngine mockEngine = new MockJetspeedEngine();
 	private PortletPreferencesProvider prefs;
 	
+	
 	@Override
 	protected String[] getConfigurations() {
 	    return new String[]
-           { "transaction.xml", "registry-test.xml", "cache.xml" };
+           { "transaction.xml", "registry.xml", "cache.xml" };
 	}
 
     protected void setUp() throws Exception
