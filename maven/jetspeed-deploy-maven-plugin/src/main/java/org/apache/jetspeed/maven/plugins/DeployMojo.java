@@ -76,6 +76,7 @@ public class DeployMojo extends AbstractMojo
         private File src;
         private File targetDir;
         private Artifact artifact;
+        private String contextName;
     }
     
     /**
@@ -271,6 +272,25 @@ public class DeployMojo extends AbstractMojo
                         dobj.deployment.targetName = dobj.deployment.targetName.substring(0, index);
                     }
                 }
+                if (dobj.deployment.infuse.booleanValue())
+                {
+                    if (dobj.deployment.expand.booleanValue())
+                    {
+                        dobj.contextName = dobj.deployment.targetName;
+                    }
+                    else
+                    {
+                        int index = dobj.deployment.targetName.lastIndexOf(".");
+                        if (index > -1)
+                        {
+                            dobj.contextName = dobj.deployment.targetName.substring(0, index);
+                        }
+                        else
+                        {
+                            dobj.contextName = dobj.deployment.targetName;
+                        }
+                    }
+                }
             }
             if (portalDeploy)
             {
@@ -420,7 +440,7 @@ public class DeployMojo extends AbstractMojo
                 }
                 try
                 {
-                    deployFactory.getInstance(dobj.src.getAbsolutePath(), tmpTarget.getAbsolutePath(), dobj.deployment.targetName, dobj.deployment.infusionStripLoggers.booleanValue(), dobj.deployment.infusionForcedVersion);
+                    deployFactory.getInstance(dobj.src.getAbsolutePath(), tmpTarget.getAbsolutePath(), dobj.contextName, dobj.deployment.infusionStripLoggers.booleanValue(), dobj.deployment.infusionForcedVersion);
                     dobj.src = tmpTarget;
                 }
                 catch (Exception e)
