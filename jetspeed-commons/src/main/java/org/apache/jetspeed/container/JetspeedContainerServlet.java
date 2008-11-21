@@ -26,6 +26,7 @@ import java.util.TimerTask;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.UnavailableException;
@@ -35,6 +36,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.session.PortalSessionsManager;
@@ -55,6 +57,7 @@ import org.apache.pluto.internal.InternalPortletRequest;
  */
 public class JetspeedContainerServlet extends HttpServlet 
 {
+    private static final long serialVersionUID = -7900846019170204195L;
     private String  contextName;
     private boolean started = false;
     private Timer   startTimer = null;
@@ -236,6 +239,12 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 return;
             }
+            // Inject the current webcontainer provided request *above* the PortletRequest wrapped Jetspeed portlet specific servletRequest (o.a.j.engine.servlet.ServletRequestImpl).
+            // This makes it possible to access the path encoded portlet parameters using the servlet.getParameterMap() which the jetspeed servlet takes care of.
+            // Injecting the webcontainer provided request *above* it is needed to ensure the "cross-context" specific state and handling is still provided correctly
+            PortletRequest portletRequest = (PortletRequest)request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+            HttpServletRequestWrapper jetspeedServletWrapper = (HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest();
+            jetspeedServletWrapper.setRequest(request);
             if (isParallelMode)
             {
                 portlet = (PortletInstance) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET);
@@ -252,10 +261,8 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                ((InternalPortletRequest)actionRequest).init(portlet.getConfig().getPortletContext(), request);
-                ((InternalPortletRequest)actionRequest).setIncluded(true);                    
-                // inject the current request into the actionRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
-//                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)actionRequest).getRequest()).setRequest(request);
+                ((InternalPortletRequest)actionRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                ((InternalPortletRequest)actionRequest).setIncluded(true);
                 portlet.processAction(actionRequest, actionResponse);
             }
             else if (method == ContainerConstants.METHOD_RENDER)
@@ -274,9 +281,7 @@ public class JetspeedContainerServlet extends HttpServlet
                     renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
 
                 }
-                // inject the current request into the renderRequest handler (o.a.j.engine.servlet.ServletRequestImpl)
-                ((InternalPortletRequest)renderRequest).init(portlet.getConfig().getPortletContext(), request);
-//                ((HttpServletRequestWrapper)((HttpServletRequestWrapper)renderRequest).getRequest()).setRequest(request);
+                ((InternalPortletRequest)renderRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
                 portlet.render(renderRequest, renderResponse);
             }
 

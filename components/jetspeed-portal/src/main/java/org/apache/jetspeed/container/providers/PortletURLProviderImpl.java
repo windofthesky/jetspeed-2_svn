@@ -44,6 +44,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private boolean secure = false;
     private Map<String, String[]> privateParameters = null;
     private Map<String, String[]> publicParameters = null;
+    private Map<String, String[]> requestParameters = null;
     private boolean resource = false;
 
     private PortalURL url;
@@ -132,14 +133,12 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public Map<String, String[]> getRenderParameters()
     {
-        if (this.privateParameters == null)
-            this.privateParameters = new HashMap<String, String[]>();
-        return this.privateParameters;
+        return this.requestParameters;
     }
 
     public Map<String, String[]> parseRenderParameters(Map<String, String[]> parentMap, String queryString)
     {
-        return this.privateParameters;
+        return this.requestParameters = parentMap;
     }
     
 }
