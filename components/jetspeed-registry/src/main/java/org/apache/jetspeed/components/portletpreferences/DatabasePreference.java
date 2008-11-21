@@ -128,6 +128,8 @@ public class DatabasePreference
 
     public String[] getValues()
     {
+        // ensure initialized
+        getPreferenceValues();
         if (values.size() == 0)
         {
             String[] result = new String[1];
