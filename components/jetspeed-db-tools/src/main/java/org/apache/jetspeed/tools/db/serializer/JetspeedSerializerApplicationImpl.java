@@ -68,7 +68,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         {
             if (args[n].equals("-c"))
                 categories = args[++n];
-            if (args[n].equals("-p"))
+            else if (args[n].equals("-p"))
                 propertyFileName = args[++n];
             else if (args[n].equals("-a"))
                 applicationRootPath = args[++n];
@@ -90,34 +90,35 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             {
                 throw new IllegalArgumentException("Unknown argument: " + args[n]);
             }
+        }
         
-            if ((!doImport) && (!doExport))
-            {
-              throw new IllegalArgumentException("Either import or export have to be defined (-I or -E followed by the filename");
-            }
+        if ((!doImport) && (!doExport))
+        {
+          throw new IllegalArgumentException("Either import or export have to be defined (-I or -E followed by the filename");
+        }
 
-            if ((doImport) && (doExport))
-            {
-                throw new IllegalArgumentException("Only one - either import or export - can be requested");
-            }
-            
-            if (categories == null)
-            {
-                throw new IllegalArgumentException("Argument -c defining the assembly categories filters (or the propertyFile key to it) is required");
-            }
-            
-            if (applicationRootPath == null)
-            {
-                throw new IllegalArgumentException("Argument -a specifying the path to (web)application root, is required");
-            }
-            if (doImport)
-            {
-                app.importFiles(logger, applicationRootPath, categories, propertyFileName, null, getTokens(fileName));
-            }
-            else if (doExport)
-            {
-                app.export(logger, applicationRootPath, categories, propertyFileName, null, fileName, exportName);
-            }
+        if ((doImport) && (doExport))
+        {
+            throw new IllegalArgumentException("Only one - either import or export - can be requested");
+        }
+        
+        if (categories == null)
+        {
+            throw new IllegalArgumentException("Argument -c defining the assembly categories filters (or the propertyFile key to it) is required");
+        }
+        
+        if (applicationRootPath == null)
+        {
+            throw new IllegalArgumentException("Argument -a specifying the path to (web)application root, is required");
+        }
+        
+        if (doImport)
+        {
+            app.importFiles(logger, applicationRootPath, categories, propertyFileName, null, getTokens(fileName));
+        }
+        else if (doExport)
+        {
+            app.export(logger, applicationRootPath, categories, propertyFileName, null, fileName, exportName);
         }
     }
         
