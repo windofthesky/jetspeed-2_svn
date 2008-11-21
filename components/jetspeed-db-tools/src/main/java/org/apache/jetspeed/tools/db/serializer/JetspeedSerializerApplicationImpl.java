@@ -59,8 +59,8 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         
         if (args == null)
         {
-            System.out.println("Usage for import: -I importFiles (, delimited if multiple) -a applicationRootFolder -c <categories | categories filter key (requires -n)> [-n <categories properties file>]");
-            System.out.println("Usage for export: -E exportFile  -a applicationRootFolder -c <categories | categories filter key (requires -n)> [-n <categories properties file>] [-N <exportName>");
+            System.out.println("Usage for import: -I importFiles (, delimited if multiple) -a applicationRootFolder -c <categories | categories filter key (requires -p)> [-p <categories properties file>]");
+            System.out.println("Usage for export: -E exportFile  -a applicationRootFolder -c <categories | categories filter key (requires -p)> [-p <categories properties file>] [-N <exportName>");
         }
 
         // Parse all the command-line arguments
