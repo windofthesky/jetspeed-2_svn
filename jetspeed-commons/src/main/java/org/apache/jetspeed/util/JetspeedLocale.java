@@ -17,7 +17,10 @@
 
 package org.apache.jetspeed.util;
 
+import java.util.List;
 import java.util.Locale;
+
+import org.apache.jetspeed.i18n.LocalizedObject;
 
 /**
  * Class to set and get Locale settings for Jetspeed.
@@ -107,4 +110,25 @@ public class JetspeedLocale
         }
         return new Locale(lang, country, variant);
     }    
+    
+    public static LocalizedObject getBestLocalizedObject(List<? extends LocalizedObject> list, Locale locale)
+    {
+        LocalizedObject fallback = null;
+        for (LocalizedObject lo : list)
+        {
+            if (lo.getLocale().equals(locale))
+            {
+                return lo;
+            }
+            else if (lo.getLocale().getLanguage().equals(locale.getLanguage()))
+            {
+                fallback = lo;
+            }
+            else if (fallback == null && lo.getLocale().equals(getDefaultLocale()))
+            {
+                fallback = lo;
+            }
+        }
+        return fallback;
+    }
 }

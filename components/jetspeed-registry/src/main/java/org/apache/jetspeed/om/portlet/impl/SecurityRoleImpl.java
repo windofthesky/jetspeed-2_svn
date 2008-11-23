@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.SecurityRole;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
  * 
@@ -48,14 +49,7 @@ public class SecurityRoleImpl implements SecurityRole
 
     public Description getDescription(Locale locale)
     {
-        for (Description d : getDescriptions())
-        {
-            if (d.getLocale().equals(locale))
-            {
-                return d;
-            }
-        }
-        return null;
+        return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
     public List<Description> getDescriptions()
@@ -70,11 +64,13 @@ public class SecurityRoleImpl implements SecurityRole
     public Description addDescription(String lang)
     {
         DescriptionImpl d = new DescriptionImpl(this, lang);
-        if (getDescription(d.getLocale()) != null)
+        for (Description desc : getDescriptions())
         {
-            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+            if (desc.getLocale().equals(d.getLocale()))
+            {
+                throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+            }
         }
-        getDescriptions();
         descriptions.add(d);
         return d;
     }

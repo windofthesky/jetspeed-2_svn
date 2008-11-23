@@ -17,11 +17,13 @@ package org.apache.jetspeed.om.portlet;
 
 import java.io.Serializable;
 
+import org.apache.jetspeed.i18n.LocalizedObject;
+
 /**
  * 
  * @version $Id$
  *
  */
-public interface Description extends org.apache.pluto.om.portlet.Description, Serializable
+public interface Description extends org.apache.pluto.om.portlet.Description, LocalizedObject, Serializable
 {
 }

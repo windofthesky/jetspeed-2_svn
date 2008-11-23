@@ -51,6 +51,7 @@ import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -260,14 +261,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     
     public Description getDescription(Locale locale)
     {
-        for (Description d : getDescriptions())
-        {
-            if (d.getLocale().equals(locale))
-            {
-                return d;
-            }
-        }
-        return null;
+        return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
     public List<Description> getDescriptions()
@@ -282,25 +276,20 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     public Description addDescription(String lang)
     {
         DescriptionImpl d = new DescriptionImpl(this, lang);
-        if (getDescription(d.getLocale()) != null)
+        for (Description desc : getDescriptions())
         {
-            throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+            if (desc.getLocale().equals(d.getLocale()))
+            {
+                throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+            }
         }
-        getDescriptions();
         descriptions.add(d);
         return d;
     }
 
     public DisplayName getDisplayName(Locale locale)
     {
-        for (DisplayName d : getDisplayNames())
-        {
-            if (d.getLocale().equals(locale))
-            {
-                return d;
-            }
-        }
-        return null;
+        return (DisplayName)JetspeedLocale.getBestLocalizedObject(getDisplayNames(), locale);
     }
     
     public List<DisplayName> getDisplayNames()
@@ -315,11 +304,13 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     public DisplayName addDisplayName(String lang)
     {
         DisplayNameImpl d = new DisplayNameImpl(this, lang);
-        if (getDisplayName(d.getLocale()) != null)
+        for (DisplayName dn : getDisplayNames())
         {
-            throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+            if (dn.getLocale().equals(d.getLocale()))
+            {
+                throw new IllegalArgumentException("DisplayName for language: "+d.getLocale()+" already defined");
+            }
         }
-        getDisplayNames();
         displayNames.add(d);
         return d;
     }
