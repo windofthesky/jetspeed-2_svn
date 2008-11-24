@@ -40,6 +40,8 @@ import javax.security.auth.Subject;
 
 import junit.framework.TestCase;
 
+import net.sf.ehcache.CacheManager;
+
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.idgenerator.IdGenerator;
@@ -79,6 +81,8 @@ import org.apache.jetspeed.security.spi.impl.FolderPermission;
 import org.apache.jetspeed.security.spi.impl.FragmentPermission;
 import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
 import org.apache.jetspeed.security.spi.impl.PagePermission;
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.impl.EhCacheImpl;
 
 /**
  * PageManagerTestShared
@@ -132,7 +136,7 @@ interface PageManagerTestShared
             dirHelper.copyFrom(webappPagesDirFile, noCVSorSVNorBackups);
 
             IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
-            FileCache cache = new FileCache(10, 12);
+            FileCache cache = new FileCache(new EhCacheImpl(CacheManager.getInstance().getEhcache("pageFileCache")), 10);
             
             DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
             DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
