@@ -24,12 +24,15 @@ import java.util.HashMap;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import net.sf.ehcache.CacheManager;
+
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.cache.file.FileCache;
+import org.apache.jetspeed.cache.impl.EhCacheImpl;
 
 /**
  * <p>
@@ -57,12 +60,14 @@ public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
     {
         super.setUp();
         
+        FileCache cache = new FileCache(new EhCacheImpl(CacheManager.getInstance().getEhcache("pageFileCache")), 10);
+        
         folderMetaDataDocumentHandler = new CastorFileSystemDocumentHandler(
             "/JETSPEED-INF/castor/page-mapping.xml",
             "folder.metadata",
             FolderMetaDataImpl.class,
             getBaseDir()+"src/test/testdata/pages",
-            new FileCache());
+            cache);
             
         Map handlerMap = new HashMap();
         handlerMap.put("folder.metadata", folderMetaDataDocumentHandler);
