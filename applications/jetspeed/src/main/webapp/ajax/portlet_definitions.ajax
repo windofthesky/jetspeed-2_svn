@@ -16,10 +16,10 @@
   limitations under the License.
 *#
 <portletDefinitions>
-#foreach($portlet in $result.portletDefinitions)
+#foreach($portlet in $result.portlets)
 	<portletDefinition>
-		<id>$portlet.id</id>
-		<name>$portlet.name</name>
+		<id>$portlet.uniqueName</id>
+		<name>$portlet.uniqueName</name>
 	</portletDefinition>
 #end
 </portletDefinitions>
