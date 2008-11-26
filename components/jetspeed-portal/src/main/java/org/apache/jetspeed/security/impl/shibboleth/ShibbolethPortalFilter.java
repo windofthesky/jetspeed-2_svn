@@ -39,8 +39,8 @@ import org.apache.jetspeed.security.AuthenticationProvider;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
-import erehay.isway.away.eebiefray.enjoyway.itway.alkerstay.UserPrincipal;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserPrincipal;
 
 public class ShibbolethPortalFilter implements Filter
 {
