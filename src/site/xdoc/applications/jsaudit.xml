@@ -55,7 +55,13 @@
 <td>UserStatusReport</td>
 <td>Presents user login statistics (filtered) about all users who have visited the portal including name, email, last login timestamp, last login IP, last password change timestamp, user status (enabled/disabled), created by administrator</td>
 </tr>
-</table>	
+</table>
+<subsection name='Excel Reports'>
+<p>In order to view the Excel reports, you will need to set this property in the WEB-INF/conf/override.properties:</p>
+<p>
+merge.portal.parameters.with.portlet.parameters=<b>true</b>
+</p>
+</subsection>	
 </section>
 </body>
 </document>
