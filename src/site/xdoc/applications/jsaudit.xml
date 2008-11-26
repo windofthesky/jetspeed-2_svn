@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed Auditing Reports</title>
+		<subtitle>Welcome to Jetspeed Auditing Reports App</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+<section name="Catalog of Jetspeed Auditing Reports">
+<p>This portlet application provides a set of report portlets for querying information gathering during administrative operations of the portal.</p>
+<table>
+<tr>
+<th>Portlet</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>AdminActivityReport</td>
+<td></td>
+</tr>
+<tr>
+<td>AdminStatusReport</td>
+<td></td>
+</tr>
+<tr>
+<td>PasswordResetReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SSOSystemSecurityReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SSOSuccessLoginReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SSOOptOutReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SSOLockedUserReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SSOFailedLoginReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SSOUserStatusReport</td>
+<td></td>
+</tr>
+<tr>
+<td>SystemSecurityReport</td>
+<td></td>
+</tr>
+<tr>
+<td>UserCreationReport</td>
+<td></td>
+</tr>
+<tr>
+<td>UserDeletionReport</td>
+<td></td>
+</tr>
+</table>	
+</section>
+</body>
+</document>

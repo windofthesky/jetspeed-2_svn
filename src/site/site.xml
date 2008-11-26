@@ -42,7 +42,7 @@
     <menu name="Essentials">
         <item name="Features" href="features.html" />
         <item name="Getting Started" href="getting-started.html" />  
-        <item name="Jetspeed for Developers" href="developers.html" />          
+        <item name="Jetspeed for Developers" href="developers.html" />
     </menu>
     <menu name="Building">
         <item name="From Source with Maven-2" href="maven-2-build.html" />
@@ -61,6 +61,7 @@
         <item name="Jetspeed Tutorial - Maven-2 Custom Build" href="http://portals.apache.org/tutorials/jetspeed-2/" />
         <item name="Jetspeed Tutorial - Ant Custom Build (incomplete)" href="http://portals.apache.org/tutorials/jetspeed-2-ant/" />
         <item name="Jetspeed-2 API" href="http://portals.apache.org/jetspeed-2/apidocs/index.html" />
+        <item name="Jetspeed Applications" href="applications/index.html"/>          
     </menu>
     <menu name="About Jetspeed-2">
         <item name="For Jetspeed-1 Users" href="j1-users.html" />
