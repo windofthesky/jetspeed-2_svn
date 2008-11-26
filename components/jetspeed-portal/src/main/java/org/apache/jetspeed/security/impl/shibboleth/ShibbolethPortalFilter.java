@@ -40,7 +40,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 
 public class ShibbolethPortalFilter implements Filter
 {
@@ -73,7 +73,7 @@ public class ShibbolethPortalFilter implements Filter
 				Subject subject = (Subject) request.getSession().getAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT);
 				if (subject != null)
 				{
-					Principal principal = SubjectHelper.getPrincipal(subject, UserPrincipal.class);
+					Principal principal = SubjectHelper.getPrincipal(subject, UserSubjectPrincipal.class);
 					if (principal != null)
 					{
 						if (principal.getName().equals(username))
