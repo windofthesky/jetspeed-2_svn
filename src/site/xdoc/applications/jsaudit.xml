@@ -33,51 +33,27 @@
 </tr>
 <tr>
 <td>AdminActivityReport</td>
-<td></td>
-</tr>
-<tr>
-<td>AdminStatusReport</td>
-<td></td>
+<td>Filtered Report displaying activity of administrators like adding and removing users, adding roles to users, resetting passwords, updating security attributes. Displays before and after values when applicable, as well as timestamp, IP address.</td>
 </tr>
 <tr>
 <td>PasswordResetReport</td>
-<td></td>
-</tr>
-<tr>
-<td>SSOSystemSecurityReport</td>
-<td></td>
-</tr>
-<tr>
-<td>SSOSuccessLoginReport</td>
-<td></td>
-</tr>
-<tr>
-<td>SSOOptOutReport</td>
-<td></td>
-</tr>
-<tr>
-<td>SSOLockedUserReport</td>
-<td></td>
-</tr>
-<tr>
-<td>SSOFailedLoginReport</td>
-<td></td>
-</tr>
-<tr>
-<td>SSOUserStatusReport</td>
-<td></td>
+<td>Presents a Password Reset activity report on the queried user(s) displaying information about when a password was last reset and by whom (administrator or user), shows IP address from where user reset password</td>
 </tr>
 <tr>
 <td>SystemSecurityReport</td>
-<td></td>
+<td>Presents a system security report on the queried user(s) displaying general system security settings: password expire date, number of attempted logins, and security policy settings: 	lockout duration policy, password complexity, user id complexity, password history</td>
 </tr>
 <tr>
 <td>UserCreationReport</td>
-<td></td>
+<td>Presents a User Creation activity report on the queried user(s) displaying a log of all user creation activity with timestamps, and which admin user created the user from which IP address</td>
 </tr>
 <tr>
 <td>UserDeletionReport</td>
-<td></td>
+<td>Presents a User Deletion activity report on the queried user(s) displaying a log of all user deletion activity with timestamps, and which admin user deleted the user from which IP address</td>
+</tr>
+<tr>
+<td>UserStatusReport</td>
+<td>Presents user login statistics (filtered) about all users who have visited the portal including name, email, last login timestamp, last login IP, last password change timestamp, user status (enabled/disabled), created by administrator</td>
 </tr>
 </table>	
 </section>
