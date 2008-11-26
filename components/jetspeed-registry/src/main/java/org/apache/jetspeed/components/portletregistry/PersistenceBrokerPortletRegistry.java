@@ -123,8 +123,8 @@ public class PersistenceBrokerPortletRegistry
         String portletName = PortletRegistryHelper.parsePortletName(name);
 
         Criteria c = new Criteria();
-// TODO: 2.2 Fix me        c.addEqualTo("app.name", appName);
-        c.addEqualTo("name", portletName);
+        c.addEqualTo("app.name", appName);
+        c.addEqualTo("portletName", portletName);
         PortletDefinition def = (PortletDefinition) getPersistenceBrokerTemplate().getObjectByQuery(
         QueryFactory.newQuery(PortletDefinitionImpl.class, c));
         if (def != null && def.getApplication() == null)
