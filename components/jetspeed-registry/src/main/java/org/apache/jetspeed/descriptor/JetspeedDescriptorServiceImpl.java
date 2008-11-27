@@ -472,7 +472,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         jpd.setExpirationCache(pd.getExpirationCache());
         jpd.setPortletClass(pd.getPortletClass());
         jpd.setResourceBundle(pd.getResourceBundle());
-        jpd.getDescriptorPreferences().setPreferencesValidator(pd.getPortletPreferences().getPreferencesValidator());
+        jpd.setPreferenceValidatorClassname(pd.getPortletPreferences().getPreferencesValidator());
         for (org.apache.pluto.om.portlet.Preference preference : pd.getPortletPreferences().getPortletPreferences())
         {
             Preference jpref = jpd.getDescriptorPreferences().addPreference(preference.getName());
