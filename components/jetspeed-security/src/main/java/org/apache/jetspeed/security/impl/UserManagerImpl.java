@@ -262,7 +262,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public JetspeedPrincipal newTransientPrincipal(String name)
 	{
-		return newTransientPrincipal(name);
+		return newTransientUser(name);
 	}
 
     public void addSubjectPrincipalsResolver(UserSubjectPrincipalsResolver resolver)
