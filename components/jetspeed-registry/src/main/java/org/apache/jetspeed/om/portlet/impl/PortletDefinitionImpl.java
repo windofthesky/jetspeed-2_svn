@@ -195,7 +195,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 
     public Preferences getPortletPreferences()
     {
-        System.out.println(">>> Getting prefs ");
+        //System.out.println(">>> Getting prefs ");
         if (PortletDefinitionImpl.portletPreferencesProvider == null)
         {
             return new PreferencesImpl();            
@@ -284,12 +284,10 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
                 else
                 {
                     // create a new locale on the fly but don't save it
-                    LanguageImpl l = new LanguageImpl();
-                    l.setLocale(locale);
-                    lang = l;
+                    fallback = getLanguage(JetspeedLocale.getDefaultLocale());
                 }
             }
-            else
+            if (fallback != null)
             {
                 // create a copy of the fallback for the locale but don't save it
                 LanguageImpl l = new LanguageImpl();
