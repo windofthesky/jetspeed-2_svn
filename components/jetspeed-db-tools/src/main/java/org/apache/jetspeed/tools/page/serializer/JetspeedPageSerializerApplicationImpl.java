@@ -68,7 +68,7 @@ public class JetspeedPageSerializerApplicationImpl implements JetspeedPageSerial
         {
             if (args[n].equals("-c"))
                 categories = args[++n];
-            if (args[n].equals("-p"))
+            else if (args[n].equals("-p"))
                 propertyFileName = args[++n];
             else if (args[n].equals("-a"))
                 applicationRootPath = args[++n];
@@ -90,40 +90,40 @@ public class JetspeedPageSerializerApplicationImpl implements JetspeedPageSerial
             {
                 throw new IllegalArgumentException("Unknown argument: " + args[n]);
             }
+        }
         
-            if ((!doImport) && (!doExport))
-            {
-              throw new IllegalArgumentException("Either import or export have to be defined (-I or -E followed by the rootFolder");
-            }
+        if ((!doImport) && (!doExport))
+        {
+          throw new IllegalArgumentException("Either import or export have to be defined (-I or -E followed by the rootFolder");
+        }
 
-            if ((doImport) && (doExport))
-            {
-                throw new IllegalArgumentException("Only one - either import or export - can be requested");
-            }
-            
+        if ((doImport) && (doExport))
+        {
+            throw new IllegalArgumentException("Only one - either import or export - can be requested");
+        }
+        
 
-            if (categories == null)
-            {
-                throw new IllegalArgumentException("Argument -c defining the assembly categories filters (or the propertyFile key to it) is required");
-            }
-            
-            if (applicationRootPath == null)
-            {
-                throw new IllegalArgumentException("Argument -a specifying the path to (web)application root, is required");
-            }
-            Properties initProperties = new Properties();
-            if (psmlPagesPath != null)
-            {
-                initProperties.put("psml.pages.path", psmlPagesPath);
-            }
-            if (doImport)
-            {
-                app.execute(logger, applicationRootPath, categories, propertyFileName, initProperties, rootFolder, true);
-            }
-            if (doExport)
-            {
-                app.execute(logger, applicationRootPath, categories, propertyFileName, initProperties, rootFolder, false);
-            }
+        if (categories == null)
+        {
+            throw new IllegalArgumentException("Argument -c defining the assembly categories filters (or the propertyFile key to it) is required");
+        }
+        
+        if (applicationRootPath == null)
+        {
+            throw new IllegalArgumentException("Argument -a specifying the path to (web)application root, is required");
+        }
+        Properties initProperties = new Properties();
+        if (psmlPagesPath != null)
+        {
+            initProperties.put("psml.pages.path", psmlPagesPath);
+        }
+        if (doImport)
+        {
+            app.execute(logger, applicationRootPath, categories, propertyFileName, initProperties, rootFolder, true);
+        }
+        if (doExport)
+        {
+            app.execute(logger, applicationRootPath, categories, propertyFileName, initProperties, rootFolder, false);
         }
     }            
 
