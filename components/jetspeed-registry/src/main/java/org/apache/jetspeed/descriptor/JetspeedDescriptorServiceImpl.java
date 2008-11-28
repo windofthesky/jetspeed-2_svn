@@ -596,7 +596,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             // initialize with the value provided by the resource bundle
             l.setShortTitle(value);
         }
-        value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
+        value = bundle.getString(Language.JAVAX_PORTLET_KEYWORDS);
         if (value.equals(""))
         {
             // resourceBundle didn't provide keywords, initialize with the PortletInfo default (if any)
