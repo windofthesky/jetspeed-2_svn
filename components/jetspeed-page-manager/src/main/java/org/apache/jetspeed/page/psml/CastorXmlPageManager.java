@@ -908,6 +908,20 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         fileCache.evictAll();
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#shutdown()
+     */
+    public void shutdown()
+    {
+        // propagate to super
+        super.shutdown();
+        // disconnect cache listener
+        fileCache.removeListener(this);
+        // propagate to handlers
+        handlerFactory.shutdown();
+        folderHandler.shutdown();
+    }
+
     /**
      * <p>
      * getNodeFolder - get folder implementation associated with specifed path

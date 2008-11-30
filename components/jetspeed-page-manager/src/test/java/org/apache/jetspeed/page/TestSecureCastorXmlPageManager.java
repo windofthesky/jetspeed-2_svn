@@ -27,7 +27,7 @@ import org.apache.jetspeed.test.JetspeedTestCase;
  * 
  * @author <a href="rwatler@apache.org">Randy Watler</a>
  * @version $Id$
- */
+*/
 public class TestSecureCastorXmlPageManager extends JetspeedTestCase implements PageManagerTestShared 
 {
     protected CastorXmlPageManager pageManager;
@@ -41,6 +41,17 @@ public class TestSecureCastorXmlPageManager extends JetspeedTestCase implements 
     {
         super.setUp();
         pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "secure-pages", false, true);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        Shared.shutdownCastorXMLPageManager(pageManager);
     }
 
     /**

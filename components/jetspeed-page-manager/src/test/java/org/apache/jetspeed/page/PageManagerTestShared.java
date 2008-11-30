@@ -81,7 +81,6 @@ import org.apache.jetspeed.security.spi.impl.FolderPermission;
 import org.apache.jetspeed.security.spi.impl.FragmentPermission;
 import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
 import org.apache.jetspeed.security.spi.impl.PagePermission;
-import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.impl.EhCacheImpl;
 
 /**
@@ -136,7 +135,7 @@ interface PageManagerTestShared
             dirHelper.copyFrom(webappPagesDirFile, noCVSorSVNorBackups);
 
             IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
-            FileCache cache = new FileCache(new EhCacheImpl(CacheManager.getInstance().getEhcache("pageFileCache")), 10);
+            FileCache cache = new FileCache(new EhCacheImpl( CacheManager.getInstance().getEhcache("pageFileCache")), 10);
             
             DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
             DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
@@ -151,6 +150,19 @@ interface PageManagerTestShared
             FolderHandler folderHandler = new FileSystemFolderHandler(baseDir+"target/testdata/" + pagesDirName, handlerFactory, cache);
 
             return new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, permissionsEnabled, constraintsEnabled);
+        }
+        
+        /**
+         * shutdownCastorXmlPageManager
+         * 
+         * shutdown page manager and free cache between test invocations
+         */
+        static void shutdownCastorXMLPageManager(CastorXmlPageManager pageManager)
+        {
+            // reset to clear cache
+            pageManager.reset();
+            // shutdown page manager and handlers
+            pageManager.shutdown();
         }
 
         /**

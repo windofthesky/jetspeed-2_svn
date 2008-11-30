@@ -78,6 +78,17 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "pages", false, false);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        Shared.shutdownCastorXMLPageManager(pageManager);
+    }
+
     /**
      * Defines the testcase name for JUnit.
      * 

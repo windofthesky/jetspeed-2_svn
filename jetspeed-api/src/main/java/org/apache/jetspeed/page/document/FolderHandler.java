@@ -163,4 +163,10 @@ public interface FolderHandler
      */
     boolean isFolder(String path);
     
+    
+   /**
+     * shutdown - gracefully shutdown handler and disconnect
+     * from other singleton components, (e.g. shared caches) 
+     */
+    public void shutdown();
 }

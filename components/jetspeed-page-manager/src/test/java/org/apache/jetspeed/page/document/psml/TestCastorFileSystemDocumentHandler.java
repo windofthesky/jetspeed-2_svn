@@ -48,7 +48,7 @@ import org.apache.jetspeed.cache.impl.EhCacheImpl;
  */
 public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
 {
-
+    protected FileCache cache;
     protected CastorFileSystemDocumentHandler folderMetaDataDocumentHandler;
 
     /*
@@ -59,8 +59,8 @@ public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        
-        FileCache cache = new FileCache(new EhCacheImpl(CacheManager.getInstance().getEhcache("pageFileCache")), 10);
+
+        cache = new FileCache(new EhCacheImpl(CacheManager.getInstance().getEhcache("pageFileCache")), 10);
         
         folderMetaDataDocumentHandler = new CastorFileSystemDocumentHandler(
             "/JETSPEED-INF/castor/page-mapping.xml",
@@ -73,6 +73,19 @@ public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
         handlerMap.put("folder.metadata", folderMetaDataDocumentHandler);
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl(handlerMap);
         folderMetaDataDocumentHandler.setHandlerFactory(handlerFactory);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+
+        cache.evictAll();
+        folderMetaDataDocumentHandler.shutdown();
     }
 
     /**

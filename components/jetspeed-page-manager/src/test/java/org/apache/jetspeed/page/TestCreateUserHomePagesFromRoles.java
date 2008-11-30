@@ -46,7 +46,18 @@ public class TestCreateUserHomePagesFromRoles extends JetspeedTestCase implement
     protected void setUp() throws Exception
     {
         super.setUp();
-        pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "secure-pages", false, true);
+        pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "pages", false, false);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown
+     */
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        Shared.shutdownCastorXMLPageManager(pageManager);
     }
 
     /**
@@ -97,8 +108,6 @@ public class TestCreateUserHomePagesFromRoles extends JetspeedTestCase implement
     
     public void testCreateUserHomePagesFromRoles() throws Exception
     {
-        PageManager pageManager = Shared.makeCastorXMLPageManager(getBaseDir(), "pages", false, false);         
-
         assertTrue("folder1 failed to create", pageManager.folderExists(FOLDER1));
         assertTrue("folder2 failed to create", pageManager.folderExists(FOLDER2));
         assertTrue("folder3 failed to create", pageManager.folderExists(FOLDER3));

@@ -202,4 +202,17 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
     {
         constraintsEnabled = enabled;
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#shutdown()
+     */
+    public void shutdown()
+    {
+        // propagate to handlers        
+        Iterator handlersIter = handlers.values().iterator();
+        while (handlersIter.hasNext())
+        {
+            ((DocumentHandler)handlersIter.next()).shutdown();
+        }
+    }    
 }

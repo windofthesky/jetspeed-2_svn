@@ -446,6 +446,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#shutdown()
+     */
+    public void shutdown()
+    {
+        // delegate
+        delegator.shutdown();
+    }
+
+     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPage(java.lang.String)
      */
     public Page getPage(String path) throws PageNotFoundException, NodeException

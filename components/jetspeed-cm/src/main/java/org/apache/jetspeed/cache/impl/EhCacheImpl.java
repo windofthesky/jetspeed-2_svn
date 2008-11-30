@@ -154,13 +154,14 @@ public class EhCacheImpl implements JetspeedCache
                return this;
            }
         };
-        
+
+        this.cacheEventListenersMap.put(listener, cacheEventListener);
         ehcache.getCacheEventNotificationService().registerListener(cacheEventListener);
     }
     
     public void removeEventListener(JetspeedCacheEventListener listener, boolean local)
     {
-        CacheEventListener cacheEventListener = this.cacheEventListenersMap.get(listener);
+        CacheEventListener cacheEventListener = this.cacheEventListenersMap.remove(listener);
         
         if (cacheEventListener != null)
             ehcache.getCacheEventNotificationService().unregisterListener(cacheEventListener);
