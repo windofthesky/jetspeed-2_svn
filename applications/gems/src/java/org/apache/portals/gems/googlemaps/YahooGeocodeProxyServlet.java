@@ -46,16 +46,18 @@ public class YahooGeocodeProxyServlet extends HttpServlet
     /**
      * Configuration 
      */
-     private static final String YAHOO_REQUEST = "http://api.local.yahoo.com/MapsService/V1/geocode?appid=YahooDemo&location=";
-
+     // OLD: private static final String YAHOO_REQUEST = "http://api.local.yahoo.com/MapsService/V1/geocode?appid=YahooDemo&location=";
+     private static final String YAHOO_REQUEST = "http://local.yahooapis.com/MapsService/V1/geocode?appid="; //YahooDemo&location=";
     /**
      * doGet() override doGet
      */
      protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, java.io.IOException {
 		String location = req.getParameter("location");
+		String appid = req.getParameter("appid");
 		location = URLEncoder.encode(location,"UTF-8");
-		String url = YAHOO_REQUEST + location;
+		appid = URLEncoder.encode(location,"UTF-8");
+		String url = YAHOO_REQUEST + appid + "&location=" +location;
 		String content = "<error/>";
 		
 		// get content from yahoo, code from http://jakarta.apache.org/commons/httpclient/tutorial.html

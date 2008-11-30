@@ -18,7 +18,8 @@
     function portletGoogleMapsLoadMap()
     {
         var loc = escape("$renderRequest.getPreferences().getValue('Location','')");
-        var getLatitudeLongitudeUrl = "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=" + loc ;
+        var appid = escape("$renderRequest.getPreferences().getValue('APIKey','')");
+        var getLatitudeLongitudeUrl = "$renderRequest.getScheme():\/\/$renderRequest.getServerName():$renderRequest.getServerPort()$renderRequest.getContextPath()\/yahoogeocode?location=" + loc + "&appid=" + appid;
         dojo.io.bind({
 		    url: getLatitudeLongitudeUrl,
 		    mimetype: "text/xml",
