@@ -130,12 +130,10 @@ public class DatabasePreference
     {
         // ensure initialized
         getPreferenceValues();
-        if (values.size() == 0)
+        if(values.size() == 0)
         {
-            String[] result = new String[1];
-            result[0] = null;
-            return result;
-            
+            // Making changes for TCK compliance
+			return null;
         }
         String[] result = new String[values.size()];
         int index = 0;
