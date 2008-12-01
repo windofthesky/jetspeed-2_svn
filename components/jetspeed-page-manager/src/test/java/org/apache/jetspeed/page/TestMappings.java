@@ -21,7 +21,7 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.pluto.om.portlet.Preference;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
@@ -44,12 +44,12 @@ public class TestMappings extends TestCase
         
         assertNotNull(fragment);
         assertEquals(1, fragment.getPreferences().size());
-        Preference pref = (Preference) fragment.getPreferences().get(0);
+        FragmentPreference pref = (FragmentPreference) fragment.getPreferences().get(0);
         
         assertEquals("Google", pref.getName());
         assertEquals(false, pref.isReadOnly());
-        Iterator itr = pref.getValues();
-        String value = (String )itr.next();
+        Iterator itr = pref.getValueList().iterator();
+        String value = (String)itr.next();
         assertEquals("http://www.google.com", value );
 
     }

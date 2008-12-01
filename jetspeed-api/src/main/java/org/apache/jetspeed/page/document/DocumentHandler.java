@@ -44,4 +44,10 @@ public interface DocumentHandler
     DocumentHandlerFactory getHandlerFactory();
 
     void setHandlerFactory(DocumentHandlerFactory factory);
+    
+    /**
+     * shutdown - gracefully shutdown handler and disconnect
+     * from other singleton components, (e.g. shared caches) 
+     */
+    public void shutdown();
 }

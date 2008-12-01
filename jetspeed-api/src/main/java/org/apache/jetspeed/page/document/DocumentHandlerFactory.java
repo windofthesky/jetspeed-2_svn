@@ -99,4 +99,10 @@ public interface DocumentHandlerFactory
      * @param enabled indicator
      */
     void setPermissionsEnabled(boolean enabled);
+    
+    /**
+     * shutdown - gracefully shutdown handlers and disconnect
+     * from other singleton components, (e.g. shared caches) 
+     */
+    public void shutdown();
 }

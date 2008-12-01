@@ -694,6 +694,14 @@ public abstract class AbstractPageManager
         // nothing to reset by default
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#shutdown()
+     */
+    public void shutdown()
+    {
+        // nothing to shutdown by default
+    }
+
     /**
      * notifyNewNode - notify page manager event listeners of
      *                 new node event

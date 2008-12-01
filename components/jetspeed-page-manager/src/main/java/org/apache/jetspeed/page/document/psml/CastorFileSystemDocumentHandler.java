@@ -779,4 +779,12 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         this.handlerFactory = factory;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.DocumentHandler#shutdown()
+     */
+    public void shutdown()
+    {
+        // disconnect cache listener
+        fileCache.removeListener(this);
+    }    
 }

@@ -18,7 +18,9 @@
 package org.apache.jetspeed.cache.file;
 
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -44,6 +46,7 @@ public class FileCache
 
     private FileCacheScanner scanner = null;
     private JetspeedCache cache = null;
+    private Map<FileCacheEventListener,JetspeedCacheEventListener> listeners = new Hashtable<FileCacheEventListener,JetspeedCacheEventListener>();
 
     private final static Log log = LogFactory.getLog(FileCache.class);
 
@@ -226,8 +229,22 @@ public class FileCache
             {
             }
         };
-
+        listeners.put(listener, cacheEventListener);
         this.cache.addEventListener(cacheEventListener, true);
+    }
+
+    /**
+     * Remove a File Cache Event Listener 
+     *
+     * @param listener the event listener
+     */
+    public void removeListener(final FileCacheEventListener listener)
+    {
+        JetspeedCacheEventListener cacheEventListener = listeners.remove(listener);
+        if (cacheEventListener != null)
+        {
+            this.cache.removeEventListener(cacheEventListener, true);
+        }
     }
 
     /**

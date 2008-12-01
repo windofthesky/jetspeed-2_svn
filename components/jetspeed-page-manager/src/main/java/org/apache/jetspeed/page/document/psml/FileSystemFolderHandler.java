@@ -665,6 +665,14 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.FolderHandler#shutdown()
+     */
+    public void shutdown()
+    {
+        // disconnect cache listener
+        fileCache.removeListener(this);
+    }    
 
     /**
      * <p>
