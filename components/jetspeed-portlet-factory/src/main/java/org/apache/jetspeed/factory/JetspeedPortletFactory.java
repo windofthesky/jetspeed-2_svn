@@ -374,5 +374,11 @@ public class JetspeedPortletFactory implements PortletFactory
     {
         // return new JetspeedRequestDispatcher(requestDispatcher);
         return new PortletRequestDispatcherImpl(requestDispatcher);
+    }
+    
+    public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path)
+    {
+        // return new JetspeedRequestDispatcher(requestDispatcher);
+        return new PortletRequestDispatcherImpl(requestDispatcher, path);
     }    
 }

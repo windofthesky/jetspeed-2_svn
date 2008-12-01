@@ -50,4 +50,5 @@ public interface PortletFactory
     PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
     PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher);
+    PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path);
 }

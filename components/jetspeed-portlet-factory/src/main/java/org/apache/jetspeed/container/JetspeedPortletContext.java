@@ -83,7 +83,7 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
         }
         if (rd != null)
         {
-            return factory.createRequestDispatcher(rd);
+            return factory.createRequestDispatcher(rd, path);
         }
         return null;
     }
