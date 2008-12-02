@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  $Id$
+-->
+<document>
+  <properties>
+    <title>Building and developing Jetspeed-2 using Maven-2</title>
+    <authors>
+      <person name="Ate Douma" email="ate@douma.nu" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Introduction">
+      <p>
+        The Jetspeed-2 build system is, as of version 2.2, fully based upon <a href="http://maven.apache.org">Apache Maven 2.0</a>.
+      </p>
+      <p>
+        This means the Jetspeed project developers as well as custom portal developers and system integrators are provided with a standardized and very
+        pluggable and configurable build environment which follows the standard guidelines of the Maven 2 build framework.
+      </p>
+      <p>
+        The Jetspeed-2 Portal itself is an application based upon a very flexible component architecture which is "assembled" and configured at runtime using
+        <a href="http://www.springframework.org">Spring Framework</a>.
+        One of the primary features of Jetspeed-2 Portal is that it can be adapted and configured for very divers and specific requirements. To be able to <em>leverage</em>
+        this feature for custom portal projects, configuring how Jetspeed-2 is to be assembled and integrated for the target environment(s) requires a very flexible build and
+        configuration toolset as well.
+      </p>
+      <subsection name="Maven Plugins">
+        <p>
+          The "standard" Maven-2 toolset is capable enough to <em>build</em> and <em>dynamically resolve</em>
+          most components and artifacts needed for a (custom) Jetspeed-2 Portal. But <em>configuring</em> and <em>integrating</em> Jetspeed-2 within <em>your</em>
+          specific project environment usually goes far beyond just <em>building</em>.
+        </p>
+        <p>
+          Setting up and interacting with back-end databases, creating and maintaining portal configurations for a specific target deployment environment, and
+          deploying not only "just" a portal war but everything required at runtime, is mostly "out-of-scope" of the standard Maven-2 toolset.
+        </p>
+        <p>
+          To be able to meet the myriad of possible integration requirements (from a Jetspeed-2 project POV) and still leverage the Maven 2 toolset, a few custom
+          Maven "plugins" have been written providing features like database initialization, portal configuration and portal deployment which can be configured
+          and used within a standard Maven 2 build environment.          
+        </p>
+        <p>
+          The rationale for the main Jetspeed Maven Plugin, jetspeed:mvn, orchestrating the usage of the other Jetspeed plugins is described in
+          <a href="the-need-for-a-custom-lifecycle.html">The Need for a custom Maven lifecycle</a>. 
+        </p>
+        <p>
+          Detailed documentation and configuration of each of the Maven plugins is available from the <a href="jetspeed-maven-plugins.html">Jetspeed Maven Plugins Overview</a>
+          menu and its subpages. Example usages and build instructions for Jetspeed-2 (which leverages these plugins too) are also available from the side menu.
+        </p>
+      </subsection>
+      <subsection name="Maven Archetypes">
+        <p>
+          As will become clear from the more detailed descriptions and their usages provided with each plugin, manually
+          setting up and configuring a complete (custom) Jetspeed Portal project is far from trivial and requires quite a few steps to perform.
+        </p>
+        <p>
+          The basic <a href="project-structure.html">project structure and configuration</a> however will be in most cases the same,
+          and a standard way of setting up such an initial build project configuration is using a Maven archetype plugin.
+          Jetspeed-2 provides its own jetspeed-archetype Maven plugin which can be used as a quickstart for creating a new custom portal project.
+          Detailed description and usage for the Jetspeed-2 Archetype plugin is provided <a href="jetspeed-archetype.html">here</a>.
+        </p>
+      </subsection>
+      <subsection name="IMPORTANT: required configuration of the Maven Settings pluginGroups">
+        <p>
+          Using non standard Maven Plugins (e.g. not from the Maven or CodeHaus Plugin projects) from the command line by default requires one to specify the full
+          coordinates of the intended plugin goal.
+        </p>
+        <p>
+          For the Jetspeed-2 Maven Plugins, this would mean for example for invoking the <a href="jetspeed-maven-plugins.html">jetspeed:mvn</a> plugin something like:
+          <source>$mvn org.apache.portals.jetspeed-2:jetspeed:mvn -Dtarget=demo</source>
+        </p>
+        <p>
+          However this can be simplified by telling Maven which additional plugin groups it should search through when the groupId is not specified on the command.<br/>
+          See also the main documentation for the <a href="http://maven.apache.org/settings.html">Maven Settings</a>.
+        </p>
+        <p>
+          Adding the Jetspeed-2 Maven Plugins groupId to the pluginGroups in your Maven settings.xml is therefore recommended and assumed by all example usages given
+          throughout the Jetspeed-2 documentation. 
+        </p>
+        <p>
+          The current user Maven settings.xml can be found at: <strong><code>${user.home}/.m2/settings.xml</code></strong> (create one if it doesn't exist yet).
+        </p>
+        <p>
+          The Jetspeed-2 groupId should be added to the pluginGroups within the settings.xml as follows:
+        <source><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/POM/4.0.0">
+  <pluginGroups>
+    <pluginGroup>org.apache.portals.jetspeed-2</pluginGroup>
+    ...
+  </pluginGroups>
+  ...
+</settings>]]></source>
+          Once the above pluginGroup is configured, the same example from above can be shorted as follows:
+          <source>$mvn jetspeed:mvn -Dtarget=demo</source>            
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>

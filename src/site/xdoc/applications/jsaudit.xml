@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed Auditing Reports</title>
+		<subtitle>Welcome to Jetspeed Auditing Reports App</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+<section name="Catalog of Jetspeed Auditing Reports">
+<p>This portlet application provides a set of report portlets for querying information gathering during administrative operations of the portal.</p>
+<table>
+<tr>
+<th>Portlet</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>AdminActivityReport</td>
+<td>Filtered Report displaying activity of administrators like adding and removing users, adding roles to users, resetting passwords, updating security attributes. Displays before and after values when applicable, as well as timestamp, IP address.</td>
+</tr>
+<tr>
+<td>PasswordResetReport</td>
+<td>Presents a Password Reset activity report on the queried user(s) displaying information about when a password was last reset and by whom (administrator or user), shows IP address from where user reset password</td>
+</tr>
+<tr>
+<td>SystemSecurityReport</td>
+<td>Presents a system security report on the queried user(s) displaying general system security settings: password expire date, number of attempted logins, and security policy settings: 	lockout duration policy, password complexity, user id complexity, password history</td>
+</tr>
+<tr>
+<td>UserCreationReport</td>
+<td>Presents a User Creation activity report on the queried user(s) displaying a log of all user creation activity with timestamps, and which admin user created the user from which IP address</td>
+</tr>
+<tr>
+<td>UserDeletionReport</td>
+<td>Presents a User Deletion activity report on the queried user(s) displaying a log of all user deletion activity with timestamps, and which admin user deleted the user from which IP address</td>
+</tr>
+<tr>
+<td>UserStatusReport</td>
+<td>Presents user login statistics (filtered) about all users who have visited the portal including name, email, last login timestamp, last login IP, last password change timestamp, user status (enabled/disabled), created by administrator</td>
+</tr>
+</table>
+<subsection name='Excel Reports'>
+<p>In order to view the Excel reports, you will need to set this property in the WEB-INF/conf/override.properties:</p>
+<p>
+merge.portal.parameters.with.portlet.parameters=<b>true</b>
+</p>
+</subsection>	
+</section>
+</body>
+</document>

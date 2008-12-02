@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  $Id$
+-->
+<document>
+  <properties>
+    <title>Standard structure of Jetspeed Portal Maven projects</title>
+    <authors>
+      <person name="Ate Douma" email="ate@douma.nu" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Standard structure of Jetspeed Portal Maven projects">
+      <p>
+        A typical custom Jetspeed Portal project usually concerns not only a (sub) project for building and configuring the custom Jetspeed Portal
+        itself but also one or more specific portlet (sub) projects delivering the portlet application(s) to be deployed to the Jetspeed Portal.
+      </p>
+      <p>
+        The following standard project structure is commmon practice and in line with standard Maven project guidelines and easily expandable and adjustable
+        to incorporate future changes of the project goals and requirements. 
+      </p>
+      <p>
+        The <a href="jetspeed-archetype.html">Jetspeed-archetype Maven Plugin</a> can be used as a quickstart to setting up a new custom Jetspeed Portal project
+        and will create a project structure using this standard layout. Furthermore, the Jetspeed archetype plugin will also provide a typical and default
+        setup and configuration for the <a href="jetspeed-maven-plugins.html">Jetspeed Maven Plugins</a> for automating and performing Portal integration tasks for the
+        target environment(s) directly from within the Maven build itself. 
+      </p>
+      <subsection name="The super project">
+        <p>
+          To support central management and configuration of all (or most) the individual (Maven) project artifacts and (Jetspeed) integration tasks, a
+          master "super" root Maven project pom.xml is used of type &lt;packaging&gt;pom&lt;/packaging&gt;.
+        </p>
+        <p>
+          This root project will contain one or more modules, defined as subprojects, which in turn will have this root project defined as their parent
+          project. This way, all artifacts will be buildable and installable as a whole directly from the root project, and (Jetspeed) integration tasks
+          can be executed from anywhere within this project structure (using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn plugin</a>).
+        </p>
+        <p>
+          In addition to the "standard" pom.xml, one or more custom jetspeed-mvn-(target name)-pom.xml Maven project files can be defined for the super project,
+          as well as corresponding jetspeed property files and even a custom override of the default Maven settings.xml configuration with a jetspeed-settings.xml file.          
+        </p>
+        <p>
+          The custom jetspeed property files and custom jetspeed-settings.xml will serve a default and fallback configuration which will be automatically
+          looked up through the project parent chain if a sub project doesn't provide these by itself when performing sub project specific integration tasks
+          using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn</a> Maven plugin.
+        </p>
+      </subsection>
+      <subsection name="The portal sub project">
+        <p>
+          For building and configuring the custom Jetspeed portal itself, as well as configuring and running Jetspeed Portal specific integration tasks,
+          a separate "portal" subproject of the root project is used. As a Jetspeed Portal is "just" a web application, &lt;packaging&gt;war&lt;/packaging&gt;
+          is used for its pom.xml
+        </p>
+        <p>
+          In addition to the "standard" pom.xml, one or more custom jetspeed-(target name).xml or even jetspeed-(target name)-(target alias).xml Maven
+          project files can be defined for this sub project, as well as corresponding property and even a custom override of the default Maven settings.xml
+          configuration with a ((sub)project specific) jetspeed-settings.xml file.  
+        </p>
+        <p>
+          Custom jetspeed property files and a custom jetspeed-settings.xml defined within a subproject can be used to override other defined files higher up
+          the project parent chain when performing sub project specific integration tasks using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn</a> Maven plugin.
+        </p>
+        <p>
+          For building the custom Jetspeed Portal war artifact, the war overlay mechanism is used in the pom.xml, using the Jetspeed-2 provided jetspeed application
+          project war artifact as overlay. This jetspeed war <em>only</em> contains the default (demo) Jetspeed Portal web application resources.
+        </p>
+        <p>
+          For pulling in the required web application jar dependencies (to be put under its WEB-INF/lib) folder, the pom.xml can include a dependency on the
+          jetspeed-dependencies project (pom) artifact. The advantage of separating the dependencies from the default jetspeed application war is that the
+          jetspeed-dependencies dependency itself can be further restricted or overridden within the pom. This wouldn't be possible (using standard Maven configuration)
+          when these dependencies were part of the prebuild jetspeed war already.
+        </p>
+      </subsection>
+      <subsection name="Portlet Application sub project(s)">
+        <p>
+          For building additional portlet application particular to the custom Jetspeed Portal, one or more separate "portlet application" subproject of the root project
+          can be added (note: a common abbriviation for "portlet application" is "pa"). As a pa also is "just" a web application, again
+          &lt;packaging&gt;war&lt;/packaging&gt; is used for its pom.xml.
+        </p>
+        <p>
+          And, like with the portal sub project, a pa sub project can have, in addition to the "standard" pom.xml, one or more custom jetspeed-mvn-(target name)-pom.xml
+          Maven project files defined for this sub project, as well as corresponding property and even a custom override of the default Maven settings.xml configuration
+          with a ((sub)project specific) jetspeed-settings.xml file.  
+        </p>
+        <p>
+          For a portlet application sub project though, this really is optional, as by default a portal only requires just its war file to deploy and install it.
+        </p>
+        <p>
+          One typical use-case where additional integration tasks might be needed is when the portlet application defines and makes use of a custom database
+          backend (or likewise: ldap, JCR etc.) which might need to be setup/created/upgraded or whatever. If an appropriate Maven plugin is available for performing
+          such an integration task (e.g. like the <a href="jetspeed-maven-plugins.html">jetspeed-db:init plugin</a>), standardizing and automating the execution of such
+          tasks using the <a href="jetspeed-maven-plugins.html">jetspeed:mvn plugin</a> will be very easy.
+        </p>
+        <p>
+          Like with the portal project, custom jetspeed property files and a custom jetspeed-settings.xml defined within a subproject can be used to override other defined
+          files higher up the project parent chain when performing sub project specific integration tasks.
+        </p>
+      </subsection>
+    </section>
+    <section name="Conceptable project directory layout and contents">
+      <p>
+        Using the above specification a conceptable custom Jetspeed Portal directory layout and its contents looks like this:
+      </p>
+      <source><![CDATA[
+/my-portal-project
+  | pom.xml                                                  // standard maven "super" pom for the whole of the my-portal project
+  | jetspeed-mvn.settings.xml                                // project scoped maven settings configuration for integration tasks execution
+  | jetspeed-mvn-<target name>-pom.xml                       // custom pom providing the "build" tasks for a global/generic jetspeed:mvn target
+  | jetspeed-mvn.properties                                  // default                      properties for jetspeed:mvn target execution
+  | jetspeed-mvn-${target name}.properties                   // default target name specific properties for jetspeed:mvn target execution
+  | jetspeed-mvn-${target name}-${target id}.properties      // default target id   specific properties for jetspeed:mvn target execution
+  + /my-pa1
+      | pom.xml                                              // standard maven my-pa1 war pom
+      | jetspeed-mvn.settings.xml                            // my-pa1 scoped maven settings configuration for integration tasks execution
+      | jetspeed-mvn-${target name}-pom.xml                  // custom pom providing the "build" tasks for my-pa1 specific jetspeed:mvn target
+      | jetspeed-mvn.properties                              // my-pa1 specific                 properties for jetspeed:mvn target execution
+      | jetspeed-mvn-${target name}.properties               // my-pa1 and target name specific properties for jetspeed:mvn target execution
+      | jetspeed-mvn-${target name}-${target id}.properties  // my-pa1 and target id   specific properties for jetspeed:mvn target execution              
+  + /my-pa2
+      | pom.xml                                              // standard maven my-pa2 war pom
+      | jetspeed-mvn.settings.xml                            // my-pa2 scoped maven settings configuration for integration tasks execution
+      | jetspeed-mvn-${target name}-pom.xml                  // custom pom providing the "build" tasks for my-pa2 specific jetspeed:mvn target
+      | jetspeed-mvn.properties                              // my-pa2 specific                 properties for jetspeed:mvn target execution
+      | jetspeed-mvn-${target name}.properties               // my-pa2 and target name specific properties for jetspeed:mvn target execution
+      | jetspeed-mvn-${target name}-${target id}.properties  // my-pa2 and target id   specific properties for jetspeed:mvn target execution              
+  + /my-portal
+      | pom.xml                                              // standard maven my-portal war pom using war overlay mechanism 
+      | jetspeed-mvn.settings.xml                            // my-portal scoped maven settings configuration for integration tasks execution
+      | jetspeed-mvn-${target name}-pom.xml                  // custom pom providing the "build" tasks for my-portal specific jetspeed:mvn target
+      | jetspeed-mvn.properties                              // my-portal specific                 properties for jetspeed:mvn target execution
+      | jetspeed-mvn-${target name}.properties               // my-portal and target name specific properties for jetspeed:mvn target execution
+      | jetspeed-mvn-${target name}-${target id}.properties  // my-portal and target id   specific properties for jetspeed:mvn target execution]]>
+      </source>
+    </section>
+    <section name="Simple project directory layout and contents">
+      <p>
+        In practice not all of the above possible directories and files will be needed.
+      </p>
+      <p>
+        A typical custom Jetspeed Portal project is much simpler and by default will looks like this:
+      </p>
+      <source><![CDATA[
+/my-portal-project
+  | pom.xml                                // standard maven "super" pom for the whole of the my-portal project
+  | jetspeed-mvn-dev.settings.xml          // project only maven development settings configuration for integration tasks execution
+  | jetspeed-mvn-prod.settings.xml.sample  // sample project only maven production settings configuration for integration tasks execution:
+                                           //   typically, production settings contain security sensitive parameters which should not be
+                                           //   committed to a version control system and a concrete jetspeed-mvn-prod.settings.xml would
+                                           //   not be allowed to be committed.
+                                           //   the sample configuration then just provides a template to be copied and further configured
+                                           //   by the developer/deployer locally. 
+  | jetspeed-mvn-db-pom.xml                // custom Maven pom for executing the jetspeed-db plugin through jetspeed:mvn 
+  | jetspeed-mvn.properties                // common (shared for development and production) properties for jetspeed:mvn target execution
+  + /my-pa
+      | pom.xml                            // standard maven my-pa war pom
+      + /my-portal
+          | pom.xml                        // standard maven my-portal war pom using war overlay mechanism 
+          | jetspeed-mvn-deploy-pom.xml    // custom Maven pom for executing the jetspeed-deploy plugin through jetspeed:mvn]]>
+      </source>
+      <p>
+        The above example project structure is what the <a href="jetspeed-archetype.html">Jetspeed Archetype Maven plugin</a> generates, where
+        the "my-" prefix and the maven artifact coordinates (groupId,artifactId,version) are configurable.
+      </p>  
+    </section>
+  </body>
+</document>
