@@ -92,8 +92,8 @@ public class EhPortletWindowCache extends EhCacheImpl implements PortletWindowCa
 	public void putPortletWindow(PortletWindow window)
 	{
 	    assert window != null;
-		String windowId = window.getId().toString();
-		portletEntityIdToEntityid.put(window.getPortletEntity().getId().toString(), windowId);
+		String windowId = window.getId().getStringId();
+		portletEntityIdToEntityid.put(window.getPortletEntity().getId(), windowId);
 		put(createElement(windowId, window));
 	}
 	
@@ -106,7 +106,7 @@ public class EhPortletWindowCache extends EhCacheImpl implements PortletWindowCa
 		PortletWindow window = getPortletWindow(portletWindowId);
 		if(window != null)
 		{			
-			portletEntityIdToEntityid.remove(window.getPortletEntity().getId().toString());
+			portletEntityIdToEntityid.remove(window.getPortletEntity().getId());
 			removeQuiet(portletWindowId);
 		}		
 	}
@@ -118,7 +118,7 @@ public class EhPortletWindowCache extends EhCacheImpl implements PortletWindowCa
 		if(portletWindow != null)
 		{
 		    portletEntityIdToEntityid.remove(portletEntityId);
-            removeQuiet(portletWindow.getId().toString());
+            removeQuiet(portletWindow.getId().getStringId());
 		}
 	}
 	
