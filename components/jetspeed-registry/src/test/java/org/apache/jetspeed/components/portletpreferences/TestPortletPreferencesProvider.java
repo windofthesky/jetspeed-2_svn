@@ -31,7 +31,7 @@ public class TestPortletPreferencesProvider extends
 	@Override
 	protected String[] getConfigurations() {
 	    return new String[]
-           { "transaction.xml", "registry.xml", "cache.xml" };
+           { "transaction.xml", "registry-test.xml", "cache-test.xml" };
 	}
 
     protected void setUp() throws Exception
@@ -58,6 +58,5 @@ public class TestPortletPreferencesProvider extends
     {
     	System.out.println("Testing baby");    	
     }
-
     
 }

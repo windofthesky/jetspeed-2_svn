@@ -20,6 +20,10 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
+import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.jetspeed.userinfo.UserInfoManager;
+
 /**
  * @version $Id$
  *
@@ -45,4 +49,20 @@ public class MockRequestContextComponent implements RequestContextComponent
     public void release(RequestContext context)
     {
     }
+
+    public ServletRequestFactory getServletRequestFactory()
+    {
+        return null;
+    }
+
+    public ServletResponseFactory getServletResponseFactory()
+    {
+        return null;
+    }
+
+    public UserInfoManager getUserInfoManager()
+    {
+        return null;
+    }
+    
 }

@@ -16,32 +16,23 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
-
-import javax.portlet.PortletMode;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
-import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.Supports;
+import org.apache.jetspeed.om.portlet.UserAttribute;
+import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
-import org.apache.jetspeed.om.portlet.impl.JetspeedServiceReferenceImpl;
-import org.apache.jetspeed.om.portlet.impl.SupportsImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.UserAttributeImpl;
-import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
-import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.portlet.PreferenceSetCtrl;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 
 /**
  * <p>
@@ -95,8 +86,8 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         assertEquals(one, two);
         PortletDefinition def = portletRegistry.getPortletDefinitionByUniqueName("PA-001::Portlet-1");
         assertNotNull(def);
-        assertEquals(def.getPortletApplicationDefinition(), one);
-        assertEquals(def, two.getPortletDefinitions().iterator().next());
+        assertEquals(def.getApplication(), one);
+        assertEquals(def, two.getPortlets().iterator().next());
         PortletApplication o = (PortletApplication)portletRegistry.getPortletApplications().iterator().next();
         assertEquals(one, o);
         assertEquals(portletRegistry.getAllPortletDefinitions().iterator().next(), def);
@@ -104,65 +95,58 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
     
     private void buildTestData() throws RegistryException, LockFailedException
     {
+        String lang = Locale.getDefault().toString();
+        
         // start clean
         Iterator itr = portletRegistry.getPortletApplications().iterator();
         while (itr.hasNext())
         {
-            portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
+            portletRegistry.removeApplication((PortletApplication) itr.next());
         }
 
         // Create an Application and a Web app
 
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("PA-001");
-        UserAttributeRef uaRef = new UserAttributeRefImpl("user-name-family", "user.name.family");
-        app.addUserAttributeRef(uaRef);
+        app.setContextRoot("/pa-001");
 
-        UserAttribute ua = new UserAttributeImpl("user.name.family", "User Last Name");
-        app.addUserAttribute(ua);
+        UserAttributeRef uaRef = app.addUserAttributeRef("user-name-family");
+        uaRef.setNameLink("user.name.family");
+        
+        UserAttribute ua = app.addUserAttribute("user.name.family");
+        ua.addDescription(lang).setDescription("User Last Name");
+        
+        app.addJetspeedServiceReference("PortletEntityAccessComponent");
+        app.addJetspeedServiceReference("PortletRegistryComponent");
 
-        JetspeedServiceReference service1 = new JetspeedServiceReferenceImpl("PortletEntityAccessComponent");
-        app.addJetspeedService(service1);
-        JetspeedServiceReference service2 = new JetspeedServiceReferenceImpl("PortletRegistryComponent");
-        app.addJetspeedService(service2);
-
-        WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
-        webApp.setContextRoot("/pa-001");
-        webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
-        webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
-
-        PortletDefinition portlet = new PortletDefinitionImpl();
+        PortletDefinition portlet = app.addPortlet("Portlet-1");
         portlet.setPortletClass("org.apache.Portlet");
-        portlet.setPortletName("Portlet-1");
-        portlet.addDescription(Locale.getDefault(), "POrtlet description.");
-        portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
+        portlet.addDescription(lang).setDescription("Portlet description.");
+        portlet.addDisplayName(lang).setDisplayName("Portlet display Name.");
+        
+        InitParam initParam = portlet.addInitParam("testparam");
+        initParam.setParamValue("test value");
+        initParam.addDescription(lang).setDescription("This is a test portlet parameter");
 
-        portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
+        Preferences prefs = portlet.getPortletPreferences();
+        Preference pref = prefs.addPreference("preference 1");
+        pref.addValue("value 1");
+        pref.addValue("value 2");
 
-        // PreferenceComposite pc = new PrefsPreference();
-        app.addPortletDefinition(portlet);
+        Language language = portlet.addLanguage(Locale.getDefault());
+        language.setTitle("Portlet 1");
+        language.setShortTitle("Portlet 1");
 
-        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet();
-        PreferenceComposite pc = (PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]
-        { "value 1", "value 2" }));
-        pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
+        
+        Supports supports = portlet.addSupports("html/text");
+        supports.addPortletMode("EDIT");
+        supports.addPortletMode("VIEW");
+        supports.addPortletMode("HELP");
+        
+        supports = portlet.addSupports("wml");
+        supports.addPortletMode("HELP");
+        supports.addPortletMode("VIEW");
 
-        portlet.addLanguage(portletRegistry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1",
-                "This is Portlet 1", null));
-
-        ContentTypeComposite html = new SupportsImpl();
-        html.setContentType("html/text");
-        ContentTypeComposite wml = new SupportsImpl();
-        html.addPortletMode(new PortletMode("EDIT"));
-        html.addPortletMode(new PortletMode("VIEW"));
-        html.addPortletMode(new PortletMode("HELP"));
-        wml.setContentType("wml");
-        wml.addPortletMode(new PortletMode("HELP"));
-        wml.addPortletMode(new PortletMode("VIEW"));
-        portlet.addContentType(html);
-        portlet.addContentType(wml);
-
-        app.setWebApplicationDefinition(webApp);
         portletRegistry.updatePortletApplication(app);
     }    
     /*
@@ -173,7 +157,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         Iterator itr = portletRegistry.getPortletApplications().iterator();
         while (itr.hasNext())
         {
-            portletRegistry.removeApplication((PortletApplicationDefinition) itr.next());
+            portletRegistry.removeApplication((PortletApplication) itr.next());
         }
         Jetspeed.setEngine(null);
         super.tearDown();
@@ -187,7 +171,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[]
-        { "transaction.xml", "registry-test.xml", "cache.xml", "static-bean-references.xml" };
+        { "transaction.xml", "registry-test.xml", "cache-test.xml", "static-bean-references.xml" };
     }
     
 }

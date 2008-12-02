@@ -81,6 +81,11 @@ public class JetspeedPortletFactory implements PortletFactory
 
     private String customConfigModePortletUniqueName;
 
+    public JetspeedPortletFactory()
+    {
+        this(false, false);
+    }
+    
     public JetspeedPortletFactory(boolean autoSwitchConfigMode,
             boolean autoSwitchEditDefaultsModeToEditMode)
     {

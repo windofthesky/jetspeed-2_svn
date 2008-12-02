@@ -32,6 +32,7 @@ import org.apache.jetspeed.util.JetspeedLocale;
  */
 public class UserAttributeRefImpl implements UserAttributeRef
 {
+    private long id;
     private String name;
     private String nameLink;
     private List<Description> descriptions;
@@ -45,14 +46,24 @@ public class UserAttributeRefImpl implements UserAttributeRef
      * @param The user attribute ref name.
      * @param The user attribute ref name link.
      */
-     public UserAttributeRefImpl(UserAttribute userAttribute)
-     {
-         this.name = userAttribute.getName();
-         for (Description d : userAttribute.getDescriptions())
-         {
-             addDescription(d.getLang()).setDescription(d.getDescription());
-         }
-     }
+    public UserAttributeRefImpl(UserAttribute userAttribute)
+    {
+        this.name = userAttribute.getName();
+        for (Description d : userAttribute.getDescriptions())
+        {
+            addDescription(d.getLang()).setDescription(d.getDescription());
+        }
+    }
+    
+    public long getId()
+    {
+        return this.id;
+    }
+    
+    public void setId(long id)
+    {
+        this.id = id;
+    }
      
     public String getName()
     {
