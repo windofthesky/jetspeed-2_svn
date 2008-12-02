@@ -1408,6 +1408,12 @@
                 <profiles>deploy</profiles>
               </target>
               <target>
+                <id>demo-deploy-min</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>deploy-min</profiles>
+              </target>              
+              <target>
                 <id>demo-deploy-dbpsml</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
@@ -1425,6 +1431,10 @@
                 <id>demo</id>
                 <depends>demo-install,demo-db,demo-deploy</depends>
               </target>
+              <target>
+                <id>demo-min</id>
+                <depends>demo-install,demo-db,demo-deploy-min</depends>
+              </target>	              
               <target>
                 <id>demo-dbpsml</id>
                 <depends>demo-db-psml,demo-deploy,demo-deploy-dbpsml</depends>
