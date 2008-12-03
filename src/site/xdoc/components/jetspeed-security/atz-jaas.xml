@@ -124,7 +124,7 @@ pms.getPermissions(user.getPrincipals());
                 .
             </p>
             <p>
-                <img src="images/rdbms-policy-c.gif" border="0" />
+                <img src="../../images/components/rdbms-policy-c.gif" border="0" />
             </p>
             <p>
                 To get more detail about the implementation of the

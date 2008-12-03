@@ -34,7 +34,7 @@
             OJB dependencies, the <code>InitablePersistenceBrokerDaoSupport</code> provides a layer of abstraction that minimizes
             the dependencies on a specific ORM engine.  The class diagram below illustration the Jetspeed-2 implementation classes
             that leverage <code>InitablePersistenceBrokerDaoSupport</code>:<br/>
-            <img src="images/persistence-broker-dao-c.gif" border="0"/>
+            <img src="../../images/components/persistence-broker-dao-c.gif" border="0"/>
             </p>
             <p>
             The <code>InitablePersistenceBrokerDaoSupport</code> extends <code>org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport</code>.

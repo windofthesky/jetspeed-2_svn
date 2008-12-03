@@ -36,7 +36,7 @@
                 .
             </p>
             <p>
-                <img src="images/atn-spi-arch-c.gif" border="0" />
+                <img src="../../images/components/atn-spi-arch-c.gif" border="0" />
             </p>
         </section>
         <section name="Authentication SPI Components">

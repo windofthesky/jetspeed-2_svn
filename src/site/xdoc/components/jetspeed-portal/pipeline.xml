@@ -33,14 +33,14 @@
             The <code>JetspeedPipeline</code> implementation assembles a ordered list of <code>Valves</code> that are
             processed sequentially.
             <br/><br/>
-            <img src="images/pipeline-c.gif" border="0"/><br/><br/>
-            <img src="images/pipeline-assembly.gif" border="0"/>
+            <img src="../../images/components/pipeline-c.gif" border="0"/><br/><br/>
+            <img src="../../images/components/pipeline-assembly.gif" border="0"/>
             </p>	
             </subsection>
             <subsection name="Jetspeed-2 Valves">
             <p>
             Jetspeed-2 provides various type of <code>Valve</code> as illustrated below:<br/><br/>
-           	<img src="images/valve-c.gif" border="0"/><br/>
+           	<img src="../../images/components/valve-c.gif" border="0"/><br/>
 			The above valves serve the following purpose:
            	<table>
             	<tr>

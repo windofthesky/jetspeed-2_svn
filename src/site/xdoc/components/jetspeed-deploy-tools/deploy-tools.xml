@@ -39,7 +39,7 @@
         	to ensure their compliance with the Jetspeed-2 portal engine. 
         	</p>
         	<p>
-            <img src="images/jetspeed-deploy-c.gif" border="0"/><br/><br/>
+            <img src="../../images/components/jetspeed-deploy-c.gif" border="0"/><br/><br/>
             </p>
             <p>
             <code>JetspeedDeploy</code> invokes the <code>JetspeedWebApplicationRewriter</code> to infuse the <code>web.xml</code>

@@ -522,7 +522,7 @@ pipeline. The portlet pipeline is also embedded in Jetspeed 1.6
 (Fusion) to give JSR168 support to Jetspeed 1.6 portals.
 </p> 
 <p>Here is an example of "just the content" of a portlet without window decorations:</p>
-<img src="images/portlet-pipeline.png"/>
+<img src="../images/guides/portlet-pipeline.png"/>
 </subsection>
 <subsection name="Portal Pipeline">
 <p>Portal pipeline uses a server-side aggregation engine. All 
@@ -563,7 +563,7 @@ Here is a one-column layout nesting two two-column layouts:</p>
  </fragment> 
 ]]></source>   
 <p>Here is a view of the above fragments in the desktop customizer:</p>			
-<img src="images/desktop-layout.png"/>
+<img src="../images/guides/desktop-layout.png"/>
 </section>
 </body>
 </document>

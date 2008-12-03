@@ -65,7 +65,7 @@
             <p>
             A class diagram of <code>ConnectionRepositoryEntry</code> and <code>ConnectionManagerImpl</code> is
             provided below:<br/>
-            <img src="images/connection-repository-c.gif" border="0"/>
+            <img src="../../images/components/connection-repository-c.gif" border="0"/>
             </p>
             </subsection>
             <subsection name="OJB Datasource Configuration">

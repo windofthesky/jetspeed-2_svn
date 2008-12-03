@@ -33,7 +33,7 @@
             Jetspeed-2 <code>SearchEngine</code> is used by the <code>PortletApplicationBrowser</code> portlet to search
             and retrieve portlet according to a given criteria.
             <br/>
-            <img src="images/portlet-search.gif" border="0" />
+            <img src="../../images/components/portlet-search.gif" border="0" />
             </p>
             <p>
             Performing a search for &quot;security&quot; returns all the matching portlets and portlet definitions.

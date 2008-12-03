@@ -51,7 +51,7 @@
         	The component hierarchy below describes the assembly dependencies supporting Jetspeed-2 deployment functionality.
         	</p>
         	<p>
-            <img src="images/deployment-mgr-assembly.gif" border="0"/><br/><br/>
+            <img src="../../images/components/deployment-mgr-assembly.gif" border="0"/><br/><br/>
             </p>
         	<p>
         	The <code>DeploymentManager</code> is configured with the properties specified in
@@ -63,7 +63,7 @@
         	The <code>DeploymentManager</code> is also configured with 2 types of <code>DeploymentEventListener</code>:
         	</p>
         	<p>
-            <img src="images/deployment-event-listener-c.gif" border="0"/><br/><br/>
+            <img src="../../images/components/deployment-event-listener-c.gif" border="0"/><br/><br/>
             </p>
             <p>
             <ul>
@@ -78,7 +78,7 @@
         	<a href="deploy-tools.html">deploy tools</a> to prepare portlet applications prior to deployment.
             </p>
             <p>
-            <img src="images/deployment-mgr-c.gif" border="0"/><br/><br/>
+            <img src="../../images/components/deployment-mgr-c.gif" border="0"/><br/><br/>
             </p>
             </subsection>
         </section>

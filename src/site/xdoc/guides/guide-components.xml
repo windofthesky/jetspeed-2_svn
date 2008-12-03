@@ -52,7 +52,7 @@
 		</p>
 		<p>
 		Jetspeed-2 component framework assembly is configured and implemented in <i>JetspeedServlet</i>:<br/><br/>
-		<img src="images/jetspeedservlet-c.gif" border="0"/>
+		<img src="../images/guides/jetspeedservlet-c.gif" border="0"/>
 		</p>
 		<p>
 		The <code>JetspeedServlet</code> is configured in the portal application <i>web.xml</i> to load at startup.  The <code>initializeComponentManager</code>

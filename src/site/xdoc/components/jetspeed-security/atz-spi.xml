@@ -39,13 +39,13 @@
             </p>
             <p>First, let's have a look at a class diagram of the authorization SPI:</p>
             <p>
-                <img src="images/security-mapping-c.gif" border="0" />
+                <img src="../../images/components/security-mapping-c.gif" border="0" />
                 <br />
                 <br />
-                <img src="images/role-security-handler-c.gif" border="0" />
+                <img src="../../images/components/role-security-handler-c.gif" border="0" />
                 <br />
                 <br />
-                <img src="images/group-security-handler-c.gif" border="0" />
+                <img src="../../images/components/group-security-handler-c.gif" border="0" />
                 <br />
                 <br />
             </p>

@@ -52,7 +52,7 @@
     		action updates the Jetspeed-2 search index.  For more information on how portlets are registered to the search engine,
     		see <code>org.apache.jetspeed.tools.pamanager.PortletApplicationManager</code>.
             <br/>
-            <img src="images/searchengine-c.gif" border="0"/>
+            <img src="../../images/components/searchengine-c.gif" border="0"/>
             </p>
             </subsection>
             <subsection name="Document Handlers Overview">
@@ -70,7 +70,7 @@
             By default, Jetspeed-2 can index portlet applications and portlet definitions respectively through the
             <code>PortletApplicationHandler</code> and <code>PortletDefinitionHandler</code>.
             <br/>
-            <img src="images/searchhandlers-c.gif" border="0"/>
+            <img src="../../images/components/searchhandlers-c.gif" border="0"/>
             </p>
             </subsection>
             <subsection name="An Extensible Framework">

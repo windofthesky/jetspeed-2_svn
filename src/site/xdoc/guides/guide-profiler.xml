@@ -46,7 +46,7 @@ The profiler input is defined in profiling rules, and can be made of any Java cl
 Jetspeed comes with quite a few predefined rules for taking criteria from request parameters, HTTP headers,
 security information, language and session attributes. The profiler is invoked during the Jetspeed request 
 processing pipeline in the profiler valve. 
-<img src="images/profiler/profiler-pipeline.jpg" border="1"/>   
+<img src="../images/guides/profiler/profiler-pipeline.jpg" border="1"/>   
 </p>
 <p>  
 All of these runtime parameters are called the <i>profile criterion</i>, which the profiler uses to locate 
@@ -87,7 +87,7 @@ There are several reserved (system) directories standardized by the profiler:
         <td>contains complete subsite trees, exactly like root tree</td>
     </tr>    
 </table>        
-<img src="images/profiler/pages.jpg" border="1"/>           
+<img src="../images/guides/profiler/pages.jpg" border="1"/>           
 </p>    
 <p>By applying profiling rules, the profiler locates pages in the portal site directory.</p>
 </section>      
@@ -550,13 +550,13 @@ Profile Locators are used to locate profiled portal resources such as
 pages, folders, menus and links. A locator contains a collection of properties 
 (name value pairs) describing the actual resource to be located. 
 </p>
-<img src="images/profiler/parameter-resolution.jpg" border="1"/>           
+<img src="../images/guides/profiler/parameter-resolution.jpg" border="1"/>           
 <p>
 The profiler takes runtime information as input, generalized into 
 generalized profile locators that are passed on to the page manager to locate a  page or menu. 
 The profile locators are normalized and not coupled to the profiler or page manager implementation.
 </p>       
-<img src="images/profiler/parameter-resolution-2.jpg" border="1"/>               
+<img src="../images/guides/profiler/parameter-resolution-2.jpg" border="1"/>               
 </section>
 <section name='Principal Rules'>
 <p>Each user principal can be mapped to specific profiling rule. This association is stored in the Jetspeed database.
@@ -567,7 +567,7 @@ for the current user, it will apply the profiling rule for the given user. The J
 has a tab for editing user profile information:
 </p>
 <p>    
-<img src="images/profiler/user-profile-locator.jpg" border="1"/>               
+<img src="../images/guides/profiler/user-profile-locator.jpg" border="1"/>               
 </p>
 <p>
 Often, profiling rules are determined and then associated by portal-specific logic during user registration (or self-registration).    

@@ -45,8 +45,8 @@
     		<p>
     		Jetpseed-2 provides administrative portlets that report on portal statistics.
     		<br/><br/>
-    		<img src="images/portlet-statistics.gif" border="0"/><br/>
-    		<img src="images/page-statistics.gif" border="0"/>
+    		<img src="../../images/components/portlet-statistics.gif" border="0"/><br/>
+    		<img src="../../images/components/page-statistics.gif" border="0"/>
     		</p>
     		</subsection>
 		</section>

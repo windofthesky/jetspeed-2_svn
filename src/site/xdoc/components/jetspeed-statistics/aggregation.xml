@@ -35,7 +35,7 @@
     AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria)</source>
     		The <code>AggregateStatistics</code> can then be used for reporting purpose.
             <br/>
-        	<img src="images/aggregatestatistics-c.gif" border="0" />
+        	<img src="../../images/components/aggregatestatistics-c.gif" border="0" />
 			</p>
 			</subsection>
 			<subsection name="Using Aggregate Statistics">
