@@ -514,7 +514,7 @@ process. A downside is more HTTP requests.
 <p>The portlet pipeline is used by the /desktop, as well as third party 
 integrators. It delivers the content of one single portlet, not a whole 
 page. This is useful for client-side aggregation engines such as the 
-Jetspeed Desktop.</p><p>Portlet Pipeline – This pipeline is used to render the 
+Jetspeed Desktop.</p><p>Portlet Pipeline - This pipeline is used to render the 
 contents of a single portlet.  This pipeline is used by several 
 portal vendors to embed JSR-168 support in their portal via 
 Jetspeed-2 technology. It is the foundation for the Desktop 
@@ -541,7 +541,7 @@ fragment can contain both nested layout fragments as well as
 portlet fragments. You can define your own layout fragments. 
 </p>
 <p>
-–Jetspeed comes with several layout implementations: 
+Jetspeed comes with several layout implementations: 
 One, Two, Three, and Four Column DIV-based layouts 
 Table-based variants of One, Two, and Three column layouts 
 Variants with No Actions on the window decorator 
