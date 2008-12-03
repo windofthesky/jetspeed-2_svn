@@ -136,10 +136,6 @@
                         <exclude>**/*$*</exclude>
                         <exclude>**/PageManagerTestShared.java</exclude>
                         <exclude>**/DirectoryXMLTransform.java</exclude>
-                        <!-- TODO: fix the following tetst case. It succeeds one time, but fails next time. -->
-                        <exclude>**/TestDatabasePageManager.java</exclude>
-                        <!-- TODO: fix the following tetst case. Testing after rollback fails. -->
-                        <exclude>**/TestTransactions.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
