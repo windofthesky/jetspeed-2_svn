@@ -67,15 +67,16 @@
             <artifactId>jetspeed-serializer</artifactId>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-file-cache</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
 
         <!-- Test Dependencies -->
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-file-cache</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>

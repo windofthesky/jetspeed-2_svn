@@ -112,7 +112,7 @@ public class TestPortalSite extends AbstractSpringTestCase
      */
     protected String[] getConfigurations()
     {
-        return new String[] {"/JETSPEED-INF/spring/test-spring.xml"};
+        return new String[] {"/JETSPEED-INF/spring/test-spring.xml", "cache-test.xml"};
     }
     
     protected String getBeanDefinitionFilterCategories()

@@ -58,10 +58,6 @@
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-serializer</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-file-cache</artifactId>
-        </dependency>
         <dependency>        
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -76,6 +72,11 @@
         </dependency>
 
         <!-- Test Dependencies -->
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-file-cache</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
