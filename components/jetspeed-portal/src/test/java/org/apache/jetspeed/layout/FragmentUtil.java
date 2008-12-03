@@ -25,6 +25,8 @@ import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
+import org.jmock.Mock;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -67,6 +69,8 @@ public class FragmentUtil
     public static RequestContext setupRequestContext(String p_sAction,
             String p_sPortletId, String p_sCol, String p_sRow)
     {
+        RequestContextComponent rcc = (RequestContextComponent) new Mock(RequestContextComponent.class).proxy();
+        
         MockServletConfig config = new MockServletConfig();
         MockServletContext context = new MockServletContext();
         MockHttpSession session = new MockHttpSession();
@@ -86,7 +90,7 @@ public class FragmentUtil
         request.setSession(session);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        RequestContext a_oRC = new JetspeedRequestContext(request, response,
+        RequestContext a_oRC = new JetspeedRequestContext(rcc, request, response,
                 config, null);
         
         a_oRC.setSubject(new Subject());
