@@ -58,6 +58,10 @@
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-serializer</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-file-cache</artifactId>
+        </dependency>
         <dependency>        
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -156,7 +160,7 @@
                                 <resources>
                                     <resource>
                                         <path>assembly</path>
-                                        <include>transaction.xml,cache.xml,security-*.xml,static-bean-references.xml,boot/datasource.xml</include>
+                                        <include>transaction.xml,security-*.xml,static-bean-references.xml,boot/datasource.xml</include>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>

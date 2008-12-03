@@ -128,7 +128,7 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
         confList.add("security-spi.xml");
         confList.add("security-spi-atn.xml");
         confList.add("transaction.xml");
-        confList.add("cache.xml");
+        confList.add("cache-test.xml");
         confList.add("static-bean-references.xml");
         return (String[]) confList.toArray(new String[1]);
     }

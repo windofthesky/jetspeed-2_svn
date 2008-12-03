@@ -180,7 +180,7 @@ public class TestUserManager extends AbstractSecurityTestcase
             // Test that the user can log in.
             try
             {
-                PassiveCallbackHandler pch = new PassiveCallbackHandler("anon", "newpassword");
+                PassiveCallbackHandler pch = new PassiveCallbackHandler("anon", "password");
                 loginContext = new LoginContext("Jetspeed", pch);
                 loginContext.login();
                 loginContext.logout();
