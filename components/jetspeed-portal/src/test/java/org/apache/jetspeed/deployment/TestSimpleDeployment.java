@@ -37,7 +37,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -329,7 +329,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
     private void verifyDemoAppCreated( String appName, File appFile )
     {
         assertNotNull(appName + " was not registered into the portlet registery.", portletRegistry
-                .getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
+                .getPortletApplication(TEST_PORTLET_APP_NAME));
         assertTrue(appName + " directory was not created, app not deployed.", appFile.exists());
     }
     

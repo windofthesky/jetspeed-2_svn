@@ -21,13 +21,12 @@
   <!-- Request Context -->
   <bean id="org.apache.jetspeed.request.RequestContextComponent"
     class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
-    <constructor-arg>
-      <value>org.apache.jetspeed.request.JetspeedRequestContext</value>
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.userinfo.UserInfoManager" />
-    </constructor-arg>
+    <constructor-arg index='0'><ref bean="ServletRequestFactory" /></constructor-arg>
+    <constructor-arg index='1'><ref bean="ServletResponseFactory" /></constructor-arg>
+    <constructor-arg index='2'><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
+    <constructor-arg index='3'><ref bean="RequestContextObjects" /></constructor-arg>
   </bean>
+  
   <!-- Single Source User Info -->
   <bean id="org.apache.jetspeed.userinfo.UserInfoManager"
     class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl">

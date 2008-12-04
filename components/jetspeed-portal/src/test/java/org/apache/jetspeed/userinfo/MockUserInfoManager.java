@@ -19,13 +19,16 @@ package org.apache.jetspeed.userinfo;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
+
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.portlet.ObjectID;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.PortletWindow;
 
 
 public class MockUserInfoManager implements UserInfoManager
 {
-    private Map fake = new HashMap();
+    private Map<String, String> fake = new HashMap<String, String>();
     
     public MockUserInfoManager()
     {}
@@ -33,7 +36,12 @@ public class MockUserInfoManager implements UserInfoManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.userinfo.UserInfoManager#getUserInfoMap(org.apache.pluto.om.common.ObjectID, org.apache.jetspeed.request.RequestContext)
      */
-    public Map getUserInfoMap(ObjectID oid, RequestContext context)
+    public Map<String, String> getUserInfoMap(String appName, RequestContext context)
+    {
+        return fake;
+    }
+
+    public Map<String, String> getUserInfo(PortletRequest request, PortletWindow window) throws PortletContainerException
     {
         return fake;
     }
