@@ -1401,6 +1401,13 @@
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>seed-dbpsml</profiles>
               </target>
+			 <target>
+                <id>min-seed-dbpsml</id>
+                <depends>demo-db</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>minseed-dbpsml</profiles>
+              </target>			  
               <target>
                 <id>demo-deploy</id>
                 <name>demo</name>
@@ -1432,9 +1439,13 @@
                 <depends>demo-install,demo-db,demo-deploy</depends>
               </target>
               <target>
-                <id>demo-min</id>
+                <id>min</id>
                 <depends>demo-install,demo-db,demo-deploy-min</depends>
               </target>	              
+              <target>
+                <id>min-dbpsml</id>
+                <depends>demo-install,demo-db,demo-deploy-min,demo-deploy-dbpsml,demomin-seed-dbpsml</depends>
+              </target>	          
               <target>
                 <id>demo-dbpsml</id>
                 <depends>demo-db-psml,demo-deploy,demo-deploy-dbpsml</depends>
