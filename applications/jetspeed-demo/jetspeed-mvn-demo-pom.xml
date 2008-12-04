@@ -180,6 +180,63 @@
     </profile>
 
     <profile>
+      <id>minseed-dbpsml</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-db-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>minseed-dbpsml</id>
+                <goals>
+                  <goal>init</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <psml>
+					<psmlPagesPath>${project.build.directory}/jetspeed-demo-${pom.version}/WEB-INF/min-pages</psmlPagesPath>
+                    <categories>pageSerializer</categories>
+                    <filterPropertiesFileName>
+                      ${project.build.directory}/jetspeed-demo-${pom.version}/WEB-INF/conf/spring-filter.properties
+                    </filterPropertiesFileName>
+                    <applicationRootPath>
+                      ${project.build.directory}/jetspeed-demo-${pom.version}
+                    </applicationRootPath>
+                    <initProperties>
+                      <org.apache.jetspeed.database.user>${org.apache.jetspeed.production.database.user}</org.apache.jetspeed.database.user>
+                      <org.apache.jetspeed.database.password>${org.apache.jetspeed.production.database.password}</org.apache.jetspeed.database.password>
+                      <org.apache.jetspeed.database.url>${org.apache.jetspeed.production.database.url}</org.apache.jetspeed.database.url>
+                      <org.apache.jetspeed.database.driver>${org.apache.jetspeed.production.database.driver}</org.apache.jetspeed.database.driver>
+                    </initProperties>
+                  </psml>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.portals.jetspeed-2</groupId>
+                <artifactId>jetspeed-portal-resources</artifactId>
+                <version>${org.apache.portals.jetspeed.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.portals.jetspeed-2</groupId>
+                <artifactId>jetspeed-db-tools</artifactId>
+                <version>${org.apache.portals.jetspeed.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>${org.apache.jetspeed.production.jdbc.driver.groupId}</groupId>
+                <artifactId>${org.apache.jetspeed.production.jdbc.driver.artifactId}</artifactId>
+                <version>${org.apache.jetspeed.production.jdbc.driver.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <id>deploy-min</id>
       <build>
         <plugins>
