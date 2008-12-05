@@ -17,11 +17,11 @@
 package org.apache.jetspeed.userinfo;
 
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -97,7 +97,10 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
         ClassLoader paClassLoader = Thread.currentThread().getContextClassLoader();
         portletApp = descriptorService.read(webDescriptor, portletDescriptor, jetspeedPortletDescriptor, paClassLoader);
         assertNotNull("App is null", portletApp);
-
+        
+        portletApp.setName("TestRegistry");
+        portletApp.setContextRoot("/TestRegistry");
+        
         // persist the app
         try
         {
@@ -123,8 +126,8 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
         request = initRequestContext("test");
         userInfo = uim.getUserInfoMap(portletApp.getName(), request);
         assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
-        assertEquals("should contain user.name.given", "Test Dude", (String) userInfo.get("user.name.given"));
-        assertEquals("should contain user.name.family", "Dudley", (String) userInfo.get("user.name.family"));
+        assertEquals("should contain user-name-given", "Test Dude", (String) userInfo.get("user-name-given"));
+        assertEquals("should contain user-name-family", "Dudley", (String) userInfo.get("user-name-family"));
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
 
         // persist the app
@@ -180,9 +183,8 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         
-        SecurityAttributes attributes = user.getSecurityAttributes();
-        attributes.getAttribute("user.name.given", true).setStringValue("Test Dude");
-        attributes.getAttribute("user.name.family", true).setStringValue("Dudley");
+        user.getSecurityAttributes().getAttribute("user.name.given", true).setStringValue("Test Dude");
+        user.getSecurityAttributes().getAttribute("user.name.family", true).setStringValue("Dudley");
         
         ums.updateUser(user);
     }

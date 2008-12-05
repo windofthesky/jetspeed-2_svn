@@ -82,26 +82,27 @@ public class TestPortletDescriptorSecurityRoles extends AbstractRequestContextTe
         JetspeedDescriptorService descriptorService = new JetspeedDescriptorServiceImpl(new PortletAppDescriptorServiceImpl());
         PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/", descriptorService );
 
-        PortletApplication app = paWar.createPortletApp();
-        assertNotNull("App is null", app);
-
-        PortletApplication portletApp = paWar.createPortletApp();
-        assertNotNull("portletApp is null", portletApp);
-
-        PortletDefinition portlet = app.getPortlet("TestPortlet");
-        assertNotNull("TestPortlet is null", portlet);
-        checkPortletApplicationSecurityRoles(portletApp);
-        checkPortletSecurityRoleRefs(portlet);
+        PortletApplication portletApp = null;
+        
         boolean validateFailed = false;
         try
         {
-            paWar.validate();
+            // From 2.2, createPortletApp() will do validation also.
+            portletApp = paWar.createPortletApp();
         }
         catch (PortletApplicationException e)
         {
             validateFailed = true;
+            portletApp = paWar.getPortletApp();
         }
         assertTrue("Invalid PortletDescriptor validation result", validateFailed);
+        
+        assertNotNull("portletApp is null", portletApp);
+
+        PortletDefinition portlet = portletApp.getPortlet("TestPortlet");
+        assertNotNull("TestPortlet is null", portlet);
+        checkPortletApplicationSecurityRoles(portletApp);
+        checkPortletSecurityRoleRefs(portlet);
         
         portletApp.addSecurityRole("users.manager");
 
@@ -114,50 +115,6 @@ public class TestPortletDescriptorSecurityRoles extends AbstractRequestContextTe
         {
         }
         assertEquals("Invalid PortletDescriptor validation result", false, validateFailed);
-
-        // persist the app
-        try
-        {
-            
-            portletRegistry.registerPortletApplication(app);
-            
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to register portlet application, " + app.getName()
-                    + ", through the portlet registry: " + e.toString();
-            
-            throw new Exception(msg, e);
-        }
-        // clear cache
-        
-
-        // read back in
-        app = portletRegistry.getPortletApplication("unit-test");
-        validateFailed = true;
-        try
-        {
-            paWar.validate();
-            validateFailed = false;
-        }
-        catch (PortletApplicationException e)
-        {
-        }
-        assertEquals("Invalid loaded PortletDescriptor validation result", false, validateFailed);
-
-        // remove the app
-        try
-        {
-            
-            portletRegistry.removeApplication(app);
-            
-        }
-        catch (Exception e)
-        {
-            String msg = "Unable to remove portlet application, " + app.getName()
-                    + ", through the portlet portletRegistry: " + e.toString();
-            throw new Exception(msg, e);
-        }
 
     }
 

@@ -117,17 +117,5 @@ limitations under the License.
             <value></value>
         </constructor-arg>
     </bean>
-
-    <!-- Page File Cache -->
-    <bean id="PageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner" destroy-method="stopFileScanner">
-        <!-- Scan rate for changes in cached files on the file system -->
-        <constructor-arg index="0">
-            <value>10</value>
-        </constructor-arg>
-        <!-- Cache size -->
-        <constructor-arg index="1">
-            <value>100</value>
-        </constructor-arg>
-    </bean>
     
 </beans>

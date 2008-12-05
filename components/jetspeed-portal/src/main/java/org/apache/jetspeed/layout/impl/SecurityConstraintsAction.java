@@ -175,7 +175,9 @@ public class SecurityConstraintsAction
         {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = domFactory.newDocumentBuilder();
-            Document document = builder.parse(new ByteArrayInputStream(xml.getBytes(requestContext.getCharacterEncoding())));
+            String charset = requestContext.getCharacterEncoding();
+            byte [] bytes = (charset != null ? xml.getBytes(charset) : xml.getBytes());
+            Document document = builder.parse(new ByteArrayInputStream(bytes));
             
             Element root = document.getDocumentElement();
             String name = root.getAttribute("name");
@@ -188,7 +190,7 @@ public class SecurityConstraintsAction
                 def.setName(name);
                 added = true;
             }
-            NodeList xmlConstraints = root.getElementsByTagName("security-contraint");
+            NodeList xmlConstraints = root.getElementsByTagName("security-constraint");
             int xmlSize = xmlConstraints.getLength();
             if (added == false)
             {

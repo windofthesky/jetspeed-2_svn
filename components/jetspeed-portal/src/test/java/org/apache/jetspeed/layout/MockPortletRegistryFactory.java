@@ -53,8 +53,11 @@ public class MockPortletRegistryFactory
         portletSizesParamMock = new Mock(InitParam.class);
         portletSizesParam = (InitParam) portletSizesParamMock.proxy();
 
-        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletSizesParamMock, "getValue", "33%,66%");
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletSizesParamMock, "getParamValue", "33%,66%");
         expectAndReturn(new InvokeAtLeastOnceMatcher(), portletRegistryMock, "getPortletDefinitionByUniqueName",new Constraint[] {new IsEqual("layout")}, portletDef);
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletDefMock, "getInitParam", new Constraint[] {new IsEqual("sizes")}, portletSizesParam);
+        
+        
         return portletRegistry;
     }
     

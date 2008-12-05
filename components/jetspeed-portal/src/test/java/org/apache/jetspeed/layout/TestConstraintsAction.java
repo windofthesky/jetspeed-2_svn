@@ -73,7 +73,7 @@ public class TestConstraintsAction extends JetspeedTestCase
 
     public static void main(String[] args)
     {
-        junit.swingui.TestRunner.run(TestLayout.class);
+        junit.swingui.TestRunner.run(TestConstraintsAction.class);
     }
 
     /**
@@ -93,7 +93,8 @@ public class TestConstraintsAction extends JetspeedTestCase
         String[] appConfigs =
         { //"src/webapp/WEB-INF/assembly/layout-api.xml",
                 "src/test/assembly/test-layout-constraints-api.xml",
-                "src/test/assembly/page-manager.xml"};
+                "src/test/assembly/page-manager.xml",
+                "src/test/assembly/cache-test.xml"};
         
                 
         cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, getBaseDir());
@@ -121,8 +122,10 @@ public class TestConstraintsAction extends JetspeedTestCase
         PageSecurity pageSecurity = pageManager.getPageSecurity();
         SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(defName);
         assertNotNull("definition " + defName + " not found ", def);
-        SecurityConstraint constraint =  (SecurityConstraint)def.getSecurityConstraints().get(0);
         assertNotNull("first constraint for " + defName + " not found ", def);
+        List constraints = def.getSecurityConstraints();
+        assertFalse("constraint list is empty.", constraints.isEmpty());
+        SecurityConstraint constraint =  (SecurityConstraint) constraints.get(0);
         assertEquals("update failed for constraints " + constraint.getPermissions().toString(), constraint.getPermissions().toString(), "[view, edit]");
     }
 

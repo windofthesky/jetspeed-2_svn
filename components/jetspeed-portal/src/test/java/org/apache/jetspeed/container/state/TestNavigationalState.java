@@ -43,13 +43,14 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
-import org.apache.jetspeed.util.JetspeedLongObjectID;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 import org.jmock.Mock;
 import org.jmock.core.matcher.AnyArgumentsMatcher;
+import org.jmock.core.matcher.NoArgumentsMatcher;
 import org.jmock.core.stub.ReturnStub;
+import org.jmock.core.stub.VoidStub;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
@@ -101,9 +102,10 @@ public class TestNavigationalState extends JetspeedTestCase
         Mock entityMock = new Mock(PortletEntity.class);        
         Mock portletDefinitionMock = new Mock(PortletDefinition.class);
         Mock portletApplicationMock = new Mock(PortletApplication.class);
-        portletApplicationMock.expects(new AnyArgumentsMatcher()).method("getId").withNoArguments().will(new ReturnStub(new JetspeedLongObjectID(1)));
-        portletDefinitionMock.expects(new AnyArgumentsMatcher()).method("getPortletApplicationDefinition").withNoArguments().will(new ReturnStub(portletApplicationMock.proxy()));
+        portletDefinitionMock.expects(new AnyArgumentsMatcher()).method("getApplication").withNoArguments().will(new ReturnStub(portletApplicationMock.proxy()));
+        portletApplicationMock.expects(new NoArgumentsMatcher()).method("getName").withNoArguments().will(new ReturnStub("app1"));
         entityMock.expects(new AnyArgumentsMatcher()).method("getPortletDefinition").withNoArguments().will(new ReturnStub(portletDefinitionMock.proxy()));
+        entityMock.expects(new AnyArgumentsMatcher()).method("setPortletWindow").withAnyArguments().will(new VoidStub());
         PortletWindowAccessor accessor = (PortletWindowAccessor) engine.getComponentManager().getComponent(PortletWindowAccessor.class);        
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "111");
         accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "222");
@@ -207,11 +209,11 @@ public class TestNavigationalState extends JetspeedTestCase
       assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
       PortletWindow target = nav.getPortletWindowOfAction();
       assertNotNull("target window is null", target);
-      assertEquals("target window should equal window 111", target.getId(), "111");
+      assertEquals("target window should equal window 111", target.getId().getStringId(), "111");
 
       PortletWindow maximizedWindow = nav.getMaximizedWindow();
       assertNotNull("maximized window is null", maximizedWindow);
-      assertEquals("maximized window should equal window 111", maximizedWindow.getId(), "111");
+      assertEquals("maximized window should equal window 111", maximizedWindow.getId().getStringId(), "111");
 
       Iterator iter = nav.getParameterNames(target);
       assertTrue("There should be one parameter",iter.hasNext());

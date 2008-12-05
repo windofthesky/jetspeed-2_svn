@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.window;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,16 +32,15 @@ import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
-import org.apache.jetspeed.util.JetspeedObjectID;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
 import org.jmock.Mock;
 import org.jmock.core.Invocation;
 import org.jmock.core.InvocationMatcher;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
-import org.jmock.core.matcher.InvokeOnceMatcher;
 import org.jmock.core.stub.CustomStub;
 import org.jmock.core.stub.ReturnStub;
+import org.jmock.core.stub.VoidStub;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
@@ -54,7 +52,6 @@ public class TestWindows extends TestCase
     protected Mock fragMock;
     protected Mock entityAccessMock;
     protected Mock entityMock;
-    protected Mock windowListMock;
 
     public static Test suite()
     {
@@ -81,7 +78,6 @@ public class TestWindows extends TestCase
 
     public void testWindowAccess() throws Exception
     {
-        List windows = new ArrayList();
         ContentFragment f1 = new ContentFragmentImpl((Fragment) fragMock.proxy(), new HashMap());
         PortletEntity entity = (PortletEntity) entityMock.proxy();
         entityAccessMock.expects(new InvokeAtLeastOnceMatcher()).method("getPortletEntityForFragment")
@@ -89,24 +85,12 @@ public class TestWindows extends TestCase
         fragMock.expects(new InvokeAtLeastOnceMatcher()).method("getId").withNoArguments()
                 .will(new ReturnStub("frag1"));
         entityMock.expects(new InvokeAtLeastOnceMatcher()).method("getId").withNoArguments().will(
-            new ReturnStub(new JetspeedObjectID("entity1")));
-
-        windowListMock.expects(new InvokeCountMatcher(4)).method("add").withAnyArguments().will(
-                new ListAppendStub(windows));
-        
+            new ReturnStub("entity1"));
+        entityMock.expects(new InvokeAtLeastOnceMatcher()).method("setPortletWindow").withAnyArguments().will(new VoidStub());
 
         PortletWindow window = windowAccess.getPortletWindow(f1);
         assertNotNull(window);
         assertEquals("frag1", window.getId().toString());
-
-        // Make sure the portlet entity's window list got updated
-        assertEquals(1, windows.size());
-
-        PortletWindow windowInList = (PortletWindow) windows.get(0);
-
-        // The window in the entities list should be the same as the one
-        // returned by getPortletWindow(f1)
-        assertEquals(windowInList, window);
 
         // remove the window
         windowAccess.removeWindow(window);
@@ -120,10 +104,8 @@ public class TestWindows extends TestCase
         // Test same remove but via entity
         windowAccess.removeWindow(window);              
 
-        assertNotNull(windowAccess.getPortletWindow(f1));                
+        assertNotNull(windowAccess.getPortletWindow(f1));
         
-        windowListMock.expects(new InvokeOnceMatcher()).method("iterator").withNoArguments().will(new ReturnStub(windows.iterator()));
-
 /*        
         windowAccess.removeWindows(entity);  
         
