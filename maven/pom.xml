@@ -42,6 +42,7 @@
     <module>jetspeed-deploy-maven-plugin</module>
     <module>jetspeed-db-maven-plugin</module>
     <module>jetspeed-archetype</module>
+    <module>jetspeed-fileutils-maven-plugin</module>
   </modules>
 
 
