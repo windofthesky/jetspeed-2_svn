@@ -53,7 +53,6 @@ public class TestSecurePermissionsDatabasePageManager extends TestSecureDatabase
     
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "secure-permissions-database-page-manager.xml", "transaction.xml" };
+        return new String[]{"secure-permissions-database-page-manager.xml", "transaction.xml"};
     }
 }

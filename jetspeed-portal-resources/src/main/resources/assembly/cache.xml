@@ -18,11 +18,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     
+    <!-- Cache Manager -->
+    <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+        <meta key="j2:cat" value="default,cache"/>
+        <property name="defaultConfigResource" value="ehcache.xml"/>
+    </bean>
+
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
-        <!--  get it through the class path
-            <property name="configLocation" value="${applicationRoot}/WEB-INF/conf/ehcache.xml"/>
-        -->
+        <meta key="j2:cat" value="default,cache"/>
+        <property name="configLocation" ref="cacheManagerConfig"/>
     </bean>
     
     <!-- Page File Cache -->
@@ -271,6 +275,29 @@
         <constructor-arg>
             <ref bean="ehInternalImportPageFileCache" />
         </constructor-arg>
+    </bean>
+    
+    <!-- Page Manager Caches -->
+    <bean id="ehPageManagerOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <meta key="j2:cat" value="default,cache"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="pageManagerOidCache"/>
+    </bean>
+    
+    <bean id="ehPageManagerPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <meta key="j2:cat" value="default,cache"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="pageManagerPathCache"/>
+    </bean>
+    
+    <bean id="pageManagerOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <meta key="j2:cat" value="default,cache"/>
+        <constructor-arg><ref bean="ehPageManagerOidCache"/></constructor-arg>
+    </bean>
+    
+    <bean id="pageManagerPathCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
+        <meta key="j2:cat" value="default,cache"/>
+        <constructor-arg><ref bean="ehPageManagerPathCache"/></constructor-arg>
     </bean>
     
 </beans>

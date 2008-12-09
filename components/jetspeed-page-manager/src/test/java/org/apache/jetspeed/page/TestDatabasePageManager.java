@@ -100,8 +100,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "database-page-manager.xml", "transaction.xml" };
+        return new String[]{"database-page-manager.xml", "transaction.xml"};
     }
 
     public void firstTestSetup() throws Exception

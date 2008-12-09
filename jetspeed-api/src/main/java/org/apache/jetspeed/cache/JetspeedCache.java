@@ -136,4 +136,11 @@ public interface JetspeedCache
      * @return the size of the cache
      */
     int getSize();
+    
+    /**
+     * Returns whether this cache is currently part of a distributed cache cluster.
+     * 
+     * @return distributed flag
+     */
+    boolean isDistributed();
 }

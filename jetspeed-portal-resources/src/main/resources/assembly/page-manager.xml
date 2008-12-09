@@ -151,22 +151,21 @@
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/page-manager-repository.xml</value>
     </constructor-arg>
-    <!-- folder/page/link cache size, default=128, min=128 -->
-    <constructor-arg index="1">
-      <value>${db.page.manager.cache.size}</value>
-    </constructor-arg>
-    <!-- folder/page/link cache expires seconds, default=-1, infinite=0, min=30 -->
-    <!--                                         (default is 150 seconds) -->
-    <constructor-arg index="2">
-      <value>${db.page.manager.cache.expire}</value>
-    </constructor-arg>
     <!-- permissions security enabled flag, default=false -->
-    <constructor-arg index="3">
+    <constructor-arg index="1">
       <value>${page.manager.permissions.security}</value>
     </constructor-arg>
     <!-- constraints security enabled flag, default=true -->
-    <constructor-arg index="4">
+    <constructor-arg index="2">
       <value>${page.manager.constraints.security}</value>
+    </constructor-arg>
+    <!-- folder/page/link cache -->
+    <constructor-arg index="3">
+      <ref bean="pageManagerOidCache"/>
+    </constructor-arg>
+    <!-- folder/page/link path cache -->
+    <constructor-arg index="4">
+      <ref bean="pageManagerPathCache"/>
     </constructor-arg>
   </bean>
 
