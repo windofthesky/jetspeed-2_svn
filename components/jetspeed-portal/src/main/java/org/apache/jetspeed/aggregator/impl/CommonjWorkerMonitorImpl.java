@@ -35,8 +35,7 @@ import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.aggregator.PortletContent;
 
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.jetspeed.container.PortletWindow;
 
 import commonj.work.WorkManager;
 import commonj.work.Work;
@@ -468,8 +467,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
             try {
                 if (log.isWarnEnabled()) {
                     PortletWindow window = job.getWindow();
-                    ObjectID windowId = (null != window ? window.getId() : null);
-                    log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms): " + windowId);
+                    log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms)" + (window != null ? ": "+window.getId().getStringId() : ""));
                 }
 
                 PortletContent content = job.getPortletContent();

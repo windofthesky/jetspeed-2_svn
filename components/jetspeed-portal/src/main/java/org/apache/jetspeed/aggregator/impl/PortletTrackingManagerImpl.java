@@ -26,8 +26,8 @@ import java.util.Map;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Tracks out of service status for portlets
@@ -132,7 +132,7 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
         while (windows.hasNext())
         {
             PortletWindow window = (PortletWindow)windows.next();
-            PortletDefinitionComposite pd = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();          
+            PortletDefinition pd = (PortletDefinition)window.getPortletEntity().getPortletDefinition();          
             for (int ix = 0; ix < fullPortletNames.size(); ix++)
             {
                 if (pd.getUniqueName().equals(fullPortletNames.get(ix)))
@@ -150,7 +150,7 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
         while (windows.hasNext())
         {
             PortletWindow window = (PortletWindow)windows.next();
-            PortletDefinitionComposite pd = (PortletDefinitionComposite)window.getPortletEntity().getPortletDefinition();
+            PortletDefinition pd = (PortletDefinition)window.getPortletEntity().getPortletDefinition();
             if (pd.getUniqueName().equals(fullPortletName) && isOutOfService(window))
             {
                 outs.add(window);

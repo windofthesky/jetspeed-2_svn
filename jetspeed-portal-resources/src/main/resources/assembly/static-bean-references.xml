@@ -62,50 +62,6 @@
     </property>
   </bean>
 
-  <bean id="_portletEntityImplPortletEntityAccessComponentInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="className" value="org.apache.jetspeed.components.portletentity.PortletEntityImpl" />
-    <property name="methodName" value="setPortletEntityAccess" />
-    <property name="typeName" value="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
-    <property name="value">
-      <ref bean="portletEntityAccess" />
-    </property>
-  </bean>
-
-  <bean id="_portletEntityImplPortletPreferencesProviderInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="className" value="org.apache.jetspeed.components.portletentity.PortletEntityImpl" />
-    <property name="methodName" value="setPortletPreferencesProvider" />
-    <property name="typeName" value="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" />
-    <property name="value">
-      <ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" />
-    </property>
-  </bean>
-
-  <bean id="_portletEntityImplPageManagerInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,xmlPageManager,dbPageManager" />
-    <property name="className" value="org.apache.jetspeed.components.portletentity.PortletEntityImpl" />
-    <property name="methodName" value="setPageManager" />
-    <property name="typeName" value="org.apache.jetspeed.page.PageManager" />
-    <property name="value">
-      <ref bean="org.apache.jetspeed.page.PageManager" />
-    </property>
-  </bean>
-
-  <bean id="_portletEntityImplRequestContextComponentInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="className" value="org.apache.jetspeed.components.portletentity.PortletEntityImpl" />
-    <property name="methodName" value="setRequestContextComponent" />
-    <property name="typeName" value="org.apache.jetspeed.request.RequestContextComponent" />
-    <property name="value">
-      <ref bean="org.apache.jetspeed.request.RequestContextComponent" />
-    </property>
-  </bean>
-
   <bean id="_abstractBaseElementInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,xmlPageManager,pageSerializer" />

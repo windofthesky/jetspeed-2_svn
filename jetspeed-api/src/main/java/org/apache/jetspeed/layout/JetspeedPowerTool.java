@@ -27,7 +27,7 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.jetspeed.container.PortletEntity;
 
 /**
  * JetspeedPowerTool

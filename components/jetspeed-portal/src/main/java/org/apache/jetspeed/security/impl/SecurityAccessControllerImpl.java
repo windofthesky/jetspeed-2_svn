@@ -22,8 +22,8 @@ import java.security.AccessController;
 import java.security.Permission;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.SecurityAccessController;
@@ -54,7 +54,7 @@ public class SecurityAccessControllerImpl implements SecurityAccessController
         return securityMode;
     }
     
-    public boolean checkPortletAccess(PortletDefinitionComposite portlet, int mask)
+    public boolean checkPortletAccess(PortletDefinition portlet, int mask)
     {
         if (portlet == null)
             return false;
@@ -63,7 +63,7 @@ public class SecurityAccessControllerImpl implements SecurityAccessController
             String constraintRef = portlet.getJetspeedSecurityConstraint();
             if (constraintRef == null)
             {
-                constraintRef = ((MutablePortletApplication)portlet.getPortletApplicationDefinition()).getJetspeedSecurityConstraint();                
+                constraintRef = ((PortletApplication)portlet.getApplication()).getJetspeedSecurityConstraint();                
                 if (constraintRef == null)
                 {
                     return true; // allow access

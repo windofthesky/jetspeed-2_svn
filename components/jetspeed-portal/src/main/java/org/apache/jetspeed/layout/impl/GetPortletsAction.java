@@ -32,14 +32,14 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.pluto.om.common.Parameter;
 
 /**
  * Get Portlets retrieves the portlet list available to the current subject
@@ -128,9 +128,9 @@ public class GetPortletsAction
         
         while (portlets.hasNext())
         {
-            PortletDefinitionComposite portlet = null;
+            PortletDefinition portlet = null;
             if (filter == null)
-                portlet = (PortletDefinitionComposite)portlets.next();
+                portlet = (PortletDefinition)portlets.next();
             else
                 portlet = this.getPortletFromParsedObject((ParsedObject)portlets.next());
             
@@ -138,22 +138,22 @@ public class GetPortletsAction
                 continue;
             
             // Do not display Jetspeed Layout Applications
-            MutablePortletApplication pa = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
+            PortletApplication pa = (PortletApplication)portlet.getApplication();
             if (pa.isLayoutApplication())
                 continue;
                  
             // SECURITY filtering
-            String uniqueName = pa.getName() + "::" + portlet.getName();
+            String uniqueName = pa.getName() + "::" + portlet.getPortletName();
             if (securityAccessController.checkPortletAccess(portlet, JetspeedActions.MASK_VIEW))
             {
-                Parameter param = portlet.getInitParameterSet().get(PORTLET_ICON);
+                InitParam param = portlet.getInitParam(PORTLET_ICON);
                 String image;
                 if (param != null)
                 {
                     //String relativeImagePath = param.getValue();
                     //String context = muta.getWebApplicationDefinition().getContextRoot();
                     // Have to use a supported icon in jetspeed, otherwise image can be out of skew
-                    image = "images/portlets/" + param.getValue();
+                    image = "images/portlets/" + param.getParamValue();
                 }
                 else
                 {                                        
@@ -166,7 +166,7 @@ public class GetPortletsAction
         return list;
     }
     
-    protected PortletDefinitionComposite getPortletFromParsedObject(ParsedObject po)
+    protected PortletDefinition getPortletFromParsedObject(ParsedObject po)
     {
         boolean found = false;
         String name = "";

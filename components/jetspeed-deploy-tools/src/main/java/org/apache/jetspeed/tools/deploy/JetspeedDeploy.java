@@ -16,23 +16,28 @@
  */
 package org.apache.jetspeed.tools.deploy;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.File;
 import java.nio.channels.FileChannel;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -103,7 +108,6 @@ public class JetspeedDeploy implements Deploy
             String portletApplicationName = contextName;
             tempFile = File.createTempFile(portletApplicationName, "");
             tempFile.deleteOnExit();
-            
 
             jin = new JarFile(inputName);
             jout = new JarOutputStream(new FileOutputStream(tempFile));
@@ -184,7 +188,7 @@ public class JetspeedDeploy implements Deploy
             addFile("WEB-INF/web.xml", webXml, jout);
             addFile("WEB-INF/portlet.xml", portletXml, jout);
             addFile("META-INF/context.xml", contextXml, jout);
-
+            
             if (!taglibFound)
             {
                 System.out.println("Attempting to add portlet.tld to war...");
@@ -212,6 +216,7 @@ public class JetspeedDeploy implements Deploy
             jin.close();
             jin = null;
             jout = null;
+
             System.out.println("Creating war " + outputName + " ...");
             System.out.flush();
             // Now copy the new war to its destination
@@ -279,16 +284,15 @@ public class JetspeedDeploy implements Deploy
             {
                 tempFile.delete();
             }
-            
         }
     }
 
     protected Document parseXml(InputStream source) throws Exception
     {
-        // Parse using the local dtds instead of remote dtds. This
-        // allows to deploy the application offline
-        SAXBuilder saxBuilder = new SAXBuilder();
-        saxBuilder.setEntityResolver(new EntityResolver()
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true); // never forget this!
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        builder.setEntityResolver(new EntityResolver()
         {
             public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId) throws SAXException,
                             java.io.IOException
@@ -300,7 +304,7 @@ public class JetspeedDeploy implements Deploy
                 return null;
             }
         });
-        Document document = saxBuilder.build(source);
+        Document document = builder.parse(source);
         return document;
     }
 
@@ -330,11 +334,30 @@ public class JetspeedDeploy implements Deploy
     {
         if (source != null)
         {
-            jos.putNextEntry(new ZipEntry(path));
-            XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
             try
             {
-                xmlOutputter.output(source, jos);
+                jos.putNextEntry(new ZipEntry(path));
+                DOMSource domSource = new DOMSource(source);
+                StreamResult streamResult = new StreamResult(jos);
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer transformer = tf.newTransformer();
+                transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+                if (source.getDoctype() != null)
+                {
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, source.getDoctype().getPublicId());
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, source.getDoctype().getSystemId());
+                }
+                transformer.setOutputProperty(OutputKeys.MEDIA_TYPE, "text/xml");
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.transform(domSource, streamResult);
+            }
+            catch (TransformerConfigurationException e)
+            {
+                throw new IOException(e.getMessage());
+            }
+            catch (TransformerException e)
+            {
+                throw new IOException(e.getMessage());
             }
             finally
             {

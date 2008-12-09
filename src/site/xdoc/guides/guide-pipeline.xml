@@ -27,7 +27,7 @@
 		<section name="Jetspeed-2 Pipeline">
 			<p>As described below, one of key component of the Jetspeed-2 portal engine is its request pipeline.
 			<br/><br/>
-			<img src="images/j2-overview.gif" border="0"/>
+			<img src="../images/guides/j2-overview.gif" border="0"/>
 			<br/>
 			In Jetspeed-2 request are processed through a series of <code>Valve</code> assembled together as a
 			pipeline.  For detailed information about Jetspeed-2 pipeline, 

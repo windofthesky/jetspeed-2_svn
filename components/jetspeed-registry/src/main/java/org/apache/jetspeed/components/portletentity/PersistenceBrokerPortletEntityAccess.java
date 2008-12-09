@@ -22,20 +22,14 @@ import java.util.Iterator;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.util.JetspeedObjectID;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.entity.PortletEntityCtrl;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -91,12 +85,12 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * @return @throws
      *         PortletEntityNotGeneratedException
      */
-    public MutablePortletEntity generateEntityFromFragment( ContentFragment fragment)
+    public PortletEntity generateEntityFromFragment( ContentFragment fragment)
             throws PortletEntityNotGeneratedException
     {
         PortletDefinition pd = registry.getPortletDefinitionByUniqueName(fragment.getName());
-        ObjectID entityKey = generateEntityKey(fragment);
-        MutablePortletEntity portletEntity = null;
+        String entityKey = generateEntityKey(fragment);
+        PortletEntity portletEntity = null;
 
         if (pd != null)
         {
@@ -115,7 +109,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
             fragment.overrideRenderedContent(msg);
         }
 
-        portletEntity.setId(entityKey.toString());
+        portletEntity.setId(entityKey);
 
         return portletEntity;
     }
@@ -132,9 +126,9 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * @param principal
      * @return
      */
-    public ObjectID generateEntityKey( Fragment fragment)
+    public String generateEntityKey( Fragment fragment)
     {
-        return JetspeedObjectID.createFromString(fragment.getId());
+        return fragment.getId();
     }
 
     /**
@@ -150,8 +144,8 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     public Collection getPortletEntities( PortletDefinition portletDefinition )
     {
         Criteria c = new Criteria();
-        String appName = ((MutablePortletApplication) portletDefinition.getPortletApplicationDefinition()).getName();
-        String portletName = portletDefinition.getName();
+        String appName = portletDefinition.getApplication().getName();
+        String portletName = portletDefinition.getPortletName();
         c.addEqualTo("appName", appName);
         c.addEqualTo("portletName", portletName);
 
@@ -170,7 +164,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         return getPersistenceBrokerTemplate().getCollectionByQuery(QueryFactory.newQuery(PortletEntityImpl.class, c));
     }
 
-    public MutablePortletEntity getPortletEntity( ObjectID id )
+    public PortletEntity getPortletEntity( String id )
     {
         try
         {
@@ -186,12 +180,12 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         }
     }
 
-    protected MutablePortletEntity getPortletEntity(ObjectID id, ContentFragment fragment) throws PortletEntityNotStoredException
+    protected PortletEntity getPortletEntity(String id, ContentFragment fragment) throws PortletEntityNotStoredException
     {
         Criteria c = new Criteria();
         c.addEqualTo("id", id.toString());
         Query q = QueryFactory.newQuery(PortletEntityImpl.class, c);
-        MutablePortletEntity portletEntity = (MutablePortletEntity) getPersistenceBrokerTemplate().getObjectByQuery(q);
+        PortletEntity portletEntity = (PortletEntity) getPersistenceBrokerTemplate().getObjectByQuery(q);
         if (portletEntity == null)
         {
             return null;
@@ -199,19 +193,19 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         else
         {
             String portletUniqueName = portletEntity.getPortletUniqueName();
-            PortletDefinitionComposite parentPortletDef = registry.getPortletDefinitionByUniqueName(portletUniqueName);
+            PortletDefinition parentPortletDef = registry.getPortletDefinitionByUniqueName(portletUniqueName);
             if(parentPortletDef != null)
             {
                 //Indication that the fragment has changed the portlet it references.
                 if(fragment != null && !portletUniqueName.equals(fragment.getName()))
                 {
                     parentPortletDef = registry.getPortletDefinitionByUniqueName(fragment.getName());
-                    ((PortletEntityCtrl)portletEntity).setPortletDefinition(parentPortletDef);
+                    portletEntity.setPortletDefinition(parentPortletDef);
                     storePortletEntity(portletEntity);
                 }
                 else
                 {
-                    ((PortletEntityCtrl)portletEntity).setPortletDefinition(parentPortletDef);
+                    portletEntity.setPortletDefinition(parentPortletDef);
                 }
             }
             else if(fragment != null && parentPortletDef == null)
@@ -222,7 +216,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
                 parentPortletDef = registry.getPortletDefinitionByUniqueName(fragment.getName());
                 if ( parentPortletDef != null)
                 {
-                    ((PortletEntityCtrl)portletEntity).setPortletDefinition(parentPortletDef);
+                    portletEntity.setPortletDefinition(parentPortletDef);
                     storePortletEntity(portletEntity);
                 }
             }
@@ -242,23 +236,17 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         }
     }
 
-    public MutablePortletEntity getPortletEntity( String id )
-    {
-        ObjectID oid = JetspeedObjectID.createFromString(id);
-        return getPortletEntity(oid);
-    }
-
-    public MutablePortletEntity getPortletEntityForFragment( ContentFragment fragment ) throws PortletEntityNotStoredException
+    public PortletEntity getPortletEntityForFragment( ContentFragment fragment ) throws PortletEntityNotStoredException
     {
         return getPortletEntity(generateEntityKey(fragment), fragment);
     }
 
-    public MutablePortletEntity newPortletEntityInstance( PortletDefinition portletDefinition )
+    public PortletEntity newPortletEntityInstance( PortletDefinition portletDefinition )
     {
         return newPortletEntityInstance(portletDefinition, autoGenerateID(portletDefinition));
     }
 
-    public MutablePortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id)
+    public PortletEntity newPortletEntityInstance(PortletDefinition portletDefinition, String id)
     {
         PortletEntityImpl portletEntity = new PortletEntityImpl();
         portletEntity.setPortletDefinition(portletDefinition);
@@ -334,7 +322,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
         try
         {
             getPersistenceBrokerTemplate().store(portletEntity);
-            ((MutablePortletEntity)portletEntity).storeChildren();
         }
         catch (Exception e)
         {
@@ -345,8 +332,8 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
 
     protected String autoGenerateID(PortletDefinition pd)
     {
-        String appName = ((MutablePortletApplication)pd.getPortletApplicationDefinition()).getName();
-        String portletName = pd.getName();
+        String appName = pd.getApplication().getName();
+        String portletName = pd.getPortletName();
         return appName+"::"+portletName+"::"+new UID().toString();
     }
 

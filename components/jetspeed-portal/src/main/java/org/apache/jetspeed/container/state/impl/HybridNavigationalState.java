@@ -25,7 +25,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * HybridNavigationalState

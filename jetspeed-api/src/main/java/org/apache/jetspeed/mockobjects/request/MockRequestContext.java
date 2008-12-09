@@ -32,13 +32,12 @@ import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.container.PortletWindow;
 
 
 
@@ -68,9 +67,9 @@ public class MockRequestContext implements RequestContext
     private Map objects;
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
+     * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(String)
      */
-    public Map getUserInfoMap( ObjectID oid )
+    public Map getUserInfoMap( String appName )
     {
         // TODO Auto-generated method stub
         return null;
@@ -243,7 +242,7 @@ public class MockRequestContext implements RequestContext
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.jetspeed.container.PortletWindow)
      */
     public HttpServletRequest getRequestForWindow( PortletWindow window )
     {
@@ -265,7 +264,7 @@ public class MockRequestContext implements RequestContext
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.jetspeed.container.PortletWindow)
      */
     public HttpServletResponse getResponseForWindow( PortletWindow window )
     {
@@ -291,7 +290,7 @@ public class MockRequestContext implements RequestContext
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.jetspeed.request.RequestContext#setActionWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#setActionWindow(org.apache.jetspeed.container.PortletWindow)
      */
     public void setActionWindow( PortletWindow window )
     {
@@ -500,7 +499,7 @@ public class MockRequestContext implements RequestContext
     
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#popActionFailure(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#popActionFailure(org.apache.jetspeed.container.PortletWindow)
      */
     public Throwable popActionFailure(PortletWindow window)
     {
@@ -508,7 +507,7 @@ public class MockRequestContext implements RequestContext
         return null;
     }
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#setActionFailure(org.apache.pluto.om.window.PortletWindow, java.lang.Throwable)
+     * @see org.apache.jetspeed.request.RequestContext#setActionFailure(org.apache.jetspeed.container.PortletWindow, java.lang.Throwable)
      */
     public void setActionFailure(PortletWindow window, Throwable actionFailure)
     {

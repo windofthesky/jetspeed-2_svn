@@ -40,16 +40,16 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.headerresource.HeaderResourceLib;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.portlet.PortletHeaderResponse;
 import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * HeaderAggregator builds the content required to render a page of portlets.
@@ -1113,13 +1113,13 @@ public class HeaderAggregatorImpl implements PageAggregator
             {
                 PortletWindow portletWindow = getPortletWindowAccessor().getPortletWindow( fragment );
                 PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
-                if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getPortletApplicationDefinition() ) )
+                if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
                 {
-                    String portletApplicationContextPath = pd.getPortletApplicationDefinition().getWebApplicationDefinition().getContextRoot();
+                    String portletApplicationContextPath = pd.getApplication().getContextRoot();
                     Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
                     if ( portlet != null && portlet instanceof SupportsHeaderPhase )
                     {
-                        log.debug( "renderHeaderFragment: " + pd.getName() + " supports header phase" );
+                        log.debug( "renderHeaderFragment: " + pd.getPortletName() + " supports header phase" );
                         
                         HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
                         PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );

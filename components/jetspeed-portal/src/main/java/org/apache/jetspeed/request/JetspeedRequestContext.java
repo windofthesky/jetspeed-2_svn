@@ -19,7 +19,6 @@ package org.apache.jetspeed.request;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -35,13 +34,13 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
-import org.apache.jetspeed.om.common.MutableLanguage;
-import org.apache.jetspeed.om.impl.LanguageImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
@@ -50,12 +49,9 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.LanguageSet;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.impl.LanguageImpl;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -69,6 +65,7 @@ import org.apache.pluto.om.window.PortletWindow;
 public class JetspeedRequestContext implements RequestContext
 {
     private static final String ACTION_ERROR_ATTR = "org.apache.jetspeed.action.error:";
+    private RequestContextComponent rcc;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletConfig config;
@@ -88,11 +85,9 @@ public class JetspeedRequestContext implements RequestContext
     private PortletWindow actionWindow;
     private String encoding;
     private String requestPath = null;
-    /** The user info manager. */
-    private UserInfoManager userInfoMgr;
     private Map requestsForWindows;
     private Map responsesForWindows;
-    private final Map objects;
+    private final Map<String, Object> objects;
     
     /**
      * Create a new Request Context
@@ -102,20 +97,18 @@ public class JetspeedRequestContext implements RequestContext
      * @param response
      * @param config
      */
-    public JetspeedRequestContext( HttpServletRequest request, HttpServletResponse response, ServletConfig config,
-            UserInfoManager userInfoMgr )
+    public JetspeedRequestContext(RequestContextComponent rcc, HttpServletRequest request, HttpServletResponse response, ServletConfig config)
     {
-        this(request, response, config, userInfoMgr, new HashMap());
+        this(rcc, request, response, config, new HashMap<String, Object>());
     }
 
-    public JetspeedRequestContext( HttpServletRequest request, HttpServletResponse response, ServletConfig config,
-            UserInfoManager userInfoMgr, Map objects)
+    public JetspeedRequestContext(RequestContextComponent rcc, HttpServletRequest request, HttpServletResponse response, ServletConfig config, Map<String, Object> objects)
     {
+        this.rcc = rcc;
         this.request = request;
         this.response = response;
         this.config = config;
         this.session = request.getSession();
-        this.userInfoMgr = userInfoMgr;
         this.requestsForWindows = new HashMap();
         this.responsesForWindows = new HashMap();
         this.objects = objects;
@@ -313,17 +306,16 @@ public class JetspeedRequestContext implements RequestContext
      * getRequestForWindow
      * </p>
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.jetspeed.container.PortletWindow)
      * @param window
      * @return
      */
     public HttpServletRequest getRequestForWindow( PortletWindow window )
     {
         if (!requestsForWindows.containsKey(window.getId()))
-        {
-            ServletRequestFactory reqFac = (ServletRequestFactory) Jetspeed.getEngine().getFactory(
-                    javax.servlet.http.HttpServletRequest.class);
-            HttpServletRequest requestWrapper = reqFac.getServletRequest(request, window);
+        {            
+            ServletRequestFactory reqFactory = rcc.getServletRequestFactory(); 
+            HttpServletRequest requestWrapper = reqFactory.getServletRequest(request, window);
             requestsForWindows.put(window.getId(), requestWrapper);
             return requestWrapper;
         }
@@ -339,7 +331,7 @@ public class JetspeedRequestContext implements RequestContext
      * getResponseForWindow
      * </p>
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.pluto.om.window.PortletWindow)
+     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.jetspeed.container.PortletWindow)
      * @param window
      * @return
      */
@@ -355,15 +347,11 @@ public class JetspeedRequestContext implements RequestContext
             }
             else
             {
-                ServletResponseFactory rspFac = (ServletResponseFactory) Jetspeed.getEngine().getFactory(
-                        HttpServletResponse.class);
-                wrappedResponse = rspFac.getServletResponse(this.response);
-
+                ServletResponseFactory rspFactory = rcc.getServletResponseFactory(); 
+                wrappedResponse = rspFactory.getServletResponse(this.response);
             }
-
             responsesForWindows.put(window.getId(), wrappedResponse);
             return wrappedResponse;
-
         }
         else
         {
@@ -508,12 +496,9 @@ public class JetspeedRequestContext implements RequestContext
         return url;
     }
 
-    /**
-     * @see org.apache.jetspeed.request.RequestContext#getUserInfoMap(org.apache.pluto.om.common.ObjectID)
-     */
-    public Map getUserInfoMap( ObjectID oid )
+    public Map<String, String> getUserInfoMap(String appName)
     {
-        return userInfoMgr.getUserInfoMap(oid, this);
+        return rcc.getUserInfoManager().getUserInfoMap(appName, this);
     }
 
     /**
@@ -538,37 +523,23 @@ public class JetspeedRequestContext implements RequestContext
         // {
         //     return language;
         // }
-        LanguageSet languageSet = portlet.getLanguageSet();
-        Language language = languageSet.get(locale);
-
-        Enumeration locales = request.getLocales();
-        while (locales.hasMoreElements() && language == null)
-        {
-            Locale aLocale = (Locale) locales.nextElement();
-            language = languageSet.get(aLocale);
-        }
-
-        Iterator langItr = languageSet.iterator();
-        if (langItr.hasNext() && language == null)
-        {
-            language = (Language) langItr.next();
-        }
+        
+        Language language = portlet.getLanguage(locale);
         
         if (language == null)
         {
-            language = languageSet.get(languageSet.getDefaultLocale());
-        }
-
+            Enumeration locales = request.getLocales();
+            while (language == null && locales.hasMoreElements())
+            {
+                Locale aLocale = (Locale) locales.nextElement();
+                language = portlet.getLanguage(aLocale);
+            }
+        }     
         if (language == null)
         {
-            MutableLanguage languageCtl = new LanguageImpl();
-            languageCtl.setLocale(locale);
-            languageCtl.setShortTitle(portlet.getName());
-            languageCtl.setTitle(portlet.getName());
-            language = languageCtl;
+            // defaultLocale will always be present, even if not persistent
+            language = portlet.getLanguage(JetspeedLocale.getDefaultLocale());
         }
-
-        // languageMap.put(portlet, language);
         return language;
     }
 
@@ -678,7 +649,7 @@ public class JetspeedRequestContext implements RequestContext
         return null;
     }    
 
-    public Map getObjects()
+    public Map<String, Object> getObjects()
     {
         return objects;
     }

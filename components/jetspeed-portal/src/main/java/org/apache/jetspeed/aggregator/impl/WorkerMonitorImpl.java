@@ -35,8 +35,8 @@ import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.util.Queue;
 import org.apache.jetspeed.util.FIFOQueue;
 
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletWindowID;
 
 /**
  * The WorkerMonitor is responsible for dispatching jobs to workers
@@ -389,8 +389,8 @@ public class WorkerMonitorImpl implements WorkerMonitor
             try {
                 if (log.isWarnEnabled()) {
                     PortletWindow window = job.getWindow();
-                    ObjectID windowId = (null != window ? window.getId() : null);
-                    log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms): " + windowId);
+                    PortletWindowID windowId = (null != window ? window.getId() : null);
+                    log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms): " + windowId.getStringId());
                 }
 
                 PortletContent content = job.getPortletContent();

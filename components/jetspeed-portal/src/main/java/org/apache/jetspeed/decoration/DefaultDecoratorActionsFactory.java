@@ -24,9 +24,9 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 public class DefaultDecoratorActionsFactory extends AbstractDecoratorActionsFactory
 {

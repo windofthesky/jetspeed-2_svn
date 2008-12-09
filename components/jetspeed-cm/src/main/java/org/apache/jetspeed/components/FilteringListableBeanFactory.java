@@ -28,6 +28,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
+@SuppressWarnings("deprecation")
 public class FilteringListableBeanFactory extends DefaultListableBeanFactory
 {
     private JetspeedBeanDefinitionFilter filter;

@@ -30,16 +30,17 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ActionValve;
@@ -47,8 +48,6 @@ import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
 
 /**
  * <p>
@@ -145,7 +144,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 //PortletMessagingImpl msg = new PortletMessagingImpl(windowAccessor);
                 
                 requestForWindow.setAttribute("JETSPEED_ACTION", request);
-                container.processPortletAction(
+                container.doAction(
                     actionWindow,
                     requestForWindow,
                     response);
@@ -264,7 +263,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         PortletEntity entity = actionWindow.getPortletEntity();
         if (entity != null)
         {
-            PortletDefinitionComposite portletDefinition = (PortletDefinitionComposite)entity.getPortletDefinition();
+            PortletDefinition portletDefinition = (PortletDefinition)entity.getPortletDefinition();
             if (portletDefinition != null)
             {
                 Collection actionList = null;
@@ -343,7 +342,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         
         if (fragment != null)
         {
-            ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
+            window.getPortletEntity().setFragment(fragment);
         }
     }
 

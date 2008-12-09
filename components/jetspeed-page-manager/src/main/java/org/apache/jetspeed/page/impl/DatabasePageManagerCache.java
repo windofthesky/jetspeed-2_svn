@@ -16,12 +16,15 @@
  */
 package org.apache.jetspeed.page.impl;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
@@ -37,15 +40,17 @@ import org.apache.ojb.broker.cache.ObjectCache;
  */
 public class DatabasePageManagerCache implements ObjectCache
 {
-    private static HashMap cacheByOID;
-    private static LinkedList cacheLRUList;
-    private static HashMap cacheByPath;
-    private static int cacheSize;
-    private static int cacheExpiresSeconds;
+    // Members
+    
+    private static JetspeedCache oidCache;
+    private static JetspeedCache pathCache;
     private static boolean constraintsEnabled;
     private static boolean permissionsEnabled;
     private static PageManager pageManager;
+    private static ThreadLocal transactionedOperations = new ThreadLocal();
 
+    // Implementation
+    
     /**
      * cacheInit
      *
@@ -53,28 +58,176 @@ public class DatabasePageManagerCache implements ObjectCache
      *
      * @param pageManager configured page manager
      */
-    public synchronized static void cacheInit(DatabasePageManager dbPageManager)
+    public synchronized static void cacheInit(final JetspeedCache oidCache, final JetspeedCache pathCache, final DatabasePageManager pageManager)
     {
-        if (pageManager != null)
+        // initialize
+        DatabasePageManagerCache.oidCache = oidCache;
+        DatabasePageManagerCache.pathCache = pathCache;
+        constraintsEnabled = pageManager.getConstraintsEnabled();
+        permissionsEnabled = pageManager.getPermissionsEnabled();
+        
+        // setup local oid cache listener
+        oidCache.addEventListener(new JetspeedCacheEventListener()
         {
-            cacheClear();
-        }
-        cacheByOID = new HashMap();
-        cacheLRUList = new LinkedList();
-        cacheByPath = new HashMap();
-        cacheSize = dbPageManager.getCacheSize();
-        cacheExpiresSeconds = dbPageManager.getCacheExpiresSeconds();
-        constraintsEnabled = dbPageManager.getConstraintsEnabled();
-        permissionsEnabled = dbPageManager.getPermissionsEnabled();
-        pageManager = dbPageManager;
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementAdded(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementAdded(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final NodeImpl node = (NodeImpl)element;
+                // infuse node with page manager configuration
+                // or the page manager itself and add to the
+                // paths cache 
+                node.setConstraintsEnabled(constraintsEnabled);
+                node.setPermissionsEnabled(permissionsEnabled);
+                if (node instanceof FolderImpl)
+                {
+                    ((FolderImpl)node).setPageManager(pageManager);
+                }
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementChanged(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementChanged(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final NodeImpl node = (NodeImpl)element;
+                // infuse node with page manager configuration
+                // or the page manager itself and add to the
+                // paths cache 
+                node.setConstraintsEnabled(constraintsEnabled);
+                node.setPermissionsEnabled(permissionsEnabled);
+                if (node instanceof FolderImpl)
+                {
+                    ((FolderImpl)node).setPageManager(pageManager);
+                }
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementEvicted(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementEvicted(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final NodeImpl node = (NodeImpl)element;
+                // reset internal FolderImpl caches
+                if (node instanceof FolderImpl)
+                {
+                    ((FolderImpl)node).resetAll(false);
+                }
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementExpired(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementExpired(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final NodeImpl node = (NodeImpl)element;
+                // reset internal FolderImpl caches
+                if (node instanceof FolderImpl)
+                {
+                    ((FolderImpl)node).resetAll(false);
+                }
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementRemoved(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementRemoved(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final NodeImpl node = (NodeImpl)element;
+                // reset internal FolderImpl caches
+                if (node instanceof FolderImpl)
+                {
+                    ((FolderImpl)node).resetAll(false);
+                }
+            }
+        }, true);
+        
+        // setup remote path cache listener
+        pathCache.addEventListener(new JetspeedCacheEventListener()
+        {
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementAdded(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementAdded(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementChanged(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementChanged(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementEvicted(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementEvicted(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementExpired(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementExpired(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementRemoved(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementRemoved(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)element;
+                // remove cache object from local oid cache
+                if (cacheObject != null)
+                {
+                    final Identity oid = cacheObject.getId();
+                    final String path = cacheObject.getPath();
+                    if ((oid != null) || (path != null))
+                    {
+                        synchronized (DatabasePageManagerCache.class)
+                        {
+                            if (oid != null)
+                            {
+                                // get object cached by oid
+                                final NodeImpl node = (NodeImpl)cacheLookup(oid);
+                                // reset internal FolderImpl caches
+                                if (node instanceof FolderImpl)
+                                {
+                                    ((FolderImpl)node).resetAll(false);
+                                }
+                                // remove from cache
+                                oidCache.removeQuiet(oid);
+                            }
+                            if (path != null)
+                            {
+                                // lookup parent object cached by path and oid
+                                final int pathLastSeparatorIndex = path.lastIndexOf(Folder.PATH_SEPARATOR);
+                                final String parentPath = ((pathLastSeparatorIndex > 0) ? path.substring(0, pathLastSeparatorIndex) : Folder.PATH_SEPARATOR);
+                                final NodeImpl parentNode = cacheLookup(parentPath);
+                                // reset internal FolderImpl caches in case element removed
+                                if (parentNode instanceof FolderImpl)
+                                {
+                                    ((FolderImpl)parentNode).resetAll(false);
+                                }
+                                // remove from cache
+                                pathCache.removeQuiet(path);
+                            }
+                        }                        
+                    }
+                }
+            }
+        }, false);
     }
 
     /**
-     * setPageManagerProxy
+     * Override page manager specified during create with proxy.
      *
      * @param proxy proxied page manager interface used to
-     *              inject into Folder instances to provide
-     *              transaction/interception
+     *               inject into Folder instances to provide
+     *               transaction/intercept
      */
     public synchronized static void setPageManagerProxy(PageManager proxy)
     {
@@ -88,283 +241,211 @@ public class DatabasePageManagerCache implements ObjectCache
     }
 
     /**
-     * cacheLookup
-     *
-     * Lookup node instances by unique path.
+     * Lookup object instances by unique path.
      *
      * @param path node unique path
      * @return cached node
      */
-    public synchronized static NodeImpl cacheLookup(String path)
+    public synchronized static NodeImpl cacheLookup(final String path)
     {
         if (path != null)
         {
-            // return valid object cached by path
-            return (NodeImpl)cacheValidateEntry((Entry)cacheByPath.get(path));
+            // return valid object cached by path and oid
+            final CacheElement pathElement = pathCache.get(path);
+            if (pathElement != null)
+            {
+                final DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)pathElement.getContent();
+                final NodeImpl node = (NodeImpl)cacheLookup(cacheObject.getId());
+                return node;
+            }
         }
         return null;
     }
 
     /**
-     * cacheAdd
-     *
-     * Add object to cache and cache node instances by unique path;
+     * Add object to cache and cache instances by unique path;
      * infuse nodes loaded by OJB with page manager configuration.
      *
-     * @param oid object/node indentity
+     * @param oid object/node identity
      * @param obj object/node to cache
      */
-    public synchronized static void cacheAdd(Identity oid, Object obj)
+    public synchronized static void cacheAdd(final Identity oid, final Object obj)
     {
-        Entry entry = (Entry)cacheByOID.get(oid);
-        if (entry != null)
+        if (obj instanceof NodeImpl)
         {
-            // update cache LRU order
-            cacheLRUList.remove(entry);
-            cacheLRUList.addFirst(entry);
-            // refresh cache entry
-            entry.touch();
-        }
-        else
-        {
-            // create new cache entry and map
-            entry = new Entry(obj, oid);
-            cacheByOID.put(oid, entry);
-            cacheLRUList.addFirst(entry);
-            // infuse node with page manager configuration
-            // or the page manager itself and add to the
-            // paths cache 
-            if (obj instanceof NodeImpl)
-            {
-                NodeImpl node = (NodeImpl)obj;
-                node.setConstraintsEnabled(constraintsEnabled);
-                node.setPermissionsEnabled(permissionsEnabled);
-                cacheByPath.put(node.getPath(), entry);
-                if (obj instanceof FolderImpl)
-                {
-                    ((FolderImpl)obj).setPageManager(pageManager);
-                }
-            }
-            // trim cache as required to maintain cache size
-            while (cacheLRUList.size() > cacheSize)
-            {
-                cacheRemoveEntry((Entry)cacheLRUList.getLast(), true);
-            }
+            final NodeImpl node = (NodeImpl)obj;
+            final String nodePath = node.getPath();
+
+            // add node to caches
+            oidCache.remove(oid);
+            final CacheElement element = oidCache.createElement(oid, node);
+            oidCache.put(element);
+            pathCache.remove(nodePath);
+            final CacheElement pathElement = pathCache.createElement(nodePath, new DatabasePageManagerCacheObject(oid, nodePath));
+            pathCache.put(pathElement);
         }
     }
 
     /**
-     * cacheClear
-     *
-     * Clear object and node caches.
+     * Clear object and path caches.
      */
     public synchronized static void cacheClear()
     {
-        // remove all cache entries
-        Iterator removeIter = cacheLRUList.iterator();
-        while (removeIter.hasNext())
+        // remove all items from oid cache individually
+        // to ensure notifications are run to detach
+        // elements; do not invoke oidCache.clear()
+        final Iterator removeOidIter = oidCache.getKeys().iterator();
+        while (removeOidIter.hasNext())
         {
-            cacheRemoveEntry((Entry)removeIter.next(), false);
+            oidCache.remove((Identity)removeOidIter.next());
         }
-        // clear cache
-        cacheByOID.clear();
-        cacheLRUList.clear();
-        cacheByPath.clear();
+        // remove all items from path cache individually
+        // to avoid potential distributed clear invocation
+        // that would be performed against all peers; do
+        // not invoke pathCache.clear()
+        final Iterator removePathIter = pathCache.getKeys().iterator();
+        while (removePathIter.hasNext())
+        {
+            pathCache.removeQuiet(removePathIter.next());
+        }
     }
 
     /**
-     * cacheLookup
-     *
      * Lookup objects by identity.
      *
      * @param oid object identity
      * @return cached object
      */
-    public synchronized static Object cacheLookup(Identity oid)
+    public synchronized static Object cacheLookup(final Identity oid)
     {
         if (oid != null)
         {
             // return valid object cached by oid
-            return cacheValidateEntry((Entry)cacheByOID.get(oid));
+            final CacheElement element = oidCache.get(oid);
+            if (element != null)
+            {
+                return element.getContent();
+            }
         }
         return null;
     }
 
     /**
-     * cacheRemove
-     *
-     * Remove identified object from object and node caches.
+     * Remove identified object from object and path caches.
      *
      * @param oid object identity
      */
-    public synchronized static void cacheRemove(Identity oid)
+    public synchronized static void cacheRemove(final Identity oid)
     {
         // remove from cache by oid
-        cacheRemoveEntry((Entry)cacheByOID.get(oid), true);
+        if (oid != null)
+        {
+            final NodeImpl node = (NodeImpl)cacheLookup(oid);
+            if (node != null)
+            {
+                // remove from caches
+                oidCache.remove(oid);
+                pathCache.remove(node.getPath());
+            }
+        }
     }
 
     /**
-     * cacheRemove
-     *
-     * Remove identified object from object and node caches.
+     * Remove identified object from object and path caches.
      *
      * @param path object path
      */
-    public synchronized static void cacheRemove(String path)
+    public synchronized static void cacheRemove(final String path)
     {
         // remove from cache by path
-        cacheRemoveEntry((Entry)cacheByPath.get(path), true);
-    }
-    
-    /**
-     * cacheValidateEntry
-     *
-     * Validate specified entry from cache, returning cached
-     * object if valid.
-     *
-     * @param entry cache entry to validate
-     * @return validated object from cache
-     */
-    private synchronized static Object cacheValidateEntry(Entry entry)
-    {
-        if (entry != null)
+        if (path != null)
         {
-            if (!entry.isExpired())
+            final CacheElement pathElement = pathCache.get(path);
+            if (pathElement != null)
             {
-                // update cache LRU order
-                cacheLRUList.remove(entry);
-                cacheLRUList.addFirst(entry);
-                // refresh cache entry and return object
-                entry.touch();
-                return entry.getObject();
-            }
-            else
-            {
-                // remove expired entry
-                cacheRemoveEntry(entry, true);
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * cacheRemoveEntry
-     *
-     * Remove specified entry from cache.
-     *
-     * @param entry cache entry to remove
-     * @param remove enable removal from cache
-     */
-    private synchronized static void cacheRemoveEntry(Entry entry, boolean remove)
-    {
-        if (entry != null)
-        {
-            Object removeObj = entry.getObject();
-            if (remove)
-            {
-                // remove entry, optimize for removal from end
-                // of list as cache size is met or entries expire
-                if (cacheLRUList.getLast() == entry)
-                {
-                    cacheLRUList.removeLast();
-                }
-                else
-                {
-                    int removeIndex = cacheLRUList.lastIndexOf(entry);
-                    if (removeIndex > 0)
-                    {
-                        cacheLRUList.remove(removeIndex);
-                    }
-                }
-                // unmap entry
-                cacheByOID.remove(entry.getOID());
-                if (removeObj instanceof NodeImpl)
-                {
-                    cacheByPath.remove(((NodeImpl)removeObj).getPath());
-                }
-            }
-            // reset internal FolderImpl caches
-            if (removeObj instanceof FolderImpl)
-            {
-                ((FolderImpl)removeObj).resetAll(false);
+                final DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)pathElement.getContent();
+                // remove from caches
+                oidCache.remove(cacheObject.getId());
+                pathCache.remove(path);
             }
         }
     }
-
+    
     /**
-     * resetCachedSecurityConstraints
-     *
-     * Reset cached security constraints in all cached node objects.
+     * Reset cached security constraints in all cached objects.
      */
     public synchronized static void resetCachedSecurityConstraints()
     {
         // reset cached objects
-        Iterator resetIter = cacheLRUList.iterator();
+        final Iterator resetIter = oidCache.getKeys().iterator();
         while (resetIter.hasNext())
         {
-            Object obj = ((Entry)resetIter.next()).getObject();
-            if (obj instanceof NodeImpl)
-            {
-                ((NodeImpl)obj).resetCachedSecurityConstraints();
-            }
+            final NodeImpl node = (NodeImpl)cacheLookup((Identity)resetIter.next());
+            node.resetCachedSecurityConstraints();
         }
     }
-
+    
     /**
-     * Entry
-     *
-     * Cache entry class adding entry timestamp to track expiration
+     * Get transactions registered on current thread
+     * 
+     * @return transactions list
      */
-    private static class Entry
+    public static List getTransactions()
     {
-        public long timestamp;
-        public Object object;
-        public Identity oid;
-
-        public Entry(Object object, Identity oid)
+        List operations = (List)transactionedOperations.get();
+        if (operations == null)
         {
-            touch();
-            this.object = object;
-            this.oid = oid;
+            operations = new LinkedList();
+            transactionedOperations.set(operations);
         }
+        return operations;
+    }
 
-        public boolean isExpired()
+    /**
+     * Register transactions with current thread
+     * 
+     * @param operation transaction operation
+     */
+    public static void addTransaction(TransactionedOperation operation)
+    {
+        final List transactions = getTransactions();        
+        transactions.add(operation);
+    }
+    
+    /**
+     * Rollback transactions registered with current thread.
+     */
+    public synchronized static void rollbackTransactions()
+    {
+        final Iterator transactions = getTransactions().iterator();
+        while (transactions.hasNext())
         {
-            if (DatabasePageManagerCache.cacheExpiresSeconds > 0)
-            {
-                long now = System.currentTimeMillis();
-                if (((now - timestamp) / 1000) < DatabasePageManagerCache.cacheExpiresSeconds)
-                {
-                    timestamp = now;
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-        
-        public void touch()
-        {
-            if (DatabasePageManagerCache.cacheExpiresSeconds > 0)
-            {
-                timestamp = System.currentTimeMillis();
-            }
-        }
-
-        public Object getObject()
-        {
-            return object;
-        }
-
-        public Identity getOID()
-        {
-            return oid;
+            final TransactionedOperation operation = (TransactionedOperation)transactions.next();
+            cacheRemove(operation.getPath());
         }
     }
 
     /**
-     * DatabasePageManagerCache
-     *
+     * Clear transactions registered with current thread.
+     */
+    public synchronized static void clearTransactions()
+    {
+        transactionedOperations.remove();
+    }
+
+    /**
+     * Returns whether this cache is currently part of a distributed cache cluster.
+     * 
+     * @return distributed flag
+     */
+    public static boolean isDistributed()
+    {
+        return pathCache.isDistributed();
+    }
+
+    // OJB Constructor
+    
+    /**
      * Construct a cache instance using OJB compliant signatures.
      *
      * @param broker broker that is to own cache
@@ -374,6 +455,8 @@ public class DatabasePageManagerCache implements ObjectCache
     {
     }
 
+    // OJB ObjectCache Implementation
+    
     /* (non-Javadoc)
      * @see org.apache.ojb.broker.cache.ObjectCache#cache(org.apache.ojb.broker.Identity, java.lang.Object)
      */
@@ -406,57 +489,21 @@ public class DatabasePageManagerCache implements ObjectCache
         cacheRemove(oid);
     }
 
+    // Utilities
+    
+    /**
+     * Dump cache paths and oids to standard out.
+     */
     public synchronized static void dump()
     {
-        System.out.println("--------------------------1");        
-        Iterator dumpIter = cacheLRUList.iterator();
+        System.out.println("--------------------------");        
+        final Iterator dumpIter = oidCache.getKeys().iterator();
         while (dumpIter.hasNext())
         {
-            Entry entry = (Entry)dumpIter.next();
-            Object entryObject = entry.getObject();
-            if (entryObject instanceof NodeImpl)
-            {
-                System.out.println("entry = " + ((NodeImpl)entryObject).getPath() + ", " + entry.getOID());
-            }
-            else
-            {
-                System.out.println("entry = <none>, " + entry.getOID());
-            }
+            final Identity oid = (Identity)dumpIter.next();
+            final NodeImpl node = (NodeImpl)cacheLookup(oid);
+            System.out.println("node="+node.getPath()+", oid="+oid);
         }
-        System.out.println("--------------------------2");
-    }
-    
-    protected static ThreadLocal transactionedOperations = new ThreadLocal();
-    
-    public static List getTransactions()
-    {
-        List operations = (List)transactionedOperations.get();
-        if (operations == null)
-        {
-            operations = new LinkedList();
-            transactionedOperations.set(operations);
-        }
-        
-        return operations;
-    }
-
-    /**
-     * @param principal
-     *            The principal to set.
-     */
-    public static void addTransaction(TransactionedOperation operation)
-    {
-        List transactions = getTransactions();        
-        transactions.add(operation);
-    }
-    
-    public static void rollbackTransactions()
-    {
-        Iterator transactions = getTransactions().iterator();
-        while (transactions.hasNext())
-        {
-            TransactionedOperation operation = (TransactionedOperation)transactions.next();
-            cacheRemove(operation.getPath());
-        }
-    }
+        System.out.println("--------------------------");
+    }    
 }

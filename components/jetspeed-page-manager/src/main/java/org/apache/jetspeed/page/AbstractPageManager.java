@@ -702,6 +702,14 @@ public abstract class AbstractPageManager
         // nothing to shutdown by default
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#isDistributed()
+     */
+    public boolean isDistributed()
+    {
+        return false;
+    }
+
     /**
      * notifyNewNode - notify page manager event listeners of
      *                 new node event

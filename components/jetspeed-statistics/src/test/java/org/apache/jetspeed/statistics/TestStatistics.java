@@ -33,8 +33,8 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
 
@@ -159,10 +159,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         RequestContext request = initRequestContext();
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("MyApp");
-        PortletDefinitionImpl portlet = new PortletDefinitionImpl();
-        portlet.setPortletApplicationDefinition(app);
-        portlet.setName("TestPortlet");
-        portlet.setPortletApplicationDefinition(app);
+        PortletDefinition portlet = app.addPortlet("TestPortlet");
         long elapsedTime = 123;
         statistics.logPortletAccess(request, portlet.getUniqueName(), "401",
                 elapsedTime);
@@ -209,10 +206,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
             RequestContext request = initRequestContext();
             PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
             app.setName("MyApp");
-            PortletDefinitionImpl portlet = new PortletDefinitionImpl();
-            portlet.setPortletApplicationDefinition(app);
-            portlet.setName("TestPortlet");
-            portlet.setPortletApplicationDefinition(app);
+            PortletDefinition portlet = app.addPortlet("TestPortlet");
             long elapsedTime = 123 + i;
             //System.out.println("logging something, number "+i);
             statistics.logPortletAccess(request, portlet.getUniqueName(),

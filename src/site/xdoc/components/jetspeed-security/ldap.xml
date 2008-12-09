@@ -816,7 +816,7 @@ It will import into your LDAP server just fine, but Jetspeed will be unable to u
         </p>
         
         <p>Validate the connection using an LDAP browser:</p>
-        <p align="center"><img src="images/ldap/rootPassword.png" border="0"/></p>        
+        <p align="center"><img src="../../images/components/ldap/rootPassword.png" border="0"/></p>        
         <br/>        
       </subsection>
       <subsection name="LDAP Object Filters">
@@ -957,7 +957,7 @@ UserFilter=(objectclass=dominoPerson)]]></source>
          </p>
          <p>The role contains a member attribute, listing all users belonging to that role.</p>
          <p align="center">
-           <img src="images/ldap/RoleMembershipAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/RoleMembershipAttributes1.png" border="0"/><br/>
            <i>A role with 2 members</i>
          </p>
          <br/>
@@ -965,7 +965,7 @@ UserFilter=(objectclass=dominoPerson)]]></source>
            The value of the member attribute is the fully qualified DN of the user (including the root context). As you can see, the user doesn't contain any attributes with regards to role membership.
          </p>
          <p align="center">
-           <img src="images/ldap/RoleMembershipAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/RoleMembershipAttributes2.png" border="0"/><br/>
            <i>A user</i>
          </p>
          <br/>
@@ -995,7 +995,7 @@ UserFilter=(objectclass=dominoPerson)]]></source>
           This will make sure that for each role the user belongs to, the memberOf attribute is set on the user object, as can be seen in the following screenshot:
         </p>
          <p align="center">
-           <img src="images/ldap/UserRoleMembershipAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/UserRoleMembershipAttributes1.png" border="0"/><br/>
            <i>User belonging to 4 different roles</i>
          </p>
          <br/>
@@ -1019,7 +1019,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
           This is configurable by Jetspeed through the <b>RequiredAttributeClasses</b> property.
          </p>         
          <p align="center">
-           <img src="images/ldap/UserRoleMembershipAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/UserRoleMembershipAttributes2.png" border="0"/><br/>
            <i>A role without any members</i>
          </p>
          <br/>
@@ -1053,7 +1053,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
           In the previous example, the <b>GroupMembershipAttributes</b> was blank, so instead the <b>UserGroupMembershipAttributes</b> was used on the user level:
         </p>
          <p align="center">
-           <img src="images/ldap/GroupMembershipAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/GroupMembershipAttributes1.png" border="0"/><br/>
          </p>
          <br/>
          <p>
@@ -1061,7 +1061,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
            As you can see, the user doesn’t contain any attributes with regards to group membership.
          </p>
          <p align="center">
-           <img src="images/ldap/GroupMembershipAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/GroupMembershipAttributes2.png" border="0"/><br/>
          </p>
          
        <br/>
@@ -1081,7 +1081,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
           Only one of those parameters can be filled in. If the <b>GroupMemberShipAttributes</b> is set, Jetspeed assumes that the attribute to determine group membership is on the group object.
         </p>
          <p align="center">
-           <img src="images/ldap/UserGroupMembershipAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/UserGroupMembershipAttributes1.png" border="0"/><br/>
            <i>User belonging to 2 different roles</i>
          </p>
          <br/>
@@ -1093,7 +1093,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
            As you can see, the role is defined in <b>cn=role1,o=sevenSeas</b>. (notice the empty uniqueMember attribute).
          </p>
          <p align="center">
-           <img src="images/ldap/UserGroupMembershipAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/UserGroupMembershipAttributes2.png" border="0"/><br/>
            <i>Role definition</i>
          </p>
          <br/>
@@ -1128,7 +1128,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
           In the previous example, the GroupMembershipAttributes was blank, so instead the UserGroupMembershipAttributes was used on the user level.
         </p>
          <p align="center">
-           <img src="images/ldap/GroupMembershipForRoleAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/GroupMembershipForRoleAttributes1.png" border="0"/><br/>
          </p>
          <br/>
          <p>
@@ -1136,7 +1136,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
            As you can see, the user doesn’t contain any attributes with regards to group membership.
         </p>
          <p align="center">
-           <img src="images/ldap/GroupMembershipForRoleAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/GroupMembershipForRoleAttributes2.png" border="0"/><br/>
          </p>
 
        <br/>
@@ -1153,7 +1153,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
           This will make sure that the <b>memberOf</b> attribute is set on the user object, as can be seen in the following screenshot.
         </p>
          <p align="center">
-           <img src="images/ldap/GroupMembershipForRoleAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/GroupMembershipForRoleAttributes1.png" border="0"/><br/>
          </p>
          <br/>
          <p>
@@ -1161,14 +1161,14 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
            As you can see, the user doesn’t contain any attributes with regards to group membership.
         </p>
          <p align="center">
-           <img src="images/ldap/GroupMembershipForRoleAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/GroupMembershipForRoleAttributes2.png" border="0"/><br/>
          </p>
          <br/>
          <p>
            Only one of those parameters can be filled in. If the <b>GroupMemberShipAttributes</b> is set, Jetspeed assumes that the attribute to determine group membership is on the group object.
          </p>
          <p align="center">
-           <img src="images/ldap/RoleGroupMembershipForRoleAttributes1.png" border="0"/><br/>
+           <img src="../../images/components/ldap/RoleGroupMembershipForRoleAttributes1.png" border="0"/><br/>
            <i>User belonging to 2 different roles</i>
          </p>
          <br/>
@@ -1178,7 +1178,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
          </p>
          <p>As you can see, the role is defined in <b>cn=role1,o=sevenSeas</b>. (notice the empty uniqueMember attribute).</p>
          <p align="center">
-           <img src="images/ldap/RoleGroupMembershipForRoleAttributes2.png" border="0"/><br/>
+           <img src="../../images/components/ldap/RoleGroupMembershipForRoleAttributes2.png" border="0"/><br/>
            <i>Role definition</i>
          </p>
          <br/>
@@ -1209,7 +1209,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
           Jetspeed will limit its search scope on the LDAP to the property values defined above. This means that only roles, groups and people within rootOrg will be used by Jetspeed.
         </p>
         <p align="center">
-          <img src="images/ldap/ObjectFilterBase.png" border="0"/><br/>
+          <img src="../../images/components/ldap/ObjectFilterBase.png" border="0"/><br/>
         </p>
         <br/>
         <p>So, together with the object filers (RoleFilter, GroupFilter, UserFilter), Jetspeed will be able to locate the roles, groups and users within the directory.</p>
@@ -1225,7 +1225,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
 </constructor-arg>]]></source>
         </p>
         <p align="center">
-          <img src="images/ldap/RoleFilterBase.png" border="0"/><br/>
+          <img src="../../images/components/ldap/RoleFilterBase.png" border="0"/><br/>
         </p>
 
        <br/>
@@ -1238,7 +1238,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
 </constructor-arg>]]></source>
         </p>
         <p align="center">
-          <img src="images/ldap/GroupFilterBase.png" border="0"/><br/>
+          <img src="../../images/components/ldap/GroupFilterBase.png" border="0"/><br/>
         </p>
         
        <br/>
@@ -1251,7 +1251,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
 </constructor-arg>]]></source>
         </p>
         <p align="center">
-          <img src="images/ldap/UserFilterBase.png" border="0"/><br/>
+          <img src="../../images/components/ldap/UserFilterBase.png" border="0"/><br/>
         </p>
         
       </subsection>
@@ -1281,7 +1281,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
         </p>
         <p>Using the settings above, roles will be created like this</p>
         <p align="center">
-          <img src="images/ldap/RoleObjectClasses.png" border="0"/><br/>
+          <img src="../../images/components/ldap/RoleObjectClasses.png" border="0"/><br/>
         </p>
         <p>Notice how all of the objectClasses defined by the RoleObjectClasses attribute have been created in the LDAP</p>
         
@@ -1295,7 +1295,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
         </p>
         <p>Using the settings above, groups will be created like this</p>
         <p align="center">
-          <img src="images/ldap/GroupObjectClasses.png" border="0"/><br/>
+          <img src="../../images/components/ldap/GroupObjectClasses.png" border="0"/><br/>
         </p>
         <p>Notice how all of the objectClasses defined by the GroupObjectClasses attribute have been created in the LDAP</p>
         
@@ -1309,7 +1309,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
         </p>
         <p>Using the settings above users will be created like this</p>
         <p align="center">
-          <img src="images/ldap/UserObjectClasses.png" border="0"/><br/>
+          <img src="../../images/components/ldap/UserObjectClasses.png" border="0"/><br/>
         </p>
         <p>Notice how all of the objectClasses defined by the UserObjectClasses attribute have been created in the LDAP</p>
         
@@ -1333,7 +1333,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
         <p><b>cn</b> is the naming attribute for the user object, as no 2 admin users can exist in the rootOrg/People subdirectory</p>
         
         <p align="center">
-          <img src="images/ldap/IdAttributes.png" border="0"/><br/>
+          <img src="../../images/components/ldap/IdAttributes.png" border="0"/><br/>
         </p>
         <br/>
         
@@ -1367,7 +1367,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
         </p>
         <p>In the screenshot below, users have the <b>uid</b> attribute as their naming attribute</p>
         <p align="center">
-          <img src="images/ldap/UserIdAttribute.png" border="0"/><br/>
+          <img src="../../images/components/ldap/UserIdAttribute.png" border="0"/><br/>
         </p>
         
       </subsection>
@@ -1381,7 +1381,7 @@ RoleFilter=(objectclass=groupOfUniqueNames)]]></source>
         
         <p>When Jetspeed builds a userPrincipal internally, it will use the attribute corresponding to the value of the userUidAttribute.</p>
         <p align="center">
-          <img src="images/ldap/userUidAttribute.png" border="0"/><br/>
+          <img src="../../images/components/ldap/userUidAttribute.png" border="0"/><br/>
         </p>
 
        <br/>

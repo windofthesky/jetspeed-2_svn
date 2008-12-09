@@ -16,11 +16,14 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,9 +37,9 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Security Permission action
@@ -170,11 +173,14 @@ public class SecurityConstraintsAction
             throw new AJAXException("Missing 'xml' parameter");
         try
         {
-            SAXBuilder saxBuilder = new SAXBuilder();
-            StringReader reader = new StringReader(xml);
-            Document document = saxBuilder.build(reader);
-            Element root = document.getRootElement();
-            String name = root.getAttribute("name").getValue();
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = domFactory.newDocumentBuilder();
+            String charset = requestContext.getCharacterEncoding();
+            byte [] bytes = (charset != null ? xml.getBytes(charset) : xml.getBytes());
+            Document document = builder.parse(new ByteArrayInputStream(bytes));
+            
+            Element root = document.getDocumentElement();
+            String name = root.getAttribute("name");
             PageSecurity pageSecurity = pageManager.getPageSecurity();
             SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(name);
             int defsSize = 0;
@@ -184,21 +190,21 @@ public class SecurityConstraintsAction
                 def.setName(name);
                 added = true;
             }
-            int xmlSize = root.getChildren("security-constraint").size();
+            NodeList xmlConstraints = root.getElementsByTagName("security-constraint");
+            int xmlSize = xmlConstraints.getLength();
             if (added == false)
             {
                 defsSize = def.getSecurityConstraints().size();
             }
             int min = (xmlSize < defsSize) ? xmlSize : defsSize;
-            List xmlConstraints = root.getChildren("security-constraint");
             List constraints = def.getSecurityConstraints();
-            Element owner = root.getChild("owner");
-            if (owner != null)
+            NodeList owners = root.getElementsByTagName("owner");
+            if (owners.getLength() == 1)
             {
             }
             for (int ix = 0; ix < min; ix++)
             {
-                Element xmlConstraint = (Element)xmlConstraints.get(ix);
+                Element xmlConstraint = (Element)xmlConstraints.item(ix);
                 SecurityConstraint constraint =  (SecurityConstraint)constraints.get(ix);                
                 updateConstraintValues(xmlConstraint, constraint);
                 count++;                
@@ -222,7 +228,7 @@ public class SecurityConstraintsAction
                 // add new constraints
                 for (int ix = min; ix < xmlSize; ix++)
                 {
-                    Element xmlConstraint = (Element)xmlConstraints.get(ix);
+                    Element xmlConstraint = (Element)xmlConstraints.item(ix);
                     SecurityConstraint constraint =  pageManager.newPageSecuritySecurityConstraint();                    
                     updateConstraintValues(xmlConstraint, constraint);
                     constraints.add(constraint);                    
@@ -248,10 +254,20 @@ public class SecurityConstraintsAction
     
     protected void updateConstraintValues(Element xmlConstraint, SecurityConstraint constraint)
     {
-        constraint.setRoles(parseCSVList(xmlConstraint.getChildText("roles")));
-        constraint.setGroups(parseCSVList(xmlConstraint.getChildText("groups")));
-        constraint.setPermissions(parseCSVList(xmlConstraint.getChildText("permissions")));
-        constraint.setUsers(parseCSVList(xmlConstraint.getChildText("users")));        
+        constraint.setRoles(parseCSVList(getChildText(xmlConstraint, "roles")));
+        constraint.setGroups(parseCSVList(getChildText(xmlConstraint, "groups")));
+        constraint.setPermissions(parseCSVList(getChildText(xmlConstraint, "permissions")));
+        constraint.setUsers(parseCSVList(getChildText(xmlConstraint, "users")));        
+    }
+    
+    protected String getChildText(Element parent, String childName)
+    {
+        NodeList children = parent.getElementsByTagName(childName);
+        if (children.getLength() > 0)
+        {
+            return ((Element)children.item(0)).getTextContent();
+        }
+        return null;
     }
     
     protected List parseCSVList(String csv)

@@ -46,18 +46,17 @@ import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <h4>PortletRendererService <br />
@@ -194,8 +193,8 @@ public class PortletRendererImpl implements PortletRenderer
         try
         {
             PortletWindow portletWindow = getPortletWindow(fragment);
-            PortletDefinitionComposite portletDefinition = 
-                (PortletDefinitionComposite) portletWindow.getPortletEntity().getPortletDefinition();           
+            PortletDefinition portletDefinition = 
+                (PortletDefinition) portletWindow.getPortletEntity().getPortletDefinition();           
             if (checkSecurityConstraints && !checkSecurityConstraint(portletDefinition, fragment))
             {
                 throw new PortletAccessDeniedException("Access Denied.");
@@ -255,14 +254,11 @@ public class PortletRendererImpl implements PortletRenderer
         renderNow(fragment, requestContext);
     }
     
-    protected int getExpirationCache(PortletDefinitionComposite portletDefinition)
+    protected int getExpirationCache(PortletDefinition portletDefinition)
     {
         if (portletDefinition == null)
             return 0;
-        String expiration = portletDefinition.getExpirationCache();
-        if (expiration == null)
-            return 0;
-        return Integer.parseInt(expiration);
+        return portletDefinition.getExpirationCache();
     }
     
     /**
@@ -309,8 +305,8 @@ public class PortletRendererImpl implements PortletRenderer
         try
         {
             PortletWindow portletWindow = getPortletWindow(fragment);
-            PortletDefinitionComposite portletDefinition = 
-                (PortletDefinitionComposite) portletWindow.getPortletEntity().getPortletDefinition();     
+            PortletDefinition portletDefinition = 
+                (PortletDefinition) portletWindow.getPortletEntity().getPortletDefinition();     
 
             long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
             portletTracking.setExpiration(portletWindow, timeoutMetadata);            
@@ -401,7 +397,7 @@ public class PortletRendererImpl implements PortletRenderer
      */
     protected boolean retrieveCachedContent(RequestContext requestContext, ContentFragment fragment, 
                                             PortletWindow portletWindow, int expiration, 
-                                            PortletDefinitionComposite portletDefinition)
+                                            PortletDefinition portletDefinition)
         throws Exception
     {
         ContentCacheKey cacheKey = portletContentCache.createCacheKey(requestContext, fragment.getId());        
@@ -448,7 +444,7 @@ public class PortletRendererImpl implements PortletRenderer
         }
 
         PortletEntity portletEntity = portletWindow.getPortletEntity();
-        ((MutablePortletEntity)portletEntity).setFragment(fragment);
+        portletEntity.setFragment(fragment);
         
         ((PortletWindowImpl) portletWindow).setInstantlyRendered(fragment.isInstantlyRendered());
 
@@ -457,7 +453,7 @@ public class PortletRendererImpl implements PortletRenderer
     
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, ContentFragment fragment, 
                                               RequestContext requestContext, boolean isParallel,
-                                              PortletDefinitionComposite portletDefinition, 
+                                              PortletDefinition portletDefinition, 
                                               PortletContent portletContent, boolean contentIsCached, long timeoutMetadata)
         throws PortletAccessDeniedException, FailedToRetrievePortletWindow, PortletEntityNotStoredException        
     {
@@ -475,7 +471,7 @@ public class PortletRendererImpl implements PortletRenderer
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, ContentFragment fragment, 
                                               HttpServletRequest request, HttpServletResponse response, 
                                               RequestContext requestContext, boolean isParallel,
-                                              PortletDefinitionComposite portletDefinition, 
+                                              PortletDefinition portletDefinition, 
                                               ContentDispatcherCtrl dispatcher, 
                                               PortletContent portletContent, 
                                               int expirationCache, boolean contentIsCached, long timeoutMetadata)
@@ -533,7 +529,7 @@ public class PortletRendererImpl implements PortletRenderer
         return rJob;
     }
  
-    protected long getTimeoutOnJob(PortletDefinitionComposite portletDefinition)
+    protected long getTimeoutOnJob(PortletDefinition portletDefinition)
     {
         long timeoutMetadata = 0;
         Collection timeoutFields = null;
@@ -624,7 +620,7 @@ public class PortletRendererImpl implements PortletRenderer
         }
     }
     
-    protected boolean checkSecurityConstraint(PortletDefinitionComposite portlet, ContentFragment fragment)
+    protected boolean checkSecurityConstraint(PortletDefinition portlet, ContentFragment fragment)
     {
         if (fragment.getType().equals(ContentFragment.PORTLET))
         {

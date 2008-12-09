@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 
 import com.mockrunner.mock.web.MockServletContext;
 
-
+@SuppressWarnings("deprecation")
 public abstract class BaseMockServletContext extends MockServletContext implements ServletContext
 {
     private final Map attributes = new HashMap();

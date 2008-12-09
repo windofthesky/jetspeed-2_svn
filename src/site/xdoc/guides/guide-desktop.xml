@@ -1,0 +1,570 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed-2 Desktop</title>
+		<subtitle>Documentation for the Jetspeed-2 Desktop</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="dtaylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+	<section name="The Jetspeed Desktop: Web 2.0 brought to the Java Portal">
+	<p>			
+The Jetspeed Desktop is a AJAX based, client-rendering (Java-script) implementation of a JSR-168 portal. Portlets are rendered individually, as opposed to a full page rendering engine such as the Page Pipeline.	
+With the Desktop configuration, portlets are rendered in a "Web 2.0" fashion: using Ajax requests to retrieve sections of the 
+page known as portlet windows. Each of these "Ajax" request are made asynchronously. The Desktop is a combination of a client-side portlet rendering engine, combined with a set of server-
+side Ajax APIs for retrieving portlet content from the client-side engine. Other parts of the page are also retrieved asynchronously with XML payloads, such as layouts, decorators and menus. 
+</p><p>
+If you have n portlets on a page, during the initial rendering of a desktop 
+page, n desktop pipeline requests will be made. However, if 
+you go to render just one portlet, other portlets will not be 
+rendered unless their cache has expired. For actions, all one 
+action request is made, and then n render requests are made 
+for each portlet on the desktop. 
+However, it may put higher load on your network.
+    </p>
+    <subsection name="How does the Desktop differ from the default portal?">
+    <p>
+    How does the Jetspeed Desktop differ from a default Jetspeed portal? Its about where the rendering engine resides. We often also call the rendering engine the "aggregation engine",
+    since the primary job of a portal rendering engine is to aggregate content onto the same page from different sources. 
+    Portals need to aggregate diverse content and provide it back to the user in one seamlessly rendered content delivery.
+    In the case of Jetspeed, since it is a Java Portlet server, it aggregates one or more portlets and displays them on a page. 
+    Jetspeed has several server-side aggregation engines, and one one client-side aggregation engine. The Jetspeed Desktop is the client-side aggregation engine written in Javascript.
+    Jetspeed has some built in optimizations on the server that makes the server-side aggregation more desirable. Most notably is the parallel rendering feature.  
+	However the Desktop also has parallel rendering built into it. Depending on how many threads your browser is configured to handle, the Desktop will attempt to retrieve each
+	portlet on a page in a separate request to the server. 	
+    </p>
+    <p>Should you use the Desktop over the server-side solution? That is up to you to decide. We provide both solutions. One thing to think about is the load you can put on network
+    in making lots of HTTP requests. The Desktop does appear to render faster, because portlets are coming back as soon as they are rendered, there is no need to wait for another 
+    portlet to complete rendering, as is the case with the sequential rendering engine. Even with the parallel rendering engine, the browser must still wait for all portlets to 
+    complete rendering before the entire payload is returned. So the desktop can be perceived as being a lot faster.
+    </p>
+	</subsection>
+	<subsection name="Viewing the Desktop">    
+    <p>The Desktop is installed and enabled by default. To view the Jetspeed desktop, simply startup Jetspeed and point your browser at:</p>
+    <p>http://localhost:8080/jetspeed/desktop</p>
+    <p>You can proceed to use Jetspeed as you normally have in the past. Your portlets will operate just the same, from a Portlet API point of view, as in default mode. However, you may notice a few differences:</p>
+    <ul>
+    <li>Portlets are rendered individually without waiting for other portlets to render. The user experience may be seem faster</li>
+    <li>Portlet actions and other user interactions, like menu navigation, do not require a complete page refresh. Each portlet is drawn individually.</li>
+    <li>The skins (decorators) are different with than what you normally see with the portal, although this is not necessary</li>
+    <li>You can move (drag and drop) and resize portlets</li>
+    <li>The Desktop Customizer is different from the default customizer</li>
+    </ul>
+	</subsection>
+	</section>	
+    <section name="Desktop Configuration">
+    <p>Most configuration with the Desktop is the exact same as you would configure the default portal. This section of documentation describes specific-desktop configuration.</p>
+	<subsection name="Disabling the Desktop">
+	<p>The desktop is installed and ready to run by default. However, you may want to disable the desktop. Disabling the desktop is easy. Jetspeed uses Spring to configure your portal. To turn off the desktop, follow these configuration
+	steps:</p>
+	<ul>
+	<li>1. Stop the server if it is running</li>
+	<li>2. In the Jetspeed webapp, copy WEB-INF/assembly/pipelines.xml to WEB-INF/assembly/override/pipelines.xml</li>
+	<li>3. Edit WEB-INF/assembly/override/pipelines.xml, and remove or comment out from the "pipeline-map" bean the following mappings: <b>/desktop, /action, /render</b></li>
+	<li>4. Save pipelines.xml, restart the server</li> 
+	</ul>
+    <p>You will no longer be able to access the desktop URL: http://localhost:8080/jetspeed/desktop</p>
+	</subsection>
+	<subsection name="Desktop Spring Configuration">
+	<p>You can find the majority of general Desktop Configuration in the Spring configuration file named <b>headtag.xml</b>. Lets take a look at one of the beans found there called  <b>DesktopConfiguration</b>.
+	This configuration bean contains a map of properties:</p>
+	<table>
+	<tr>
+	<th>Property</th>
+	<th>Default</th>
+	<th></th>
+	</tr>
+	<tr>
+	<td>decoration.layout</td>
+	<td>blueocean</td>
+	<td>Default layout decoration for desktop, this is used when a selected layout decoration does not support desktop</td>
+	</tr>
+	<tr>
+	<td>decoration.portlet</td>
+	<td>tigris</td>
+	<td>Default portlet decoration for desktop, this is used when a selected portlet decoration does not support desktop</td>
+	</tr>
+	<tr>
+	<td>page.ajaxnavigation</td>
+	<td>true</td>
+	<td>Enable ajax page navigation, meaning that pages will not be completely reloaded and redrawn when navigating from one page to another. If set to true, you should set <i>dojo.parameter.preventBackButtonFix</i> to false</td>
+	</tr>
+	<tr>
+	<td>window.tiling</td>
+	<td>true</td>
+	<td>Enable window tiling mode. This is the default behavior for most portals, although you may want to experiment with having your portlets displayed as true *desktop* freeform windows. Note the original Jetspeed Desktop was designed to work with freeform windows. This is where the name "desktop" came from.</td>
+	</tr>
+	<tr>
+	<td>window.heightexpand</td>
+	<td>true</td>
+	<td>Used in combination with the window.tiling feature. If set to true, tiled windows will expand in height to fit the content of the rendered portlet</td>
+	</tr>
+	<tr>
+	<td>window.height</td>
+	<td>200</td>
+	<td>Default window height. Only applicable if <i>window.heightexpand</i> is set to false</td>
+	</tr>
+	<tr>
+	<td>window.width</td>
+	<td>280</td>
+	<td>Default window width. Only applicable if <i>window.tiling</i> is set to false</td>
+	</tr>
+	<tr>
+	<td>window.action.button.order</td>
+	<td>menu, config, edit_defaults, edit, view, print, help, minimized, normal, maximized, removeportlet</td>
+	<td>The order, left to right, that action buttons should be rendered. All listed actions are expected to have associated images at derived path:  decorations/portlet/{decorator-name}/images/desktop/{action}.gif. If an action has no image, it can still be in this list as long as it also appears in the window.action.noimage entry (the goal here is that the decorator need only override window.action.noimage). Of course, each portlet will only display those actions that it supports. No image mapping is offered because if it is to be supported, it should be from DecoratorAction. Some actions, such as "menu" and "restore" have special behaviors (e.g. restore replaces minimize when window is minimized). Note that the <i>removeportlet</i> is only available in page edit mode</td>
+	</tr>
+	<tr>
+	<td>window.action.button.maximum</td>
+	<td>11</td>
+	<td>Maximum number of action buttons allowed - overflow items will be displayed at top of action menu</td>
+	</tr>
+	<tr>
+	<td>window.action.noimage</td>
+	<td>tile, untile, heightexpand, heightnormal</td>
+	<td>list of actions that do no have images</td>
+	</tr>
+	<tr>
+	<td>window.action.menu.order</td>
+	<td>view, maximized, normal, minimized, print, edit, edit_defaults, config, tile, untile, heightexpand, heightnormal, about, help, removeportlet</td>
+	<td>The order that the actions should appear in action menu (for each action that is not displayed as a button)</td>
+	</tr>
+	<tr>
+	<td>window.action.button.tooltip</td>
+	<td>true</td>
+	<td>Display tooltips for window action buttons</td>
+	</tr>
+	<tr>
+	<td>window.icon.enabled</td>
+	<td>true</td>
+	<td>Flag to determine if an icon should display for each portlet window</td>
+	</tr>
+	<tr>
+	<td>window.icon.path</td>
+	<td>/images/portlets/small</td>
+	<td>Jetspeed webapp relative path to window icons</td>
+	</tr>
+	<tr>
+	<td>page.action.button.tooltip</td>
+	<td>true</td>
+	<td>Display tooltips for page action buttons</td>
+	</tr>
+	</table>
+	</subsection>
+	</section>
+	<section name="Desktop Decorators">	
+	<p>Desktop decorations share a lot of configuration with default decorator configurations. For example, they are stored in the exact same directory structure as default decorators. However, there are some differences. This section covers the differences.
+	For common decorations documentation, see the <a href="guide-decorators.html">Decorations Guide</a>. Just like with default decorators, there are two kinds of decorators: layout(or page) decorators, and portlet decorators.</p>
+	<p>How do you enable an existing default decorator to work with the desktop? The best method of creating a new decorator that is compatible with Jetspeed Desktop is to start with a copy of a desktop compatible decorator. The 'tigris' and 'blueocean' layout and portlet decorators
+    are currently compatible with jetspeed-desktop.	 Make sure to add the <i>decoratordesktop.properties</i> file to the root of your decorator. A desktop compatible decorator (both portlet and layout) is expected to define these css files:
+</p>
+<ul>
+<li>css/styles.css -- css definitions shared by desktop and portal</li>
+<li>css/desktop.css -- css definitions or overrides for desktop</li>
+<li>css/portal.css -- css definitions or overrides for portal</li>
+</ul>
+	<subsection name="Decorations Location">
+	<p>The location of your desktop (and default) decorators is configured in the
+	<b>jetspeed.properties</b> file found in the Jetspeed webapp under WEB-INF/conf/jetspeed.properties. See the property:</p>
+<source>
+<![CDATA[        
+	portal.core.relative.decorations.path=/decorations
+]]></source>   
+	<p> this path is relative to your jetpeed webapp. Jetspeed will look for all decorators in this directory.
+	</p>
+	</subsection>
+	<subsection name="Layout Decorators">
+	<p>Layout Decorators are used to decorate, or skin, your page. Layout decorators are often called Page Decorators, since they decorate the page with common markup such as menus, branding, header and footer repeatable areas. 
+	The following layout decorators are provided out of the box:</p>
+	<ul>
+	<li>tigris</li>
+	<li>blueocean</li>
+	</ul>
+	<p>Decorators can be written in JSP or Velocity. Examples are provided in both JSP and Velocity for the tigris and blueocean page themes. You should define your decorators template type in the decorator properties. If you don't, the system wide default is set in the Spring configuration file <i>desktop.xml</i></p>
+	<p>A layout decorator configuration is stored in the <i>decoratordesktop.properties</i> file. </p>
+	<h3>Layout Decorator Packaging</h3>
+	<p>Desktop layout decorator packaging is overlaid on top of the same default layout packaging. Here are the directories, with the additional desktop directories or files denoted in bold:</p>
+	<table>
+	<tr>
+	<td>/css</td>
+	<td>shared by both desktop and default decorators</td>
+	</tr>
+	<tr>
+	<td>/html</td>
+	<td>used only by default decorators</td>
+	</tr>
+	<tr>
+	<td>/images</td>
+	<td>shared by both desktop and default decorators</td>
+	</tr>
+	<tr>
+	<td><b>/images/desktop</b></td>
+	<td>images specific to the desktop</td>
+	</tr>
+	<tr>
+	<td><b>/images/desktop/loading</b></td>
+	<td>images specific to the desktop dynamic loading message feature</td>
+	</tr>
+	<tr>
+	<td><b>/images/desktop/tabs</b></td>
+	<td>image specific to the desktop for tab menus</td>
+	</tr>
+	<tr>
+	<td>/resources</td>
+	<td>shared by both desktop and default decorators</td>
+	</tr>
+	<tr>
+	<td><b>/templates</b></td>
+	<td>desktop decorator specific templates for features like breadcrumbs</td>
+	</tr>
+	<tr>
+	<td>decorator.properties</td>
+	<td>default decorators only</td>
+	</tr>
+	<tr>
+	<td><b>decoratordesktop.properties</b></td>
+	<td>configuration properties specific to the desktop decorator</td>
+	</tr>
+	<tr>
+	<td><b>desktop_print.*</b></td>
+	<td>print mode for the desktop (either .jsp or .vm)</td>
+	</tr>
+	<tr>
+	<td><b>desktop.*</b></td>
+	<td>the desktop layout decorator template (either .jsp or .vm)</td>
+	</tr>
+	</table>
+	<h3>General Decorator Properties</h3>
+	<p>These properties are all defined in the required <i>decoratordesktop.properties</i> file in the root of the decorator package:</p>
+	<table>
+	<tr>
+	<th>Property</th>
+	<th>Value</th>
+	<th></th>
+	</tr>
+	<tr>
+	<td>desktop.template.extension</td>	
+	<td>.jsp</td>	
+	<td>The template type for this decorator, denoted by the extension. Valid values are (.jsp, .vm).</td>	
+	</tr>
+	<tr>
+	<td>resource.file</td>	
+	<td>Messages</td>	
+	<td>Localized resource strings are stored in the subdirectory "resources" of a decorator package. This string tells the desktop what is the filename of the resources, like Messages_en.properties, Messages._fr.properties...</td>	
+	</tr>
+	<tr>
+	<td>template.print.id</td>	
+	<td>desktop_print</td>	
+	<td>The filename of the Print mode template found in the root of the decorator package. The example here will look for a print mode template named desktop_print.jsp</td>	
+	</tr>
+	</table>
+	<h3>Desktop Page Editor Options</h3>
+	<p>Many of these options have a directly equivalent property for portal customizer</p>	
+	<table>
+	<tr>
+	<th>Property</th>
+	<th>Value</th>
+	<th></th>
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.movemode.isdefault</td>	
+	<td>true</td>	
+	<td>Move Mode only shows the title bars of portlets on a page. (only applicable in edit mode). Move mode allows you to better see the layout of your portlets, and more easily drag them around since you will not see the entire content of the portlets, making the entire edit area much smaller and manageable for page customization</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.page.layout.decorator.editable</td>	
+	<td>true</td>	
+	<td>Flag to lockout page layout edit mode. Setting to false is useful if want to disable edit mode access from the layout decorator</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.page.portlet.decorator.editable</td>	
+	<td>true</td>	
+	<td>Flag to lockout portlet edit mode. Setting to false is useful if want to disable edit mode access from the layout decorator</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.page.add.enabled</td>	
+	<td>true</td>	
+	<td>Flag to enable or disable the "Add Page" button from the customizer</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.page.layout.depth.max</td>	
+	<td>3</td>	
+	<td>Max depth for nested layouts</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.portlet.add.enabled</td>	
+	<td>true</td>	
+	<td>Enable or disable the Add Portlet (+) button from the customizer</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.layout.name.editable</td>	
+	<td>true</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.layout.columnsize.editable</td>	
+	<td>true</td>	
+	<td>Allow for editing the column sizes with constant values (percentages, pixels)</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.layout.noactions.editable</td>	
+	<td>false</td>	
+	<td>if layout.noactions.editable=true, the below layout.noactions.* properties are ignored and also, in page editor noaction layouts are fully editable (i.e. the noaction editing restrictions are enforced only in regular page view, not in page editor)</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.layout.noactions.toplevel.moveable</td>	
+	<td>false</td>	
+	<td>see below</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.layout.noactions.columnsize.editable</td>	
+	<td>true</td>	
+	<td>see below</td>	
+	</tr>
+	<tr>
+	<td>desktop.pageeditor.layout.noactions.editor.role</td>	
+	<td>admin</td>	
+	<td>see below</td>	
+	</tr>
+	</table>
+
+	<h3>Image Loading Decorator Properties</h3>
+	<p>Note the quotes are required in these property values since the strings are supplied as is to JSON. Additionally, arrays must be enclosed by brackets standard JSON format</p>
+	<table>
+	<tr>
+	<th>Property</th>
+	<th>Value</th>
+	<th></th>
+	</tr>
+	<tr>	
+	<td>desktop.loading.img.dir</td>	
+	<td>"/images/desktop/loading"</td>	
+	<td>Decorator-relative location of where to find images used during page and portlet loading. </td>	
+	</tr>
+	<tr>
+	<td>desktop.loading.img.animated</td>	
+	<td>"loaddots.gif"</td>	
+	<td>Animated image for loading animation</td>	
+	</tr>
+	<tr>
+	<td>desktop.loading.img.stepprefix</td>	
+	<td>"loaddots_"</td>	
+	<td>Prefix for sequence of gifs loading</td>	
+	</tr>
+	<tr>
+	<td>desktop.loading.img.stepextension</td>	
+	<td>".gif"</td>	
+	<td>Extension of image files</td>	
+	</tr>
+	<tr>
+	<td>desktop.loading.img.steps</td>	
+	<td>["E","L2","L4","L6","L8","R7","R5","R3","R1"]</td>	
+	<td>Array of file suffixes to append on to desktop.loading.img.stepprefix and desktop.loading.img.stepextension</td>	
+	</tr>
+	</table>
+<subsection name='No Action Decorator Layout'>
+<p>NoAction Layouts under desktop pipeline behave different from portal pipeline. The desktop allows you to still get into edit mode and change things, where as the portal locks it down but not based on security. 
+The advantages and disadvantages to both. You can secure the page, and only allow certain users access to the actions. Whereas the portal solution requires you to edit PSML to change the decorator, 
+the /desktop solution allows administrators a way out without editing PSML directly
+</p>
+The solution for this issue is to configure the desktop page editor NoAction layout settings. Here are some details:
+
+This issue is probably caused by the logged-in user having privileges to edit no-action layouts.
+ The layout decorator decoratordesktop.properties file specifies configuration for the desktop page editor (customizer). Currently, the tigris layout decorator sets these properties as follows:
+<source>
+<![CDATA[        
+desktop.pageeditor.layout.noactions.editable=false
+#  if layout.noactions.editable=true, the below layout.noactions.* properties are ignored
+#     and also, in page editor noaction layouts are fully editable
+#     (i.e. the noaction editing restrictions are enforced
+#     only in regular page view, not in page editor)
+desktop.pageeditor.layout.noactions.toplevel.moveable=false
+desktop.pageeditor.layout.noactions.columnsize.editable=true
+desktop.pageeditor.layout.noactions.editor.role=admin
+]]></source>   
+
+The above setting for "desktop.pageeditor.layout.noactions.editor.role" specifies that any user with the "admin" role can fully edit a no-action layout.
+If no role should be able to edit no-action layouts, either omit the "...noactions.editor.role" property or set it to empty string.
+</subsection>
+</subsection>
+	<subsection name="Portlet Decorators">
+	<p>Portlet Decorators are used to decorate, or skin, your portlet. Portlet decorators are used to create the window around a portlet, as well as displaying the actions available on that window. 
+	The following layout decorators are provided out of the box:</p>
+	<ul>
+	<li>tigris</li>
+	<li>blueocean</li>
+	</ul>
+	<p>Decorators can be written in JSP or Velocity. Examples are provided in both JSP and Velocity for the tigris and blueocean page themes. You should define your decorators template type in the decorator properties. If you don't, the system wide default is set in the Spring configuration file <i>desktop.xml</i></p>
+	<p>A portlet decorator configuration is stored in the <i>decoratordesktop.properties</i> file. </p>
+	<h3>Portlet Decorator Packaging</h3>
+	<p>Desktop portlet decorator packaging is overlaid on top of the same default portlet packaging. Here are the directories, with the additional desktop directories or files denoted in bold:</p>
+	<table>
+	<tr>
+	<td>/css</td>
+	<td>shared by both desktop and default decorators</td>
+	</tr>
+	<tr>
+	<td>/images</td>
+	<td>shared by both desktop and default decorators</td>
+	</tr>
+	<tr>
+	<td><b>/images/desktop</b></td>
+	<td>images specific to the desktop</td>
+	</tr>
+	<tr>
+	<td><b>/templates</b></td>
+	<td>desktop decorator specific templates for features like print mode</td>
+	</tr>
+	<tr>
+	<td>decorator.properties</td>
+	<td>default decorators only</td>
+	</tr>
+	<tr>
+	<td><b>decoratordesktop.properties</b></td>
+	<td>configuration properties specific to the desktop decorator</td>
+	</tr>
+	</table>
+	<h3>General Portlet Decorator Properties</h3>
+	<p>These properties are all defined in the required <i>decoratordesktop.properties</i> file in the root of the decorator package. 
+	These properties allow for overriding the defaults set in headtag.xml and core.src.js</p>
+	<table>
+	<tr>
+	<th>Property</th>
+	<th></th>
+	</tr>
+	<tr>
+	<td>window.action.button.order</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.action.noimage</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.action.menu.order</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.action.button.maximum</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.action.button.tooltip</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.icon.enabled</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.icon.path</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.titlebar.enabled</td>	
+	<td></td>	
+	</tr>
+	<tr>
+	<td>window.resizebar.enabled</td>	
+	<td></td>	
+	</tr>
+	</table>
+</subsection>
+</section>		
+	
+<section name="Programming Desktop Decorators">
+<subsection name="Programming with JSP">
+<p>TODO: document "desktop" variable in JSP</p>
+</subsection>
+<subsection name="Programming with Velocity">
+<p>TODO: document "jetspeedDesktop" variable in vm</p>
+</subsection>
+</section>
+<section name="Pipelines Overview with the Desktop">
+<subsection name="Desktop Pipeline">
+<p>The desktop pipeline naturally provides a more distributed rendering 
+engine since each request for a portlet is on its own thread. This pipeline processes the Action or Render  phase for the Jetspeed Desktop.
+The desktop pipeline makes use of the Portlet Pipeline to render each portlet on its on request.
+</p><p>
+The Desktop pipeline uses a client-side aggregation engine. The 
+aggregation is implemented in JavaScript with pipeline calls over 
+the /portlet pipeline to retrieve the content of each portlet. This 
+also achieves a quite successful multithreaded and distributed 
+process. A downside is more HTTP requests. 
+</p>
+</subsection>
+<subsection name="Portlet Pipeline">
+<p>The portlet pipeline is used by the /desktop, as well as third party 
+integrators. It delivers the content of one single portlet, not a whole 
+page. This is useful for client-side aggregation engines such as the 
+Jetspeed Desktop.</p><p>This pipeline is used to render the 
+contents of a single portlet. This pipeline is used by several 
+portal projects to embed JSR-168 support in their portal via 
+Jetspeed-2 technology. It is the foundation for the Desktop 
+pipeline. The portlet pipeline is also embedded in Jetspeed 1.6 
+(Fusion) to give JSR168 support to Jetspeed 1.6 portals.
+</p> 
+<p>Here is an example of "just the content" of a portlet without window decorations:</p>
+<img src="../images/guides/portlet-pipeline.png"/>
+</subsection>
+<subsection name="Portal Pipeline">
+<p>Portal pipeline uses a server-side aggregation engine. All 
+content is generated on the server-side, then, returned to the 
+client. Jetspeed supports a multithreaded server-side aggregation 
+engine.</p>
+</subsection>
+</section>
+<section name="Customization">
+<p>Desktop Customizer performs the same actions as the default customizer with additional features such asdrag and drop, resizing, detach, and column resizing.
+Almost all aspects of PSML pages, and  specifically fragments, can be modified, such as moving, adding and deleting fragments, by the customizer. 
+</p>
+<p>
+Layout fragments are containers for other fragments. They work the same with both the Desktop and default portal. A layout 
+fragment can contain both nested layout fragments as well as 
+portlet fragments. You can define your own layout fragments. 
+</p>
+<p>
+Jetspeed comes with several layout implementations: 
+One, Two, Three, and Four Column DIV-based layouts 
+Table-based variants of One, Two, and Three column layouts 
+Variants with No Actions on the window decorator 
+Variants with different widths (25%,75%), default (50%, 50%) 
+Widths can be modified in the preferences of the decorator with the desktop 
+customizer or in configure mode </p>
+			<p>
+Here is a one-column layout nesting two two-column layouts:</p>
+<source>
+<![CDATA[        
+
+ <fragment id="jsmin-1" type="layout" name="jetspeed-layouts::VelocityOneColumn"> 
+    <fragment id="jsmin-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns"> 
+            // Portlet Fragments GO HERE 
+    </fragment> 
+    <fragment id="jsmin-10" type="layout" name="jetspeed-layouts::VelocityTwoColumns"> 
+            // Portlet Fragments GO HERE 
+    </fragment> 
+ </fragment> 
+]]></source>   
+<p>Here is a view of the above fragments in the desktop customizer:</p>			
+<img src="../images/guides/desktop-layout.png"/>
+</section>
+</body>
+</document>
+

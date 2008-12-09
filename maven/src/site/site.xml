@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+
+  $Id$
+-->
+
+<project name="Building and developing Jetspeed-2 using Maven-2">
+  <body>
+    <menu name="Overview">
+      <item name="Introduction" href="index.html" />
+      <item name="The need for a custom Maven lifecycle" href="the-need-for-a-custom-lifecycle.html" />
+      <item name="Structure of Jetspeed Portal Projects" href="project-structure.html" />
+      <item name="Jetspeed Portal Resources" href="jetspeed-portal-resources.html" />
+    </menu>
+    <menu name="Documentation">
+      <item name="Jetspeed Maven Plugins Overview" href="jetspeed-maven-plugins.html">
+        <item name="Using jetspeed:mvn" href="jetspeed-mvn-plugin.html" />
+        <item name="Using jetspeed-unpack:unpack" href="jetspeed-unpack-plugin.html" />
+        <item name="Using jetspeed-db:init" href="jetspeed-db-init-plugin.html" />
+        <item name="Using jetspeed-db:ddl" href="jetspeed-db-ddl-plugin.html" />
+        <item name="Using jetspeed-deploy:deploy" href="jetspeed-deploy-plugin.html" />
+      </item>
+      <item name="Using the Jetspeed Archetype" href="jetspeed-archetype.html" />
+      <item name="Building Jetspeed-2 from source" href="building-jetspeed.html" />
+    </menu>
+    <menu name="Examples">
+      <item name="Jetspeed Demo Portal" href="examples/jetspeed-demo.html" />
+      <item name="Multiple target environments" href="examples/multiple-targets.html" />
+    </menu>
+  </body>
+</project>

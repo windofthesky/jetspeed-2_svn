@@ -33,20 +33,20 @@ public interface NodeManager
 	/**
 	 * Returns the current "knowledge" about a given node (i.e. the portlet application).
 	 * If the contextName doesn't exist NODE_NEW is returned.
-	 * An id requested newer than what is stored is indicated by NODE_OUTDATED. 
-	 * @param id
+	 * An revision requested newer than what is stored is indicated by NODE_OUTDATED. 
+	 * @param revision
 	 * @param contextName
 	 * @return
 	 */
-	public int checkNode(Long id, String contextName);
+	public int checkNode(Long revision, String contextName);
 
 	/**
-	 * Add a new node or update the id of an existing one...(i.e. the portlet application) to the local info
-	 * @param id
+	 * Add a new node or update the revision of an existing one...(i.e. the portlet application) to the local info
+	 * @param revision
 	 * @param contextName
 	 * @throws Exception
 	 */
-	public void addNode(Long id, String contextName) throws Exception;
+	public void addNode(Long revision, String contextName) throws Exception;
 
 	/**
 	 * return the number of currently stored nodes

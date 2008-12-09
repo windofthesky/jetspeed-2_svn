@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 
 /**
  * Validator to check if the defined required applications have been initialised in the Jetspeed engine

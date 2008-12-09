@@ -18,8 +18,8 @@ package org.apache.jetspeed.page.document;
 
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.page.BaseElement;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * <p>

@@ -21,16 +21,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.commons.collections.MultiHashMap;
-import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.Description;
-import org.apache.pluto.om.common.DisplayName;
-import org.apache.pluto.om.common.Language;
+import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
 
 /**
  * @author <a href="mailto: jford@apache.org">Jeremy Ford</a>
@@ -52,10 +52,10 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
     public ParsedObject parseObject(Object o)
     {
         BaseParsedObject result = null;
-        if(o instanceof PortletDefinitionComposite)
+        if(o instanceof PortletDefinition)
         {
             result = new BaseParsedObject();
-            PortletDefinitionComposite pd = (PortletDefinitionComposite)o;
+            PortletDefinition pd = (PortletDefinition)o;
             
             //need to get Locale here
             String displayNameText = pd.getDisplayNameText(JetspeedLocale.getDefaultLocale());
@@ -70,9 +70,9 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
             
             //TODO: this is common to PAs as well, possible refactor
             MultiHashMap fieldMap = new MultiHashMap();
-            fieldMap.put(ID, pd.getName());
+            fieldMap.put(ID, pd.getPortletName());
             
-            PortletApplication pa = (PortletApplication)pd.getPortletApplicationDefinition();
+            PortletApplication pa = (PortletApplication)pd.getApplication();
             fieldMap.put(PORTLET_APPLICATION, pa.getName()); 
             
             Collection mdFields = pd.getMetadata().getFields();
@@ -83,38 +83,26 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
             }
             
             //Handle descriptions
-            Iterator descIter = pd.getDescriptionSet().iterator();
-            while (descIter.hasNext())
+            for (Description d : pd.getDescriptions())
             {
-                Description desc = (Description) descIter.next();
-                fieldMap.put(ParsedObject.FIELDNAME_DESCRIPTION, desc.getDescription());
+                fieldMap.put(ParsedObject.FIELDNAME_DESCRIPTION, d.getDescription());
             }
             
             //Handle keywords and titles
-            Iterator displayNameIter = pd.getDisplayNameSet().iterator();
-            while (displayNameIter.hasNext())
+            for (DisplayName d : pd.getDisplayNames())
             {
-                DisplayName displayName = (DisplayName) displayNameIter.next();
-                fieldMap.put(ParsedObject.FIELDNAME_TITLE, displayName.getDisplayName());
+                fieldMap.put(ParsedObject.FIELDNAME_TITLE, d.getDisplayName());
             }
             
             HashSet keywordSet = new HashSet();
             
-            Iterator langIter = pd.getLanguageSet().iterator();
-            while (langIter.hasNext())
+            for (Language lang : pd.getLanguages())
             {
-                Language lang = (Language) langIter.next();
                 fieldMap.put(ParsedObject.FIELDNAME_TITLE, lang.getTitle());
                 fieldMap.put(ParsedObject.FIELDNAME_TITLE, lang.getShortTitle());
-                
-                Iterator keywordIter = lang.getKeywords();
-                if (keywordIter != null)
+                for (String keyword : lang.getKeywordList())
                 {
-                    while (keywordIter.hasNext())
-                    {
-                        String keyword = (String) keywordIter.next();
-                        keywordSet.add(keyword);
-                    }
+                    keywordSet.add(keyword);
                 }
             }
             

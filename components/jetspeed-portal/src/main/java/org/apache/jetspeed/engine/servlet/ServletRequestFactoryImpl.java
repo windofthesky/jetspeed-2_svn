@@ -20,7 +20,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.namespace.JetspeedNamespaceMapper;
 
 /**
  * Factory implementation for creating HTTP Request Wrappers
@@ -31,7 +32,12 @@ import org.apache.pluto.om.window.PortletWindow;
 public class ServletRequestFactoryImpl
     implements ServletRequestFactory
 {    
+    private JetspeedNamespaceMapper namespaceMapper;
     
+    public ServletRequestFactoryImpl(JetspeedNamespaceMapper namespaceMapper)
+    {
+        this.namespaceMapper = namespaceMapper;
+    }
     public void init(javax.servlet.ServletConfig config, Map properties) 
     throws Exception
     {        
@@ -44,7 +50,7 @@ public class ServletRequestFactoryImpl
 
     protected HttpServletRequest createRequest(HttpServletRequest request, PortletWindow window)
     {
-        return new ServletRequestImpl(request, window);        
+        return new ServletRequestImpl(request, window, namespaceMapper);        
     }
     
     public HttpServletRequest getServletRequest(HttpServletRequest request, PortletWindow window)
@@ -53,7 +59,6 @@ public class ServletRequestFactoryImpl
         if (!(request instanceof ServletRequestImpl))
         {
             HttpServletRequest servletRequest = createRequest(request, window);
-
             return servletRequest;
         }
         else

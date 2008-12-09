@@ -19,8 +19,7 @@ package org.apache.jetspeed.userinfo;
 import java.util.Map;
 
 import org.apache.jetspeed.request.RequestContext;
-
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.spi.optional.UserInfoService;
 
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 
@@ -49,7 +48,7 @@ import org.apache.pluto.om.common.ObjectID;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public interface UserInfoManager
+public interface UserInfoManager extends UserInfoService
 {
     
     /**
@@ -58,5 +57,5 @@ public interface UserInfoManager
      * @param context The request context.
      * @return The {@link PortletRequest.USER_INFO} map.
      */
-    Map<String, String> getUserInfoMap(ObjectID oid, RequestContext context);
+    Map<String, String> getUserInfoMap(String appName, RequestContext context);
 }

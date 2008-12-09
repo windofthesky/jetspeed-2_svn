@@ -44,7 +44,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
      */
     private BeanFactory beanFactory;
 
-	private HashMap nodes = null; 
+	private HashMap<String, NodeInformation> nodes = null; 
 	private File rootIndexDir = null;
 	    
     /** the default criterion bean name */
@@ -80,7 +80,8 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 			}
 	}
     
-	protected void load()
+	@SuppressWarnings("unchecked")
+    protected void load()
 	{
 			File data = new File( rootIndexDir.getAbsolutePath()+ "/nodeInfo.ser");
 			if (data.exists())
@@ -88,13 +89,13 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 				try {
 				    FileInputStream fin = new FileInputStream(data.getAbsolutePath());
 				    ObjectInputStream ois = new ObjectInputStream(fin);
-				    nodes = (HashMap) ois.readObject();
+				    nodes = (HashMap<String,NodeInformation>) ois.readObject();
 				    ois.close();
 				    }
 				   catch (Exception e) 
 				   { 
 			            log.error("Failed to read nodes data file from " + data.getAbsolutePath() + " - error : " + e.getLocalizedMessage());
-					   nodes = new HashMap();
+					   nodes = new HashMap<String,NodeInformation>();
 				   }
 			}
 			else
@@ -108,27 +109,27 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 		            log.error("Failed to create new nodes data file error : " + e.getLocalizedMessage());
 					e.printStackTrace();
 				}
-				nodes = new HashMap();
+				nodes = new HashMap<String,NodeInformation>();
 			}
 			
 //			NodeInformationImpl temp = new NodeInformationImpl();
 //			temp.setContextName("tttt");
 	}
-	public int checkNode(Long id, String contextName)
+	public int checkNode(Long revision, String contextName)
 	{
-		if ((contextName == null) || (id == null))
+		if ((contextName == null) || (revision == null))
 			return NodeManager.INVALID_NODE_REQUEST;
 		NodeInformation info = (NodeInformation)nodes.get(contextName);
 		if (info == null)
 			return NodeManager.NODE_NEW;
-		if (info.getId().longValue() < id.longValue())
+		if (info.getRevision().longValue() < revision.longValue())
 			return NodeManager.NODE_OUTDATED;
 		return NodeManager.NODE_SAVED;
 	}
 	
-	public void addNode(Long id, String contextName) throws Exception
+	public void addNode(Long revision, String contextName) throws Exception
 	{
-		if ((contextName == null) || (id == null))
+		if ((contextName == null) || (revision == null))
 			return;
 		NodeInformation info = (NodeInformation)nodes.get(contextName);
 		if (info == null)
@@ -136,7 +137,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 			info = createNodeInformation();
 			info.setContextName(contextName);
 		}
-		info.setId(id);
+		info.setRevision(revision);
 		nodes.put(contextName, info);
 		save();
 	}
@@ -151,7 +152,6 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 		nodes.remove(contextName);
 		save();
 	}
-
 	
     /*
      * (non-Javadoc)
@@ -189,9 +189,5 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 	public int getNumberOfNodes()
 	{
 		return nodes.size();
-	}
-
-    
-    
-    
+	}    
 }

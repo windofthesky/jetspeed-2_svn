@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.document.Node;
 
 

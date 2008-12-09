@@ -43,7 +43,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      * getName
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#getName()
+     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#getPortletName()
      * @return
      */
     public String getName()
@@ -56,7 +56,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      * setName
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#setName(java.lang.String)
+     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#setPortletName(java.lang.String)
      * @param name
      */
     public void setName(String name)

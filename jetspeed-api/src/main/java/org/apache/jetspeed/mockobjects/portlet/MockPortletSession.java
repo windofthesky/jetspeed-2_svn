@@ -16,8 +16,11 @@
  */
 package org.apache.jetspeed.mockobjects.portlet;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
+
 import javax.portlet.PortletContext;
 import javax.portlet.PortletSession;
 
@@ -31,7 +34,7 @@ import javax.portlet.PortletSession;
 public class MockPortletSession implements PortletSession
 {
     // Hashtable (not HashMap) makes enumerations easier to work with
-    Hashtable attributes = new Hashtable();
+    Hashtable<String, Object> attributes = new Hashtable<String, Object>();
 
     public MockPortletSession()
     {     
@@ -57,7 +60,7 @@ public class MockPortletSession implements PortletSession
     /* (non-Javadoc)
      * @see javax.portlet.PortletSession#getAttributeNames(int)
      */
-    public Enumeration getAttributeNames(int scope)
+    public Enumeration<String> getAttributeNames(int scope)
     {
         return attributes.keys();
     }
@@ -139,7 +142,7 @@ public class MockPortletSession implements PortletSession
         attributes.put(name, value);
     }
 
-    public Enumeration getAttributeNames()
+    public Enumeration<String> getAttributeNames()
     {
         return this.getAttributeNames(PortletSession.PORTLET_SCOPE);
     }    
@@ -167,5 +170,18 @@ public class MockPortletSession implements PortletSession
     {
         // TODO Auto-generated method stub
         return null;
+    }
+
+
+    public Map<String, Object> getAttributeMap()
+    {
+        return Collections.unmodifiableMap(attributes);
+    }
+
+
+    public Map<String, Object> getAttributeMap(int scope)
+    {
+        // TODO: need to filter on scope
+        return getAttributeMap();
     }
 }

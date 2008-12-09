@@ -16,7 +16,8 @@
  */
 package org.apache.jetspeed.om.page;
 
-import org.apache.jetspeed.om.impl.LocalizedFieldImpl;
+import org.apache.jetspeed.om.portlet.impl.LocalizedFieldImpl;
+import org.apache.jetspeed.util.JetspeedLongObjectID;
 
 /**
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
@@ -24,4 +25,13 @@ import org.apache.jetspeed.om.impl.LocalizedFieldImpl;
  */
 public class PageLocalizedFieldImpl extends LocalizedFieldImpl
 {
+    protected JetspeedLongObjectID id;
+    
+    /**
+     * getId - access object id
+     */
+    public JetspeedLongObjectID getId()
+    {
+        return id;
+    }   
 }

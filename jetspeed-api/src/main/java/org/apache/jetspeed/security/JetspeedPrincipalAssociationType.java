@@ -16,13 +16,10 @@
  */
 package org.apache.jetspeed.security;
 
-import java.io.Serializable;
-
-
 /**
  * @version $Id$
  */
-public interface JetspeedPrincipalAssociationType extends Serializable
+public interface JetspeedPrincipalAssociationType
 {
     /**
      * build-in supported @{link {@link #getAssociationName() associationName} "isMemberOf"

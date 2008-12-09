@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.tools.deploy;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Utilities for manipulating the context.xml deployment descriptor
@@ -44,26 +44,26 @@ public class JetspeedContextRewriter
             {
                 // get root Context
                 Element root = null;
-                if (!document.hasRootElement())
+                if (!document.hasChildNodes())
                 {
-                    root = new Element("Context");
-                    document.setRootElement(root);
+                    root = document.createElement("Context");
+                    document.appendChild(root);
                 }
                 else
                 {
-                    root = document.getRootElement();
+                    root = document.getDocumentElement();
                 }   
                 
                 // set Context path
-                String pathAttribute = root.getAttributeValue("path");
-                if ((pathAttribute == null) || !pathAttribute.equals("/" + portletApplication))
+                String pathAttribute = root.getAttribute("path");
+                if ((pathAttribute.equals("")) || !pathAttribute.equals("/" + portletApplication))
                 {
                     root.setAttribute("path", "/" + portletApplication);
                 }
                 
                 // set Context docBase
-                String docBaseAttribute = root.getAttributeValue("docBase");
-                if ((docBaseAttribute == null) || !docBaseAttribute.equals(portletApplication))
+                String docBaseAttribute = root.getAttribute("docBase");
+                if ((docBaseAttribute.equals("")) || !docBaseAttribute.equals(portletApplication))
                 {
                     root.setAttribute("docBase", portletApplication);
                 }

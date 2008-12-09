@@ -56,44 +56,44 @@ public class TestCluster extends DatasourceEnabledSpringTestCase
     public void testCluser() throws Exception
     {
     	String contextName = "SOME_NEW_PORTLET_APPLICATION";
-    	Long id = new Long(10);
+    	Long revision = new Long(10);
     	
         assertNotNull("Manager should be instantiated", single);
         
         int numExistingApps = single.getNumberOfNodes();
         
         //create a new node
-        int status = single.checkNode(id, contextName);
+        int status = single.checkNode(revision, contextName);
         if (status != NodeManager.NODE_NEW)
         {
         	single.removeNode(contextName); //previous run didn't clean up
-        	status = single.checkNode(id, contextName);
+        	status = single.checkNode(revision, contextName);
             assertEquals("Should be a new node",NodeManager.NODE_NEW,status);
         }
         
         // ok - create a new node
-        single.addNode(id, contextName);
+        single.addNode(revision, contextName);
         int newApps = single.getNumberOfNodes();
 
         assertEquals("Should have added new node",newApps, numExistingApps+1);
         
-        status = single.checkNode(id, contextName);
+        status = single.checkNode(revision, contextName);
         assertEquals("Should be a current (saved) node",NodeManager.NODE_SAVED,status);
         
-    	id = new Long(20);
-        status = single.checkNode(id, contextName);
+    	revision = new Long(20);
+        status = single.checkNode(revision, contextName);
         assertEquals("Should be an outdated node",NodeManager.NODE_OUTDATED,status);
 
-        single.addNode(id, contextName);
-        status = single.checkNode(id, contextName);
+        single.addNode(revision, contextName);
+        status = single.checkNode(revision, contextName);
         assertEquals("Should be again a current (saved) node",NodeManager.NODE_SAVED,status);
 
-    	id = new Long(10);
-        status = single.checkNode(id, contextName);
+    	revision = new Long(10);
+        status = single.checkNode(revision, contextName);
         assertEquals("Should still be a current (saved) node",NodeManager.NODE_SAVED,status);
 
     	single.removeNode(contextName); //previous run didn't clean up
-        status = single.checkNode(id, contextName);
+        status = single.checkNode(revision, contextName);
         assertEquals("Node should be gone....",NodeManager.NODE_NEW,status);
     }
     protected String[] getConfigurations()

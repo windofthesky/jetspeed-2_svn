@@ -54,4 +54,36 @@
     <!-- Uncomment this to HARD CODE your portal URL -->
     <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
   </bean>
+
+  <!-- Desktop Pluto Portlet Container -->
+  <bean id="DesktopPluto" class="org.apache.jetspeed.container.DesktopPortletContainerImpl">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index='0'><value>${portal.name}</value></constructor-arg>
+    <constructor-arg index='1'><ref bean="org.apache.pluto.services.RequiredPlutoServices"/></constructor-arg>
+    <constructor-arg index='2'><ref bean="org.apache.pluto.services.OptionalPlutoServices"/></constructor-arg>	    
+    <constructor-arg index='3'><value>/desktop</value></constructor-arg>
+    <constructor-arg index='4'><value>/action</value></constructor-arg>
+    <constructor-arg index='5'><value>/portlet</value></constructor-arg>
+  </bean>
+
+  <!-- Jetspeed 2's wrapper around Desktop Pluto container -->
+  <!-- settings for this bean will start the underlying pluto portlet container -->
+  <bean id="org.apache.pluto.DesktopPortletContainer"
+    class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper" init-method="init"
+    destroy-method="destroy">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <ref bean="DesktopPluto" />
+    </constructor-arg>
+    <constructor-arg>
+      <value>${portal.name}Desktop</value>
+    </constructor-arg>
+    <property name="requestFactory">
+      <ref bean="ServletRequestFactory" />
+    </property>
+    <property name="responseFactory">
+      <ref bean="ServletResponseFactory" />
+    </property>
+  </bean>
+
 </beans>

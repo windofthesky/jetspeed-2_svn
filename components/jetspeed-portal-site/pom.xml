@@ -105,6 +105,10 @@
                                         <path>assembly</path>
                                         <include>boot/datasource.xml</include>
                                     </resource>
+                                    <resource>
+                                        <path>db-ojb</path>
+                                        <include>ehcache.xml</include>
+                                    </resource>
                                 </resources>
                             </unpack>
                         </configuration>

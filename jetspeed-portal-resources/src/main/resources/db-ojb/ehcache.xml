@@ -135,13 +135,7 @@
     * stashRemoteCachePeers (optional) - specify "true" or "false".  Defaults to true.
       CachePeer objects are stashed for performance.
     * jndiUrls (mandatory) - specify a pipe separated list of jndiUrls,
-      in the form protocol//hostname:port
-      
-    <cacheManagerPeerProviderFactory
-            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
-            properties="peerDiscovery=automatic,
-                        multicastGroupAddress=230.0.0.1,
-                        multicastGroupPort=4446, timeToLive=1"/>
+      in the form protocol//hostname:port      
     -->
   
 
@@ -185,9 +179,6 @@
     net.sf.ehcache.distribution.JNDIManualRMICacheManagerPeerProviderFactoryerFactory.
     Properties for JNDIRMICacheManagerPeerListenerFactory are the same as
     RMICacheManagerPeerListenerFactory.
-
-    <cacheManagerPeerListenerFactory
-            class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"/>
     -->
   
 
@@ -332,8 +323,7 @@
    
     If there are more than 10000 elements it will overflow to the
     disk cache, which in this configuration will go to wherever java.io.tmp is
-    defined on your system. On a standard Linux system this will be /tmp"
-    
+    defined on your system. On a standard Linux system this will be /tmp
     timeToIdleSeconds and timeToLiveSeconds to live are both set at 8 hours (28800) 
     this is the default setting for portlets who set their expiration cache as -1
     -->
@@ -355,13 +345,6 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
-<!-- 
-        <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicateAsynchronously=true, replicatePuts=false,
-                            replicateUpdates=false, replicateUpdatesViaCopy=false,
-                            replicateRemovals=true"/>
-  -->
    </cache>
 
 
@@ -383,13 +366,6 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
-<!-- 
-        <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicateAsynchronously=true, replicatePuts=false,
-                            replicateUpdates=false, replicateUpdatesViaCopy=false,
-                            replicateRemovals=true"/>
- -->                            
    </cache>
 
    <cache name="portletDefinitionOidCache"
@@ -410,13 +386,6 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
- <!-- 
-        <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicateAsynchronously=true, replicatePuts=false,
-                            replicateUpdates=false, replicateUpdatesViaCopy=false,
-                            replicateRemovals=true"/>
-  -->                           
    </cache>
 
 
@@ -521,24 +490,40 @@
            memoryStoreEvictionPolicy="LFU"
             />
 
+    <!--
+        Jetspeed Page Manager Caches
+    -->
+
     <cache name="pageFileCache"
-           maxElementsInMemory="1000"
-           maxElementsOnDisk="1000"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxfiles}"
            eternal="false"
            overflowToDisk="false"
            timeToIdleSeconds="0"
            timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"
-            />
+           memoryStoreEvictionPolicy="LFU"/>
 
     <cache name="importPageFileCache"
-           maxElementsInMemory="1000"
-           maxElementsOnDisk="1000"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxfiles}"
            eternal="false"
            overflowToDisk="false"
            timeToIdleSeconds="0"
            timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"
-            />
+           memoryStoreEvictionPolicy="LFU"/>
     
+    <cache name="pageManagerOidCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           memoryStoreEvictionPolicy="LFU"/>
+
+    <cache name="pageManagerPathCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           memoryStoreEvictionPolicy="LFU"/>
+
 </ehcache>

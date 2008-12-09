@@ -32,10 +32,9 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
-import org.apache.pluto.om.common.Language;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Portal Request Context is associated with each request
@@ -380,10 +379,10 @@ public interface RequestContext
     
     /**
      * Returns the user info map of user attributes for a given portlet application.</p>
-     * @param oid The portlet application object id.
+     * @param appName The portlet application name.
      * @return The PortletRequest.USER_INFO map.
      */
-    Map getUserInfoMap(ObjectID oid);
+    Map<String, String> getUserInfoMap(String appName);
     
     /**
      * 
@@ -446,6 +445,6 @@ public interface RequestContext
      * @return a Map of request context objects
      * @since 2.1.2
      */
-    Map getObjects();
+    Map<String, Object> getObjects();
 }
 

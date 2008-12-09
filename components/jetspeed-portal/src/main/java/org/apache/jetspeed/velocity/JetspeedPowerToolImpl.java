@@ -62,7 +62,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.Path;
-import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.velocity.context.Context;
 
 /**

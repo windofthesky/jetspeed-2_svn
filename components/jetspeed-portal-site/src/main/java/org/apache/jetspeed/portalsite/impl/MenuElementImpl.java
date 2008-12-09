@@ -18,7 +18,7 @@ package org.apache.jetspeed.portalsite.impl;
 
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.MenuElement;

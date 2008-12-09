@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;

@@ -21,8 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.distribution.CacheManagerPeerProvider;
 import net.sf.ehcache.event.CacheEventListener;
 
 import org.apache.jetspeed.cache.CacheElement;
@@ -74,9 +76,18 @@ public class EhCacheImpl implements JetspeedCache
     
     public CacheElement createElement(Object key, Object content)
     {
-    	if (!((key instanceof Serializable) ||  !(content instanceof Serializable)))
-    		throw new IllegalArgumentException("The cache key and the object to cache must be serializable."); //return null;
-   	    return new EhCacheElementImpl((Serializable)key, (Serializable)content);
+    	if (!(key instanceof Serializable))
+    	{
+    		throw new IllegalArgumentException("The cache key must be serializable.");
+    	}
+    	if (content instanceof Serializable)
+    	{
+            return new EhCacheElementImpl((Serializable)key, (Serializable)content);    	    
+    	}
+    	else
+    	{
+            return new EhCacheElementImpl((Serializable)key, content);
+    	}
     }
 
     public boolean remove(Object key)
@@ -117,27 +128,27 @@ public class EhCacheImpl implements JetspeedCache
         {
            public void notifyElementEvicted(Ehcache cache, Element element)
            {
-               listener.notifyElementEvicted(EhCacheImpl.this, local, element.getKey(), element.getValue());
+               listener.notifyElementEvicted(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
            }
            
            public void notifyElementExpired(Ehcache cache, Element element)
            {
-               listener.notifyElementExpired(EhCacheImpl.this, local, element.getKey(), element.getValue());
+               listener.notifyElementExpired(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
            }
            
            public void notifyElementPut(Ehcache cache, Element element)
            {
-               listener.notifyElementAdded(EhCacheImpl.this, local, element.getKey(), element.getValue());
+               listener.notifyElementAdded(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
            }
            
            public void notifyElementUpdated(Ehcache cache, Element element)
            {
-               listener.notifyElementChanged(EhCacheImpl.this, local, element.getKey(), element.getValue());
+               listener.notifyElementChanged(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
            }
            
            public void notifyElementRemoved(Ehcache cache, Element element)
            {
-               listener.notifyElementRemoved(EhCacheImpl.this, local, element.getKey(), null);
+               listener.notifyElementRemoved(EhCacheImpl.this, local, element.getKey(), ((element == null) ? null : element.getObjectValue()));
            }
            
            public void notifyRemoveAll(Ehcache cache)
@@ -175,6 +186,20 @@ public class EhCacheImpl implements JetspeedCache
     public List getKeys()
     {
         return ehcache.getKeys();
+    }
+    
+    public boolean isDistributed()
+    {
+        // check if cache part of a distributed cluster
+        try
+        {
+            CacheManagerPeerProvider peerProvider = ehcache.getCacheManager().getCachePeerProvider();
+            return ((peerProvider != null) && (peerProvider.listRemoteCachePeers(ehcache).size() > 0));
+        }
+        catch (CacheException ce)
+        {
+        }
+        return false;
     }
    
     // ------------------------------------------------------

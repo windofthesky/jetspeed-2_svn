@@ -45,6 +45,7 @@
 		  <li><a href="guide-ntlm.html">Guide to using NTLM Authentication</a></li>
 		  <li><a href="guide-user-attributes.html">Guide to defining user attributes (PLT.17 user information configuration)</a></li>
 			<li><a href="guide-profiler.html">Guide to using profilers</a></li>
+			<li><a href="guide-desktop.html">Guide to the Desktop</a></li>			
 			<li><a href="guide-aggregation.html">Guide to Aggregation</a></li>
 			<li><a href="guide-subsites.html">Guide to Subsites</a></li>
 			<li><a href="guide-migration.html">Guide to Migration</a></li>			

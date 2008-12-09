@@ -38,7 +38,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Update Page action -- updates various parts of the PSML page

@@ -17,13 +17,15 @@
 package org.apache.jetspeed;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 public final class PortletFactoryMock implements PortletFactory
 {
@@ -42,4 +44,10 @@ public final class PortletFactoryMock implements PortletFactory
     public static final PortletFactoryMock instance = new PortletFactoryMock();
     
     public void updatePortletConfig(PortletDefinition pd) {}
+
+    public void setPortalContext(PortalContext portalContext) {}
+    
+    public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher) { return null; }
+    
+    public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path) { return null; }
 }

@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -57,7 +57,7 @@ public interface SecurityAccessController
      * @param mask A mask <code>JetspeedActions</code> such as view, edit
      * @return true if access is granted, false if access denied based on policy or constraints
      */
-    boolean checkPortletAccess(PortletDefinitionComposite portlet, int mask);
+    boolean checkPortletAccess(PortletDefinition portlet, int mask);
     
     /**
      * Returns the configured security mode for this accessor

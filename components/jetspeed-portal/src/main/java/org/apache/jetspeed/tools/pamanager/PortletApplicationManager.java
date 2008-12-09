@@ -30,10 +30,13 @@ import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent
 import org.apache.jetspeed.components.portletentity.PortletEntityNotDeletedException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.PermissionManager;
@@ -44,10 +47,6 @@ import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.om.common.SecurityRole;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.entity.PortletEntityCtrl;
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * PortletApplicationManager
@@ -69,7 +68,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected RoleManager           roleManager;
     protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
-    protected List                  permissionRoles;
+    protected List<String>          permissionRoles;
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
     /**
      * holds the max number of retries in case of unsuccessful PA start
@@ -80,6 +79,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected boolean started;
     protected String appRoot;
     protected NodeManager nodeManager;
+    protected JetspeedDescriptorService descriptorService;
     
     /**
 	 * Creates a new PortletApplicationManager object.
@@ -87,7 +87,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
-        RoleManager roleManager, List permissionRoles, NodeManager nodeManager, String appRoot)
+        RoleManager roleManager, List<String> permissionRoles, NodeManager nodeManager, String appRoot,
+        JetspeedDescriptorService descriptorService)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
@@ -99,6 +100,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.permissionRoles    = permissionRoles;
         this.nodeManager		= nodeManager;
         this.appRoot            = appRoot;
+        this.descriptorService  = descriptorService;
 	}
     
     public void start()
@@ -167,26 +169,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        startPA(contextName, "/"+contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
+        startPA(contextName, "/"+contextName, warStruct, paClassLoader, PortletApplication.LOCAL);
 	}
 
-    public void startInternalApplication(String contextName) throws RegistryException
-    {
-        checkStarted();
-        File webinf = new File (appRoot);
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();        
-        DirectoryHelper dir = new DirectoryHelper(webinf);
-        String appName = (contextName.startsWith("/")) ? contextName.substring(1) : contextName;
-        MutablePortletApplication app = registry.getPortletApplicationByIdentifier(appName);
-        if (app != null && app.getApplicationType() == MutablePortletApplication.LOCAL)
-        {
-            app.setApplicationType(MutablePortletApplication.INTERNAL);
-            registry.updatePortletApplication(app);
-        }
-        startPA(contextName, "/"+contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
-        // startInternal(contextName, warStruct, paClassLoader, true);        
-    }
-    
 	public void startPortletApplication(String contextName, FileSystemHelper warStruct,
 		ClassLoader paClassLoader)
 		throws RegistryException
@@ -202,7 +187,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            startPA(contextName, contextPath, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
+            startPA(contextName, contextPath, warStruct, paClassLoader, PortletApplication.WEBAPP);
         }
         finally
         {
@@ -214,7 +199,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	public void stopLocalPortletApplication(String contextName)
 		throws RegistryException
 	{
-		stopPA(contextName, MutablePortletApplication.LOCAL);
+		stopPA(contextName, PortletApplication.LOCAL);
 	}
 
 	public void stopPortletApplication(String contextName)
@@ -224,7 +209,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            stopPA(contextName, MutablePortletApplication.WEBAPP);
+            stopPA(contextName, PortletApplication.WEBAPP);
         }
         finally
         {
@@ -239,7 +224,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            MutablePortletApplication pa = null;
+            PortletApplication pa = null;
             
             try
             {
@@ -297,61 +282,49 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
-	protected MutablePortletApplication registerPortletApplication(PortletApplicationWar paWar,
-		MutablePortletApplication oldPA, int paType, ClassLoader paClassLoader)
+	protected PortletApplication registerPortletApplication(PortletApplicationWar paWar,
+		PortletApplication oldPA, int paType, ClassLoader paClassLoader)
 		throws RegistryException
 	{
+	    long revision = 0;
 		if (oldPA != null)
 		{
+		    revision = oldPA.getRevision();
 			unregisterPortletApplication(oldPA, false);
 			oldPA = null;
 		}
 
-		MutablePortletApplication pa		 = null;
+		PortletApplication pa		 = null;
 		boolean					  registered = false;
 		String					  paName     = paWar.getPortletApplicationName();
 
 		try
 		{
-			log.info("Loading portlet.xml...." + paName);
+            log.info("Loading deployment descriptors for "+paName+" ....");
 			pa = paWar.createPortletApp(paClassLoader);
-			pa.setApplicationType(paType);
-
-			// load the web.xml
-			log.info("Loading web.xml...." + paName);
-			MutableWebApplication wa = paWar.createWebApp();
-			paWar.validate();
-
-			if (paType == MutablePortletApplication.LOCAL)
+            pa.setApplicationType(paType);
+			if (revision > 0)
 			{
-				wa.setContextRoot("<portal>");
+			    pa.setRevision(revision);
 			}
-            else if (paType == MutablePortletApplication.INTERNAL)
-            {
-                // TODO: this is screwing up the PSML as its set all over the place to "jetspeed-layouts", not good
-                wa.setContextRoot("/" + paName);                
-            }
 
-			pa.setWebApplicationDefinition(wa);
-            
+			if (paType == PortletApplication.LOCAL)
+			{
+				pa.setContextRoot("<portal>");
+			}
+
             // Make sure existing entities are refreshed with the most
             // recent PortletDefintion.
-            Collection portletDefs = pa.getPortletDefinitions();
-            if(portletDefs != null && portletDefs.size() > 0)
+            for (PortletDefinition pd : pa.getPortlets())
             {
-                Iterator pdItr = portletDefs.iterator();
-                while(pdItr.hasNext())
+                Collection portletEntites = entityAccess.getPortletEntities(pd);
+                if(portletEntites != null && portletEntites.size() > 0)
                 {
-                    PortletDefinition pd = (PortletDefinition) pdItr.next();
-                    Collection portletEntites = entityAccess.getPortletEntities(pd);
-                    if(portletEntites != null && portletEntites.size() > 0)
+                    Iterator peItr = portletEntites.iterator();
+                    while(peItr.hasNext())
                     {
-                        Iterator peItr = portletEntites.iterator();
-                        while(peItr.hasNext())
-                        {
-                            PortletEntityCtrl portletEntity = (PortletEntityCtrl) peItr.next();
-                            portletEntity.setPortletDefinition(pd);
-                        }
+                        PortletEntity portletEntity = (PortletEntity) peItr.next();
+                        portletEntity.setPortletDefinition(pd);
                     }
                 }
             }
@@ -377,26 +350,21 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			// and add to the current node info
             if (nodeManager != null)
             {            
-                nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
+                nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
             }
             // grant default permissions to portlet application
 			grantDefaultPermissions(paName);
             
-            if ( autoCreateRoles && roleManager != null && pa.getWebApplicationDefinition().getSecurityRoles() != null )
+            if ( autoCreateRoles && roleManager != null && pa.getSecurityRoles() != null )
             {
                 try
                 {
-                    Iterator rolesIter = pa.getWebApplicationDefinition().getSecurityRoles().iterator();
-                    SecurityRole sr;
-                    while ( rolesIter.hasNext() )
-                    {
-                        sr = (SecurityRole)rolesIter.next();
-                        if ( !roleManager.roleExists(sr.getRoleName()) )
+                    for (SecurityRole sr : pa.getSecurityRoles())
+                        if ( !roleManager.roleExists(sr.getName()) )
                         {
-                            roleManager.addRole(sr.getRoleName());
-                            log.info("AutoCreated role: "+sr.getRoleName()+" from portlet application "+paName+" its web definition");
+                            roleManager.addRole(sr.getName());
+                            log.info("AutoCreated role: "+sr.getName()+" from portlet application "+paName+" its web definition");
                         }
-                    }
                 }
                 catch (SecurityException sex)
                 {
@@ -415,7 +383,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				try
 				{
-					unregisterPortletApplication(pa, (paType == MutablePortletApplication.LOCAL));
+					unregisterPortletApplication(pa, (paType == PortletApplication.LOCAL));
 				}
 				catch (Exception re)
 				{
@@ -458,7 +426,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
             // create PA  from war (file) structure
             // paWar = new PortletApplicationWar(warStruct, contextName, "/" + contextName, checksum);
-            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum);
+            paWar = new PortletApplicationWar(warStruct, contextName, contextPath, checksum, this.descriptorService);
             try
             {
                 if (paClassLoader == null)
@@ -486,7 +454,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
 
 			// try to get the PA from database by context name
-			MutablePortletApplication pa = registry.getPortletApplication(contextName);
+			PortletApplication pa = registry.getPortletApplication(contextName);
 
             if (pa != null)
             {
@@ -540,7 +508,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                     {
                         log.debug("Re-register existing portlet application " + contextName + ".");
                     }
-            		int status = nodeManager.checkNode(new Long(pa.getId().toString()), pa.getName());
+            		int status = nodeManager.checkNode(new Long(pa.getRevision()), pa.getName());
         			boolean reregister = false;
         			boolean deploy = false;
         			switch (status)
@@ -621,7 +589,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         					// and add to the current node info
         					try
         					{
-        						nodeManager.addNode(new Long(pa.getId().toString()), pa.getName());
+        						nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
         					} catch (Exception e)
         					{
         					    log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
@@ -668,26 +636,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
             throw new RegistryException(msg);
         }
-		finally
-		{
-			if (paWar != null)
-			{
-				try
-				{
-					paWar.close();
-				}
-				catch (IOException e)
-				{
-				    log.error("Failed to close PA WAR for " + contextName, e);
-				}
-			}
-		}
 	}
 
 	protected void stopPA(String contextName, int paType)
 		throws RegistryException
 	{
-		MutablePortletApplication pa = null;
+		PortletApplication pa = null;
         
         try
         {
@@ -713,26 +667,26 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	
-	protected void updateSearchEngine(boolean remove,MutablePortletApplication pa )
+	protected void updateSearchEngine(boolean remove,PortletApplication pa )
 	{
 		if (searchEngine != null)
 		{
 			if (remove)
 			{
 				searchEngine.remove(pa);
-				searchEngine.remove(pa.getPortletDefinitions());
+				searchEngine.remove(pa.getPortlets());
 				log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
 			}
 			else
 			{
 			    searchEngine.add(pa);
-                searchEngine.add(pa.getPortletDefinitions());
+                searchEngine.add(pa.getPortlets());
                 log.info("Registered the portlet application in the search engine... " + pa.getName());
 			}
 		}
 		
 	}
-	protected void unregisterPortletApplication(MutablePortletApplication pa,
+	protected void unregisterPortletApplication(PortletApplication pa,
 		boolean purgeEntityInfo)
 		throws RegistryException
 	{
@@ -740,11 +694,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		updateSearchEngine(true,pa);
 		log.info("Remove all registry entries defined for portlet application " + pa.getName());
 
-		Iterator portlets = pa.getPortletDefinitions().iterator();
-
-		while (portlets.hasNext())
+		for (PortletDefinition portletDefinition : pa.getPortlets())
 		{
-			PortletDefinition portletDefinition = (PortletDefinition) portlets.next();
 			Iterator		  entities = entityAccess.getPortletEntities(portletDefinition)
 													 .iterator();
 
@@ -781,10 +732,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
         try
         {
             // create a default permission for this portlet app, granting configured roles to the portlet application 
-            Iterator roles = permissionRoles.iterator();
-            while (roles.hasNext())
+            for (String roleName : permissionRoles)
             {
-                String roleName = (String)roles.next();
                 Role userRole = roleManager.getRole(roleName);
                 if (userRole != null)
                 {
@@ -807,10 +756,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
     {
         try
         {
-            Iterator roles = permissionRoles.iterator();
-            while (roles.hasNext())
+            for (String roleName : permissionRoles)
             {
-                String roleName = (String)roles.next();
                 Role userRole = roleManager.getRole(roleName);
                 if (userRole != null)
                 {

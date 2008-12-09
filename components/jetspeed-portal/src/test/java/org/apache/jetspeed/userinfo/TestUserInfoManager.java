@@ -16,10 +16,12 @@
  */
 package org.apache.jetspeed.userinfo;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -28,8 +30,10 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
+import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
+import org.apache.jetspeed.descriptor.JetspeedDescriptorServiceImpl;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityException;
@@ -37,8 +41,7 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.UserImpl;
-import org.apache.jetspeed.util.descriptor.ExtendedPortletMetadata;
-import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
+import org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl;
 
 /**
  * <p>
@@ -49,7 +52,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationDescriptor;
  */
 public class TestUserInfoManager extends AbstractRequestContextTestCase
 {
-    private MutablePortletApplication portletApp;
+    private PortletApplication portletApp;
     private UserInfoManager single;
     /** The user manager. */
     protected UserManager ums;
@@ -87,10 +90,17 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
 
     private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
-        PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(getBaseDir()+"src/test/testdata/deploy/portlet.xml"), "unit-test");
-        portletApp = pad.createPortletApplication();
+        JetspeedDescriptorService descriptorService = new JetspeedDescriptorServiceImpl(new PortletAppDescriptorServiceImpl());
+        InputStream webDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/web.xml");
+        InputStream portletDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/portlet.xml");
+        InputStream jetspeedPortletDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml");
+        ClassLoader paClassLoader = Thread.currentThread().getContextClassLoader();
+        portletApp = descriptorService.read(webDescriptor, portletDescriptor, jetspeedPortletDescriptor, paClassLoader);
         assertNotNull("App is null", portletApp);
-
+        
+        portletApp.setName("TestRegistry");
+        portletApp.setContextRoot("/TestRegistry");
+        
         // persist the app
         try
         {
@@ -108,21 +118,17 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
 
         // Without linked attributes
         // There are no preferences associated to the user profile.
-        Map<String, String> userInfo = uim.getUserInfoMap(portletApp.getId(), request);
+        Map<String, String> userInfo = uim.getUserInfoMap(portletApp.getName(), request);
 //        assertNull(PortletRequest.USER_INFO + " is null", userInfo);
 
         // The user has preferences associated to the user profile.
         initUser();
         request = initRequestContext("test");
-        userInfo = uim.getUserInfoMap(portletApp.getId(), request);
+        userInfo = uim.getUserInfoMap(portletApp.getName(), request);
         assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
-        assertEquals("should contain user.name.given", "Test Dude", (String) userInfo.get("user.name.given"));
-        assertEquals("should contain user.name.family", "Dudley", (String) userInfo.get("user.name.family"));
+        assertEquals("should contain user-name-given", "Test Dude", (String) userInfo.get("user-name-given"));
+        assertEquals("should contain user-name-family", "Dudley", (String) userInfo.get("user-name-family"));
         assertNull("should not contain user.home-info.online.email", userInfo.get("user.home-info.online.email"));
-
-        // With linked attributes
-        ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml"), portletApp);
-        extMetaData.load();
 
         // persist the app
         try
@@ -137,7 +143,7 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
             throw new Exception(msg, e);
         }
 
-        userInfo = uim.getUserInfoMap(portletApp.getId(), request);
+        userInfo = uim.getUserInfoMap(portletApp.getName(), request);
         assertNotNull(PortletRequest.USER_INFO + " should not be null", userInfo);
         assertEquals("should contain user-name-given", "Test Dude", (String) userInfo.get("user-name-given"));
         assertEquals("should contain user-name-family", "Dudley", (String) userInfo.get("user-name-family"));
@@ -177,9 +183,8 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
             assertTrue("user exists. should not have thrown an exception.", false);
         }
         
-        SecurityAttributes attributes = user.getSecurityAttributes();
-        attributes.getAttribute("user.name.given", true).setStringValue("Test Dude");
-        attributes.getAttribute("user.name.family", true).setStringValue("Dudley");
+        user.getSecurityAttributes().getAttribute("user.name.given", true).setStringValue("Test Dude");
+        user.getSecurityAttributes().getAttribute("user.name.family", true).setStringValue("Dudley");
         
         ums.updateUser(user);
     }

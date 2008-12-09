@@ -38,6 +38,7 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
@@ -47,6 +48,7 @@ import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.TransientJetspeedPrincipal;
 import org.apache.jetspeed.test.JetspeedTestCase;
+import org.jmock.Mock;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -71,7 +73,7 @@ public class TestConstraintsAction extends JetspeedTestCase
 
     public static void main(String[] args)
     {
-        junit.swingui.TestRunner.run(TestLayout.class);
+        junit.swingui.TestRunner.run(TestConstraintsAction.class);
     }
 
     /**
@@ -91,7 +93,8 @@ public class TestConstraintsAction extends JetspeedTestCase
         String[] appConfigs =
         { //"src/webapp/WEB-INF/assembly/layout-api.xml",
                 "src/test/assembly/test-layout-constraints-api.xml",
-                "src/test/assembly/page-manager.xml"};
+                "src/test/assembly/page-manager.xml",
+                "src/test/assembly/cache-test.xml"};
         
                 
         cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, getBaseDir());
@@ -119,8 +122,10 @@ public class TestConstraintsAction extends JetspeedTestCase
         PageSecurity pageSecurity = pageManager.getPageSecurity();
         SecurityConstraintsDef def = pageSecurity.getSecurityConstraintsDef(defName);
         assertNotNull("definition " + defName + " not found ", def);
-        SecurityConstraint constraint =  (SecurityConstraint)def.getSecurityConstraints().get(0);
         assertNotNull("first constraint for " + defName + " not found ", def);
+        List constraints = def.getSecurityConstraints();
+        assertFalse("constraint list is empty.", constraints.isEmpty());
+        SecurityConstraint constraint =  (SecurityConstraint) constraints.get(0);
         assertEquals("update failed for constraints " + constraint.getPermissions().toString(), constraint.getPermissions().toString(), "[view, edit]");
     }
 
@@ -246,6 +251,8 @@ public class TestConstraintsAction extends JetspeedTestCase
     public void runTest(String xml, String defName, String method)
     throws Exception
     {
+        RequestContextComponent rcc = (RequestContextComponent) new Mock(RequestContextComponent.class).proxy();
+        
         MockServletConfig config = new MockServletConfig();
         MockServletContext context = new MockServletContext();
         MockHttpSession session = new MockHttpSession();
@@ -259,7 +266,7 @@ public class TestConstraintsAction extends JetspeedTestCase
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         final RequestContext rc = 
-            new JetspeedRequestContext(request, response, config, null);
+            new JetspeedRequestContext(rcc, request, response, config, null);
         
         Set principals = new HashSet();
         principals.add(new TestUser("admin"));

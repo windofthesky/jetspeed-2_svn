@@ -18,12 +18,13 @@ package org.apache.jetspeed.om.window.impl;
 
 import java.io.Serializable;
 
-import org.apache.pluto.om.window.PortletWindow;
-import org.apache.pluto.om.window.PortletWindowCtrl;
-import org.apache.pluto.om.window.PortletWindowListCtrl;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.jetspeed.util.JetspeedObjectID;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletWindowID;
 
 /**
  * <P>
@@ -35,36 +36,47 @@ import org.apache.jetspeed.util.JetspeedObjectID;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  **/
-public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Serializable
+public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serializable
 {
-    private ObjectID objectId = null;
+    private static final long serialVersionUID = 6578938580906866201L;
+    
     private transient PortletEntity portletEntity = null;
+    private String id;
+    private PortletMode portletMode;
+    private WindowState windowState;
+    
     private boolean instantlyRendered;
 
     public PortletWindowImpl(String id)
     {
-        this.objectId = JetspeedObjectID.createFromString(id);
-    }
-
-    public PortletWindowImpl(ObjectID oid)
-    {
-        this.objectId = oid;
+        this.id = id;
     }
 
     public PortletWindowImpl()
     {
         super();
-    }
+    }    
 
     /**
     * Returns the identifier of this portlet instance window as object id
     *
     * @return the object identifier
     **/
-    public ObjectID getId()
+    public PortletWindowID getId()
     {
-        return objectId;
+        return this;
     }
+
+    public String toString()
+    {
+        return getStringId();
+    }
+    
+    public String getStringId()
+    {
+        return id;
+    }
+    
     /**
      * Returns the portlet entity
      *
@@ -83,7 +95,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
      */
     public void setId(String id)
     {
-        objectId = JetspeedObjectID.createFromString(id);
+        this.id = id;
     }
 
     /**
@@ -94,7 +106,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
     public void setPortletEntity(PortletEntity portletEntity)
     {
         this.portletEntity = portletEntity;
-        ((PortletWindowListCtrl)portletEntity.getPortletWindowList()).add(this);
+        this.portletEntity.setPortletWindow(this);
     }
     
     /**
@@ -113,4 +125,25 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowCtrl, Seri
         return this.instantlyRendered;
     }
 
+    public PortletMode getPortletMode()
+    {
+        // TODO: 2.2 this works, but we might want to better wire things in
+        return Jetspeed.getCurrentRequestContext().getPortalURL().getNavigationalState().getMode(this);
+    }
+
+    public void setPortletMode(PortletMode portletMode)
+    {
+        this.portletMode = portletMode;
+    }
+
+    public WindowState getWindowState()
+    {
+        // TODO: 2.2 this works, but we might want to better wire things in
+        return Jetspeed.getCurrentRequestContext().getPortalURL().getNavigationalState().getState(this);
+    }
+
+    public void setWindowState(WindowState windowState)
+    {
+        this.windowState = windowState;
+    }
 }

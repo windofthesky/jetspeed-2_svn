@@ -24,7 +24,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * NavigationalState gives readonly access to the state of the Portal URL and all navigational state context
@@ -138,6 +138,8 @@ public interface NavigationalState
     
     String[] getParameterValues(PortletWindow window, String parameterName);
 
+    Map<String, String[]> getParameterMap(PortletWindow window);
+    
     PortletWindow getPortletWindowOfAction();
     
     PortletWindow getPortletWindowOfResource();

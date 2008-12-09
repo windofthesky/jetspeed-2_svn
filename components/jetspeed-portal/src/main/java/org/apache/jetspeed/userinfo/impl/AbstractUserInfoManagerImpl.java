@@ -18,13 +18,21 @@ package org.apache.jetspeed.userinfo.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
+
+import javax.portlet.PortletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.om.portlet.UserAttribute;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.PortletWindow;
 
 /**
  * <p> Common user info management support
@@ -98,4 +106,20 @@ public abstract class AbstractUserInfoManagerImpl
         return linkedUserAttributes;
     }
 
+    /**
+     * For Pluto 2.0
+     */
+    public Map<String, String> getUserInfo(PortletRequest request, PortletWindow window) throws PortletContainerException
+    {
+        String remoteUser = request.getRemoteUser(); 
+        if ( remoteUser == null ) 
+        {
+            return null;
+        }
+        RequestContext requestContext=(RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        return this.getUserInfoMap(window.getPortletEntity().getPortletDefinition().getApplication().getName(), requestContext);        
+    }
+
+    public abstract Map getUserInfoMap(String appName, RequestContext context);
+    
 }

@@ -43,8 +43,7 @@ public class ServletResponseFactoryImpl implements ServletResponseFactory
     {
         if (!(response instanceof ServletResponseImpl))
         {
-            return new ServletResponseImpl(response);
-            
+            return new ServletResponseImpl(response);            
         }
         else
         {

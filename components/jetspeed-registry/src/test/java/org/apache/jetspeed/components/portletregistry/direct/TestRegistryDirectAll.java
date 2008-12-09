@@ -16,32 +16,25 @@
  */
 package org.apache.jetspeed.components.portletregistry.direct;
 
-import java.util.Arrays;
 import java.util.Locale;
 
-import javax.portlet.PortletMode;
 
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
-import org.apache.jetspeed.om.common.DublinCore;
-import org.apache.jetspeed.om.common.GenericMetadata;
-import org.apache.jetspeed.om.common.JetspeedServiceReference;
-import org.apache.jetspeed.om.common.UserAttribute;
-import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.common.portlet.ContentTypeComposite;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceComposite;
-import org.apache.jetspeed.om.impl.DublinCoreImpl;
-import org.apache.jetspeed.om.impl.JetspeedServiceReferenceImpl;
-import org.apache.jetspeed.om.impl.UserAttributeImpl;
-import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
-import org.apache.jetspeed.om.portlet.impl.ContentTypeImpl;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
+import org.apache.jetspeed.om.portlet.Supports;
+import org.apache.jetspeed.om.portlet.UserAttribute;
+import org.apache.jetspeed.om.portlet.DublinCore;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.servlet.impl.WebApplicationDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.common.PreferenceSetCtrl;
 
 /**
  * 
@@ -57,7 +50,6 @@ import org.apache.pluto.om.common.PreferenceSetCtrl;
  */
 public class TestRegistryDirectAll extends AbstractRegistryTest
 {
-
     /*
      * (non-Javadoc)
      * 
@@ -80,62 +72,56 @@ public class TestRegistryDirectAll extends AbstractRegistryTest
      */
     private void buildTestData() throws RegistryException, LockFailedException
     {
+        String lang = Locale.getDefault().toString();
+        
         // Create an Application and a Web app      
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
-        app.setApplicationIdentifier("App_1");
+        app.setContextRoot("/app1");
+        
+        app.addDescription(Locale.FRENCH.toString()).setDescription("Description: Le fromage est dans mon pantalon!");
+        app.addDisplayName(Locale.FRENCH.toString()).setDisplayName("Display Name: Le fromage est dans mon pantalon!");
 
-        UserAttributeRef uaRef = new UserAttributeRefImpl("user-name-family", "user.name.family");
-        app.addUserAttributeRef(uaRef);
+        UserAttributeRef uaRef = app.addUserAttributeRef("user-name-family");
+        uaRef.setNameLink("user.name.family");
 
-        UserAttribute ua = new UserAttributeImpl("user.name.family", "User Last Name");
-        app.addUserAttribute(ua);
+        UserAttribute ua = app.addUserAttribute("user.name.family");
+        ua.addDescription(lang).setDescription("User Last Name");
 
-        JetspeedServiceReference service1 = new JetspeedServiceReferenceImpl("PortletEntityAccessComponent");
-        app.addJetspeedService(service1);
-        JetspeedServiceReference service2 = new JetspeedServiceReferenceImpl("PortletRegistryComponent");
-        app.addJetspeedService(service2);
+        app.addJetspeedServiceReference("PortletEntityAccessComponent");
+        app.addJetspeedServiceReference("PortletRegistryComponent");
 
         addDublinCore(app.getMetadata());
 
-        WebApplicationDefinitionImpl webApp = new WebApplicationDefinitionImpl();
-        webApp.setContextRoot("/app1");
-        webApp.addDescription(Locale.FRENCH, "Description: Le fromage est dans mon pantalon!");
-        webApp.addDisplayName(Locale.FRENCH, "Display Name: Le fromage est dans mon pantalon!");
+        PortletDefinition portlet = app.addPortlet("Portlet 1");
+        portlet.setPortletClass("org.apache.Portlet");
+        portlet.addDescription(lang).setDescription("Portlet description.");
+        portlet.addDisplayName(lang).setDisplayName("Portlet display Name.");
 
-        PortletDefinitionComposite portlet = new PortletDefinitionImpl();
-        portlet.setClassName("org.apache.Portlet");
-        portlet.setName("Portlet 1");
-        portlet.addDescription(Locale.getDefault(), "Portlet description.");
-        portlet.addDisplayName(Locale.getDefault(), "Portlet display Name.");
-
-        portlet.addInitParameter("testparam", "test value", "This is a test portlet parameter", Locale.getDefault());
+        InitParam initParam = portlet.addInitParam("testparam");
+        initParam.setParamValue("test value");
+        initParam.addDescription(lang).setDescription("This is a test portlet parameter");
 
         addDublinCore(portlet.getMetadata());
 
-        // PreferenceComposite pc = new PrefsPreference();
-        app.addPortletDefinition(portlet);
-        PreferenceSetCtrl prefSetCtrl = (PreferenceSetCtrl) portlet.getPreferenceSet();
-        PreferenceComposite pc = (PreferenceComposite) prefSetCtrl.add("preference 1", Arrays.asList(new String[]{
-                "value 1", "value 2"}));
-        pc.addDescription(JetspeedLocale.getDefaultLocale(), "Preference Description");
-
-        portlet.addLanguage(registry.createLanguage(Locale.getDefault(), "Portlet 1", "Portlet 1", "This is Portlet 1",
-                null));
-
-        ContentTypeComposite html = new ContentTypeImpl();
-        html.setContentType("html/text");
-        ContentTypeComposite wml = new ContentTypeImpl();
-        html.addPortletMode(new PortletMode(MODE_EDIT));
-        html.addPortletMode(new PortletMode(MODE_VIEW));
-        html.addPortletMode(new PortletMode(MODE_HELP));
-        wml.setContentType("wml");
-        wml.addPortletMode(new PortletMode(MODE_HELP));
-        wml.addPortletMode(new PortletMode(MODE_VIEW));
-        portlet.addContentType(html);
-        portlet.addContentType(wml);
-
-        app.setWebApplicationDefinition(webApp);
+        Preferences prefs = portlet.getPortletPreferences();
+        Preference pref = prefs.addPreference("preference 1");
+        pref.addValue("value 1");
+        pref.addValue("value 2");
+        
+        Language language = portlet.addLanguage(Locale.getDefault());
+        language.setTitle("Portlet 1");
+        language.setShortTitle("Portlet 1");
+        
+        Supports supports = portlet.addSupports("html/text");
+        supports.addPortletMode(MODE_EDIT);
+        supports.addPortletMode(MODE_VIEW);
+        supports.addPortletMode(MODE_HELP);
+        
+        supports = portlet.addSupports("wml");
+        supports.addPortletMode(MODE_HELP);
+        supports.addPortletMode(MODE_VIEW);
+        
         registry.registerPortletApplication(app);
     }
 
@@ -170,7 +156,7 @@ public class TestRegistryDirectAll extends AbstractRegistryTest
         PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
         assertNotNull("PA App_1 is NULL", app);
 
-        app.addUserAttribute("user.pets.doggie", "Busby");
+        app.addUserAttribute("user.pets.doggie").addDescription(Locale.getDefault().toString()).setDescription("Busby");
         
         registry.updatePortletApplication(app);        
                                 

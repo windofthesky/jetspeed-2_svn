@@ -29,7 +29,7 @@ import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.util.ArgUtil;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * AbstractPortalURL delivers the base implemention for parsing Jetspeed Portal URLs and creating new Portlet URLs.

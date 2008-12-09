@@ -16,20 +16,17 @@
  */
 package org.apache.jetspeed.services.title;
 
-import java.util.Iterator;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.Preference;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
 
 public class DynamicTitleServiceImpl implements DynamicTitleService
 {
-
     public void setDynamicTitle(PortletWindow window,
             HttpServletRequest request, String titleArg)
     {
@@ -47,11 +44,9 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
             }
 
 //        }
-
         request.setAttribute(
                 PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
                         + "::window.id::" + window.getId(), title);
-
     }
     
     public String getDynamicTitle(PortletWindow window,
@@ -77,7 +72,7 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
 
         if (title == null && entity.getPortletDefinition() != null)
         {
-            title = entity.getPortletDefinition().getName();
+            title = entity.getPortletDefinition().getPortletName();
         }
         else if (title == null)
         {
@@ -85,33 +80,6 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
         }
         
         return title;
-    }
-
-    protected final String getTitleFromPreference(PortletWindow window,
-            HttpServletRequest request)
-    {
-        Locale locale = request.getLocale();
-        String titleKey = createTitleKey(locale, false);
-
-        Preference titlePref = window.getPortletEntity().getPreferenceSet()
-                .get(titleKey);
-        if (titlePref == null)
-        {
-            titleKey = createTitleKey(locale, true);
-            titlePref = window.getPortletEntity().getPreferenceSet().get(
-                    titleKey);
-        }
-
-        if (titlePref != null)
-        {
-            Iterator values = titlePref.getValues();
-            if (values.hasNext())
-            {
-                return (String) titlePref.getValues().next();
-            }
-        }
-
-        return null;
     }
 
     public static String createTitleKey(Locale locale, boolean languageOnly)

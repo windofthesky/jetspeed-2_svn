@@ -57,6 +57,9 @@
     <constructor-arg index="4">
       <ref bean="portletDefinitionNameCache" />
     </constructor-arg>
+    <constructor-arg index="5">
+      <ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" />
+    </constructor-arg>    
   </bean>
 
   <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry"
@@ -86,15 +89,19 @@
     </property>
   </bean>
 
-  <!-- Portlet Preferences Implementation -->
-  <bean id="PortletPreferencesProviderImpl"
-    class="org.apache.jetspeed.components.portletpreferences.PersistenceBrokerPortletPreferencesProvider"
-    init-method="init" destroy-method="destroy">
-    <meta key="j2:cat" value="default,registry" />
+    <bean id="org.apache.pluto.services.PreferencesService" name="PortletPreferencesProviderImpl"
+          class="org.apache.jetspeed.components.portletpreferences.PortletPreferencesServiceImpl"
+	    init-method="init" destroy-method="destroy">
+          
+      <meta key="j2:cat" value="default,registry" />          
     <constructor-arg index="0">
-      <ref bean="preferencesCache" />
+      <ref bean="portletFactory" />
     </constructor-arg>
-  </bean>
+    <constructor-arg index="1">
+      <ref bean="preferencesCache" />
+    </constructor-arg>    
+    <property name="useEntityPreferences" ><value>true</value></property>
+    </bean>
 
   <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" parent="baseTransactionProxy"
     name="portletPreferencesProvider" destroy-method="destroy">
@@ -104,12 +111,11 @@
     </property>
 
     <property name="target">
-      <ref bean="PortletPreferencesProviderImpl" />
+      <ref bean="org.apache.pluto.services.PreferencesService" />
     </property>
     <property name="transactionAttributes">
       <props>
-        <prop key="save*">PROPAGATION_REQUIRED</prop>
-        <prop key="delete*">PROPAGATION_REQUIRED</prop>
+        <prop key="store*">PROPAGATION_REQUIRED</prop>
         <prop key="*">PROPAGATION_SUPPORTS</prop>
       </props>
     </property>

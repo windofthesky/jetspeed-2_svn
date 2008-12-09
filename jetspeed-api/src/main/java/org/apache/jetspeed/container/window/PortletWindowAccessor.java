@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Portlet Window Accessor

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  $Id$
+-->
+<document>
+  <properties>
+    <title>Overview of the Jetspeed Maven Plugins</title>
+    <authors>
+      <person name="Ate Douma" email="ate@douma.nu" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Overview of the Jetspeed Maven Plugins">
+      <p>
+        The <a href="http://maven.apache.org">Maven 2.0</a> plugins provided by Jetspeed-2 are used for three different purposes:
+      </p>
+      <ul>
+        <li>Adding support for standard artifact (mainly: war) building:
+          <ul>
+            <li>the <a href="jetspeed-unpack-plugin.html">jetspeed-unpack:unpack</a> Plugin</li>
+            <li>the <a href="jetspeed-deploy-plugin.html">jetspeed-deploy:deploy</a> Plugin</li>
+         </ul> 
+        </li>
+        <li>Performing target environment integration tasks performed outside the standard artifact building lifecycle:
+          <ul>
+            <li>the <a href="jetspeed-db-init-plugin.html">jetspeed-db:init</a> Plugin</li>
+            <li>the <a href="jetspeed-deploy-plugin.html">jetspeed-deploy:deploy</a> Plugin</li>
+         </ul> 
+        </li>
+        <li>Automating and coordinating integration tasks to be performed outside the standard artifact building lifecycle:
+          <ul>
+            <li>the <a href="jetspeed-mvn-plugin.html">jetspeed:mvn</a> Plugin</li>
+         </ul> 
+        </li>
+        <li>Jetspeed Portal Project (internal) build support for generating database ddl script from ddl schema definitions:
+          <ul>
+            <li>the <a href="jetspeed-db-ddl-plugin.html">jetspeed-db:ddl</a> Plugin</li>
+         </ul> 
+        </li>
+      </ul>
+      <p>
+        Additionally, Jetspeed-2 provides an project archetype for usage with the
+        <a href="http://maven.apache.org/plugins/maven-archetype-plugin/">Maven 2 Archetype Plugin</a>,
+        the <a href="jetspeed-archetype.html">jetspeed-archetype</a>.
+      </p>
+      <p>
+        The jetspeed-archetype is a resource for the Maven Archetype plugin to generate a new custom <a href="project-structure.html">Jetspeed Portal project structure</a>
+        with a basic configuration to effectively make use of the Jetspeed-2 Maven Plugins.
+      </p>
+      <subsection name="Recommended reading">
+        <p>
+          The rationale for automating Maven 2 using the jetspeed:mvn Maven Plugin and coordinating execution of integration tasks
+          outside the standard artifact building lifecycle is described in: <br/>
+          <pre>&#160;&#160;&#160;<a href="the-need-for-a-custom-lifecycle.html">The need for a custom Maven Lifecycle</a></pre>.
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>

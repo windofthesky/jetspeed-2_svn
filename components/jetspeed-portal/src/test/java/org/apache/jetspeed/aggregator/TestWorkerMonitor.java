@@ -25,7 +25,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <P>Test the aggregation service</P>

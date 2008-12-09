@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -34,6 +33,7 @@ import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.portalsite.Menu;

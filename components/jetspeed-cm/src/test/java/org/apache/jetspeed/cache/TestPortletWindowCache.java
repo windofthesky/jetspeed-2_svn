@@ -26,9 +26,9 @@ import net.sf.ehcache.Element;
 
 import org.apache.jetspeed.cache.impl.EhCacheImpl;
 import org.apache.jetspeed.cache.impl.EhPortletWindowCache;
-import org.apache.pluto.om.common.ObjectID;
-import org.apache.pluto.om.entity.PortletEntity;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletWindowID;
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.jmock.core.stub.VoidStub;
@@ -52,7 +52,6 @@ public class TestPortletWindowCache extends MockObjectTestCase
     private Mock windowMock;
     private Mock entityMock;
     private Mock oidMock;
-    private Mock entityOidMock;
     
     protected void setUp() throws Exception
     {
@@ -60,8 +59,7 @@ public class TestPortletWindowCache extends MockObjectTestCase
         cacheMock = mock(Ehcache.class);
         windowMock = mock(SerializablePortletWindow.class);
         entityMock = mock(PortletEntity.class);
-        oidMock = mock(ObjectID.class);
-        entityOidMock = (Mock) mock(ObjectID.class);
+        oidMock = mock(PortletWindowID.class);
     }    
 
     public void testSimplePutAndGet()
@@ -69,13 +67,11 @@ public class TestPortletWindowCache extends MockObjectTestCase
 
         PortletWindow window = (PortletWindow) windowMock.proxy();
         Element element = new Element(WINDOW_ID, window);
-        ObjectID oid = (ObjectID) oidMock.proxy();
-        ObjectID entityOid = (ObjectID) entityOidMock.proxy();
-        entityOidMock.expects(atLeastOnce()).method("toString").will(returnValue(ENTITY_ID));
-        oidMock.expects(atLeastOnce()).method("toString").will(returnValue(WINDOW_ID));
-        windowMock.expects(once()).method("getId").withNoArguments().will(returnValue(oid));
+        PortletWindowID wid = (PortletWindowID) oidMock.proxy();
+        oidMock.expects(atLeastOnce()).method("getStringId").will(returnValue(WINDOW_ID));
+        windowMock.expects(once()).method("getId").withNoArguments().will(returnValue(wid));
         windowMock.expects(once()).method("getPortletEntity").withNoArguments().will(returnValue(entityMock.proxy()));
-        entityMock.expects(once()).method("getId").withNoArguments().will(returnValue(entityOid));
+        entityMock.expects(once()).method("getId").withNoArguments().will(returnValue(ENTITY_ID));
         cacheMock.expects(once()).method("put").with(eq(element));
         cacheMock.expects(atLeastOnce()).method("get").with(eq(WINDOW_ID)).will(returnValue(element));
         
@@ -96,15 +92,13 @@ public class TestPortletWindowCache extends MockObjectTestCase
         SerializablePortletWindow window = (SerializablePortletWindow) windowMock.proxy();
         Element element = new Element(WINDOW_ID, window);
         
-        ObjectID oid = (ObjectID) oidMock.proxy();
-        oidMock.expects(atLeastOnce()).method("toString").will(returnValue(WINDOW_ID));
-        ObjectID entityOid = (ObjectID) entityOidMock.proxy();
-        entityOidMock.expects(atLeastOnce()).method("toString").will(returnValue(ENTITY_ID));
+        PortletWindowID oid = (PortletWindowID) oidMock.proxy();
+        oidMock.expects(atLeastOnce()).method("getStringId").will(returnValue(WINDOW_ID));
         cacheMock.expects(once()).method("put").with(eq(element));
         cacheMock.expects(once()).method("get").with(eq(WINDOW_ID)).will(returnValue(element));
         windowMock.expects(once()).method("getId").withNoArguments().will(returnValue(oid));
         windowMock.expects(once()).method("getPortletEntity").withNoArguments().will(returnValue(entityMock.proxy()));
-        entityMock.expects(once()).method("getId").withNoArguments().will(returnValue(entityOid));
+        entityMock.expects(once()).method("getId").withNoArguments().will(returnValue(ENTITY_ID));
         
         Ehcache cache = (Ehcache) cacheMock.proxy();        
         PortletWindowCache windowCache = new EhPortletWindowCache(cache);  
@@ -121,17 +115,14 @@ public class TestPortletWindowCache extends MockObjectTestCase
         SerializablePortletWindow window = (SerializablePortletWindow) windowMock.proxy();
         Element element = new Element(WINDOW_ID, window);
         
-        ObjectID oid = (ObjectID) oidMock.proxy();
-        oidMock.expects(atLeastOnce()).method("toString").will(returnValue(WINDOW_ID));
-        
-        ObjectID entityOid = (ObjectID)entityOidMock.proxy();
-        entityOidMock.expects(atLeastOnce()).method("toString").will(returnValue(ENTITY_ID));
+        PortletWindowID oid = (PortletWindowID) oidMock.proxy();
+        oidMock.expects(atLeastOnce()).method("getStringId").will(returnValue(WINDOW_ID));
         
         cacheMock.expects(once()).method("put").with(eq(element));
         cacheMock.expects(exactly(2)).method("get").with(eq(WINDOW_ID)).will(returnValue(element));
         windowMock.expects(once()).method("getId").withNoArguments().will(returnValue(oid));
         windowMock.expects(exactly(2)).method("getPortletEntity").withNoArguments().will(returnValue(entityMock.proxy()));
-        entityMock.expects(exactly(2)).method("getId").withNoArguments().will(returnValue(entityOid));
+        entityMock.expects(exactly(2)).method("getId").withNoArguments().will(returnValue(ENTITY_ID));
         
         
         cacheMock.expects(once()).method("removeQuiet").with(eq(WINDOW_ID)).will(returnValue(true));
@@ -152,17 +143,14 @@ public class TestPortletWindowCache extends MockObjectTestCase
         SerializablePortletWindow window = (SerializablePortletWindow) windowMock.proxy();
         Element element = new Element(WINDOW_ID, window);
         
-        ObjectID oid = (ObjectID) oidMock.proxy();
-        oidMock.expects(atLeastOnce()).method("toString").will(returnValue(WINDOW_ID));
-        
-        ObjectID entityOid = (ObjectID) entityOidMock.proxy();
-        entityOidMock.expects(atLeastOnce()).method("toString").will(returnValue(ENTITY_ID));
+        PortletWindowID oid = (PortletWindowID) oidMock.proxy();
+        oidMock.expects(atLeastOnce()).method("getStringId").will(returnValue(WINDOW_ID));
         
         cacheMock.expects(once()).method("put").with(eq(element));
         cacheMock.expects(exactly(3)).method("get").with(eq(WINDOW_ID)).will(onConsecutiveCalls(returnValue(element), returnValue(element), new VoidStub()));
         windowMock.expects(exactly(2)).method("getId").withNoArguments().will(returnValue(oid));
         windowMock.expects(once()).method("getPortletEntity").withNoArguments().will(returnValue(entityMock.proxy()));
-        entityMock.expects(once()).method("getId").withNoArguments().will(returnValue(entityOid));
+        entityMock.expects(once()).method("getId").withNoArguments().will(returnValue(ENTITY_ID));
         
         
         cacheMock.expects(atLeastOnce()).method("removeQuiet").with(eq(WINDOW_ID)).will(returnValue(true));

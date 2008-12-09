@@ -18,12 +18,11 @@ package org.apache.jetspeed.aggregator.impl;
 
 import javax.portlet.PortletPreferences;
 
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletHeaderRequest;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.core.impl.PortletPreferencesImpl;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 
 public class PortletHeaderRequestImpl implements PortletHeaderRequest
@@ -31,7 +30,7 @@ public class PortletHeaderRequestImpl implements PortletHeaderRequest
     private RequestContext requestContext;
     private String portletApplicationContextPath;
     private PortletWindow portletWindow;
-    private ParameterSet initParamSet;
+    private PortletDefinition pd;
     
     public PortletHeaderRequestImpl( RequestContext requestContext, PortletWindow portletWindow, String portletApplicationContextPath )
     {
@@ -47,26 +46,18 @@ public class PortletHeaderRequestImpl implements PortletHeaderRequest
     
     public PortletPreferences getPreferences()
     {
-        return new PortletPreferencesImpl(org.apache.pluto.Constants.METHOD_NOOP, this.portletWindow.getPortletEntity());
+        return null;
+//        return new PortletPreferencesImpl(org.apache.pluto.Constants.METHOD_NOOP, this.portletWindow.getPortletEntity());
     }
     
     public String getInitParameter( String name )
     {
-        ParameterSet iParamSet = this.initParamSet;
-        if ( iParamSet == null )
+        if (pd == null)
         {
-            iParamSet = this.portletWindow.getPortletEntity().getPortletDefinition().getInitParameterSet();
-            this.initParamSet = iParamSet;
+            pd = portletWindow.getPortletEntity().getPortletDefinition();
         }
-        if ( iParamSet != null )
-        {
-            Parameter initParam = iParamSet.get( name );
-            if ( initParam != null )
-            {
-                return initParam.getValue();
-            }
-        }
-        return null;
+        InitParam param = pd.getInitParam(name);
+        return param != null ? param.getParamValue() : null;
     }
     
     /**

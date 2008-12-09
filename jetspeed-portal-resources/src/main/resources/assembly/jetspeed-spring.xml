@@ -25,11 +25,6 @@
     </constructor-arg>
   </bean>
 
-  <!-- ServletConfig -->
-  <bean id="javax.servlet.ServletConfig" name="ServletConfig"
-    class="org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean">
-    <meta key="j2:cat" value="default" />
-  </bean>
 
   <!-- Template Locators -->
   <bean id="TemplateLocator" class="org.apache.jetspeed.locator.JetspeedTemplateLocator" init-method="start"
@@ -76,15 +71,10 @@
   <bean id="org.apache.jetspeed.request.RequestContextComponent"
     class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
     <meta key="j2:cat" value="default,registry" />
-    <constructor-arg index='0'>
-      <value>org.apache.jetspeed.request.JetspeedRequestContext</value>
-    </constructor-arg>
-    <constructor-arg index='1'>
-      <ref bean="org.apache.jetspeed.userinfo.UserInfoManager" />
-    </constructor-arg>
-    <constructor-arg index='2'>
-      <ref bean="RequestContextObjects" />
-    </constructor-arg>
+    <constructor-arg index='0'><ref bean="ServletRequestFactory" /></constructor-arg>
+    <constructor-arg index='1'><ref bean="ServletResponseFactory" /></constructor-arg>
+    <constructor-arg index='2'><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
+    <constructor-arg index='3'><ref bean="RequestContextObjects" /></constructor-arg>
   </bean>
 
   <bean class="org.apache.jetspeed.components.factorybeans.NullReferenceFactoryBean">
@@ -116,68 +106,23 @@
   </bean>
 
   <!-- Pluto Portlet Container -->
-  <bean id="Pluto" class="org.apache.pluto.PortletContainerImpl">
+  <bean id="Pluto" class="org.apache.pluto.core.PortletContainerImpl">
     <meta key="j2:cat" value="default" />
-  </bean>
-
-  <!-- Desktop Pluto Portlet Container -->
-  <bean id="DesktopPluto" class="org.apache.jetspeed.container.DesktopPortletContainerImpl">
-    <meta key="j2:cat" value="default" />
-
-    <constructor-arg index='0'>
-      <value>/desktop</value>
-    </constructor-arg>
-    <constructor-arg index='1'>
-      <value>/action</value>
-    </constructor-arg>
-    <constructor-arg index='2'>
-      <value>/portlet</value>
-    </constructor-arg>
-
+    <constructor-arg><value>${portal.name}</value></constructor-arg>
+    <constructor-arg><ref bean="org.apache.pluto.services.RequiredPlutoServices"/></constructor-arg>
+    <constructor-arg><ref bean="org.apache.pluto.services.OptionalPlutoServices"/></constructor-arg>	    
   </bean>
 
   <!-- Jetspeed 2's wrapper around Pluto -->
   <!-- settings for this bean will start the underlying pluto portlet container -->
   <bean id="org.apache.pluto.PortletContainer" class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper"
-    init-method="start" destroy-method="shutdown">
+    init-method="init" destroy-method="destroy">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="Pluto" />
     </constructor-arg>
     <constructor-arg>
       <value>${portal.name}</value>
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="ServletConfig" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="Engine" />
-    </constructor-arg>
-    <property name="requestFactory">
-      <ref bean="ServletRequestFactory" />
-    </property>
-    <property name="responseFactory">
-      <ref bean="ServletResponseFactory" />
-    </property>
-  </bean>
-
-  <!-- Jetspeed 2's wrapper around Desktop Pluto container -->
-  <!-- settings for this bean will start the underlying pluto portlet container -->
-  <bean id="org.apache.pluto.DesktopPortletContainer"
-    class="org.apache.jetspeed.container.JetspeedPortletContainerWrapper" init-method="start"
-    destroy-method="shutdown">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg>
-      <ref bean="DesktopPluto" />
-    </constructor-arg>
-    <constructor-arg>
-      <value>${portal.name}Desktop</value>
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="ServletConfig" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="Engine" />
     </constructor-arg>
     <property name="requestFactory">
       <ref bean="ServletRequestFactory" />
@@ -204,6 +149,11 @@
     <constructor-arg>
       <value type="boolean">true</value>
     </constructor-arg>
+  </bean>
+
+  <bean id="org.apache.pluto.services.title.DynamicTitleService" name="DynamicTitleService"
+    class="org.apache.jetspeed.services.title.DynamicTitleServiceImpl">
+    <meta key="j2:cat" value="default" />
   </bean>
 
 </beans>

@@ -16,47 +16,31 @@
 */
 package org.apache.jetspeed.om.portlet.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.om.common.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.CustomWindowState;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 public class CustomWindowStateImpl implements CustomWindowState
 {
-    /** The application id. */
-    protected long                  appId;
-
-    protected long                  id;
-
-    protected String                customName;
-
-    protected String                mappedName;
-
-    protected String                description;
-
+    protected String customName;
+    protected String mappedName;
+    protected List<Description> descriptions;
     protected transient WindowState customState;
-
     protected transient WindowState mappedState;
 
     public CustomWindowStateImpl()
     {
     }
 
-    public void setCustomName(String customName)
+    public void setWindowState(String customName)
     {
-        if (customName == null)
-        {
-            throw new IllegalArgumentException("CustomName is required");
-        }
-        else if ( this.customName != null )
-        {
-            throw new IllegalStateException("CustomName already set");
-        }
         this.customName = customName.toLowerCase();
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
     }
 
     public void setMappedName(String mappedName)
@@ -95,11 +79,6 @@ public class CustomWindowStateImpl implements CustomWindowState
         return mappedState;
     }
 
-    public String getDescription()
-    {
-        return description;
-    }
-
     public int hashCode()
     {
         return customName != null ? customName.hashCode() : super.hashCode();
@@ -111,5 +90,38 @@ public class CustomWindowStateImpl implements CustomWindowState
             return customName.equals(((CustomWindowStateImpl) object).customName);
         else
             return false;
+    }
+
+    public Description getDescription(Locale locale)
+    {
+        return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
+    }
+    
+    public List<Description> getDescriptions()
+    {
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl(this, lang);
+        for (Description desc : getDescriptions())
+        {
+            if (desc.getLocale().equals(d.getLocale()))
+            {
+                throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+            }
+        }
+        descriptions.add(d);
+        return d;
+    }
+
+    public String getWindowState()
+    {
+        return customName;
     }
 }

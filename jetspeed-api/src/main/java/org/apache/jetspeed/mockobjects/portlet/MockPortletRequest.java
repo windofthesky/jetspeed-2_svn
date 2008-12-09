@@ -27,6 +27,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
+import javax.servlet.http.Cookie;
 
 /**
  * A mock portlet request, useful for unit testing and offline utilities
@@ -41,47 +42,6 @@ public class MockPortletRequest implements PortletRequest
     public MockPortletRequest()
     {
         session = new MockPortletSession();     
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#isWindowStateAllowed(javax.portlet.WindowState)
-     */
-    public boolean isWindowStateAllowed(WindowState state)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#isPortletModeAllowed(javax.portlet.PortletMode)
-     */
-    public boolean isPortletModeAllowed(PortletMode mode)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getPortletMode()
-     */
-    public PortletMode getPortletMode()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getWindowState()
-     */
-    public WindowState getWindowState()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getPreferences()
-     */
-    public PortletPreferences getPreferences()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
     /* (non-Javadoc)
      * @see javax.portlet.PortletRequest#getPortletSession()
@@ -101,216 +61,183 @@ public class MockPortletRequest implements PortletRequest
         }
         return session;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getProperty(java.lang.String)
-     */
-    public String getProperty(String name)
+    
+    public Object getAttribute(String arg0)
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getProperties(java.lang.String)
-     */
-    public Enumeration getProperties(String name)
+    public Enumeration<String> getAttributeNames()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getPropertyNames()
-     */
-    public Enumeration getPropertyNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getPortalContext()
-     */
-    public PortalContext getPortalContext()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getAuthType()
-     */
     public String getAuthType()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getContextPath()
-     */
     public String getContextPath()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getRemoteUser()
-     */
-    public String getRemoteUser()
+    public Cookie[] getCookies()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getUserPrincipal()
-     */
-    public Principal getUserPrincipal()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#isUserInRole(java.lang.String)
-     */
-    public boolean isUserInRole(String role)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getAttribute(java.lang.String)
-     */
-    public Object getAttribute(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getAttributeNames()
-     */
-    public Enumeration getAttributeNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getParameter(java.lang.String)
-     */
-    public String getParameter(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getParameterNames()
-     */
-    public Enumeration getParameterNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getParameterValues(java.lang.String)
-     */
-    public String[] getParameterValues(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getParameterMap()
-     */
-    public Map getParameterMap()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#isSecure()
-     */
-    public boolean isSecure()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#setAttribute(java.lang.String, java.lang.Object)
-     */
-    public void setAttribute(String name, Object o)
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#removeAttribute(java.lang.String)
-     */
-    public void removeAttribute(String name)
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getRequestedSessionId()
-     */
-    public String getRequestedSessionId()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#isRequestedSessionIdValid()
-     */
-    public boolean isRequestedSessionIdValid()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getResponseContentType()
-     */
-    public String getResponseContentType()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getResponseContentTypes()
-     */
-    public Enumeration getResponseContentTypes()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getLocale()
-     */
     public Locale getLocale()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getScheme()
-     */
+    public Enumeration<Locale> getLocales()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public String getParameter(String arg0)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Map<String, String[]> getParameterMap()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Enumeration<String> getParameterNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public String[] getParameterValues(String arg0)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public PortalContext getPortalContext()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public PortletMode getPortletMode()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public PortletPreferences getPreferences()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Map<String, String[]> getPrivateParameterMap()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Enumeration<String> getProperties(String arg0)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public String getProperty(String arg0)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Enumeration<String> getPropertyNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Map<String, String[]> getPublicParameterMap()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public String getRemoteUser()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public String getRequestedSessionId()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public String getResponseContentType()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Enumeration<String> getResponseContentTypes()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     public String getScheme()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getServerName()
-     */
     public String getServerName()
     {
         // TODO Auto-generated method stub
         return null;
     }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletRequest#getServerPort()
-     */
     public int getServerPort()
     {
         // TODO Auto-generated method stub
         return 0;
     }
-    
-    public Enumeration getLocales()
+    public Principal getUserPrincipal()
     {
+        // TODO Auto-generated method stub
         return null;
     }
-    
+    public String getWindowID()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public WindowState getWindowState()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public boolean isPortletModeAllowed(PortletMode arg0)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    public boolean isRequestedSessionIdValid()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    public boolean isSecure()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    public boolean isUserInRole(String arg0)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    public boolean isWindowStateAllowed(WindowState arg0)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    public void removeAttribute(String arg0)
+    {
+        // TODO Auto-generated method stub
+    }
+    public void setAttribute(String arg0, Object arg1)
+    {
+        // TODO Auto-generated method stub
+    }
 }

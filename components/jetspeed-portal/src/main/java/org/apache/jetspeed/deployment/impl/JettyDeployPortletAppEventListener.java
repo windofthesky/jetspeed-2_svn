@@ -23,21 +23,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentException;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -160,7 +165,7 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         return null;
     }
     
-    protected Document getCurrentJettyContext(File contextFile) throws IOException
+    protected Document getCurrentJettyContext(File contextFile) throws Exception
     {
         InputStream source = null;
         try
@@ -184,7 +189,7 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         }
     }
     
-    protected Document getJettyContextTemplate() throws IOException
+    protected Document getJettyContextTemplate() throws Exception
     {
         InputStream source = null;
         try
@@ -208,7 +213,7 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         }
     }
     
-    protected Document getJettyContext(String fileName) throws IOException
+    protected Document getJettyContext(String fileName) throws Exception
     {
         JarFile jin = null;
         InputStream source = null;
@@ -216,11 +221,11 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         {
             jin = new JarFile(fileName);
             
-            ZipEntry src;
-            Enumeration zipEntries = jin.entries();
-            while (zipEntries.hasMoreElements())
+            JarEntry src;
+            Enumeration<JarEntry> jarEntries = jin.entries();
+            while (jarEntries.hasMoreElements())
             {
-                src = (ZipEntry) zipEntries.nextElement();
+                src = jarEntries.nextElement();
                 String target = src.getName();
                 if ("META-INF/jetspeed-jetty-context.xml".equals(target))
                 {
@@ -261,28 +266,29 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
     
     protected void updateJettyContext(String contextName, String warPath, Document context)
     {
-        Element root = context.getRootElement();
-        Iterator iter = root.getChildren("Set").iterator();
+        Element root = context.getDocumentElement();
+        NodeList sets = root.getElementsByTagName("Set");
         boolean foundSetWar = false;
         boolean foundSetContextPath = false;
         boolean foundSetConfigurationClasses = false;
         
-        while (iter.hasNext())
+        
+        for (int i = 0, size = sets.getLength(); i < size; i++)
         {
-            Element set = (Element)iter.next();
-            String name = set.getAttribute("name").getName();
+            Element set = (Element)sets.item(i);
+            String name = set.getAttribute("name");
             if (name.equals("contextPath"))
             {
-                set.setText("/"+contextName);
+                set.setTextContent("/"+contextName);
                 foundSetContextPath = true;
             }
             else if (name.equals("resourceBase"))
             {
-                iter.remove();
+                root.removeChild(set);
             }
             else if (name.equals("war"))
             {
-                set.setText(warPath);
+                set.setTextContent(warPath);
                 foundSetWar = true;
             }
             else if (name.equals("configurationClasses"))
@@ -292,21 +298,49 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         }        
         if (!foundSetContextPath)
         {
-            root.addContent(new Element("Set").setAttribute(new Attribute("name", "contextPath")).setText("/"+contextName));
+            Element set = context.createElement("Set");
+            set.setAttribute("name", "contextPath");
+            set.setTextContent("/"+contextName);
+            root.appendChild(set);
         }
         if (!foundSetWar)
         {
-            root.addContent(new Element("Set").setAttribute(new Attribute("name", "war")).setText(warPath));
+            Element set = context.createElement("Set");
+            set.setAttribute("name", "war");
+            set.setTextContent(warPath);
+            root.appendChild(set);
         }
         if (!foundSetConfigurationClasses)
         {
-            Element array = new Element("Array").setAttribute(new Attribute("type","java.lang.String"));
-            array.addContent(new Element("Item").setText("org.mortbay.jetty.webapp.WebInfConfiguration"));
-            array.addContent(new Element("Item").setText("org.mortbay.jetty.plus.webapp.EnvConfiguration"));
-            array.addContent(new Element("Item").setText("org.mortbay.jetty.plus.webapp.Configuration"));
-            array.addContent(new Element("Item").setText("org.mortbay.jetty.webapp.JettyWebXmlConfiguration"));
-            array.addContent(new Element("Item").setText("org.mortbay.jetty.webapp.TagLibConfiguration"));
-            root.addContent(new Element("Set").setAttribute(new Attribute("name", "configurationClasses")).setContent(array));
+            Element set = context.createElement("Set");
+            set.setAttribute("name", "configurationClasses");
+            
+            root.appendChild(set);
+            
+            Element array = context.createElement("Array");
+            array.setAttribute("type", "java.lang.String");
+            
+            set.appendChild(array);
+
+            Element item = context.createElement("Item");
+            item.setTextContent("org.mortbay.jetty.webapp.WebInfConfiguration");
+            array.appendChild(item);
+
+            item = context.createElement("Item");
+            item.setTextContent("org.mortbay.jetty.plus.webapp.EnvConfiguration");
+            array.appendChild(item);
+
+            item = context.createElement("Item");
+            item.setTextContent("org.mortbay.jetty.plus.webapp.Configuration");
+            array.appendChild(item);
+
+            item = context.createElement("Item");
+            item.setTextContent("org.mortbay.jetty.webapp.JettyWebXmlConfiguration");
+            array.appendChild(item);
+
+            item = context.createElement("Item");
+            item.setTextContent("org.mortbay.jetty.webapp.TagLibConfiguration");
+            array.appendChild(item);
         }
     }
     
@@ -321,8 +355,27 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         try
         {
             output = new FileOutputStream(contextFile);
-            XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-            xmlOutputter.output(context, output);
+            DOMSource domSource = new DOMSource(context);
+            StreamResult streamResult = new StreamResult(output);
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            if (context.getDoctype() != null)
+            {
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, context.getDoctype().getPublicId());
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, context.getDoctype().getSystemId());
+            }
+            transformer.setOutputProperty(OutputKeys.MEDIA_TYPE, "text/xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(domSource, streamResult);
+        }
+        catch (TransformerConfigurationException e)
+        {
+            throw new IOException(e.getMessage());
+        }
+        catch (TransformerException e)
+        {
+            throw new IOException(e.getMessage());
         }
         finally
         {
@@ -340,12 +393,12 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
         }
     }
 
-    protected Document parseJettyContext(InputStream source) throws IOException 
+    protected Document parseJettyContext(InputStream source) throws Exception 
     {
-        // Parse using the local dtds instead of remote dtds. This
-        // allows to deploy the application offline
-        SAXBuilder saxBuilder = new SAXBuilder();
-        saxBuilder.setEntityResolver(new EntityResolver()
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true); // never forget this!
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        builder.setEntityResolver(new EntityResolver()
         {
             public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId) throws SAXException,
                             java.io.IOException
@@ -357,16 +410,7 @@ public class JettyDeployPortletAppEventListener extends DeployPortletAppEventLis
                 return null;
             }
         });
-        try
-        {
-            Document document = saxBuilder.build(source);
-            return document;
-        }
-        catch (JDOMException e)
-        {
-            IOException ioException = new IOException("Parse failure: "+e.getMessage());
-            ioException.fillInStackTrace();
-            throw ioException;
-        }
+        Document document = builder.parse(source);
+        return document;
     }
 }

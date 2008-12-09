@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -36,6 +35,7 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
@@ -100,8 +100,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "database-page-manager.xml", "transaction.xml" };
+        return new String[]{"database-page-manager.xml", "transaction.xml"};
     }
 
     public void firstTestSetup() throws Exception

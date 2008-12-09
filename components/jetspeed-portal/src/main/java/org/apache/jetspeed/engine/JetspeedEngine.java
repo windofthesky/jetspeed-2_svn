@@ -32,6 +32,7 @@ import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.administration.PortalConfigurationImpl;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -39,10 +40,6 @@ import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.factory.Factory;
-import org.apache.pluto.services.ContainerService;
-import org.apache.pluto.services.factory.FactoryManagerService;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 
 /**
@@ -119,8 +116,9 @@ public class JetspeedEngine implements Engine
             ClassHelper.setClassLoader(ploader2);
             
             //Start the ComponentManager
-            componentManager.start();               
+            componentManager.start();
             pipelineMapper = (Map)componentManager.getComponent("pipeline-map");
+            ((PortletFactory)componentManager.getComponent("portletFactory")).setPortalContext(context);
             try
             {
                 statistics = (PortalStatistics)componentManager.getComponent("PortalStatistics");
@@ -174,7 +172,7 @@ public class JetspeedEngine implements Engine
                     .getComponent(PortletContainer.class);
             if (container != null)
             {
-                container.shutdown();
+                container.destroy();
             }
     
             componentManager.stop();
@@ -189,26 +187,21 @@ public class JetspeedEngine implements Engine
     public void service( RequestContext context ) throws JetspeedException
     {        
         long start = System.currentTimeMillis();
-        String targetPipeline = context
-                .getRequestParameter(PortalReservedParameters.PIPELINE);
+        String targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
         if (null == targetPipeline)
         {
-            targetPipeline = (String)context.getAttribute(PortalReservedParameters.PIPELINE);                
-            if (null == targetPipeline)
+            String pipelineKey = context.getRequest().getServletPath();                    
+            if (null != pipelineKey)
             {
-                String pipelineKey = context.getRequest().getServletPath();                    
-                if (null != pipelineKey)
-                {
-                    if (pipelineKey.equals("/portal"))
-                        targetPipeline = this.defaultPipelineName;
-                    else
-                        targetPipeline = (String)pipelineMapper.get(pipelineKey); 
-                    // System.out.println("pipeline = " + targetPipeline);
-                }
-                else
-                {
+                if (pipelineKey.equals("/portal"))
                     targetPipeline = this.defaultPipelineName;
-                }
+                else
+                    targetPipeline = (String)pipelineMapper.get(pipelineKey); 
+                // System.out.println("pipeline = " + targetPipeline);
+            }
+            else
+            {
+                targetPipeline = this.defaultPipelineName;
             }
         }
         Pipeline pipeline = null;
@@ -293,44 +286,4 @@ public class JetspeedEngine implements Engine
     {
         return this.componentManager;
     }
-    /**
-     * <p>
-     * getFactory
-     * </p>
-     *
-     * @see org.apache.pluto.services.factory.FactoryManagerService#getFactory(java.lang.Class)
-     * @param theClass
-     * @return
-     */
-    public Factory getFactory( Class theClass )
-    {        
-        return (Factory) getComponentManager().getComponent(theClass);
-    }
-    /**
-     * <p>
-     * getContainerService
-     * </p>
-     *
-     * @see org.apache.pluto.services.PortletContainerEnvironment#getContainerService(java.lang.Class)
-     * @param service
-     * @return
-     */
-    public ContainerService getContainerService( Class service )
-    {
-        if(service.equals(FactoryManagerService.class))
-        {
-            return this;
-        }
-
-        try
-        {
-            return (ContainerService) getComponentManager().getComponent(service);
-        }
-        catch (NoSuchBeanDefinitionException e)
-        {
-            log.warn("No ContainerService defined for "+service.getName());
-            return null;
-        }
-    }
-
 }

@@ -18,7 +18,7 @@ package org.apache.jetspeed.om.folder;
 
 import java.util.Locale;
 
-import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * This interface describes the object used to define

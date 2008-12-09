@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.apache.jetspeed.container.JetspeedPortletContext;
+import org.apache.jetspeed.container.InternalPortletContext;
 import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
@@ -38,7 +38,7 @@ public class ServletContextProviderImpl implements ServletContextProvider
 {
     public ServletContext getServletContext(GenericPortlet portlet) 
     {
-        return ((JetspeedPortletContext)portlet.getPortletContext()).getServletContext();
+        return ((InternalPortletContext)portlet.getPortletContext()).getServletContext();
     }
 
     public HttpServletRequest getHttpServletRequest(GenericPortlet portlet, PortletRequest request) 

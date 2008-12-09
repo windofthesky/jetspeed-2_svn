@@ -29,15 +29,14 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.UserAttributeRef;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.pluto.om.common.ObjectID;
 
 /**
  * <p>
@@ -57,7 +56,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     // TODO Same caching issue as usual. We should look into JCS. That wil do
     // for now.
     /** Map used to cache user info maps for each mapped portlet application. */
-    private static Map userInfoMapCache;
+    private static Map<String, Map<String, String>> userInfoMapCache;
 
     /** The user manager */
     UserManager userMgr;
@@ -101,19 +100,15 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
         initUserInfoMapCache();
     }
 
-    /**
-     * @see org.apache.jetspeed.userinfo.UserInfoManager#setUserInfoMap(org.apache.jetspeed.om.page.Fragment,
-     *      org.apache.jetspeed.request.RequestContext)
-     */
-    public Map getUserInfoMap(ObjectID oid, RequestContext context)
+    public Map<String, String> getUserInfoMap(String appName, RequestContext context)
     {
         if (log.isDebugEnabled())
             log.debug("Getting user info for portlet application: " + oid.toString());
 
         // Check if user info map is in cache.
-        if (userInfoMapCache.containsKey(oid))
+        if (userInfoMapCache.containsKey(appName))
         {
-            return (Map) userInfoMapCache.get(oid);
+            return userInfoMapCache.get(appName);
         }
         // Not in cache, map user info.
         Map<String, String> userInfo = getUserInformation(context);
@@ -123,7 +118,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             return null;
         }
 
-        MutablePortletApplication pa = registry.getPortletApplication(oid);
+        PortletApplication pa = registry.getPortletApplication(appName);
         if (null == pa)
         {
             log.debug(PortletRequest.USER_INFO + " is set to null");
@@ -131,9 +126,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
         }
         Collection userAttributes = pa.getUserAttributes();
         Collection userAttributeRefs = pa.getUserAttributeRefs();
-        Map userInfoMap = mapUserInfo(userInfo, userAttributes, userAttributeRefs);
-
-        return userInfoMap;
+        return mapUserInfo(userInfo, userAttributes, userAttributeRefs);
     }
 
     /**

@@ -16,46 +16,32 @@
 */
 package org.apache.jetspeed.om.portlet.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import javax.portlet.PortletMode;
 
-import org.apache.jetspeed.om.common.portlet.CustomPortletMode;
+import org.apache.jetspeed.om.portlet.CustomPortletMode;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 public class CustomPortletModeImpl implements CustomPortletMode
 {
-    /** The application id. */
-    protected long                  appId;
-
-    protected long                  id;
-
-    protected String                customName;
-
-    protected String                mappedName;
-
-    protected String                description;
-
+    protected String  customName;
+    protected String  mappedName;
+    protected Boolean portalManaged;
+    protected List<Description> descriptions;
     protected transient PortletMode customMode;
-
     protected transient PortletMode mappedMode;
 
     public CustomPortletModeImpl()
     {
     }
-
-    public void setCustomName(String customName)
+    
+    public void setPortletMode(String customName)
     {
-        if (customName == null)
-        {
-            throw new IllegalArgumentException("CustomName is required");
-        } else if (this.customName != null)
-        {
-            throw new IllegalStateException("CustomName already set");
-        }
         this.customName = customName.toLowerCase();
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
     }
 
     public void setMappedName(String mappedName)
@@ -93,11 +79,6 @@ public class CustomPortletModeImpl implements CustomPortletMode
         return mappedMode;
     }
 
-    public String getDescription()
-    {
-        return description;
-    }
-
     public int hashCode()
     {
         return customName != null ? customName.hashCode() : super.hashCode();
@@ -109,5 +90,48 @@ public class CustomPortletModeImpl implements CustomPortletMode
             return customName.equals(((CustomPortletModeImpl) object).customName);
         else
             return false;
+    }
+
+    public Description getDescription(Locale locale)
+    {
+        return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
+    }
+    
+    public List<Description> getDescriptions()
+    {
+        if (descriptions == null)
+        {
+            descriptions = new ArrayList<Description>();
+        }
+        return descriptions;
+    }
+    
+    public Description addDescription(String lang)
+    {
+        DescriptionImpl d = new DescriptionImpl(this, lang);
+        for (Description desc : getDescriptions())
+        {
+            if (desc.getLocale().equals(d.getLocale()))
+            {
+                throw new IllegalArgumentException("Description for language: "+d.getLocale()+" already defined");
+            }
+        }
+        descriptions.add(d);
+        return d;
+    }
+
+    public String getPortletMode()
+    {
+        return customName;
+    }
+
+    public boolean isPortalManaged()
+    {
+        return portalManaged == null ? true : portalManaged.booleanValue();
+    }
+
+    public void setPortalManaged(boolean value)
+    {
+        portalManaged = value ? Boolean.TRUE : Boolean.FALSE;
     }
 }

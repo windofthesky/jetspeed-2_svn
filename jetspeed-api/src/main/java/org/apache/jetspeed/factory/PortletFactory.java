@@ -17,11 +17,14 @@
 package org.apache.jetspeed.factory;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -32,16 +35,20 @@ import org.apache.pluto.om.portlet.PortletDefinition;
  * </p>
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
+ * 
  * @version $Id$
  *  
  */
 public interface PortletFactory
 {
+    void setPortalContext(PortalContext portalContext);
     void registerPortletApplication(PortletApplication pa, ClassLoader paClassLoader);
     void unregisterPortletApplication(PortletApplication pa);
     boolean isPortletApplicationRegistered(PortletApplication pa);
     ClassLoader getPortletApplicationClassLoader(PortletApplication pa);
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
-    PreferencesValidator getPreferencesValidator(PortletDefinition pd );
+    PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
+    PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher);
+    PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path);
 }

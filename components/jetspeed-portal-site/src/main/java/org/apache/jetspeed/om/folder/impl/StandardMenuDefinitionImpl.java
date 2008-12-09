@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.folder.MenuDefinition;
-import org.apache.jetspeed.om.common.GenericMetadata;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * This abstract class implements the menu definition interface

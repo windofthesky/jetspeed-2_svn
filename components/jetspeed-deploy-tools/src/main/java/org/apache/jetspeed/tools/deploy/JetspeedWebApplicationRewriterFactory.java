@@ -16,7 +16,9 @@
 */
 package org.apache.jetspeed.tools.deploy;
 
-import org.jdom.Document;
+import org.w3c.dom.Document;
+
+//import org.jdom.Document;
 
 /**
  * @author Nicolas Dutertry
@@ -62,7 +64,11 @@ public class JetspeedWebApplicationRewriterFactory {
         String version = forcedVersion;
         if(version == null)
         {
-            version = doc.getRootElement().getAttributeValue("version", "2.3");
+            version = doc.getDocumentElement().getAttribute("version");
+            if (version.equals(""))
+            {
+                version = "2.3";
+            }
         }
         
         try

@@ -25,7 +25,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;

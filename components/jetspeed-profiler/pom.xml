@@ -84,6 +84,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-file-cache</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
             <scope>test</scope>
@@ -129,6 +134,7 @@
                                     <resource>
                                         <path>assembly</path>
                                         <include>*.xml,boot/datasource.xml</include>
+                                        <exclude>cache.xml</exclude>
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>

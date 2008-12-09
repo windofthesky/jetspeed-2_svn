@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.jetspeed.cache.PortletWindowCache;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * This implementation of {@link PortletWindowCache} is to be used ONLY for testing purposes.

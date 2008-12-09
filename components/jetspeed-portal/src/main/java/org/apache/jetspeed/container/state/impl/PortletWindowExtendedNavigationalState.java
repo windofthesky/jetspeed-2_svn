@@ -60,11 +60,11 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
         }
     }
     
-    private Map parametersMap;
+    private Map<String, String[]> parametersMap;
     
     private Map decoratorActionEncodings;
         
-    public Map getParametersMap()
+    public Map<String, String[]> getParametersMap()
     {
         return parametersMap;
     }
@@ -73,12 +73,12 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     {
         if ( parametersMap == null )
         {
-            parametersMap = new HashMap();
+            parametersMap = new HashMap<String, String[]>();
         }
         parametersMap.put(name, values);
     }    
     
-    public void setParametersMap(Map parametersMap)
+    public void setParametersMap(Map<String, String[]> parametersMap)
     {
         this.parametersMap = parametersMap;
     }

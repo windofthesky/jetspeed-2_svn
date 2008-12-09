@@ -44,6 +44,7 @@ import org.apache.oro.text.regex.Perl5Matcher;
 
 import com.mockrunner.mock.web.MockServletConfig;
 
+@SuppressWarnings("deprecation")
 public class ResourceLocatingServletContext extends BaseMockServletContext
 {
     protected final static Log log = LogFactory.getLog(ResourceLocatingServletContext.class);

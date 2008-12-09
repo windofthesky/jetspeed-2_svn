@@ -16,20 +16,25 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.Collection;
+import java.util.Map;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.internal.InternalPortletPreference;
 
-public interface PortletPreferencesProvider
+
+/**
+ * 
+ * @version $Id$
+ *
+ */
+public interface PortletPreferencesProvider extends org.apache.pluto.spi.optional.PortletPreferencesService
 {
-    void init() throws Exception;
-    public PreferenceSetComposite getPreferenceSet(PortletDefinitionComposite pd);
-    public PreferenceSetComposite getPreferenceSet(MutablePortletEntity pe);
-    public PreferenceSetComposite getPreferenceSet(MutablePortletEntity pe, String userName);
-    public Collection<String> getUserNames(MutablePortletEntity pe);
-    public void savePreferenceSet(PortletDefinitionComposite pd, PreferenceSetComposite preferenceSet);
-    public void savePreferenceSet(MutablePortletEntity pe, PreferenceSetComposite preferenceSet);
-    public void savePreferenceSet(MutablePortletEntity pe, String userName, PreferenceSetComposite preferenceSet);        
+    public void preloadApplicationPreferences(String portletApplicationName);
+    public void preloadAllEntities();    
+    public void storeDefaults(PortletDefinition pd);
+    public void storeDefaults(PortletApplication app);
+    public void removeDefaults(PortletDefinition pd);
+    public void removeDefaults(PortletApplication app);
+    public Map<String, InternalPortletPreference> getDefaultPreferences(PortletDefinition pd);
 }

@@ -26,7 +26,7 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.pluto.util.Enumerator;
 
 /**
@@ -62,20 +62,20 @@ public class JetspeedPortalContext implements PortalContext
      */
     private String applicationRoot;
     
-    private final String portalInfo;
+    private String contextPath;
+    
+    private String portalInfo;
 
+    public JetspeedPortalContext()
+    {
+    }
+    
     public JetspeedPortalContext(Engine engine, PortalConfiguration configuration, String applicationRoot)
     {
         this.engine = engine;
         this.configuration = configuration;
         this.applicationRoot = applicationRoot;
-             
-        portalInfo = configuration.getString(PORTAL_NAME_ATTR) + "/" + configuration.getString(PORTAL_VERSION_ATTR);
-        
-        // Inititalize supported portlet modes and window states
-        String[] supportedModes = configuration.getStringArray(SUPPORTED_PORTLETMODE_ATTR);
-        String[] supportedStates = configuration.getStringArray(SUPPORTED_WINDOWSTATE_ATTR);
-        new JetspeedActions(supportedModes, supportedStates);
+        initialize();
     }
 
     // ------------------------------------------------------------------------
@@ -110,6 +110,17 @@ public class JetspeedPortalContext implements PortalContext
     public void setConfiguration(PortalConfiguration configuration)
     {
         this.configuration = configuration;
+        initialize();
+    }
+    
+    protected void initialize()
+    {
+        portalInfo = configuration.getString(PORTAL_NAME_ATTR) + "/" + configuration.getString(PORTAL_VERSION_ATTR);
+        
+        // Inititalize supported portlet modes and window states
+        String[] supportedModes = configuration.getStringArray(SUPPORTED_PORTLETMODE_ATTR);
+        String[] supportedStates = configuration.getStringArray(SUPPORTED_WINDOWSTATE_ATTR);
+        new JetspeedActions(supportedModes, supportedStates);        
     }
 
     /**
@@ -131,6 +142,16 @@ public class JetspeedPortalContext implements PortalContext
     {
         this.applicationRoot = applicationRoot;
     }
+    
+    public String getContextPath()
+    {
+        return contextPath;
+    }
+    
+    public void setContextPath(String contextPath)
+    {
+        this.contextPath = contextPath;
+    }
 
     /**
      * Returns the engine associated with this context.
@@ -141,7 +162,7 @@ public class JetspeedPortalContext implements PortalContext
     {
         return this.engine;
     }
-
+    
     /**
      * Returns the engine attribute with the given name, or null if there is no attribute by that name.
      *
@@ -189,7 +210,7 @@ public class JetspeedPortalContext implements PortalContext
         PortletRequestContext ctx = PortletRequestContext.getContext();
         if ( ctx != null )
         {
-            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getPortletApplicationDefinition());
+            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getApplication());
             return pa.getSupportedPortletModes();
         }
         return JetspeedActions.getStandardPortletModes();
@@ -213,7 +234,7 @@ public class JetspeedPortalContext implements PortalContext
         PortletRequestContext ctx = PortletRequestContext.getContext();
         if ( ctx != null )
         {
-            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getPortletApplicationDefinition());
+            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getApplication());
             return pa.getSupportedWindowStates();
         }
         return JetspeedActions.getStandardWindowStates();

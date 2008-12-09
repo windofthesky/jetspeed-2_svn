@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -43,6 +42,7 @@ import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;

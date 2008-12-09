@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * This interface describes the page manager event listener
@@ -33,33 +33,33 @@ public interface RegistryEventListener
      *           updated by the registry or when the
      *           state modification is otherwise detected
      *
-     * @param MutablePortletApplicaiton new managed application 
+     * @param PortletApplicaiton new managed application 
      */
-    void applicationUpdated(MutablePortletApplication app);
+    void applicationUpdated(PortletApplication app);
 
     /**
      * portletUpdated - invoked when the definition of a portlet definition is
      *           updated by the registry or when the
      *           state modification is otherwise detected
      *
-     * @param PortletDefinitionComposite new managed portlet definition 
+     * @param PortletDefinition new managed portlet definition 
      */
-    void portletUpdated(PortletDefinitionComposite def);
+    void portletUpdated(PortletDefinition def);
 
     /**
      * applicationRemoved - invoked when the definition of a portlet application is
      *           removed by the registry
      *           
-     * @param MutablePortletApplicaiton removed portlet application 
+     * @param PortletApplicaiton removed portlet application 
      */
-    void applicationRemoved(MutablePortletApplication app);
+    void applicationRemoved(PortletApplication app);
 
     /**
      * portletUpdated - invoked when the definition of a portlet definition is
      *           removed by the registry 
      *
-     * @param PortletDefinitionComposite new managed portlet definition if known
+     * @param PortletDefinition new managed portlet definition if known
      */
-    void portletRemoved(PortletDefinitionComposite def);
+    void portletRemoved(PortletDefinition def);
     
 }

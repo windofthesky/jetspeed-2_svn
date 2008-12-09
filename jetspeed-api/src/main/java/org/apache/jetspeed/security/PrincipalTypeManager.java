@@ -17,13 +17,11 @@
 
 package org.apache.jetspeed.security;
 
-import java.io.Serializable;
-
 /**
  * @version $Id$
  *
  */
-public interface PrincipalTypeManager extends Serializable 
+public interface PrincipalTypeManager
 {
     JetspeedPrincipalType getPrincipalType();
     JetspeedPrincipalManager getPrincipalManager();

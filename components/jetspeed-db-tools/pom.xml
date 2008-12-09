@@ -44,15 +44,15 @@
       <version>${javax.servlet.version}</version>
     </dependency>
     <dependency>
-      <groupId>portlet-api</groupId>
+      <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
       <version>${portlet-api.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.pluto</groupId>
-      <artifactId>pluto</artifactId>
-      <version>${org.apache.pluto.version}</version>
-    </dependency>
+      <dependency>
+        <groupId>org.apache.pluto</groupId>
+        <artifactId>pluto-container-api</artifactId>
+        <version>${org.apache.pluto.version}</version>
+      </dependency>
 
     <!-- Build Dependencies -->
     <dependency>

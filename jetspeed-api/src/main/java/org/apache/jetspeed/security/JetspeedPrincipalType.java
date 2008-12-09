@@ -16,15 +16,13 @@
  */
 package org.apache.jetspeed.security;
 
-import java.io.Serializable;
-
 /**
  * <p>The base JetspeedPrincipal type.</p>
  * 
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
  * @version $Id$
  */
-public interface JetspeedPrincipalType extends Serializable
+public interface JetspeedPrincipalType
 {
     /** build-in supported JetspeedPrincipalType "group" */
     String GROUP = "group";

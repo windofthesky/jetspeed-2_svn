@@ -87,7 +87,7 @@ Jetspeed {
             <table>
                 <tr>
                     <td style="background-color:#FFFFFF;" align="center">
-                        <img src="images/default-login-module-c.gif" border="0" />
+                        <img src="../../images/components/default-login-module-c.gif" border="0" />
                     </td>
                 </tr>
             </table>

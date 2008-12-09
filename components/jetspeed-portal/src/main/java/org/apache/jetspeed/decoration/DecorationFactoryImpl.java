@@ -39,13 +39,13 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.Path;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.springframework.web.context.ServletContextAware;
 
 /**
@@ -562,15 +562,15 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         Iterator portlets = registry.getAllPortletDefinitions().iterator();
         while ( portlets.hasNext() )
         {
-            PortletDefinitionComposite portlet = (PortletDefinitionComposite)portlets.next();
-            MutablePortletApplication muta = (MutablePortletApplication)portlet.getPortletApplicationDefinition();
-            String appName = muta.getName();
+            PortletDefinition portlet = (PortletDefinition)portlets.next();
+            PortletApplication app = (PortletApplication)portlet.getApplication();
+            String appName = app.getName();
             if ( appName == null )
                 continue;
             if ( ! appName.equals( "jetspeed-layouts" ) )
                 continue;
 
-            String uniqueName = appName + "::" + portlet.getName();
+            String uniqueName = appName + "::" + portlet.getPortletName();
             list.add( new LayoutInfoImpl( uniqueName,
                       portlet.getDisplayNameText( request.getLocale() ),
                       portlet.getDescriptionText( request.getLocale() ) ) );

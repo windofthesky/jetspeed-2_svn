@@ -16,10 +16,11 @@
  */
 package org.apache.jetspeed.layout;
 
+import java.util.List;
+
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.jmock.Mock;
 import org.jmock.core.Constraint;
 import org.jmock.core.InvocationMatcher;
@@ -38,29 +39,25 @@ public class MockPortletRegistryFactory
         Mock portletRegistryMock;
         PortletRegistry portletRegistry;
         Mock portletDefMock;
-        PortletDefinitionComposite portletDef;
-        Mock portletDefInitParamsMock;
-        ParameterSet portletDefInitParams;
+        PortletDefinition portletDef;
 
         Mock portletSizesParamMock;
-        Parameter portletSizesParam;
+        InitParam portletSizesParam;
         
         portletRegistryMock = new Mock(PortletRegistry.class);
         portletRegistry = (PortletRegistry) portletRegistryMock.proxy();
         
-        portletDefMock = new Mock(PortletDefinitionComposite.class);
-        portletDef = (PortletDefinitionComposite) portletDefMock.proxy();
+        portletDefMock = new Mock(PortletDefinition.class);
+        portletDef = (PortletDefinition) portletDefMock.proxy();
 
-        portletDefInitParamsMock = new Mock(ParameterSet.class);
-        portletDefInitParams = (ParameterSet) portletDefInitParamsMock.proxy();
+        portletSizesParamMock = new Mock(InitParam.class);
+        portletSizesParam = (InitParam) portletSizesParamMock.proxy();
 
-        portletSizesParamMock = new Mock(Parameter.class);
-        portletSizesParam = (Parameter) portletSizesParamMock.proxy();
-
-        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletSizesParamMock, "getValue", "33%,66%");
-        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletDefInitParamsMock, "get",new Constraint[] {new IsEqual("sizes")}, portletSizesParam);
-        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletDefMock, "getInitParameterSet", portletDefInitParams);
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletSizesParamMock, "getParamValue", "33%,66%");
         expectAndReturn(new InvokeAtLeastOnceMatcher(), portletRegistryMock, "getPortletDefinitionByUniqueName",new Constraint[] {new IsEqual("layout")}, portletDef);
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletDefMock, "getInitParam", new Constraint[] {new IsEqual("sizes")}, portletSizesParam);
+        
+        
         return portletRegistry;
     }
     

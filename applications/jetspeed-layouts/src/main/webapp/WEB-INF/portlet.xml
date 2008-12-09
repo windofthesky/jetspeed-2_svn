@@ -16,8 +16,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<portlet-app version="1.0">
-
+<portlet-app version="1.0"
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
+    
   <portlet id="SimpleLayoutPortlet">
     <description>The SimpleLayoutPortlet requires a ViewPage layout template set through the portlet preferences
       which provides its own layout algorithm</description>

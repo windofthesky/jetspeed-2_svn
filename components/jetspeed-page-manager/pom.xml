@@ -124,6 +124,11 @@
             <artifactId>junit</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-jexl</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>
@@ -162,6 +167,7 @@
                                     </resource>
                                     <resource>
                                         <path>db-ojb</path>
+                                        <exclude>ehcache.xml,distributed-ehcache.xml</exclude>
                                         <destination>test-classes</destination>
                                     </resource>
                                 </resources>
@@ -171,17 +177,5 @@
                 </executions>
             </plugin>
         </plugins>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-            <testResource>
-                <directory>src/test/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </testResource>
-        </testResources>
     </build>
 </project>

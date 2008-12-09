@@ -20,11 +20,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.collections.MultiHashMap;
-import org.apache.jetspeed.om.common.LocalizedField;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.ParsedObject;
+import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
  *
@@ -46,12 +48,16 @@ public class PortletApplicationHandler extends AbstractObjectHandler
     {
         BaseParsedObject result = null;
         
-        if(o instanceof MutablePortletApplication)
+        if(o instanceof PortletApplication)
         {
             result = new BaseParsedObject();
-	        MutablePortletApplication pa = (MutablePortletApplication) o;
+	        PortletApplication pa = (PortletApplication) o;
 	        
-	        result.setDescription(pa.getDescription());
+	        Description defaultDescription = pa.getDescription(JetspeedLocale.getDefaultLocale());
+	        if (defaultDescription != null)
+	        {
+	            result.setDescription(defaultDescription.getDescription());
+	        }
 	        result.setTitle(pa.getName());
 	        result.setKey(KEY_PREFIX + pa.getName());
 	        result.setType(ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION);

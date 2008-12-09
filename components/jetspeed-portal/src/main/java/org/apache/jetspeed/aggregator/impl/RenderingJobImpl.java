@@ -40,13 +40,12 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.PortletContainer;
-import org.apache.pluto.om.portlet.PortletDefinition;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * The RenderingJob is responsible for storing all necessary objets for
@@ -113,7 +112,7 @@ public class RenderingJobImpl implements RenderingJob
         this.requestContext = requestContext; 
         this.window = window;
         this.portletContent = portletContent; 
-        ((MutablePortletEntity)window.getPortletEntity()).setFragment(fragment);
+        window.getPortletEntity().setFragment(fragment);
         this.expirationCache = expirationCache;
         this.contentIsCached = contentIsCached;
     }
@@ -240,7 +239,7 @@ public class RenderingJobImpl implements RenderingJob
                     PortletDefinition curPortletDefinition = (PortletDefinition)
                         CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
                     
-                    if (!oldPortletDefinition.getId().equals(curPortletDefinition.getId())) {
+                    if (!oldPortletDefinition.isSameIdentity(curPortletDefinition)) {
                         curEntity.setPortletDefinition(curPortletDefinition);
                     }
                 }
@@ -267,8 +266,7 @@ public class RenderingJobImpl implements RenderingJob
                 this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
               //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
             }
-            
-            container.renderPortlet(this.window, this.request, this.response);               
+            container.doRender(this.window, this.request, this.response);               
             this.response.flushBuffer();                           
         }
         catch (Throwable t)
@@ -309,7 +307,7 @@ public class RenderingJobImpl implements RenderingJob
                     if (exceededTimeout)
                     {
                         // took too long to render
-                        log.info("Portlet Exceeded timeout: " + curWindow.getPortletEntity().getPortletDefinition().getName() + " for window " + curWindow.getId());
+                        log.info("Portlet Exceeded timeout: " + curWindow.getPortletEntity().getPortletDefinition().getPortletName() + " for window " + curWindow.getId());
                         portletTracking.incrementRenderTimeoutCount(curWindow);
                     }
                     else

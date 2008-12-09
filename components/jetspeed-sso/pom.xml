@@ -85,6 +85,32 @@
 
     <build>
         <plugins>
+            <!-- Temporary excluding blocks starts -->
+            <!-- TODO: Refactor SSO components and test cases. After that, remove the excluding blocks. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
+                    <testExcludes>
+                        <exclude>**/*.java</exclude>
+                    </testExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!-- Temporary excluding blocks ends -->
             <plugin>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>jetspeed-unpack-maven-plugin</artifactId>

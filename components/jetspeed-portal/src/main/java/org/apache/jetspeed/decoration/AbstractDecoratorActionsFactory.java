@@ -27,12 +27,12 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 public abstract class AbstractDecoratorActionsFactory implements DecoratorActionsFactory
 {
@@ -51,7 +51,7 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
     }
     
     public List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
-                    WindowState ws, Decoration decoration, List actionTemplates,PortletDefinitionComposite portlet, 
+                    WindowState ws, Decoration decoration, List actionTemplates,PortletDefinition portlet, 
                     ContentFragment fragment,SecurityAccessController accessController)
     {
         DecoratorAction action;
@@ -192,7 +192,7 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
     
     //added for checkin the constraints on actions
     protected boolean checkSecurityConstraint(
-            PortletDefinitionComposite portlet, ContentFragment fragment,
+            PortletDefinition portlet, ContentFragment fragment,
             SecurityAccessController accessController, String action)
     {
         if (fragment.getType().equals(ContentFragment.PORTLET))

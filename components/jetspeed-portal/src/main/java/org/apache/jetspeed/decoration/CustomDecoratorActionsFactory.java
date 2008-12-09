@@ -24,13 +24,13 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFactory
 {
@@ -70,7 +70,7 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
     
     public List getDecoratorActions(RequestContext rc, PortletApplication pa, PortletWindow pw, PortletMode pm,
                     WindowState ws, Decoration decoration, List actionTemplates, 
-                    PortletDefinitionComposite portlet, ContentFragment fragment, SecurityAccessController accessController)
+                    PortletDefinition portlet, ContentFragment fragment, SecurityAccessController accessController)
     {
         int printModeIndex = actionTemplates.indexOf(PRINT_MODE_TEMPLATE);
         int soloStateIndex = actionTemplates.indexOf(SOLO_ACTION_TEMPLATE);

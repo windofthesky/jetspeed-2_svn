@@ -16,10 +16,13 @@
  */
 package org.apache.jetspeed.components.portletregistry.direct;
 
+import java.util.Locale;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
+import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
 /**
@@ -40,11 +43,13 @@ public class TestRegistryDirectPart1b extends AbstractRegistryTest
     
     public void testUpdates() throws Exception
     {
+        String lang = Locale.getDefault().toString();
         
         PortletApplicationDefinitionImpl app = (PortletApplicationDefinitionImpl) registry.getPortletApplication("App_1");
         assertNotNull("PA App_1 is NULL", app);
 
-        app.addUserAttribute("user.pets.doggie", "Busby");
+        UserAttribute ua = app.addUserAttribute("user.pets.doggie");
+        ua.addDescription(lang).setDescription("Busby");
         
         registry.updatePortletApplication(app);        
                                 

@@ -52,20 +52,20 @@
 			<li><b>%b </b>- number of bytes sent (&quot;-&quot; if no bytes sent).</li>
 			</ul>
         	<br/>
-        	<img src="images/portalstatistics-c.gif" border="0" />
+        	<img src="../../images/components/portalstatistics-c.gif" border="0" />
         	</p>
         	<p>
         	Statistics data is stored in 3 relational tables as illustrated below:
         	<br/><br/>
-        	<img src="images/statistics-db.gif" border="0" />
+        	<img src="../../images/components/statistics-db.gif" border="0" />
         	</p>
         	<p>
         	Each event type is mapped to a data holder that gets persisted in the statistics tables illustrated above.
-        	<img src="images/logrecord-c.gif" border="0" />
+        	<img src="../../images/components/logrecord-c.gif" border="0" />
         	<br/>
         	Jetspeed-2 persists the collected data in batches through the <code>BatchedStatistics</code> component.
         	<br/><br/>
-        	<img src="images/batchedstatistics-c.gif" border="0" />
+        	<img src="../../images/components/batchedstatistics-c.gif" border="0" />
         	</p>
         	</subsection>
         	<subsection name="PortalStatistics Configuration">

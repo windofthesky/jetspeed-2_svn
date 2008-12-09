@@ -45,7 +45,6 @@ public interface PortletApplicationManagement
   void startPortletApplication(String contextName, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;
   void stopPortletApplication(String contextName) throws RegistryException;
   void startLocalPortletApplication(String contextName, FileSystemHelper warStruct, ClassLoader paClassLoader) throws RegistryException;
-  void startInternalApplication(String contextName) throws RegistryException;
   void stopLocalPortletApplication(String contextName) throws RegistryException;
   public void unregisterPortletApplication(String paName) throws RegistryException;
 }

@@ -22,7 +22,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 
 /**
  * 
@@ -45,7 +45,7 @@ public class TestRegistryDirectPart2a extends AbstractRegistryTest
         Iterator itr = registry.getPortletApplications().iterator();
         while(itr.hasNext())
         {        
-            registry.removeApplication((PortletApplicationDefinition)itr.next());
+            registry.removeApplication((PortletApplication)itr.next());
         }
         
         

@@ -38,9 +38,8 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.common.Parameter;
-import org.apache.pluto.om.common.ParameterSet;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * Get Page retrieves a page from the Page Manager store and PSML format
@@ -254,9 +253,8 @@ public class GetPageAction
                 
                 if ( portletDef != null && portletIcons != null )
                 {
-                    ParameterSet paramSet = portletDef.getInitParameterSet();
-                    Parameter iconParam = paramSet.get( "portlet-icon" );
-                    String iconParamVal = ( iconParam == null ) ? null : iconParam.getValue();
+                    InitParam iconParam = portletDef.getInitParam("portlet-icon");
+                    String iconParamVal = ( iconParam == null ) ? null : iconParam.getParamValue();
                     if ( iconParamVal != null && iconParamVal.length() > 0 )
                     {
                         portletIcons.put( frag.getId(), iconParamVal );

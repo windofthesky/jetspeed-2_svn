@@ -66,7 +66,7 @@
                 as its default IoC container.
             </p>
             <p>
-                <img src="images/components.jpg" align="right" border="0" hspace="1" vspace="2" />
+                <img src="../../images/components/components.jpg" align="right" border="0" hspace="1" vspace="2" />
                 Jetspeed 2 security services are founded on a set of modular and extensible security modules exposed through an SPI model. The SPI model
                 provides the ability to modify the behavior of the Jetspeed coarsed security services (UserManager, RoleManager, GroupManager)
                 through the modification and configuration of specialized handlers. For

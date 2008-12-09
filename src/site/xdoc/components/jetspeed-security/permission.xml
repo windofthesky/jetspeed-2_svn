@@ -36,14 +36,14 @@
             to the <code>PermissionManager</code>.
             </p>
             <p>
-            <img src="images/permission-mgr-c.gif" border="0" />
+            <img src="../../images/components/permission-mgr-c.gif" border="0" />
             </p>
             <p>
             Each <code>InternalPermission</code> maps to one or more <code>InternalPrincipal</code> and, each 
             <code>InternalPrincipal</code> can have one or more <code>InternalPermission</code>.
             </p>
             <p>
-            <img src="images/permissions-principals-om-c.gif" border="0" />
+            <img src="../../images/components/permissions-principals-om-c.gif" border="0" />
             </p>
         </section>
         <section name="Schema and OJB Mapping">
@@ -74,7 +74,7 @@
             The relational schema maintaining principal to permission associations is provided below:
             </p>
             <p>
-            <img src="images/permissions-principals-schema.gif" border="0" />
+            <img src="../../images/components/permissions-principals-schema.gif" border="0" />
             </p>
         </section>
     </body>

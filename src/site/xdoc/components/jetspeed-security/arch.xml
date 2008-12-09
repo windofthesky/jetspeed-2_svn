@@ -42,7 +42,7 @@
                 The following diagram describes the high level security architecture:
             </p>
             <p align="center">
-                <img src="images/arch-overview.gif" border="0" />
+                <img src="../../images/components/arch-overview.gif" border="0" />
             </p>
             <p>
                 Configuration files for each component areas are specified.  For more information, go to the documentation

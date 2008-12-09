@@ -18,7 +18,7 @@
 <portletEntity>
   <id>$result.id</id>
 
-  #foreach($pref in $result.preferenceSet.iterator())
+  #foreach($pref in $result.fragment.preferences())
    #if($pref.readOnly)
 	#set($readOnly = "true") 
    #else 
@@ -26,7 +26,7 @@
    #end  
    <preference readOnly="${readOnly}">
      <name>$pref.name</name>
-   #foreach($value in $pref.values)
+   #foreach($value in $pref.valueList)
 	 <value>$value</value>
    #end
    </preference>

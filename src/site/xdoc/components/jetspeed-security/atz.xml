@@ -30,7 +30,7 @@
                 a relation database store to manage associations between principals and permissions.
             </p>
             <p align="center">
-                <img src="images/rdbms-policy-overview-c.gif" border="0" />
+                <img src="../../images/components/rdbms-policy-overview-c.gif" border="0" />
             </p>
             <p>
                 The <code>PermissionManager</code> provides access to the permissions associated to given principals.

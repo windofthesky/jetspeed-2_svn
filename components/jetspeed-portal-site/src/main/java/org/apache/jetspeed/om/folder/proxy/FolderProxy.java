@@ -28,13 +28,13 @@ import java.util.Locale;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.om.common.GenericMetadata;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.proxy.LinkProxy;
 import org.apache.jetspeed.om.page.proxy.PageProxy;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;

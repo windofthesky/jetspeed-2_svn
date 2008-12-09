@@ -38,19 +38,19 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.om.common.portlet.PortletApplication;
-import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.pluto.om.portlet.ContentTypeSet;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.om.portlet.Supports;
 
 /**
  * Assigns decorations and page actions to all of the portlet Fragments within
@@ -340,7 +340,7 @@ public class DecorationValve extends AbstractValve implements Valve
     {
         boolean fragmentSupportsActions = false;
         PortletWindow window = windowAccessor.getPortletWindow(fragment); 
-        PortletDefinitionComposite portlet = (PortletDefinitionComposite) window.getPortletEntity().getPortletDefinition();
+        PortletDefinition portlet = (PortletDefinition) window.getPortletEntity().getPortletDefinition();
         
         if (null == portlet)
         {
@@ -351,18 +351,18 @@ public class DecorationValve extends AbstractValve implements Valve
         
         PortletMode currentMode = requestContext.getPortalURL().getNavigationalState().getMode(window);
         WindowState currentState = requestContext.getPortalURL().getNavigationalState().getState(window);
-        ContentTypeSet content = portlet.getContentTypeSet();
+        List<Supports> supports = portlet.getSupports();
         
         if ( fragment.equals(requestContext.getPage().getRootFragment()) )
         {
             fragmentSupportsActions = true;
-            actions = getPageModes(requestContext, window, content, currentMode, currentState, pageActionAccess, decoration, isAjaxRequest);
+            actions = getPageModes(requestContext, window, supports, currentMode, currentState, pageActionAccess, decoration, isAjaxRequest);
         }
         else if ( !Fragment.LAYOUT.equals(fragment.getType()) )
         {
             fragmentSupportsActions = true;
             String fragmentId = fragment.getId();
-            PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getPortletApplicationDefinition();
+            PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getApplication();
 
             String portletName = portlet.getUniqueName();
 
@@ -402,7 +402,7 @@ public class DecorationValve extends AbstractValve implements Valve
                         }
                         if ( ! equalsCurrentMode || isAjaxRequest )
                         {
-                            if ( (content.supportsPortletMode(customMode) || isAutoSwitchableCustomMode(content, customMode))
+                            if ( (supportsPortletMode(supports,customMode) || isAutoSwitchableCustomMode(supports, customMode))
                                  && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
                                  && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
                                  )
@@ -445,6 +445,23 @@ public class DecorationValve extends AbstractValve implements Valve
         return fragmentSupportsActions;
     }
     
+    protected boolean supportsPortletMode(List<Supports> supports, PortletMode mode)
+    {
+        if(mode.equals(PortletMode.VIEW))
+        {
+            return true;
+        }
+        String pm = mode.toString();
+        for (Supports s : supports)
+        {
+            if (s.getPortletModes().contains(pm))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Builds a list of portlet modes that can be executed on the current
      * <code>fragment</code> excluding the portlet's current mode.
@@ -459,7 +476,7 @@ public class DecorationValve extends AbstractValve implements Valve
      * @return <code>java.util.List</code> of modes excluding the current one.
      * @throws PortletEntityNotStoredException 
      */
-    protected List getPageModes(RequestContext requestContext, PortletWindow window, ContentTypeSet content, 
+    protected List getPageModes(RequestContext requestContext, PortletWindow window, List<Supports> supports, 
                                 PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration,
                                 boolean isAjaxRequest)
     {
@@ -494,7 +511,7 @@ public class DecorationValve extends AbstractValve implements Valve
                 
                 //window.getPortletEntity().getPortletDefinition().getInitParameterSet().get( "xxxx" );
                 
-                if (content.supportsPortletMode(PortletMode.HELP))
+                if (supportsPortletMode(supports,PortletMode.HELP))
                 {
                     if ( pageActionAccess.isEditing() )
                     {
@@ -692,7 +709,7 @@ public class DecorationValve extends AbstractValve implements Valve
         return this.autoSwitchingForConfigMode;
     }
     
-    private boolean isAutoSwitchableCustomMode(ContentTypeSet content, PortletMode customMode)
+    private boolean isAutoSwitchableCustomMode(List<Supports> supports, PortletMode customMode)
     {
         if (this.autoSwitchingForConfigMode && JetspeedActions.CONFIG_MODE.equals(customMode))
         {
@@ -701,7 +718,7 @@ public class DecorationValve extends AbstractValve implements Valve
         
         if (this.autoSwitchingToEditDefaultsModes)
         {
-            if (content.supportsPortletMode(PortletMode.EDIT) && JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))
+            if (supportsPortletMode(supports,PortletMode.EDIT) && JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))
             {
                 return true;
             }

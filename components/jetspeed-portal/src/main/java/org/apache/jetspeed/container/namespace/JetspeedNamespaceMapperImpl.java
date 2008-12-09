@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.container.namespace;
 
-import org.apache.pluto.om.common.ObjectID;
+import org.apache.pluto.PortletWindowID;
 
 
 /**
@@ -33,7 +33,7 @@ public class JetspeedNamespaceMapperImpl implements JetspeedNamespaceMapper
     public JetspeedNamespaceMapperImpl(String prefix)
     {
         this.prefix = prefix;
-        if ( this.prefix == null )
+        if (this.prefix == null)
         {
             this.prefix = DEFAULT_PREFIX;
         }        
@@ -44,79 +44,72 @@ public class JetspeedNamespaceMapperImpl implements JetspeedNamespaceMapper
         this(null);
     }
     
+    /*
+     * Public Pluto APIs, encode, decode on PortletWindowID, String
+     */
+    public String encode(PortletWindowID namespace, String name)
+    {
+        return encode(namespace.toString(), name);        
+    }
+    
+    public String decode(PortletWindowID namespace, String name)
+    {
+        return decode(namespace.toString(), name);
+    }
+    
+    /*
+     * Jetspeed API, getPrefix
+     */    
     public String getPrefix()
     {
         return prefix;
     }
     
-    public String encode(String ns, String name)
+    /*
+     * Implementation
+     */
+    protected String encode(String ns, String name)
     {
-        return join(prefix,ns,"_",name,null,null);
+        return join(prefix, ns, "_", name, null, null);
     }
 
     public String encode(String ns1, String ns2, String name)
     {
-        return join(prefix,ns1,"_",ns2,"_",name);
+        return join(prefix, ns1, "_", ns2, "_", name);
     }
 
     public String decode(String ns, String name)
     {
-        if (!name.startsWith(prefix)) return null;
-        String tmp = join(prefix,ns,"_",null,null,null);
-        if (!name.startsWith(tmp)) return null;
+        if (!name.startsWith(prefix))
+            return null;
+        String tmp = join(prefix, ns, "_", null, null, null);
+        if (!name.startsWith(tmp))
+            return null;
         return name.substring(tmp.length());
     }
-
-    public String encode(long id, String name)
-    {
-        return encode(new Long(id).toString(),name);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.util.NamespaceMapper#encode(org.apache.pluto.om.common.ObjectID, java.lang.String)
-     */
-    public String encode(ObjectID ns, String name)
-    {
-        return encode(ns.toString(),name);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.util.NamespaceMapper#encode(org.apache.pluto.om.common.ObjectID, org.apache.pluto.om.common.ObjectID, java.lang.String)
-     */
-    public String encode(ObjectID ns1, ObjectID ns2, String name)
-    {
-        return encode(ns1.toString(),ns2.toString(),name);
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.util.NamespaceMapper#decode(org.apache.pluto.om.common.ObjectID, java.lang.String)
-     */
-    public String decode(ObjectID ns, String name)
-    {
-        return decode(ns.toString(),name);
-    }
     
-    private static String join(String s1, String s2, String s3, String s4, String s5, String s6)
+    protected static String join(String s1, String s2, String s3, String s4,
+            String s5, String s6)
     {
         int len = 0;
         if (s1 != null)
         {
-            len+=s1.length();
+            len += s1.length();
             if (s2 != null)
             {
-                len+=s2.length();
+                len += s2.length();
                 if (s3 != null)
                 {
-                    len+=s3.length();
+                    len += s3.length();
                     if (s4 != null)
                     {
-                        len+=s4.length();
+                        len += s4.length();
                         if (s5 != null)
                         {
-                            len+=s5.length();
+                            len += s5.length();
                             if (s6 != null)
                             {
-                                len+=s6.length();
+                                len += s6.length();
                             }
                         }
                     }
@@ -125,35 +118,35 @@ public class JetspeedNamespaceMapperImpl implements JetspeedNamespaceMapper
         }
         char[] buffer = new char[len];
         int index = 0;
-        if (s1 != null) 
+        if (s1 != null)
         {
             len = s1.length();
-            s1.getChars(0,len,buffer,index);
-            index+= len;
-            if (s2 != null) 
+            s1.getChars(0, len, buffer, index);
+            index += len;
+            if (s2 != null)
             {
                 len = s2.length();
-                s2.getChars(0,len,buffer,index);
-                index+= len;
-                if (s3 != null) 
+                s2.getChars(0, len, buffer, index);
+                index += len;
+                if (s3 != null)
                 {
                     len = s3.length();
-                    s3.getChars(0,len,buffer,index);
-                    index+= len;
-                    if (s4 != null) 
+                    s3.getChars(0, len, buffer, index);
+                    index += len;
+                    if (s4 != null)
                     {
                         len = s4.length();
-                        s4.getChars(0,len,buffer,index);
-                        index+= len;
-                        if (s5 != null) 
+                        s4.getChars(0, len, buffer, index);
+                        index += len;
+                        if (s5 != null)
                         {
                             len = s5.length();
-                            s5.getChars(0,len,buffer,index);
-                            index+= len;
-                            if (s6 != null) 
+                            s5.getChars(0, len, buffer, index);
+                            index += len;
+                            if (s6 != null)
                             {
                                 len = s6.length();
-                                s6.getChars(0,len,buffer,index);
+                                s6.getChars(0, len, buffer, index);
                             }
                         }
                     }

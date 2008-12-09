@@ -101,7 +101,7 @@ public class SpringComponentManager implements ComponentManager
     {        
         // Using \ characters will corrupt the path when used as (Spring expanded) variables
         // making sure default (Java) path separators are used which somehow always work, even on Windows platform.
-        appRoot = appRoot.replace('\\', '/');        
+        appRoot = appRoot.replace('\\', '/');
         
         if (initProperties == null)
         {

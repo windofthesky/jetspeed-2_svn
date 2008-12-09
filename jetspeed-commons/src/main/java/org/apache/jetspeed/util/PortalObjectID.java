@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.util;
 
-import org.apache.pluto.om.common.ObjectID;
 
 /**
  * PortalObjectID
@@ -24,7 +23,7 @@ import org.apache.pluto.om.common.ObjectID;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PortalObjectID extends ObjectID
+public interface PortalObjectID
 {
     long getOID();    
 }

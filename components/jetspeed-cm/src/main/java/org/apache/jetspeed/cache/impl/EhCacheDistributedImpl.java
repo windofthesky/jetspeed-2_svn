@@ -43,6 +43,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
     protected List remoteListeners = new ArrayList();
 
 	private Map refList = Collections.synchronizedMap(new HashMap());
+	private boolean removeAllLocal = false;
 
 
 	public EhCacheDistributedImpl(Ehcache ehcache)
@@ -91,6 +92,14 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 
 	public CacheElement createElement(Object key, Object content)
 	{
+        if (!(key instanceof Serializable))
+        {
+            throw new IllegalArgumentException("The cache key must be serializable.");
+        }
+        if (!(content instanceof DistributedCacheObject))
+        {
+            throw new IllegalArgumentException("The cache content must be a distributed cache object.");
+        }
 		return new EhCacheDistributedElementImpl((Serializable)key, (DistributedCacheObject)content);
 	}
 
@@ -129,7 +138,13 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 	
     public void clear()
     {
-        super.clear();
+        // invoke removeAll with local flag set
+        synchronized (refList)
+        {
+            removeAllLocal = true;
+            super.clear();
+            removeAllLocal = false;
+        }
         notifyListeners(true, CacheElement.ActionRemoved,null,null);
     }
 
@@ -242,7 +257,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 
 	public void notifyElementEvicted(Ehcache cache, Element arg1)
 	{
-			notifyElement(cache, false, arg1,CacheElement.ActionEvicted);
+	    notifyElement(cache, false, arg1,CacheElement.ActionEvicted);
 	}
 
 	public void notifyElementExpired(Ehcache cache, Element arg1)
@@ -253,8 +268,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 	public void notifyElementPut(Ehcache cache, Element arg1)
 			throws CacheException
 	{
-		
-			notifyElement(cache, false, arg1, CacheElement.ActionAdded);
+		notifyElement(cache, false, arg1, CacheElement.ActionAdded);
 	}
 
 	public void notifyElementRemoved(Ehcache cache, Element arg1)
@@ -277,20 +291,25 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 		}
 		try
 		{
-			Iterator it = refList.entrySet().iterator();
-			while (it.hasNext())
-			{
-				EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl)it.next();
-				notifyListeners(false, CacheElement.ActionRemoved,e.getKey(),e);
-				e.notifyChange(CacheElement.ActionRemoved);
-			}
-			refList.clear();
-		} catch (Exception e)
+		    // synchronize on refList to ensure exclusive
+		    // operation on refList and removeAllLocal flag
+		    synchronized (refList)
+		    {
+		        // notify all listeners of element removal
+		        // and each element of its removal
+		        Iterator it = refList.values().iterator();
+		        while (it.hasNext())
+		        {
+		            EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl)it.next();
+		            notifyListeners(removeAllLocal, CacheElement.ActionRemoved,e.getKey(),e.getContent());
+		            e.notifyChange(CacheElement.ActionRemoved);
+		        }
+		        refList.clear();
+		    }
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-
-	
 	}
-
 }

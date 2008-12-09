@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.om.window.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <p>The ContentDispatcher control interface used for updating the content of

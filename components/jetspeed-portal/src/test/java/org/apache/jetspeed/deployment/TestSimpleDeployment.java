@@ -29,15 +29,15 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.deployment.impl.StandardDeploymentManager;
 import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
-import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.JarHelper;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * <p>
@@ -151,7 +151,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
         verifyDemoAppCreated(TEST_PORTLET_APP_NAME, demoApp);
         verifyDemoAppCreated("TestSecurityRoles", securityApp);
        
-        MutablePortletApplication jetspeedApp = portletRegistry.getPortletApplicationByIdentifier("jetspeed");
+        PortletApplication jetspeedApp = portletRegistry.getPortletApplicationByIdentifier("jetspeed");
         assertNotNull("jetspeed was not registered into the portlet registery.", jetspeedApp);
         assertFalse("local app, jetspeed, got deployed when it should have only been registered.", new File(webAppsDir
                 + "/jetspeed").exists());
@@ -306,11 +306,11 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
         
         verifyDemoAppCreated(TEST_PORTLET_APP_NAME, demoApp);
         
-        MutablePortletApplication app = portletRegistry.getPortletApplication(TEST_PORTLET_APP_NAME);
+        PortletApplication app = portletRegistry.getPortletApplication(TEST_PORTLET_APP_NAME);
         
-        PortletDefinition portlet = (PortletDefinition) app.getPortletDefinitionList().iterator().next();
+        PortletDefinition portlet = (PortletDefinition) app.getPortlets().iterator().next();
         
-        MutablePortletEntity entity = entityAccess.newPortletEntityInstance(portlet);
+        PortletEntity entity = entityAccess.newPortletEntityInstance(portlet);
         entity.setId("testEnity");
         
         entityAccess.storePortletEntity(entity);
@@ -329,7 +329,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
     private void verifyDemoAppCreated( String appName, File appFile )
     {
         assertNotNull(appName + " was not registered into the portlet registery.", portletRegistry
-                .getPortletApplicationByIdentifier(TEST_PORTLET_APP_NAME));
+                .getPortletApplication(TEST_PORTLET_APP_NAME));
         assertTrue(appName + " directory was not created, app not deployed.", appFile.exists());
     }
     

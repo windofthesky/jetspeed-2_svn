@@ -31,10 +31,10 @@
       </p>
 	 <source>
 	 <![CDATA[
-cd $server_home
+cd tomcat-express
 cd bin
 # Windows
-startup.bat
+startup.bat 
 # Linux
 ./startup.sh
      ]]>

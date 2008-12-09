@@ -24,7 +24,7 @@ import java.io.Serializable;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class JetspeedLongObjectID implements PortalObjectID, Serializable
+public class JetspeedLongObjectID implements Serializable
 {
     private Long oid;
     
