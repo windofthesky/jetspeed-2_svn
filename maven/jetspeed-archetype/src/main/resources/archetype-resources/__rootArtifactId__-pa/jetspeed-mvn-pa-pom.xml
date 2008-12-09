@@ -43,33 +43,6 @@
   </build>
 
   <profiles>
-    <profile>
-      <id>db</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>resources</id>
-                <goals>
-                  <goal>resources</goal>
-                </goals>
-                <phase>process-resources</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-        <resources>
-          <resource>
-            <directory>${dollar}{basedir}/src/conf/jpox</directory>
-            <targetPath>../jpox</targetPath>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-      </build>
-    </profile>
 
     <profile>
       <id>deploy</id>

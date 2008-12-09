@@ -32,10 +32,11 @@
 
   <properties>
     <org.apache.portals.jetspeed.version>2.2-SNAPSHOT</org.apache.portals.jetspeed.version>
-    <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
+    <org.apache.pluto.version>2.0.0-SNAPSHOT</org.apache.pluto.version>
+    <ccpp.version>1.0</ccpp.version>
     <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
     <servlet-api.version>2.4</servlet-api.version>
-    <portlet-api.version>1.0</portlet-api.version>
+    <portlet-api.version>2.0</portlet-api.version>
     <portal.context.name>${artifactId}</portal.context.name>
     <org.apache.jetspeed.server.home>/opt/apache-tomcat-5.5.26/</org.apache.jetspeed.server.home>
 
@@ -62,7 +63,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>portlet-api</groupId>
+        <groupId>javax.portlet</groupId>
         <artifactId>portlet-api</artifactId>
         <version>${dollar}{portlet-api.version}</version>
       </dependency>
@@ -77,7 +78,7 @@
   <dependencies>
     <!-- Provided Dependencies -->
     <dependency>
-      <groupId>portlet-api</groupId>
+      <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -125,13 +126,6 @@
                 <depends>install-portal,install-pa</depends>
               </target>
               <target>
-                <id>db-pa</id>
-                <depends>install-pa</depends>
-                <name>pa</name>
-                <dir>@rootdir@/${artifactId}-pa</dir>
-                <profiles>db</profiles>
-              </target>
-              <target>
                 <id>db-portal</id>
                 <depends>install-portal</depends>
                 <name>portal</name>
@@ -140,7 +134,7 @@
               </target>
               <target>
                 <id>db</id>
-                <depends>db-portal,db-pa</depends>
+                <depends>db-portal</depends>
               </target>
               <target>
                 <id>deploy-pa</id>

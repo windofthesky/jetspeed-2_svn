@@ -220,7 +220,10 @@
                   <deployments>
                     <!-- shared/lib -->
                     <deployment>
-                      <artifact>portlet-api:portlet-api:jar</artifact>
+                      <artifact>javax.portlet:portlet-api:jar</artifact>
+                    </deployment>
+                    <deployment>
+                      <artifact>javax.ccpp:ccpp:jar</artifact>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.jetspeed-2:jetspeed-api:jar</artifact>
@@ -229,23 +232,13 @@
                       <artifact>org.apache.portals.jetspeed-2:jetspeed-commons:jar</artifact>
                     </deployment>
                     <deployment>
-                      <artifact>org.apache.pluto:pluto:jar</artifact>
+                      <artifact>org.apache.pluto:pluto-container-api:jar</artifact>
+                    </deployment>
+                    <deployment>
+                      <artifact>org.apache.pluto:pluto-taglib:jar</artifact>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.bridges:portals-bridges-common:jar</artifact>
-                    </deployment>
-                    <!-- common/endorsed -->
-                    <deployment>
-                      <artifact>xalan:xalan:jar</artifact>
-                      <destination>system</destination>
-                    </deployment>
-                    <deployment>
-                      <artifact>xerces:xercesImpl:jar</artifact>
-                      <destination>system</destination>
-                    </deployment>
-                    <deployment>
-                      <artifact>xml-apis:xml-apis:jar</artifact>
-                      <destination>system</destination>
                     </deployment>
                     <deployment>
                       <artifact>${dollar}{org.apache.jetspeed.production.jdbc.driver.groupId}:${dollar}{org.apache.jetspeed.production.jdbc.driver.artifactId}:jar</artifact>
@@ -284,9 +277,14 @@
                 <type>war</type>
               </dependency>
               <dependency>
-                <groupId>portlet-api</groupId>
+                <groupId>javax.portlet</groupId>
                 <artifactId>portlet-api</artifactId>
                 <version>${dollar}{portlet-api.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>javax.ccpp</groupId>
+                <artifactId>ccpp</artifactId>
+                <version>${dollar}{ccpp.version}</version>
               </dependency>
               <dependency>
                 <groupId>org.apache.portals.jetspeed-2</groupId>
@@ -300,7 +298,12 @@
               </dependency>
               <dependency>
                 <groupId>org.apache.pluto</groupId>
-                <artifactId>pluto</artifactId>
+                <artifactId>pluto-container-api</artifactId>
+                <version>${dollar}{org.apache.pluto.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.pluto</groupId>
+                <artifactId>pluto-taglib</artifactId>
                 <version>${dollar}{org.apache.pluto.version}</version>
               </dependency>
               <dependency>

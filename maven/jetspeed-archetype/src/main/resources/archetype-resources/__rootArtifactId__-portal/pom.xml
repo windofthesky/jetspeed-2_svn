@@ -62,6 +62,12 @@
       <version>${dollar}{org.apache.portals.jetspeed.version}</version>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>org.apache.pluto</groupId>
+      <artifactId>pluto-container-api</artifactId>
+      <version>${dollar}{org.apache.pluto.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
