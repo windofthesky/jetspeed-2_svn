@@ -26,6 +26,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.components.util.ConfigurationProperties;
+
 /**
  * EhCacheConfigResource
  * 
@@ -34,6 +38,8 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class EhCacheConfigResource extends AbstractResource implements InitializingBean
 {
+    protected static Log log = LogFactory.getLog(EhCacheConfigResource.class);
+    
     // Constants
     
     public static final String EHCACHE_CONFIG_RESOURCE_PROP_NAME = "org.apache.jetspeed.ehcache.config.resource";
@@ -82,6 +88,7 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     
     // Members
 
+    private ConfigurationProperties configuration;
     private String defaultConfigResource;
     private boolean test;
     private String defaultGroupAddress;
@@ -102,6 +109,47 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
      */
     public void afterPropertiesSet()
     {
+        // copy specified configuration settings
+        if (configuration != null)
+        {
+            if (configuration.getString(EHCACHE_CONFIG_RESOURCE_PROP_NAME) != null)
+            {
+                defaultConfigResource = configuration.getString(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_GROUP_ADDRESS_PROP_NAME) != null)
+            {
+                defaultGroupAddress = configuration.getString(EHCACHE_GROUP_ADDRESS_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_GROUP_PORT_PROP_NAME) != null)
+            {
+                defaultGroupPort = configuration.getString(EHCACHE_GROUP_PORT_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_GROUP_TTL_PROP_NAME) != null)
+            {
+                defaultGroupTTL = configuration.getString(EHCACHE_GROUP_TTL_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_HOSTNAME_PROP_NAME) != null)
+            {
+                defaultHostname = configuration.getString(EHCACHE_HOSTNAME_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_PORT_PROP_NAME) != null)
+            {
+                defaultPort = configuration.getString(EHCACHE_PORT_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME) != null)
+            {
+                defaultPageManagerMaxElements = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME) != null)
+            {
+                defaultPageManagerElementTTL = configuration.getString(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME);
+            }
+            if (configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME) != null)
+            {
+                defaultPageManagerMaxFiles = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME);
+            }
+        }
+        
         // set system properties used in global cache configuration
         if (System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME) == null)
         {
@@ -153,7 +201,9 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
         }
 
         // setup delegate ClassPathResource
-        classPathResource = new ClassPathResource(System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME));
+        final String configResource = System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+        log.info("Configured with resource: "+configResource);
+        classPathResource = new ClassPathResource(configResource);
     }
     
     // AbstractResource implementation
@@ -214,6 +264,14 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     
     // Data access
         
+    /**
+     * @param configuration the configuration to set
+     */
+    public void setConfiguration(ConfigurationProperties configuration)
+    {
+        this.configuration = configuration;
+    }
+
     /**
      * @param defaultConfigResource the defaultConfigResource to set
      */

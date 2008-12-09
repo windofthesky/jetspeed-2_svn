@@ -21,6 +21,7 @@
     <!-- Cache Manager -->
     <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
         <meta key="j2:cat" value="default,cache"/>
+        <property name="configuration" ref="portal_configuration"/>
         <property name="defaultConfigResource" value="ehcache.xml"/>
     </bean>
 
