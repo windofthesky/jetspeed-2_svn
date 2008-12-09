@@ -465,7 +465,7 @@
       <Criteria>
         <Criterion name="page">
           <type value="hard.coded"/>
-          <value value="/${parentArtifactId}-account.psml"/>
+          <value value="/my-account.psml"/>
           <fallBackOrder value="0"/>
           <fallBackType value="0"/>
         </Criterion>
