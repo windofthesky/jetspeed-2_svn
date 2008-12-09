@@ -78,7 +78,7 @@
                     </div>
                 </p>
                 <p>
-                    <em>Note: depending on your database platform, the value of 'org.apache.jetspeed.production.database.default.name' property can be one of the followings:</em>
+                    <em>Note: depending on your database platform, the value of 'org.apache.jetspeed.production.database.default.name' property can be one of the followings depending on your database platform:</em>
                     <ul>
                         <li>db2</li>
                         <li>db2v8</li>
@@ -91,6 +91,7 @@
                         <li>postgresql</li>
                         <li>sapdb</li>
                     </ul>
+                    (For details about support for databases, you can refer to <a href="http://db.apache.org/ddlutils/">Apache DB Project - DdlUtils Homepage</a>.)
                 </p>
                 <p>
                     The following <strong><code>jetspeed-mvn-settings.xml</code></strong> provides a sample configuration using a MySQL database.
@@ -168,8 +169,28 @@
                     For login, use one of the following username/password combinations: admin/admin, user/user, jetspeed/jetspeed
                 </p>
             </subsection>
+            <subsection name="Deploying the jetspeed-min Portal">
+                <p>
+                  If you don't need some demo portlet applications, you can just build Jetspeed with only j2-admin portlet application by the following command:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=min</pre>
+                    </div>
+                  With the above command, the Jetspeed Maven Plugin will build and deploy Jetspeed portal with some administrative PSML folders and pages and j2-admin portlet application.
+                </p>
+                <p>
+                    Start your Tomcat:
+                    <div class="source"><pre>$ $TOMCAT_HOME/bin/catalina.sh run</pre>
+                    </div>
+                </p>
+                <p>
+                    Use the jetspeed-min Portal:
+                    <a class="externalLink" href="http://localhost:8080/jetspeed">http://localhost:8080/jetspeed</a>
+                </p>
+                <p>
+                    Now you can see the Jetspeed portal with some administrative menus only.
+                </p>
+            </subsection>
         </section>
-		<section name='Maven Profiles'>
+        <section name='Maven Profiles'>
             <p>The following profiles can be supplied when building </p>
             <div>
                 <table>

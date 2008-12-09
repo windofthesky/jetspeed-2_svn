@@ -22,12 +22,305 @@
     <title>Quickstart a new custom Jetspeed Portal project using the jetspeed-archetype Maven Plugin</title>
     <authors>
       <person name="Ate Douma" email="ate@douma.nu" />
+      <person name="Woonsan Ko" email="woonsan@douma.nu" />
     </authors>
   </properties>
   <body>
-    <section name="Using the jetspeed-archetype Maven Plugin">
+    <section name="Quickstart a new custom Jetspeed Portal project using the jetspeed-archetype Maven Plugin">
       <p>
+        Jetspeed-2.2 provides an archetype Maven plugin to allow portal developers to create custom portal projects very easily. When starting a new Jetspeed-based portal project, we strongly recommend that you create a custom portal project by the jetspeed-archetype Maven Plugin, and do not edit the Jetspeed-2 source and resources directly.
       </p>
+      <p>
+        This document will guide you how to run the command and the steps to create a sample portal named <strong>hello</strong>.
+      </p>
+      <p>You need the following prerequisites:
+          <ul>
+              <li>Java Development Kit 1.5</li>
+              <li><a class="externalLink" href="http://maven.apache.org/">Apache Maven</a> 2.0.9 or higher</li>
+              <li><a class="externalLink" href="http://tomcat.apache.org/">Apache Tomcat</a> 5.5.26 or higher</li>
+          </ul>
+      </p>
+      <subsection name="Optional: Building and Installing Jetspeed-2 Maven Plugins">
+          <p>
+            Because Jetspeed Maven Plugins and Archetype Plugins will be automatically downloaded by Maven-2, you don't need to build and install those from the Jetspeed-2 source.
+          </p>
+          <p><em>Note</em>: you may skip this section for simplicity in normal cases.</p>
+          <p>
+            However, if you want this for some reasons, you can build and install the Jetspeed-2 Maven Plugins and Archetype Plugins from the source of Jetspeed-2 with the following command in the root directory of Jetspeed-2 source:
+            <div class="source"><pre>$mvn install -P init</pre>
+            </div>
+          </p>
+          <p>
+              This will ensure the required Jetspeed-2 Maven plugins are build and installed as well as the jetspeed-portal-resources artifact.
+          </p>
+      </subsection>
+      <subsection name="Using the jetspeed-archetype Maven Plugin">
+        <p>
+          To use jetspeed-archetype Maven Plugin, you can run a command like the following:
+          <div class="source"><code><pre>mvn org.apache.maven.plugins:maven-archetype-plugin:2.0-alpha-4:generate \
+    -DarchetypeGroupId=org.apache.portals.jetspeed-2 \
+    -DarchetypeArtifactId=jetspeed-archetype \
+    -DarchetypeVersion=2.2-SNAPSHOT \
+    -DartifactId=hello \
+    -Dpackage=org.example \
+    -DgroupId=org.example -Dversion=1.0-SNAPSHOT</pre></code></div>
+        </p>
+        <p>In the above command, the variables, "artifactId", "package" and "groupId", are project-specific ones. So you should provide variables for your project.</p>
+        <p>By the way, the other variables in the above command are from the Maven Archetype Plugin Specification. Please refer to <a href="http://maven.apache.org/plugins/maven-archetype-plugin/">Maven Archetype Plugin</a> homepage for details.</p>
+      </subsection>
+      <subsection name="Generating Hello Portal Application Example">
+        <p>
+          To build a custom portal project named 'hello', you may need to move to a folder under which your project folder should be located. For example,
+          <div class="source"><code><pre>$ cd ~/projects
+$ mvn org.apache.maven.plugins:maven-archetype-plugin:2.0-alpha-4:generate \
+-DarchetypeGroupId=org.apache.portals.jetspeed-2 \
+-DarchetypeArtifactId=jetspeed-archetype \
+-DarchetypeVersion=2.2-SNAPSHOT \
+-DartifactId=hello \
+-Dpackage=org.example \
+-DgroupId=org.example -Dversion=1.0-SNAPSHOT
+          </pre></code></div>
+        </p>
+        <p>
+          <em>Note: </em>After running the above command, you will meet a prompt for confirmation. By pressing enter key it will continue to generate a custom portal project.
+        </p>
+        <p>With the above command, the <strong>jetspeed-archetype</strong> generates a complete Maven-2 project directory structure for developing a custom portal as well as portlet applications. Here is an overview of directories created by the jetspeed-archetype (directories are relative to the custom portal root):</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Directory</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>hello</td>
+              <td>Project root directory</td>
+            </tr>
+            <tr>
+              <td>hello/hello-portal</td>
+              <td>Custom portal web application root directory</td>
+            </tr>
+            <tr>
+              <td>hello/hello-portal/src</td>
+              <td>Source directory for custom portal</td>
+            </tr>
+            <tr>
+              <td>hello/hello-portal/src/main/webapp/WEB-INF/pages</td>
+              <td>Source directory for custom PSML page sources</td>
+            </tr>
+            <tr>
+              <td>hello/hello-portal/src/sql/min</td>
+              <td>Source directory for seeding initial database</td>
+            </tr>
+            <tr>
+              <td>hello/hello-pa</td>
+              <td>Custom portlet application root directory</td>
+            </tr>
+            <tr>
+              <td>hello/hello-pa/src</td>
+              <td>Source directory for custom portlet application</td>
+            </tr>
+          </tbody>
+        </table>
+      </subsection>
+      <subsection name="Building Hello Portal Application Example">
+        <p>
+          To configure the generated portal project, you need to edit <strong><code>jetspeed-mvn-settings.xml</code></strong> file in the project root directory and change the following:
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>org.apache.jetspeed.server.home</td>
+                <td>The Tomcat server directory which is the target of the custom portal deployment.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.jdbc.driver.groupId</td>
+                <td>The groupdId of your JDBC driver. For example, this can be "org.apache.derby" for Apache Derby JDBC driver.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.jdbc.driver.artifactId</td>
+                <td>The artifactId of your JDBC driver. For example, this can be "derby" for Apache Derby JDBC driver.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.jdbc.driver.version</td>
+                <td>The version of your JDBC driver.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.database.default.name</td>
+                <td>
+                  The database name which is used by DDLUtils to generate database schema SQL scripts for your specific database.
+                  Depending on your database platform, this must be one of the followings: "db2", "db2v8", "derby", "mssql", "mysql", "mysql5", "oracle9", "oracle10", "postgresql", "sapdb" and more. (For details about support for databases, you can refer to <a href="http://db.apache.org/ddlutils/">Apache DB Project - DdlUtils Homepage</a>.)
+                </td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.database.url</td>
+                <td>The JDBC URL for your database access.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.database.driver</td>
+                <td>The JDBC driver class name for your database access.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.database.user</td>
+                <td>The database user name for your database access.</td>
+              </tr>
+              <tr>
+                <td>org.apache.jetspeed.production.database.password</td>
+                <td>The database user password for your database access.</td>
+              </tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          Initially, the <strong>jetspeed-archetype</strong> generates a <strong><code>jetspeed-mvn-settings.xml</code></strong> to use Apache Derby like the following example:
+          <div class="source"><code><pre><![CDATA[<settings xmlns="http://maven.apache.org/POM/4.0.0">
+  <profiles>
+    <profile>
+    
+      ...
+      
+      <properties>
+        <org.apache.jetspeed.server.home>/change/this/apache-tomcat-5.5.26/</org.apache.jetspeed.server.home>
+        <org.apache.jetspeed.production.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.production.jdbc.driver.groupId>
+        <org.apache.jetspeed.production.jdbc.driver.artifactId>derby</org.apache.jetspeed.production.jdbc.driver.artifactId>
+        <org.apache.jetspeed.production.jdbc.driver.version>10.3.2.1</org.apache.jetspeed.production.jdbc.driver.version>
+        <org.apache.jetspeed.production.database.default.name>derby</org.apache.jetspeed.production.database.default.name>
+        <org.apache.jetspeed.production.database.url>jdbc:derby:/tmp/jetspeed/derby/productiondb;create=true</org.apache.jetspeed.production.database.url>
+        <org.apache.jetspeed.production.database.driver>org.apache.derby.jdbc.EmbeddedDriver</org.apache.jetspeed.production.database.driver>
+        <org.apache.jetspeed.production.database.user></org.apache.jetspeed.production.database.user>
+        <org.apache.jetspeed.production.database.password></org.apache.jetspeed.production.database.password>
+      </properties>
+    </profile>
+  </profiles>
+</settings>
+          ]]></pre></code></div>
+        </p>
+        <p>
+          So, if you want to deploy your custom portal to other Tomcat location and to use other database, you should change the "org.apache.jetspeed.server.home" property and the other database-related properties. For example, the following shows one usage with MySQL database:
+          <div class="source"><code><pre><![CDATA[<settings xmlns="http://maven.apache.org/POM/4.0.0">
+  <profiles>
+    <profile>
+    
+      ...
+      
+      <properties>
+        <org.apache.jetspeed.server.home>C:/apache-tomcat-5.5.26/</org.apache.jetspeed.server.home>
+        <org.apache.jetspeed.production.jdbc.driver.groupId>mysql</org.apache.jetspeed.production.jdbc.driver.groupId>
+        <org.apache.jetspeed.production.jdbc.driver.artifactId>mysql-connector-java</org.apache.jetspeed.production.jdbc.driver.artifactId>
+        <org.apache.jetspeed.production.jdbc.driver.version>5.1.6</org.apache.jetspeed.production.jdbc.driver.version>
+        <org.apache.jetspeed.production.database.default.name>mysql5</org.apache.jetspeed.production.database.default.name>
+        <org.apache.jetspeed.production.database.url>jdbc:mysql://127.0.0.1/jetspeed?useServerPrepStmts=false&amp;jdbcCompliantTruncation=false</org.apache.jetspeed.production.database.url>
+        <org.apache.jetspeed.production.database.driver>com.mysql.jdbc.Driver</org.apache.jetspeed.production.database.driver>
+        <org.apache.jetspeed.production.database.user>username</org.apache.jetspeed.production.database.user>
+        <org.apache.jetspeed.production.database.password>password</org.apache.jetspeed.production.database.password>
+      </properties>
+    </profile>
+  </profiles>
+</settings>
+          ]]></pre></code></div>
+        </p>
+        <p>
+            You can build and deploy your custom portal to your Tomcat installation by using the following command:
+            <div class="source"><pre>$mvn org.apache.portals.jetspeed-2:jetspeed-mvn-maven-plugin:mvn -Dtarget=all</pre>
+            </div>
+            You can shorten the above command by adding the Jetspeed Maven Plugin's groupId to the list of groupIds searched by default.
+            To do this, you need to add the following to your ${user.home}/.m2/settings.xml file:
+            <div class="source"><pre>&lt;settings xmlns="http://maven.apache.org/POM/4.0.0"&gt;
+&lt;pluginGroups&gt;
+&lt;!-- add the following line to shorten the command invoking the Jetspeed Maven Plugin. --&gt;
+&lt;pluginGroup&gt;org.apache.portals.jetspeed-2&lt;/pluginGroup&gt;
+&lt;/pluginGroups&gt;
+&lt;/settings&gt;</pre></div>
+            Now you can use a shorter command like the following:
+            <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=all</pre>
+            </div>
+        </p>
+        <p>
+            Start your Tomcat:
+            <div class="source"><pre>$ $TOMCAT_HOME/bin/catalina.sh run</pre>
+            </div>
+        </p>
+        <p>
+            Use your custom portal:
+            <a class="externalLink" href="http://localhost:8080/hello">http://localhost:8080/hello</a>
+        </p>
+      </subsection>
+      <subsection name="Advanced Build Options">
+        <p>
+          By the command, `$mvn jetspeed:mvn -Dtarget=all', the <strong>jetspeed-archtype</strong> will build and install your custom portal project, initialize your database and finally deploy your portal and portlet application to your Tomcat.
+          However, during your continuous development, doing all tasks by the above command could be regarded as inefficient.
+        </p>
+        <p>
+          Therefore, <strong>jetspeed-archetype</strong> provides more advanced build options to fulfill various needs. You can build by setting a proper target you need in the following table:
+          <table>
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Example command</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>install-pa</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=install-pa</code></td>
+                <td>Cleans and builds the portlet application subproject.</td>
+              </tr>
+              <tr>
+                <td>install-portal</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=install-portal</code></td>
+                <td>Cleans and builds the portal application subproject</td>
+              </tr>
+              <tr>
+                <td>install</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=install</code></td>
+                <td>Does `install-pa' and `install-portal'.</td>
+              </tr>
+              <tr>
+                <td>db</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=db</code></td>
+                <td>Initializes the database and seed the initial data for your custom portal.</td>
+              </tr>
+              <tr>
+                <td>portal-seed</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=portal-seed</code></td>
+                <td>Just seeds the initial data for your custom portal without initializing the database.</td>
+              </tr>
+              <tr>
+                <td>deploy-pa</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=deploy-pa</code></td>
+                <td>Deploys your custom portlet application.</td>
+              </tr>
+              <tr>
+                <td>deploy-portal</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=deploy-portal</code></td>
+                <td>Deploys your custom portal.</td>
+              </tr>
+              <tr>
+                <td>portal-seed-dbpsml</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=portal-seed-dbpsml</code></td>
+                <td>Seeds database-based pages data for your custom portal application.</td>
+              </tr>
+              <tr>
+                <td>deploy-portal-dbpsml</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=deploy-portal-dbpsml</code></td>
+                <td>Deploys your custom portal with seeding database-based pages data.</td>
+              </tr>
+              <tr>
+                <td>all</td>
+                <td><code>mvn jetspeed:mvn -Dtarget=all</code></td>
+                <td>Installs and deploys your custom portal and custom portlet application, initializes and seeds the database.</td>
+              </tr>
+            </tbody>
+          </table>
+        </p>
+      </subsection>
     </section>
   </body>
 </document>
