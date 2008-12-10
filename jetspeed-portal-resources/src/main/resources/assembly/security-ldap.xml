@@ -106,7 +106,7 @@
   <bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldapSecurity" />
     <property name="baseDN" value="${ldap.base}" />
-    <property name="searchDN" value="" />
+    <property name="searchDN" value="${ldap.user.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="(objectClass=inetOrgPerson)" />
@@ -337,5 +337,8 @@
     <constructor-arg index="3">
        	<value>${ldap.search.scope}</value>
     </constructor-arg>
+    <constructor-arg index="4">
+       	<value>${ldap.user.searchBase}</value>
+    </constructor-arg>	    
   </bean>
 </beans>

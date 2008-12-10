@@ -34,6 +34,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
 import org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy;
@@ -75,13 +76,12 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         {
             if (userName == null)
             {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER,userName));
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
             }
             if (password == null)
             {
                 throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
             }
-
             authenticated = authenticateUser(userName, password);
             if (authenticated)
             {
@@ -91,10 +91,12 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         }
         catch (SecurityException authEx)
         {
-           if(authEx.getCause().getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
+            if (authEx.getCause().getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
             {
-               throw new SecurityException(SecurityException.INCORRECT_PASSWORD);
-            }else{
+                throw new SecurityException(SecurityException.INCORRECT_PASSWORD);
+            }
+            else
+            {
                 throw authEx;
             }
         }
@@ -115,12 +117,10 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         try
         {
             Hashtable env = context.getCtx().getEnvironment();
-            
             // String savedPassword = String.valueOf(getPassword(uid));
             String oldCredential = (String) env.get(Context.SECURITY_CREDENTIALS);
             String oldUsername = (String) env.get(Context.SECURITY_PRINCIPAL);
             String dn = lookupByUid(userName);
-            
             if (dn == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
@@ -129,7 +129,12 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             // are/can be stored in a subtree (searchScope sub-tree)
             // The looked up dn though is/should always be correct, just need to append the root context.
             if (!StringUtils.isEmpty(context.getRootContext()))
-                dn += "," + context.getRootContext();
+            {
+                if (DnUtils.encodeDn(dn).indexOf(DnUtils.encodeDn(context.getRootContext())) < 0)
+                {
+                    dn += "," + DnUtils.encodeDn(context.getRootContext());
+                }
+            }
             env.put(Context.SECURITY_PRINCIPAL, dn);
             env.put(Context.SECURITY_CREDENTIALS, password);
             new InitialContext(env);
@@ -140,11 +145,10 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         catch (AuthenticationException aex)
         {
             throw new SecurityException(aex);
-
         }
         catch (NamingException nex)
         {
-            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"authenticateUser", nex.getMessage()));
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "authenticateUser", nex.getMessage()));
         }
     }
 
@@ -161,6 +165,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             throw new SecurityException(e);
         }
     }
+
     protected SearchControls setSearchControls()
     {
         SearchControls controls = new SearchControls();
@@ -185,8 +190,8 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         // logger.debug("searchByWildCardedUid = " + query);
         cons.setSearchScope(Integer.parseInt(context.getMemberShipSearchScope()));
         // TODO: added this here for OpenLDAP (when users are stored in ou=People,o=evenSeas)
-        String searchBase = StringUtils.replace(getSearchDomain(), "," + context.getRootContext(), "");
-        NamingEnumeration results = ((DirContext) context.getCtx()).search(searchBase, query, cons);
+        // String searchBase = StringUtils.replace(getSearchDomain(), "," + context.getRootContext(), "");
+        NamingEnumeration results = ((DirContext) context.getCtx()).search(getSearchDomain(), query, cons);
         return results;
     }
 
@@ -218,6 +223,18 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 
     private String getSearchDomain()
     {
-        return "";
+        StringBuffer searchDomain = new StringBuffer();
+        if (!StringUtils.isEmpty(context.getUserSearchBase()))
+        {
+            searchDomain.append(context.getUserSearchBase());
+        }
+        if (searchDomain.length() == 0)
+        {
+            if (!StringUtils.isEmpty(context.getRootContext()))
+            {
+                searchDomain.append(context.getRootContext());
+            }
+        }
+        return searchDomain.toString();
     }
 }

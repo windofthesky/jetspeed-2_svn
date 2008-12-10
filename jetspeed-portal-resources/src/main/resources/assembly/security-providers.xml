@@ -22,7 +22,7 @@
   <!-- Security: Default Authentication Provider -->
   <bean id="org.apache.jetspeed.security.AuthenticationProvider"
     class="org.apache.jetspeed.security.impl.DefaultAuthenticationProvider">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="dbSecurity" />
     <constructor-arg index="0">
       <value>DefaultAuthenticator</value>
     </constructor-arg>

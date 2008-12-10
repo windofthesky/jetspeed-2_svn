@@ -39,37 +39,38 @@ public class LdapContextProxy implements InvocationHandler
     private Properties env;
     private LdapContext ctx;
     private LdapContextSource springContext;
-    private String initialContextFactory;    
+    private String initialContextFactory;
     private String userFilter;
     private String memberShipSearchScope;
-    
-   
-    public LdapContextProxy(LdapContextSource context,String factory,String userFilter,String memberShipSearchScope)    {
-        springContext = context; 
+    private String userSearchBase;
+
+    public LdapContextProxy(LdapContextSource context, String factory, String userFilter, String memberShipSearchScope,String userSearchBase)
+    {
+        springContext = context;
         env = new Properties();
         env.put(Context.INITIAL_CONTEXT_FACTORY, factory);
-        env.put(Context.PROVIDER_URL,springContext.getUrls()[0]+"/" + springContext.getBaseLdapPath());
+        env.put(Context.PROVIDER_URL, springContext.getUrls()[0]);
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_CREDENTIALS, springContext.getAuthenticationSource().getCredentials());
         env.put(Context.SECURITY_PRINCIPAL, springContext.getAuthenticationSource().getPrincipal());
-        
         this.initialContextFactory = factory;
         this.userFilter = userFilter;
         this.memberShipSearchScope = memberShipSearchScope;
+        this.userSearchBase = userSearchBase;
     }
-    
+
     public LdapContext getCtx() throws NamingException
     {
-        if ( ctx == null )
+        if (ctx == null)
         {
             ctx = new InitialLdapContext(env, null);
         }
         return ctx;
     }
-    
+
     private void closeCtx()
     {
-        if ( ctx != null )
+        if (ctx != null)
         {
             try
             {
@@ -81,17 +82,16 @@ public class LdapContextProxy implements InvocationHandler
             ctx = null;
         }
     }
+
     /*
      * (non-Javadoc)
-     * 
-     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-     *      java.lang.reflect.Method, java.lang.Object[])
+     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
      */
     public synchronized Object invoke(Object proxy, Method m, Object[] args) throws Throwable
     {
         Object result = null;
         boolean close = "close".equals(m.getName()) && args.length == 0;
-        if ( close && ctx == null )
+        if (close && ctx == null)
         {
             // don't need to do anything
             ;
@@ -99,11 +99,10 @@ public class LdapContextProxy implements InvocationHandler
         else
         {
             LdapContext ctx = getCtx();
-            
             try
             {
-                result = m.invoke(ctx,args);
-                if ( close )
+                result = m.invoke(ctx, args);
+                if (close)
                 {
                     closeCtx();
                 }
@@ -111,26 +110,24 @@ public class LdapContextProxy implements InvocationHandler
             catch (Throwable t)
             {
                 closeCtx();
-                
-                if ( t instanceof InvocationTargetException)
+                if (t instanceof InvocationTargetException)
                 {
-                    t = ((InvocationTargetException)t).getTargetException();
+                    t = ((InvocationTargetException) t).getTargetException();
                 }
                 if (t instanceof ServiceUnavailableException || t instanceof CommunicationException)
                 {
                     try
                     {
                         ctx = getCtx();
-                        result = m.invoke(ctx,args);
+                        result = m.invoke(ctx, args);
                     }
                     catch (Throwable t2)
                     {
                         closeCtx();
-                        if ( t2 instanceof InvocationTargetException)
+                        if (t2 instanceof InvocationTargetException)
                         {
-                            t2 = ((InvocationTargetException)t2).getTargetException();
+                            t2 = ((InvocationTargetException) t2).getTargetException();
                         }
-                        
                         throw t2;
                     }
                 }
@@ -139,6 +136,7 @@ public class LdapContextProxy implements InvocationHandler
         }
         return result;
     }
+
     public String getInitialContextFactory()
     {
         return initialContextFactory;
@@ -148,14 +146,23 @@ public class LdapContextProxy implements InvocationHandler
     {
         return userFilter;
     }
+    
+    public String getUserSearchBase()    
+    {
+        return this.userSearchBase;
+    }
 
     public String getRootContext()
     {
         return springContext.getBaseLdapPathAsString();
+        
+    }
+    public LdapContextSource getContextSource()
+    {
+        return this.springContext;
     }
     public String getMemberShipSearchScope()
     {
         return memberShipSearchScope;
     }
-
 }
