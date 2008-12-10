@@ -546,11 +546,7 @@ public class TestDatabasePageManagerCache extends TestCase
         for (final URL pathURL : urlLoader.getURLs())
         {
             // convert path URL to file path
-            String path = pathURL.getPath().replace("/", fileSeparator);
-            if (path.endsWith(fileSeparator))
-            {
-                path = path.substring(0, path.length()-fileSeparator.length());
-            }
+            String path = new File(pathURL.toURI()).getCanonicalPath();
 
             // build class path
             if (classPathBuilder.length() > 0)
