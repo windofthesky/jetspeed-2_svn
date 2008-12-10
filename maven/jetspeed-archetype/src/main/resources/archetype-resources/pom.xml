@@ -38,7 +38,7 @@
     <servlet-api.version>2.4</servlet-api.version>
     <portlet-api.version>2.0</portlet-api.version>
     <portal.context.name>${artifactId}</portal.context.name>
-    <org.apache.jetspeed.server.home>/opt/apache-tomcat-5.5.26/</org.apache.jetspeed.server.home>
+    <org.apache.jetspeed.server.home>/opt/apache-tomcat-5.5.27/</org.apache.jetspeed.server.home>
 
   </properties>
 
@@ -47,16 +47,6 @@
       <id>bluesunrise</id>
       <name>BlueSunrise Maven 2 Repository</name>
       <url>http://bluesunrise.com/maven2</url>
-    </repository>
-    <repository>
-      <id>bwwmm.ch.cam.ac.uk</id>
-      <name>for ostermiller pom only</name>
-      <url>http://wwmm.ch.cam.ac.uk/maven2</url>
-    </repository>
-    <repository>
-      <id>mvnsearch</id>
-      <name>for jdom and html cleaner</name>
-      <url>http://maven.xwiki.org/externals</url>
     </repository>
   </repositories>
 
