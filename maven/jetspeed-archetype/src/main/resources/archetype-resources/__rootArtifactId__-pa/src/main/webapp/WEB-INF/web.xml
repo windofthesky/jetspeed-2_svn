@@ -20,32 +20,5 @@
   under the License.
 -->
 <web-app>
-    <display-name>My Portal</display-name>
-
-    <description>Generated Portlet Wrapper</description>
-
-    <servlet>
-        <servlet-name>${parentArtifactId}-pa</servlet-name>
-        <display-name>${parentArtifactId}-pa Portlet</display-name>
-        <description>Portlet for Jetspeed Fusion</description>
-        <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
-        <init-param>
-            <param-name>registerAtInit</param-name>
-            <param-value>1</param-value>
-        </init-param>
-        <init-param>
-            <param-name>portletApplication</param-name>
-            <param-value>${parentArtifactId}-pa</param-value>
-        </init-param>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>JetspeedContainer</servlet-name>
-        <url-pattern>/container/*</url-pattern>
-    </servlet-mapping>
-
-    <taglib>
-        <taglib-uri>http://java.sun.com/portlet</taglib-uri>
-        <taglib-location>/WEB-INF/tld/portlet.tld</taglib-location>
-    </taglib>
+    <display-name>My Portlet Application</display-name>
 </web-app>
