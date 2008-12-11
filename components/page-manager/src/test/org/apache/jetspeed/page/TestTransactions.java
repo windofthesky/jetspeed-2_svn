@@ -63,16 +63,9 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
     
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "tx-page-manager.xml", "transaction.xml", "interceptors.xml" }; 
+        return new String[]{"database-page-manager.xml", "transaction.xml"}; 
     }
 
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "boot/datasource.xml"};
-    }
-    
     public void testTx() throws Exception
     {
         if (pageManager.folderExists("/"))
@@ -100,11 +93,11 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
         catch (Exception e)
         {
             System.out.println("Exception adding pages" + e);
-           // e.printStackTrace();
-            
         }
+
         System.out.println("--- after rollback");
         DatabasePageManagerCache.dump();
+
         assertFalse("page 1 found", pageManager.pageExists("/tx__test1.psml"));
         assertFalse("page 2 found", pageManager.pageExists("/tx__test2.psml"));
         assertFalse("page 3 found", pageManager.pageExists("/tx__test3.psml"));

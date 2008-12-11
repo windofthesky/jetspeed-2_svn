@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.cache;
 
+import java.util.List;
+
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -120,4 +122,25 @@ public interface JetspeedCache
     void addEventListener(JetspeedCacheEventListener listener, boolean local);
     
     void removeEventListener(JetspeedCacheEventListener listener, boolean local);
+    
+    /**
+     * Returns a list of all elements in the cache, whether or not they are expired.
+     * The returned keys are unique and can be considered a set. 
+     * @return the list of keys
+     */
+    List getKeys();
+    
+    /**
+     * get the size of the cache
+     *
+     * @return the size of the cache
+     */
+    int getSize();
+    
+    /**
+     * Returns whether this cache is currently part of a distributed cache cluster.
+     * 
+     * @return distributed flag
+     */
+    boolean isDistributed();
 }

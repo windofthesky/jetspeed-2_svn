@@ -53,8 +53,7 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
     
     protected String[] getConfigurations()
     {
-        return new String[]
-        { "secure-database-page-manager.xml", "transaction.xml" };
+        return new String[]{"secure-database-page-manager.xml", "transaction.xml"};
     }
 
     public void testSecurePageManager() throws Exception

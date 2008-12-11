@@ -348,6 +348,8 @@
               file="./src/webapp/WEB-INF/assembly/transaction.xml"/>
         <copy todir="${maven.build.dir}/classes"
               file="./src/webapp/WEB-INF/assembly/alternate/interceptors.xml"/>        
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/cache.xml"/>
         <java classname="org.apache.jetspeed.page.PageImporter" fork="yes">
           <classpath>
             <path refid="maven.dependency.classpath"/>
@@ -385,6 +387,8 @@
               file="./src/webapp/WEB-INF/assembly/transaction.xml"/>
         <copy todir="${maven.build.dir}/classes"
               file="./src/webapp/WEB-INF/assembly/alternate/interceptors.xml"/>        
+        <copy todir="${maven.build.dir}/classes"
+              file="./src/webapp/WEB-INF/assembly/cache.xml"/>
         <mkdir dir="./target/export/psml"></mkdir>
         <java classname="org.apache.jetspeed.page.PageImporter" fork="yes">
           <classpath>

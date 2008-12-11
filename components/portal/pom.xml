@@ -119,7 +119,7 @@ limitations under the License.
             <artifactId>mail</artifactId>
         </dependency>
         <dependency>
-        	<groupId>ehcache</groupId>
+        	<groupId>net.sf.ehcache</groupId>
         	<artifactId>ehcache</artifactId>
         </dependency>
         <dependency>

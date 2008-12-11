@@ -693,5 +693,13 @@ public interface PageManager
      * @param actions one or more portlet actions (view,edit,help,..)
      * @return
      */
-    public boolean checkConstraint(String securityConstraintName, String actions);    
+    public boolean checkConstraint(String securityConstraintName, String actions);
+    
+    /**
+     * Returns whether the page manager cache is currently part of a distributed
+     * cache cluster.
+     * 
+     * @return distributed flag
+     */
+    public boolean isDistributed();
 }

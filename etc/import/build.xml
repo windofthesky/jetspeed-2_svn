@@ -89,6 +89,7 @@ limitations under the License.
                 <include name="etc/db-ojb/*"/>
                 <include name="etc/import/assembly/import-page-manager.xml"/>
                 <include name="etc/import/assembly/repository-datasource-spring.xml"/>
+                <include name="src/webapp/WEB-INF/assembly/cache.xml"/>
                 <include name="src/webapp/WEB-INF/assembly/transaction.xml"/>
                 <include name="src/webapp/WEB-INF/assembly/alternate/interceptors.xml"/>
             </fileset>

@@ -135,9 +135,14 @@
     * stashRemoteCachePeers (optional) - specify "true" or "false".  Defaults to true.
       CachePeer objects are stashed for performance.
     * jndiUrls (mandatory) - specify a pipe separated list of jndiUrls,
-      in the form protocol//hostname:port      
+      in the form protocol//hostname:port
     -->
-  
+      
+    <cacheManagerPeerProviderFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+                                     properties="peerDiscovery=automatic,
+                                                 multicastGroupAddress=${org.apache.jetspeed.ehcache.group.address},
+                                                 multicastGroupPort=${org.apache.jetspeed.ehcache.group.port},
+                                                 timeToLive=${org.apache.jetspeed.ehcache.group.ttl}"/>
 
     <!--
     (Enable for distributed operation)
@@ -180,7 +185,10 @@
     Properties for JNDIRMICacheManagerPeerListenerFactory are the same as
     RMICacheManagerPeerListenerFactory.
     -->
-  
+
+    <cacheManagerPeerListenerFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+                                     properties="hostName=${org.apache.jetspeed.ehcache.hostname},
+                                                 port=${org.apache.jetspeed.ehcache.port}"/>
 
     <!-- Cache configuration.
 
@@ -345,6 +353,11 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true, replicatePuts=false,
+                            replicateUpdates=false, replicateUpdatesViaCopy=false,
+                            replicateRemovals=true"/>
    </cache>
 
 
@@ -366,6 +379,11 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true, replicatePuts=false,
+                            replicateUpdates=false, replicateUpdatesViaCopy=false,
+                            replicateRemovals=true"/>
    </cache>
 
    <cache name="portletDefinitionOidCache"
@@ -386,6 +404,11 @@
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
            memoryStoreEvictionPolicy="LFU">
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true, replicatePuts=false,
+                            replicateUpdates=false, replicateUpdatesViaCopy=false,
+                            replicateRemovals=true"/>
    </cache>
 
 
@@ -508,6 +531,13 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LFU">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                                   properties="replicateAsynchronously=true,
+                                               replicatePuts=false,
+                                               replicateUpdates=false,
+                                               replicateUpdatesViaCopy=false,
+                                               replicateRemovals=true"/>
+    </cache>
 
 </ehcache>

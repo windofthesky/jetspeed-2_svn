@@ -91,6 +91,7 @@ limitations under the License.
                 <include name="etc/dbpsml/assembly/repository-datasource-spring.xml"/>
                 <include name="etc/serializer/assembly/transaction.xml"/>
                 <include name="etc/dbpsml/assembly/alternate/interceptors.xml"/>
+                <include name="etc/dbpsml/assembly/cache.xml"/>
             </fileset>
         </copy>
 

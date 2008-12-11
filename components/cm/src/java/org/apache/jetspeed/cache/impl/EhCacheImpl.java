@@ -17,11 +17,15 @@
 package org.apache.jetspeed.cache.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.distribution.CacheManagerPeerProvider;
+import net.sf.ehcache.event.CacheEventListener;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.ContentCacheKey;
@@ -32,12 +36,12 @@ import org.apache.jetspeed.request.RequestContext;
 public class EhCacheImpl implements JetspeedCache
 {
     protected Ehcache ehcache;
-    protected List localListeners = new ArrayList();
-    protected List remoteListeners = new ArrayList();
+    protected Map cacheEventListenersMap;
     
     public EhCacheImpl(Ehcache ehcache)
     {
         this.ehcache = ehcache;
+        this.cacheEventListenersMap = new HashMap();
      }
 
     public CacheElement get(Object key)
@@ -68,14 +72,22 @@ public class EhCacheImpl implements JetspeedCache
     {
     	EhCacheElementImpl impl = (EhCacheElementImpl)element;
         ehcache.put(impl.getImplElement());
-		notifyListeners(true, CacheElement.ActionAdded,impl.getKey(),impl.getContent());
     }
     
     public CacheElement createElement(Object key, Object content)
     {
-    	if (!((key instanceof Serializable) ||  !(content instanceof Serializable)))
-    		throw new IllegalArgumentException("The cache key and the object to cache must be serializable."); //return null;
-   	    return new EhCacheElementImpl((Serializable)key, (Serializable)content);
+    	if (!(key instanceof Serializable))
+    	{
+    		throw new IllegalArgumentException("The cache key must be serializable.");
+    	}
+    	if (content instanceof Serializable)
+    	{
+            return new EhCacheElementImpl((Serializable)key, (Serializable)content);    	    
+    	}
+    	else
+    	{
+            return new EhCacheElementImpl((Serializable)key, content);
+    	}
     }
 
     public boolean remove(Object key)
@@ -84,8 +96,6 @@ public class EhCacheImpl implements JetspeedCache
         if (element == null)
             return false;
         boolean isRemoved = ehcache.remove(key);
-        if (isRemoved)
-    		notifyListeners(true, CacheElement.ActionRemoved,key,null);
         return isRemoved;
     }
     
@@ -100,7 +110,6 @@ public class EhCacheImpl implements JetspeedCache
     public void clear()
     {
         ehcache.removeAll();
-		notifyListeners(true, CacheElement.ActionRemoved,null,null);
     }
     
     public void evictContentForUser(String username)
@@ -113,22 +122,84 @@ public class EhCacheImpl implements JetspeedCache
         return;
     }
     
-    public void addEventListener(JetspeedCacheEventListener listener, boolean local)
+    public void addEventListener(final JetspeedCacheEventListener listener, final boolean local)
     {
-    	if (local)
-    		localListeners.add(listener);
-    	else
-    		remoteListeners.add(listener);
-    		
+        CacheEventListener cacheEventListener = new CacheEventListener()
+        {
+           public void notifyElementEvicted(Ehcache cache, Element element)
+           {
+               listener.notifyElementEvicted(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
+           }
+           
+           public void notifyElementExpired(Ehcache cache, Element element)
+           {
+               listener.notifyElementExpired(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
+           }
+           
+           public void notifyElementPut(Ehcache cache, Element element)
+           {
+               listener.notifyElementAdded(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
+           }
+           
+           public void notifyElementUpdated(Ehcache cache, Element element)
+           {
+               listener.notifyElementChanged(EhCacheImpl.this, local, element.getKey(), element.getObjectValue());
+           }
+           
+           public void notifyElementRemoved(Ehcache cache, Element element)
+           {
+               listener.notifyElementRemoved(EhCacheImpl.this, local, element.getKey(), ((element == null) ? null : element.getObjectValue()));
+           }
+           
+           public void notifyRemoveAll(Ehcache cache)
+           {
+               listener.notifyElementRemoved(EhCacheImpl.this, local, null, null);
+           }
+           
+           public void dispose()
+           {
+           }
+           
+           public Object clone()
+           {
+               return this;
+           }
+        };
+
+        this.cacheEventListenersMap.put(listener, cacheEventListener);
+        ehcache.getCacheEventNotificationService().registerListener(cacheEventListener);
     }
     
     public void removeEventListener(JetspeedCacheEventListener listener, boolean local)
     {
-        if (local)
-        	localListeners.remove(listener);
-        else
-        	remoteListeners.remove(listener);
-        	
+        CacheEventListener cacheEventListener = (CacheEventListener)this.cacheEventListenersMap.remove(listener);
+        
+        if (cacheEventListener != null)
+            ehcache.getCacheEventNotificationService().unregisterListener(cacheEventListener);
+    }
+    
+    public int getSize()
+    {
+        return ehcache.getSize();
+    }
+    
+    public List getKeys()
+    {
+        return ehcache.getKeys();
+    }
+    
+    public boolean isDistributed()
+    {
+        // check if cache part of a distributed cluster
+        try
+        {
+            CacheManagerPeerProvider peerProvider = ehcache.getCacheManager().getCachePeerProvider();
+            return ((peerProvider != null) && (peerProvider.listRemoteCachePeers(ehcache).size() > 0));
+        }
+        catch (CacheException ce)
+        {
+        }
+        return false;
     }
    
     // ------------------------------------------------------
@@ -140,41 +211,6 @@ public class EhCacheImpl implements JetspeedCache
 
     public void dispose()
     {
-    }
-
-    protected void notifyListeners(boolean local, int action, Object key, Object value)
-    {
-    	List listeners = (local?localListeners:remoteListeners);
-        for (int ix = 0; ix < listeners.size(); ix++)
-        {
-        	try
-        	{
-        		JetspeedCacheEventListener listener = (JetspeedCacheEventListener)listeners.get(ix);
-        		switch (action)
-        		{
-        			case CacheElement.ActionAdded:
-        				listener.notifyElementAdded(this,local, key,value);
-        				break;
-        			case CacheElement.ActionChanged:
-        				listener.notifyElementChanged(this,local, key,value);
-        				break;
-        			case CacheElement.ActionRemoved:
-        				listener.notifyElementRemoved(this,local, key,value);
-        				break;
-        			case CacheElement.ActionEvicted:
-        				listener.notifyElementEvicted(this,local, key,value);
-        				break;
-        			case CacheElement.ActionExpired:
-        				listener.notifyElementExpired(this,local, key,value);
-        				break;
-        		}
-        	}
-        	catch (Exception e)
-        	{
-        		e.printStackTrace();
-        		
-        	}
-        }    	
     }
 
     public ContentCacheKey createCacheKey(RequestContext rc, String windowId)

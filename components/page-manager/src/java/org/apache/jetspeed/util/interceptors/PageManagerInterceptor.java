@@ -46,6 +46,10 @@ public class PageManagerInterceptor implements MethodInterceptor
             DatabasePageManagerCache.rollbackTransactions();
             throw exp;
         }
+        finally
+        {
+            DatabasePageManagerCache.clearTransactions();            
+        }
     }
 
 }

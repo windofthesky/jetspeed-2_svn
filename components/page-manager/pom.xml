@@ -92,6 +92,11 @@ limitations under the License.
             <artifactId>xalan</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-jexl</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

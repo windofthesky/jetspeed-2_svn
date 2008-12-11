@@ -343,6 +343,7 @@
       <fileset dir="${jetspeedWebinfDir}" >
         <include name="assembly/transaction.xml"/>
         <include name="assembly/alternate/interceptors.xml"/>
+        <include name="assembly/cache.xml"/>
       </fileset>
     </copy>    
   

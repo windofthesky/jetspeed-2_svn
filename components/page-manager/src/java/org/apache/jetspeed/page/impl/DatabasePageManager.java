@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -100,10 +101,6 @@ import org.apache.ojb.broker.query.QueryFactory;
  */
 public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager
 {
-    private static final int DEFAULT_CACHE_SIZE = 128;
-    private static final int MIN_CACHE_EXPIRES_SECONDS = 30;
-    private static final int DEFAULT_CACHE_EXPIRES_SECONDS = 150;
-
     private static Map modelClasses = new HashMap();
     static
     {
@@ -134,50 +131,13 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
     private DelegatingPageManager delegator;
     
-    private int cacheSize;
-
-    private int cacheExpiresSeconds;
-
     private PageManager pageManagerProxy;
 
-    public DatabasePageManager(String repositoryPath, int cacheSize, int cacheExpiresSeconds, boolean isPermissionsSecurity, boolean isConstraintsSecurity)
+    public DatabasePageManager(String repositoryPath, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache)
     {
         super(repositoryPath);
         delegator = new DelegatingPageManager(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
-        this.cacheSize = Math.max(cacheSize, DEFAULT_CACHE_SIZE);
-        if (cacheExpiresSeconds < 0)
-        {
-            this.cacheExpiresSeconds = DEFAULT_CACHE_EXPIRES_SECONDS;
-        }
-        else if (cacheExpiresSeconds == 0)
-        {
-            this.cacheExpiresSeconds = 0;
-        }
-        else
-        {
-            this.cacheExpiresSeconds = Math.max(cacheExpiresSeconds, MIN_CACHE_EXPIRES_SECONDS);
-        }
-        DatabasePageManagerCache.cacheInit(this);
-    }
-
-    /**
-     * getCacheSize
-     *
-     * @return configured cache size
-     */
-    public int getCacheSize()
-    {
-        return cacheSize;
-    }
-
-    /**
-     * getCacheExpiresSeconds
-     *
-     * @return configured cache expiration in seconds
-     */
-    public int getCacheExpiresSeconds()
-    {
-        return cacheExpiresSeconds;
+        DatabasePageManagerCache.cacheInit(oidCache, pathCache, this);
     }
 
     /**
@@ -1867,5 +1827,12 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         }
         return pages.length;
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#isDistributed()
+     */
+    public boolean isDistributed()
+    {
+        return DatabasePageManagerCache.isDistributed();
+    }
 }

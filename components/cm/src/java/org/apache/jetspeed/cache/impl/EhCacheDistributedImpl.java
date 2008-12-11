@@ -17,12 +17,13 @@
 package org.apache.jetspeed.cache.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -32,13 +33,17 @@ import net.sf.ehcache.event.RegisteredEventListeners;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.request.RequestContext;
 
 public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache, CacheEventListener
 {
 
+    protected List localListeners = new ArrayList();
+    protected List remoteListeners = new ArrayList();
 
 	private Map refList = Collections.synchronizedMap(new HashMap());
+	private boolean removeAllLocal = false;
 
 
 	public EhCacheDistributedImpl(Ehcache ehcache)
@@ -87,6 +92,14 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 
 	public CacheElement createElement(Object key, Object content)
 	{
+        if (!(key instanceof Serializable))
+        {
+            throw new IllegalArgumentException("The cache key must be serializable.");
+        }
+        if (!(content instanceof DistributedCacheObject))
+        {
+            throw new IllegalArgumentException("The cache content must be a distributed cache object.");
+        }
 		return new EhCacheDistributedElementImpl((Serializable)key, (DistributedCacheObject)content);
 	}
 
@@ -122,7 +135,35 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 		return ehcache.removeQuiet(key);
 
 	}
+	
+    public void clear()
+    {
+        // invoke removeAll with local flag set
+        synchronized (refList)
+        {
+            removeAllLocal = true;
+            super.clear();
+            removeAllLocal = false;
+        }
+        notifyListeners(true, CacheElement.ActionRemoved,null,null);
+    }
 
+    public void addEventListener(JetspeedCacheEventListener listener, boolean local)
+    {
+        if (local)
+            localListeners.add(listener);
+        else
+            remoteListeners.add(listener);
+    }
+    
+    public void removeEventListener(JetspeedCacheEventListener listener, boolean local)
+    {
+        if (local)
+            localListeners.remove(listener);
+        else
+            remoteListeners.remove(listener);
+    }
+    
 	public void evictContentForUser(RequestContext context)
 	{
 		return;
@@ -154,6 +195,40 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 		}
     }
 	
+    protected void notifyListeners(boolean local, int action, Object key, Object value)
+    {
+        List listeners = (local?localListeners:remoteListeners);
+        for (int ix = 0; ix < listeners.size(); ix++)
+        {
+            try
+            {
+                JetspeedCacheEventListener listener = (JetspeedCacheEventListener)listeners.get(ix);
+                switch (action)
+                {
+                    case CacheElement.ActionAdded:
+                        listener.notifyElementAdded(this,local, key,value);
+                        break;
+                    case CacheElement.ActionChanged:
+                        listener.notifyElementChanged(this,local, key,value);
+                        break;
+                    case CacheElement.ActionRemoved:
+                        listener.notifyElementRemoved(this,local, key,value);
+                        break;
+                    case CacheElement.ActionEvicted:
+                        listener.notifyElementEvicted(this,local, key,value);
+                        break;
+                    case CacheElement.ActionExpired:
+                        listener.notifyElementExpired(this,local, key,value);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }       
+    }
+   
 	public void notifyElement( Ehcache cache, boolean local,Element arg1, int action)
 	{
 		if (cache != this.ehcache)
@@ -182,7 +257,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 
 	public void notifyElementEvicted(Ehcache cache, Element arg1)
 	{
-			notifyElement(cache, false, arg1,CacheElement.ActionEvicted);
+	    notifyElement(cache, false, arg1,CacheElement.ActionEvicted);
 	}
 
 	public void notifyElementExpired(Ehcache cache, Element arg1)
@@ -193,8 +268,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 	public void notifyElementPut(Ehcache cache, Element arg1)
 			throws CacheException
 	{
-		
-			notifyElement(cache, false, arg1, CacheElement.ActionAdded);
+		notifyElement(cache, false, arg1, CacheElement.ActionAdded);
 	}
 
 	public void notifyElementRemoved(Ehcache cache, Element arg1)
@@ -217,20 +291,25 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 		}
 		try
 		{
-			Iterator it = refList.entrySet().iterator();
-			while (it.hasNext())
-			{
-				EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl)it.next();
-				notifyListeners(false, CacheElement.ActionRemoved,e.getKey(),e);
-				e.notifyChange(CacheElement.ActionRemoved);
-			}
-			refList.clear();
-		} catch (Exception e)
+		    // synchronize on refList to ensure exclusive
+		    // operation on refList and removeAllLocal flag
+		    synchronized (refList)
+		    {
+		        // notify all listeners of element removal
+		        // and each element of its removal
+		        Iterator it = refList.values().iterator();
+		        while (it.hasNext())
+		        {
+		            EhCacheDistributedElementImpl e = (EhCacheDistributedElementImpl)it.next();
+		            notifyListeners(removeAllLocal, CacheElement.ActionRemoved,e.getKey(),e.getContent());
+		            e.notifyChange(CacheElement.ActionRemoved);
+		        }
+		        refList.clear();
+		    }
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-
-	
 	}
-
 }
