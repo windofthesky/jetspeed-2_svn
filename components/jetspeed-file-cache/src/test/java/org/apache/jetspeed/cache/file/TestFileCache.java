@@ -33,6 +33,7 @@ import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 import org.apache.jetspeed.cache.impl.EhCacheImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 
@@ -73,6 +74,7 @@ public class TestFileCache extends JetspeedTestCase implements FileCacheEventLis
         super.setUp();
         
         // initialize ehCache
+        EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
         CacheManager cacheManager = new CacheManager();
         Cache ehPageFileCache = new Cache("ehPageFileCache", CACHE_SIZE, false, false, 0, 0);
         cacheManager.addCache(ehPageFileCache);

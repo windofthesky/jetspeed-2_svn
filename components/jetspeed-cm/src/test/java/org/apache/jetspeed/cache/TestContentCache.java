@@ -26,6 +26,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 import org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl;
 import org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
@@ -51,6 +52,7 @@ public class TestContentCache extends TestCase
     public void testContentCacheByUser() throws Exception
     {
         // initialize ehCache
+        EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
         CacheManager cacheManager = new CacheManager();
         Cache ehContentCache = new Cache("ehPortletContentCache", 10000, false, false, 28800, 28800);
         cacheManager.addCache(ehContentCache);
@@ -144,6 +146,7 @@ public class TestContentCache extends TestCase
     public void testContentCacheBySession() throws Exception
     {
         // initialize ehCache
+        EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
         CacheManager cacheManager = new CacheManager();
         Cache ehContentCache = new Cache("ehPortletContentCache", 10000, false, false, 28800, 28800);
         cacheManager.addCache(ehContentCache);
