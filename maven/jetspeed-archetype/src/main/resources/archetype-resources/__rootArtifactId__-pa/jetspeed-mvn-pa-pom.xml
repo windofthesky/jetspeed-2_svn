@@ -79,7 +79,7 @@
               <dependency>
                 <groupId>${groupId}</groupId>
                 <artifactId>${parentArtifactId}-pa</artifactId>
-                <version>${pom.version}</version>
+                <version>${dollar}{pom.version}</version>
                 <type>war</type>
               </dependency>
 
