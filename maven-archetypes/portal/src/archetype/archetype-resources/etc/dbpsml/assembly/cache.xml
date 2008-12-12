@@ -20,6 +20,7 @@
 
     <!-- Cache Manager -->
     <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+        <!-- <property name="defaultConfigResource" value="distributed-ehcache.xml"/> -->
         <property name="defaultConfigResource" value="ehcache.xml"/>
     </bean>
 

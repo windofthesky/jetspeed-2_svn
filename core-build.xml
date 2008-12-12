@@ -106,7 +106,21 @@ limitations under the License.
 	    </dependency>
 	    <dependency>
 	      <id>ehcache</id>
-	      <version>1.2.4</version>
+	      <version>1.5.0</version>
+	      <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <id>backport-util-concurrent</id>
+	      <version>3.1</version>
+	      <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <id>jsr107cache</id>
+	      <version>1.0</version>
 	      <properties>
 	        <war.bundle>true</war.bundle>
 	      </properties>
@@ -247,6 +261,13 @@ limitations under the License.
 	    <dependency>
 	      <id>junit</id>
 	      <version>3.8.1</version>
+		  <properties>
+	        <war.bundle>false</war.bundle>
+	      </properties>
+	    </dependency>      
+	    <dependency>
+	      <id>commons-jexl</id>
+	      <version>1.1</version>
 		  <properties>
 	        <war.bundle>false</war.bundle>
 	      </properties>

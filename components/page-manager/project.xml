@@ -90,6 +90,7 @@
             <excludes>
                 <exclude>**/PageManagerTestShared.java</exclude>
               <exclude>**/DirectoryXMLTransform.java</exclude>
+              <exclude>**/DatabasePageManagerServer.java</exclude>
             </excludes>
             <resources>
                 <resource>
@@ -110,6 +111,10 @@
                 </resource>
                 <resource>
                     <directory>${basedir}/../../etc/db-ojb</directory>
+                    <excludes>
+                        <exclude>**/ehcache.xml</exclude>
+                        <exclude>**/distributed-ehcache.xml</exclude>
+                    </excludes>
                 </resource>
                 <resource>
                     <directory>${basedir}/../../src/webapp/WEB-INF/assembly</directory>
