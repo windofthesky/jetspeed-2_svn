@@ -113,6 +113,7 @@ public class TestNavigationalState extends TestCase
         entityMock.expects(new AnyArgumentsMatcher()).method("getPortletWindowList").withNoArguments().will(new ReturnStub(windowList));
         windowListMock.expects(new AnyArgumentsMatcher()).method("add").withAnyArguments().will(new VoidStub());
         portletApplicationMock.expects(new AnyArgumentsMatcher()).method("getId").withNoArguments().will(new ReturnStub(new JetspeedLongObjectID(1)));
+        portletApplicationMock.expects(new AnyArgumentsMatcher()).method("getName").withNoArguments().will(new ReturnStub("app1"));
         portletDefinitionMock.expects(new AnyArgumentsMatcher()).method("getPortletApplicationDefinition").withNoArguments().will(new ReturnStub(portletApplicationMock.proxy()));
         entityMock.expects(new AnyArgumentsMatcher()).method("getPortletDefinition").withNoArguments().will(new ReturnStub(portletDefinitionMock.proxy()));
         PortletWindowAccessor accessor = (PortletWindowAccessor) engine.getComponentManager().getComponent(PortletWindowAccessor.class);        
