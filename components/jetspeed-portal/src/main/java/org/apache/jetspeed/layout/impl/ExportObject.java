@@ -67,7 +67,7 @@ public class ExportObject extends BaseGetResourceAction implements AjaxAction, A
 	public boolean run(RequestContext requestContext, Map resultMap) {
 		boolean success = true;
 		String status = "success";
-		String userName = requestContext.getUserPrincipal().toString();
+		String userName = requestContext.getUserPrincipal().getName();
 		try {
 			resultMap.put(ACTION, "export");
 			if (false == checkAccess(requestContext, JetspeedActions.VIEW)) {
