@@ -34,6 +34,7 @@ import org.apache.jetspeed.pipeline.valve.LocalizationValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
@@ -116,7 +117,7 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
                                 && userMgr.userExists(userPrincipal.getName()))
                         {
                             User user = userMgr.getUser(userPrincipal.getName());
-                            Map<String, SecurityAttribute> sa = user.getSecurityAttributes().getInfoAttributeMap();
+                            Map<String, SecurityAttribute> sa = user.getSecurityAttributes().getAttributeMap(SecurityAttributeType.JETSPEED_CATEGORY);
                             SecurityAttribute attrib = sa.get(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
                             if (attrib != null)
                             {
@@ -168,7 +169,6 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         request.getRequest().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         request.getRequest().getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         CurrentLocale.set(locale);
-       
         // Pass control to the next Valve in the Pipeline
         context.invokeNext(request);
 
