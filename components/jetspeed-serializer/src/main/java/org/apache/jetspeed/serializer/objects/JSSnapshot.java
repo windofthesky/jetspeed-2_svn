@@ -62,6 +62,8 @@ public class JSSnapshot implements JetspeedSerializedData
     
     private JSUsers oldUsers;
     
+    private JSPrincipals principals;
+    
     private JSPrincipalAssociations principalAssociations;
 
     private JSPermissions permissions;
@@ -97,6 +99,7 @@ public class JSSnapshot implements JetspeedSerializedData
         oldGroups = new JSGroups();
         users = new JSPrincipals(JetspeedPrincipalType.USER);
         oldUsers = new JSUsers();
+        principals = new JSPrincipals();
         principalAssociations = new JSPrincipalAssociations();
         permissions = new JSPermissions();
         rules = new JSProfilingRules();
@@ -292,6 +295,14 @@ public class JSSnapshot implements JetspeedSerializedData
     public JSUsers getOldUsers()
     {
         return oldUsers;
+    }
+    
+    /**
+     * @return Returns the jetspeed principals.
+     */
+    public JSPrincipals getPrincipals()
+    {
+        return principals;
     }
     
     public void setPrincipalAssociations(JSPrincipalAssociations principalAssociations)
@@ -548,6 +559,10 @@ public class JSSnapshot implements JetspeedSerializedData
                 {
                     xml.add(g.getUsers());
                 }
+                if ( !g.getPrincipals().isEmpty() )
+                {
+                    xml.add(g.getPrincipals());
+                }
                 if ( !g.getPrincipalAssociations().isEmpty() )
                 {
                     xml.add(g.getPrincipalAssociations());
@@ -636,6 +651,10 @@ public class JSSnapshot implements JetspeedSerializedData
                         else if (JetspeedPrincipalType.USER.equals(principalType))
                         {
                             g.users = jsps;
+                        }
+                        else if (principalType != null && !"".equals(principalType))
+                        {
+                            g.principals = jsps;
                         }
                     }
                     else if (o1 instanceof JSPrincipalAssociations)

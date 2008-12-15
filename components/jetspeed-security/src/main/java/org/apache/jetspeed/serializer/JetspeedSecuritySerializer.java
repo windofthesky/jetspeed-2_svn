@@ -89,14 +89,19 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         
         public HashMap<String, Principal> getPrincipalMap(String principalTypeName)
         {
+            HashMap<String, Principal> principalMap = null;
+            
             if (principalMapByType.containsKey(principalTypeName))
             {
-                return principalMapByType.get(principalTypeName);
+                principalMap = principalMapByType.get(principalTypeName);
             }
             else
             {
-                return principalMapByType.put(principalTypeName, new HashMap<String, Principal>());
+                principalMap = new HashMap<String, Principal>();
+                principalMapByType.put(principalTypeName, principalMap);
             }
+            
+            return principalMap;
         }
     }
     
@@ -110,14 +115,19 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         
         public HashMap<String, JSPrincipal> getPrincipalMap(String principalTypeName)
         {
+            HashMap<String, JSPrincipal> jsPrincipalMap = null;
+            
             if (principalMapByType.containsKey(principalTypeName))
             {
-                return principalMapByType.get(principalTypeName);
+                jsPrincipalMap = principalMapByType.get(principalTypeName);
             }
             else
             {
-                return principalMapByType.put(principalTypeName, new HashMap<String, JSPrincipal>());
+                jsPrincipalMap = new HashMap<String, JSPrincipal>();
+                principalMapByType.put(principalTypeName, jsPrincipalMap);
             }
+            
+            return jsPrincipalMap;
         }
     }
 
@@ -312,6 +322,48 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
         
         log.debug("recreateRoles - done");
+        
+        log.debug("processing general principals");
+        
+        JetspeedPrincipalManager principalManager = null;
+        
+        for (JSPrincipal jsPrincipal : snapshot.getPrincipals())
+        {
+            String typeName = jsPrincipal.getType();
+            String name = jsPrincipal.getName();
+            
+            try
+            {
+                JetspeedPrincipalType type = this.principalManagerProvider.getPrincipalType(typeName);
+                principalManager = this.principalManagerProvider.getManager(type);
+                JetspeedPrincipal principal = null;
+                
+                if (!(principalManager.principalExists(name)))
+                {
+                    principal = principalManager.newPrincipal(name, jsPrincipal.isMapped());
+                    JSSecurityAttributes jsSecAttrs = jsPrincipal.getSecurityAttributes();
+                    if (jsSecAttrs != null)
+                    {
+                        for (JSNVPElement elem : jsSecAttrs.getValues())
+                        {
+                            principal.getSecurityAttributes().getAttribute(elem.getKey(), true).setStringValue(elem.getValue());
+                        }
+                    }
+                    principalManager.addPrincipal(principal, null);
+                }
+                
+                principal = principalManager.getPrincipal(name);
+                refs.getPrincipalMap(typeName).put(name, principal);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { typeName,
+                        e.getMessage() }), e);
+            }
+        }
+        
+        log.debug("recreate general principals - done");
         
         log.debug("processing users");
 
@@ -779,6 +831,38 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             {
                 throw new SerializerException(SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create(new String[] {
                         "User", e.getMessage() }), e);
+            }
+        }
+        
+        for (Map.Entry<String, JetspeedPrincipalType> entry : this.principalManagerProvider.getPrincipalTypeMap().entrySet())
+        {
+            String typeName = entry.getKey();
+            
+            if (!JetspeedPrincipalType.USER.equals(typeName) && !JetspeedPrincipalType.GROUP.equals(typeName) && !JetspeedPrincipalType.ROLE.equals(typeName))
+            {
+                JetspeedPrincipalType type = this.principalManagerProvider.getPrincipalType(typeName);
+                JetspeedPrincipalManager principalManager = this.principalManagerProvider.getManager(type);
+                
+                for (JetspeedPrincipal principal : principalManager.getPrincipals(""))
+                {
+                    try
+                    {
+                        Map refsMap = refs.getPrincipalMap(typeName);
+                        JSPrincipal _tempPrincipal = (JSPrincipal) getObjectBehindPrinicpal(refsMap, principal);
+                        if (_tempPrincipal == null)
+                        {
+                            _tempPrincipal = createJSPrincipal(principal);
+                            refsMap.put(_tempPrincipal.getName(), _tempPrincipal);
+                            snapshot.getPrincipals().add(_tempPrincipal);
+                        }
+    
+                    }
+                    catch (Exception e)
+                    {
+                        throw new SerializerException(SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create(new String[] {
+                                typeName, e.getMessage() }));
+                    }
+                }
             }
         }
     }

@@ -96,6 +96,7 @@ public class JSPrincipal
             try
             {
                 JSPrincipal p = (JSPrincipal) o;
+                p.setType(xml.getAttribute("type", ""));
                 p.setName(StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "")));
                 p.mapped = xml.getAttribute("mapped", false);
                 p.enabled = xml.getAttribute("enabled", false);
