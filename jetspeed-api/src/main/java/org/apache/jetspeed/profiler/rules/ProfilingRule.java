@@ -97,7 +97,7 @@ public interface ProfilingRule extends Serializable
      * 
      * @return a sorted map of rule criteria.
      */         
-    Collection getRuleCriteria();
+    Collection<RuleCriterion> getRuleCriteria();
                      
     /**
      * Gets the unique identifier for this rule

@@ -158,6 +158,34 @@ public class SubjectHelper
     
     /**
      * <p>
+     * Given a subject, finds all principals of the given JetspeedPrincipalType(JPT)  for that subject. If no principals
+     * of the given class is not found, null is returned.
+     * </p>
+     * 
+     * @param subject The subject supplying the principals.
+     * @param jptName the name of the Jetspeed Principal Type
+     * @return A List of all principals of type JetspeedPrincipal matching a JPT name parameter.
+     */
+    public static List<JetspeedPrincipal> getPrincipals(Subject subject, String jptName)
+    {
+        List<JetspeedPrincipal> result = new LinkedList<JetspeedPrincipal>();
+        Iterator<Principal> principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = principals.next();
+            if (p instanceof JetspeedPrincipal)
+            {
+                JetspeedPrincipal jp = (JetspeedPrincipal)p;
+                if (jp.getType().getName().equals(jptName))
+                {
+                    result.add(jp);
+                }
+            }
+        }
+        return result;
+    }    
+    /**
+     * <p>
      * Given a subject, finds a specific principal by name of the given classe for that subject.
      * </p>
      * 

@@ -20,10 +20,9 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
-import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.Role;
 
 /**
  * Role combo resolver 
@@ -35,22 +34,14 @@ import org.apache.jetspeed.security.Role;
  * @version $Id: RoleCriterionResolver.java 187756 2004-10-15 22:58:43Z ate $
  */
 public class RoleComboCriterionResolver
-    extends StandardResolver
-    implements RuleCriterionResolver
+    extends PrincipalCriterionResolver
+    implements FallbackCriterionResolver
 {
-    protected final static Log log = LogFactory.getLog(UserCriterionResolver.class);
+    private static final long serialVersionUID = 1L;
+    protected final static Log log = LogFactory.getLog(RoleComboCriterionResolver.class);
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
-     */    
     public String resolve(RequestContext context, RuleCriterion criterion)
     {
-        String value = super.resolve(context, criterion);
-        if (value != null)
-        {
-            return value;
-        }
-            
         Subject subject = context.getSubject();
         if (subject == null)
         {
@@ -58,17 +49,11 @@ public class RoleComboCriterionResolver
             log.error(msg);
             return null;
         }
-            
-        return combinePrincipals(context, criterion, subject, Role.class);
+        return combinePrincipals(context, criterion, subject, criterion.getName());
      }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
-     */
     public boolean isControl(RuleCriterion criterion)
     {
         return true;
     }
-    
-    
 }

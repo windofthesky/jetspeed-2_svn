@@ -20,10 +20,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
+import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.ojb.broker.util.collections.RemovalAwareCollection;
@@ -37,13 +39,13 @@ import org.apache.ojb.broker.util.collections.RemovalAwareCollection;
 public abstract class AbstractProfilingRule implements ProfilingRule
 {
     private static final long serialVersionUID = 1;    
-    protected Collection criteria = new RemovalAwareCollection();
+    protected Collection<RuleCriterion> criteria = new RemovalAwareCollection();
     protected String id;
     protected String title;
     protected String ojbConcreteClass;
     
     /** Map of profile locators kept around for reuse TODO: evict entries after max size reached */    
-    protected Map locators = Collections.synchronizedMap(new HashMap());
+    protected Map<String, ProfileLocator> locators = Collections.synchronizedMap(new HashMap<String, ProfileLocator>());
     
     /** Map of resolver rules for criteria. The map goes from criterion name to resolver class */
     protected ProfileResolvers resolvers;
@@ -90,7 +92,7 @@ public abstract class AbstractProfilingRule implements ProfilingRule
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.ProfilingRule#getRuleCriterion()
      */
-    public Collection getRuleCriteria()
+    public Collection<RuleCriterion> getRuleCriteria()
     {
         return criteria;
     }

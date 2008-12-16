@@ -227,7 +227,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         context.setPath("/homepage.psml");        
         context.setSubject(subject);
         ProfileLocator locator = rule.apply(context, profiler);
-        System.out.println("locator = " + locator);
+        System.out.println("locator = " + locator);                            //     /homepage.psml:user:david:navigation:/:role:ATP:role:NB:page:/homepage.psml
         assertTrue("locator string " + locator.toString(), locator.toString().equals("/homepage.psml:user:david:navigation:/:role:ATP-NB:page:/homepage.psml"));
         
         System.out.println("COMPLETED: running test user role fallback.");

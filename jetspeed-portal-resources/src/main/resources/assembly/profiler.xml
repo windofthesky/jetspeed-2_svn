@@ -166,6 +166,9 @@
   <bean id='RoleCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.RoleCriterionResolver'>
     <meta key="j2:cat" value="default,profiler" />
   </bean>
+  <bean id='PrincipalCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.PrincipalCriterionResolver'>
+    <meta key="j2:cat" value="default,profiler" />
+  </bean>
   <bean id='RoleComboCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.RoleComboCriterionResolver'>
     <meta key="j2:cat" value="default,profiler" />
   </bean>
