@@ -27,21 +27,21 @@ limitations under the License.
 <section name="PSML DTDs and XML Schema">
 <p>
 The following PSML DTDs and XML Schema are included to further define the XML documents defined in these guides:
+</p>
 <ul>
     <li><a href="guide-psml.html">Guide to PSML</a></li>
     <li><a href="guide-security-declarative-psml.html">Guide to declarative security through PSML</a></li>
     <li><a href="guide-menus-declarative-psml.html">Guide to declarative menus in PSML</a></li>
 </ul>
-</p>
 <p>
 The DTDs and XML Schema included here are organized by PSML document:
+</p>
 <ul>
 	<li><a href="#Page">Page, (*.psml)</a></li>
 	<li><a href="#Folder">Folder Metadata, (folder.metadata)</a></li>
 	<li><a href="#Link">Link, (*.link)</a></li>
 	<li><a href="#Page_Security">Page Security, (page.security)</a></li>
 </ul>
-</p>
 </section>
 
 <section name='Page'>

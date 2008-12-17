@@ -58,12 +58,12 @@
         <subsection name='Single Organization'>
         <p>In our Single Organization example, we are hosting three different portal subsites within the organization:</p>
         <img src='../images/guides/subsites.jpg' border="0"/>        
-        <p>Here we have three subsites (four including localhost) defined for three different companies:
+        <p>Here we have three subsites (four including localhost) within the company:
         </p>
         <ul>
-        <li>employees.my-company.com - subsite for employees</li>
-        <li>partners.my-company.com - subsite for partners</li>
-        <li>www.my-company.com - subsite for the public</li>
+        <li>employees.mycompany.com - subsite for employees</li>
+        <li>partners.mycompany.com - subsite for partners</li>
+        <li>www.mycompany.com - subsite for the public</li>
         </ul>        
         </subsection>
         <subsection  name='Site Manager'>
@@ -94,9 +94,9 @@
         127.0.0.1 www.company-2.com
         127.0.0.1 www.company-3.com
 
-        127.0.0.1 employees.my-company.com
-        127.0.0.1 partners.my-company.com
-        127.0.0.1 www.my-company.com
+        127.0.0.1 employees.mycompany.com
+        127.0.0.1 partners.mycompany.com
+        127.0.0.1 www.mycompany.com
 ]]>
 </source>
         </subsection>

@@ -197,7 +197,7 @@ public class HelloWorld extends GenericPortlet
             JetspeedSecurity.addUser(user);
 ]]>
 </source>									
-			<p>In Jetspeed-2, Jetspeed Services the standard way to access Jetspeed Services is to get a handle in the init phase, for example:</p>
+			<p>In Jetspeed-2, the standard way to access Jetspeed Services is to get a handle in the init phase, for example:</p>
 <source>
 <![CDATA[
     private UserManager userManager;
@@ -273,7 +273,7 @@ response.getPortletOutputStream().write(helloString.getBytes());
 ]]>
 </source>	
 <p>Of course you can use JSPs or Velocity with either Jetspeed-1 or Jetspeed-2. 
-With Jetspeed-1, the common practice is to make use of the Jetspeed-1 <b>GenericMVCPortlet</b> or one of its derivitives,
+With Jetspeed-1, the common practice is to make use of the Jetspeed-1 <b>GenericMVCPortlet</b> or one of its derivatives,
 the <b>VelocityPortlet</b> or the <b>JspPortlet</b>. Both the VelocityPortlet and JspPortlet are really just GenericMVCPortlets.
 Here is the xreg example of a WeatherPortlet which extends the GenericMVCPortlet by setting its parent to Velocity
 </p>		
@@ -849,7 +849,7 @@ to the <b>processAction</b> method on the Portlet API.
 				  <tr><td>user</td><td>_user</td><td>Holds all user folders</td></tr>
 				  <tr><td>role</td><td>_role</td><td>Holds all role folders</td></tr>
 				  <tr><td>group</td><td>_group</td><td>Holds all group folders</td></tr>
-				  <td><td>{mediatype}</td><td>_mediatype</td><td>Content per mime/mediatype</td></td>
+				  <tr><td>{mediatype}</td><td>_mediatype</td><td>Content per mime/mediatype</td></tr>
 				  <tr><td>{language}</td><td>_lanaguage</td><td>Content per language</td></tr>
 				  <tr><td>{country}</td><td>_country</td><td>Content per country code</td></tr>
 				  </table>
@@ -961,7 +961,7 @@ to the <b>processAction</b> method on the Portlet API.
 		<p>There is a big difference with the navigational aspects, or menus, between Jetspeed-1 and Jetspeed-2.
 		Jetspeed-1 restricts menus navigation to navigation amongst <i>tabs</i>. Tabs are defined within a PSML page. 
 		Tabs are simply subcontainers in the PSML page, defined by the <b>portlets</b> element.
-		Whereas Jetspeed-1 does support navigation to other pages, the Tabbing Menus do not directly support it without
+		Whereas Jetspeed-2 does support navigation to other pages, the Tabbing Menus do not directly support it without
 		writing a specific  portlet to act as an external link.</p>
 		<p>Jetspeed-2 menu navigations map directly onto the Portal Site. Thus menu tabs represent portal resources.
 		Menus in Jetspeed-2 can point to folders, pages or links. This more naturally allows the user to navigate

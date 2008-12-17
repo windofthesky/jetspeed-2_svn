@@ -26,7 +26,7 @@
 		<section name="Jetspeed For Developers">
 			<p> When developing with Jetspeed, you may be creating portlet
 				applications, or building and creating extensions to the Jetspeed
-				portal. If you ar going to be creating portlet applications, check
+				portal. If you are going to be creating portlet applications, check
 				out this fine e-book for an overall guide to writing portlets:</p>
 			<ul>
 				<li>
@@ -46,11 +46,13 @@
 				<b>quickest</b>
 				build for getting custom projects up and running in no time.
 			</p>
-			<li>
-				<a href='http://portals.apache.org/tutorials/jetspeed-2-ant/'
-					target='_blank'>Jetspeed Tutorial - Building a Custom Portal with
-					Ant and Eclipse</a>
-			</li>
+			<ul>
+				<li>
+				  <a href='http://portals.apache.org/tutorials/jetspeed-2-ant/'
+					  target='_blank'>Jetspeed Tutorial - Building a Custom Portal with
+					  Ant and Eclipse</a>
+				</li>
+			</ul>
 			<h2>Custom Building with Maven Plugins</h2>
 			<p>Jetspeed 2.1 can be built with Maven-2.
 				You can actually build your own portal without the Jetspeed source.
