@@ -181,11 +181,11 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         String query = "";
         if (StringUtils.isEmpty(getSearchSuffix()))
         {
-            query = "(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
+            query = "(" + context.getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
         }
         else
         {
-            query = "(&(" + getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
+            query = "(&(" + context.getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
         }
         // logger.debug("searchByWildCardedUid = " + query);
         cons.setSearchScope(Integer.parseInt(context.getMemberShipSearchScope()));
@@ -214,11 +214,6 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     private String getSearchSuffix()
     {
         return context.getUserFilter();
-    }
-
-    private String getEntryPrefix()
-    {
-        return "cn";
     }
 
     private String getSearchDomain()

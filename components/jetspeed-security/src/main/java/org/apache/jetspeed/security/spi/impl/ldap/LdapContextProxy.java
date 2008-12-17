@@ -43,8 +43,9 @@ public class LdapContextProxy implements InvocationHandler
     private String userFilter;
     private String memberShipSearchScope;
     private String userSearchBase;
+    private String entryPrefix;
 
-    public LdapContextProxy(LdapContextSource context, String factory, String userFilter, String memberShipSearchScope,String userSearchBase)
+    public LdapContextProxy(LdapContextSource context, String factory, String userFilter, String memberShipSearchScope,String userSearchBase,String entryPrefix)
     {
         springContext = context;
         env = new Properties();
@@ -57,6 +58,7 @@ public class LdapContextProxy implements InvocationHandler
         this.userFilter = userFilter;
         this.memberShipSearchScope = memberShipSearchScope;
         this.userSearchBase = userSearchBase;
+        this.entryPrefix = entryPrefix;
     }
 
     public LdapContext getCtx() throws NamingException
@@ -164,5 +166,9 @@ public class LdapContextProxy implements InvocationHandler
     public String getMemberShipSearchScope()
     {
         return memberShipSearchScope;
+    }
+    public String getEntryPrefix()
+    {
+    	return entryPrefix;
     }
 }
