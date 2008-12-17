@@ -84,6 +84,7 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
@@ -1849,5 +1850,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public boolean isDistributed()
     {
         return DatabasePageManagerCache.isDistributed();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#notifyUpdatedNode(org.apache.jetspeed.page.document.Node)
+     */
+    public void notifyUpdatedNode(Node node)
+    {
+        // notify page manager listeners
+        delegator.notifyUpdatedNode(node);
     }
 }

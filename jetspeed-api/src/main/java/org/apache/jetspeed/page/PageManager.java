@@ -40,6 +40,7 @@ import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
@@ -721,4 +722,11 @@ public interface PageManager
      * @return distributed flag
      */
     public boolean isDistributed();
+
+    /**
+     * Notify page manager listeners that node modification was externally detected.
+     *
+     * @param node updated managed node if known
+     */
+    public void notifyUpdatedNode(Node node);
 }

@@ -198,6 +198,8 @@ public class DatabasePageManagerCache implements ObjectCache
                                 {
                                     ((FolderImpl)node).resetAll(false);
                                 }
+                                // notify page manager of update
+                                pageManager.notifyUpdatedNode(node);
                                 // remove from cache
                                 oidCache.removeQuiet(oid);
                             }
@@ -212,7 +214,7 @@ public class DatabasePageManagerCache implements ObjectCache
                                 {
                                     ((FolderImpl)parentNode).resetAll(false);
                                 }
-                                // remove from cache
+                                // ensure removed from cache
                                 pathCache.removeQuiet(path);
                             }
                         }                        
@@ -255,8 +257,7 @@ public class DatabasePageManagerCache implements ObjectCache
             if (pathElement != null)
             {
                 final DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)pathElement.getContent();
-                final NodeImpl node = (NodeImpl)cacheLookup(cacheObject.getId());
-                return node;
+                return (NodeImpl)cacheLookup(cacheObject.getId());
             }
         }
         return null;
