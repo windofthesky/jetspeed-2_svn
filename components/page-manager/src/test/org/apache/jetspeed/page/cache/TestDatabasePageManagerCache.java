@@ -266,7 +266,7 @@ public class TestDatabasePageManagerCache extends TestCase
             boolean deepPage1Removed = false;
             boolean deep1FolderRemoved = false;
             boolean rootFolderFoldersCountOne = false;
-            final long coherencyCheckStarted = System.currentTimeMillis();
+            long coherencyCheckStarted = System.currentTimeMillis();
             do
             {
                 // check cache coherency
@@ -326,6 +326,70 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(deepPage1Removed);
             assertTrue(deep1FolderRemoved);
             assertTrue(rootFolderFoldersCountOne);
+
+            // add new objects in first page manager
+            result = server0.execute("page = pageManager.newPage(\"/new-page.psml\");");
+            assertTrue(result.indexOf("Exception") == -1);
+            result = server0.execute("page.setTitle(\"New Page\");");
+            assertTrue(result.indexOf("Exception") == -1);
+            result = server0.execute("pageManager.updatePage(page);");
+            assertTrue(result.indexOf("Exception") == -1);
+            result = server0.execute("folder = pageManager.newFolder(\"/deep-2\");");
+            assertTrue(result.indexOf("Exception") == -1);
+            result = server0.execute("folder.setTitle(\"Deep 2 Folder\");");
+            assertTrue(result.indexOf("Exception") == -1);
+            result = server0.execute("pageManager.updateFolder(folder);");
+            assertTrue(result.indexOf("Exception") == -1);
+            
+            // test objects in both page managers for cache coherency
+            result = server0.execute("pageManager.getFolder(\"/\").getPages().size();");
+            assertTrue(result.endsWith("3"));
+            result = server0.execute("pageManager.getFolder(\"/\").getFolders().size();");
+            assertTrue(result.endsWith("2"));
+            result = server0.execute("pageManager.getPage(\"/new-page.psml\").getTitle();");
+            assertTrue(result.endsWith("New Page"));
+            result = server0.execute("pageManager.getFolder(\"/deep-2\").getTitle();");
+            assertTrue(result.endsWith("Deep 2 Folder"));
+            boolean rootFolderPagesCountThree = false;
+            boolean rootFolderFoldersCountTwo = false;
+            boolean newPageCreated = false;
+            boolean deep2FolderCreated = false;
+            coherencyCheckStarted = System.currentTimeMillis();
+            do
+            {
+                // check cache coherency
+                if (!rootFolderPagesCountThree)
+                {
+                    result = server1.execute("pageManager.getFolder(\"/\").getPages().size();");
+                    rootFolderPagesCountThree = result.endsWith("3");
+                }
+                if (!rootFolderFoldersCountTwo)
+                {
+                    result = server1.execute("pageManager.getFolder(\"/\").getFolders().size();");
+                    rootFolderFoldersCountTwo = result.endsWith("2");
+                }
+                if (!newPageCreated)
+                {
+                    result = server1.execute("pageManager.getPage(\"/new-page.psml\").getTitle();");
+                    newPageCreated = result.endsWith("New Page");
+                }
+                if (!deep2FolderCreated)
+                {
+                    result = server1.execute("pageManager.getFolder(\"/deep-2\").getTitle();");
+                    deep2FolderCreated = result.endsWith("Deep 2 Folder");
+                }
+
+                // wait for cache coherency
+                if (!rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated)
+                {
+                    Thread.sleep(250);
+                }
+            }
+            while ((!rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated) && (System.currentTimeMillis()-coherencyCheckStarted < 5000));
+            assertTrue(rootFolderPagesCountThree);
+            assertTrue(rootFolderFoldersCountTwo);
+            assertTrue(newPageCreated);
+            assertTrue(deep2FolderCreated);
 
             // reset database page managers
             result = server0.execute("pageManager.reset();");
