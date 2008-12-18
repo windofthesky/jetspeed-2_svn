@@ -40,12 +40,22 @@ public class DatabasePageManagerCacheObject implements DistributedCacheObject
     /**
      * Construct new cache object with id and path
      * 
+     * @param path
+     */
+    public DatabasePageManagerCacheObject(final String path)
+    {
+        this.path = path;
+    }
+
+    /**
+     * Construct new cache object with id and path
+     * 
      * @param id
      * @param path
      */
     public DatabasePageManagerCacheObject(final Identity id, final String path)
     {
-        this.path = path;
+        this(path);
         this.id = id;
     }
 

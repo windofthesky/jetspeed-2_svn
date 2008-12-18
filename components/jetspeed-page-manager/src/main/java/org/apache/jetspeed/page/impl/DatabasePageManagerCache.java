@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class DatabasePageManagerCache implements ObjectCache
     private static boolean constraintsEnabled;
     private static boolean permissionsEnabled;
     private static PageManager pageManager;
+    private static List updatePathsList = new ArrayList();
     private static ThreadLocal transactionedOperations = new ThreadLocal();
 
     // Implementation
@@ -264,6 +266,19 @@ public class DatabasePageManagerCache implements ObjectCache
     }
 
     /**
+     * Add path to list of updating paths; this list is used to
+     * distinguish cache add operations that are probably the
+     * result of writes vs. those that are associated with reads.
+     *
+     * @param path object path
+     */
+    public synchronized static void addUpdatePath(final String path)
+    {
+        // add path for later examination, (duplicates allowed)
+        updatePathsList.add(path);
+    }
+
+    /**
      * Add object to cache and cache instances by unique path;
      * infuse nodes loaded by OJB with page manager configuration.
      *
@@ -277,14 +292,36 @@ public class DatabasePageManagerCache implements ObjectCache
             final NodeImpl node = (NodeImpl)obj;
             final String nodePath = node.getPath();
 
-            // add node to caches
+            // add node to caches; note that removes force notification
+            // of update to distributed caches
             oidCache.remove(oid);
             final CacheElement element = oidCache.createElement(oid, node);
             oidCache.put(element);
-            pathCache.remove(nodePath);
+            final boolean removed = pathCache.remove(nodePath);
             final CacheElement pathElement = pathCache.createElement(nodePath, new DatabasePageManagerCacheObject(oid, nodePath));
             pathCache.put(pathElement);
+            // if a remove was not successful from the path cache, update
+            // notification to distributed peers was not performed;
+            // for updates of objects evicted from the cache or newly
+            // created ones, this is problematic: remove and put into
+            // path cache a second time to force
+            if (!removed && updatePathsList.contains(nodePath))
+            {
+                pathCache.remove(nodePath);
+                pathCache.put(pathElement);
+            }
         }
+    }
+
+    /**
+     * Remove path from list of updating paths.
+     *
+     * @param path object path
+     */
+    public synchronized static void removeUpdatePath(final String path)
+    {
+        // remove single path from list
+        updatePathsList.remove(path);
     }
 
     /**
@@ -344,9 +381,21 @@ public class DatabasePageManagerCache implements ObjectCache
             final NodeImpl node = (NodeImpl)cacheLookup(oid);
             if (node != null)
             {
-                // remove from caches
+                final String nodePath = node.getPath();
+                // remove from caches; note that removes are
+                // propagated to distributed caches
                 oidCache.remove(oid);
-                pathCache.remove(node.getPath());
+                final boolean removed = pathCache.remove(nodePath);
+                // if a remove was not successful from the path cache,
+                // remove notification to distributed peers was not
+                // performed; this is problematic: put into path cache
+                // and remove a second time to force
+                if (!removed)
+                {
+                    final CacheElement pathElement = pathCache.createElement(nodePath, new DatabasePageManagerCacheObject(oid, nodePath));
+                    pathCache.put(pathElement);
+                    pathCache.remove(nodePath);
+                }
             }
         }
     }
@@ -361,13 +410,24 @@ public class DatabasePageManagerCache implements ObjectCache
         // remove from cache by path
         if (path != null)
         {
-            final CacheElement pathElement = pathCache.get(path);
+            CacheElement pathElement = pathCache.get(path);
             if (pathElement != null)
             {
                 final DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)pathElement.getContent();
-                // remove from caches
+                // remove from caches; note that removes are
+                // propagated to distributed caches
                 oidCache.remove(cacheObject.getId());
                 pathCache.remove(path);
+            }
+            else
+            {
+                // if an object is not found in the path cache, remove
+                // notification to distributed peers will not be performed;
+                // this is problematic: put into path cache and remove to
+                // force
+                pathElement = pathCache.createElement(path, new DatabasePageManagerCacheObject(path));
+                pathCache.put(pathElement);
+                pathCache.remove(path);                
             }
         }
     }

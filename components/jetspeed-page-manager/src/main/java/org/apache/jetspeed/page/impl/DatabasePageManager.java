@@ -959,8 +959,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update page and mark cache transaction
                 page.setParent(parent);
-                getPersistenceBrokerTemplate().store(page);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(page.getPath(), TransactionedOperation.ADD_OPERATION));
+                storeEntity( page, pagePath, true);
 
                 // reset parent folder pages cache
                 if (parent != null)
@@ -977,8 +976,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 page.checkAccess(JetspeedActions.EDIT);
 
                 // update page and mark cache transaction
-                getPersistenceBrokerTemplate().store(page);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(page.getPath(), TransactionedOperation.UPDATE_OPERATION));
+                storeEntity( page, page.getPath(), false);
                 
                 // reset parent folder pages cache in case
                 // parent is holding an out of date copy of
@@ -1102,8 +1100,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update folder and mark cache transaction
                 folder.setParent(parent);
-                getPersistenceBrokerTemplate().store(folder);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(folder.getPath(), TransactionedOperation.ADD_OPERATION));
+                storeEntity(folder, folderPath, true);
 
                 // reset parent folder folders cache
                 if (parent != null)
@@ -1122,20 +1119,21 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // check for edit access on folder and parent folder
                 // if not being initially created; access is not
                 // checked on create
-                if (!newFolder || !folder.getPath().equals(Folder.PATH_SEPARATOR))
+                String folderPath = folder.getPath();
+                if (!newFolder || !folderPath.equals(Folder.PATH_SEPARATOR))
                 {
                     folder.checkAccess(JetspeedActions.EDIT);
                 }
 
                 // create root folder or update folder and mark cache transaction
-                getPersistenceBrokerTemplate().store(folder);
+                storeEntity(folder, folderPath);
                 if (newFolder && !folder.getId().equals("0"))
                 {
-                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(folder.getPath(), TransactionedOperation.ADD_OPERATION));
+                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(folderPath, TransactionedOperation.ADD_OPERATION));
                 }
                 else
                 {
-                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(folder.getPath(), TransactionedOperation.UPDATE_OPERATION));
+                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(folderPath, TransactionedOperation.UPDATE_OPERATION));
                 }
 
                 // reset parent folder folders cache in case
@@ -1411,8 +1409,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update link and mark cache transaction
                 link.setParent(parent);
-                getPersistenceBrokerTemplate().store(link);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(link.getPath(), TransactionedOperation.ADD_OPERATION));
+                storeEntity(link, linkPath, true);
 
                 // reset parent folder links cache
                 if (parent != null)
@@ -1429,8 +1426,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 link.checkAccess(JetspeedActions.EDIT);
 
                 // update link and mark cache transaction
-                getPersistenceBrokerTemplate().store(link);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(link.getPath(), TransactionedOperation.UPDATE_OPERATION));
+                storeEntity(link, link.getPath(), false);
 
                 // reset parent folder links cache in case
                 // parent is holding an out of date copy of
@@ -1549,8 +1545,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     
                     // update document and mark cache transaction
                     pageSecurity.setParent(parent);
-                    getPersistenceBrokerTemplate().store(pageSecurity);
-                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(pageSecurity.getPath(), TransactionedOperation.ADD_OPERATION));
+                    storeEntity(pageSecurity, pageSecurityPath, true);
 
                     // reset parent folder page security cache
                     if (parent != null)
@@ -1572,8 +1567,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 pageSecurity.checkAccess(JetspeedActions.EDIT);
 
                 // update document and mark cache transaction
-                getPersistenceBrokerTemplate().store(pageSecurity);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(pageSecurity.getPath(), TransactionedOperation.UPDATE_OPERATION));
+                storeEntity(pageSecurity, pageSecurity.getPath(), false);
 
                 // reset parent folder page security cache in case
                 // parent is holding an out of date copy of this
@@ -1652,6 +1646,43 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             throw new FailedToDeleteDocumentException("Document " + pageSecurity.getPath() + " not removed.", e);
         }
+    }
+    
+    /**
+     * Add or update persistence object by storing to persistence broker.
+     *  
+     * @param node node to store
+     * @param path node path
+     */
+    private void storeEntity(Object node, String path)
+    {
+        // store object for add/update and interoperate with cache
+        // to signal update operations
+        DatabasePageManagerCache.addUpdatePath(path);
+        try
+        {
+            getPersistenceBrokerTemplate().store(node);
+        }
+        finally
+        {
+            DatabasePageManagerCache.removeUpdatePath(path);
+        }
+    }
+
+    /**
+     * Add or update persistence object by storing to persistence broker
+     * with thread cache transaction management.
+     *  
+     * @param node node to store
+     * @param path node path
+     * @param add whether transaction operation is add or update
+     */
+    private void storeEntity(Object node, String path, boolean add)
+    {
+        // store object for add/update and interoperate with cache
+        // to signal update operations and record thread transactions
+        storeEntity(node, path);
+        DatabasePageManagerCache.addTransaction(new TransactionedOperation(path, (add ? TransactionedOperation.ADD_OPERATION : TransactionedOperation.UPDATE_OPERATION)));
     }
 
     /* (non-Javadoc)
