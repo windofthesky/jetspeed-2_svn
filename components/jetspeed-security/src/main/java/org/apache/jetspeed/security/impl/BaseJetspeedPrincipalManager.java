@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
  */
 public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalManagerSPI
 {
-    private static class AssociationHandlerKey
+    private static class AssociationHandlerKey implements Serializable
     {
         String name;
         String fromPrincipalType;

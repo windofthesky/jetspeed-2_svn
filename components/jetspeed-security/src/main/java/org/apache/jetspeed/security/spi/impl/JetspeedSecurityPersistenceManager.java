@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ import org.springframework.orm.ojb.PersistenceBrokerCallback;
  */
 public class JetspeedSecurityPersistenceManager
     extends InitablePersistenceBrokerDaoSupport
-    implements JetspeedPrincipalAccessManager,
+    implements Serializable,JetspeedPrincipalAccessManager,
                 JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager, UserPasswordCredentialAccessManager,
                 JetspeedPrincipalAssociationStorageManager, JetspeedPermissionAccessManager, JetspeedPermissionStorageManager
 {

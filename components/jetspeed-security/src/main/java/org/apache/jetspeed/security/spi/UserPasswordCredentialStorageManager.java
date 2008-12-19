@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
@@ -23,7 +25,7 @@ import org.apache.jetspeed.security.User;
 /**
  * @version $Id$
  */
-public interface UserPasswordCredentialStorageManager
+public interface UserPasswordCredentialStorageManager extends Serializable
 {
     PasswordCredential getPasswordCredential(User user) throws SecurityException;
     void storePasswordCredential(PasswordCredential credential) throws SecurityException;

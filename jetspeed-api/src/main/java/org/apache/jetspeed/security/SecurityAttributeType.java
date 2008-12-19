@@ -16,10 +16,12 @@
  */
 package org.apache.jetspeed.security;
 
+import java.io.Serializable;
+
 /**
  * @version $Id$
  */
-public interface SecurityAttributeType
+public interface SecurityAttributeType extends Serializable
 {
     /** 
      * build-in supported SecurityAttributeType category "info"

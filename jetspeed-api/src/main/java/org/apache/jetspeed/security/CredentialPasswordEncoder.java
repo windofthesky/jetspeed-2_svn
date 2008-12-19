@@ -16,6 +16,8 @@
 */
 package org.apache.jetspeed.security;
 
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -25,7 +27,7 @@ package org.apache.jetspeed.security;
  * @author <a href="mailto:ate@apache.org">Ate Douma</a>
  * @version $Id: CredentialPasswordEncoder.java 187914 2004-11-08 22:36:04Z ate $
  */
-public interface CredentialPasswordEncoder
+public interface CredentialPasswordEncoder extends Serializable
 {
     String encode(String userName, String clearTextPassword) throws SecurityException;
 }

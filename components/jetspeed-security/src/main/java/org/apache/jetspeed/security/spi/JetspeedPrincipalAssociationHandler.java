@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
@@ -24,7 +26,7 @@ import org.apache.jetspeed.security.SecurityException;
 /**
  * @version $Id$
  */
-public interface JetspeedPrincipalAssociationHandler
+public interface JetspeedPrincipalAssociationHandler extends Serializable
 {
     JetspeedPrincipalAssociationType getAssociationType();
     

@@ -17,6 +17,8 @@
 
 package org.apache.jetspeed.security.spi;
 
+import java.io.Serializable;
+
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -26,7 +28,7 @@ import org.apache.jetspeed.security.SecurityException;
  * @version $Id$
  *
  */
-public interface UserPasswordCredentialPolicyManager
+public interface UserPasswordCredentialPolicyManager extends Serializable
 {    
     CredentialPasswordEncoder getCredentialPasswordEncoder();
     CredentialPasswordValidator getCredentialPasswordValidator();

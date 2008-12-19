@@ -16,12 +16,13 @@
  */
 package org.apache.jetspeed.security;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * @version $Id$
  */
-public interface SecurityAttributeTypes
+public interface SecurityAttributeTypes extends Serializable
 {
     Map<String, SecurityAttributeType> getAttributeTypeMap();
 
