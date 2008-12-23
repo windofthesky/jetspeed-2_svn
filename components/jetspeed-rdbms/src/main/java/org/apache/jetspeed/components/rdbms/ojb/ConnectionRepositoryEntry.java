@@ -426,7 +426,7 @@ public class ConnectionRepositoryEntry
             // #ifdef JDBC4 return getConnection().isWrapperFor(iface);
         }
 
-        <T> T unwrap(Class<T> iface) throws SQLException
+        public <T> T unwrap(Class<T> iface) throws SQLException
         {
             throw new SQLException("PoolingDataSource is not a wrapper.");
             //#ifdef JDBC4 return getConnection().unwrap(iface);
