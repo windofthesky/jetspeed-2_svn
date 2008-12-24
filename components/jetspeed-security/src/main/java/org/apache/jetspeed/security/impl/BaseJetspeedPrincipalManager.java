@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.PrincipalManagerEventListener;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationHandler;
@@ -88,6 +90,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     private JetspeedPrincipalStorageManager jpsm;
     //added for removing circular dependciese
     protected static JetspeedPrincipalManagerProvider jpmp;
+    private List<PrincipalManagerEventListener> listeners = new LinkedList();
     
     public BaseJetspeedPrincipalManager(JetspeedPrincipalType principalType, JetspeedPrincipalAccessManager jpam,
                                         JetspeedPrincipalStorageManager jpsm)
@@ -307,6 +310,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                 }
             }
         }
+        notifyNewPrincipal(principal);
     }
 
     public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
@@ -324,8 +328,9 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             }
         }
         jpsm.removePrincipal(principal);
-    }
-
+        notifyRemovedPrincipal(principal);
+    }     
+    
     public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
         validatePrincipal(principal);
@@ -334,8 +339,37 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             throw new SecurityException(SecurityException.PRINCIPAL_IS_READ_ONLY.createScoped(principal.getType().getName(), principal.getName()));
         }
         jpsm.updatePrincipal(principal);
+        notifyUpdatedPrincipal(principal);
     }
 
+    /**
+     * addListener - add principal manager event listener
+     *
+     * @param listener principal manager event listener
+     */
+    public void setListener(PrincipalManagerEventListener listener)
+    {
+        // add listener to listeners list
+        synchronized (listeners)
+        {
+            listeners.add(listener);
+        }
+    }
+
+    /**
+     * removeListener - remove principal manager event listener
+     *
+     * @param listener principal manager event listener
+     */
+    public void removeListener(PrincipalManagerEventListener listener)
+    {
+        // remove listener from listeners list
+        synchronized (listeners)
+        {  
+        	listeners.remove(listener);
+        }
+    }
+    
     //
     // JetspeedPrincipalAssociationHandler interface invocations
     //
@@ -367,6 +401,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             to = pto;
         }
         jpah.add(from, to);
+        notifyAddedAssociation(from,to, associationName);
     }
     
     public void transferAssociationFrom(JetspeedPrincipal from, JetspeedPrincipal to, JetspeedPrincipal target,
@@ -416,11 +451,106 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
                 to = pto;
             }
             jpah.remove(from, to);
+            notifyRemovedAssociation(from,to, associationName);
         }
     }
     
     protected boolean isSynchronizing(){
         return SynchronizationStateAccess.isSynchronizing();
     }
+    /**
+     * notifyNewPrincipal - notify principal manager event listeners of
+     *                 new principal event
+     *
+     * @param principal New principal
+     */
+    public void notifyNewPrincipal(JetspeedPrincipal principal) throws SecurityException
+    {
+        // copy listeners list to reduce synchronization deadlock
+        List<PrincipalManagerEventListener> listenersList = null;
+        synchronized (listeners)
+        {
+            listenersList = new ArrayList(listeners);
+        }
+        for(PrincipalManagerEventListener listener : listenersList)
+        {
+                listener.newPrincipal(principal);
+        }
+    }
 
+    /**
+     * notifyUpdatedPrincipal - notify page manager event listeners of
+     *                         updated node event
+     *
+     * @param node updated managed node if known
+     */
+    public void notifyUpdatedPrincipal(JetspeedPrincipal principal) throws SecurityException
+    {
+	   List<PrincipalManagerEventListener> listenersList = null;
+       synchronized (listeners)
+       {
+           listenersList = new ArrayList(listeners);
+       }
+       for(PrincipalManagerEventListener listener : listenersList)
+       {
+               listener.updatePrincipal(principal);
+       }
+    }
+
+    /**
+     * notifyRemovedPrincipal - notify principal manager event listeners of
+     *                          removed principal event
+     *
+     * @param principal removed managed principal if known
+     */
+    public void notifyRemovedPrincipal(JetspeedPrincipal principal)
+    {
+ 	   List<PrincipalManagerEventListener> listenersList = null;
+       synchronized (listeners)
+       {
+           listenersList = new ArrayList(listeners);
+       }
+       for(PrincipalManagerEventListener listener : listenersList)
+       {
+               listener.removePrincipal(principal);
+       }
+    }
+
+    /**
+     * notifyAddedAssociation - notify principal manager event listeners of
+     *                          addedd association event
+     *
+     * @param principal removed managed principal if known
+     */
+    public void notifyAddedAssociation(JetspeedPrincipal fromPrincipal,JetspeedPrincipal toPrincipal, String associationName)
+    {
+ 	   List<PrincipalManagerEventListener> listenersList = null;
+       synchronized (listeners)
+       {
+           listenersList = new ArrayList(listeners);
+       }
+       for(PrincipalManagerEventListener listener : listenersList)
+       {
+               listener.associationAdded(fromPrincipal,toPrincipal, associationName);
+       }
+    }
+
+    /**
+     * notifyRemovedAssociation - notify principal manager event listeners of
+     *                          removed association event
+     *
+     * @param principal removed managed principal if known
+     */
+    public void notifyRemovedAssociation(JetspeedPrincipal fromPrincipal,JetspeedPrincipal toPrincipal, String associationName)
+    {
+ 	   List<PrincipalManagerEventListener> listenersList = null;
+       synchronized (listeners)
+       {
+           listenersList = new ArrayList(listeners);
+       }
+       for(PrincipalManagerEventListener listener : listenersList)
+       {
+               listener.associationRemoved(fromPrincipal,toPrincipal, associationName);
+       }
+    }
 }

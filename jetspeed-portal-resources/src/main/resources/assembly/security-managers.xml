@@ -138,6 +138,9 @@
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
     <constructor-arg index="5" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
+    <property name="listener">
+      <ref bean="org.apache.jetspeed.security.PrincipalManagerEventAdapter" />
+    </property>    
   </bean>
 
   <!-- Security: Group Manager -->
@@ -171,6 +174,9 @@
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
+    <property name="listener">
+      <ref bean="org.apache.jetspeed.security.PrincipalManagerEventAdapter" />
+    </property>    
   </bean>
 
   <!-- Security: Role Manager -->
@@ -204,6 +210,9 @@
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
+    <property name="listener">
+      <ref bean="org.apache.jetspeed.security.PrincipalManagerEventAdapter" />
+    </property>    
   </bean>
 
   <!-- Security: Permission Manager -->
@@ -392,4 +401,7 @@
       </list>
     </constructor-arg>
   </bean>
+  <bean id="org.apache.jetspeed.security.PrincipalManagerEventAdapter" class="org.apache.jetspeed.security.PrincipalManagerEventAdapter" >
+    <meta key="j2:cat" value="default" />
+  </bean>  
 </beans>
