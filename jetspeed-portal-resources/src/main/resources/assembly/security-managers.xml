@@ -402,6 +402,6 @@
     </constructor-arg>
   </bean>
   <bean id="org.apache.jetspeed.security.PrincipalManagerEventAdapter" class="org.apache.jetspeed.security.PrincipalManagerEventAdapter" >
-    <meta key="j2:cat" value="default" />
+    <meta key="j2:cat" value="default,security" />
   </bean>  
 </beans>
