@@ -1,0 +1,16 @@
+
+There are two Jetspeed installers that can be built from command line: a portal
+with minimal functionality and a demo portal with more portlet applications.
+
+To build either of these installers, the Jetspeed Maven plugin for Maven-2 
+should be used as follows:  
+
+> mvn jetspeed:mvn -Dtarget=installer-minimal
+
+  or	
+
+> mvn jetspeed:mvn -Dtarget=installer-demo
+
+
+NB: the target directory will be cleaned so you cannot build both installers at the same time
+without saveguarding the first build target.

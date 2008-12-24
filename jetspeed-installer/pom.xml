@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  $Id$
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+
+  <artifactId>jetspeed-installer-pom</artifactId>
+  <name>Jetspeed-2 Installer</name>
+  <parent>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>jetspeed-2</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+
+  <build>
+    <pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-mvn-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <configuration>
+          <targets combine.children="append">
+            <target>
+              <id>clean</id>
+              <dir>./</dir>
+              <goals>clean</goals>
+            </target>
+            <target>
+              <id>database-minimal</id>
+              <name>database</name>
+              <properties>
+                <seed.path>seed/min</seed.path>
+              </properties>
+            </target>
+            <target>
+              <id>database-demo</id>
+              <name>database</name>
+              <properties>
+                <seed.path>seed</seed.path>
+              </properties>
+            </target>
+            <target>
+              <id>tomcat-portal-unpack</id>
+              <name>tomcat-portal</name>
+              <profiles>unpack</profiles>
+            </target>
+            <target>
+              <id>tomcat-portal-minimal</id>
+              <name>tomcat-portal</name>
+              <profiles>minimal</profiles>
+            </target>
+            <target>
+              <id>tomcat-portal-demo</id>
+              <name>tomcat-portal</name>
+              <profiles>demo</profiles>
+            </target>
+            <target>
+              <id>tomcat-portal-pack</id>
+              <name>tomcat-portal</name>
+              <profiles>pack</profiles>
+            </target>
+            <target>
+              <id>ant-installer-demo</id>
+              <name>ant-installer</name>
+              <profiles>demo</profiles>
+              <properties>
+                <antinstall.filename>antinstall-config.xml</antinstall.filename>
+              </properties>
+            </target>
+            <target>
+              <id>ant-installer-minimal</id>
+              <name>ant-installer</name>
+              <profiles>minimal</profiles>
+              <properties>
+                <antinstall.filename>antinstall-config-min.xml</antinstall.filename>
+              </properties>
+            </target>
+            <target>
+              <id>installer-demo</id>
+              <depends>clean,database-demo,tomcat-portal-unpack,tomcat-portal-demo,tomcat-portal-pack,ant-installer-demo</depends>
+            </target>
+            <target>
+              <id>installer-minimal</id>
+              <depends>clean,database-minimal,tomcat-portal-unpack,tomcat-portal-minimal,tomcat-portal-pack,ant-installer-minimal</depends>
+            </target>
+          </targets>
+        </configuration>
+      </plugin>
+
+    </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

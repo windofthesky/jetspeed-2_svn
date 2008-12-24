@@ -197,6 +197,7 @@ public class MvnMojo extends AbstractMojo
             
             for (Target t : targets)
             {
+                System.out.println("Processing target: "+t);
                 t.init();
                 if (t.id == null)
                 {
@@ -208,7 +209,7 @@ public class MvnMojo extends AbstractMojo
                 }                
                 if (targetsMap.containsKey(t.id))
                 {
-                    throw new MojoFailureException("Duplicate target id (or derived from its name): "+t.id);
+                    throw new MojoFailureException("Duplicate target id (or derived from its name): "+t.id + "("+targetsMap+")");                    
                 }
                 if (t.dir != null)
                 {
