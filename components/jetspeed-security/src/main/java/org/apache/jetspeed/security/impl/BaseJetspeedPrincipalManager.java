@@ -234,7 +234,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             }
             assHandlers.put(key, jpah);
             associationTypes.add(jpah.getAssociationType());
-            if (jpah.getAssociationType().isRequired())
+            if (jpah.getAssociationType().isRequired() && jpah.getAssociationType().getFromPrincipalType().getName().equals(principalType.getName()))
             {
                 reqAssociations.put(key,jpah.getAssociationType());
             }
