@@ -27,6 +27,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.PrincipalManagerEventListener;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -208,5 +209,22 @@ public abstract class StubJetspeedPrincipalManager implements JetspeedPrincipalM
         // TODO Auto-generated method stub
         
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.JetspeedPrincipalManager#addListener(org.apache.jetspeed.security.PrincipalManagerEventListener)
+     */
+    public void addListener(PrincipalManagerEventListener listener)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.security.JetspeedPrincipalManager#removeListener(org.apache.jetspeed.security.PrincipalManagerEventListener)
+     */
+    public void removeListener(PrincipalManagerEventListener listener)
+    {
+        // TODO Auto-generated method stub
+        
+    }    
 }

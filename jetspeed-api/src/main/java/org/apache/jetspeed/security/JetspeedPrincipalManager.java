@@ -146,8 +146,8 @@ public interface JetspeedPrincipalManager extends Serializable
     
     void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName)
         throws SecurityException;
-    
-    void setListener(PrincipalManagerEventListener listener);
+           
+    void addListener(PrincipalManagerEventListener listener);
     
     void removeListener(PrincipalManagerEventListener listener);
 }

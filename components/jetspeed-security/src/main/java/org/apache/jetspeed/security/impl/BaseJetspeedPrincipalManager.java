@@ -343,11 +343,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     }
 
     /**
-     * addListener - add principal manager event listener
+     * ssetListener - add principal manager event listener
      *
      * @param listener principal manager event listener
      */
-    public void setListener(PrincipalManagerEventListener listener)
+    public void addListener(PrincipalManagerEventListener listener)
     {
         // add listener to listeners list
         synchronized (listeners)
@@ -355,7 +355,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
             listeners.add(listener);
         }
     }
-
+       
     /**
      * removeListener - remove principal manager event listener
      *
