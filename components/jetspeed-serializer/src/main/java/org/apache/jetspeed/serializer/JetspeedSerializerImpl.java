@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javolution.xml.XMLBinding;
+import javolution.xml.XMLObjectReader;
+import javolution.xml.XMLObjectWriter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.serializer.objects.JSApplication;
@@ -64,6 +68,8 @@ import org.apache.jetspeed.serializer.objects.JSRoles;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
 import org.apache.jetspeed.serializer.objects.JSSecurityAttributes;
+import org.apache.jetspeed.serializer.objects.JSSecurityDomain;
+import org.apache.jetspeed.serializer.objects.JSSecurityDomains;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 import org.apache.jetspeed.serializer.objects.JSUserAttributes;
@@ -71,10 +77,6 @@ import org.apache.jetspeed.serializer.objects.JSUserGroups;
 import org.apache.jetspeed.serializer.objects.JSUserRoles;
 import org.apache.jetspeed.serializer.objects.JSUserUsers;
 import org.apache.jetspeed.serializer.objects.JSUsers;
-
-import javolution.xml.XMLBinding;
-import javolution.xml.XMLObjectReader;
-import javolution.xml.XMLObjectWriter;
 
 /**
  * Main JetspeedSerializer implementation delegating the real serializing to JetspeedComponentSerializer instances
@@ -227,6 +229,8 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setAlias(JSEntities.class, "Entities");
         binding.setAlias(JSEntityPreference.class, "Principal");
         binding.setAlias(JSEntityPreferences.class, "Settings");
+        binding.setAlias(JSSecurityDomains.class, "SecurityDomains");
+        binding.setAlias(JSSecurityDomain.class, "SecurityDomain");
 
         binding.setAlias(String.class, "String");
         binding.setAlias(Integer.class, "int");

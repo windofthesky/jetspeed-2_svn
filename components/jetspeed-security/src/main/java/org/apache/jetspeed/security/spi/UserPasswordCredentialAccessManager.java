@@ -39,4 +39,9 @@ public interface UserPasswordCredentialAccessManager
     PasswordCredential getPasswordCredential(String userName);
     void loadPasswordCredentialUser(PasswordCredential credential);
     List<PasswordCredential> getHistoricPasswordCredentials(User user);
+
+
+    PasswordCredential getPasswordCredential(String userName, Long securityDomain);
+    List<PasswordCredential> getHistoricPasswordCredentials(User user, Long securityDomain);
+
 }

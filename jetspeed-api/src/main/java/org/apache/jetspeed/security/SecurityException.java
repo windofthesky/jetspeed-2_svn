@@ -151,6 +151,15 @@ public class SecurityException extends JetspeedException
     public static final KeyedMessage ATTRIBUTES_ARE_READ_ONLY = new KeyedMessage("The principal attributes are read only.");
 
     public static final KeyedMessage ATTRIBUTES_NOT_EXTENDABLE = new KeyedMessage("Adding new principal attributes is not supported.");
+
+    public static final KeyedMessage SECURITY_DOMAIN_EXISTS = new KeyedMessage("The security domain {0} already exists.");
+
+    public static final KeyedMessage SECURITY_DOMAIN_DOES_NOT_EXIST = new KeyedMessage("The security domain {0} does not exist.");
+
+    public static final KeyedMessage SECURITY_DOMAIN_NOT_REMOVABLE = new KeyedMessage("The security domain {0} could not be removed.");
+
+    public static final KeyedMessage DEFAULT_SECURITY_DOMAIN_DOES_NOT_EXIST = new KeyedMessage("The default security domain does not exist.");
+
     /**
      * <p>Default Constructor.</p>
      */

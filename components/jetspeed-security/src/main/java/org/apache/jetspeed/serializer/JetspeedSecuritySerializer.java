@@ -17,6 +17,8 @@
 package org.apache.jetspeed.serializer;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,9 +43,13 @@ import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.SecurityDomain;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.impl.SecurityDomainImpl;
+import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
+import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
 import org.apache.jetspeed.serializer.objects.JSGroup;
 import org.apache.jetspeed.serializer.objects.JSNVPElement;
@@ -54,12 +60,15 @@ import org.apache.jetspeed.serializer.objects.JSPrincipal;
 import org.apache.jetspeed.serializer.objects.JSPrincipalAssociation;
 import org.apache.jetspeed.serializer.objects.JSRole;
 import org.apache.jetspeed.serializer.objects.JSSecurityAttributes;
+import org.apache.jetspeed.serializer.objects.JSSecurityDomain;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSUser;
 import org.apache.jetspeed.serializer.objects.JSUserAttributes;
 import org.apache.jetspeed.serializer.objects.JSUserGroups;
 import org.apache.jetspeed.serializer.objects.JSUserRoles;
 import org.apache.jetspeed.serializer.objects.JSUserUsers;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * JetspeedSecuritySerializer - Security component serializer
@@ -131,15 +140,17 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
+    protected SecurityDomainStorageManager domainStorageManager; 
+    protected SecurityDomainAccessManager domainAccessManager;
     protected JetspeedPrincipalManagerProvider principalManagerProvider;
     protected GroupManager groupManager;
     protected RoleManager roleManager;
     protected UserManager userManager;
     protected CredentialPasswordEncoder cpe;
     protected PermissionManager pm;
-
+    
     public JetspeedSecuritySerializer(JetspeedPrincipalManagerProvider principalManagerProvider, GroupManager groupManager, RoleManager roleManager, UserManager userManager,
-            CredentialPasswordEncoder cpe, PermissionManager pm)
+            CredentialPasswordEncoder cpe, PermissionManager pm, SecurityDomainStorageManager sdsm, SecurityDomainAccessManager sdam )
     {
         this.principalManagerProvider = principalManagerProvider;
         this.groupManager = groupManager;
@@ -147,6 +158,8 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         this.userManager = userManager;
         this.cpe = cpe;
         this.pm = pm;
+        this.domainAccessManager=sdam;
+        this.domainStorageManager=sdsm;
     }
 
     protected void processExport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
@@ -182,9 +195,11 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             {
                 SynchronizationStateAccess.setSynchronizing(Boolean.TRUE);
                 ImportRefs refs = new ImportRefs();
+                
+                recreateSecurityDomains(refs, snapshot, settings, log);
                 recreateJetspeedPrincipals(refs, snapshot, settings, log);
                 recreateJetspeedPrincipalAssociations(refs, snapshot, settings, log);
-                
+
                 if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_PERMISSIONS))
                 {
                     log.info("creating permissions");
@@ -238,6 +253,107 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
+    protected SecurityDomain checkDomainExistsOtherwiseCreate(String domainName) throws SecurityException{
+        SecurityDomain domain = domainAccessManager.getDomainByName(domainName);
+        if (domain == null){
+            SecurityDomainImpl newDomain = new SecurityDomainImpl();
+            newDomain.setName(domainName);
+            newDomain.setEnabled(true);
+            newDomain.setRemote(false);
+            
+            domainStorageManager.addDomain(newDomain);
+            domain = domainAccessManager.getDomainByName(domainName);
+        }
+        return domain;
+    }
+    
+    private void recreateSecurityDomains(ImportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException {
+        log.debug("recreateSecurityDomains");
+    
+     // create system and default domain. Adding them to the seed is not necessary!           
+        Long systemDomainId=null;            
+        Long defaultDomainId=null;
+        try{
+            defaultDomainId=checkDomainExistsOtherwiseCreate(SecurityDomain.DEFAULT_NAME).getDomainId();
+            systemDomainId=checkDomainExistsOtherwiseCreate(SecurityDomain.SYSTEM_NAME).getDomainId();
+        } catch (Exception e){
+            throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { "SecurityDomains",
+                    "Could not create default and / or system domains!\n"+e.getMessage() }), e);
+        }
+        
+        if (snapshot.getSecurityDomains() != null && snapshot.getSecurityDomains().size() > 0){
+            
+            // sort the domains according to whether they have an owner domain
+            // domains without owner domains ( = base or parent domains) should be created first
+            ArrayList<JSSecurityDomain> sortedDomains = new ArrayList<JSSecurityDomain>(snapshot.getSecurityDomains());
+            
+            Collections.sort(sortedDomains, new Comparator<JSSecurityDomain>(){
+                public int compare(JSSecurityDomain o1, JSSecurityDomain o2)
+                {
+                    boolean o1HasOwner = o1.getOwnerDomain() != null;
+                    boolean o2HasOwner = o2.getOwnerDomain() != null;
+                    
+                    if (o1HasOwner==o2HasOwner){
+                        return 0;
+                    } else if (o1HasOwner){
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            });
+            
+            
+            
+            // create other domains
+            for (JSSecurityDomain jsDomain : sortedDomains){      
+                // do some checks first
+                
+                // if domain is the system domain or the default domain, skip creation (they exist already)
+                if (jsDomain.getName().equals(SecurityDomain.SYSTEM_NAME) || jsDomain.getName().equals(SecurityDomain.DEFAULT_NAME)){
+                    break;
+                }
+                if (jsDomain.getName().length() == 0){
+                    throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { "SecurityDomain",
+                            "Name of Security Domain must not be empty!" }));
+                }
+                Long ownerDomainId = null;
+                if (jsDomain.getOwnerDomain() != null){                    
+                    if (jsDomain.getOwnerDomain().equals(SecurityDomain.SYSTEM_NAME)){
+                        ownerDomainId=defaultDomainId;
+                    } else if (jsDomain.getOwnerDomain().equals(SecurityDomain.SYSTEM_NAME)) {
+                        ownerDomainId=systemDomainId;
+                    } else {
+                        SecurityDomain ownerDomain = domainAccessManager.getDomainByName(jsDomain.getOwnerDomain());
+                        if (ownerDomain == null){
+                            throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { "SecurityDomain","Could not find owner domain with name "+jsDomain.getOwnerDomain()+"for domain with name "+jsDomain.getName()}));
+                        }
+                        ownerDomainId=ownerDomain.getDomainId();
+                    }
+                } else {
+                    // remote domains always need an owner domain. Set the default domain if owner domain is not specified
+                    if (jsDomain.isRemote()){
+                        ownerDomainId=defaultDomainId;
+                    }
+                }
+                
+                SecurityDomainImpl newDomain = new SecurityDomainImpl();
+                newDomain.setName(jsDomain.getName());
+                newDomain.setOwnerDomainId(ownerDomainId);
+                newDomain.setRemote(jsDomain.isRemote());
+                newDomain.setEnabled(jsDomain.isEnabled());
+                try{
+                    domainStorageManager.addDomain(newDomain);    
+                  } catch (Exception e){
+                  throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create(new String[] { "SecurityDomain",
+                          e.getMessage() }), e);
+              }
+                
+            }
+            
+        }
+    }
+    
     /**
      * import the groups, roles and finally the users to the current environment
      * 

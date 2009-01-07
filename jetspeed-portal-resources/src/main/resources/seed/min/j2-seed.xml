@@ -272,6 +272,21 @@
 			<mimeTypes>text/html</mimeTypes>
 		</Client>
 	</Clients>
+	<SecurityDomains>
+		<!-- NB: the system and default domains will be added automatically. Only specify custom Security Domains here -->
+		<!--
+			example of a local domain : 
+			<SecurityDomain name="departmentA"/>
+			
+			example of a remote domain :
+			(the owner domain will be the "default" domain if no owner domain is specified)
+			<SecurityDomain name="nytimes" remote="true""/>
+			
+			non-default owner domain:
+			<SecurityDomain name="nytimes" remote="true" ownerDomain="departmentA"/>
+			
+		-->
+	</SecurityDomains>
 	<Roles>
 		<Role>admin</Role>
 		<Role>guest</Role>

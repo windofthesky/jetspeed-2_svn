@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.security;
 
-import java.security.Principal;
+import java.security.Principal; 
 import java.sql.Timestamp;
 import java.util.Map;
 
@@ -55,4 +55,6 @@ public interface JetspeedPrincipal extends Principal
      * @return an unmodifiable Map<String,String> of the SecurityAttributes.INFO_CATEGORY SecurityAttributes
      */
     Map<String, String> getInfoMap();
+    
+    Long getDomainId();
 }

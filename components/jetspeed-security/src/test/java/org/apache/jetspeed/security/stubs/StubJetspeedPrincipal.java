@@ -150,4 +150,10 @@ public class StubJetspeedPrincipal implements JetspeedPrincipal
 
     }
 
+    public Long getDomainId()
+    {
+        // TODO Auto-generated method stub
+        return 1L;
+    }
+
 }

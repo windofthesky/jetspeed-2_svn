@@ -289,6 +289,11 @@ limitations under the License.
           nullable="false"
       >
       </field-descriptor>
+      <field-descriptor 
+          name="domainId" 
+          nullable="false" 
+          jdbc-type="BIGINT"
+          column="domain_id"/>
       <collection-descriptor
           name="attributes"
           element-class-ref="org.apache.jetspeed.security.impl.SecurityAttributeValue"
@@ -445,4 +450,49 @@ limitations under the License.
       </reference-descriptor>
   </class-descriptor>
 
+<!-- 
+    SECURITY DOMAIN
+-->
+    <!--
+        - J E T S P E E D   P R I N C I P A L   A S S O C I A T I O N
+    -->
+    <class-descriptor
+        class="org.apache.jetspeed.security.impl.SecurityDomainImpl"
+        table="SECURITY_DOMAIN"        
+        >
+        <documentation>Security Domain</documentation>
+        <field-descriptor
+            name="domainId"            
+            autoincrement="true"            
+            column="domain_id"
+            jdbc-type="BIGINT"
+            primarykey="true"
+        />
+        <field-descriptor
+            name="name"
+            column="domain_name"
+            jdbc-type="VARCHAR"
+            length="30"
+        />
+        <field-descriptor
+            name="ownerDomainId"
+            column="owner_domain_id"
+            jdbc-type="BIGINT"            
+        />
+        <field-descriptor
+            name="remote"
+            column="remote"
+            jdbc-type="INTEGER"
+            conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+            nullable="false"
+        />
+        <field-descriptor
+            name="enabled"
+            column="enabled"
+            jdbc-type="INTEGER"
+            conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+            nullable="false"
+        />
+    </class-descriptor>
+    
 </descriptor-repository>

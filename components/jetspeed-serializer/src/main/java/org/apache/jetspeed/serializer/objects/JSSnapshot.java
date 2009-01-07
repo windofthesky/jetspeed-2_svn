@@ -73,6 +73,9 @@ public class JSSnapshot implements JetspeedSerializedData
     private String defaultRule;
 
     private JSApplications applications;
+    
+    private JSSecurityDomains securityDomains;
+    
 
     /**
      * check the software version and subvversion against the saved
@@ -104,6 +107,7 @@ public class JSSnapshot implements JetspeedSerializedData
         permissions = new JSPermissions();
         rules = new JSProfilingRules();
         applications = new JSApplications();
+        securityDomains=new JSSecurityDomains();
     }
 
     public JSSnapshot(String name)
@@ -486,6 +490,16 @@ public class JSSnapshot implements JetspeedSerializedData
         this.applications = applications;
     }
 
+    public JSSecurityDomains getSecurityDomains()
+    {
+        return securityDomains;
+    }
+    
+    public void setSecurityDomains(JSSecurityDomains securityDomains)
+    {
+        this.securityDomains = securityDomains;
+    }
+
 
     /***************************************************************************
      * SERIALIZER
@@ -579,6 +593,10 @@ public class JSSnapshot implements JetspeedSerializedData
                 {
                     xml.add(g.getApplications());
                 }
+                if ( !g.getSecurityDomains().isEmpty() )
+                {
+                    xml.add(g.getSecurityDomains());
+                }
             }
             catch (Exception e)
             {
@@ -665,6 +683,8 @@ public class JSSnapshot implements JetspeedSerializedData
                         g.rules = (JSProfilingRules) o1;
                     else if (o1 instanceof JSApplications)
                         g.applications = (JSApplications) o1;
+                    else if (o1 instanceof JSSecurityDomains)
+                        g.securityDomains = (JSSecurityDomains) o1;
                 }
             }
             catch (Exception e)

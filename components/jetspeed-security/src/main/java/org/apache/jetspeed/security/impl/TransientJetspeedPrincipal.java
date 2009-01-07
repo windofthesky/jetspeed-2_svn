@@ -41,6 +41,7 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     
     protected transient JetspeedPrincipalType jpt;
     protected transient SecurityAttributes sa;
+    private Long domainId;
     
     public static void setJetspeedPrincipalManagerProvider(JetspeedPrincipalManagerProvider jpmp)
     {
@@ -165,5 +166,14 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     public String toString()
     {
         return getType().getName()+": "+getName()+" (id: "+(getId())+", transient: "+isTransient()+", mapped: "+isMapped()+")";
+    }
+    
+    public Long getDomainId()
+    {
+        return domainId;
+    }
+
+    public void setDomainId(Long domainId){
+        this.domainId=domainId;
     }
 }

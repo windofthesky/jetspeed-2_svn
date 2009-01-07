@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.spi.impl;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -30,15 +31,21 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.SecurityDomain;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
+import org.apache.jetspeed.security.impl.SecurityDomainImpl;
+import org.apache.jetspeed.security.impl.TransientJetspeedPrincipal;
+import org.apache.jetspeed.security.spi.JetspeedDomainPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPermissionAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
+import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
+import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialAccessManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager;
 import org.apache.ojb.broker.PersistenceBroker;
@@ -51,6 +58,7 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.apache.ojb.broker.util.collections.ManageableArrayList;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.ojb.PersistenceBrokerCallback;
 
 /**
@@ -59,9 +67,14 @@ import org.springframework.orm.ojb.PersistenceBrokerCallback;
 public class JetspeedSecurityPersistenceManager
     extends InitablePersistenceBrokerDaoSupport
     implements Serializable,JetspeedPrincipalAccessManager,
-                JetspeedPrincipalStorageManager, UserPasswordCredentialStorageManager, UserPasswordCredentialAccessManager,
-                JetspeedPrincipalAssociationStorageManager, JetspeedPermissionAccessManager, JetspeedPermissionStorageManager
+                JetspeedPrincipalStorageManager, JetspeedDomainPrincipalAccessManager, UserPasswordCredentialStorageManager, UserPasswordCredentialAccessManager,
+                JetspeedPrincipalAssociationStorageManager, JetspeedPermissionAccessManager, JetspeedPermissionStorageManager, 
+                SecurityDomainStorageManager, SecurityDomainAccessManager
 {
+    private static final long serialVersionUID = -2689340557699526023L;
+	
+    private Long defaultSecurityDomainId;
+    
     private static class ManagedListByQueryCallback implements PersistenceBrokerCallback
     {
         private Query query;
@@ -86,69 +99,99 @@ public class JetspeedSecurityPersistenceManager
     {
         if (principal.getId() == null)
         {
-            return principalExists(principal.getName(), principal.getType());
+            if (principal.getDomainId() != null){
+                return principalExists(principal.getName(), principal.getType(), principal.getDomainId());    
+            } else {
+                return principalExists(principal.getName(), principal.getType());
+            }
+            
         }
         Criteria criteria = new Criteria();
         criteria.addEqualTo("id", principal.getId());
         criteria.addEqualTo("type", principal.getType().getName());
+        criteria.addEqualTo("domainId", principal.getDomainId());
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return getPersistenceBrokerTemplate().getCount(query) == 1;
     }
 
+	public List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+	    return getAssociatedFrom(principalFromName, from, to, associationName, getDefaultSecurityDomainId());
+	}
     //
     // JetspeedPrincipalAccessManager interface implementation
     //
     @SuppressWarnings("unchecked") 
-    public List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.name", principalFromName);
         criteria.addEqualTo("type", to.getName());
+        criteria.addEqualTo("associationsTo.to.domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    public List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedTo(principalToName, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.name", principalToName);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.from.domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    public List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedFrom(principalFromId, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.id", principalFromId);
         criteria.addEqualTo("type", to.getName());
+        criteria.addEqualTo("associationsTo.to.domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    public List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedTo(principalToId, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.id", principalToId);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.from.domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
+    public List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedNamesFrom(principalFromName, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.name", principalFromName);
         criteria.addEqualTo("type", to.getName());
+        criteria.addEqualTo("associationsTo.to.domainId", securityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
@@ -159,13 +202,18 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    public List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedNamesFrom(principalFromId, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.id", principalFromId);
         criteria.addEqualTo("type", to.getName());
+        criteria.addEqualTo("associationsTo.to.domainId", securityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
@@ -176,13 +224,18 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    public List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedNamesTo(principalToName, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.name", principalToName);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.from.domainId", securityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
@@ -193,13 +246,18 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
+    public List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
+        return getAssociatedNamesTo(principalToId, from, to, associationName, getDefaultSecurityDomainId());
+    }
+
     @SuppressWarnings("unchecked") 
-    public List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName)
+    public List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.id", principalToId);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.from.domainId", securityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
@@ -217,15 +275,26 @@ public class JetspeedSecurityPersistenceManager
 
     public JetspeedPrincipal getPrincipal(String principalName, JetspeedPrincipalType type)
     {
+        return getPrincipal(principalName, type, getDefaultSecurityDomainId());
+    }
+    
+    public JetspeedPrincipal getPrincipal(String principalName, JetspeedPrincipalType type, Long securityDomain)
+    {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("name", principalName);
         criteria.addEqualTo("type", type.getName());
+        criteria.addEqualTo("domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return (JetspeedPrincipal)getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
-    @SuppressWarnings("unchecked") 
     public List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type)
+    {
+        return getPrincipalNames(nameFilter, type, getDefaultSecurityDomainId());
+    }
+
+    @SuppressWarnings("unchecked") 
+    public List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         if (nameFilter != null && nameFilter.length() > 0)
@@ -233,6 +302,7 @@ public class JetspeedSecurityPersistenceManager
             criteria.addLike("name", nameFilter+"%");
         }
         criteria.addEqualTo("type", type.getName());
+        criteria.addEqualTo("domainId", securityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class,criteria);
         query.setAttributes(new String[]{"name"});
         ArrayList<String> names = new ArrayList<String>();
@@ -243,8 +313,13 @@ public class JetspeedSecurityPersistenceManager
         return names;
     }
 
-    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type)
+    {
+        return getPrincipals(nameFilter, type, getDefaultSecurityDomainId());
+    }
+    
+    @SuppressWarnings("unchecked") 
+    public List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         if (nameFilter != null && nameFilter.length() > 0)
@@ -252,26 +327,39 @@ public class JetspeedSecurityPersistenceManager
             criteria.addLike("name", nameFilter+"%");
         }
         criteria.addEqualTo("type", type.getName());
+        criteria.addEqualTo("domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
-    @SuppressWarnings("unchecked") 
     public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue, JetspeedPrincipalType type)
+    {
+        return getPrincipalsByAttribute(attributeName, attributeValue, type, getDefaultSecurityDomainId());
+    }
+    
+    @SuppressWarnings("unchecked") 
+    public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue, JetspeedPrincipalType type, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("attributes.name", attributeName);
         criteria.addEqualTo("attributes.value", attributeValue);
         criteria.addEqualTo("type", type.getName());
+        criteria.addEqualTo("domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
 
     public boolean principalExists(String principalName, JetspeedPrincipalType type)
     {
+        return principalExists(principalName, type, getDefaultSecurityDomainId());
+    }
+    
+    public boolean principalExists(String principalName, JetspeedPrincipalType type, Long securityDomain)
+    {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("name", principalName);
         criteria.addEqualTo("type", type.getName());
+        criteria.addEqualTo("domainId", securityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
         return getPersistenceBrokerTemplate().getCount(query) == 1;
     }
@@ -282,6 +370,9 @@ public class JetspeedSecurityPersistenceManager
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
         throws SecurityException
     {
+        if (principal.getDomainId() == null && principal instanceof TransientJetspeedPrincipal){
+            ((TransientJetspeedPrincipal)principal).setDomainId(getDefaultSecurityDomainId());
+        }
         if (principalExists(principal))
         {
             throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(principal.getType().getName(), principal.getName()));
@@ -391,6 +482,9 @@ public class JetspeedSecurityPersistenceManager
         getPersistenceBrokerTemplate().store(credential);
     }
 
+    public PasswordCredential getPasswordCredential(String userName){
+        return getPasswordCredential(userName,getDefaultSecurityDomainId());
+    }
     //
     // UserPasswordCredentialAccessManager interface implementation
     //
@@ -405,12 +499,13 @@ public class JetspeedSecurityPersistenceManager
      * The user reference can be materialized by calling {@link #loadPasswordCredentialUser(PasswordCredential)}.
      * </p>
      */
-    public PasswordCredential getPasswordCredential(String userName)
+    public PasswordCredential getPasswordCredential(String userName, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("user.name", userName);
         criteria.addEqualTo("user.enabled",true);
         criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
+        criteria.addEqualTo("domainId", securityDomain);
         Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
         PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBrokerTemplate().getObjectByQuery(query);
         if (pwc != null)
@@ -438,8 +533,12 @@ public class JetspeedSecurityPersistenceManager
         }
     }
 
+    public List<PasswordCredential> getHistoricPasswordCredentials(User user){
+        return getHistoricPasswordCredentials(user,getDefaultSecurityDomainId());
+    }
+    
     @SuppressWarnings("unchecked") 
-    public List<PasswordCredential> getHistoricPasswordCredentials(User user)
+    public List<PasswordCredential> getHistoricPasswordCredentials(User user, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("principalId", user.getId());
@@ -580,6 +679,7 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("type", principalType);
         }
+        criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         query.addOrderByAscending("type");
         query.addOrderByAscending("name");
@@ -749,6 +849,7 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("type", principalType);
         }
+        criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         List<JetspeedPrincipal> currentList = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
         List<JetspeedPrincipal> targetList = new ArrayList<JetspeedPrincipal>(principals);
@@ -794,6 +895,7 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("principal.type", principal.getType());
             criteria.addEqualTo("principal.name", principal.getName());
+            criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
         }
         else
         {
@@ -830,6 +932,7 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("principal.type", principal.getType());
             criteria.addEqualTo("principal.name", principal.getName());
+            criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
         }
         else
         {
@@ -849,4 +952,103 @@ public class JetspeedSecurityPersistenceManager
             throw new SecurityException(msg, pbe);
         }
     }
+
+    protected boolean domainExists(SecurityDomain domain){        
+        return getDomainByName(domain.getName()) != null;
+    }
+    
+    public void addDomain(SecurityDomain domain) throws SecurityException 
+    {
+        if (domainExists(domain))
+        {
+            throw new SecurityException(SecurityException.SECURITY_DOMAIN_EXISTS.create(domain.getName()));
+        }
+        try
+        {
+            getPersistenceBrokerTemplate().store(domain);
+        }
+        catch (Exception pbe)
+        {
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                   "addDomain",
+                                                                   pbe.getMessage());
+            logger.error(msg, pbe);
+            throw new SecurityException(msg, pbe);            
+        }
+    }
+
+    public SecurityDomain getDomain(Long domainId)
+    {
+        try{
+            return (SecurityDomain) getPersistenceBrokerTemplate().getObjectById(SecurityDomainImpl.class, domainId);    
+        } catch (ObjectRetrievalFailureException ore){
+            return null;
+        }
+        
+    }
+
+    protected Long getDefaultSecurityDomainId() {
+        if (defaultSecurityDomainId == null){
+            SecurityDomain d = getDomainByName(SecurityDomain.DEFAULT_NAME);
+            if (d == null){
+                throw new RuntimeException("The default security domain could not be found!");
+            }
+            defaultSecurityDomainId=d.getDomainId();
+        }   
+        return defaultSecurityDomainId;
+    }
+    
+    public SecurityDomain getDomainByName(String domainName)
+    {
+    	Criteria criteria = new Criteria();
+        criteria.addEqualTo("name", domainName);
+        Query query = QueryFactory.newQuery(SecurityDomainImpl.class,criteria);
+        return (SecurityDomain) getPersistenceBrokerTemplate().getObjectByQuery(query);    
+    }
+
+    @SuppressWarnings("unchecked") 
+    public Collection<SecurityDomain> getAllDomains()
+    {
+        QueryByCriteria query = QueryFactory.newQuery(SecurityDomainImpl.class, new Criteria());
+        query.addOrderByAscending("name");
+        return (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+    }
+    
+    public void removeDomain(SecurityDomain domain) throws SecurityException
+    {
+        if (!domainExists(domain))
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.create(domain.getName()));
+        }
+        try
+        {
+            getPersistenceBrokerTemplate().delete(domain);
+        }
+        catch (Exception pbe)
+        {
+            if (pbe instanceof DataIntegrityViolationException)
+            {
+                logger.error(pbe.getMessage(), pbe);
+                throw new SecurityException(SecurityException.SECURITY_DOMAIN_NOT_REMOVABLE.create(domain.getName()));
+            }
+            
+            KeyedMessage msg = SecurityException.UNEXPECTED.create("JetspeedSecurityPersistenceManager",
+                                                                   "removeDomain",
+                                                                   pbe.getMessage());
+            logger.error(msg, pbe);
+            throw new SecurityException(msg, pbe);            
+        }
+        
+    }
+    
+    @SuppressWarnings("unchecked") 
+    public Collection<SecurityDomain> getDomainsOwnedBy(Long ownerDomainId)
+    {
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("ownerDomainId", ownerDomainId);
+        QueryByCriteria query = QueryFactory.newQuery(SecurityDomainImpl.class, criteria);
+        query.addOrderByAscending("name");
+        return (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+    }
+    
 }

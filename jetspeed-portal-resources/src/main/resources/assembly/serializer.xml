@@ -17,6 +17,8 @@
           <constructor-arg index="3" ref="org.apache.jetspeed.security.UserManager" />
           <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.CredentialPasswordEncoder" />
           <constructor-arg index="5" ref="org.apache.jetspeed.security.PermissionManager" />
+          <constructor-arg index="6" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+          <constructor-arg index="7" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
         </bean>
         <bean class="org.apache.jetspeed.serializer.JetspeedProfilerSerializer">
           <constructor-arg index="0" ref="org.apache.jetspeed.profiler.Profiler" />
