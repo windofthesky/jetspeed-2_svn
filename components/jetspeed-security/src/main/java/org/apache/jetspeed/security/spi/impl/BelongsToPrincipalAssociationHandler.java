@@ -30,7 +30,7 @@ public class BelongsToPrincipalAssociationHandler extends BaseJetspeedPrincipalA
 {
     public BelongsToPrincipalAssociationHandler(JetspeedPrincipalManagerSPI from, JetspeedPrincipalManagerSPI to, JetspeedPrincipalAssociationStorageManager jpasm)
     {
-        super(new JetspeedPrincipalAssociationTypeImpl(JetspeedPrincipalAssociationType.IS_CHILD_OF, from.getPrincipalType(), to.getPrincipalType(), true, true, true, false), from, to, jpasm);
+        super(new JetspeedPrincipalAssociationTypeImpl(JetspeedPrincipalAssociationType.BELONGS_TO, from.getPrincipalType(), to.getPrincipalType(), true, true, true, false), from, to, jpasm);
     }
     
     public BelongsToPrincipalAssociationHandler(String associationName, JetspeedPrincipalManagerSPI from, JetspeedPrincipalManagerSPI to, JetspeedPrincipalAssociationStorageManager jpasm)
