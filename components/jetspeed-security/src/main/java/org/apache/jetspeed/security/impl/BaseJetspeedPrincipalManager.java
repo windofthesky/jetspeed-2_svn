@@ -343,7 +343,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     }
 
     /**
-     * ssetListener - add principal manager event listener
+     * addListener - add principal manager event listener
      *
      * @param listener principal manager event listener
      */
