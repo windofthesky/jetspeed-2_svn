@@ -138,9 +138,15 @@
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
     <constructor-arg index="5" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
-    <property name="listener">
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default,security" />
+    <property name="targetObject"><ref local="org.apache.jetspeed.security.impl.UserManagerImpl"/></property>
+    <property name="targetMethod"><value>addListener</value></property>
+    <property name="arguments">
       <ref bean="org.apache.jetspeed.security.PrincipalManagerEventAdapter" />
-    </property>    
+    </property>
   </bean>
 
   <!-- Security: Group Manager -->
@@ -174,9 +180,15 @@
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
-    <property name="listener">
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default,security" />
+    <property name="targetObject"><ref local="org.apache.jetspeed.security.impl.GroupManagerImpl"/></property>
+    <property name="targetMethod"><value>addListener</value></property>
+    <property name="arguments">
       <ref bean="org.apache.jetspeed.security.PrincipalManagerEventAdapter" />
-    </property>    
+    </property>
   </bean>
 
   <!-- Security: Role Manager -->
@@ -210,9 +222,15 @@
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
-    <property name="listener">
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default,security" />
+    <property name="targetObject"><ref local="org.apache.jetspeed.security.impl.RoleManagerImpl"/></property>
+    <property name="targetMethod"><value>addListener</value></property>
+    <property name="arguments">
       <ref bean="org.apache.jetspeed.security.PrincipalManagerEventAdapter" />
-    </property>    
+    </property>
   </bean>
 
   <!-- Security: Permission Manager -->
