@@ -128,7 +128,7 @@ limitations under the License.
     </bean>
 
     <bean id="org.apache.pluto.services.PortletEnvironmentService"
-          class="org.apache.pluto.core.DefaultPortletEnvironmentService">
+          class="org.apache.jetspeed.container.services.JetspeedPortletEnvironmentService">
       <meta key="j2:cat" value="default" />          
     </bean>
 
