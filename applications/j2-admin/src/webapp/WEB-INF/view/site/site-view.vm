@@ -1893,7 +1893,7 @@ function ajaxInvoke(action, names, values, handler)
     {
         for (var ix=0;  ix<names.length; ix++)
         {
-            requestUrl = requestUrl + "&" + names[ix] + "=" + encodeURIComponent(values[ix]);
+            requestUrl = requestUrl + "&" + names[ix] + "=" + dojo.string.escape('ascii',values[ix]);
         }    
     }
     var mimeType = "text/xml";
