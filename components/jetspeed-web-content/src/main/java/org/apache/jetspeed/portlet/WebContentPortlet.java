@@ -524,7 +524,7 @@ public class WebContentPortlet extends GenericVelocityPortlet
     
     protected HttpMethodBase getHttpMethod(HttpClient client, String uri, Map params, String formMethod, RenderRequest request) throws IOException
     {
-        formMethod = FORM_MULTIPART_METHOD;
+        // formMethod = FORM_MULTIPART_METHOD;
         HttpMethodBase httpMethod = null;
         String useragentProperty = request.getProperty("User-Agent");
         if(formMethod.equalsIgnoreCase(FORM_MULTIPART_METHOD)){ 

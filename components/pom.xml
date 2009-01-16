@@ -54,9 +54,7 @@
         <module>jetspeed-search</module>
         <module>jetspeed-security</module>
         <module>jetspeed-serializer</module>
-        <!-- Commenting out SSO module for now
-        module>jetspeed-sso</module>
-         -->
+        <module>jetspeed-sso</module>
         <module>jetspeed-statistics</module>
         <module>jetspeed-utils</module>
         <module>jetspeed-web-content</module>

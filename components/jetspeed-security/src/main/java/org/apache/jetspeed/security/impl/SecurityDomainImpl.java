@@ -32,6 +32,20 @@ public class SecurityDomainImpl implements SecurityDomain
     private boolean remote;
     private boolean enabled=true;
     
+    
+    public SecurityDomainImpl(){
+        
+    }
+    
+    public SecurityDomainImpl(SecurityDomain anotherDomain){
+        this();
+        this.domainId=anotherDomain.getDomainId();
+        this.name=anotherDomain.getName();
+        this.ownerDomainId=anotherDomain.getOwnerDomainId();
+        this.remote=anotherDomain.isRemote();
+        this.enabled=anotherDomain.isEnabled();
+    }
+    
     public Long getDomainId()
     {
         return domainId;

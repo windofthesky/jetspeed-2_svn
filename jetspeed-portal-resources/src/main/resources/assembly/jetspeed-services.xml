@@ -47,9 +47,9 @@
         <entry key="Profiler">
           <ref bean="org.apache.jetspeed.profiler.Profiler" />
         </entry>
-        <!--<entry key="SSO">
-          <ref bean="org.apache.jetspeed.sso.SSOProvider" />
-          </entry>-->
+        <entry key="SSO">
+          <ref bean="org.apache.jetspeed.sso.SSOManager" />
+          </entry>
         <entry key="EntityAccessor">
           <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent' />
         </entry>

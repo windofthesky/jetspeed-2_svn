@@ -29,7 +29,13 @@ public class SSOException extends JetspeedException {
 
    /** <p>Adding the credentials to the request failed.</p> */
    public static final String BASIC_AUTHENTICATION_ADD_FAILED = "Adding the credentials to the request failed.";
- 
+
+   /** <p>The site could not be created because a site with the same name exists.</p> */
+   public static final String SITE_ALREADY_EXISTS = "The site could not be created because a site with the same name exists.";
+
+   /** <p>The site could not be created because a site with the same name exists.</p> */
+   public static final String SITE_COULD_NOT_BE_CREATED = "The site could not be created.";
+
    /** <p>The site has no Single Sign On credentails attached.</p> */
    public static final String NO_CREDENTIALS_FOR_SITE = "The site has no Single Sign On credentails attached.";
 

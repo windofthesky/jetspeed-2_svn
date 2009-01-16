@@ -22,6 +22,9 @@ package org.apache.jetspeed.portlet.sso;
 import java.io.IOException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
+import java.security.Principal;
+import java.util.Collection;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -33,8 +36,12 @@ import javax.portlet.RenderResponse;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.sso.SSOClient;
 import org.apache.jetspeed.sso.SSOException;
-import org.apache.jetspeed.sso.SSOProvider;
+import org.apache.jetspeed.sso.SSOManager;
+import org.apache.jetspeed.sso.SSOSite;
+import org.apache.jetspeed.sso.SSOUser;
 import org.apache.portals.bridges.common.ScriptPostProcess;
 import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
 
@@ -53,7 +60,7 @@ import org.apache.portals.bridges.velocity.GenericVelocityPortlet;
  */
 public class SSOProxyPortlet extends GenericVelocityPortlet {
     private PortletContext context;
-    private SSOProvider sso;
+    private SSOManager sso;
     
     /* Re-use Proxy client inside the SSO Component */
     private boolean isAuthenticated = false;
@@ -76,19 +83,17 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     
     /** ForceSSORefresh*/
     static final String FORCE_SSO_REFRESH = "ForceSSORefresh";
-    
+
     /** Encoding*/
     static final String ENCODING = "Encoding";
     
-    private String destinationURL;
-    private String ssoSite;
     private String encoding;
 
     public void init(PortletConfig config) throws PortletException
     {
         super.init(config);
         context = getPortletContext();
-        sso = (SSOProvider)context.getAttribute("cps:SSO");
+        sso = (SSOManager) context.getAttribute("cps:SSO");
         if (null == sso)
         {
            throw new PortletException("Failed to find SSO Provider on portlet initialization");
@@ -100,15 +105,15 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     throws PortletException, IOException
     {
        	String ssoProxyAction = request.getParameter(ACTION_PARAMETER_SSOPROXY); 
-//       	System.out.println("SSOProxy Action value [" + ssoProxyAction + "]");
        	
-     	if ( ssoProxyAction != null && ssoProxyAction.length() > 0)
-     		this.destinationURL = ssoProxyAction;
-     	else
-     		this.destinationURL = request.getParameter(DESTINATION_URL);
+       	
+//     	if ( ssoProxyAction != null && ssoProxyAction.length() > 0)
+//     		this.destinationURL = ssoProxyAction;
+//     	else
+//     		this.destinationURL = request.getParameter(DESTINATION_URL);
      	
      	
-        this.ssoSite = request.getParameter(SSO_SITE);
+        // this.ssoSiteName = request.getParameter(SSO_SITE);
         this.encoding = request.getParameter(ENCODING);
         if (this.encoding == null)
         	this.encoding =  this.defaultEncoding;
@@ -120,78 +125,70 @@ public class SSOProxyPortlet extends GenericVelocityPortlet {
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String forceRefresh = request.getPreferences().getValue(FORCE_SSO_REFRESH, "false");
-
-        if (destinationURL == null || destinationURL.length() == 0)
+        boolean forceRefresh = Boolean.parseBoolean(request.getPreferences().getValue(FORCE_SSO_REFRESH, "false"));
+        String destinationURL = request.getPreferences().getValue(DESTINATION_URL,null);
+        String ssoSiteName = request.getPreferences().getValue(SSO_SITE,null);
+        
+        if (ssoSiteName == null)
         {
             // No destination configured Switch to configure View
-             request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
+            request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
             setupPreferencesEdit(request, response);
             super.doView(request, response);
             return;
         }
         
-//      Set the content type
+        // Set the content type
         response.setContentType("text/html");
         
-        /*
-         * Call into the SSO Proxy and process the result page
-         */
-        boolean doRefresh = false;
-        if ( (forceRefresh.compareToIgnoreCase("TRUE") == 0) || this.isAuthenticated == false)
-        	doRefresh = true;
-       
         try
         {
         	StringBuffer page= new StringBuffer();
-            Subject subject = getSubject(); 
-            if (ssoSite == null || ssoSite.length() ==0)
-            	page.append(sso.useSSO(subject, destinationURL,doRefresh));
-            else
-            	page.append(sso.useSSO(subject, destinationURL,ssoSite, doRefresh));
-            
-            // Authentication done at least once
-            this.isAuthenticated = true;
-            /*
-            bis.mark(BLOCK_SIZE);
-            String pageEncoding = getContentCharSet(bis);
-            if (pageEncoding == null)
-            {
-            	pageEncoding = encoding;
-            }
-            
-            Reader read = new InputStreamReader(bis, encoding);
-            
-            
-			char[] bytes = new char[BLOCK_SIZE];
-			
-			int len = read.read(bytes, 0, BLOCK_SIZE);			
-			while (len > 0)
-			{
-				page.append(bytes, 0, len);
-				len = read.read(bytes, 0, BLOCK_SIZE);
-			}
-			
-            //Done
-            read.close();
-            */
-            // Rewrite
-			// Post Process for generated page		
-			PortletURL actionURL = response.createActionURL();
-			ScriptPostProcess processor = new ScriptPostProcess();
-			processor.setInitalPage(page);
-			processor.postProcessPage(actionURL, ACTION_PARAMETER_SSOPROXY);
-			String finalPage = processor.getFinalizedPage();
-			
-			// Write the page
-			response.getWriter().println(finalPage);
+            // Subject subject = getSubject(); 
+            // TODO refactor
+        	// if (sso)
+        	SSOSite site = sso.getSiteByName(ssoSiteName);
+        	if (site == null){
+        		response.getWriter().println("<P>Could not find site with name "+ssoSiteName+"</P>");
+        		return;
+        	}
+        	if (destinationURL == null){
+        		destinationURL = site.getURL();
+        	}
+        	
+        	Principal p = request.getUserPrincipal();
+        	if (p instanceof JetspeedPrincipal){
+                Collection<SSOUser> remoteUsers = sso.getRemoteUsers(site,getSubject());
+                if (remoteUsers.size() > 0){
+                    // TODO: in case of multiple users, invent a way to choose one of them
+                    //   right now, simply the first SSO user is selected
+                    SSOUser remoteUser = remoteUsers.iterator().next();
+                    SSOClient client = sso.getClient(site, remoteUser);
+                    if (client == null){
+                        response.getWriter().println("<P>Could not create client for site with name "+ssoSiteName+" and user "+request.getUserPrincipal().getName()+"</P>");
+                        return;
+                    }
+                    
+                    client.write(destinationURL, forceRefresh, response.getWriter());
+
+                    PortletURL actionURL = response.createActionURL();
+                    ScriptPostProcess processor = new ScriptPostProcess();
+                    processor.setInitalPage(page);
+                    processor.postProcessPage(actionURL, ACTION_PARAMETER_SSOPROXY);
+                    String finalPage = processor.getFinalizedPage();
+                    
+                    // Write the page
+                    response.getWriter().println(finalPage);
+                }
+        	    
+                
+
+        	}
         
         }
         catch (SSOException e)
         {
-        	response.getWriter().println("<P>Error rendering page. Error message<BR>" + e.getMessage() + "</P>");
-        	
-        	this.destinationURL ="";   
+        	response.getWriter().println("<P>Error rendering page. Error message<BR>" + e.getMessage() + "</P>");        	
         }          
     }
     

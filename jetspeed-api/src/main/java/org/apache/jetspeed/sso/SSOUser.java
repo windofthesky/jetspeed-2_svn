@@ -14,23 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.sso;
 
-import org.apache.jetspeed.security.SecurityDomain;
-import org.apache.jetspeed.security.SecurityException;
-
+import org.apache.jetspeed.security.User;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityDomainStorageManager
-{
-
-    public void addDomain(SecurityDomain domain) throws SecurityException;
-
-    public void updateDomain(SecurityDomain domain) throws SecurityException;
-
-    public void removeDomain(SecurityDomain domain) throws SecurityException;
+public interface SSOUser extends User {
+    
+    void setName(String name);
     
 }

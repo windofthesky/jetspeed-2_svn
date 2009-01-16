@@ -152,7 +152,34 @@ limitations under the License.
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>
     </table>
+	
 
+    <!--
+       Create SiteTable
+    -->
+    <table name="SSO_SITE">
+        <column name="SITE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="NAME" required="true" size="254" type="VARCHAR"/>
+        <column name="URL" required="true" size="254" type="VARCHAR"/>
+        <column name="ALLOW_USER_SET" default="0" type="BOOLEANINT"/>
+        <column name="REQUIRES_CERTIFICATE" default="0" type="BOOLEANINT"/>
+        <column name="CHALLENGE_RESPONSE_AUTH" default="0" type="BOOLEANINT"/>
+        <column name="FORM_AUTH" default="0" type="BOOLEANINT"/>
+        <column name="FORM_USER_FIELD" required="false" size="128" type="VARCHAR"/>
+        <column name="FORM_PWD_FIELD" required="false" size="128" type="VARCHAR"/>
+        <column name="REALM" required="false" size="128" type="VARCHAR"/>
+        <column name="DOMAIN_ID" required="true" type="INTEGER"/>
+        <foreign-key foreignTable="SECURITY_DOMAIN" name="FK_SECURITY_DOMAIN_2" onDelete="cascade">
+            <reference foreign="DOMAIN_ID" local="DOMAIN_ID"/>
+        </foreign-key>  
+        <unique name="UIX_SITE_NAME">
+            <unique-column name="NAME" />
+        </unique>   
+        <unique name="UIX_SITE_URL">
+          <unique-column name="URL" />
+        </unique>                
+    </table>
+    
     <table name="SECURITY_DOMAIN">
         <column name="DOMAIN_ID" primaryKey="true" type="INTEGER" autoIncrement="true"/>
         <column name="DOMAIN_NAME" type="VARCHAR" size="30"/>
@@ -162,6 +189,9 @@ limitations under the License.
         <unique name="UIX_DOMAIN_NAME">
             <unique-column name="DOMAIN_NAME" />
         </unique>           
+        <!--<foreign-key foreignTable="SECURITY_DOMAIN" name="FK_OWNER_DOMAIN_ID" onDelete="none">
+            <reference foreign="DOMAIN_ID" local="OWNER_DOMAIN_ID"/>
+        </foreign-key>-->
     </table>
     
          

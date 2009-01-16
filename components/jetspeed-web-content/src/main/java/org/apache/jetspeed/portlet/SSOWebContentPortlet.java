@@ -44,11 +44,18 @@ import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.CommonPortletServices;
+import org.apache.jetspeed.portlet.sso.SSOPortletUtil;
 import org.apache.jetspeed.rewriter.WebContentRewriter;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.sso.SSOContext;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.sso.SSOException;
-import org.apache.jetspeed.sso.SSOProvider;
+import org.apache.jetspeed.sso.SSOManager;
+import org.apache.jetspeed.sso.SSOSite;
+import org.apache.jetspeed.sso.SSOUser;
 import org.apache.portals.messaging.PortletMessaging;
 
 
@@ -121,7 +128,8 @@ public class SSOWebContentPortlet extends WebContentPortlet
     // Data Members
     
     protected PortletContext context;
-    protected SSOProvider sso;
+    protected SSOManager sso;
+    protected UserManager userManager;
     
     
     // Methods
@@ -130,11 +138,28 @@ public class SSOWebContentPortlet extends WebContentPortlet
     {
         super.init(config);
         context = getPortletContext();
-        sso = (SSOProvider)context.getAttribute("cps:SSO");
+        sso = (SSOManager)context.getAttribute("cps:SSO");
         if (null == sso)
         {
-           throw new PortletException("Failed to find SSO Provider on portlet initialization");
+           throw new PortletException("Failed to find SSO Manager on portlet initialization");
         }        
+        userManager = (UserManager) context.getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT);
+        if (null == userManager)
+        {
+            throw new PortletException("Failed to find the User Manager on portlet initialization");
+        }
+    }
+    
+    protected JetspeedPrincipal getLocalPrincipal(String localUserName){
+        JetspeedPrincipal localPrincipal = null;
+        
+        try{
+            localPrincipal = userManager.getUser(localUserName);
+        } catch (SecurityException secex){
+            
+        }
+        
+        return localPrincipal;
     }
     
     public void processAction(ActionRequest actionRequest, ActionResponse actionResponse)
@@ -142,8 +167,8 @@ public class SSOWebContentPortlet extends WebContentPortlet
     {
         // grab parameters - they will be cleared in processing of edit response
         String webContentParameter = actionRequest.getParameter(WebContentRewriter.ACTION_PARAMETER_URL);
-        String ssoPrincipal = actionRequest.getParameter(SSO_EDIT_FIELD_PRINCIPAL);
-        String ssoCredential = actionRequest.getParameter(SSO_EDIT_FIELD_CREDENTIAL);        
+        String ssoPrincipalName = actionRequest.getParameter(SSO_EDIT_FIELD_PRINCIPAL);
+        String ssoPrincipalPassword = actionRequest.getParameter(SSO_EDIT_FIELD_CREDENTIAL);        
 
         // save the prefs
         super.processAction(actionRequest, actionResponse);
@@ -153,27 +178,36 @@ public class SSOWebContentPortlet extends WebContentPortlet
         {
             // processPreferencesAction(request, actionResponse);
             // get the POST params -- requires HTML post params named above 
-            String site = actionRequest.getPreferences().getValue("SRC", "");
-            
+            String siteName = actionRequest.getPreferences().getValue("SRC", "");
+            String localUser = actionRequest.getUserPrincipal().getName();
             try
             {
-                Subject subject = getSubject();
-                if (sso.hasSSOCredentials(subject, site))
-                {
-                    SSOContext context = sso.getCredentials(subject, site);
-                    if (!context.getRemotePrincipalName().equals(ssoPrincipal))
-                    {
-                        sso.removeCredentialsForSite(subject, site);
-                        sso.addCredentialsForSite(subject, ssoPrincipal, site, ssoCredential);
+                SSOSite site = sso.getSiteByName(siteName);
+                if (site != null){
+                    
+                    JetspeedPrincipal localPrincipal = getLocalPrincipal(localUser);
+                    
+                    // find the remote user related directly to the User principal of this user, the user's "private" SSO credentials.
+                    SSOUser currentSSOUser = SSOPortletUtil.getRemoteUser(sso, actionRequest, site);
+                    PasswordCredential pwc = sso.getCredentials(currentSSOUser);
+                	
+                	
+                    if (pwc != null)                    {
+                        
+                        if (!pwc.getUserName().equals(ssoPrincipalName))
+                        {
+                            sso.removeUser(currentSSOUser);                            
+                            sso.addUser(site,localPrincipal,ssoPrincipalName,ssoPrincipalPassword);
+                        }
+                        else
+                        {
+                            sso.setPassword(currentSSOUser,ssoPrincipalPassword);
+                        }
                     }
                     else
                     {
-                        sso.updateCredentialsForSite(subject, ssoPrincipal, site, ssoCredential);
+                    	sso.addUser(site,localPrincipal,ssoPrincipalName,ssoPrincipalPassword);
                     }
-                }
-                else
-                {
-                    sso.addCredentialsForSite(subject, ssoPrincipal, site, ssoCredential);
                 }
             }
             catch (SSOException e)
@@ -186,35 +220,31 @@ public class SSOWebContentPortlet extends WebContentPortlet
     public void doView(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        String site = request.getPreferences().getValue("SRC", null);
-
+        String siteName = request.getPreferences().getValue("SRC", null);
+        SSOSite site = null;
+        if (siteName != null){
+            site = sso.getSiteByName(siteName);
+        }
         if (site == null)
         {
-            // no SRC configured in prefs - switch to SSO Configure View
+            // no SRC configured in prefs / site not found - switch to SSO Configure View
             request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
             setupPreferencesEdit(request, response);
         }
-        else try
+        else 
         {
-            Subject subject = getSubject();                 
-            SSOContext context = sso.getCredentials(subject, site);
-            request.setAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME, context.getRemotePrincipalName());
-            request.setAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD, context.getRemoteCredential());
-        }
-        catch (SSOException e)
-        {
-            if (e.getMessage().equals(SSOException.NO_CREDENTIALS_FOR_SITE))
-            {
+        	PasswordCredential pwc = SSOPortletUtil.getCredentialsForSite(sso,siteName,request);
+        	if (pwc != null){
+                request.setAttribute(SSO_REQUEST_ATTRIBUTE_USERNAME, pwc.getUserName());
+                request.setAttribute(SSO_REQUEST_ATTRIBUTE_PASSWORD, pwc.getPassword());
+        	} else {
                 // no credentials configured in SSO store
                 // switch to SSO Configure View
                 request.setAttribute(PARAM_VIEW_PAGE, this.getPortletConfig().getInitParameter(PARAM_EDIT_PAGE));
                 setupPreferencesEdit(request, response);    
-            }
-            else
-            {
-                throw new PortletException(e);
-            }
-        }        
+        	}
+        }
+         
         
         super.doView(request, response);
     }
@@ -223,29 +253,17 @@ public class SSOWebContentPortlet extends WebContentPortlet
     public void doEdit(RenderRequest request, RenderResponse response)
     throws PortletException, IOException
     {
-        try
-        {
-            Subject subject = getSubject();                 
-            String site = request.getPreferences().getValue("SRC", "");
-            SSOContext context = sso.getCredentials(subject, site);
-            getContext(request).put(SSO_EDIT_FIELD_PRINCIPAL, context.getRemotePrincipalName());
-            getContext(request).put(SSO_EDIT_FIELD_CREDENTIAL, context.getRemoteCredential());
+        String site = request.getPreferences().getValue("SRC", "");
+    	PasswordCredential pwc = SSOPortletUtil.getCredentialsForSite(sso,site,request);
+    	if (pwc != null){
+            getContext(request).put(SSO_EDIT_FIELD_PRINCIPAL, pwc.getUserName());
+            getContext(request).put(SSO_EDIT_FIELD_CREDENTIAL, pwc.getPassword());
+        } else {
+            // no credentials configured in SSO store
+            // switch to SSO Configure View
+            getContext(request).put(SSO_EDIT_FIELD_PRINCIPAL, "");
+            getContext(request).put(SSO_EDIT_FIELD_CREDENTIAL, "");
         }
-        catch (SSOException e)
-        {
-            if (e.getMessage().equals(SSOException.NO_CREDENTIALS_FOR_SITE))
-            {
-                // no credentials configured in SSO store
-                // switch to SSO Configure View
-                getContext(request).put(SSO_EDIT_FIELD_PRINCIPAL, "");
-                getContext(request).put(SSO_EDIT_FIELD_CREDENTIAL, "");
-            }
-            else
-            {
-                throw new PortletException(e);
-            }
-        }        
-        
         super.doEdit(request, response);
     }
 

@@ -87,6 +87,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-sso</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-registry</artifactId>
     </dependency>
     <dependency>

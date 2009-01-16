@@ -38,20 +38,20 @@ public interface JetspeedDomainPrincipalAccessManager
 
     List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type, Long securityDomain);
     
-    List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
-    List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long securityDomain);
+    List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName, Long fromSecurityDomain, Long toSecurityDomain);
 
 }

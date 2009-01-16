@@ -14,23 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.sso;
 
-import org.apache.jetspeed.security.SecurityDomain;
-import org.apache.jetspeed.security.SecurityException;
+import java.io.Writer;
 
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityDomainStorageManager
+public interface SSOClient
 {
 
-    public void addDomain(SecurityDomain domain) throws SecurityException;
-
-    public void updateDomain(SecurityDomain domain) throws SecurityException;
-
-    public void removeDomain(SecurityDomain domain) throws SecurityException;
+    String get(String url, boolean refreshProxy) throws SSOException;
+    void write(String url, boolean refreshProxy, Writer out) throws SSOException;
     
 }

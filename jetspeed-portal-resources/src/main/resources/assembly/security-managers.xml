@@ -283,6 +283,7 @@
         <ref bean="org.apache.jetspeed.security.UserManager" />
         <ref bean="org.apache.jetspeed.security.GroupManager" />
         <ref bean="org.apache.jetspeed.security.RoleManager" />
+        <ref bean="org.apache.jetspeed.sso.spi.SSOUserManagerSPI" />
       </set>
     </constructor-arg>
   </bean>

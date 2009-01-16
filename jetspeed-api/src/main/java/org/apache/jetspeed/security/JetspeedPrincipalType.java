@@ -32,6 +32,8 @@ public interface JetspeedPrincipalType extends Serializable
     String ROLE = "role";
     /** build-in supported JetspeedPrincipalType "user" */
     String USER = "user";
+    /** build-in supported JetspeedPrincipalType "ssoUser" */
+    String SSO_USER = "ssoUser";
     
     /**
      * The name to identify the type of a JetspeedPrincipal.

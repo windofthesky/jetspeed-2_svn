@@ -14,23 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
-
-import org.apache.jetspeed.security.SecurityDomain;
-import org.apache.jetspeed.security.SecurityException;
+package org.apache.jetspeed.sso;
 
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityDomainStorageManager
+public interface SSOManager extends SSOUserManager, SSOSiteManager
 {
 
-    public void addDomain(SecurityDomain domain) throws SecurityException;
-
-    public void updateDomain(SecurityDomain domain) throws SecurityException;
-
-    public void removeDomain(SecurityDomain domain) throws SecurityException;
+     SSOClient getClient(SSOSite site, SSOUser user) throws SSOException;
     
 }

@@ -95,12 +95,10 @@
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-portlet-factory</artifactId>
     </dependency>
-    <!-- Commenting out SSO module for now
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-sso</artifactId>
     </dependency>
-    -->
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-statistics</artifactId>

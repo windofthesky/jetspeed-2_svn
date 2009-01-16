@@ -14,23 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.sso.impl;
 
-import org.apache.jetspeed.security.SecurityDomain;
-import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
+import org.apache.jetspeed.sso.SSOUser;
 
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityDomainStorageManager
+public class SSOUserImpl extends PersistentJetspeedPrincipal implements SSOUser 
 {
 
-    public void addDomain(SecurityDomain domain) throws SecurityException;
+    private static final long serialVersionUID = 1L;
 
-    public void updateDomain(SecurityDomain domain) throws SecurityException;
-
-    public void removeDomain(SecurityDomain domain) throws SecurityException;
-    
 }

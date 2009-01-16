@@ -158,6 +158,8 @@ public class SecurityException extends JetspeedException
 
     public static final KeyedMessage SECURITY_DOMAIN_NOT_REMOVABLE = new KeyedMessage("The security domain {0} could not be removed.");
 
+    public static final KeyedMessage SECURITY_DOMAIN_UPDATE_FAILURE = new KeyedMessage("Failed to update security domain {0}.");
+
     public static final KeyedMessage DEFAULT_SECURITY_DOMAIN_DOES_NOT_EXIST = new KeyedMessage("The default security domain does not exist.");
 
     /**

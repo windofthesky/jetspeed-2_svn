@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.JetspeedPrincipal;
+
 
 /**
 * <p>Utility component to handle SSO requests</p>
@@ -30,14 +32,8 @@ import javax.security.auth.Subject;
 */
 public interface SSOProvider
 {   
-	/**
-	 * Init
-	 * Called from the Spring Framework to initialize SSO Provider component
-	 * @throws Exception
-	 */
-   void init() throws Exception;
-   
-   /**
+
+    /**
     * This method first authenticates the the SSOSite and then forwards the request
     * to the destination URL. The content will be returned as a string.
     * If the SSOSite and the url match only one call will be executed since the
@@ -50,7 +46,7 @@ public interface SSOProvider
     * @return
     * @throws SSOException
     */
-   public String useSSO(Subject subject, String url, String SSOSite, boolean bRefresh) throws SSOException;
+   public String useSSO(SSOUser user, String url, String SSOSite, boolean bRefresh) throws SSOException;
    
    /**
     * Same as the method above except that the user will be authenticated against all
@@ -79,23 +75,22 @@ public interface SSOProvider
     */
    Collection getCookiesForUser(Subject user);
    
-   
    /**
     * Public API's for SSO functinality
     * @return
     */
-	boolean	hasSSOCredentials(Subject subject, String site);
+    boolean hasSSOCredentials(Subject subject, String site);
         
-	SSOContext getCredentials(Subject subject, String site)  
+    SSOContext getCredentials(Subject subject, String site)  
         throws SSOException;
     
-	void  addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
+    void  addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
         throws SSOException;
     
     void  updateCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)  
     throws SSOException;
     
-	void removeCredentialsForSite(Subject subject, String site)  
+    void removeCredentialsForSite(Subject subject, String site)  
         throws SSOException;
     
     /**
@@ -151,8 +146,8 @@ public interface SSOProvider
     String getSiteURL(String site);
     String getSiteName(String site); 
     
-    void	setRealmForSite(String site, String realm) throws SSOException;
-    String	getRealmForSite(String site) throws SSOException;
+    void    setRealmForSite(String site, String realm) throws SSOException;
+    String  getRealmForSite(String site) throws SSOException;
     
     /**
      * Get all SSOSites that the principal has access to

@@ -472,13 +472,11 @@
         <artifactId>jetspeed-portlet-factory</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      <!-- Commenting out SSO module for now
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-sso</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      -->
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-statistics</artifactId>
@@ -552,7 +550,7 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <groupId>org.apache.portals.applications</groupId>
         <artifactId>demo</artifactId>
         <type>war</type>
         <version>${pom.version}</version>

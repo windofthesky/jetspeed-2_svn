@@ -17,9 +17,6 @@
 
 package org.apache.jetspeed.sso;
 
-import java.util.Collection;
-import org.apache.jetspeed.sso.SSOPrincipal;
-
 /**
  * Interface SSOSite
  * 
@@ -58,60 +55,20 @@ public interface SSOSite {
 	public void setName(String name) ;
 	
 	/**
-	 * @return Returns the principals.
+	 * @return Returns the id of the site.
 	 */
-	public Collection getPrincipals() ;
-	
-	/**
-	 * @param principals The principals to set.
-	 */
-	public void setPrincipals(Collection principals);
-	
-	/**
-	 * @return Returns the siteId.
-	 */
-	public int getSiteId() ;
-	
-	/**
-	 * @param siteId The siteId to set.
-	 */
-	public void setSiteId(int siteId) ;
+	public int getId() ;
 	
 	/**
 	 * @return Returns the siteURL.
 	 */
-	public String getSiteURL() ;
+	public String getURL() ;
 	
 	/**
 	 * @param siteURL The siteURL to set.
 	 */
-	public void setSiteURL(String siteURL) ;
+	public void setURL(String siteURL) ;
 	
-	
-	
-	/**
-	 * Adds the SSOPrincipal to the principals collection
-	 *
-	 */
-	public void addPrincipal(SSOPrincipal principal) throws SSOException;
-	
-	/**
-	* removePrincipal()
-	 * removes a principal from the principals collection
-	 *
-	 */
-	public void removePrincipal(long principalId) throws SSOException;
-	
-	 /**
-     * getRemotePrincipals 
-     */
-	public Collection getRemotePrincipals();
-	
-    /**
-     * setRemotePrincipals 
-     */
-    public void setRemotePrincipals(Collection remotePrincipals);
-    
     /**
      * Define the Authentication methods. 
      * Supported are: Challenge Response and From based
@@ -130,7 +87,7 @@ public interface SSOSite {
      */
     public void setChallengeResponseAuthentication(boolean isChallengeResponseAuthentication);
     
-    public boolean isChallangeResponseAuthentication();
+    public boolean isChallengeResponseAuthentication();
 	public boolean isFormAuthentication();
 
 	public String getFormPwdField();
@@ -141,4 +98,7 @@ public interface SSOSite {
 	
 	public void setRealm(String realm);
 	public String getRealm();
+	
+    public Long getSecurityDomainId();
+    public void setSecurityDomainId(Long securityDomain);
 }

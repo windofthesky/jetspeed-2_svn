@@ -14,23 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.sso.spi;
 
-import org.apache.jetspeed.security.SecurityDomain;
-import org.apache.jetspeed.security.SecurityException;
+import java.util.Collection;
+
+import org.apache.jetspeed.sso.SSOException;
+import org.apache.jetspeed.sso.SSOSite;
+import org.apache.jetspeed.sso.SSOUser;
 
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public interface SecurityDomainStorageManager
+public interface SSOSiteManagerSPI
 {
-
-    public void addDomain(SecurityDomain domain) throws SecurityException;
-
-    public void updateDomain(SecurityDomain domain) throws SecurityException;
-
-    public void removeDomain(SecurityDomain domain) throws SecurityException;
     
+    SSOSite getByName(String siteName);
+
+	SSOSite getByUrl(String siteUrl);
+
+	SSOSite getById(int id);
+
+    void update(SSOSite site) throws SSOException;
+    
+    SSOSite add(SSOSite site) throws SSOException; 
+    
+    void remove(SSOSite site) throws SSOException;
+
+	Collection<SSOSite> getSites(String filter);
+
+	SSOSite getSite(SSOUser ssoUser);
+	
+	Collection<SSOSite> getSites(Collection<SSOUser> users);
+
 }
