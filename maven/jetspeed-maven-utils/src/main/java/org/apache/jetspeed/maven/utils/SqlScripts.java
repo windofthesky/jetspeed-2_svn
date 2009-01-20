@@ -184,7 +184,7 @@ public class SqlScripts
             }
             catch (Exception e)
             {
-                throw new MojoExecutionException("Unepected error", e);
+                throw new MojoExecutionException("Unexpected error", e);
             }
             finally
             {
