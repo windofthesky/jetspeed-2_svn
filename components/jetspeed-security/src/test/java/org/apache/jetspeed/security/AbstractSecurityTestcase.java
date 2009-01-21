@@ -130,6 +130,9 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
         confList.add("transaction.xml");
         confList.add("cache-test.xml");
         confList.add("static-bean-references.xml");
+        // override the JetspeedPrincipalManagerProvider bean to get rid of
+        // dependency on SSO
+        confList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");
         return (String[]) confList.toArray(new String[1]);
     }
 
