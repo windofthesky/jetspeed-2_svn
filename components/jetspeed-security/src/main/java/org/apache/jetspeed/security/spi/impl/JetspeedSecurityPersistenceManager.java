@@ -1007,13 +1007,21 @@ public class JetspeedSecurityPersistenceManager
         
     }
 
-    protected Long getDefaultSecurityDomainId() {
-        if (defaultSecurityDomainId == null){
+    protected Long getDefaultSecurityDomainId()
+    {
+        if (defaultSecurityDomainId == null)
+        {
             SecurityDomain d = getDomainByName(SecurityDomain.DEFAULT_NAME);
-            if (d == null){
-                throw new RuntimeException("The default security domain could not be found!");
+            if (d != null)
+            {
+                // cache real default security domain id
+                defaultSecurityDomainId = d.getDomainId();
             }
-            defaultSecurityDomainId=d.getDomainId();
+            else
+            {
+                // return fake id that should not exist
+                return new Long(-1);
+            }
         }   
         return defaultSecurityDomainId;
     }
