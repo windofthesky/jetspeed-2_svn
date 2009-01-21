@@ -40,6 +40,7 @@ public class AbstractRequestContextTestCase extends RegistrySupportedTestCase
         confList.add("security-atn.xml");
         confList.add("security-spi-atn.xml");
         confList.add("security-atz.xml");
+        confList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");        
         return (String[]) confList.toArray(new String[confList.size()]);
     }
 
