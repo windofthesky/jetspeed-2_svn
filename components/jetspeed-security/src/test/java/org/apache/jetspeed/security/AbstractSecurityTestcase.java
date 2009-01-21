@@ -34,6 +34,9 @@ import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.impl.SecurityDomainImpl;
+import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
+import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
@@ -55,6 +58,9 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
     /** The permission manager. */
     protected PermissionManager pms;
 
+    protected SecurityDomainStorageManager domainStorageManager;
+    protected SecurityDomainAccessManager domainAccessManager;
+    
     /**
      * @see junit.framework.TestCase#setUp()
      */
@@ -70,10 +76,31 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
         // Authorization.
         pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
         
+        domainStorageManager = (SecurityDomainStorageManager) scm.getComponent(SecurityDomainStorageManager.class.getName());
+        domainAccessManager = (SecurityDomainAccessManager) scm.getComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
+
+        // TODO: remove when default seed contains the default domain        
+        SecurityDomain domain = domainAccessManager.getDomainByName(SecurityDomain.SYSTEM_NAME); 
+        if (domain == null){
+            
+            SecurityDomainImpl newDomain = new SecurityDomainImpl();
+            newDomain.setName(SecurityDomain.SYSTEM_NAME);
+            domainStorageManager.addDomain(newDomain);
+        } 
+        domain = domainAccessManager.getDomainByName(SecurityDomain.DEFAULT_NAME); 
+        if (domain == null){
+            
+            SecurityDomainImpl newDomain = new SecurityDomainImpl();
+            newDomain.setName(SecurityDomain.DEFAULT_NAME);
+            domainStorageManager.addDomain(newDomain);
+        }
+
         new JetspeedActions(new String[] {"secure"}, new String[] {});
         
         destroyPrincipals();
         destroyPermissions();
+        
+
     }
 
     protected void tearDown() throws Exception
