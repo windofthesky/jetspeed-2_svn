@@ -559,7 +559,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "cache-test.xml", "capabilities.xml", "registry.xml", "search.xml", "jetspeed-spring.xml",
-                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-atz.xml", "static-bean-references.xml" };
+                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-atz.xml", "static-bean-references.xml", "JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml" };
     }
 
     protected String getBeanDefinitionFilterCategories()

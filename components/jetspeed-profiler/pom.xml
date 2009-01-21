@@ -75,6 +75,11 @@
         </dependency>
         <dependency>
             <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-sso</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-registry</artifactId>
             <scope>test</scope>
         </dependency>
@@ -159,6 +164,12 @@
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
             </testResource>
+            <testResource>
+                <directory>src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>            
         </testResources>
     </build>
 </project>
