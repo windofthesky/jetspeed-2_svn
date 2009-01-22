@@ -267,15 +267,15 @@ public class TestRoleManager extends AbstractSecurityTestcase
             assertTrue("failed to init testIsUserInRole(), " + sex, false);
         }
 
-//DST        try
-//        {
-//            boolean isUserInRole = rms.isUserInRole("anonuser4", "testuserrolemapping");
-//            assertTrue("anonuser4 should be in role testuserrolemapping", isUserInRole);
-//        }
-//        catch (SecurityException sex)
-//        {
-//            assertTrue("user and role exist. should not have thrown an exception: " + sex, false);
-//        }
+        try
+        {
+            boolean isUserInRole = rms.isUserInRole("anonuser4", "testuserrolemapping");
+            assertTrue("anonuser4 should be in role testuserrolemapping", isUserInRole);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("user and role exist. should not have thrown an exception: " + sex, false);
+        }
     }
 
     /**
@@ -296,15 +296,15 @@ public class TestRoleManager extends AbstractSecurityTestcase
         {
             assertTrue("failed to init testIsGroupInRole(), " + sex, false);
         }
-//DST        try
-//        {
-//            boolean isGroupInRole = rms.isGroupInRole("testrolegroupmapping", "testuserrolemapping");
-//            assertTrue("testrolegroupmapping should be in role testuserrolemapping", isGroupInRole);
-//        }
-//        catch (SecurityException sex)
-//        {
-//            assertTrue("group and role exist. should not have thrown an exception: " + sex, false);
-//        }
+        try
+        {
+            boolean isGroupInRole = rms.isGroupInRole("testrolegroupmapping", "testuserrolemapping");
+            assertTrue("testrolegroupmapping should be in role testuserrolemapping", isGroupInRole);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("group and role exist. should not have thrown an exception: " + sex, false);
+        }
     }
 
     /**

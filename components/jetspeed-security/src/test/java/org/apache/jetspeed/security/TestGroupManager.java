@@ -328,15 +328,15 @@ public class TestGroupManager extends AbstractSecurityTestcase
             assertTrue("failed to init testRemoveUserFromGroup(), " + sex, false);
         }
 
-//DST        try
-//        {
-//            boolean isUserInGroup = gms.isUserInGroup("anonuser3", "testgroup1.group1");
-//            assertTrue("anonuser3 should be in group testgroup1.group1", isUserInGroup);
-//        }
-//        catch (SecurityException sex)
-//        {
-//            assertTrue("user and group exist. should not have thrown an exception: " + sex, false);
-//        }
+        try
+        {
+            boolean isUserInGroup = gms.isUserInGroup("anonuser3", "testgroup1.group1");
+            assertTrue("anonuser3 should be in group testgroup1.group1", isUserInGroup);
+        }
+        catch (SecurityException sex)
+        {
+            assertTrue("user and group exist. should not have thrown an exception: " + sex, false);
+        }
     }
 
     /**
