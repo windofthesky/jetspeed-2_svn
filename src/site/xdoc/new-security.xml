@@ -20,7 +20,7 @@
 		<title>Security 2.2</title>
 		<subtitle>New Security in Version 2.2</subtitle>
 		<authors>
-			<person name="Dennis Dam" email="d.dam@onehippo.com" />
+			<person name="Dennis Dam" email="ddam@apache.org" />
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 		</authors>
 	</properties>
@@ -43,7 +43,7 @@ All the security identity information above is managed by the Jetspeed Security 
  A user principal can then be associated with several other principals, which can be of the same (user principal) or different type (e.g. role, group, ..). 
  Principals are resolved in a nested manner, which means that each principal that is associated with the user principal can also be associated with other principals, 
  which can in turn be associated with other principals, etc. The final collection of principals found in this way is aggregated and attached to the Subject that is 
- resolved for the authenticated user. The Subject is used throughout Jetspeed for security purposed and can also be used by portlet applications to secure custom objects 
+ resolved for the authenticated user. The Subject is used throughout Jetspeed for security purposes and can also be used by portlet applications to secure custom objects 
  using standard JAAS API.			
 			</p>
 			</subsection>
