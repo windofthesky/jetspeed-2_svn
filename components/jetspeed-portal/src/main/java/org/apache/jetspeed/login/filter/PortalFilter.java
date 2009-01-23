@@ -80,8 +80,10 @@ public class PortalFilter implements Filter
                 try{
                 	authUser = authProvider.authenticate(username, password);	
                 }
-                catch (SecurityException e) {
-                		throw new ServletException(e);                		
+                catch (SecurityException e) 
+                {
+                    audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_FAILURE, "PortalFilter");                    
+                    request.getSession().setAttribute(LoginConstants.ERRORCODE, LoginConstants.ERROR_INVALID_PASSWORD);
 				}
                 if (authUser != null)
                 {
