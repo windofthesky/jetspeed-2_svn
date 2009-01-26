@@ -1019,8 +1019,7 @@ public class JetspeedSecurityPersistenceManager
             }
             else
             {
-                // return fake id that should not exist
-                return new Long(-1);
+                throw new IllegalStateException("The default security domain could not be found.");
             }
         }   
         return defaultSecurityDomainId;
