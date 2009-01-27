@@ -39,6 +39,8 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public interface PortalURL
 {
+    enum URLType { ACTION, RESOURCE, RENDER }
+
     /** HTTP protocol. */
     public static final String HTTP = "http";
 
@@ -115,8 +117,24 @@ public interface PortalURL
      * @param action indicates if an actionURL or renderURL is created
      * @param secure indicates if a secure url is required 
      * @return a new actionURL or renderURL as String
+     * @deprecated
      */
-    String createPortletURL(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action, boolean secure);
+    String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action, boolean secure);
+    
+    /**
+     * Create a new PortletURL for a PortletWindow including request or action parameters.
+     * <br>
+     * The Portal Navigational State is encoded within the URL
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param urlType indicates if an actionURL, Resource or renderURL is to created
+     * @param secure indicates if a secure url is required 
+     * @return a new actionURL or renderURL as String
+     */
+    String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType, boolean secure);
 
     /**
      * Create a new PortletURL for a PortletWindow retaining its (request) parameters.
@@ -152,8 +170,23 @@ public interface PortalURL
      * @param action indicates if an actionURL or renderURL is created
      * @param secure indicates if a secure url is required 
      * @return a new navigational state as String
+     * @deprecated
      */
-    String createNavigationalEncoding(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action);
+    String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action);
+    
+    /**
+     * Creates the navigational encoding for a given window
+     * Similiar to createPortletURL above
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param urlType indicates if an actionURL, Resource or renderURL is to created
+     * @param secure indicates if a secure url is required 
+     * @return a new navigational state as String
+     */
+    String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType);
     
     /**
      * Creates the navigational encoding for a given window

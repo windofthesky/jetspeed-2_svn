@@ -24,6 +24,8 @@ package org.apache.jetspeed.container.state.impl;
  */
 public class PortletWindowRequestNavigationalState extends PortletWindowExtendedNavigationalState
 {
+    private static final long serialVersionUID = 3807035638733358425L;
+
     private String  windowId;
     
     /**

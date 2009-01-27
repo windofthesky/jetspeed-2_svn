@@ -22,9 +22,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -70,8 +69,8 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     private CharArrayWriterBuffer charOutputBuffer;
     private ServletOutputStream outputStream;
     private PrintWriter printWriter;
-    private HashMap headers;
-    private ArrayList cookies;
+    private HashMap<String, ArrayList<String>> headers;
+    private ArrayList<Cookie> cookies;
     private int errorCode;
     private int statusCode;
     private String errorMessage;
@@ -82,6 +81,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     private Locale locale;
     private boolean closed;
     private String characterEncoding;
+    private boolean setContentTypeAfterEncoding;
     private int contentLength = -1;
     private String contentType;
     private boolean flushed;
@@ -99,61 +99,51 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
         }
         flushed = true;
         
+        if (cookies != null)
+        {
+            for (Cookie cookie : cookies)
+            {
+                response.addCookie(cookie);
+            }
+            cookies = null;
+        }
         if (locale != null)
         {
             response.setLocale(locale);
         }        
+        
         if (contentType != null)
         {
-            response.setContentType(contentType);
+            if (characterEncoding != null)
+            {
+                if (setContentTypeAfterEncoding)
+                {
+                    response.setCharacterEncoding(characterEncoding);
+                    response.setContentType(contentType);
+                }
+                else
+                {
+                    response.setContentType(contentType);
+                    response.setCharacterEncoding(characterEncoding);
+                }
+            }
+            else
+            {
+                response.setContentType(contentType);
+            }
         }
-        if (characterEncoding != null)
+        else if (characterEncoding != null)
         {
-            // setCharacterEncoding only available on Servlet Spec 2.4+
-            try
-            {
-                response.getClass().getMethod("setCharacterEncoding", new Class[]{String.class}).invoke(response, new Object[]{characterEncoding});
-            }
-            catch (NoSuchMethodException nsme)
-            {
-                // servlet spec 2.3
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
+            response.setCharacterEncoding(characterEncoding);
         }
-        if (cookies != null)
-        {
-            for (int i=0,size=cookies.size(); i<size; i++)
-            {
-                response.addCookie((Cookie)cookies.get(i));
-            }
-            cookies = null;
-        }
+        
         if (headers != null)
         {
-            Iterator iter = headers.entrySet().iterator();
-            while (iter.hasNext())
+            for (Map.Entry<String, ArrayList<String>> entry : headers.entrySet())
             {
-                Entry e = (Entry)iter.next();
-                String name = (String)e.getKey();
-                ArrayList values = (ArrayList)e.getValue();
-                for (int i=0, size=values.size(); i < size; i++ )
+                for (String value : entry.getValue())
                 {
-                    Object value = values.get(i);
-                    if (value instanceof Integer)
-                    {
-                        response.addIntHeader(name, ((Integer)value).intValue());
-                    }
-                    else if (value instanceof Long)
-                    {
-                        response.addDateHeader(name, ((Long)value).longValue());
-                    }
-                    else
-                    {
-                        response.addHeader(name, (String)value);
-                    }
+                    response.addHeader(entry.getKey(), value);
                 }
             }
             headers = null;
@@ -215,16 +205,16 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
         }
     }
     
-    private ArrayList getHeaderList(String name, boolean create)
+    private ArrayList<String> getHeaderList(String name, boolean create)
     {
         if ( headers == null )
         {
-            headers = new HashMap();
+            headers = new HashMap<String, ArrayList<String>>();
         }
-        ArrayList headerList = (ArrayList)headers.get(name);
+        ArrayList<String> headerList = headers.get(name);
         if ( headerList == null && create )
         {
-            headerList = new ArrayList();
+            headerList = new ArrayList<String>();
             headers.put(name,headerList);
         }
         return headerList;
@@ -247,7 +237,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
         {
             if ( cookies == null )
             {
-                cookies = new ArrayList();
+                cookies = new ArrayList<Cookie>();
             }
             cookies.add(cookie);
         }
@@ -260,8 +250,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     {
         if (!committed)
         {
-            ArrayList headerList = getHeaderList(name, true);
-            headerList.add(new Long(date));
+            addHeader(name, Long.toString(date));
         }
     }
 
@@ -272,8 +261,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     {
         if (!committed)
         {
-            ArrayList headerList = getHeaderList(name, true);
-            headerList.add(value);
+            getHeaderList(name, true).add(value);
         }
     }
 
@@ -284,8 +272,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     {
         if (!committed)
         {
-            ArrayList headerList = getHeaderList(name, true);
-            headerList.add(new Integer(value));
+            addHeader(name, Integer.toString(value));
         }
     }
 
@@ -336,9 +323,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     {
         if (!committed)
         {
-            ArrayList headerList = getHeaderList(name, true);
-            headerList.clear();
-            headerList.add(new Long(date));
+            setHeader(name, Long.toString(date));
         }
     }
 
@@ -349,7 +334,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     {
         if (!committed)
         {
-            ArrayList headerList = getHeaderList(name, true);
+            ArrayList<String> headerList = getHeaderList(name, true);
             headerList.clear();
             headerList.add(value);
         }
@@ -362,9 +347,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
     {
         if (!committed)
         {
-            ArrayList headerList = getHeaderList(name, true);
-            headerList.clear();
-            headerList.add(new Integer(value));
+            setHeader(name, Integer.toString(value));
         }
     }
 
@@ -537,6 +520,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
         if (charset != null && !committed && printWriter == null)
         {
             characterEncoding = charset;
+            setContentTypeAfterEncoding = false;
         }
     }
 
@@ -568,6 +552,7 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
         if (!committed)
         {
             contentType = type;
+            setContentTypeAfterEncoding = false;
             if (printWriter == null)
             {
                 // TODO: parse possible encoding for better return value from getCharacterEncoding()
@@ -583,9 +568,6 @@ public class BufferedHttpServletResponse extends HttpServletResponseWrapper
         if (!committed)
         {
             this.locale = locale;
-            /* NON-FIXABLE ISSUE: defaulting the characterEncoding from the Locale
-               This feature cannot be implemented/wrapped as it might depend on web.xml locale settings
-             */
         }
     }
 }

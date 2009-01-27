@@ -102,11 +102,16 @@ public abstract class AbstractPortalURL implements PortalURL
         return navStateParameter;
     }
     
-    public String createNavigationalEncoding(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action)
+    public String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action)
+    {
+        return createNavigationalEncoding(window, parameters, mode, state, action ? URLType.ACTION : URLType.RENDER);
+    }
+    
+    public String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType)
     {
         try
         {
-            return getNavigationalStateParameterName() + ":" + getNavigationalState().encode(window, parameters, mode, state, action);
+            return getNavigationalStateParameterName() + ":" + getNavigationalState().encode(window, parameters, mode, state, urlType);
         }
         catch (UnsupportedEncodingException e)
         {
@@ -252,11 +257,16 @@ public abstract class AbstractPortalURL implements PortalURL
         return navState;
     }
 
-    public String createPortletURL(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
+    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
+    {
+        return createPortletURL(window, parameters, mode, state, action ? URLType.ACTION : URLType.RENDER, secure);
+    }
+    
+    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType, boolean secure)
     {
         try
         {
-            return createPortletURL(navState.encode(window,parameters,mode,state,action), secure);
+            return createPortletURL(navState.encode(window,parameters,mode,state,urlType), secure);
         }
         catch (UnsupportedEncodingException e)
         {

@@ -29,6 +29,7 @@ import javax.portlet.WindowState;
  */
 public class PortletWindowBaseNavigationalState implements Serializable
 {
+    private static final long serialVersionUID = 4188214497281562619L;
     private String modeName;
     private String stateName;
     

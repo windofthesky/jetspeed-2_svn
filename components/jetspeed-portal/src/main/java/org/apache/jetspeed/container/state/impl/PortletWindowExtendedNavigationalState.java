@@ -31,8 +31,12 @@ import javax.portlet.WindowState;
  */
 public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNavigationalState
 {
+    private static final long serialVersionUID = -504769105830572875L;
+
     private static final class ModeStateKey implements Serializable
     {
+        private static final long serialVersionUID = 1419744882315564633L;
+        
         private final String mode;
         private final String state;
         private final int hashCode;
@@ -62,7 +66,7 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     
     private Map<String, String[]> parametersMap;
     
-    private Map decoratorActionEncodings;
+    private Map<ModeStateKey, String> decoratorActionEncodings;
         
     public Map<String, String[]> getParametersMap()
     {
@@ -95,7 +99,7 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     {
         if (decoratorActionEncodings == null)
         {
-            decoratorActionEncodings = new HashMap(4);
+            decoratorActionEncodings = new HashMap<ModeStateKey, String>(4);
         }
         decoratorActionEncodings.put(new ModeStateKey(mode,state), encoding);
     }
@@ -104,7 +108,7 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     {
         if (decoratorActionEncodings != null)
         {
-            return (String)decoratorActionEncodings.get(new ModeStateKey(mode,state));
+            return decoratorActionEncodings.get(new ModeStateKey(mode,state));
         }
         return null;
     }

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.container.providers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -37,15 +38,14 @@ import org.apache.pluto.spi.PortletURLProvider;
  */
 public class PortletURLProviderImpl implements PortletURLProvider
 {
+    private PortalURL.URLType urlType = PortalURL.URLType.RENDER;
     private PortletWindow portletWindow = null;
     private PortletMode mode = null;
     private WindowState state = null;
-    private boolean action = false;
     private boolean secure = false;
     private Map<String, String[]> privateParameters = null;
     private Map<String, String[]> publicParameters = null;
     private Map<String, String[]> requestParameters = null;
-    private boolean resource = false;
 
     private PortalURL url;
     
@@ -81,7 +81,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
     public String toString()
     {
         // TODO: handle publicParameters, resource url, resourceID, cacheability (last two needs to be added to the PortletURLPRovider interface)
-        return url.createPortletURL(portletWindow,privateParameters,mode,state,action,secure);
+        return url.createPortletURL(portletWindow,privateParameters,mode,state,urlType,secure);
     }
     
     public void setParameters(Map parameters)
@@ -102,7 +102,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public boolean isResourceServing()
     {
-        return resource;
+        return PortalURL.URLType.RESOURCE.equals(urlType);
     }
 
     public boolean isSecureSupported()
@@ -118,7 +118,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public void setAction(boolean isAction)
     {
-        action = isAction;
+        urlType = isAction ? PortalURL.URLType.ACTION : PortalURL.URLType.RENDER;
     }
 
     public void setPublicRenderParameters(Map parameters)
@@ -128,7 +128,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
 
     public void setResourceServing(boolean isResourceServing)
     {
-        resource = isResourceServing;
+        urlType = isResourceServing ? PortalURL.URLType.RESOURCE : PortalURL.URLType.RENDER;
     }
 
     public Map<String, String[]> getRenderParameters()
@@ -140,5 +140,13 @@ public class PortletURLProviderImpl implements PortletURLProvider
     {
         return this.requestParameters = parentMap;
     }
-    
+
+    public Map<String, List<String>> getProperties()
+    {
+        return null;
+    }
+
+    public void setProperties(Map<String, List<String>> properties)
+    {
+    }
 }

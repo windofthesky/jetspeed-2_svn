@@ -171,6 +171,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         // gather all required data from request and response
         ServletRequest servletRequest = this.requestResponseUnwrapper.unwrapPortletRequest(portletRequest);
         ServletResponse servletResponse = this.requestResponseUnwrapper.unwrapPortletResponse(portletResponse);
+        boolean useForward = servletRequest.getAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD) != null;
 
         try
         {
@@ -213,13 +214,20 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             }
 
             PortletRequestContext.createContext(portletDefinition, portletInstance, portletRequest, portletResponse);
-            dispatcher.include(servletRequest, servletResponse);
+            if (useForward)
+            {
+                dispatcher.forward(servletRequest, servletResponse);
+            }
+            else
+            {
+                dispatcher.include(servletRequest, servletResponse);
+            }
             
         }
         catch (Exception e)
         {
             String message =
-                "Failed to dispatch.include for Portlet Application: " + portletApplicationName + ", servlet: " + servletMappingName;
+                "Failed to dispatch."+(useForward?"forward":"include")+" for Portlet Application: " + portletApplicationName + ", servlet: " + servletMappingName;
             log.error(message, e);
             throw new PortletException(message, e);
         }

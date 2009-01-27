@@ -71,15 +71,15 @@ limitations under the License.
 <!--   <constructor-arg><ref bean="org.apache.pluto.services.PortletURLProviderImpl"/></constructor-arg> (currently doing a 'new')
        <constructor-arg><ref bean="org.apache.pluto.services.ResourceURLProviderImpl"/></constructor-arg> (currently doing a 'new')
 -->
-		<constructor-arg><ref bean="org.apache.pluto.services.RequestPropertyProvider"/></constructor-arg>
+		<constructor-arg><ref bean="org.apache.pluto.services.PropertyManager"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.EventProvider"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.FilterManager"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.PortletURLListener"/></constructor-arg>
     </bean>
 
 
-	<bean id='org.apache.pluto.services.RequestPropertyProvider'
-		  class="org.apache.jetspeed.container.providers.RequestPropertyProviderImpl">
+	<bean id='org.apache.pluto.services.PropertyManager'
+		  class="org.apache.pluto.core.DefaultPropertyManager">
       <meta key="j2:cat" value="default" />		  
 	</bean>
 	

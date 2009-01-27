@@ -21,11 +21,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.url.PortalURL;
 
 public class PortletWindowRequestNavigationalStates
 {
     private String characterEncoding;
-    private Map pwnStates = new HashMap();
+    private Map<String, PortletWindowRequestNavigationalState> pwnStates = new HashMap<String, PortletWindowRequestNavigationalState>();
+    private PortalURL.URLType urlType;
     private PortletWindow maximizedWindow;
     private PortletWindow actionWindow;
     private PortletWindow resourceWindow;
@@ -40,7 +42,7 @@ public class PortletWindowRequestNavigationalStates
         return characterEncoding;
     }
     
-    public Iterator getWindowIdIterator()
+    public Iterator<String> getWindowIdIterator()
     {
         return pwnStates.keySet().iterator();
     }
@@ -63,6 +65,16 @@ public class PortletWindowRequestNavigationalStates
                 resourceWindow = null;
             }
         }
+    }
+    
+    public PortalURL.URLType getURLType()
+    {
+        return urlType;
+    }
+    
+    public void setURLType(PortalURL.URLType urlType)
+    {
+        this.urlType = urlType;
     }
     
     public PortletWindowRequestNavigationalState getPortletWindowNavigationalState(String windowId)

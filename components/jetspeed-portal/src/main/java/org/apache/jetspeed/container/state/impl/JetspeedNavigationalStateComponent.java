@@ -49,8 +49,8 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
     
     // maps containing allowed PortletMode and WindowState objects on their lowercase name
     // ensuring only allowed, and always the same objects are returned and allowing comparision by value
-    private final Map supportedPortletModes = Collections.synchronizedMap(new HashMap());
-    private final Map supportedWindowStates = Collections.synchronizedMap(new HashMap());
+    private final Map<String, PortletMode> supportedPortletModes = Collections.synchronizedMap(new HashMap<String, PortletMode>());
+    private final Map<String, WindowState> supportedWindowStates = Collections.synchronizedMap(new HashMap<String, WindowState>());
 
     private BeanFactory beanFactory;
     
@@ -75,18 +75,18 @@ public class JetspeedNavigationalStateComponent implements NavigationalStateComp
         this.urlBeanName = urlBeanName;
         this.desktopUrlBeanName = desktopUrlBeanName;
 
-        Enumeration portletModesEnum = portalContext.getSupportedPortletModes();
+        Enumeration<PortletMode> portletModesEnum = portalContext.getSupportedPortletModes();
         PortletMode portletMode;
         while ( portletModesEnum.hasMoreElements() )
         {
-            portletMode = (PortletMode)portletModesEnum.nextElement();
+            portletMode = portletModesEnum.nextElement();
             supportedPortletModes.put(portletMode.toString(), portletMode);
         }
-        Enumeration windowStatesEnum = portalContext.getSupportedWindowStates();
+        Enumeration<WindowState> windowStatesEnum = portalContext.getSupportedWindowStates();
         WindowState windowState;
         while ( windowStatesEnum.hasMoreElements() )
         {
-            windowState = (WindowState)windowStatesEnum.nextElement();
+            windowState = windowStatesEnum.nextElement();
             supportedWindowStates.put(windowState.toString(), windowState);
         }
     }

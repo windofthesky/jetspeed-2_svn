@@ -34,14 +34,18 @@ import org.apache.jetspeed.container.PortletWindow;
 
 public class PortletWindowSessionNavigationalStates implements Serializable
 {
+    private static final long serialVersionUID = -2891442112700830546L;
+
     private static final class PageState implements Serializable
     {
-        public Map windowStates = new HashMap();
+        private static final long serialVersionUID = -2730733728229116932L;
+        
+        public Map<String, PortletWindowBaseNavigationalState> windowStates = new HashMap<String, PortletWindowBaseNavigationalState>();
         public String maximizedWindowId;
     }
     
     private final boolean storeParameters;
-    private Map pageStates = new HashMap();
+    private Map<String, PageState> pageStates = new HashMap<String, PageState>();
 
     public PortletWindowSessionNavigationalStates(boolean storeParameters)
     {
@@ -77,7 +81,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             pageState.maximizedWindowId = null;
         }
 
-        Iterator iter = requestStates.getWindowIdIterator();
+        Iterator<String> iter = requestStates.getWindowIdIterator();
         iter = pageState.windowStates.keySet().iterator();
         String windowId;
         while ( iter.hasNext() )
@@ -193,7 +197,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             pageState.maximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
         }
         
-        Iterator iter = requestStates.getWindowIdIterator();
+        Iterator<String> iter = requestStates.getWindowIdIterator();
         String actionWindowId = requestStates.getActionWindow() != null ? requestStates.getActionWindow().getId().toString() : null;
         boolean actionRequestState = false;
         // now synchronize requestStates and sessionStates
@@ -357,7 +361,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                     {
                         changed = true;
                     }
-                    extendedSessionState.setParametersMap(new HashMap(requestState.getParametersMap()));
+                    extendedSessionState.setParametersMap(new HashMap<String, String[]>(requestState.getParametersMap()));
                 }
             }
             else if ( requestState.isClearParameters() )
@@ -368,28 +372,28 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             }            
             else if ( extendedSessionState.getParametersMap() != null )
             {
-                requestState.setParametersMap(new HashMap(extendedSessionState.getParametersMap()));
+                requestState.setParametersMap(new HashMap<String, String[]>(extendedSessionState.getParametersMap()));
             }
         }
         return changed;
     }    
 
-    protected boolean changedParameters(Map requestMap, Map sessionMap)
+    protected boolean changedParameters(Map<String, String[]> requestMap, Map<String, String[]> sessionMap)
     {
         if (sessionMap == null || requestMap == null)
             return true;
         if (requestMap.size() != sessionMap.size())
             return true;
-        Iterator ri = requestMap.entrySet().iterator();
-        Iterator si = sessionMap.entrySet().iterator();
+        Iterator<Map.Entry<String, String[]>> ri = requestMap.entrySet().iterator();
+        Iterator<Map.Entry<String, String[]>> si = sessionMap.entrySet().iterator();
         while (ri.hasNext() && si.hasNext())
         {
-            Map.Entry r = (Map.Entry)ri.next();
-            Map.Entry s = (Map.Entry)si.next();
+            Map.Entry<String, String[]> r = ri.next();
+            Map.Entry<String, String[]> s = si.next();
             if (!r.getKey().equals(s.getKey()))
                 return true;
-            String[] rvals = (String[])r.getValue();
-            String[] svals = (String[])s.getValue();            
+            String[] rvals = r.getValue();
+            String[] svals = s.getValue();            
             for (int ix = 0; ix < rvals.length; ix++)
             {
                 if (!rvals[ix].equals(svals[ix]))
@@ -411,7 +415,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         cache.invalidate(context);
     }
     
-    protected Map getWindowStates(Page page)
+    protected Map<String, PortletWindowBaseNavigationalState> getWindowStates(Page page)
     {
         PageState pageState = (PageState)pageStates.get(page.getId());
         return pageState != null ? pageState.windowStates : null;

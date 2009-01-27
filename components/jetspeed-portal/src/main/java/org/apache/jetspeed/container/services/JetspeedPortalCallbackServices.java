@@ -30,7 +30,7 @@ import org.apache.pluto.spi.FilterManager;
 import org.apache.pluto.spi.PortalCallbackService;
 import org.apache.pluto.spi.PortletURLListener;
 import org.apache.pluto.spi.PortletURLProvider;
-import org.apache.pluto.spi.RequestPropertyProvider;
+import org.apache.pluto.spi.PropertyManager;
 import org.apache.pluto.spi.ResourceURLProvider;
 
 /**
@@ -42,15 +42,15 @@ import org.apache.pluto.spi.ResourceURLProvider;
  */
 public class JetspeedPortalCallbackServices implements PortalCallbackService
 {
-    RequestPropertyProvider propertyProvider;   
+    PropertyManager propertyManager;   
     EventProvider eventProvider; 
     FilterManager filterManager;
     PortletURLListener urlListener;
     
-    public JetspeedPortalCallbackServices(RequestPropertyProvider propertyProvider,
+    public JetspeedPortalCallbackServices(PropertyManager propertyManager,
             EventProvider eventProvider, FilterManager filterManager, PortletURLListener urlListener)
     {
-        this.propertyProvider = propertyProvider;
+        this.propertyManager = propertyManager;
         this.eventProvider = eventProvider;
         this.filterManager = filterManager;
         this.urlListener = urlListener;
@@ -72,9 +72,9 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
         return new ResourceURLProviderImpl(rc, portletWindow);
     }
 
-    public RequestPropertyProvider getRequestPropertyProvider()
+    public PropertyManager getPropertyManager()
     {
-        return propertyProvider;
+        return propertyManager;
     }
         
 

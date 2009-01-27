@@ -26,6 +26,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.url.PortalURL;
 
 /**
  * HybridNavigationalState
@@ -45,21 +46,26 @@ public class HybridNavigationalState extends SessionNavigationalState
         this.prefix = prefix;
     }
     
-    public String encode(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action)
+    public String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action)
     throws UnsupportedEncodingException
     {
-        Map subset = new HashMap();
-        Iterator params = parameters.keySet().iterator();
+        return encode(window, parameters, mode, state, action ? PortalURL.URLType.ACTION : PortalURL.URLType.RENDER);
+    }
+    public String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, PortalURL.URLType urlType)
+    throws UnsupportedEncodingException
+    {
+        Map<String, String[]> subset = new HashMap<String, String[]>();
+        Iterator<String> params = parameters.keySet().iterator();
         while (params.hasNext())
         {
-            String key = (String)params.next();
+            String key = params.next();
             if (key.startsWith(prefix))
             {
                 // only encode params that start with prefix
                 subset.put(key, parameters.get(key));
             }
         }
-        return super.encode(window, subset, mode, state, action);
+        return super.encode(window, subset, mode, state, urlType);
     }
 
     public boolean isNavigationalParameterStateFull()
@@ -71,6 +77,4 @@ public class HybridNavigationalState extends SessionNavigationalState
     {
         return false;
     }
-    
-    
 }

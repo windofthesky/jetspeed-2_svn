@@ -23,6 +23,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.url.PortalURL;
 
 public interface NavigationalStateCodec
 {
@@ -31,8 +32,8 @@ public interface NavigationalStateCodec
     String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, PortletMode portletMode,
             WindowState windowState, boolean navParamsStateFull, boolean renderParamsStateFull) throws UnsupportedEncodingException;
 
-    String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, Map parameters,
-            PortletMode portletMode, WindowState windowState, boolean action, boolean navParamsStateFull, 
+    String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, Map<String, String[]> parameters,
+            PortletMode portletMode, WindowState windowState, PortalURL.URLType urlType, boolean navParamsStateFull, 
             boolean renderParamsStateFull) throws UnsupportedEncodingException;
 
     String encode(PortletWindowRequestNavigationalStates states, boolean navParamsStateFull, boolean renderParamsStateFull) 

@@ -27,6 +27,7 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.container.PortletWindow;
 
@@ -196,7 +197,8 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         return requestStates.getMaximizedWindow();
     }
 
-    public Iterator getParameterNames(PortletWindow window)
+    @SuppressWarnings("unchecked")
+    public Iterator<String> getParameterNames(PortletWindow window)
     {
         PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
         if ( state != null && state.getParametersMap() != null )
@@ -233,6 +235,11 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
             return null;
     }
     
+    public PortalURL.URLType getURLType()
+    {
+        return requestStates.getURLType();
+    }
+    
     public PortletWindow getPortletWindowOfAction()
     {
         return requestStates.getActionWindow();
@@ -243,7 +250,13 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         return requestStates.getResourceWindow();
     }
 
-    public String encode(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action)
+    public String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action)
+    throws UnsupportedEncodingException
+    {
+        return encode(window, parameters, mode, state, action ? PortalURL.URLType.ACTION : PortalURL.URLType.RENDER);
+    }
+
+    public String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, PortalURL.URLType urlType)
     throws UnsupportedEncodingException
     {
         if ( mode != null || state != null )
@@ -263,7 +276,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 state = pa.getMappedWindowState(state);
             }
         }
-        return codec.encode(requestStates, window, parameters, mode, state, action, isNavigationalParameterStateFull(),
+        return codec.encode(requestStates, window, parameters, mode, state, urlType, isNavigationalParameterStateFull(),
                 isRenderParameterStateFull());
     }
 
@@ -288,7 +301,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
             }
         }
         String encodedState = null;
-        Map currentWindowStates = null;
+        Map<String, PortletWindowBaseNavigationalState> currentWindowStates = null;
         PortletWindowExtendedNavigationalState windowNavState = null;
         PortletMode targetMode = mode;
         WindowState targetState = state;
@@ -333,7 +346,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         return codec.encode(requestStates, isNavigationalParameterStateFull(), isRenderParameterStateFull());
     }
 
-    public Iterator getWindowIdIterator()
+    public Iterator<String> getWindowIdIterator()
     {
         return requestStates.getWindowIdIterator();
     }
@@ -343,7 +356,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
         if (state != null)
         {
-            Map map = state.getParametersMap();
+            Map<String, String[]> map = state.getParametersMap();
             if (map != null)
             {
                 map.clear();

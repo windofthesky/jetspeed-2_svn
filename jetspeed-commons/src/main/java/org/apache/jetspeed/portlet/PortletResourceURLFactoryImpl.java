@@ -20,11 +20,10 @@ import java.util.Map;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceURL;
 
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.portals.bridges.common.PortletResourceURLFactory;
 
 /**
@@ -44,13 +43,12 @@ public class PortletResourceURLFactoryImpl implements PortletResourceURLFactory
      */
     public String createResourceURL(PortletConfig config, RenderRequest request, RenderResponse response, Map parameters)
             throws PortletException
-    {
-        PortletURL url = response.createRenderURL();
+    {        
+        ResourceURL url = response.createResourceURL();
         if (parameters != null)
         {
             url.setParameters(parameters);
         }
-        url.setParameter(PortalReservedParameters.PORTLET_RESOURCE_URL_REQUEST_PARAMETER, "");
         return url.toString();
     }
 }

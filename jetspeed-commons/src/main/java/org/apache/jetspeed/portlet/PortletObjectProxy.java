@@ -20,14 +20,17 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.List;
 
 import java.io.IOException;
 
+import javax.portlet.EventPortlet;
 import javax.portlet.Portlet;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
+import javax.portlet.ResourceServingPortlet;
 import javax.portlet.WindowState;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -103,21 +106,34 @@ public class PortletObjectProxy extends BaseObjectProxy
     
     public static Object createProxy(Object proxiedObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
     {
+        HashSet<Class> interfaces = new HashSet<Class>();
+        interfaces.add(Portlet.class);
+        Class current = proxiedObject.getClass();
+        while (current != null)
+        {
+            try
+            {
+                Class[] currentInterfaces = current.getInterfaces();
+                for (int i = 0; i < currentInterfaces.length; i++)
+                {
+                    if (currentInterfaces[i] != Portlet.class)
+                    {
+                        interfaces.add(currentInterfaces[i]);
+                    }
+                }
+                current = current.getSuperclass();
+            }
+            catch (Exception e)
+            {
+                current = null;
+            }
+        }
+        
         Class proxiedClass = proxiedObject.getClass();
         ClassLoader classLoader = proxiedClass.getClassLoader();
-        Class [] proxyInterfaces = null;
-        
-        if (proxiedObject instanceof SupportsHeaderPhase)
-        {
-            proxyInterfaces = new Class [] { Portlet.class, SupportsHeaderPhase.class };
-        }
-        else
-        {
-            proxyInterfaces = new Class [] { Portlet.class };
-        }
         
         InvocationHandler handler = new PortletObjectProxy(proxiedObject, autoSwitchEditDefaultsModeToEditMode, autoSwitchConfigMode, customConfigModePortletUniqueName);
-        return Proxy.newProxyInstance(classLoader, proxyInterfaces, handler);
+        return Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[interfaces.size()]), handler);
     }
 
     private PortletObjectProxy(Object portletObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
@@ -150,7 +166,7 @@ public class PortletObjectProxy extends BaseObjectProxy
         boolean handledHere = false;
         Class declaringClass = method.getDeclaringClass();
         
-        if (declaringClass == Portlet.class)
+        if (declaringClass == Portlet.class || declaringClass == ResourceServingPortlet.class || declaringClass == EventPortlet.class)
         {
             if (renderMethod.equals(method))
             {

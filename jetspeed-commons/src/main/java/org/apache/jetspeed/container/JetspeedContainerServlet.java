@@ -29,6 +29,9 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -262,7 +265,6 @@ public class JetspeedContainerServlet extends HttpServlet
                 ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
                 ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
                 ((InternalPortletRequest)actionRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
-                ((InternalPortletRequest)actionRequest).setIncluded(true);
                 portlet.processAction(actionRequest, actionResponse);
             }
             else if (method == ContainerConstants.METHOD_RENDER)
@@ -283,6 +285,25 @@ public class JetspeedContainerServlet extends HttpServlet
                 }
                 ((InternalPortletRequest)renderRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
                 portlet.render(renderRequest, renderResponse);
+            }
+            else if (method == ContainerConstants.METHOD_RESOURCE && portlet.getRealPortlet() instanceof ResourceServingPortlet)
+            {
+                ResourceRequest resourceRequest = null;
+                ResourceResponse resourceResponse = null;
+
+                if (isParallelMode)
+                {
+                    resourceRequest = (ResourceRequest) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                    resourceResponse = (ResourceResponse) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                }
+                else
+                {
+                    resourceRequest = (ResourceRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                    resourceResponse = (ResourceResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+
+                }
+                ((InternalPortletRequest)resourceRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                ((ResourceServingPortlet)portlet.getRealPortlet()).serveResource(resourceRequest, resourceResponse);
             }
 
             // if we get this far we are home free

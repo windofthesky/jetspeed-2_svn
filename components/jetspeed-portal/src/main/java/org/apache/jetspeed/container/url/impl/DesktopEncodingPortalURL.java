@@ -25,14 +25,11 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.pluto.om.portlet.PortletDefinition;
 
 /**
  * DesktopEncodingPortalURL encodes action URLs to target desktop specific /action pipeline,
@@ -94,7 +91,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             desktopRenderPipelinePath = desktopRenderPipelinePath.substring( 0, desktopRenderPipelinePath.length() -1 );
         
         this.desktopRenderPipelinePath = desktopRenderPipelinePath;
-        this.desktopActionPipelinePath = desktopActionPipelinePath;        
+        this.desktopActionPipelinePath = desktopActionPipelinePath;
     }
 
     protected void decodeBasePath(HttpServletRequest request)
@@ -152,26 +149,27 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
 
     protected String createPortletURL(String encodedNavState, boolean secure)
     {
-        return createPortletURL(encodedNavState, secure, null, false);
+        return createPortletURL(encodedNavState, secure, null, URLType.RENDER, false);
     }
     
-    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action)
-    {   
-        return createPortletURL(encodedNavState, secure, window, action, false, false);
-    }
-    
-    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, boolean action, boolean resource, boolean desktopRequestNotAjax)
+    protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, URLType urlType, boolean desktopRequestNotAjax)
     {   
         StringBuffer buffer = new StringBuffer("");
         buffer.append(getBaseURL(secure));
-        if (action)
+        boolean desktopEncoder = false;
+        
+        if (URLType.ACTION.equals(urlType))
         {
             buffer.append(this.baseActionPath);
         }
         else
         {
-            buffer.append(this.baseRenderPath);        
-        }            
+            buffer.append(this.baseRenderPath);
+            if (URLType.RESOURCE.equals(urlType))
+            {
+                desktopEncoder = true;
+            }            
+        }
         if ( encodedNavState != null )
         {
             buffer.append("/");
@@ -184,17 +182,13 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             buffer.append(getPath());
         }
         
-        if ( !resource )
+        if ( !desktopEncoder )
         {
         	if ( ! desktopRequestNotAjax )
             {
         		PortletEntity pe = window.getPortletEntity();
         		buffer.append( "?entity=" ).append( pe.getId() );
-            
-        		PortletDefinition portlet = pe.getPortletDefinition();
-        		PortletApplication app = (PortletApplication)portlet.getApplication();
-        		String uniqueName = app.getName() + "::" + portlet.getPortletName();
-        		buffer.append( "&portlet=" ).append( uniqueName );
+        		buffer.append( "&portlet=" ).append( pe.getPortletDefinition().getUniqueName() );
             }
         }
         else
@@ -205,18 +199,22 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         return buffer.toString();
     }        
     
-    public String createPortletURL(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
+    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
+    {
+        return createPortletURL(window, parameters, mode, state, action ? URLType.ACTION : URLType.RENDER ,secure);
+    }
+    
+    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType, boolean secure)
     {
         try
         {
-            boolean resource = !action && parameters.containsKey(PortalReservedParameters.PORTLET_RESOURCE_URL_REQUEST_PARAMETER);
             boolean desktopRequestNotAjax = false;
             if ( parameters.containsKey(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER) )
             {
             	desktopRequestNotAjax = true;
             	parameters.remove(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER);
             }
-            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,action), secure, window, action, resource, desktopRequestNotAjax);
+            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,urlType), secure, window, urlType, desktopRequestNotAjax);
         }
         catch (UnsupportedEncodingException e)
         {

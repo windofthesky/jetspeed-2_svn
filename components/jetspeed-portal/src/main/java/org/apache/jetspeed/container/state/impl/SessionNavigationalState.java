@@ -44,7 +44,7 @@ import org.apache.jetspeed.request.RequestContext;
 public class SessionNavigationalState extends AbstractNavigationalState
 {   
     protected final Log log = LogFactory.getLog(getClass());    
-    private Map currentPageWindowStates;
+    private Map<String, PortletWindowBaseNavigationalState> currentPageWindowStates;
     private boolean clearPortletsModeAndWindowStateEnabled = false;
     
     public SessionNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
@@ -130,7 +130,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
         }
     }
     
-    public Map getCurrentPageWindowStates()
+    public Map<String, PortletWindowBaseNavigationalState> getCurrentPageWindowStates()
     {
         return currentPageWindowStates;
     }

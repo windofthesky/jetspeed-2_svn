@@ -25,6 +25,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.url.PortalURL;
 
 /**
  * NavigationalState gives readonly access to the state of the Portal URL and all navigational state context
@@ -134,11 +135,13 @@ public interface NavigationalState
      */
     PortletWindow getMaximizedWindow();
         
-    Iterator getParameterNames(PortletWindow window);
+    Iterator<String> getParameterNames(PortletWindow window);
     
     String[] getParameterValues(PortletWindow window, String parameterName);
 
     Map<String, String[]> getParameterMap(PortletWindow window);
+    
+    PortalURL.URLType getURLType();
     
     PortletWindow getPortletWindowOfAction();
     
@@ -151,7 +154,7 @@ public interface NavigationalState
      * the PortletWindowOfAction.
      * @return iterator of portletWindow ids (String)
      */
-    Iterator getWindowIdIterator();
+    Iterator<String> getWindowIdIterator();
     
     /**
      * Encodes the Navigational State with overrides for a specific PortletWindow into a string to be embedded within a 
@@ -163,8 +166,22 @@ public interface NavigationalState
      * @param state the new WindowState for the PortalWindow
      * @param action indicates if to be used in an actionURL or renderURL
      * @return encoded new Navigational State
+     * @deprecated
      */
-    String encode(PortletWindow window, Map parameters, PortletMode mode, WindowState state, boolean action) throws UnsupportedEncodingException;
+    String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action) throws UnsupportedEncodingException;
+
+    /**
+     * Encodes the Navigational State with overrides for a specific PortletWindow into a string to be embedded within a 
+     * PortalURL.
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param urlType indicates if to be used in an actionURL, ResourceURL or renderURL
+     * @return encoded new Navigational State
+     */
+    String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, PortalURL.URLType urlType) throws UnsupportedEncodingException;
 
     /**
      * Encodes the Navigational State with overrides for a specific PortletWindow while retaining its (request) 
