@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.container;
 
+import org.apache.pluto.EventContainer;
 import org.apache.pluto.PortletContainer;
 
 /**
@@ -24,6 +25,6 @@ import org.apache.pluto.PortletContainer;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PortletContainerWrapper extends PortletContainer
+public interface PortletContainerWrapper extends PortletContainer, EventContainer
 {
 }

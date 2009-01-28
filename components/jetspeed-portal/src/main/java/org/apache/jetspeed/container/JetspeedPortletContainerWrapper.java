@@ -18,6 +18,7 @@ package org.apache.jetspeed.container;
 
 import java.io.IOException;
 
+import javax.portlet.Event;
 import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -156,6 +157,14 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
     public void setResponseFactory(ServletResponseFactory responseFactory)
     {
         this.responseFactory = responseFactory;
+    }
+
+    public void fireEvent(HttpServletRequest request,
+            HttpServletResponse response, PortletWindow window, Event event)
+            throws PortletException, IOException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+        
     }
     
 
