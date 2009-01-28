@@ -34,7 +34,7 @@ limitations under the License.
   
 
   <fragment id="pa-site" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="prof-1" type="portlet" name="j2-admin::ProfilerAdmin" >
+    <fragment id="prof-2" type="portlet" name="j2-admin::WicketProfilerAdmin" >
     </fragment>
   </fragment>
 </page>
