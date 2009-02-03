@@ -651,5 +651,10 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("++++ PREFS:ENTITIES loaded " + count + " total entity pref nodes in " + elapsed + " milliseconds.");
     }
-    
+ 
+    public void destroy()
+    {
+        NodeImplProxy.setProvider(null);
+        preferenceCache = null;
+    }    
 }

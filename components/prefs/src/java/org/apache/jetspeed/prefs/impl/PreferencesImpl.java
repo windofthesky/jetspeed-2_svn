@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.prefs.FailedToCreateNodeException;
 import org.apache.jetspeed.prefs.NodeAlreadyExistsException;
 import org.apache.jetspeed.prefs.NodeDoesNotExistException;
-import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.prefs.om.Property;
 import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
@@ -41,6 +40,7 @@ import org.apache.jetspeed.prefs.om.impl.PropertyImpl;
  * </p>
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
+ *  @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  */
 public class PreferencesImpl extends AbstractPreferences
 {
@@ -57,11 +57,12 @@ public class PreferencesImpl extends AbstractPreferences
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesImpl.class);
 
-    protected static PreferencesProvider prefsProvider;
-
-    static PreferencesImpl systemRoot;
-
-    static PreferencesImpl userRoot;
+    PreferencesProviderWrapper ppw;
+    
+    void disposeNode()
+    {
+        node = null;
+    }
 
     /**
      * <p>
@@ -76,12 +77,13 @@ public class PreferencesImpl extends AbstractPreferences
      * @param nodeName The node name.
      * @param nodeType The node type.
      */
-    public PreferencesImpl(PreferencesImpl parent, String nodeName, int nodeType) throws IllegalStateException
+    PreferencesImpl(PreferencesImpl parent, PreferencesProviderWrapper ppw, String nodeName, int nodeType) throws IllegalStateException
     {
         super(parent, nodeName);
+        this.ppw = ppw;
         try
         {
-            node = prefsProvider.getNode(this.absolutePath(), nodeType);
+            node = ppw.provider().getNode(this.absolutePath(), nodeType);
             newNode = false;
         }
         catch (NodeDoesNotExistException e1)
@@ -90,11 +92,11 @@ public class PreferencesImpl extends AbstractPreferences
             {
                 if (parent != null)
                 {
-                    this.node = prefsProvider.createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
+                    this.node = ppw.provider().createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
                 }
                 else
                 {
-                    this.node = prefsProvider.createNode(null, nodeName, nodeType, this.absolutePath());
+                    this.node = ppw.provider().createNode(null, nodeName, nodeType, this.absolutePath());
                 }
 
                 newNode = true;
@@ -110,7 +112,7 @@ public class PreferencesImpl extends AbstractPreferences
             {
                 try
                 {
-                    node = prefsProvider.getNode(this.absolutePath(), nodeType);
+                    node = ppw.provider().getNode(this.absolutePath(), nodeType);
                     newNode = false;
                 }
                 catch (NodeDoesNotExistException e2)
@@ -127,14 +129,14 @@ public class PreferencesImpl extends AbstractPreferences
                 }
             }
         }
-    }
+    }        
 
     /**
      * @see java.util.prefs.Preferences#childrenNamesSpi()
      */
     public String[] childrenNamesSpi() throws BackingStoreException
     {
-        Collection nodes = prefsProvider.getChildren(getNode());
+        Collection nodes = ppw.provider().getChildren(getNode());
 
         if (null != nodes)
         {
@@ -159,7 +161,7 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public AbstractPreferences childSpi(String name)
     {
-        return new PreferencesImpl(this, name, node.getNodeType());
+        return new PreferencesImpl(this, ppw, name, node.getNodeType());
     }
 
     /**
@@ -167,7 +169,7 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void flushSpi() throws BackingStoreException
     {
-        prefsProvider.storeNode(this.node);
+        ppw.provider().storeNode(this.node);
     }
 
     /**
@@ -249,7 +251,7 @@ public class PreferencesImpl extends AbstractPreferences
             properties.add(new PropertyImpl(node.getNodeId(), key, value));
         }
 
-        prefsProvider.storeNode(node);
+        ppw.provider().storeNode(node);
     }
 
     /**
@@ -263,7 +265,7 @@ public class PreferencesImpl extends AbstractPreferences
         {
             parentNode = ((PreferencesImpl) parent).getNode();
         }
-        prefsProvider.removeNode(parentNode, node);
+        ppw.provider().removeNode(parentNode, node);
     }
 
     /**
@@ -283,7 +285,7 @@ public class PreferencesImpl extends AbstractPreferences
             }
         }
         // Update node.
-        prefsProvider.storeNode(node);
+        ppw.provider().storeNode(node);
     }
 
     /**
@@ -305,21 +307,5 @@ public class PreferencesImpl extends AbstractPreferences
     public Node getNode()
     {
         return node;
-    }
-
-    /**
-     * 
-     * <p>
-     * setPreferencesProvider
-     * </p>
-     * Sets the <code>org.apache.jetspeed.prefs.PreferencesProvider</code>
-     * that will support backing store operations for all
-     * <code>PreferencesImpls</code>
-     * 
-     * @param prefsProvider
-     */
-    public static void setPreferencesProvider(PreferencesProvider prefsProvider)
-    {
-        PreferencesImpl.prefsProvider = prefsProvider;
     }
 }

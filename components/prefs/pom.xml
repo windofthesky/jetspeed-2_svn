@@ -50,6 +50,11 @@ limitations under the License.
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-rdbms</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-commons</artifactId>
+            <scope>provided</scope>
+        </dependency>        
         <!--
             Note: junit is normally required only for test, but 
             in this case, abstract test cases are included in the

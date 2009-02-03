@@ -91,6 +91,7 @@
                 <exclude>**/PageManagerTestShared.java</exclude>
               <exclude>**/DirectoryXMLTransform.java</exclude>
               <exclude>**/DatabasePageManagerServer.java</exclude>
+   			  <exclude>**/TestTransactions.java</exclude>              
             </excludes>
             <resources>
                 <resource>
