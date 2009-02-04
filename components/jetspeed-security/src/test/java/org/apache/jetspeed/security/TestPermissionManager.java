@@ -31,6 +31,8 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.security.impl.TransientUser;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -161,7 +163,10 @@ public class TestPermissionManager extends AbstractSecurityTestcase
         
         try
         {
-            pms.revokeAllPermissions(user);
+            // test revokeAllPrincipal a Transient User representation to ensure
+            // that use-case is covered too because it requires additional
+            // handling (lookup of the principal Id first)
+            pms.revokeAllPermissions(new TransientUser("test"));
             Permissions permissions = pms.getPermissions(user);
             assertEquals(
                 "permissions should be empty for user " + user.getName(),

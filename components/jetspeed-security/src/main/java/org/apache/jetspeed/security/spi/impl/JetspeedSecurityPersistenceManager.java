@@ -18,6 +18,7 @@ package org.apache.jetspeed.security.spi.impl;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -93,6 +94,24 @@ public class JetspeedSecurityPersistenceManager
     public JetspeedSecurityPersistenceManager(String repositoryPath)
     {
         super(repositoryPath);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected Long getPrincipalId(String name, String type, Long domainId) throws SecurityException
+    {
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("name", name);
+        criteria.addEqualTo("type", type);
+        criteria.addEqualTo("domainId", domainId);
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
+        query.setAttributes(new String[]{"id"});
+        // need to force OJB to return a Long, otherwise it'll return a Integer causing a CCE
+        query.setJdbcTypes(new int[]{Types.BIGINT});
+        for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
+        {
+            return (Long)iter.next()[0];
+        }
+        throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(type, name));
     }
     
 	public boolean principalExists(JetspeedPrincipal principal)
@@ -906,17 +925,17 @@ public class JetspeedSecurityPersistenceManager
 
     public void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException
     {
+        Long principalId = null;
         Criteria criteria = new Criteria();
         if (principal.isTransient() || principal.getId() == null)
         {
-            criteria.addEqualTo("principal.type", principal.getType());
-            criteria.addEqualTo("principal.name", principal.getName());
-            criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
+            principalId = getPrincipalId(principal.getName(), principal.getType().getName(), getDefaultSecurityDomainId());
         }
         else
         {
-            criteria.addEqualTo("principalId", principal.getId());
+            principalId = principal.getId();
         }
+        criteria.addEqualTo("principalId", principalId);
         if (permission.getId() == null)
         {
             criteria.addEqualTo("permission.type", permission.getType());
@@ -943,17 +962,17 @@ public class JetspeedSecurityPersistenceManager
     
     public void revokeAllPermissions(JetspeedPrincipal principal) throws SecurityException
     {
+        Long principalId = null;
         Criteria criteria = new Criteria();
         if (principal.isTransient() || principal.getId() == null)
         {
-            criteria.addEqualTo("principal.type", principal.getType());
-            criteria.addEqualTo("principal.name", principal.getName());
-            criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
+            principalId = getPrincipalId(principal.getName(), principal.getType().getName(), getDefaultSecurityDomainId());
         }
         else
         {
-            criteria.addEqualTo("principalId", principal.getId());
+            principalId = principal.getId();
         }
+        criteria.addEqualTo("principalId", principalId);
         Query query = QueryFactory.newQuery(JetspeedPrincipalPermission.class,criteria);
         try
         {
