@@ -53,7 +53,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
         {
             System.out.println("\t\t[TestRdbmsPolicy - Folder] Creating login context.");
             PassiveCallbackHandler pch = new PassiveCallbackHandler("anon", "password");
-            loginContext = new LoginContext("jetspeed", pch);
+            loginContext = new LoginContext("Jetspeed", pch);
             loginContext.login();
         }
         catch (LoginException le)
@@ -86,7 +86,7 @@ public class TestRdbmsPolicyFolder extends AbstractSecurityTestcase
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestRdbmsPolicy.class);
+        return new TestSuite(TestRdbmsPolicyFolder.class);
     }
 
     /**
