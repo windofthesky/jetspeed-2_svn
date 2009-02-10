@@ -27,7 +27,7 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>target/${tomcat.version}</directory>
+      <directory>target/${tomcat.name}</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>

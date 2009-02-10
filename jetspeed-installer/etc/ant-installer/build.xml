@@ -56,7 +56,7 @@
     </condition>
     
     <property name="jdbcjar" value="${jdbc.driver.jar}" />
-    <copy failonerror="false" todir="${installDir}/shared/lib" file="${jdbcjar}" />
+    <copy failonerror="false" todir="${installDir}/lib" file="${jdbcjar}" />
 
     <move file="${installDir}/database/database.properties.template" tofile="${installDir}/database/database.properties"
       overwrite="true">

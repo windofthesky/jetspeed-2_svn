@@ -72,23 +72,23 @@
 
 	</target>
 
-	<target name="setupNoDB">
-		<antcall target="setupDBPSML" />
-	</target>
+	<target name="runSetupDB" depends="checkDerby,checkImportPsml,generateStandardDB,generateDerbyDB,copyJetspeedContext,filterSpringFilterKey,seedDB,dbPsml" />
+
+	<target name="runSetupNoDB" depends="checkImportPsml,copyJetspeedContext,filterSpringFilterKey" />
 
 	<target name="checkInput" unless="failSetup">
 		<antcall target="runSetupDB" />
 	</target>
 
-	<target name='setupDBPSML'>
-		<copy file="${jetspeedWebInfDir}/assembly/page-manager.xml" tofile="${jetspeedWebInfDir}/assembly/alternate/fs-page-manager.xml" />
-	</target>
-
-	<target name="runSetupDB" depends="setupDBPSML,checkDerby,generateStandardDB,generateDerbyDB,copyJetspeedContext,filterSpringDatasource,seedDB,do-psml" />
-
 	<target name="checkDerby">
 		<condition property="_derby">
 			<equals arg1="${db.type}" arg2="derby" />
+		</condition>
+	</target>
+
+	<target name="checkImportPsml">
+		<condition property="_doImportPsml">
+			<equals arg1="${dbImportPsml}" arg2="true" />
 		</condition>
 	</target>
 
@@ -98,7 +98,7 @@
 
 		<java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
 			<classpath>
-				<fileset dir="${basedir}/../shared/lib">
+				<fileset dir="${basedir}/../lib">
 					<include name="**/*.jar" />
 				</fileset>
 				<fileset dir="${jetspeedWebInfDir}/lib">
@@ -107,10 +107,7 @@
 				<fileset dir="${basedir}/lib">
 					<include name="**/*.jar" />
 				</fileset>
-				<fileset dir="${basedir}/../common/lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<pathelement location="${basedir}/../shared/classes" />
+				<pathelement location="${basedir}/../lib" />
 				<pathelement location="${jetspeedWebInfDir}/classes" />
 			</classpath>
 			<arg line="driver=&quot;${_jdbc.driver.class}&quot; 
@@ -127,7 +124,7 @@
 
 		<sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}" src="${basedir}/${db.type}/drop-schema.sql" autocommit="true" onerror="continue" print="no" output="setup.log">
 			<classpath>
-				<fileset dir="${basedir}/../shared/lib">
+				<fileset dir="${basedir}/../lib">
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
@@ -136,7 +133,7 @@
 		<echo>Starting database generation</echo>
 		<sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}" src="${basedir}/${db.type}/create-schema.sql">
 			<classpath>
-				<fileset dir="${basedir}/../shared/lib">
+				<fileset dir="${basedir}/../lib">
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
@@ -146,7 +143,7 @@
 	</target>
 
 	<target name="copyJetspeedContext">
-		<copy file="${portalName}.xml" tofile="${basedir}/../conf/Catalina/localhost/${portalName}.xml" overwrite="true">
+		<copy file="resources/${portalName}.xml" tofile="${basedir}/../conf/Catalina/localhost/${portalName}.xml" overwrite="true">
 
 			<!-- note that the $ is escaped here -->
 			<filterset begintoken="$${" endtoken="}">
@@ -158,18 +155,30 @@
 		</copy>
 	</target>
 
-	<target name="filterSpringDatasource">
-		<copy file="${jetspeedWebInfDir}/assembly/boot/datasource.xml" tofile="${jetspeedWebInfDir}/assembly/boot/datasource_filtered.xml">
+	<target name="filterSpringFilterKey">
+		<delete quiet="true" file="${jetspeedWebInfDir}/conf/spring-filter-key.properties" />
+
+		<!-- Ant's if/else simulation, _doImportPsml has been set before -->
+		<antcall target="filterSpringFilterKey_db"/>
+		<antcall target="filterSpringFilterKey_file"/>
+	</target>
+
+	<target name="filterSpringFilterKey_db" if="_doImportPsml">
+		<copy file="resources/spring-filter-key.properties" todir="${jetspeedWebInfDir}/conf/">
 			<!-- note that the $ is escaped here -->
 			<filterset begintoken="$${" endtoken="}">
-				<filter token="org.apache.jetspeed.database.user" value="${_db.username}" />
-				<filter token="org.apache.jetspeed.database.password" value="${_db.password}" />
-				<filter token="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}" />
-				<filter token="org.apache.jetspeed.database.url" value="${_jdbc.url}" />
+				<filter token="org.apache.jetspeed.spring.filter.key" value="portal.dbPageManager" />
 			</filterset>
 		</copy>
-		<move file="${jetspeedWebInfDir}/assembly/boot/datasource_filtered.xml" tofile="${jetspeedWebInfDir}/assembly/boot/datasource.xml" overwrite="true" />
-		<delete file="${jetspeedWebInfDir}/assembly/boot/datasource_filtered.xml" />
+	</target>
+
+	<target name="filterSpringFilterKey_file" unless="_doImportPsml">
+		<copy file="resources/spring-filter-key.properties" todir="${jetspeedWebInfDir}/conf/">
+			<!-- note that the $ is escaped here -->
+			<filterset begintoken="$${" endtoken="}">
+				<filter token="org.apache.jetspeed.spring.filter.key" value="portal" />
+			</filterset>
+		</copy>
 	</target>
 
 	<target name="seedDB">
@@ -178,7 +187,7 @@
 
 		<java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
 			<classpath>
-				<fileset dir="${basedir}/../shared/lib">
+				<fileset dir="${basedir}/../lib">
 					<include name="**/*.jar" />
 				</fileset>
 				<fileset dir="${jetspeedWebInfDir}/lib">
@@ -187,14 +196,16 @@
 				<fileset dir="${basedir}/lib">
 					<include name="**/*.jar" />
 				</fileset>
-				<fileset dir="${basedir}/../common/lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<pathelement location="${basedir}/../shared/classes" />
+				<pathelement location="${basedir}/../lib" />
 				<pathelement location="${jetspeedWebInfDir}/classes" />
 			</classpath>
 
-			<arg line="-I &quot;${basedir}/j2-seed.xml&quot; 
+            <sysproperty key="org.apache.jetspeed.database.user" value="${_db.username}"/>
+	        <sysproperty key="org.apache.jetspeed.database.password" value="${_db.password}"/>
+	        <sysproperty key="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
+	        <sysproperty key="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
+	        	
+			<arg line="-I &quot;${basedir}/resources/j2-seed.xml&quot; 
               -a &quot;${basedir}/../webapps/${portalName}&quot;
       		  -c &quot;serializer&quot;
       	      -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
@@ -202,41 +213,29 @@
 
 	</target>
 
-	<!-- Populate database with pages the user has selected so -->
-	<target name="do-psml" depends="test-import-psml,db-psml,fs-psml" />
-
-	<target name="test-import-psml">
-		<condition property="_doImportPsml">
-			<equals arg1="${dbImportPsml}" arg2="true" />
-		</condition>
-	</target>
-
-	<target name="fs-psml" unless="_doImportPsml">
-		<copy file="${jetspeedWebInfDir}/assembly/alternate/fs-page-manager.xml" tofile="${jetspeedWebInfDir}/assembly/page-manager.xml" overwrite="true" />
-		<delete quiet="true" file="${jetspeedWebInfDir}/assembly/interceptors.xml" />
-	</target>
-
-	<target name="db-psml" if="_doImportPsml">
+	<target name="dbPsml" if="_doImportPsml">
 
 	    <echo>Importing psml into the database</echo>
 
 	    <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
 	      <classpath>
-	        <fileset dir="${basedir}/../shared/lib">
-	          <include name="**/*.jar" />
-	        </fileset>
-	        <fileset dir="${jetspeedWebInfDir}/lib">
-	          <include name="**/*.jar" />
-	        </fileset>
-	        <fileset dir="${basedir}/lib">
-	          <include name="**/*.jar" />
-	        </fileset>
-	        <fileset dir="${basedir}/../common/lib">
-	          <include name="**/*.jar" />
-	        </fileset>
-	        <pathelement location="${basedir}/../shared/classes" />
-	        <pathelement location="${jetspeedWebInfDir}/classes" />
+			<fileset dir="${basedir}/../lib">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${jetspeedWebInfDir}/lib">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${basedir}/lib">
+				<include name="**/*.jar" />
+			</fileset>
+			<pathelement location="${basedir}/../lib" />
+			<pathelement location="${jetspeedWebInfDir}/classes" />
 	      </classpath>
+
+          <sysproperty key="org.apache.jetspeed.database.user" value="${_db.username}"/>
+          <sysproperty key="org.apache.jetspeed.database.password" value="${_db.password}"/>
+          <sysproperty key="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
+          <sysproperty key="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
 
 	      <arg
 	        line="-I &quot;/&quot;

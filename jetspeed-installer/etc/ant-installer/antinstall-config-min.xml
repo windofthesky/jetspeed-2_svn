@@ -44,7 +44,7 @@
 
   <page type="input" name="requiredComponents" displayText="Components selection">
     <comment displayText="Jetspeed Enterprise Portal version 2.2-SNAPSHOT" bold="true" />
-    <target displayText="Tomcat 5.5.27 Webserver" target="install" defaultValue="true" force="true" />
+    <target displayText="Tomcat 6.0.18 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Administration Portlets" property="dummy" defaultValue="true" force="true" />
@@ -196,20 +196,20 @@
   <page type="input" name="dbCheckFailed" displayText="Connection to the database failed"
     ifProperty="(${checkdb}=true) AND (${dbvalid}=false)">
     <hidden property="checkdb" value="false" />
-    <hidden property="setupDBAntTarget" value="setupNoDB" />
+    <hidden property="setupDBAntTarget" value="runSetupNoDB" />
 
     <comment displayText="Please go back and specify the correct database configuration parameters." bold="true" />
     <comment displayText="" />
     <comment displayText="Continuing now will otherwise require manual setup of the database."/>
   </page>
 
-  <page type="input" name="beforeInstall" displayText="Before your install.." ifProperty="(${dbName}=manual) OR (${setupDBAntTarget}=setupNoDB)">
+  <page type="input" name="beforeInstall" displayText="Before your install.." ifProperty="(${dbName}=manual) OR (${setupDBAntTarget}=runSetupNoDB)">
     <hidden property="db.username" value="" />
     <hidden property="db.password" value="" />
     <hidden property="jdbc.url" value="" />
     <hidden property="jdbc.driver.class" value="" />
     <hidden property="jdbc.driver.jar" value="" />
-    <hidden property="setupDBAntTarget" value="setupNoDB" />
+    <hidden property="setupDBAntTarget" value="runSetupNoDB" />
     <comment displayText="Jetspeed will be installed without yet a configured database to:" bold="true"/>
     <comment displayText="  ${installDir}"/>
     <comment displayText="Warning: all content in this directory will be deleted first!" bold="true"/>

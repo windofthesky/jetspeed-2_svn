@@ -54,6 +54,10 @@ public class DeployMojo extends AbstractMojo
 {
     private static final String DEPLOY_FACTORY_CLASS_NAME = "org.apache.jetspeed.tools.deploy.JetspeedDeployFactory";
 
+    private static final String PROFILE_TOMCAT5 = "tomcat5"; 
+    private static final String PROFILE_TOMCAT6 = "tomcat6"; 
+    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT5; 
+
     public static class Deployment
     {
         private String artifact;
@@ -123,6 +127,11 @@ public class DeployMojo extends AbstractMojo
     /** @parameter expression="${plugin.introducedDependencyArtifacts}" */
     private Set pluginDependencyArtifacts;
     
+    /**
+     * @parameter
+     */
+    private String profile;
+
     private Artifacts artifacts;
     
     /* (non-Javadoc)
@@ -135,27 +144,8 @@ public class DeployMojo extends AbstractMojo
         {
             destMap.putAll(destinations);
         }
-        // init default for tomcat5.5
-        if (!destMap.containsKey("system"))
-        {
-            destMap.put("system","common/endorsed");
-        }
-        if (!destMap.containsKey("lib"))
-        {
-            destMap.put("lib","shared/lib");
-        }
-        if (!destMap.containsKey("war"))
-        {
-            destMap.put("war", "webapps");
-        }
-        if (!destMap.containsKey("deploy"))
-        {
-            destMap.put("deploy", ((String)destMap.get("war"))+"/"+portalName+"/WEB-INF/deploy");
-        }
-        if (!destMap.containsKey("local"))
-        {
-            destMap.put("local", ((String)destMap.get("deploy"))+"/local");
-        }
+
+       	initDefaultDestinations(destMap, (profile != null) ? profile : DEFAULT_PROFILE);
         
         File targetBaseDir = new File(this.targetBaseDir);
         if (targetBaseDir.exists() && targetBaseDir.isFile())
@@ -476,8 +466,8 @@ public class DeployMojo extends AbstractMojo
             }
         }
     }
-    
-    private static String getValue(String value, String defaultValue)
+
+	private static String getValue(String value, String defaultValue)
     {
         return value != null ? value : defaultValue;
     }
@@ -653,4 +643,62 @@ public class DeployMojo extends AbstractMojo
             }
         }
     }
-}
+    
+    /**
+     * Initialize default destinations for a certain profile.
+     */
+    private void initDefaultDestinations(Map destMap, String profile) throws MojoFailureException {
+
+    	if (!(profile.equals(PROFILE_TOMCAT5) || profile.equals(PROFILE_TOMCAT6))) {
+    		throw new MojoFailureException("Cannot handle profile '" + profile + "', use '" 
+    				+ PROFILE_TOMCAT5 + "' or '" + PROFILE_TOMCAT6 + "'");
+    	}
+    	
+    	if (profile.equals(PROFILE_TOMCAT5)) {
+    		
+	        if (!destMap.containsKey("system"))
+	        {
+	            destMap.put("system","common/endorsed");
+	        }
+	        if (!destMap.containsKey("lib"))
+	        {
+	            destMap.put("lib","shared/lib");
+	        }
+	        if (!destMap.containsKey("war"))
+	        {
+	            destMap.put("war", "webapps");
+	        }
+	        if (!destMap.containsKey("deploy"))
+	        {
+	            destMap.put("deploy", ((String)destMap.get("war"))+"/"+portalName+"/WEB-INF/deploy");
+	        }
+	        if (!destMap.containsKey("local"))
+	        {
+	            destMap.put("local", ((String)destMap.get("deploy"))+"/local");
+	        }
+    	}
+    	else if (profile.equals(PROFILE_TOMCAT6)) {
+
+    		if (!destMap.containsKey("system"))
+            {
+                destMap.put("system","lib");
+            }
+            if (!destMap.containsKey("lib"))
+            {
+                destMap.put("lib","lib");
+            }
+            if (!destMap.containsKey("war"))
+            {
+                destMap.put("war", "webapps");
+            }
+            if (!destMap.containsKey("deploy"))
+            {
+                destMap.put("deploy", ((String)destMap.get("war"))+"/"+portalName+"/WEB-INF/deploy");
+            }
+            if (!destMap.containsKey("local"))
+            {
+                destMap.put("local", ((String)destMap.get("deploy"))+"/local");
+            }
+    	}
+    }
+}	

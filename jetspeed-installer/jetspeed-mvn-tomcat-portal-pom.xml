@@ -38,10 +38,12 @@
   <packaging>pom</packaging>
 
   <properties>
+    <tomcat.version.major>6</tomcat.version.major>
+    <tomcat.version.minor>6.0.18</tomcat.version.minor>
+    <tomcat.name>apache-tomcat-${tomcat.version.minor}</tomcat.name>
     <org.apache.portals.jetspeed.version>${pom.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
-    <tomcat.version>apache-tomcat-5.5.27</tomcat.version>
-    <org.apache.jetspeed.portal.home>${project.build.directory}/${tomcat.version}</org.apache.jetspeed.portal.home>
+    <org.apache.jetspeed.portal.home>${project.build.directory}/${tomcat.name}</org.apache.jetspeed.portal.home>
   </properties>
 
   <build>
@@ -67,16 +69,13 @@
                   <tasks>
                     <mkdir dir="resources"/>
                     <get usetimestamp="true"
-                      src="http://archive.apache.org/dist/tomcat/tomcat-5/v5.5.27/bin/${tomcat.version}.zip"
-                      dest="resources/${tomcat.version}.zip"/>
-                    <unzip src="resources/${tomcat.version}.zip" dest="${project.build.directory}"
+                      src="http://archive.apache.org/dist/tomcat/tomcat-${tomcat.version.major}/v${tomcat.version.minor}/bin/${tomcat.name}.zip"
+                      dest="resources/${tomcat.name}.zip"/>
+                    <unzip src="resources/${tomcat.name}.zip" dest="${project.build.directory}"
                       overwrite="false"/>
 
-                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/balancer"/>
-                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/jsp-examples"/>
-                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/servlets-examples"/>
-                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/tomcat-docs"/>
-                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/webdav"/>
+                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/examples"/>
+                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/docs"/>
                   </tasks>
                 </configuration>
                 <goals>
@@ -145,6 +144,7 @@
                 <configuration>
                   <targetBaseDir>${org.apache.jetspeed.portal.home}</targetBaseDir>
                   <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${tomcat.version.major}</profile>
                   <destinations>
                     <context>webapps/jetspeed/META-INF</context>
                   </destinations>
@@ -310,6 +310,7 @@
                 <configuration>
                   <targetBaseDir>${org.apache.jetspeed.portal.home}</targetBaseDir>
                   <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${tomcat.version.major}</profile>
                   <destinations>
                     <context>webapps/jetspeed/META-INF</context>
                   </destinations>

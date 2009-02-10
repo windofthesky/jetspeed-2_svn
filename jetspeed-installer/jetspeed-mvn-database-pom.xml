@@ -112,7 +112,15 @@
         </exclusion>
         <exclusion>
           <groupId>org.apache.portals.jetspeed-2</groupId>
+          <artifactId>jetspeed-rdbms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.portals.jetspeed-2</groupId>
           <artifactId>jetspeed-registry</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.portals.jetspeed-2</groupId>
+          <artifactId>jetspeed-sso</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.portals.jetspeed-2</groupId>
@@ -141,6 +149,14 @@
         <exclusion>
           <groupId>org.apache.portals.jetspeed-2</groupId>
           <artifactId>jetspeed-serializer</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-ojb</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -179,9 +195,8 @@
             <configuration>
               <tasks>
                 <copy file="${project.build.directory}/resources/tomcat/context.xml"
-                  tofile="${project.build.directory}/database/${org.apache.jetspeed.portal.context.name}.xml"
-                />
-              </tasks>
+                  tofile="${project.build.directory}/database/resources/${org.apache.jetspeed.portal.context.name}.xml" />
+               </tasks>
             </configuration>
             <goals>
               <goal>run</goal>
@@ -215,11 +230,7 @@
                   <resource>
                     <path>@seed.path@</path>
                     <include>j2-seed.xml</include>
-                    <destination>database</destination>
-                  </resource>
-                  <resource>
-                    <path>db-ojb</path>
-                    <destination>database/import/db-ojb</destination>
+                    <destination>database/resources</destination>
                   </resource>
                   <resource>
                     <path>ddl</path>
@@ -265,3 +276,6 @@
   </build>
 
 </project>
+
+
+
