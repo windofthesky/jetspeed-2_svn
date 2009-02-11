@@ -20,5 +20,5 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd">
  <title>PDF Portlet</title>
- <url>http://localhost:8080/jetspeed/fileserver/_content/sample_pdf.pdf</url>
+ <url>/../fileserver/_content/sample_pdf.pdf</url>
 </link>
