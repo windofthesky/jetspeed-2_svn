@@ -26,6 +26,9 @@ import java.util.TimerTask;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.EventPortlet;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -285,6 +288,25 @@ public class JetspeedContainerServlet extends HttpServlet
                 }
                 ((InternalPortletRequest)renderRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
                 portlet.render(renderRequest, renderResponse);
+            }
+            else if (method == ContainerConstants.METHOD_EVENT)
+            {
+                EventRequest eventRequest = null;
+                EventResponse eventResponse =  null;
+
+                if (isParallelMode)
+                {
+                    eventRequest = (EventRequest) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                    eventResponse = (EventResponse) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                }
+                else
+                {
+                    eventRequest = (EventRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                    eventResponse = (EventResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+
+                }
+                ((InternalPortletRequest)eventRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                ((EventPortlet)portlet.getRealPortlet()).processEvent(eventRequest, eventResponse);
             }
             else if (method == ContainerConstants.METHOD_RESOURCE && portlet.getRealPortlet() instanceof ResourceServingPortlet)
             {

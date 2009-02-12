@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOptionValue;
 
 /**
  * @version $Id$
@@ -29,8 +30,19 @@ import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
  */
 public class ContainerRuntimeOptionImpl implements ContainerRuntimeOption, Serializable
 {
+    private static final long serialVersionUID = 1L;
     protected String name;
-    protected List<String> values = new ArrayList<String>();
+    protected List<ContainerRuntimeOptionValue> values = new ArrayList<ContainerRuntimeOptionValue>();    
+    protected String owner;    
+
+    public ContainerRuntimeOptionImpl()
+    {}
+    
+    public ContainerRuntimeOptionImpl(Object owner, String name)
+    {
+        this.owner = owner.getClass().getName();        
+        this.name = name;
+    }
     
     public String getName()
     {
@@ -44,11 +56,31 @@ public class ContainerRuntimeOptionImpl implements ContainerRuntimeOption, Seria
 
     public void addValue(String value)
     {
-        values.add(value);
+        if (values == null)
+        {
+            values = new ArrayList<ContainerRuntimeOptionValue>();
+        }
+        for (ContainerRuntimeOptionValue param : this.values)
+        {
+            if (param.equals(value))
+            {
+                throw new IllegalArgumentException("Support for container runtime parameter with identifier: "+value+" already defined");
+            }
+        }
+        values.add(new ContainerRuntimeOptionValueImpl(this, value));                
     }
 
     public List<String> getValues()
     {
-        return values;
+        if (values == null)
+        {
+            values = new ArrayList<ContainerRuntimeOptionValue>();
+        }
+        List<String> vals = new ArrayList<String>();
+        for (ContainerRuntimeOptionValue v : this.values)
+        {
+            vals.add(v.toString());
+        }
+        return vals;
     }
 }

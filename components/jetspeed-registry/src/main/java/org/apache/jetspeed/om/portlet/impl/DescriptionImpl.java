@@ -41,8 +41,7 @@ public class DescriptionImpl implements Description
     protected Locale locale = null;
     
     public DescriptionImpl()
-    {
-        
+    {        
     }
     
     public DescriptionImpl(Object owner, String lang)

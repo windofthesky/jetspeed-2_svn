@@ -58,7 +58,7 @@ public interface GenericMetadata
      * @param name
      * @return
      */
-    public Collection getFields( String name );
+    public Collection<LocalizedField> getFields( String name );
     
     /**
      * 
@@ -69,7 +69,7 @@ public interface GenericMetadata
      * @param name
      * @param values
      */
-    public void setFields( String name, Collection values );
+    public void setFields( String name, Collection<LocalizedField> values );
     
     /**
      * 
@@ -79,7 +79,7 @@ public interface GenericMetadata
      *
      * @return
      */
-    public Collection getFields();
+    public Collection<LocalizedField> getFields();
     
     /**
      * 
@@ -89,7 +89,7 @@ public interface GenericMetadata
      *
      * @param fields
      */
-    public void setFields( Collection fields );
+    public void setFields( Collection<LocalizedField> fields );
     
     /**
      * 
@@ -109,5 +109,5 @@ public interface GenericMetadata
      *
      * @param fields
      */
-    public void copyFields( Collection fields );
+    public void copyFields( Collection<LocalizedField> fields );
 }

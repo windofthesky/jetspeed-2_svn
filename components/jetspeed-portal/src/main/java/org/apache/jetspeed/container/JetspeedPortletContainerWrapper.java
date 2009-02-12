@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.pluto.EventContainer;
 import org.apache.pluto.OptionalContainerServices;
 import org.apache.pluto.PortletContainer;
 import org.apache.pluto.PortletContainerException;
@@ -163,8 +164,7 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
             HttpServletResponse response, PortletWindow window, Event event)
             throws PortletException, IOException, PortletContainerException
     {
-        // TODO Auto-generated method stub
-        
+        ((EventContainer)pluto).fireEvent(request, response, window, event);
     }
     
 

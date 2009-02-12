@@ -27,35 +27,30 @@ import org.apache.jetspeed.om.portlet.EventDefinitionReference;
  * @version $Id$
  *
  */
-public class EventDefinitionReferenceImpl implements EventDefinitionReference, Serializable
+public class EventDefinitionReferenceImpl extends PortletQNameImpl implements EventDefinitionReference, Serializable
 {
-    protected QName qname;
-    protected String name;
+    public EventDefinitionReferenceImpl()
+    {
+        super();
+    }
     
-    public QName getQName()
+    public EventDefinitionReferenceImpl(Object owner, QName qname)
     {
-        return qname;
+        super(owner, qname);
     }
 
-    public void setQName(QName value)
+    public EventDefinitionReferenceImpl(Object owner, String qname)
     {
-        qname = value;
-        name = null;
+        super(owner, new QName(qname));
     }
-
+    
     public String getName()
     {
-        return name;
-    }
-
-    public void setName(String value)
-    {
-        name = value;
-        qname = null;
+        return super.getLocalPart();
     }
 
     public QName getQualifiedName(String defaultNamespace)
     {
-        return qname != null ? qname : name != null ? new QName(defaultNamespace, name) : null;
+        return super.getQName();
     }
 }

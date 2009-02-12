@@ -36,7 +36,7 @@ import org.apache.jetspeed.om.portlet.LocalizedField;
  */
 public abstract class GenericMetadataImpl implements GenericMetadata
 {   
-    private Collection fields = null;
+    private Collection<LocalizedField> fields = null;
     private transient MultiValueMap fieldMap = null;
     
     private MultiValueMap getFieldMap(boolean create)
@@ -75,7 +75,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     {
         if(fields == null)
         {
-            fields = new ArrayList();
+            fields = new ArrayList<LocalizedField>();
         }
         
         fields.add(field);
@@ -85,17 +85,18 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#getFields(java.lang.String)
      */
-    public Collection getFields(String name)
+    @SuppressWarnings("unchecked")
+    public Collection<LocalizedField> getFields(String name)
     {
     	//TODO:  return an immutable version?
         MultiValueMap fieldMap = getFieldMap(false);
-        return (Collection)(fieldMap !=null ? fieldMap.get(name) : null);
+        return (Collection<LocalizedField>)(fieldMap !=null ? fieldMap.get(name) : null);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#setFields(java.lang.String, java.util.Collection)
      */
-    public void setFields(String name, Collection values)
+    public void setFields(String name, Collection<LocalizedField> values)
     {
         MultiValueMap fieldMap = getFieldMap(false);
         if (fieldMap != null)
@@ -103,7 +104,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             fieldMap.remove(name);
         }
         
-        Iterator fieldIter = fields.iterator();
+        Iterator<LocalizedField> fieldIter = fields.iterator();
         while(fieldIter.hasNext())
         {
             LocalizedField field = (LocalizedField)fieldIter.next();
@@ -115,7 +116,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
         
         if(values != null)
         {    
-            Iterator iter = values.iterator();
+            Iterator<LocalizedField> iter = values.iterator();
             while(iter.hasNext())
             {
                 LocalizedField field = (LocalizedField)iter.next();
@@ -129,14 +130,15 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#getFields()
      */
-    public Collection getFields() {
+    public Collection<LocalizedField> getFields() 
+    {
         return fields;
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#setFields(java.util.Collection)
      */
-    public void setFields(Collection fields)
+    public void setFields(Collection<LocalizedField> fields)
     {
         this.fields = fields;
 
@@ -148,7 +150,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
         
         if(fields != null)
         {    
-            Iterator fieldIter = fields.iterator();
+            Iterator<LocalizedField> fieldIter = fields.iterator();
             while(fieldIter.hasNext())
             {
                 LocalizedField field = (LocalizedField)fieldIter.next();
@@ -164,7 +166,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#copyFields(java.util.Collection)
      */
-    public void copyFields(Collection fields)
+    public void copyFields(Collection<LocalizedField> fields)
     {
         // preserve matching fields during copy to
         // minimize persistent store thrash and
@@ -188,10 +190,10 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             // create new fields collection if necessary
             if (this.fields == null)
             {
-                this.fields = new ArrayList();
+                this.fields = new ArrayList<LocalizedField>();
             }
             // copy unique new metadata members
-            Iterator fieldIter = fields.iterator();
+            Iterator<LocalizedField> fieldIter = fields.iterator();
             while (fieldIter.hasNext())
             {
                 LocalizedField field = (LocalizedField)fieldIter.next();
@@ -211,7 +213,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
         
         if (this.fields != null)
         {    
-            Iterator fieldIter = this.fields.iterator();
+            Iterator<LocalizedField> fieldIter = this.fields.iterator();
             while (fieldIter.hasNext())
             {
                 LocalizedField field = (LocalizedField)fieldIter.next();

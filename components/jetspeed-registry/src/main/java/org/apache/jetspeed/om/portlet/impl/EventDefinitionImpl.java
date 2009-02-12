@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.EventDefinition;
+import org.apache.jetspeed.om.portlet.PortletQName;
 import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
@@ -34,10 +35,12 @@ import org.apache.jetspeed.util.JetspeedLocale;
  */
 public class EventDefinitionImpl implements EventDefinition, Serializable
 {
-    protected String name;
-    protected QName qname;
+    private static final long serialVersionUID = 1L;
+    protected String localPart;
+    protected String prefix;
+    protected String namespace;
     protected String valueType;
-    protected List<QName> aliases;
+    protected List<PortletQName> aliases;
     protected List<Description> descriptions;
     
     public Description getDescription(Locale locale)
@@ -70,39 +73,77 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
 
     public QName getQName()
     {
-        return qname;
+        if (namespace == null)
+        {
+            return new QName(localPart);
+        }
+        else if (prefix == null)
+        {
+            return new QName(namespace, localPart);
+        }
+        else
+        {
+            return new QName(namespace, localPart, prefix);
+        }
     }
 
-    public void setQName(QName value)
+    public void setQName(QName qname)
     {
-        qname = value;
-        name = null;
+        this.namespace = qname.getNamespaceURI();
+        if (this.namespace != null && this.namespace.equals(""))
+            this.namespace = null;
+        this.prefix = qname.getPrefix();
+        if (this.prefix != null && this.prefix.equals(""))
+            this.prefix = null;
+        this.localPart = qname.getLocalPart();
     }
 
     public String getName()
     {
-        return name;
+        return this.localPart;
     }
 
-    public void setName(String value)
+    public void setName(String name)
     {
-        name = value;
-        qname = null;
+        this.localPart = name;
+        this.prefix = null;
+        this.namespace = null;
     }
 
     public List<QName> getAliases()
     {
-        if (aliases == null)
+        List<QName> result = new ArrayList<QName>();
+        if (aliases != null)
         {
-            aliases = new ArrayList<QName>();
+            for (PortletQName qname : aliases)
+            {
+                result.add(qname.getQName());
+            }
         }
-        return aliases;
+        return result;
     }
     
     public void addAlias(QName alias)
+    {       
+        if (aliases == null)
+        {
+            aliases = new ArrayList<PortletQName>();
+        }
+        if (!containsAlias(alias))
+        {
+            aliases.add(new PortletQNameImpl(this, alias));
+        }
+    }
+    
+    protected boolean containsAlias(QName qname)
     {
-        // TODO: check for duplicates
-        getAliases().add(alias);
+        PortletQName alias = new PortletQNameImpl(this, qname);
+        for (PortletQName p : aliases)
+        {
+            if (p.equals(alias))
+                return true;
+        }
+        return false;
     }
 
     public String getValueType()
@@ -115,8 +156,9 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
         valueType = value;
     }
 
-    public QName getQualifiedName(String defaultNamespace)
+    public QName getQualifiedName(String defaultnamespace)
     {
-        return qname != null ? qname : name != null ? new QName(defaultNamespace, name) : null;
+        return new QName(defaultnamespace, localPart);
+        //return qname != null ? qname : name != null ? new QName(defaultNamespace, name) : null;
     }
 }

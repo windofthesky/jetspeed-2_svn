@@ -18,18 +18,32 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.om.common.Support;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.EventDefinitionReference;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Preferences;
+import org.apache.jetspeed.om.portlet.SecurityRoleRef;
+import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.PreferencesImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.springframework.dao.DataAccessException;
@@ -294,5 +308,48 @@ public class PersistenceBrokerPortletRegistry
     {
         this.listeners.remove(listener);
     }
+ 
+    public void clonePortletDefinition(PortletDefinition source, String newPortletName) throws FailedToStorePortletDefinitionException
+    {
+        if (this.portletDefinitionExists(newPortletName, source.getApplication()))
+        {
+            throw new FailedToStorePortletDefinitionException("Cannot clone to portlet named " + newPortletName + ", name already exists"); 
+        }
+        PortletDefinitionImpl copy = new PortletDefinitionImpl();
+        copy.setApplication(source.getApplication());
+        copy.setPortletName(newPortletName);
+        copy.setPortletClass(source.getPortletClass());
+        copy.setResourceBundle(source.getResourceBundle());
+        copy.setPreferenceValidatorClassname(source.getPreferenceValidatorClassname());
+        copy.setExpirationCache(source.getExpirationCache());
+        copy.setCacheScope(source.getCacheScope());
+        // TODO: Metadata
+        
+        copy.setJetspeedSecurityConstraint(source.getJetspeedSecurityConstraint());
+        copy.getDescriptions().addAll(source.getDescriptions());
+        copy.getDisplayNames().addAll(source.getDisplayNames());
+        
+    }
+    
+    /*
+
+    private Collection<LocalizedField> metadataFields = null;
+
+    
+    private List<InitParam> initParams;
+    private List<EventDefinitionReference> supportedProcessingEvents;
+    private List<EventDefinitionReference> supportedPublishingEvents;
+    private List<SecurityRoleRef> securityRoleRefs;
+    private List<Supports> supports;
+    private List<String> supportedLocales;
+    private List<Language> languages;
+    private List<ContainerRuntimeOption> containerRuntimeOptions;    
+    private List<String> supportedPublicRenderParameters;
+    private Preferences descriptorPreferences = new PreferencesImpl();    
+    
+    private transient Map<Locale,InlinePortletResourceBundle> resourceBundles = new HashMap<Locale, InlinePortletResourceBundle>();
+    
+    protected List portletEntities;     
+     */
     
 }

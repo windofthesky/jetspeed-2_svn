@@ -186,6 +186,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
 
         assertNotNull("App did NOT persist its description", app.getDescription(Locale.FRENCH));
 
+        TestPortletRegistryDAO.verifyPortlet20Data(app, portlet);
     }
 
     protected String getBeanDefinitionFilterCategories()

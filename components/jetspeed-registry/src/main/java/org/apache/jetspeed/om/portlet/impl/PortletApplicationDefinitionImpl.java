@@ -46,6 +46,7 @@ import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PortletQName;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.SecurityRole;
@@ -82,9 +83,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     /** Metadata property */
     private Collection<LocalizedField> metadataFields = null;
     
-    /** Description */
-    private String description;
-
     private String resourceBundle;
     private String defaultNamespace;
     
@@ -233,16 +231,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         this.jetspeedSecurityConstraint = constraint;
     }
     
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription(String string)
-    {
-        description = string;
-    }
-
     /**
      * @see org.apache.jetspeed.om.portlet.PortletApplication#getMetadata()
      */
@@ -427,11 +415,11 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             throw new IllegalArgumentException("PublicRenderParameter with identifier: "+identifier+" already defined");
         }
-        // TODO: check duplicates on name|qname?
-        PublicRenderParameterImpl p = new PublicRenderParameterImpl();
-        p.setName(name);
-        p.setIdentifier(identifier);
-        getPublicRenderParameters().add(p);
+        PublicRenderParameterImpl p = new PublicRenderParameterImpl(name, identifier);
+        if (!containsPublicRenderParameter(p))
+        {
+            getPublicRenderParameters().add(p);
+        }
         return p;        
     }
 
@@ -441,14 +429,25 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             throw new IllegalArgumentException("PublicRenderParameter with identifier: "+identifier+" already defined");
         }
-        // TODO: check duplicates on name|qname?
-        PublicRenderParameterImpl p = new PublicRenderParameterImpl();
-        p.setQName(qname);
+        PublicRenderParameterImpl p = new PublicRenderParameterImpl(qname);        
         p.setIdentifier(identifier);
-        getPublicRenderParameters().add(p);
+        if (!containsPublicRenderParameter(p))
+        {
+            getPublicRenderParameters().add(p);
+        }
         return p;        
     }
 
+    protected boolean containsPublicRenderParameter(PublicRenderParameter prp)
+    {
+        for (PublicRenderParameter p : this.publicRenderParameters)
+        {
+            if (p.equals(prp))
+                return true;
+        }
+        return false;
+    }
+    
     public CustomPortletMode getCustomPortletMode(String name)
     {
         for (CustomPortletMode cpm : getCustomPortletModes())
@@ -828,8 +827,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             throw new IllegalArgumentException("Container runtime option with name: "+name+" already defined");
         }
-        ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl();
-        cro.setName(name);
+        ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl(this, name);
         getContainerRuntimeOptions().add(cro);
         return cro;        
     }

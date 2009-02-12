@@ -49,6 +49,7 @@ import org.apache.jetspeed.om.portlet.PortletInfo;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.SecurityRoleRef;
+import org.apache.jetspeed.om.portlet.SupportedPublicRenderParameter;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
@@ -96,7 +97,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     private List<String> supportedLocales;
     private List<Language> languages;
     private List<ContainerRuntimeOption> containerRuntimeOptions;    
-    private List<String> supportedPublicRenderParameters;
+    private List<SupportedPublicRenderParameter> supportedPublicRenderParameters;
     private Preferences descriptorPreferences = new PreferencesImpl();    
     
     private transient Map<Locale,InlinePortletResourceBundle> resourceBundles = new HashMap<Locale, InlinePortletResourceBundle>();
@@ -559,8 +560,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         {
             throw new IllegalArgumentException("Container runtime option with name: "+name+" already defined");
         }
-        ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl();
-        cro.setName(name);
+        ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl(this, name);
         containerRuntimeOptions.add(cro);
         return cro;        
     }
@@ -661,21 +661,30 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
         if (supportedPublicRenderParameters == null)
         {
-            supportedPublicRenderParameters = new ArrayList<String>();
+            supportedPublicRenderParameters = new ArrayList<SupportedPublicRenderParameter>();
         }
-        return supportedPublicRenderParameters;
+        List<String> params = new ArrayList<String>();
+        for (SupportedPublicRenderParameter param : this.supportedPublicRenderParameters)
+        {
+            params.add(param.toString());
+        }
+        return params;
     }
     
     public void addSupportedPublicRenderParameter(String identifier)
     {
-        for (String ident : getSupportedPublicRenderParameters())
+        if (supportedPublicRenderParameters == null)
         {
-            if (ident.equals(identifier))
+            supportedPublicRenderParameters = new ArrayList<SupportedPublicRenderParameter>();
+        }
+        for (SupportedPublicRenderParameter param : this.supportedPublicRenderParameters)
+        {
+            if (param.equals(identifier))
             {
                 throw new IllegalArgumentException("Support for public render parameter with identifier: "+identifier+" already defined");
             }
         }
-        supportedPublicRenderParameters.add(identifier);
+        supportedPublicRenderParameters.add(new SupportedPublicRenderParameterImpl(this, identifier));        
     }
 
 
@@ -806,8 +815,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
         // TODO: check duplicates
         getSupportedProcessingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
-        edr.setQName(qname);
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, qname);
         supportedProcessingEvents.add(edr);
         return edr;
     }
@@ -816,8 +824,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
         // TODO check duplicates
         getSupportedProcessingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
-        edr.setName(name);
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, name);
         supportedProcessingEvents.add(edr);
         return edr;
     }
@@ -835,8 +842,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
         // TODO: check duplicates
         getSupportedPublishingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
-        edr.setQName(qname);
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, qname);
         supportedPublishingEvents.add(edr);
         return edr;
     }
@@ -845,8 +851,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
         // TODO check duplicates
         getSupportedPublishingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl();
-        edr.setName(name);
+        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, name);
         supportedPublishingEvents.add(edr);
         return edr;
     }

@@ -25,6 +25,7 @@ import java.util.Locale;
 import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.PortletQName;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.util.JetspeedLocale;
 
@@ -34,11 +35,34 @@ import org.apache.jetspeed.util.JetspeedLocale;
  */
 public class PublicRenderParameterImpl implements PublicRenderParameter, Serializable
 {
+    private static final long serialVersionUID = 1L;
+    private String localPart;
+    private String prefix;
+    private String namespace;
     protected String identifier;
-    protected QName qname;
-    protected String name;
-    protected List<QName> alias;
+
+    protected List<PortletQName> aliases;
     protected List<Description> descriptions;
+
+    public PublicRenderParameterImpl()
+    {}
+    
+    public PublicRenderParameterImpl(String name, String identifier)    
+    {
+        this.localPart = name;
+        this.identifier = identifier;
+    }
+    
+    public PublicRenderParameterImpl(QName qname)
+    {
+        this.namespace = qname.getNamespaceURI();
+        if (this.namespace != null && this.namespace.equals(""))
+            this.namespace = null;
+        this.prefix = qname.getPrefix();
+        if (this.prefix != null && this.prefix.equals(""))
+            this.prefix = null;
+        this.localPart = qname.getLocalPart();                
+    }
     
     public String getIdentifier()
     {
@@ -50,41 +74,113 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
         identifier = value;
     }
 
-    public QName getQName()
+    public String getLocalPart()
     {
-        return qname;
+        return this.localPart;
     }
 
-    public void setQName(QName value)
+    public String getNamespace()
     {
-        qname = value;
-        name = null;
+        return this.namespace;
+    }
+
+    public String getPrefix()
+    {
+        return this.prefix;
+    }
+
+    public QName getQName()
+    {
+        if (namespace == null)
+        {
+            return new QName(localPart);
+        }
+        else if (prefix == null)
+        {
+            return new QName(namespace, localPart);
+        }
+        else
+        {
+            return new QName(namespace, localPart, prefix);
+        }
+    }
+    
+    public void setQName(QName qname)
+    {
+        this.namespace = qname.getNamespaceURI();
+        if (this.namespace != null && this.namespace.equals(""))
+            this.namespace = null;
+        this.prefix = qname.getPrefix();
+        if (this.prefix != null && this.prefix.equals(""))
+            this.prefix = null;
+        this.localPart = qname.getLocalPart();
+    }    
+    
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof PublicRenderParameter))
+            return false;
+        PublicRenderParameter param = (PublicRenderParameter)o;
+        String i1 = (param.getIdentifier() == null ? "" : param.getIdentifier());
+        String i2 = (this.identifier == null ? "" : this.identifier);
+        if (i1.equals(i2))
+            return true;
+        return (this.toString().equals(param.toString()));
+    }
+    
+    public String toString()
+    {
+        return ((this.getNamespace() == null) ? "" : this.getNamespace() + "//:") + 
+               ((this.getPrefix() == null) ? "" : this.getPrefix() + ":") +
+               ((this.getLocalPart() == null) ? "" : this.getLocalPart());
     }
 
     public String getName()
     {
-        return name;
+        return this.localPart;
     }
 
-    public void setName(String value)
+    public void setName(String name)
     {
-        name = value;
-        qname = null;
+        this.localPart = name;
+        this.prefix = null;
+        this.namespace = null;
     }
-
+    
     public List<QName> getAliases()
     {
-        if (alias == null)
+        List<QName> result = new ArrayList<QName>();
+        if (aliases != null)
         {
-            alias = new ArrayList<QName>();
+            for (PortletQName qname : aliases)
+            {
+                result.add(qname.getQName());
+            }
         }
-        return alias;
+        return result;
     }
-
+    
     public void addAlias(QName alias)
+    {       
+        if (aliases == null)
+        {
+            aliases = new ArrayList<PortletQName>();
+        }
+        if (!containsAlias(alias))
+        {
+            aliases.add(new PortletQNameImpl(this, alias));
+        }
+    }
+    
+    protected boolean containsAlias(QName qname)
     {
-        // TODO: check duplicates
-        getAliases().add(alias);
+        PortletQName alias = new PortletQNameImpl(this, qname);
+        for (PortletQName p : aliases)
+        {
+            if (p.equals(alias))
+                return true;
+        }
+        return false;
     }
     
     public Description getDescription(Locale locale)

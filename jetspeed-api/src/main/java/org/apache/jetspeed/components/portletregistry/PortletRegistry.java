@@ -117,4 +117,13 @@ public interface PortletRegistry
     void addRegistryListener(RegistryEventListener listener);
     
     void removeRegistryEventListener(RegistryEventListener listener);
+
+    /**
+     * Given a portlet definition, create a clone of it, with a new name
+     * @param source the portlet definition to be cloned
+     * @param newPortletName the unique name of the new portlet definition
+     * @throws FailedToStorePortletDefinitionException
+     */
+    void clonePortletDefinition(PortletDefinition source, String newPortletName) throws FailedToStorePortletDefinitionException;
+    
 }

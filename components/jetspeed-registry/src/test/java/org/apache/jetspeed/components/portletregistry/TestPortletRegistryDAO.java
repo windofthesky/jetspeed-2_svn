@@ -18,22 +18,30 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+
+import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DublinCore;
+import org.apache.jetspeed.om.portlet.EventDefinition;
+import org.apache.jetspeed.om.portlet.EventDefinitionReference;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.Language;
-import org.apache.jetspeed.om.portlet.Supports;
-import org.apache.jetspeed.om.portlet.UserAttribute;
-import org.apache.jetspeed.om.portlet.Preference;
-import org.apache.jetspeed.om.portlet.Preferences;
-import org.apache.jetspeed.om.portlet.DublinCore;
-import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
+import org.apache.jetspeed.om.portlet.PublicRenderParameter;
+import org.apache.jetspeed.om.portlet.Supports;
+import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
@@ -202,9 +210,11 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         supports.addPortletMode(MODE_HELP);
         supports.addPortletMode(MODE_VIEW);
         
-        portletRegistry.updatePortletApplication(app);
+        build20TestData(app, portlet);
+        portletRegistry.updatePortletApplication(app);        
     }
-
+     
+    
     protected void verifyData(boolean afterUpdates) throws Exception
     {
         PortletApplication app;
@@ -277,9 +287,11 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         app = portletRegistry.getPortletApplication("App_1");
 
         assertNotNull("App did NOT persist its description", app.getDescription(Locale.FRENCH));
-
+        
+        verifyPortlet20Data(app, portlet);        
     }
-
+    
+  
     protected void validateDublinCore(GenericMetadata metadata)
     {
         DublinCore dc = new DublinCoreImpl(metadata);
@@ -309,4 +321,179 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         return new String[]
         { "transaction.xml", "registry-test.xml", "cache-test.xml", "static-bean-references.xml" };
     }
+    
+    public static void build20TestData(PortletApplication app, PortletDefinition portlet)
+    throws RegistryException
+    {
+        // Portlet 2.0 Support        
+        app.setDefaultNamespace("http:apache.org/events");
+        portlet.setCacheScope("private");
+        portlet.setExpirationCache(-1);
+        EventDefinition event = app.addEventDefinition("plainOldEvent");
+        event.setValueType("java.lang.String");
+        Description en1 = event.addDescription("en");
+        en1.setDescription("The Plain Old Event");
+        Description fr1 = event.addDescription("fr");
+        fr1.setDescription("Le Vieux Ordinaire 思始ement");        
+        
+        QName q2 = new QName("http:portals.apache.org/events", "qualifiedEvent");
+        EventDefinition event2 = app.addEventDefinition(q2);
+        event2.setValueType("java.lang.String");       
+
+        QName q3 = new QName("http:portals.apache.org/events", "prefixedEvent", "x");
+        EventDefinition event3 = app.addEventDefinition(q3);
+        event3.setValueType("java.lang.String");       
+        event3.addAlias(new QName("local-1"));
+        event3.addAlias(new QName("http:2portals.apache.org/events", "local-2"));
+        event3.addAlias(new QName("http:3portals.apache.org/events", "local-3", "p"));
+        // test dupes
+        event3.addAlias(new QName("local-1"));            
+        event3.addAlias(new QName("http:2portals.apache.org/events", "local-2"));            
+        event3.addAlias(new QName("http:3portals.apache.org/events", "local-3", "p"));            
+        assertEquals(event3.getAliases().size(), 3);
+
+        portlet.addSupportedProcessingEvent("plainOldEvent");
+        portlet.addSupportedProcessingEvent(q3);
+        portlet.addSupportedPublishingEvent("local-1");
+        portlet.addSupportedPublishingEvent(q2);
+        
+        portlet.addSupportedPublicRenderParameter("city");
+        portlet.addSupportedPublicRenderParameter("zipcode");
+        
+        ContainerRuntimeOption opt1 = portlet.addContainerRuntimeOption("PortletOption1");
+        opt1.addValue("p-value-1");
+        opt1.addValue("p-value-2");
+        opt1.addValue("p-value-3");
+        ContainerRuntimeOption opt2 = portlet.addContainerRuntimeOption("PortletOption2");
+        opt2.addValue("p-value-4");
+        opt2.addValue("p-value-5");
+
+        ContainerRuntimeOption opt3 = app.addContainerRuntimeOption("AppOption1");
+        opt3.addValue("a-value-1");
+        opt3.addValue("a-value-2");
+        opt3.addValue("a-value-3");
+        ContainerRuntimeOption opt4 = app.addContainerRuntimeOption("AppOption2");        
+        opt4.addValue("a-value-4");
+        
+        PublicRenderParameter prp1 = app.addPublicRenderParameter("prp1", "prp1-id");
+        Description d1 = prp1.addDescription("en");
+        d1.setDescription("dog");
+        Description d2 = prp1.addDescription("fr");
+        d2.setDescription("chien");
+        prp1.addAlias(new QName("alias-1"));        
+    }
+
+    public static void verifyPortlet20Data(PortletApplication app, PortletDefinition portlet)
+    throws Exception
+    {   
+        // Portlet 2.0 Support
+        assertEquals(app.getDefaultNamespace(), "http:apache.org/events");
+        assertEquals(portlet.getCacheScope(), "private");
+        assertEquals(portlet.getExpirationCache(), -1);
+        
+        List<EventDefinition> events = app.getEventDefinitions();
+        assertNotNull(events);
+        assertTrue(events.size() == 3);
+        EventDefinition event1 = events.get(0);
+        assertNotNull(event1);
+        assertEquals(event1.getName(), "plainOldEvent");
+        assertEquals(event1.getValueType(), "java.lang.String");
+        QName q = event1.getQName();
+        assertEquals(q.getNamespaceURI(), "");
+        assertEquals(q.getPrefix(), "");
+        Description en = event1.getDescription(new Locale("en"));
+        assertEquals(en.getDescription(), "The Plain Old Event");
+        Description fr = event1.getDescription(new Locale("fr"));
+        assertEquals(fr.getDescription(), "Le Vieux Ordinaire 思始ement");        
+        
+        EventDefinition event2 = events.get(1);
+        assertNotNull(event2);
+        QName qname = event2.getQName();
+        assertEquals(qname.getNamespaceURI(), "http:portals.apache.org/events");
+        assertEquals(qname.getLocalPart(), "qualifiedEvent");
+        assertEquals(event2.getValueType(), "java.lang.String");        
+        assertEquals(qname.getPrefix(), "");
+
+        EventDefinition event3 = events.get(2);
+        assertNotNull(event3);
+        QName qname3 = event3.getQName();
+        assertEquals(qname3.getNamespaceURI(), "http:portals.apache.org/events");
+        assertEquals(qname3.getLocalPart(), "prefixedEvent");
+        assertEquals(qname3.getPrefix(), "x");
+        assertEquals(event3.getValueType(), "java.lang.String");        
+        
+        QName alias1 = event3.getAliases().get(0);
+        assertEquals(alias1.getLocalPart(), "local-1");
+        QName alias2 = event3.getAliases().get(1);
+        assertEquals(alias2.getLocalPart(), "local-2");
+        assertEquals(alias2.getNamespaceURI(), "http:2portals.apache.org/events");
+        QName alias3 = event3.getAliases().get(2);
+        assertEquals(alias3.getLocalPart(), "local-3");
+        assertEquals(alias3.getNamespaceURI(), "http:3portals.apache.org/events");
+        assertEquals(alias3.getPrefix(), "p");        
+
+        List<EventDefinitionReference> refs = portlet.getSupportedProcessingEvents();
+        assertEquals(refs.size(), 2);
+        EventDefinitionReference ref1 = refs.get(0);
+        assertEquals(ref1.getName(), "plainOldEvent");
+        EventDefinitionReference ref2 = refs.get(1);
+        QName ref2QName = ref2.getQName();
+        assertEquals(ref2QName, new QName("http:portals.apache.org/events", "prefixedEvent", "x"));
+
+        List<EventDefinitionReference> pubRefs = portlet.getSupportedPublishingEvents();
+        assertEquals(pubRefs.size(), 2);
+        EventDefinitionReference pubRef1 = pubRefs.get(0);
+        assertEquals(pubRef1.getName(), "local-1");
+        EventDefinitionReference pubRef2 = pubRefs.get(1);
+        QName pubRef2QName = pubRef2.getQName();
+        assertEquals(pubRef2QName, new QName("http:portals.apache.org/events", "qualifiedEvent"));
+
+        List<String> supportedRenderParams = portlet.getSupportedPublicRenderParameters();
+        assertEquals(supportedRenderParams.size(), 2);
+        String p1 = supportedRenderParams.get(0);
+        assertEquals(p1, "city");
+        String p2 = supportedRenderParams.get(1);
+        assertEquals(p2, "zipcode");
+
+        List<ContainerRuntimeOption> portletOptions = portlet.getContainerRuntimeOptions();
+        assertEquals(portletOptions.size(), 2);
+        ContainerRuntimeOption opt1 = portlet.getContainerRuntimeOption("PortletOption1");
+        assertEquals(opt1.getName(), "PortletOption1");
+        assertEquals(opt1.getValues().size(), 3);
+        assertEquals(opt1.getValues().get(0), "p-value-1");
+        assertEquals(opt1.getValues().get(1), "p-value-2");
+        assertEquals(opt1.getValues().get(2), "p-value-3");
+        ContainerRuntimeOption opt2 = portlet.getContainerRuntimeOption("PortletOption2");
+        assertEquals(opt2.getName(), "PortletOption2");
+        assertEquals(opt2.getValues().size(), 2);
+        assertEquals(opt2.getValues().get(0), "p-value-4");
+        assertEquals(opt2.getValues().get(1), "p-value-5");
+        
+        List<ContainerRuntimeOption> appOptions = app.getContainerRuntimeOptions();
+        assertEquals(appOptions.size(), 2);
+        ContainerRuntimeOption opt3 = app.getContainerRuntimeOption("AppOption1");
+        assertEquals(opt3.getName(), "AppOption1");
+        assertEquals(opt3.getValues().size(), 3);
+        assertEquals(opt3.getValues().get(0), "a-value-1");
+        assertEquals(opt3.getValues().get(1), "a-value-2");
+        assertEquals(opt3.getValues().get(2), "a-value-3");
+        ContainerRuntimeOption opt4 = app.getContainerRuntimeOption("AppOption2");
+        assertEquals(opt4.getName(), "AppOption2");
+        assertEquals(opt4.getValues().size(), 1);
+        assertEquals(opt4.getValues().get(0), "a-value-4");
+        
+        PublicRenderParameter x = app.getPublicRenderParameter("prp1-id");
+        assertNotNull(x);
+        assertEquals(x.getName(), "prp1");
+        List<PublicRenderParameter> xs = app.getPublicRenderParameters();
+        assertEquals(xs.size(), 1);
+        Description d1 = x.getDescription(new Locale("en"));
+        assertEquals(d1.getDescription(), "dog");
+        Description d2 = x.getDescription(new Locale("fr"));
+        assertEquals(d2.getDescription(), "chien");
+        List<QName> aliases = x.getAliases();
+        assertEquals(aliases.size(), 1);
+        assertEquals(aliases.get(0).getLocalPart(), "alias-1");
+    }
+
 }

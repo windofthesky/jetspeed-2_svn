@@ -72,9 +72,9 @@ limitations under the License.
        <constructor-arg><ref bean="org.apache.pluto.services.ResourceURLProviderImpl"/></constructor-arg> (currently doing a 'new')
 -->
 		<constructor-arg><ref bean="org.apache.pluto.services.PropertyManager"/></constructor-arg>
-		<constructor-arg><ref bean="org.apache.pluto.services.EventProvider"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.FilterManager"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.PortletURLListener"/></constructor-arg>
+		<constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>		
     </bean>
 
 

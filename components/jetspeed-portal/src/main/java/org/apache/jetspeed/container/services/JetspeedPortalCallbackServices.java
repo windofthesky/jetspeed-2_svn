@@ -21,9 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.providers.EventProviderImpl;
 import org.apache.jetspeed.container.providers.PortletURLProviderImpl;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
+import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.EventContainer;
 import org.apache.pluto.om.portlet.PortletApplicationDefinition;
 import org.apache.pluto.spi.EventProvider;
 import org.apache.pluto.spi.FilterManager;
@@ -42,20 +45,28 @@ import org.apache.pluto.spi.ResourceURLProvider;
  */
 public class JetspeedPortalCallbackServices implements PortalCallbackService
 {
+    public static final String PER_REQUEST_EVENT_PROVIDER = "org.apache.jetspeed.container.EventProvider";
+
     PropertyManager propertyManager;   
-    EventProvider eventProvider; 
     FilterManager filterManager;
     PortletURLListener urlListener;
+    PortletWindowAccessor windowAccessor;
+    EventContainer eventContainer; 
     
-    public JetspeedPortalCallbackServices(PropertyManager propertyManager,
-            EventProvider eventProvider, FilterManager filterManager, PortletURLListener urlListener)
+    public JetspeedPortalCallbackServices(final PropertyManager propertyManager,
+            final FilterManager filterManager, final PortletURLListener urlListener, final PortletWindowAccessor windowAccessor)
     {
         this.propertyManager = propertyManager;
-        this.eventProvider = eventProvider;
         this.filterManager = filterManager;
         this.urlListener = urlListener;
+        this.windowAccessor = windowAccessor;
     }
 
+    public void setEventContainer(final EventContainer eventContainer)
+    {
+        this.eventContainer = eventContainer;
+    }
+    
     public PortletURLProvider getPortletURLProvider(HttpServletRequest request,
             org.apache.pluto.PortletWindow portletWindow)
     {
@@ -77,16 +88,23 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
         return propertyManager;
     }
         
-
+    
     public EventProvider getEventProvider(HttpServletRequest request,
             org.apache.pluto.PortletWindow portletWindow)
     {   
-        return eventProvider;
+        RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        EventProvider provider = (EventProvider)rc.getObjects().get(PER_REQUEST_EVENT_PROVIDER);
+        if (provider == null)
+        {
+            provider  = new EventProviderImpl(rc, portletWindow, this.windowAccessor);
+            rc.getObjects().put(PER_REQUEST_EVENT_PROVIDER, provider);
+        }
+        return provider;
     }
 
     public EventProvider getEventProvider()
     {
-        return eventProvider;
+        throw new RuntimeException("TODO: need to deprecate this");
     }
 
     /**

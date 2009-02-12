@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.portletregistry.AbstractRegistryTest;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.components.portletregistry.TestPortletRegistryDAO;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.Preference;
@@ -122,6 +123,7 @@ public class TestRegistryDirectAll extends AbstractRegistryTest
         supports.addPortletMode(MODE_HELP);
         supports.addPortletMode(MODE_VIEW);
         
+        TestPortletRegistryDAO.build20TestData(app, portlet);        
         registry.registerPortletApplication(app);
     }
 
