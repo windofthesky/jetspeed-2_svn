@@ -93,13 +93,7 @@ public class JetspeedPortalCallbackServices implements PortalCallbackService
             org.apache.pluto.PortletWindow portletWindow)
     {   
         RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        EventProvider provider = (EventProvider)rc.getObjects().get(PER_REQUEST_EVENT_PROVIDER);
-        if (provider == null)
-        {
-            provider  = new EventProviderImpl(rc, portletWindow, this.windowAccessor);
-            rc.getObjects().put(PER_REQUEST_EVENT_PROVIDER, provider);
-        }
-        return provider;
+        return new EventProviderImpl(rc, portletWindow, this.windowAccessor);
     }
 
     public EventProvider getEventProvider()

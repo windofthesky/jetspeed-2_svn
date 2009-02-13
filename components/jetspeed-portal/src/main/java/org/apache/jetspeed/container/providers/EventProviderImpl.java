@@ -20,8 +20,10 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.Event;
 import javax.servlet.http.HttpServletRequest;
@@ -60,10 +62,12 @@ import org.apache.pluto.spi.EventProvider;
 public class EventProviderImpl implements EventProvider, Cloneable
 {
     private static Log log = LogFactory.getLog(EventProviderImpl.class);
-    private final PortletWindow portletWindow;
-    private EventList savedEvents = new EventList();
+    private final PortletWindow portletWindow;    
     private final RequestContext rc;
     private final PortletWindowAccessor windowAccessor;
+    
+    // IMPROVEME: (a lot) this is a simple-non-production implementation of an event queue
+    private static Map<String, EventList> eventQueue = new HashMap<String, EventList>();
     
     public EventProviderImpl()
     {
@@ -83,6 +87,7 @@ public class EventProviderImpl implements EventProvider, Cloneable
             throws IllegalArgumentException
     {
         System.out.println("registering to fire events");
+        EventList savedEvents = new EventList();        
         if (isDeclaredAsPublishingEvent(qname)) 
         {
             if (value != null && !isValueInstanceOfDefinedClass(qname, value))
@@ -119,6 +124,7 @@ public class EventProviderImpl implements EventProvider, Cloneable
                     {
                         Thread.currentThread().setContextClassLoader(cl);
                     }
+                    out = null;
                     if (out != null) 
                     {
                         savedEvents.addEvent(new EventImpl(qname,
@@ -140,19 +146,23 @@ public class EventProviderImpl implements EventProvider, Cloneable
                 log.warn(e);
             }
         }
+        eventQueue.put(this.portletWindow.getId().toString(), savedEvents);
     }
     
     public static final int MAX_EVENTS_SIZE = 10; // TODO
     
     public void fireEvents(EventContainer eventContainer)
     {
-        System.out.println("firing events");
-
+        String eventTargetWindow = this.portletWindow.getId().toString();
+        System.out.println("firing events for " + eventTargetWindow);
+        EventList savedEvents = this.eventQueue.get(eventTargetWindow);
+        if (savedEvents == null)
+            return;
         while (savedEvents.hasMoreEvents()
                 && savedEvents.getSize() < MAX_EVENTS_SIZE) 
         {
-            Event event = getArbitraryEvent();
-            this.savedEvents.setProcessed(event);
+            Event event = getArbitraryEvent(savedEvents);
+            savedEvents.setProcessed(event);
             
             List<PortletWindow> windows = getAllPortletsRegisteredForEvent(event);
 
@@ -175,7 +185,7 @@ public class EventProviderImpl implements EventProvider, Cloneable
                     // TODO: handle
                     e.printStackTrace();
                 }
-                    
+                this.eventQueue.remove(eventTargetWindow);    
 // TODO: threading                
 //                PortletWindow window = new PortletWindowImpl(container, config, portalURL);
 //                if (portletNames != null) {
@@ -198,6 +208,7 @@ public class EventProviderImpl implements EventProvider, Cloneable
 //                    }
                 }
             }
+        
 //            waitForEventExecution();
 //            try {
 //                Thread.sleep(WAITING_CYCLE);
@@ -259,12 +270,12 @@ public class EventProviderImpl implements EventProvider, Cloneable
         return true;
     }
     
-    private Event getArbitraryEvent() 
+    private Event getArbitraryEvent(EventList savedEvents) 
     {
         Event eActual = null;
-        for (Event event : this.savedEvents.getEvents()) 
+        for (Event event : savedEvents.getEvents()) 
         {
-            if (this.savedEvents.isNotProcessed(event)) 
+            if (savedEvents.isNotProcessed(event)) 
             {
                 eActual = event;
             }
