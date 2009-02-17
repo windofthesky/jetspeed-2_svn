@@ -18,10 +18,13 @@ package org.apache.jetspeed.security.mapping.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
+
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -65,7 +68,17 @@ public class AttributeImpl implements Attribute
     
     public Collection<String> getValues()
     {
-        return getDefinition().isMultiValue() ? values : null;
+        if(getDefinition().isMultiValue())
+        {
+         return values;         
+        }else{
+            if(value==null)
+            {
+                return Collections.emptyList();
+            }else{
+                return Arrays.asList(new String[]{value});
+            }
+        }        
     }
 
     public void setValues(Collection<String> values)
