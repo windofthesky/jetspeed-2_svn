@@ -50,7 +50,7 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
-import org.apache.jetspeed.page.document.psml.NodeOrderCompartaor;
+import org.apache.jetspeed.page.document.psml.NodeOrderComparator;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.PermissionFactory;
 
@@ -523,11 +523,11 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             {
                 if (getPath().endsWith(PATH_SEPARATOR))
                 {
-                    allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath()));
+                    allNodes = new NodeSetImpl(getPath(), new NodeOrderComparator(metadata.getDocumentOrder(), getPath()));
                 }
                 else
                 {
-                    allNodes = new NodeSetImpl(getPath(), new NodeOrderCompartaor(metadata.getDocumentOrder(), getPath() + PATH_SEPARATOR));
+                    allNodes = new NodeSetImpl(getPath(), new NodeOrderComparator(metadata.getDocumentOrder(), getPath() + PATH_SEPARATOR));
                 }
             }
             else
