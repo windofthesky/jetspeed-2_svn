@@ -21,14 +21,12 @@ public class ContainerRuntimeOptionValueImpl implements
         ContainerRuntimeOptionValue
 {
     private String value;
-    protected String owner;    
 
     public ContainerRuntimeOptionValueImpl()
     {}
     
-    public ContainerRuntimeOptionValueImpl(Object owner, String value)
+    public ContainerRuntimeOptionValueImpl(String value)
     {
-        this.owner = owner.getClass().getName();        
         this.value = value;
     }
     

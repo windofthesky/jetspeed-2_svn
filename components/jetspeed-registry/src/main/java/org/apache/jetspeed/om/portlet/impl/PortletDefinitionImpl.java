@@ -67,6 +67,7 @@ import org.apache.pluto.internal.InternalPortletPreference;
  */
 public class PortletDefinitionImpl implements PortletDefinition, Serializable, Support, PersistenceBrokerAware
 {
+    private static final long serialVersionUID = 1L;
     private static PortletRegistry registry;
     private static PortletFactory  portletFactory;
     private static PortletPreferencesProvider portletPreferencesProvider;
@@ -813,22 +814,25 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 
     public EventDefinitionReference addSupportedProcessingEvent(QName qname)
     {
-        // TODO: check duplicates
-        getSupportedProcessingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, qname);
+        List<EventDefinitionReference> refs = getSupportedProcessingEvents();
+        for (EventDefinitionReference ref : refs)
+        {
+            if (ref.getQName().equals(qname))
+            {
+                return ref;
+            }
+        }
+        ProcessingEventReferenceImpl edr = new ProcessingEventReferenceImpl(qname);
         supportedProcessingEvents.add(edr);
         return edr;
     }
     
     public EventDefinitionReference addSupportedProcessingEvent(String name)
     {
-        // TODO check duplicates
-        getSupportedProcessingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, name);
-        supportedProcessingEvents.add(edr);
-        return edr;
+        QName qname = new QName(name);
+        return this.addSupportedProcessingEvent(qname);
     }
-        
+         
     public List<EventDefinitionReference> getSupportedPublishingEvents()
     {
         if (supportedPublishingEvents == null)
@@ -836,24 +840,27 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
             supportedPublishingEvents = new ArrayList<EventDefinitionReference>();            
         }
         return supportedPublishingEvents;
-    }
+    }    
 
     public EventDefinitionReference addSupportedPublishingEvent(QName qname)
     {
-        // TODO: check duplicates
-        getSupportedPublishingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, qname);
+        List<EventDefinitionReference> refs = getSupportedPublishingEvents();
+        for (EventDefinitionReference ref : refs)
+        {
+            if (ref.getQName().equals(qname))
+            {
+                return ref;
+            }
+        }
+        EventDefinitionReferenceImpl edr = new ProcessingEventReferenceImpl(qname);
         supportedPublishingEvents.add(edr);
         return edr;
     }
     
     public EventDefinitionReference addSupportedPublishingEvent(String name)
     {
-        // TODO check duplicates
-        getSupportedPublishingEvents();
-        EventDefinitionReferenceImpl edr = new EventDefinitionReferenceImpl(this, name);
-        supportedPublishingEvents.add(edr);
-        return edr;
+        QName qname = new QName(name);
+        return this.addSupportedPublishingEvent(qname);
     }
 
 }

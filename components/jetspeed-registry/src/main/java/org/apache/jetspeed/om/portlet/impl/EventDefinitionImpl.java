@@ -40,9 +40,18 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
     protected String prefix;
     protected String namespace;
     protected String valueType;
-    protected List<PortletQName> aliases;
+    protected List<EventAliasImpl> aliases;
     protected List<Description> descriptions;
     
+    public EventDefinitionImpl()
+    {
+    }
+
+    public EventDefinitionImpl(QName qname)
+    {
+        setQName(qname);
+    }
+
     public Description getDescription(Locale locale)
     {
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
@@ -127,17 +136,17 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
     {       
         if (aliases == null)
         {
-            aliases = new ArrayList<PortletQName>();
+            aliases = new ArrayList<EventAliasImpl>();
         }
         if (!containsAlias(alias))
         {
-            aliases.add(new PortletQNameImpl(this, alias));
+            aliases.add(new EventAliasImpl(alias));
         }
     }
     
     protected boolean containsAlias(QName qname)
     {
-        PortletQName alias = new PortletQNameImpl(this, qname);
+        PortletQName alias = new EventAliasImpl(qname);
         for (PortletQName p : aliases)
         {
             if (p.equals(alias))
@@ -161,4 +170,17 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
         return new QName(defaultnamespace, localPart);
         //return qname != null ? qname : name != null ? new QName(defaultNamespace, name) : null;
     }
+
+    public boolean equals(Object qname)
+    {
+        return (this.toString().equals(qname.toString()));
+    }
+    
+    public String toString()
+    {
+        return ((this.namespace == null) ? "" : this.namespace + "//:") + 
+               ((this.prefix == null) ? "" : this.prefix + ":") +
+               ((this.localPart == null) ? "" : this.localPart);
+    }
+    
 }

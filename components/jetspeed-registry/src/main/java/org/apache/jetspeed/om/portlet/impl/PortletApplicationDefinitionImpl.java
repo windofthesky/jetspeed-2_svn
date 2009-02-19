@@ -38,6 +38,7 @@ import org.apache.jetspeed.om.portlet.CustomWindowState;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.EventDefinition;
+import org.apache.jetspeed.om.portlet.EventDefinitionReference;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
@@ -46,7 +47,6 @@ import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.PortletQName;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.SecurityRole;
@@ -66,6 +66,8 @@ import org.apache.ojb.broker.PersistenceBrokerException;
  */
 public class PortletApplicationDefinitionImpl implements PortletApplication, Serializable, Support, PersistenceBrokerAware
 { 
+    private static final long serialVersionUID = 1L;
+
     private int applicationType = PortletApplication.WEBAPP;
     
     private String checksum = "0";
@@ -372,18 +374,21 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     public EventDefinition addEventDefinition(String name)
     {
-        // TODO: check duplicates (complication: set of qname and name)
-        EventDefinitionImpl ed = new EventDefinitionImpl();
-        ed.setName(name);
-        getEventDefinitions().add(ed);
-        return ed;
+        QName qname = new QName(name);
+        return addEventDefinition(qname);
     }
 
     public EventDefinition addEventDefinition(QName qname)
     {
-        // TODO: check duplicates (complication: set of qname and name)
-        EventDefinitionImpl ed = new EventDefinitionImpl();
-        ed.setQName(qname);
+        List<EventDefinition> defs = getEventDefinitions();
+        for (EventDefinition def : defs)
+        {
+            if (def.getQName().equals(qname))
+            {
+                return def;
+            }
+        }
+        EventDefinitionImpl ed = new EventDefinitionImpl(qname);
         getEventDefinitions().add(ed);
         return ed;
     }

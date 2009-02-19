@@ -497,40 +497,24 @@
       </collection-descriptor>
 
      <collection-descriptor
-         name="supportedProcessingEvents"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.EventDefinitionReferenceImpl"
-         auto-delete="true"
-         auto-update = "true"
-         auto-retrieve = "true"
-
-      >
-         <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
-
-      </collection-descriptor>
+       name="supportedProcessingEvents"
+       element-class-ref="org.apache.jetspeed.om.portlet.impl.ProcessingEventReferenceImpl"
+       auto-delete="true"
+       auto-update = "true"
+       auto-retrieve = "true"
+     >
+       <inverse-foreignkey field-ref="ownerId"/>
+    </collection-descriptor>
 
      <collection-descriptor
-         name="supportedPublishingEvents"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.EventDefinitionReferenceImpl"
-         auto-delete="true"
-         auto-update = "true"
-         auto-retrieve = "true"
-
-      >
-         <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
-
-      </collection-descriptor>
+       name="supportedPublishingEvents"
+       element-class-ref="org.apache.jetspeed.om.portlet.impl.PublishingEventReferenceImpl"
+       auto-delete="true"
+       auto-update = "true"
+       auto-retrieve = "true"
+     >
+       <inverse-foreignkey field-ref="ownerId"/>
+    </collection-descriptor>
 
      <collection-descriptor
          name="supportedPublicRenderParameters"
@@ -1427,7 +1411,7 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
 
       <collection-descriptor
          name="aliases"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletQNameImpl"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.EventAliasImpl"
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"
@@ -1447,11 +1431,11 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
 
 
 <!--
-   - Q N A M E
+   - E V E N T  A L I A S
  -->
    <class-descriptor
-      class="org.apache.jetspeed.om.portlet.impl.PortletQNameImpl"
-      table="PORTLET_QNAME"
+      class="org.apache.jetspeed.om.portlet.impl.EventAliasImpl"
+      table="EVENT_ALIAS"
    >
 
       <field-descriptor
@@ -1468,13 +1452,6 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          column="OWNER_ID"
          jdbc-type="BIGINT"
          access="anonymous"
-      />
-
-
-      <field-descriptor
-         name="owner"
-         column="OWNER_CLASS_NAME"
-         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
@@ -1498,11 +1475,11 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
     </class-descriptor>
 
 <!--
-   - Q N A M E
+   - P A R A M E T E R  A L I A S
  -->
    <class-descriptor
-      class="org.apache.jetspeed.om.portlet.impl.EventDefinitionReferenceImpl"
-      table="PORTLET_QNAME"
+      class="org.apache.jetspeed.om.portlet.impl.ParameterAliasImpl"
+      table="PARAMETER_ALIAS"
    >
 
       <field-descriptor
@@ -1521,11 +1498,92 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          access="anonymous"
       />
 
+      <field-descriptor
+         name="localPart"
+         column="LOCAL_PART"
+         jdbc-type="VARCHAR"
+      />
 
       <field-descriptor
-         name="owner"
-         column="OWNER_CLASS_NAME"
+         name="namespace"
+         column="NAMESPACE"
          jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="prefix"
+         column="PREFIX"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+
+<!--
+   - PUBLISHING EVENT
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.PublishingEventReferenceImpl"
+      table="PUBLISHING_EVENT"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="ownerId"
+         column="OWNER_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="localPart"
+         column="LOCAL_PART"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="namespace"
+         column="NAMESPACE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="prefix"
+         column="PREFIX"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+
+<!--
+   - PROCESSING EVENT
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.ProcessingEventReferenceImpl"
+      table="PROCESSING_EVENT"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="ownerId"
+         column="OWNER_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
       />
 
       <field-descriptor
@@ -1624,23 +1682,16 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          jdbc-type="VARCHAR"
       />
 
-      <collection-descriptor
+
+     <collection-descriptor
          name="values"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.ContainerRuntimeOptionValueImpl"
-         auto-delete="true"
-         auto-update = "true"
-         auto-retrieve = "true"
-
-      >
-         <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
-
-      </collection-descriptor>
+       auto-delete="true"
+       auto-update = "true"
+       auto-retrieve = "true"
+     >
+       <inverse-foreignkey field-ref="ownerId"/>
+    </collection-descriptor>
 
     </class-descriptor>
 
@@ -1666,13 +1717,6 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          column="OWNER_ID"
          jdbc-type="BIGINT"
          access="anonymous"
-      />
-
-
-      <field-descriptor
-         name="owner"
-         column="OWNER_CLASS_NAME"
-         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
@@ -1751,7 +1795,7 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
 
       <collection-descriptor
          name="aliases"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletQNameImpl"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.ParameterAliasImpl"
          auto-delete="true"
          auto-update = "true"
          auto-retrieve = "true"

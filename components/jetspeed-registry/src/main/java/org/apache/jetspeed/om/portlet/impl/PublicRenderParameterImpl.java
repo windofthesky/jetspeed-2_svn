@@ -41,7 +41,7 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
     private String namespace;
     protected String identifier;
 
-    protected List<PortletQName> aliases;
+    protected List<ParameterAliasImpl> aliases;
     protected List<Description> descriptions;
 
     public PublicRenderParameterImpl()
@@ -164,17 +164,17 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
     {       
         if (aliases == null)
         {
-            aliases = new ArrayList<PortletQName>();
+            aliases = new ArrayList<ParameterAliasImpl>();
         }
         if (!containsAlias(alias))
         {
-            aliases.add(new PortletQNameImpl(this, alias));
+            aliases.add(new ParameterAliasImpl(alias));
         }
     }
     
     protected boolean containsAlias(QName qname)
     {
-        PortletQName alias = new PortletQNameImpl(this, qname);
+        PortletQName alias = new ParameterAliasImpl(qname);
         for (PortletQName p : aliases)
         {
             if (p.equals(alias))

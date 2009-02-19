@@ -25,14 +25,12 @@ public class PortletQNameImpl implements PortletQName
     private String localPart;
     private String prefix;
     private String namespace;
-    protected String owner;    
 
     public PortletQNameImpl()
     {}
     
-    public PortletQNameImpl(Object owner, QName qname)
+    public PortletQNameImpl(QName qname)
     {
-        this.owner = owner.getClass().getName();        
         this.namespace = qname.getNamespaceURI();
         if (this.namespace != null && this.namespace.equals(""))
             this.namespace = null;

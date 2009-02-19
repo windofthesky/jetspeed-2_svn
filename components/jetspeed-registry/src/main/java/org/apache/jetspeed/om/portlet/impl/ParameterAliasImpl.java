@@ -14,45 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.jetspeed.om.portlet.impl;
-
-import java.io.Serializable;
 
 import javax.xml.namespace.QName;
 
-import org.apache.jetspeed.om.portlet.EventDefinitionReference;
 
-/**
- * @version $Id$
- *
- */
-public class EventDefinitionReferenceImpl extends PortletQNameImpl implements EventDefinitionReference, Serializable
+public class ParameterAliasImpl extends PortletQNameImpl
 {
-    private static final long serialVersionUID = 1L;
-
-    public EventDefinitionReferenceImpl()
+    public ParameterAliasImpl()
     {
         super();
     }
     
-    public EventDefinitionReferenceImpl(QName qname)
+    public ParameterAliasImpl(QName qname)
     {
         super(qname);
-    }
-
-    public EventDefinitionReferenceImpl(String qname)
-    {
-        super(new QName(qname));
-    }
-    
-    public String getName()
-    {
-        return super.getLocalPart();
-    }
-
-    public QName getQualifiedName(String defaultNamespace)
-    {
-        return super.getQName();
-    }
+    }    
 }

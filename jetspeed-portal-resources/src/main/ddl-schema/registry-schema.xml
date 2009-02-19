@@ -291,12 +291,44 @@ limitations under the License.
     </table>             
 
     <!-- 
-	    PORTLET_QNAME       
+	    EVENT ALIAS       
     -->
-    <table name="PORTLET_QNAME">
+    <table name="EVENT_ALIAS">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="OWNER_ID" required="true" type="INTEGER"/>
-        <column name="OWNER_CLASS_NAME" required="true" size="255" type="VARCHAR"/>
+        <column name="LOCAL_PART" required="true" size="80" type="VARCHAR"/>
+        <column name="NAMESPACE" required="false" size="80" type="VARCHAR"/>
+        <column name="PREFIX" required="false" size="20" type="VARCHAR"/>        
+    </table>
+
+    <!-- 
+	    PUBLIC RENDER PARAM ALIAS       
+    -->
+    <table name="PARAMETER_ALIAS">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="OWNER_ID" required="true" type="INTEGER"/>
+        <column name="LOCAL_PART" required="true" size="80" type="VARCHAR"/>
+        <column name="NAMESPACE" required="false" size="80" type="VARCHAR"/>
+        <column name="PREFIX" required="false" size="20" type="VARCHAR"/>        
+    </table>
+
+    <!-- 
+	    PUBLISHING EVENT       
+    -->
+    <table name="PUBLISHING_EVENT">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="OWNER_ID" required="true" type="INTEGER"/>
+        <column name="LOCAL_PART" required="true" size="80" type="VARCHAR"/>
+        <column name="NAMESPACE" required="false" size="80" type="VARCHAR"/>
+        <column name="PREFIX" required="false" size="20" type="VARCHAR"/>        
+    </table>
+
+    <!-- 
+	    PROCESSING EVENT
+    -->
+    <table name="PROCESSING_EVENT">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="OWNER_ID" required="true" type="INTEGER"/>
         <column name="LOCAL_PART" required="true" size="80" type="VARCHAR"/>
         <column name="NAMESPACE" required="false" size="80" type="VARCHAR"/>
         <column name="PREFIX" required="false" size="20" type="VARCHAR"/>        
@@ -325,7 +357,6 @@ limitations under the License.
     <table name="RUNTIME_VALUE">                                            
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="OWNER_ID" required="true" type="INTEGER"/>
-        <column name="OWNER_CLASS_NAME" required="true" size="255" type="VARCHAR"/>
         <column name="RVALUE" required="true" size="200" type="VARCHAR"/>
     </table> 
 

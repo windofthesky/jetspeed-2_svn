@@ -67,7 +67,7 @@ public class ContainerRuntimeOptionImpl implements ContainerRuntimeOption, Seria
                 throw new IllegalArgumentException("Support for container runtime parameter with identifier: "+value+" already defined");
             }
         }
-        values.add(new ContainerRuntimeOptionValueImpl(this, value));                
+        values.add(new ContainerRuntimeOptionValueImpl(value));                
     }
 
     public List<String> getValues()
