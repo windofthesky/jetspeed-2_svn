@@ -122,5 +122,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-2.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-attrs-2.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commonj/jars/commonj-twm-1.1.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-jexl/jars/commons-jexl-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
