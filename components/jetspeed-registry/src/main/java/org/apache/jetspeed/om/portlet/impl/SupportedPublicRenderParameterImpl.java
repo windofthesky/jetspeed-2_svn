@@ -6,14 +6,12 @@ import org.apache.jetspeed.om.portlet.SupportedPublicRenderParameter;
 public class SupportedPublicRenderParameterImpl implements SupportedPublicRenderParameter
 {
     private String name;
-    protected String owner;    
 
     public SupportedPublicRenderParameterImpl()
     {}
     
-    public SupportedPublicRenderParameterImpl(Object owner, String name)
+    public SupportedPublicRenderParameterImpl(String name)
     {
-        this.owner = owner.getClass().getName();        
         this.name = name;
     }
     

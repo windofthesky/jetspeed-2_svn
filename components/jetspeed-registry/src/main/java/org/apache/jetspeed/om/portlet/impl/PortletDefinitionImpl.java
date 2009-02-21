@@ -685,7 +685,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
                 throw new IllegalArgumentException("Support for public render parameter with identifier: "+identifier+" already defined");
             }
         }
-        supportedPublicRenderParameters.add(new SupportedPublicRenderParameterImpl(this, identifier));        
+        supportedPublicRenderParameters.add(new SupportedPublicRenderParameterImpl(identifier));        
     }
 
 

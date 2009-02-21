@@ -308,12 +308,6 @@
           auto-retrieve = "true"
       >
          <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
       </collection-descriptor>
       
    </class-descriptor>
@@ -525,13 +519,6 @@
 
       >
          <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
-
       </collection-descriptor>
 
    <collection-descriptor
@@ -542,12 +529,6 @@
           auto-retrieve = "true"
       >
          <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
       </collection-descriptor>
 
    <!--
@@ -1418,13 +1399,6 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
 
       >
          <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
-
       </collection-descriptor>
    
 	</class-descriptor>
@@ -1630,13 +1604,6 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          access="anonymous"
       />
 
-
-      <field-descriptor
-         name="owner"
-         column="OWNER_CLASS_NAME"
-         jdbc-type="VARCHAR"
-      />
-
       <field-descriptor
          name="name"
          column="NAME"
@@ -1784,12 +1751,6 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
 
       >
          <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
 
       </collection-descriptor>
 
@@ -1801,14 +1762,7 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          auto-retrieve = "true"
 
       >
-         <inverse-foreignkey field-ref="ownerId"/>
-         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
-            <attribute
-              attribute-name="discriminatorField"
-              attribute-value="owner"
-            />
-         </query-customizer>
-
+       <inverse-foreignkey field-ref="ownerId"/>
       </collection-descriptor>
    
 	</class-descriptor>
