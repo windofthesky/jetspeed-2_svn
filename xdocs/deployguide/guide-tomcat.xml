@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>How to Download Jetspeed-2</title>
+		<subtitle>Documentation on How to Download Jetspeed-2</subtitle>
+		<authors>
+			<person name="David Le Strat" email="dlestrat@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Tomcat Configuration">
+
+				<p>
+					Jetspeed 2 can use the Tomcat Manager application
+					for managing portlet applications with the Portlet
+					Application Lifecycle Manager Portlet (PALM). To be
+					able to do so it needs a configured Tomcat user with
+					the predefined 'manager' role in the
+					${org.apache.jetspeed.server.home}/conf/tomcat-users.xml.
+				</p>
+				<p>
+					A minimal example tomcat-users.xml can look like:
+					<source>
+						<![CDATA[
+<tomcat-users>
+  <role rolename="manager"/>
+    <user username="j2deployer" password="xxxxx" roles="manager"/>
+</tomcat-users>]]>
+					</source>
+					<i>
+						The attribute values for username and password
+						must correspond to the specified values for
+						<code>
+							${org.apache.jetspeed.services.autodeployment.user}
+						</code>
+						and
+						<code>
+							${org.apache.jetspeed.services.autodeployment.user}
+						</code>
+						as described above.
+					</i>
+				</p>
+			</section>
+			
+			<section name="Tomcat 5.5.9 on Windows">
+				<p>
+					To have redeployment and undeployment working
+					properly when using Tomcat 5.5.9 on Windows you have
+					to set the global Context attribute "antiJARLocking"
+					to true.
+				</p>
+				<p>
+					In
+					${org.apache.jetspeed.server.home}\conf\context.xml
+					use:
+					<source>
+						<![CDATA[
+    <Context antiJARLocking="true">
+    ...
+    </Context>]]>
+					</source>
+				</p>
+			</section>
+</body>
+</document>

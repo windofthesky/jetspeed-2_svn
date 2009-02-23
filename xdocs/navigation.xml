@@ -19,32 +19,38 @@
     <body>
         <links>
         	<item name="Jetspeed-1" href="http://portals.apache.org/jetspeed-1" target="_nw"/>
-        	<item name="Jetspeed-2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
+        	<item name="Jetspeed-2.2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
         	<item name="Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
             <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
         </links>
         <menu name="Essentials">
+            <item name="Welcome" href="index.html" />
             <item name="Features" href="features.html" />
         	<item name="Getting Started" href="getting-started.html" />  
-        	<item name="Jetspeed for Developers" href="developers.html" />          
+        	<item name="Jetspeed Online Demos" href="demo.html"/>          
         </menu>
-    	<menu name="Building">
-    	    <item name="From Source with Maven-2" href="maven-2-build.html" />
-    	    <item name="From Maven-2 Plugin" href="maven-2-custom.html" />    	    
-    	    <item name="From Source with Maven-1 (deprecated)" href="getting-started-source.html" />
-    	    <item name="From Maven-1 Plugin (deprecated)" href="getting-started-binary.html" />
-    	    <item name="From Eclipse" href="jetspeed-eclipse.html" />            
-    	</menu>
     	<menu name="Get Jetspeed-2.1.3">
     		<item name="Download" href="download.html" />
+    		<item name="Installer Instructions" href="getting-started-installer.html" />
     		<item name="Release Notes" href="release-notes.html" />
     	</menu>
-    	<menu name="Documentation">
-    		<item name="Documentation Guides" href="guides/index.html" />
-    		<item name="Jetspeed Tutorial - Maven-2 Custom Build" href="http://portals.apache.org/tutorials/jetspeed-2/" />
-    		<item name="Jetspeed Tutorial - Ant Custom Build (incomplete)" href="http://portals.apache.org/tutorials/jetspeed-2-ant/" />
-    		<item name="Jetspeed-2 API" href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/index.html" />
-    		<item name="Jetspeed-2 Plugin" href="j2-maven-plugin.html" />    		
+    	<menu name="Documentation Guides">
+    		<item name="Users Guide" href="usersguide/index.html" />
+    		<item name="Administrators Guide" href="adminguide/index.html" />
+    		<item name="Deployment Guide" href="deployguide/index.html" />
+    		<item name="Developers Guide" href="devguide/index.html" />
+    		<item name="Migration Guide" href="guide-migration.html" />
+    	</menu>
+    	<menu name="APIs">
+    		<item name="Jetspeed-2 Java API" href="jetspeed-api/apidocs/index.html" />
+    		<item name="Jetspeed-2 AJAX API" href="devguide/guide-ajax-api.html" />
+    		<item name="Jetspeed-2 Maven-2 Plugin" href="devguide/m2-build/j2-maven-plugin.html" />    		
+    	</menu>
+    	<menu name="Tutorials">
+    	    <item name="Jetspeed Tutorial - Maven-2 Custom Build" href="tutorials/maven-2/index.html" />
+    		<item name="Jetspeed Tutorial - Ant Custom Build (incomplete)" href="tutorials/ant/index.html" />
+    		<item name="Maven-1 Custom Build" href="tutorials/stepbystep/guide-building-custom-portal-maven1.html" />
+    		<item name="Maven-2 Custom Build" href="tutorials/stepbystep/guide-building-custom-portal-maven2.html" />
     	</menu>
     	<menu name="About Jetspeed-2">
     		<item name="For Jetspeed-1 Users" href="j1-users.html" />

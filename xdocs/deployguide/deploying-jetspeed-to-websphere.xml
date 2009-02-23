@@ -1,0 +1,755 @@
+<?xml version="1.0"?>
+<document>
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+	<properties>
+		<title>Deploying Jetspeed to Websphere</title>
+		<subtitle>With Websphere 6.1</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name='Deploying Jetspeed to Websphere - With Websphere 6.1'>
+			<ol>
+				<li>
+					<a href="#section_1">Introduction</a>
+					<ol>
+						<li><a href="#section_1_1">Purpose</a></li>
+						<li><a href="#section_1_2">Should I deploy Jetspeed as a WAR file or embedded in an EAR file?</a></li>
+					</ol>
+				</li>
+				<li>
+					<a href="#section_2">Getting Started with Websphere 6.1 and Jetspeed</a>
+					<ol>
+						<li><a href="#section_2_1">Required Fix Pack</a></li>
+						<li><a href="#section_2_2">Verifying Websphere Version</a></li>
+						<li><a href="#section_2_3">Debugging</a></li>
+					</ol>
+				</li>
+				<li><a href="#section_3">Database Configuration</a>
+					<ol>
+						<li><a href="#section_3_1">Creating a JAAS User Identity in Websphere</a></li>
+						<li><a href="#section_3_2">Creating a JDBC Data Provider</a></li>
+						<li><a href="#section_3_3">Creating an Oracle JDBC Provider</a></li>
+						<li><a href="#section_3_4">Configuring an Oracle Data Source</a></li>
+						<li><a href="#section_3_5">Restart Websphere (optional)</a></li>
+					</ol>
+				</li>
+				<li><a href="#section_4">WAR Deployment</a>
+					<ol>
+						<li><a href="#section_4_1">The WAR Files</a></li>
+						<li><a href="#section_4_2">Shared Libraries</a></li>
+						<li><a href="#section_4_3">Add a Shared Library Reference to the Application Server Class Loader</a></li>
+						<li><a href="#section_4_4">Install the Jetspeed Portal WAR file</a></li>
+						<li><a href="#section_4_5">Install the Jet Express Demo Portlet Application</a></li>
+						<li><a href="#section_4_6">Install the Jetspeed Admin Portlet Application</a></li>
+						<li><a href="#section_4_7">Starting the Applications</a></li>
+					</ol>
+				</li>
+				<li><a href="#section_5">EAR Deployment</a>
+					<ol>
+						<li><a href="#section_5_1">The EAR File</a></li>
+						<li><a href="#section_5_2">Shared Libraries</a></li>
+						<li><a href="#section_5_3">Remove any old shared libraries</a></li>
+						<li><a href="#section_5_4">Installing the EAR File</a></li>
+					</ol>
+				</li>
+				<li><a href="#section_6">Two or more EAR Deployment Files</a></li>
+				<li><a href="#section_7">Websphere Application Server Additional Information</a>
+					<ol>
+						<li><a href="#section_7_1">Websphere Application Server Portlet Extensions</a></li>
+						<li><a href="#section_7_2">Patch to Portlet and Servlet Names being different</a></li>
+					</ol>
+				</li>
+				<li><a href="#section_8">Revision History</a></li>
+			</ol>
+		</section>
+			<section name='Introduction'>
+				<p>
+					<a name="section_1"></a>
+					This document is a step by step guide to deploying your custom Apache Jetspeed-2 portal and portlet applications on a Websphere Application Server. This solution provided here is tested on Websphere version 6.1.
+				</p>
+				<p>
+				For building a Jetspeed Portal, please read the accompanying documents "Building Jetspeed for Websphere with Maven-1" and "Building Jetspeed for Websphere with Maven-2".
+				</p>
+				<p>
+				Jetspeed is an open source project, thus all source code is freely available from Apache. See the website for more details: <a href="http://portals.apache.org/jetspeed-2/">http://portals.apache.org/jetspeed-2/</a>.
+				</p>
+				<subsection name='Purpose'>
+					<p>
+					<a name="section_1_1"></a>
+					This document will teach you how to deploy a Jetspeed Portal and one or more portlet applications to Websphere in a web application archive or an enterprise archive (EAR).
+					</p>
+					<p>
+					The custom portal used in this document is an example tutorial portal named Jet Express. Jet Express is a customized version of the Jetspeed portal. Additionally, we will deploy the Jetspeed Administrative portlet application and a sample portlet application named Express Demo. The purpose of using a sample custom portal is to teach you how to deploy your own custom portal for a production system.
+					</p>
+				</subsection>
+				<subsection name='Should I deploy Jetspeed as a WAR fiel or embedded in an EAR file?'>
+				<p>
+				<a name="section_1_2"></a>
+				There are benefits to both approaches. Deploying the Jetspeed portal as a WAR may be a better approach for incremental development of portlet applications. By deploying Jetspeed as a WAR file once, you will not have to redeploy it as often as your portlet application(s). This can separate the deployment cycle of your portlet application from the Jetspeed portal’s deployment cycle.
+				</p>
+				<p>
+				The benefits of deploying an EAR are:
+				<ul>
+					<li>You only have to deal with one deployment unit</li>
+					<li>In a production environment, this may make more sense</li>
+					<li>The shared libraries are easier to configure</li>
+					<li>You can configure resources such as JDBC data sources in the EAR</li>
+				</ul>
+				</p>
+				<p>
+				The procedure for deploying as all WAR files is different from the procedure for deploying in a single EAR file.
+				</p>
+				<p>
+				The WAR procedure is defined in <a href="#">section 4</a>.
+				</p>
+				<p>
+				The EAR procedure is defined in <a href="#">section 5</a>.
+				</p>
+				<p>
+				The third choice is to deploy Jetspeed and the Jetspeed Administrative application as an EAR file, and then deploy your portlet applications as external EAR files. See <a href="#">section 6</a> for details on deploying two or more EAR files.
+				</p>
+				</subsection>
+			</section>
+			<section name='Getting Started with Websphere 6.1 and Jetspeed'>
+			<p>
+			<a name="section_2"></a>
+			This guide assumes that you are using Websphere version 6.1. Although Jetspeed run on Websphere 5.x, and Websphere Express, this guide is targeted specifically to the Websphere 6.1 environment.
+			</p>
+			<subsection name='Required Fix Pack'>
+			<a name="section_2_1"></a>
+			<p>
+			If you are running version 6.1.0.0 or version 6.1.0.1, Fix Pack 2 must be installed in order for Jetspeed to run. Without this fix pack, portlets can not be correctly rendered. Download the fix pack from here:
+			<br/><br/>
+			<a href="http://www-1.ibm.com/support/docview.wss?rs=180&amp;uid=swg27004980#ver61">http://www-1.ibm.com/support/docview.wss?rs=180&amp;uid=swg27004980#ver61</a>
+			<br/><br/>
+			Installing the fix pack will require the installing the IBM Update Installer program.
+			</p>
+			</subsection>
+			<subsection name='Verifying Websphere Version'>
+			<a name="section_2_2"></a>
+			<p>
+			Start up Websphere. Go to the administrative console with a web browser, and verify that you are running the correct version of Websphere.
+			</p>
+			<p>
+			<code>http://localhost:9060/ibm/console/</code>
+			</p>
+			<p>
+			You should a split page, with navigations on the left, and details on the right. Click on the first navigation on the left-hand-side: "Welcome".
+			</p>
+			<p>
+			<img src="images/websphere/22-1.png"/>
+			</p>
+			<p>
+			Ensure that you are running the correct version of Websphere, 6.1.0.2 or higher:
+			</p>
+			<p>
+			<img src="images/websphere/22-2.png"/>
+			</p>
+			<p>
+			Websphere must be running version 6.1.0.2 or higher. If you are on version 6.1.0.1 or lower, then please follow the instructions in section 2.1 before continuing.
+			</p>
+			</subsection>
+			<subsection name='Debugging'>
+			<p>
+			<a name="section_2_3"></a>
+			If you would like to attach to Websphere with Eclipse or RAD, you can turn on debugging to debug your portlets. Navigate to the <i>Servers -> Application servers</i> menu; select the server you would like to debug. Under the <i>Additional Properties</i> section, click on <i>Debugging Service</i> link.
+			</p>
+			<p>
+			<img src="images/websphere/23-1.png"/>
+			</p>
+			<p>
+			From here you can enable debugging by clicking <i>Enable service at server startup</i>, press OK, and then restarting your server:
+			</p>
+			<p>
+			<img src="images/websphere/23-2.png"/>
+			</p>
+			</subsection>
+			</section>
+			<section name='Database Configuration'>
+			<p>
+			<a name="section_3"></a>
+			Jetspeed requires a relational database for storing portlet information such as portlet preferences, pages, and the portlet registry. Jetspeed supports many of the most popular commercial and open source databases including:
+			<ul>
+				<li>Oracle</li>
+				<li>DB2</li>
+				<li>MySQL</li>
+				<li>MS SQL Server</li>
+				<li>Derby</li>
+				<li>SAP DB</li>
+				<li>PostgreSQL</li>
+			</ul>
+			Documentation for configuration MySQL data providers with Websphere can be found here:
+			<br/><br/>
+			<a href="http://www.devx.com/Java/Article/31571">http://www.devx.com/Java/Article/31571</a><br/>
+			<a href="http://www.hackedby.us/2006/04/discovering-portals-jetspeed-with.html">http://www.hackedby.us/2006/04/discovering-portals-jetspeed-with.html</a>
+			<br/><br/>
+			WAS 5.x<br/>
+			<a href="http://www.webspherepower.com/issuesprint/issue200403/00001236.html">http://www.webspherepower.com/issuesprint/issue200403/00001236.html</a>
+			</p>
+			<p>
+			In this example, we will configure an Oracle JDBC data provider. Before proceeding, please configure a Jetspeed database in an Oracle instance.  Make sure that you have already:
+			<ol>
+				<li>Created an Oracle user (schema) configured to hold the Jetspeed tables.</li>
+				<li>Built the Custom Portal. The Jetspeed tables must be pre-created and pre-populated with default data. The Custom Portal build does this for you. See the build guides for more information on pre-populating the database.</li>
+				<li>The Oracle/JDBC connection string to connect to the database.</li>
+			</ol>
+			<i>Note</i>: if you are sharing schemas amongst one or more developers, you could be overwriting the development environment of another developer. Thus it is recommended that each developer has an allocated schema. Developers configure their database configuration in their build properties file. See the Jetspeed build documents for more information
+			</p>
+			<p>
+			<source>
+org.apache.jetspeed.production.database.default.name = oracle
+org.apache.jetspeed.production.database.url = jdbc:oracle:thin:@localhost:1521:fep
+org.apache.jetspeed.production.database.driver = oracle.jdbc.driver.OracleDriver
+org.apache.jetspeed.production.database.user = fep
+org.apache.jetspeed.production.database.password = xxxxx
+org.apache.jetspeed.production.jdbc.drivers.path = ${was.root}/lib/OptionalLibraries/oracle/ojdbc14.jar
+			</source>
+			</p>
+			<subsection name='Creating a JAAS User Identity in Websphere'>
+			<p>
+			<a name="section_3_1"></a>
+			First, create a user identity and password in the JAAS Java 2 connector. Navigate to the "Security" menu in the LHS menu of Websphere:
+			<br/>
+			<img src="images/websphere/31-1.png"/>
+			</p>
+			<p>
+			Select "Secure administration, applications, and infrastructure", which leads to the Authentication page. Expand the "Java Authentication and Authorization Service" section:
+			<br/>
+			<img src="images/websphere/31-2.png"/>
+			</p>
+			<p>
+			Select "J2C authentication data"... to create a new JAAS J2C User identity, select "New":
+			<br/>
+			<img src="images/websphere/31-3.png"/>
+			</p>
+			<p>
+			And then enter your credentials. Note we have called the user alias "JetExpressLogin". It is not required to name it "JetExpressLogin"; but make sure you use the same name when configuring your JDBC data source in the next section.
+			<br/>
+			<img src="images/websphere/31-4.png"/>
+			</p>
+			<p>
+			Press OK, and complete the Save dialogs.
+			</p>
+			</subsection>
+			<subsection name='Creating a JDBC Data Provider'>
+			<p>
+			<a name="section_3_2"></a>
+			In the default configuration of Jetspeed, Jetspeed prefers to get its database connections from a connection pool provided by the application server using a JNDI name. This section demonstrates how to configure a Websphere 6.1 JDBC Data Provider. In Websphere, a data provider can hold one or more data sources. Jetspeed actually connects to the data source, but first we need to define a generalize data provider.
+			</p>
+			</subsection>
+			<subsection name='Creating an Oracle JDBC Data Provider'>
+			<p>
+			<a name="section_3_3"></a>
+			Second, navigate to the "Resources" menu in the LHS menu of Websphere:
+			<br/>
+			<img src="images/websphere/33-1.png"/>
+			</p>
+			<p>
+			Click on JDBC Providers, you should see some a list of all your pre-installed JDBC providers. If you have already installed an Oracle JDBC provider, skip to the next section on configuring a JDBC Data Source. Otherwise, click "New" as shown below:
+			<br/>
+			<img src="images/websphere/33-2.png"/>
+			</p>
+			<p>
+			We can then create a new Oracle JDBC provider:
+			<br/><img src="images/websphere/33-3.png"/>
+			</p>
+			<p>
+			Select the "Database type" of Oracle, provider type of "Oracle JDBC driver", and "Connection pool data source". Give the provider a name or use the default values (Oracle JDBC Driver).
+			<br/><br/>
+			Make sut that you have a driver configured in Websphere:
+			<br/><img src="images/websphere/33-4.png"/>
+			<br/>
+			Here we hard-coded the path to a driver that we downloaded from Oracle and installed onto our system:
+			<br/><br/>
+			<code>/opt/IBM/WebSphere/AppServer/lib/ext/ojdbc14.jar</code>
+			<br/><br/>
+			Click next, and go with the default values for everything else. When you get to the end, press "Finish" and then "Save" as shown below:
+			<br/><img src="images/websphere/33-5.png"/><br/><br/>
+			You should now see Oracle in the list of known JDBC providers on Websphere:
+			<br/><img src="images/websphere/33-6.png"/>
+			</p>
+			</subsection>
+			<subsection name='Configuring an Oracle Data Source'>
+			<p>
+			<a name="section_3_4"></a>
+			Next, we will need to create an Oracle data source. Before continuing with this step, please make sure to properly configure your Oracle database as described in section 3. Navigate to the Oracle JDBC provider, and click on "Data sources" in the Additional Properties area:
+			<br/><img src="images/websphere/34-1.png"/>
+			</p>
+			<p>
+			Enter:
+			<ol>
+				<li>Data source name -rename it to <b>jetspeed</b></li>
+				<li>JNDI name - this value must be <b>jdbc/jetspeed</b></li>
+				<li>Select the default CMA alias <br/>
+				<img src="images/websphere/34-2.png"/></li>
+				<li>Enter the Oracle JDBC URL connection string, usually the string looks something like:<br/><br/>
+				<code>jdbc:oracle:thin:@localhost:1521:XE</code><br/><br/></li>
+				<li>Select a Data store helper class for either Oracle 9i or Oracle 10g</li>
+				<li>Select the JAAC J2C identity configured in section 3.1 from the Component-managed authentication alias:<br/>
+				<img src="images/websphere/34-3.png"/>
+				</li>
+			</ol>
+			Press the <b>"Test connection"</b> button to ensure that your connection is correct. Do not proceed to section 4 until you can connect to the database with the Test connection button. Press <b>"Save"</b> at the top of the page to complete the JDBC Data source configuration and complete the Save dialogs.
+			<br/>
+			<img src="images/websphere/34-4.png"/>
+			</p>
+			</subsection>
+			<subsection name='Restart Websphere'>
+			<p>
+			<a name="section_3_5"></a>
+			On Websphere 5.1.1.3, it was required to restart Websphere after installing the data source definitions. Otherwise, the data source definitions were not available to Jetspeed when first deployed. With version 6.1.0.2 or greater, restarting is not required.
+			</p>
+			</subsection>
+			</section>
+			<section name='WAR Deployment'>
+			<p>
+			<a name="section_4"></a>
+			This section covers deploying Jetspeed to Websphere with WAR files. If you prefer to deploy using EAR files, skip down to <a href="#">section 5</a>.
+			</p>
+			<p>
+			The deployment artifacts are created developers or a build team. In this example, we will assume that you have used the demo custom portal "Jet Express". See the accompanying build documents for instructions on how to build the Jet Express portal artifacts.
+			</p>
+			<subsection name='The WAR Files'>
+			<p>
+			<a name="section_4_1"></a>
+			The WAR file deployment for Jet Express consists of three war files:
+			<ul>
+				<li><b>jetexpress.war</b> - the custom Jetspeed portal</li>
+				<li><b>j2-admin.war</b> - the administrative portlets that come with Jetspeed</li>
+				<li><b>expressdemo.war</b> - the sample portlet application</li>
+			</ul>
+			These three war files must be deployed in the order above to Websphere using the administrative console.
+			</p>
+			</subsection>
+			<subsection name='Shared Libraries'>
+			<p>
+			<a name="section_4_2"></a>
+			The following jar files must be in a shared class loader used by Jetspeed and all portlet applications:
+			<ol>
+				<li>jetspeed-api-2.1-dev.jar</li>
+				<li>jetspeed-commons-2.1-dev.jar</li>
+				<li>pluto-1.0.1.jar</li>
+				<li>portals-bridges-common-1.0.jar</li>
+				<li>portlet-api-1.0.jar</li>
+			</ol>
+			</p>
+			<p>
+			The 6th jar file, derby-10.1.1.0.jar, should not be copied in. If you are going to use the Derby (Cloudscape) database with Jetspeed, <br/>create a JDBC data source in Websphere and connect it into Jetspeed via the JNDI procedure described in <a href="#">section 3</a>.
+			<br/><br/>
+			These 6 files are creating during the build process described in the accompanying build document.
+			<br/><br/>
+			Websphere 6 has a new feature specifically for sharing libraries (jars) amongst applications. Websphere has a directory for storing shared libraries. Your Websphere installation should have a directory: <b>${WAS_INSTALL_ROOT}/optionalLibraries/Apache/</b>.  
+			<br/><br/>
+			Create a directory underneath the Apache directory named "Jetspeed-2":
+			<br/><br/>
+			<code>${WAS_INSTALL_ROOT}/optionalLibraries/Apache/Jetspeed-2/jetspeed-api-2.1-dev.jar</code>
+			<br/>
+			<source>
+cd ${WAS_INSTALL_ROOT}/optionalLibraries/Apache
+mkdir Jetspeed-2</source>
+			Copy the five jar files above into the Jetspeed-2 shared library directory. Then from the Websphere Admin, go to the LHS menu option <i>Environment -> Shared Libraries</i>, and click "New":
+			<br/><img src="images/websphere/42-1.png"/>
+			</p>
+			<p>
+			Here we create a new Shared Library for use by deployed applications:<br/>
+			<img src="images/websphere/42-2.png"/>
+			</p>
+			<p>
+			Make sure to enter the five jars into the Classpath multi-line edit as shown above, with a CRLF to separate each jar file:
+			<source>
+${WAS_INSTALL_ROOT}/optionalLibraries/Apache/Jetspeed-2/jetspeed-api-2.1-dev.jar
+${WAS_INSTALL_ROOT}/optionalLibraries/Apache/Jetspeed-2/jetspeed-commons-2.1-dev.jar
+${WAS_INSTALL_ROOT}/optionalLibraries/Apache/Jetspeed-2/pluto-1.0.1.jar
+${WAS_INSTALL_ROOT}/optionalLibraries/Apache/Jetspeed-2/portals-bridges-common-1.0.jar
+${WAS_INSTALL_ROOT}/optionalLibraries/Apache/Jetspeed-2/portlet-api-1.0.jar</source>
+			Notice that we have named the Shared Library "JetspeedSharedLib". Don’t forget to reference this shared library when installing the Jetspeed application and all other portlet applications.
+			</p>
+			</subsection>
+			<subsection name='Add a Shared Library Reference to the Application Server Class Loader'>
+			<p>
+			<a name="section_4_3"></a>
+			In order to share the Jetspeed shared libraries installed in <a href="#">section 4.2</a> system-wide across WAR or EAR deployments, you will need to add a shared library reference to the application server’s class loader. This shared library reference points to <i>JetspeedSharedLib</i> shared library configured in <a href="#">section 4.2</a>.
+			</p>
+			<p>
+			To install a shared library reference, go to the <i>Server -> Application</i> servers menu:<br/>
+			<img src="images/websphere/43-1.png"/>
+			</p>
+			<p>
+			Select the server to install Jetspeed on, and then expand the <i>Java and Process Management</i> item on the right side of the page, then click <i>Class loader</i>:
+			<br/> <img src="images/websphere/43-2.png"/>
+			</p>
+			<p>
+			From the Class loader page, click New:<br/>
+			<img src="images/websphere/43-3.png"/>
+			</p>
+			<p>
+			On General Properties, set <i>Class loader order</i> to <i>Classes loaded with parent class loader last</i>:
+			<br/> <img src="images/websphere/43-4.png"/>
+			</p>
+			<p>
+			Click OK, and then Save. Click on your new Class loader: 
+			<br/> <img src="images/websphere/43-5.png"/>
+			</p>
+			<p>
+			Click on the <i>Shared libraries references</i> link:
+			<br/> <img src="images/websphere/43-6.png"/>
+			</p>
+			<p>
+			Created a new shared library reference by clicking New:
+			<br/> <img src="images/websphere/43-7.png"/>
+			</p>
+			<p>
+			Select the <i>JetspeedSharedLib</i> library name, press OK and continue with saving to the master configuration.
+			<br/> <img src="images/websphere/43-8.png"/>
+			</p>
+			<p>
+			You are now ready to deploy the Jetspeed portal and portlet application WAR files.
+			</p>
+			</subsection>
+			<subsection name='Install the Jetspeed Portal WAR file'>
+			<p>
+			<a name="section_4_4"></a>
+			The next step is to install the Jetspeed Portal WAR file. Jetspeed must always be installed and running before attempting to install any portlet applications. In our example, the name of the jetspeed war file is <i>"jetexpress.war"</i>.
+			</p>
+			<p>
+			Navigate to <i>Applications -> Install New Application</i>:
+			<br/> <img src="images/websphere/44-1.png"/>
+			<br/><br/>
+			<ol>
+				<li>Select the browse button, and load the <b>jetexpress.war</b> file from your local file system.</li>
+				<li>Enter a Context Root of <b>/jetexpress</b></li>
+				<li>Press Next, leading to a series of dialogs</li>
+				<li>On the Step 1 dialog, go with the defaults and press Next</li>
+				<li>On the Step 2 dialog, go with the defaults and press Next</li>
+				<li>On theStep 3 dialog, specify authentication method as “none” and select your JDBC data source:
+				<br/> <img src="images/websphere/44-2.png"/> <br/>
+				Hit Browse and select the preconfigured Oracle JDBC data source from section 3, and Apply then Next:
+				</li>
+				<li>On the Step 4 dialog, "Map Virtual hosts..", click the check box, and press Next</li>
+				<li>On the Step 5 dialog, press Finish, then on the next dialog, press Save</li>
+			</ol>
+			</p>
+			<p>
+			If you go to the <i>Applications -> Enterprise Applications</i> page, you should see your application deployed:	
+			<br/> <img src="images/websphere/44-3.png"/>	
+			</p>
+			</subsection>
+			<subsection name='Install the Jet Express Demo Portlet Application'>
+			<p>
+			<a name="section_4_5"></a>
+			Here we will install the Jet Express demo portlet application. This procedure is the same for all portlet applications.
+			In our example, the name of the application war file is <i>"expressdemo.war"</i>. 
+			</p>
+			<p>
+			Navigate to Applications->Install New Application: <br/>
+			<img src="images/websphere/45-1.png"/>
+			<ol>
+				<li>Select the browse button, and load the <b>expressdemo.war</b> file from your local file system.</li>
+				<li>Enter a Context Root of <b>/expressdemo</b></li>
+				<li>Press Next, leading to a series of dialogs</li>
+				<li>On the Steps 1 through 4 dialogs, go with the defaults and press Next and then Finish</li>
+				<li>Save the changes to the Master Configuration</li>
+			</ol>
+			</p>
+			<p>
+			If you go to the <i>Applications -> Enterprise Applications</i> page, you should see your application deployed:<br/>
+			<img src="images/websphere/45-2.png"/>
+			</p>
+			</subsection>
+			<subsection name='Install the Jetspeed Admin Portlet Application'>
+			<p>
+			<a name="section_4_6"></a>
+			Here we will install the Jetspeed Admin portlet application. This procedure is the same for all portlet applications. In our example, the name of the jetspeed war file is <i>"j2-admin.war"</i>.
+			</p>
+			<p>
+			Navigate to <i>Applications -> Install New Application</i>:<br/>
+			<img src="images/websphere/46-1.png"/>
+			<ol>
+				<li>Select the browse button, and load the <b>j2-admin.war</b> file from your local file system.</li>
+				<li>Enter a Context Root of <b>/j2-admin</b></li>
+				<li>Press Next, leading to a series of dialogs</li>
+				<li>On the Steps 1 through 4 dialogs, go with the defaults and press Next and then Finish</li>
+				<li>Save the changes to the Master Configuration</li>
+			</ol>
+			</p>
+			<p>
+			If you go to the <i>Applications -> Enterprise Applications</i> page, you should see your application deployed: <br/>
+			<img src="images/websphere/46-2.png"/>
+			</p>
+			</subsection>
+			<subsection name='Starting the Applications'>
+			<p>
+			From the <i>Applications -> Enterprise Applications</i> menu, you can start and stop all of your deployed applications. Start the Jetspeed application (<i>jetexpress_war</i>) first by clicking the checkbox next to it then pressing <i>Start</i>.
+			<br/>
+			<img src="images/websphere/46-3.png"/>
+			</p>
+			<p>
+			Once you see all "green statuses", you are then ready to test your portal.
+			</p>
+			<p>
+			Go to this link:
+			</p>
+			<p>
+			<a href="http://localhost:9080/jetexpress/portal">http://localhost:9080/jetexpress/portal</a>
+			</p>
+			<p>
+			You should see the example Jet Express custom portal:<br/>
+			<img src="images/websphere/46-4.png"/>
+			</p>
+			</subsection>
+			</section>
+			<section name='EAR Deployment'>
+			<p>
+			<a name="section_5"></a>
+			This section covers deploying Jetspeed to Websphere within one EAR file. If you prefer to deploy using WAR files, go to <a href="#section_4">section 4</a>.
+			</p>
+			<p>
+			The deployment artifacts are created by developers or a build team. In this example, we will assume that you have used the demo custom portal "Jet Express". See the accompanying build documents for instructions on how to build the Jet Express portal artifacts.
+			</p>
+			<subsection name='The EAR File'>
+			<p>
+			<a name="section_5_1"></a>
+			The EAR file deployment for Jet Express consists of one EAR file:
+			<ul>
+				<li><b>jetexpress.ear</b> - the custom Jetspeed portal and sample portlet application</li>
+			</ul>
+			</p>
+			<p>
+			The EAR File contains:<br/>
+			<ul>
+				<li><b>jetexpress.war</b> - the custom Jetspeed portal</li>
+				<li><b>j2-admin.war</b> - the administrative portlets that come with Jetspeed</li>
+				<li><b>expressdemo.war</b> - the sample portlet application</li>
+				<li><b>shared library files</b> - the shared libraries used by the three war files above</li>
+				<li><b>application.xml</b> - the EAR deployment descriptor</li>				
+			</ul>
+			</p>
+			</subsection>
+			<subsection name='Shared Libraries'>
+			<p>
+			<a name="section_5_2"></a>
+			The following jar files must be in a shared class loader used by Jetspeed and all portlet applications:
+			<ol>
+				<li>jetspeed-api-2.1-dev.jar</li>
+				<li>jetspeed-commons-2.1-dev.jar</li>
+				<li>pluto-1.0.1.jar</li>
+				<li>portals-bridges-common-1.0.jar</li>
+				<li>portlet-api-1.0.jar</li>
+			</ol>
+			</p>
+			<p>
+			With an EAR file, shared jar files can simply be placed in the root of the EAR distribution. These files are then shared in the same class loader across all web applications deployed in this EAR distribution.
+			</p>
+			<p>
+			The 6th jar file, derby-10.1.1.0.jar, should not be copied in. If you are going to use the Derby (Cloudscape) database with Jetspeed, create a JDBC data source in Websphere and connect it into Jetspeed via the JNDI procedure described in section 3.
+			</p>
+			<p>
+			The shared jar files are creating during the build process described in the accompanying build document. The build will automatically place the shared jar files into the root of the EAR file. In fact, all three WAR files are also contained in the root of the EAR file. Thus the EAR file contains 5 jar files and 3 war files in the root directory, and one deployment descriptor under the META-INF directory (<i>application.xml</i>).
+			</p>
+			<p>
+			The EAR file should look something like this:
+			</p>
+			<p>
+			<source>
+META-INF/
+META-INF/MANIFEST.MF
+expressdemo.war
+j2-admin.war
+jetexpress.war
+jetspeed-api-2.1-dev.jar
+jetspeed-commons-2.1-dev.jar
+pluto-1.0.1.jar
+portals-bridges-common-1.0.jar
+portlet-api-1.0.jar
+META-INF/application.xml
+			</source>
+			</p>
+			</subsection>
+			<subsection name='Remove any old shared libraries'>
+			<p>
+			<a name="section_5_3"></a>
+			If you deploy the shared jar files into your EAR file, you will want to remove any application server-wide shared libraries such as the one configured in <a href="section_43">section 4.3</a> #Add a Shared Library Reference to the Application Server Class Loader.
+			</p>
+			</subsection>
+			<subsection name='Installing the EAR File'>
+			<p>
+			<a name="section_5_4"></a>
+			EAR files are installed in the same manner as WAR files.
+			</p>
+			<p>
+			Navigate to <i>Applications -> Install New Application</i>: <br/>
+			<img src="images/websphere/54-1.png"/>
+			<ol>
+				<li>Select the browse button, and load the <b>jetexpress.ear</b> file from your local file system.</li>
+				<li>Leave the context root blank</li>
+				<li>Press Next, leading to a series of dialogs</li>
+				<li>On the Step 1 dialog, go with the defaults and press Next</li>
+				<li>On the Step 2, select the three web applications to map them to the server
+				<br/> 
+				<img src="images/websphere/54-2.png"/>
+				</li>
+				<li>On the Step 3 dialog, specify authentication method as "none" and select your JDBC data source:<br/>
+				<img src="images/websphere/54-3.png"/> <br/>
+				Hit Browse and select the preconfigured Oracle JDBC data source from section 3, and Apply then Next: <br/> 
+				<img src="images/websphere/54-4.png"/></li>
+				<li>On the Step 4 dialog, select the three web applications to map the to a virtual host:<br/>
+				<img src="images/websphere/54-5.png"/>
+				</li>
+				<li>On the Step 5 dialog, press Finish, then on the next dialog, press Save</li>
+			</ol>
+			</p>
+			<p>
+			If you go to the <i>Applications -> Enterprise Applications</i> page, you should see your application deployed:<br/>
+			<img src="images/websphere/54-6.png"/>
+			</p>
+			<p>
+			If the Application Status is not started (red, not green), then click on the checkbox next to <b>jetexpress</b> link, and click the Start button to start it. Once you see all "green statuses", you are then ready to test your portal. 
+			</p>
+			<p>
+			Go to this link:
+			</p>
+			<p>
+			<a href="http://localhost:9080/jetexpress/portal">http://localhost:9080/jetexpress/portal</a>
+			</p>
+			<p>
+			You should see the example Jet Express custom portal:<br/>
+			<img src="images/websphere/54-7.png"/>
+			</p>
+			</subsection>
+			</section>
+			<section name='Two or more EAR Deployment Files'>
+			<p>
+			<a name="section_6"></a>
+			In section 5, we demonstrated how to deploy all WAR file. In section 6, we demonstrated how to deploy in a single EAR file. The third choice is to deploy Jetspeed and your portlet applications in two or more EAR deployment files. 
+			</p>
+			<p>
+			Advantages:
+			<ol>
+				<li>Don't have to redeploy Jetspeed and the Jetspeed Administrative Portlets every time</li>
+				<li>For development, a smaller footprint for deployment of portlet applications</li>
+			</ol>
+			Disadvantages:
+			<ol>
+				<li>Still need to setup one shared library and the shared references.</li>
+			</ol>
+			</p>
+			<p>
+			The deployment of two or more EAR files is not covered by this document. All the steps required can be found in sections 3, 4, and 5. You will still need to install the shared libraries as defined in section 4. Additionally, you will need shared library references for each EAR deployment file. Follow the directions in section 4 for configuring shared libraries and shared library references, as they apply to EAR files in the same way as for WAR  files.
+			</p>
+			</section>
+			<section name='Websphere Application Server Additional Information'>
+			<a name="section_7"></a>
+			<subsection name='Websphere Application Server Portlet Extensions'>
+			<p>
+			<a name="section_7_1"></a>
+			Extensions for the portlet deployment descriptor specific to Websphere Application Server are defined within a file called <i>ibm-portlet-ext.xmi</i>. This deployment descriptor is an optional descriptor that you can use to configure WebSphere extensions for the portlet application and its portlets. For example, you can disable the <i>PortletServingServlet</i> servlet for the portlet application in the extended portlet deployment descriptor. 
+The <i>ibm-portlet-ext.xmi</i> extension file is loaded during application startup. If there are no extension-files specified with this setting, the portlet container's default values are used.
+The default for the <i>portletServingEnabled</i> attribute is true. The following is an example of how to configure that a <i>PortletServingServlet</i> servlet is not created for any portlet on the portlet application.
+			</p>
+			<p>
+			<source><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<portletappext:PortletApplicationExtension xmi:version="1.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:portletappext="portletapplicationext.xmi"
+    xmlns:portletapplication="portletapplication.xmi"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmi:id="PortletApp_ID_Ext"
+    portletServingEnabled="false">
+  <portletappext:portletApplication href="WEB-INF/portlet.xml#myPortletApp"/>
+</portletappext:PortletApplicationExtension>
+]]>
+			</source>
+			</p>
+			<p>
+			Find more information about Websphere porlet extensions here:
+			</p>
+			<p>
+			<a href="http://publib.boulder.ibm.com/infocenter/wasinfo/v6r1/index.jsp?topic=/com.ibm.websphere.nd.doc/info/ae/ae/rport_depdesc_ext.html">
+			http://publib.boulder.ibm.com/infocenter/wasinfo/v6r1/index.jsp?topic=/com.ibm.websphere.nd.doc/info/ae/ae/rport_depdesc_ext.html
+			</a>
+			</p>
+			</subsection>
+			<subsection name='Patch to Portlet Names and Servlet Names being different'>
+			<p>
+			<a name="section_7_2"></a>
+			When URL addressability is enabled, portlet names must not be the same as any servlet in the same web application. If URL Addressability is not needed, this name requirement is not needed. A fix is required to switch off name validation if URL addressability is disabled.
+			</p>
+			<h3>Problem conclusion</h3>
+			<p>
+			When URL addressability is disabled, the validation test if port let names match servlet names must also be disabled. With this fix and URL addressability disabled, a portlet application can be installed also if having the same portlet name as a servlet.
+			</p>
+			<p>
+			The fix for this APAR is currently targeted for inclusion in fix pack 6.1.0.4.
+			</p>
+			<p>
+			<a href="http://www-1.ibm.com/support/docview.wss?uid=swg1PK31467">http://www-1.ibm.com/support/docview.wss?uid=swg1PK31467</a>
+			</p>
+			</subsection>
+			</section>
+			<section name='Revision History' id="rev">
+			<a name="section_8"></a>
+			<table>
+				<tr>
+					<td>Revision</td>
+					<td>Date</td>
+					<td>Author</td>
+					<td>Comments</td>
+				</tr>
+				<tr>
+					<td>0.1</td>
+					<td>2005-01-21</td>
+					<td>David Sean Taylor</td>
+					<td>Initial draft</td>
+				</tr>
+				<tr>
+					<td>0.2</td>
+					<td>2006-01-10</td>
+					<td>Ate Douma</td>
+					<td>Further refinements and cleanout of unused sections</td>
+				</tr>
+				<tr>
+					<td>0.3</td>
+					<td>2006-01-10</td>
+					<td>David Sean Taylor</td>
+					<td>Express refinements</td>
+				</tr>
+				<tr>
+					<td>0.4</td>
+					<td>2006-10-16</td>
+					<td>David Sean Taylor</td>
+					<td>Websphere 6.1 testing</td>
+				</tr>
+				<tr>
+					<td>0.5</td>
+					<td>2006-10-16</td>
+					<td>David Sean Taylor</td>
+					<td>Upgrade to 6.1.0.2, complete WAR section, start on EAR section</td>
+				</tr>
+				<tr>
+					<td>0.6</td>
+					<td>2006-10-23</td>
+					<td>David Sean Taylor</td>
+					<td>Complete EAR sections</td>
+				</tr>
+			</table>
+			</section>
+	</body>
+</document>
+

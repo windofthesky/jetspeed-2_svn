@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Group Administration Guide</title>
+		<subtitle>Guide to Administering Groups</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Group Administration Guide">
+			<p>
+				Administering roles with Jetspeed. 
+				<br/><br/>
+			</p>
+		</section>
+		<section name="The Group Browser">
+			<p>
+			TODO: overview, screenshot			
+			</p>
+			<subsection name="Paging">
+			<p>
+			</p>
+			</subsection>
+			<subsection name="Searching">
+			<p>
+			</p>
+			</subsection>
+			<subsection name="Filtering">
+			<p>
+			</p>
+			</subsection>
+			<subsection name="Selecting for Edit">
+			<p>
+			</p>
+			</subsection>		
+		</section>
+		<section name="Adding a New Group">
+			<p>
+			TODO: overview, screenshot
+			<table>
+			<tr>
+			<th>Field</th>
+			<th>Description</th>			
+			</tr>
+			<tr>
+			<td>New Group Name</td>
+			<td></td>
+			</tr>
+			</table>
+			</p>
+		</section>
+		<section name="Group Detail Information">
+		<p>
+		</p>
+		<subsection name="Add Users to Group">
+		<p>
+		</p>
+		</subsection>
+		<subsection name="Remove Checked Users">
+		<p>
+		</p>
+		</subsection>
+		<subsection name="Search Users in Group">
+		<p>
+		</p>
+		</subsection>
+		<subsection name="Add Roles to Group">
+		<p>
+		</p>
+		</subsection>
+		<subsection name="Remove Checked Roles">
+		<p>
+		</p>
+		</subsection>
+		<subsection name="Search Roles in Group">
+		<p>
+		</p>
+		</subsection>
+		<subsection name="Deleting a Group">
+		<p>
+		</p>
+		</subsection>
+
+		</section>	
+		<subsection name="Group Details Configuration">
+		<p>
+		For some weird reason there is no Edit Mode here!	
+			<table>
+			<tr>
+			<th>Field</th>
+			<th>Description</th>			
+			</tr>
+			<tr>
+			<td></td>
+			<td></td>
+			</tr>
+			<tr>
+			<td></td>
+			<td></td>
+			</tr>
+			</table>
+		</p>		
+		</subsection>				
+	</body>
+</document>

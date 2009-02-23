@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed Users Guide</title>
+		<subtitle>Guide to Using Jetspeed</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
+		</authors>
+	</properties>
+    <body>
+        <section name="Menu">
+			<p>
+				The left hand Menu of the Portal Window contains additional navigation items.  The links, pages and folders are pre-configured links
+				that can vary based on a person's role or group.  You may add new folders using the Folder Configuration option.  Enter the Folder Name, Title 
+				and Short Title.  The Short Title will be used for the Name of the Folder in the left hand side menu, the Folder Name will be the name of the Tab in
+				your Tab that is present when you click on your folder name in the Menu.
+			</p>
+			<p>
+				You may add additional folders, add folders within folders and add tabs within each folder.  Each new tab or folder creates a new blank
+				page that you may then customize by changing themes, layouts, Portlet Themes and Adding Portlets.  The Menu on the left and the Tab bar across 
+				the top will change when you click on a folder name.
+			</p>
+			<p>
+				The Breadcrumbs bar underneath the leftmost Tab gives you navigation links back to the user home page.  
+			</p>
+		</section>
+ 	</body>
+</document>

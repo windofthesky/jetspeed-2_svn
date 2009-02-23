@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project>
+    <body>
+        <links>
+        	<item name="Main Docs" href="index.html" />
+        	<item name="Admin Guide" href="adminguide/index.html" />        	
+        	<item name="Developers Guide" href="devguide/index.html" />
+        	<item name="Users Guide" href="usersguide/index.html" />
+            <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />        
+        </links>
+        <menu name="Deployment Overview">
+            <item name="Overview" href="deployguide/index.html" />            
+        </menu>
+    	<menu name="The Jetspeed Properties File">
+    	    <item name="Jetspeed Properties" href="deployguide/jetspeed-properties.html" />            
+    	    <item name="Override Properties" href="deployguide/override-properties.html" />            
+    	</menu>
+    	<menu name="Spring Configurations">
+    		<item name="Spring Introduction" href="deployguide/config-spring.html" />
+    		<item name="Datasource Bootstrap" href="deployguide/config-datasource.html" />
+    		<item name="Overrides" href="deployguide/config-overrides.html" />
+    		<item name="Jetspeed Components" href="deployguide/guide-components.html"/>
+    	</menu>
+    	
+    	<menu name="Deployment">
+			<item name="Tomcat 5" href="deployguide/guide-tomcat.html"/>
+			<item name="Websphere" href="deployguide/deploying-jetspeed-to-websphere.html"/>
+    		<item name="Deployer Tools" href="deployguide/deploye-tools.html" />
+		</menu>		
+    	
+    	<menu name="Security Components">
+    		<item name="Security Configuration" href="deployguide/security-config.html" />
+    		<item name="Credentials" href="deployguide/credentials.html" />
+    		<item name="Federated Authentication" href="deployguide/guide-federated-security.html" />
+    		<item name="NTLM" href="deployguide/guide-ntlm.html" />
+    		<item name="LDAP" href="deployguide/ldap.html" />
+    		
+    		<item name="SSO" href="deployguide/config-sso.html" />
+    		 <item name="Tomcat SSO Cross-Context" href="deployguide/guide-tomcat-sso-cross-context-j2-realm.html"/>
+    		 <item name="User Attributes" href="deployguide/guide-user-attributes.html"/>   		 
+		</menu>
+		
+    	<menu name="Portal Components">
+    		<item name="Aggregation" href="deployguide/guide-aggregation.html" />
+    		<item name="Caching" href="" />
+    		<item name="Device Capabilities" href="" />
+    		<item name="Portal Core" href="" />    		
+    		<item name="Pipelines" href="" />
+    		<item name="Pluto Container" href="" />
+    		<item name="Profiler" href="deployguide/config-profiler.html" />
+    		<item name="Registry" href="" />    		
+    		<item name="Services" href="" />
+    		<item name="Transactions" href="" />
+    	</menu>
+
+    	<menu name="PSML Configuration">
+    		<item name="Menus" href="deployguide/guide-menus-declarative-psml.html" />
+    		<item name="PSML Declarative Security" href="deployguide/guide-security-declarative-psml.html" />
+		</menu>
+
+		<menu name="Jetspeed Cluster">    				
+    		<item name="Clustering" href="deployguide/config-cluster.html" />
+    		<item name="Distributed Cache" href="deployguide/distributed-cache.html" />
+		</menu>
+		
+    	<menu name="Administration Compoenents">
+    		<item name="General Administration" href="" />
+    		<item name="Statistics" href="" />    		
+		</menu>
+		
+    	<menu name="Ajax">
+    		<item name="Ajax API" href="ajaxapi.html" />
+		</menu>
+		
+    	<menu name="Desktop">
+    		<item name="Desktop" href="" />    	
+    		<item name="Header Contribution" href="" />    	
+		</menu>
+		
+    </body>
+</project>

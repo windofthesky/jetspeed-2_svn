@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Guide to Distributed Cache</title>
+    <subtitle>How to configure Jetspeed Distributed Cache.</subtitle>
+    <authors>
+      <person name="David Sean Taylor" email="taylor@apache.org" />
+    </authors>
+  </properties>
+  <body>
+    <section name="Jetspeed Distributed Cache">
+
+First, verify that the following page-manager test works on your development machine:
+
+mvn test -P test -Dtest=TestDatabasePageManagerCache
+
+Not only must this test pass, but the following message should not appear in the
+console/shell or in the test log files:
+
+"Server page managers not distributed: possible system limitation... test skipped"
+
+If you see the above message, check firewall settings to allow UDP/4446. That is
+sometimes needed on Lunix systems if firewalls are enabled to allow udp multicast
+loopback. Some older TCP stacks do not support udp multicast loopback at all. This
+is why this test does not outright fail when distributed caches can not be setup.
+
+Now for the full test: setup two independent tomcat J2 images.
+
+
+Edit webapps/jetspeed/WEB-INF/assembly/cache.xml in tomcat image #1:
+<source><![CDATA[
+   <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+       <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
+       <property name="defaultHostname" value="localhost"/>
+       <property name="defaultPort" value="40001"/>
+   </bean>
+]]></source>
+Edit webapps/jetspeed/WEB-INF/assembly/cache.xml in tomcat image #2:
+<source><![CDATA[
+   <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+       <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
+       <property name="defaultHostname" value="localhost"/>
+       <property name="defaultPort" value="40002"/>
+   </bean>
+]]></source>
+Startup browsers against each server, (remember to use different host names to
+ensure cookies are managed separately... for instance: '127.0.0.1' and 'localhost').
+View the same page in each browser. Edit the page in one browser. Change should be
+visible in second browser on refresh.
+
+When distributed caches are run on multiple virtual or physical servers, the default
+port assigned above does not need to be incremented for each machine. If the servers
+are deployed on multiple networks, care must be taken to ensure multicast traffic on
+UDP/4446/230.0.0.1 and TCP/40001 is routed between the servers. Additionally,
+multicast propagation TTL may have to be specified to enable the UDP packets to
+jump between networks. The default value is "1", which is supposed to limit packets
+to one subnet. Here are the ttl options:
+
+     0   - the same host
+     1   - the same subnet
+     32  - the same site
+     64  - the same region
+     128 - the same continent
+     255 - unrestricted
+
+Here is a fully specified cacheManagerConfig bean with its distributed cache default
+values for normal installation:
+<source><![CDATA[
+
+   <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+       <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
+       <property name="defaultGroupAddress" value="230.0.0.1"/>
+       <property name="defaultGroupPort" value="4446"/>
+       <property name="defaultGroupTTL" value="1"/>
+       <property name="defaultHostname" value="localhost"/>
+       <property name="defaultPort" value="40001"/>
+   </bean>
+]]></source>
+
+Any of these can be configured to reflect requirements of the production network.
+</section>
+</body>
+</document>

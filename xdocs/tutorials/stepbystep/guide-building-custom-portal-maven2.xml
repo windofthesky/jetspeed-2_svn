@@ -1,0 +1,455 @@
+<?xml version="1.0"?>
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<document>	
+	<properties>
+		<title>Building a Custom Jetspeed Portal With Maven-2</title>
+		<subtitle>For Tomcat 5 and Websphere Deployments</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+		<section name='Building a Custom Jetspeed Portal With Maven-2'>
+			<ul>
+				<li>
+					<a href="#Introduction">Introduction</a>
+					<ul>
+						<li><a href="#Purpose">Purpose</a></li>
+						<li><a href="#Software_Requirements">Software Requirements</a></li>
+						<li><a href="#The_Jet_Express_Custom_Portal_Project">The Jet Express Custom Portal Project</a></li>
+						<li><a href="#Environment">Environment</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#Building_With_Maven-2">Building with Maven-2</a>
+					<ul>
+						<li><a href="#The_Maven-2_Repository">The Maven-2 Repository</a></li>
+						<li><a href="#The_Portal_Archetype_-_Creating_Your_Custom_Project">The Portal Archetype - Creating your Custom Project</a></li>
+						<li><a href="#The_Jet_Express_Custom_Portal">The Jet Express Custom Portal</a>
+							<ul>
+								<li>Step One: create the custom portal project</li>
+								<li>Step Two: create a portlet application project</li>
+								<li>Step Three: create the eclipse project files</li>
+								<li>Step Four: create the default PSML pages</li>
+								<li>Step Five: create the custom decorators</li>
+								<li>Step Six: add your new portlet application (Jet Express 2) to build</li>
+								<li>Step Seven: deploy your portal and portlet application</li>
+								<li>Optional Step: enable automated EAR build</li>
+							</ul>
+						</li>
+						<li><a href="#Redeploying_The_Portlet_Application">Redeploying the Portlet Application</a></li>
+					</ul>
+				</li>
+				<li><a href="#Revision_History">Revision History</a></li>
+			</ul>
+		</section>
+			<section name='Introduction' id="introduction">
+				<p>
+					This document is a step by step guide to building a custom Apache Portals Jetspeed-2 portal with Maven-2. 
+					The Maven-2 project provided with this document will:
+					<ol>
+						<li>Build a custom portal</li>
+						<li>Build a custom portlet application</li>
+						<li>Populate the database</li>
+						<li>Create distributable deployment archives for Websphere
+							6.1 and Tomcat 5</li>
+					</ol>
+				</p>
+				<p>
+					This document is for Maven-2 build systems. To build with Maven-2, see
+					the accompanying document "Building Custom a Jetspeed Portal with
+					Maven-1"
+				</p>
+				<p>
+					For documentation on deploying the WAR and EAR files created here, see
+					the document "Deploying Jetspeed to Websphere"
+				</p>
+				<subsection name='Purpose' id="intro-purpose">
+					<p>
+					This document will teach you how to build and configure a custom Jetspeed Portal and create deployable archives for Websphere 6.1 and Tomcat 5. The complete source code, projects and deployment environment are described in this document. Deployments are based upon the J2EE standard "Web Application" and "Enterprise Application" deployment. The build is based on the Apache Portals Jetspeed-2 "Maven-2 Custom Build".
+					</p>
+					<p>
+					Jetspeed is an open source project, thus all source code is freely available from Apache. See the website for more details: <a href="http://portals.apache.org/jetspeed-2/">http://portals.apache.org/jetspeed-2/</a>
+					</p>
+					<p>
+					This document assumes that the user is familiar with open source Java development. In particular the Apache Software Foundation (ASF) and the essential Apache open source projects:
+					<ol>
+						<li>Apache Portals <a href="http://portals.apache.org">http://portals.apache.org</a> and subprojects:
+							<ol>
+								<li>Jetspeed-2</li>
+								<li>Bridges</li>
+								<li>Pluto</li>
+							</ol>
+						</li>
+						<li>Ant (<a href="http://ant.apache.org">http://ant.apache.org</a>)</li>
+						<li>Maven-2 (<a href="http://maven.apache.org">http://maven.apache.org</a>)</li>
+						<li>Apache Tomcat Web Server (<a href="http://tomcat.apache.org">http://tomcat.apache.org</a>)</li>
+						<li>IBM Websphere Application Server</li>
+					</ol>
+					</p>
+				</subsection>
+				<subsection name='Software Requirements' id="intro-software-req">
+					The distribution assumes the following software products installed:
+					<table>
+						<tr>
+							<td>Product</td>
+							<td>Version</td>
+						</tr>
+						<tr>
+							<td>Ant</td>
+							<td>1.6.5 or higher</td>
+						</tr>
+						<tr>
+							<td>Eclipse</td>
+							<td>3.1.1 or higher</td>
+						</tr>
+						<tr>
+							<td>Maven</td>
+							<td>2.0.4 or higher</td>
+						</tr>
+						<tr>
+							<td>Sun JDK</td>
+							<td>1.4.2 or 1.5</td>
+						</tr>
+						<tr>
+							<td>Tomcat</td>
+							<td>5.5.12 (with Java 1.4 compatibility) or higher</td>
+						</tr>
+						<tr>
+							<td>IBM Websphere</td>
+							<td>6.1.0.2 or higher</td>
+						</tr>
+					</table>
+				</subsection>
+				<subsection name='The Jet Express Custom Portal Project' id="intro-jetexpress">
+				<p>
+				The example project accompanying this document is called Jet Express. It is a custom Jetspeed portal project. Custom projects are how you build a customized version of Jetspeed. With a custom project, you can override:
+				<ul>
+					<li>Spring configuration of your portal</li>
+					<li>Database connection</li>
+					<li>Portal decorations and layouts</li>
+					<li>Version of Jetspeed to integrate with</li>
+					<li>The context name of the portal</li>
+				</ul>
+				</p>
+				<p>
+				Here is what the customized portal will look like after it is built:
+				<br/>
+				<img src="images/custom-portal-build.png"/>
+				</p>
+				<p>
+				As you can see, it doesn’t look like the default Jetspeed portal that you can download from Apache. Custom builds are best for developers to integrate their own portlet applications and portal features into a customized build environment.
+				</p>
+				<p>
+				The Jet Express project contains the following sub project builds:
+				<ul>
+					<li>The Portal build – builds a customized version of Jetspeed using the Portal Archetype.</li>
+					<li>The Express Demo build – builds a demo portlet application</li>
+				</ul>
+				</p>
+				<p>
+				With this build environment, you will be able to build both a portal and a portlet application. By following the examples in this document, the goal is to teach you how to create your own custom portal with a similar custom build project as Jet Express.
+				</p>
+				</subsection>
+				<subsection name='Environment'>
+				<p>
+				The system path will need to include Java, Maven and Ant. 
+				</p>
+				<p>
+				Under Windows XP, the Environment Variables and the System Path is modified by going to the <i>Start Menu -> Settings -> Control Panel -> System -> Advanced -> Environment</i> Variables.
+				</p>
+				<p>
+				Note: You need administrative privileges to be allowed to modify system environment variables.
+				</p>
+				<p>
+				With these settings configured, you then have to make your system Windows PATH variable based on the executable directories for:
+				<ol>
+					<li>Maven</li>
+					<li>Ant</li>
+					<li>Java</li>
+				</ol>
+				Make sure you can go to a command line and type:
+				</p>
+				<p>
+				<source>mvn -v</source>
+				</p>
+				<p>
+				This command should display the current version of Maven-2.
+				</p>
+				</subsection>
+			</section>
+			<section name='Building with Maven-2' id="maven2">
+			<p>
+			The build environment uses the Maven-2 project management tool (<a href="http://maven.apache.org">http://maven.apache.org</a>). One thing that Maven does well is managing Java jar files and maintaining versions of those files. Maven stores all jar files for almost every known open source project on the planet in a set of distributed repositories on the internet. Maven project descriptors reference specific versions of the jars, and the jars are downloaded to a local repository in order to build the system.
+			</p> 
+			<subsection name='The Maven-2 Repository' id="maven2-repo">
+			<p>
+			By default Maven looks for the local repository in a directory named ".m2" found under your Home directory which on Windows XP usually is found under the "Documents and Settings" directory. 
+			</p>
+			<p>
+			We have provided a distribution of the entire Maven-2 repository required to build your custom portal. Simply unzip the <i>repository.zip</i> file into your <code>$HOME/.m2/repository</code> directory. You are now ready to start building with Maven and Jetspeed.
+			</p>
+			</subsection>
+			<subsection name='The Portal Archetype - Creating your Custom Project' id="maven2-custom-proj">
+			<p>
+			The first step is to create a new portal project. In our example, we create a new custom Jetspeed project named "jetexpress-2". Archetypes are Maven templates for creating other Maven kinds of projects. Jetspeed provides several archetypes:
+			<ul>
+				<li><i>Portal</i> archetype -creates a Jetspeed custom portal project</li>
+				<li><i>Application</i> archetype - creates a portlet application project</li>
+				<li><i>Component</i> archetype - create a general <a href="http://www.springsource.org">Spring</a> component project</li>
+				<li><i>Shared Jetspeed component</i> archetype - create a Jetspeed shared component project</li>
+			</ul>
+			</p>
+			<p>
+			From the directory above where you want to create the project, issued this command:
+			</p>
+			<p>
+			<source>
+			mvn archetype:create 
+    -DarchetypeGroupId=org.apache.portals.jetspeed-2 
+    -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1-dev 
+    -DgroupId=bluesunrise 
+    -DartifactId=jetexpress-2 
+    -Dversion=1.0
+			</source>
+			</p>
+			<p>
+			This command will create a new subdirectory named "jetexpress-2". Under that subdirectory, you will find the shell for a complete Jetspeed portal custom project.
+			</p>
+			<p>
+			Note that this and other archetypes can issue many harmless warnings while expanding. Please ignore the warnings unless the expansion of the archetype template fails. When complete, the portal archetype expansion will contain the following structure within a directory named as the specified artifactId relative to the current working directory: 
+			<ul>
+			<li><i>&lt;artifactId&gt;/applications</i> - conventional subdirectory for portal application war modules.</li>
+			<li><i>&lt;artifactId&gt;/app-servers</i> - contains portal deployment builds and resources.</li>
+			<li><i>&lt;artifactId&gt;/components</i> - conventional subdirectory for portal component jar modules.</li>
+			<li><i>&lt;artifactId&gt;/etc/assembly</i> - custom portal application component Spring assemblies.</li>
+			<li><i>&lt;artifactId&gt;/conf</i> - portal application context configuration files.</li>
+			<li><i>&lt;artifactId&gt;/etc/decorations</i> - custom decorations in images, layout, and portlet subdirectories.</li>
+			<li><i>&lt;artifactId&gt;/etc/pages</i> - custom portal PSML pages augment/override minimal defaults, (e.g. <i>/Administrative/**, /default-page.psml, /myaccount.psml, /page.security, and /system/**</i>).</li>
+			<li><i>&lt;artifactId&gt;/etc/schema</i> - Jetspeed-2 database schema definitions.</li>
+			<li><i>&lt;artifactId&gt;/etc/sql</i> - Jetspeed-2 base database configuration scripts.</li>
+			<li><i>&lt;artifactId&gt;/etc/templates</i> - custom overrides for Jetspeed-2 layout portlet templates.</li>
+			<li><i>&lt;artifactId&gt;/etc/webapp</i> - custom content resources to be packaged with portal application.</li>
+			<li><i>&lt;artifactId&gt;/portal</i> - portal application war build scripts and webapp resource overrides.</li>
+			<li><i>&lt;artifactId&gt;/src</i> - these directories are an artifact of archetype expansion and should be deleted.</li>
+			</ul>
+			</p>
+			<p>
+			The archetype also contains a <i>settings.xml.sample</i> that is a subset of the Jetspeed-2 source build parameters. If one has not previously configured the <i>~/.m2/settings.xml</i> file as described above, this sample can be used to do so without J2 test configurations. 
+			</p>
+			<p>
+			The first step in using the Maven2 build is to either: 
+			<ol>
+				<li>copy the <i>settings.xml.sample</i> to <i>~/.m2/settings.xml</i>, or</li>
+				<li>incorporate the settings in this file into your existing Maven2 configuration by copying <i>settings.xml.sample</i> to <i>settings.xml</i></li>
+			</ol>
+			</p>
+			<p>
+			For our example, we are going to copy over pre-configured resources, including the <i>settings.xml</i> on top of our project to make the tutorial more useful.
+			</p>
+			</subsection>
+			<subsection name='The Jet Express Custom Portal' id="maven2-express-custom">
+			<p>
+			The Jet Express project has already been created for you. We ran the <i>archetype:create</i> command, then created all the resources and portlets to make up our custom portal. Lets go through the steps we went through, so that you can apply these same steps to your custom build. 
+			</p>
+			<p>
+			NOTE: the steps below are not necessary with the training material
+			</p>
+			<h3>Step One: create the custom portal project</h3>
+			<p>
+			Create your portal application by running <i>archetype:create</i> for example:
+			</p>
+			<p>
+			<source>mvn archetype:create 
+    -DarchetypeGroupId=org.apache.portals.jetspeed-2 
+    -DarchetypeArtifactId=portal-archetype -DarchetypeVersion=2.1-dev 
+    -DgroupId=bluesunrise 
+    -DartifactId=jetexpress-2 
+    -Dversion=1.0
+			</source>
+			</p>
+			<p>
+			This command will create a new subdirectory named "jetexpress-2". Under that subdirectory, you will find the shell for a complete Jetspeed portal custom project.
+			</p>
+			<h3>Step Two: create a portlet application project</h3>
+			<p>
+			Jetspeed also have an archetype for creating a portlet application:
+			</p>
+			<p>
+			<source>mvn archetype:create 
+   -DarchetypeGroupId=org.apache.portals.jetspeed-2 
+   -DarchetypeArtifactId=application-archetype
+   -DarchetypeVersion=2.1-dev 
+   -DgroupId=bluesunrise 
+   -DartifactId=express-demo2 
+   -Dversion=1.0
+			</source>
+			</p>
+			<p>
+			The training material comes with a full express-demo2 portlet application. We have already written the portlets.
+			</p>
+			<h3>Step Three: create the eclipse project files</h3>
+			<p>
+			Maven can create the eclipse project files for you:
+			</p>
+			<p>
+			<source>mvn eclipse:eclipse</source>
+			</p>
+			<h3>Step Four: create the default PSML pages</h3>
+			<p>
+			PSML pages go in the portal/src/webapp/WEB-INF/pages directory by default:
+			<img src="images/webinf-structure-psml.png"/>
+			</p>
+			<p>
+			Usually each portal has a set of default PSML pages. The users will create their own pages as they use the system.
+			</p>
+			<h3>Step Five: create the custom decorators</h3>
+			<p>
+			Decorators go in the <i>portal/src/webapp/decorators</i> directory by default:	
+			<img src="images/webinf-structure-decorators.png"/>
+			</p>
+			<p>
+			Here we have two kinds of decorators: page (layout) and portlet decorators. We have defined one of each. The page decorator defines the skin for the pages in our portal. The portlet decorator defines the default skin for the portlets.
+			</p>
+			<h3>Step Six: add your new portlet application (Jet Express 2) to the build</h3>
+			<p>
+			We need to edit a few files to help automate the Maven build so that it automatically deploys the Jet Express 2 portlet applications. Edit the <i>applications/pom.xml</i> file:
+			</p>
+			<p>
+			<source><![CDATA[
+<modules>
+	<module>express-demo2</module>
+</modules>]]>
+			</source>
+			</p>
+			<p>
+			Edit the root <i>pom.xml</i> file:
+			</p>
+			<p>
+			<source>
+			<![CDATA[
+<dependencyManagement>
+	<dependencies>
+  	...          
+		<dependency>
+			<groupId>${pom.groupId}</groupId>
+			<artifactId>express-demo2</artifactId>
+			<type>war</type>
+			<version>${pom.version}</version>
+		</dependency>]]>            
+			</source>
+			</p>
+			<p>
+			Finally, for deployment, add your new portlet application to the <i>app-servers</i> POM found under <i>app-servers/pom.xml</i>:
+			</p>
+			<p>
+			<source>
+			<![CDATA[
+<!-- custom portlet app -->
+<dependency>
+	<groupId>${pom.groupId}</groupId>
+	<artifactId>express-demo2</artifactId>
+	<type>war</type>
+	<version>${pom.version}</version>
+</dependency>]]>
+			</source>
+			</p>
+			<p>
+			To hot deploy your custom portlet application to Tomcat, add it to the <i>app-servers</i> Ant script for Tomcat:
+			</p>
+			<p>
+			<source><![CDATA[
+<target name="hot-deploy-apps">
+...
+	<antcall target="hot-deploy-war">
+		<param name="org.apache.jetspeed.deploy.groupid" value="${portal.groupid}"/>
+		<param name="org.apache.jetspeed.deploy.artifactid" value="express-demo2"/>
+		<param name="org.apache.jetspeed.deploy.version" value="${portal.version}"/>
+	</antcall>]]>
+			</source>
+			</p>
+			<h3>Step Seven: deploy your portal and portlet application</h3>
+			<p>
+			Now you are ready to deploy your new portal and portlet application. In this example, we will deploy to Tomcat:
+			</p>
+			<p>
+			<code>mvn –P tomcat</code>
+			</p>
+			<p>
+			Startup Tomcat, and go to:
+			</p>
+			<p>
+			<code>http://localhost:8080/jetexpress-2</code>
+			</p>
+			<p>
+			<img src="images/startupscreen.png"/>
+			</p>
+			<h3>Optional Step: enable automated EAR build</h3>
+			<p>
+			By default, only WAR files are generated. To generate an EAR file, edit the root <i>pom.xml</i> and uncomment this line:
+			</p>
+			<p>
+			<source>
+			<!-- Build Enterprise APP -->
+        	<module>enterprise</module>
+			</source>
+			</p>
+			<p>
+			The EAR file will be generated into the <i>enterprise/target</i> directory.
+			</p>
+			<p>
+			You can deploy the generated EAR file as is into Websphere. We have tested this EAR with Websphere 6.1.  Please read the accompanying document, 
+			"Deploying Jetspeed to Websphere.doc" for more information.
+			</p>
+			</subsection>
+			<subsection name='Redeploying the Portlet Application' id="maven2-redeploy-app">
+			<p>
+			For fast servlet and portlet development, nothing seems to beat developing with Tomcat. 
+			Say you make a change to a Java class in the Express Demo portlet application. To build and redeploy:
+			</p>
+			<p>
+			<source>
+			cd applications
+			cd express-demo2
+			mvn 
+			copy target\express-demo2-1.0.war \JetspeedTraining\tomcat5\webapps\express-demo2.war
+			</source>
+			</p>
+			<p>
+			Wait a few seconds, and your changes should be deployed by Tomcat.
+			</p>
+			</subsection>
+			</section>
+			<section name='Revision History' id="rev">
+			<table>
+				<tr>
+					<td>Revision</td>
+					<td>Date</td>
+					<td>Author</td>
+					<td>Comments</td>
+				</tr>
+				<tr>
+					<td>0.1</td>
+					<td>2006-10-24</td>
+					<td>David Sean Taylor</td>
+					<td>Initial draft</td>
+				</tr>
+			</table>
+			</section>
+	</body>
+</document>
+

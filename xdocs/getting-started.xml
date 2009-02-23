@@ -21,59 +21,130 @@
 		<subtitle>Getting up and running quickly</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
-			<person name="Ate Douma" email="ate@apache.org" />
-			<person name="David Le Strat" email="dlestrat@apache.org" />
-			<person name="Ron Wheeler"
-				email="rwheeler@artifact-software.com" />
 		</authors>
 	</properties>
 	<body>
-		<section name="Requirements">
-			<p>
-				It is expected that the user is familiar with both the
-				<a href="http://maven.apache.org">Apache Maven</a>
-				project management tool and the
-				<a href="http://ant.apache.org">Apache Ant</a>
-				scripting utility.
-			</p>
-			<ul>
-				<li>
-					<a href="http://ant.apache.org/bindownload.cgi">
-						Ant 1.5
-					</a>
-					or higher
-				</li>
-				<li>
-					<a
-						href="http://maven.apache.org/start/download.html">
-						Maven 1.0.2
-					</a>
-				</li>
-				<li>Java 1.4.2_02 or higher</li>
-				<li>
-					Servlet 2.4 Engine:
+		<section name="Where do I start?">
+		<p>Where you start depends on what you plan on doing with Jetspeed. Its always best to start by reading the documentation guides. There are several guides provided:
+		</p>
 					<ul>
-						<li>Tomcat 5.5.x</li> 
+						<li>
+							<a href="usersguide/index.html">
+								Users Guide
+							</a>
+						</li>
+						<li>
+							<a href="adminguide/index.html">
+								Administration Guide
+							</a>
+						</li>
+						<li>
+							<a href="deployguide/index.html">
+								Deployment and Configuration Guide
+							</a>
+						</li>
+						<li>
+							<a href="devguide/index.html">
+								Developers Guide
+							</a>
+						</li>
+						<li>
+							<a href="deploy/index.html">
+								Deployers Guide
+							</a>
+						</li>
+					</ul>
+		<p>
+		For those of you in more of a hurry to get started,		
+				you have the choice of
+				installing Jetspeed from a binary release or doing more indepth open source development by working with the
+				source code.</p><p>If you want to modify the core functionality of
+				Jetspeed or contribute to the development of Jetspeed,
+				you need to work with the source code. If you are 
+				interested in building your first custom enterprise
+				portal, try the custom build. We recommend trying an Evaluation (demo, download) to get started. Eventually you will want to move on to Building a Custom Portal.
+				Advanced users will want to learn how to build from source.
+		</p>
+		<ul>
+		  <li><a href="#Evaluating">Evaluation</a></li>
+		  <li><a href="#Custom Build">Building a Custom Portal</a></li>
+		  <li><a href="#Building from Source">Building Jetspeed from Source</a></li>
+	   </ul>	   		  
+		</section>
+		<section name="Evaluating">
+		<p>
+		If you are evaluating Jetspeed, best to download the latest distribution or try running Jetspeed from the demo site:
+		<ul>
+		  <li><a href="download.html">Download Jetspeed</a></li>
+		  <li><a href="demo.html">Jetspeed Online Demos</a></li>
+	   </ul>		  
+		</p>
+		<p><b>Download Requirements</b> - The requirements for the downloadable distribution are: Java 1.4.2_02 or higher, enough memory to run Tomcat with several web apps (the demo comes with Tomcat embedded in the installer)</p> 
+		<p><b>Online Demo Requirements</b> - The requirements for the online demos are minimal: just a web browser</p> 
+		</section>
+		<section name="Custom Build">
+			<p>
+When starting a new Jetspeed portal project, we strongly recommend that you create a custom portal project, and do not edit the Jetspeed-2 source and resources directly. 
+A custom build allows you to create and maintain a Jetspeed Portal's lifecycle. With a custom build, you have a reproducible procedure for maintaining your portal across future versions. 
+When we say custom, we mean customizing Jetspeed for your needs. Everyone has custom requirements. Custom build procedures formalize the steps required to create a custom portal. 
+Although Jetspeed can be customized online using the portal customization features. Still, having a reproducible build is valuable as it  enables you to store artifacts in a source code repository and 
+maintain the life-cycle of this source.
+</p>
+<p> 
+Custom Jetspeed builds for version 2.1.3 can currently be built with Maven-1, Maven-2 or Ant. Building Jetspeed from the source is not necessary for most projects.
+Since Maven-1 is being deprecated out of Jetspeed in version 2.2, we recommend starting with either an <a href="#Ant Custom Build">Ant Custom Build</a> or 
+a <a href="#Maven-2 Custom Build">Maven-2 Custom Build</a>.
+</p> 
+<subsection name="Ant Custom Build">
+<p>The Ant Custom Build is a set of build targets for creating and maintaining a portal. You can easily hook the Ant build into a developer's portal running locally for development, 
+a test or staging server, or a production server. The Ant Custom Build provides you with several goals including:
+<ul>
+<li>Create an Installer</li> 
+<li>Deploy Portlet Applications</li> 
+<li>Deploy Decorations </li>
+<li>Deploy Site and Page modifications</li> 
+<li>Deploy Spring Assembly modifications </li>
+<li>Upgrade to a new version </li>
+</ul>
+</p>
+<p>
+To get started, goto the Ant Tutorial found here: <a href="tutorials/ant/index.html">Ant Tutorial for Jetspeed 2.1.3</a>
+</p>	
+</subsection>
+<subsection name="Maven-2 Custom Build">
+<p>The Maven-2 Custom Build is based on a Maven-2 plugin. To get started with the Maven-2 plugin, see the tutorial and usage guide here:
+<ul>
+<li><a href="tutorials/maven-2/index.html">Maven-2 Custom Build Tutorial</a></li>
+<li><a href="devguide/m2-build/maven-2-custom.html">Maven-2 Custom Build Guide</a></li>
+</ul>
+</p>
+<p>
+<i>There is also a deprecated Maven-1 plugin. If you really insist on using Maven-1 custom builds, see the docs here: <a href="devguide/m1-build/getting-started-binary.html">Maven-1 Custom Build Guide</a>.</i> 
+</p>	
+</subsection>
+<subsection name="Requirements for Custom Builds">
+<p>
+The general requirements for all custom builds of 2.1.3 are:
+</p>
+	<ul>
+		<li>Java 1.4.2_02 or higher</li>
+		<li>Maven-1 or Maven-2</li>
+		<li>Ant</li>
+		<li>
+			Servlet 2.4 Engine:
+				<ul>
+						<li><a href="deployguide/guide-tomcat.html">Tomcat 5.5.x</a></li> 
 						<li>Jetty</li>
-						<li>Websphere 6.0</li>
+						<li><a href="adminguide/websphere/index.html">Websphere 6.0</a></li>
 						<li>Geronimo</li>
 						<li>JBoss</li>
 						<li>Weblogic</li>
-					</ul>
-
-				</li>
-			</ul>
-		</section>
-
-		<section name='1. Get Maven Ready'>
-			<p>
-				If you have not already done so, download and install
-				<a href="http://maven.apache.org/maven-1.x">Maven</a>
-				.
-			</p>
-		</section>
-		<section name='2. What Database do you want'>
-			<p>
+				</ul>
+				Jetspeed 2 portals can be run under any
+				servlet container supporting the 2.4 specification or
+				greater. However we don't have documentation listed for all servers. Contributions welcome! 				
+		</li>
+		<li>A Database
 				Jetspeed's security model requires a database to
 				authorize users and to retain the user information.
 				Jetspeed security should work with any JDBC 2.0
@@ -88,123 +159,57 @@
 					<li>Sybase</li>
 					<li>SQL Server</li>
 				</ul>
-
+			<p>
 				Jetspeed is distributed with the Derby database
 				configured as the default.
-			</p>
+				</p>
 			<p>
 				The database configuration will be setup during the
-				installation process. If you are not going to use the
+				custom build process based on your property settings. See the appropriate build guide for details.. If you are not going to use the
 				default Derby database, you need to select another database
-				during installation.
+				during your build configuration.
 			</p>
-		</section>
-		<section name="3 Servlet Engines">
+				
+		</li>		
+	</ul>			
+</subsection>
+</section>
+<section name='Building from Source'>
 			<p>
-				In theory, Jetspeed 2 portals can be run under any
-				servlet container supporting the 2.4 specification or
-				greater. Successful Jetspeed 2 portal applications have
-				been deployed using:
-				<ul>
-					<li>Tomcat 5.5.8 or higher</li>
-					<li>Jetty</li>
-					<li>Websphere</li>
-					<li>Geronimo</li>
-					<li>JBoss</li>
-				</ul>
-			</p>
-			<subsection name=" Tomcat Configuration">
-				<p>
-					Jetspeed 2 can use the Tomcat Manager application
-					for managing portlet applications with the Portlet
-					Application Lifecycle Manager Portlet (PALM). To be
-					able to do so it needs a configured Tomcat user with
-					the predefined 'manager' role in the
-					${org.apache.jetspeed.server.home}/conf/tomcat-users.xml.
-				</p>
-				<p>
-					A minimal example tomcat-users.xml can look like:
-					<source>
-						<![CDATA[
-<tomcat-users>
-  <role rolename="manager"/>
-    <user username="j2deployer" password="xxxxx" roles="manager"/>
-</tomcat-users>]]>
-					</source>
-					<i>
-						The attribute values for username and password
-						must correspond to the specified values for
-						<code>
-							${org.apache.jetspeed.services.autodeployment.user}
-						</code>
-						and
-						<code>
-							${org.apache.jetspeed.services.autodeployment.user}
-						</code>
-						as described above.
-					</i>
-				</p>
-			</subsection>
-			<subsection name="Tomcat 5.5.9 on Windows">
-				<p>
-					To have redeployment and undeployment working
-					properly when using Tomcat 5.5.9 on Windows you have
-					to set the global Context attribute "antiJARLocking"
-					to true.
-				</p>
-				<p>
-					In
-					${org.apache.jetspeed.server.home}\conf\context.xml
-					use:
-					<source>
-						<![CDATA[
-    <Context antiJARLocking="true">
-    ...
-    </Context>]]>
-					</source>
-				</p>
-			</subsection>
-			<subsection
-				name="Jetty - A Quick Test Environment or a Production Servlet Container">
-			<p>
-				Jetty can be used for a production deployment but it is
-				most commonly used to quickly test customizations
-				without interfering with the production servlet
-				container. It does not require any special
-				configuration.
-			</p>
-			</subsection>
-		</section>
-		<section
-			name='4. Installing Jetspeed from Source or Binary Distributions'>
-			<p>
-				Depending on what you want to do, you have the choice of
-				installing Jetspeed from a binary release or from the
-				sources. If you want to modify the core functionality of
-				Jetspeed or contribute to the development of Jetspeed,
-				you need to work with the sources. If you are only
-				interested in building your own custom enterprise
-				portal, you can start with a binary release of Jetspeed.
-				Most people should start with the binary distribution.
-			</p>
-		</section>
-		<section name='5. Jetspeed build'>
-			<p>
-				Your installation instructions will depend on whether
-				you are
-				<a href="getting-started-source.html">
-					building from source
+	Building from Source is covered in the following Developer guides for either Maven-1 or Maven-2. For most cases, we recommend building with Maven-2, but the Maven-1 build is also fully supported.
+	If you are going to build a 2.1.3 installer, currently you must build with the Maven-1 build.
+	</p>
+	<subsection name="Building from Source with Maven-1">
+	<ul>
+	<li>
+				<a href="devguide/m1-build/getting-started-source.html">
+					Building with Maven-1 from Source
 				</a>
-				or
-				<a href="getting-started-binary.html">
-					building from a binary distribution
+	</li>				
+	<li>
+				<a href="devguide/m1-build/getting-started-binary.html">
+					Maven-1 Plugin Guide 
 				</a>
-				or
-				<a href="getting-started-installer.html">
-					installing with Jetspeed-2 installer
+	</li>				
+	</ul>
+	</subsection>				
+	<subsection name="Building from Source with Maven-2">
+	<p>The best place to start using Jetspeed, as a Developer, is to go to the developers guide documentation:</p>
+	<p><a href="devguide/index.html">Jetspeed Developers Guide</a></p>
+	<p>For general build information, also see:</p>
+	<ul>
+	<li>
+				<a href="devguide/m2-build/maven-2-build.html">
+					Building with Maven-2 from Source
 				</a>
-				.
-			</p>
+	</li>				
+	<li>
+				<a href="devguide/m2-build/j2-maven-plugin.html">
+					Maven-2 Plugin Guide
+				</a>
+	</li>				
+	</ul>
+	</subsection>				
 		</section>
 	</body>
 </document>

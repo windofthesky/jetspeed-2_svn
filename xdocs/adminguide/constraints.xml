@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Constraints Administration Guide</title>
+		<subtitle>Guide to Administering Security Constraints</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Security Constraints Administration Guide">
+			<p> 
+Security constraints restrict access to resources in the portal. Portal resources (folders, links, pages, portlets) can be secured with either:
+<ul>
+<li>Security Constraints (based on Jetspeed-specific security constraints)</li> 
+<li>Security Permissions (based on a Java Security Policy)</li>
+</ul> 
+The default security is Constraints as they are easier to configure by a portal administrator. The advantage of Permissions is that they 
+are stored in a central repository in the Jetspeed database, and  they adhere to the Java Security Standard  Both constraints and permissions inherit. Meaning that if you set a 
+permission or constraint on a folder, it is inherited by all subfolders and pages 
+</p>
+<p>
+A constraint grants a permission to a security principal, either: 
+<ul>
+<li>a role</li> 
+<li>a group</li> 
+<li>a user</li> 
+<li>or * for all users</li>
+</ul> 
+A constraint defines the action, which can be standard portlet modes:
+<ul> 
+<li>view</li> 
+<li>edit</li> 
+<li>help</li>
+</ul> 
+Or Jetspeed extended portlet modes: 
+<ul> 
+<li>edit_defaults</li> 
+<li>about </li>
+<li>config </li>
+<li>print</li> 
+</ul>
+</p>
+<subsection name="Constraint Management">
+<p> 
+TODO: describe UI, screen shots
+</p>
+</subsection>
+<subsection name="Security References">
+<p> 
+A security definition is referenced by portal resources to secure that particular resource. The following resources can be secured: 
+<ul>
+<li>Folder: in the folder metadata</li> 
+<li>Page: in a PSML file </li>
+<li>Link: in a .link file </li>
+<li>Portlet Window: one instance of a portlet on a page</li>
+<li>Portlet Definition: all instances of a portlet on all pages</li>
+<li>Portlet Application: all portlets in a portlet application</li>
+</ul>
+Securing a resource is as simple as referencing the definition. You can do this from several areas of the portal:
+<ul>
+<li>1. The Site Manager to secure a folder, page or link</li>
+<li>2. Portlet Application Manager, to secure a Portlet Application or Portlet Definition</li>
+<li>3. Config Mode, if available for a portlet, you can secure a portlet instance</li>
+</ul>
+Additionally, portlets can be secured in the deployment descriptors. See the <a href="">deployment</a> guide for more details.
+</p>
+</subsection>
+</section>
+	</body>
+</document>

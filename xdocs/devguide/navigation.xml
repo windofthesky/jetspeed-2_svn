@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project>
+    <body>
+        <links>
+        <links>
+        	<item name="Main Docs" href="index.html" />
+        	<item name="Admin Guide" href="adminguide/index.html" />        	
+        	<item name="Deployment Guide" href="deployguide/index.html" />
+        	<item name="Users Guide" href="usersguide/index.html" />
+            <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />        
+        </links>
+        </links>
+        
+        <menu name="Getting Involved">
+        	<item name="Sending Patches" href='devguide/patches.html'/>
+        </menu>
+        
+        <menu name="Building with Maven-2">
+            <item name="Custom Build" href="devguide/m2-build/maven-2-custom.html" />
+            <item name="Building from Source" href="devguide/m2-build/maven-2-build.html" />
+            <item name="Maven-2 Plugin" href="devguide/m2-build/j2-maven-plugin.html" />
+		</menu>
+        <menu name="Building with Maven-1 (deprecated)">
+            <item name="Custom Build" href="devguide/m1-build/getting-started-binary.html" />
+            <item name="Building from Source" href="devguide/m1-build/getting-started-source.html" />
+            <item name="Configuration Properties" href="devguide/m1-build/guide-properties.html" />
+		</menu>
+		
+        <menu name="Security Architecture">
+            <item name="Security Concepts" href="devguide/dev-security.xml" />
+            <item name="Overview" href="devguide/guide-security.xml" />
+            <item name="Architecture Overview" href="devguidea/arch.html" />
+            <item name="Authentication" href="devguide/atn.html">
+                <item name="Login Module" href="devguide/login-module.html" />
+                <item name="Authentication SPI" href="devguide/atn-spi.html" />
+                <item name="Credentials Management" href="devguide/credentials.html" />
+            </item>
+            <item name="Authorization" href="devguide/atz.html">
+                <item name="JAAS Authorization" href="devguide/atz-jaas.html" />
+                <item name="PermissionManager Overview" href="devguide/permission.html" />
+                <item name="Authorization/Security Mapping SPI" href="devguide/atz-spi.html" />
+                <item name="Hierarchy Management" href="devguide/hierarchy.html" />
+            </item>
+            <item name="High Level Security Services" href="devguide/high-level-services.html" />
+            <item name="Security Services Configuration" href="deployguide/security-config.html" />
+            <item name="LDAP Configuration" href="deployguide/ldap.html" />            
+        </menu>
+
+		
+        <menu name="Jetspeed Components">
+            <item name="Components" href="devguide/dev-cm.html" />
+            <item name="Capabilities" href="devguide/dev-capaabilities.html" />
+            <item name="Deployment" href="devguide/dev-deploy.html" />
+            <item name="Search" href="devguide/dev-search.html" />
+            <item name="Statistics" href="devguide/dev-statistics.html" />
+	        <item name="Localization" href="devguide/guide-l10n.html" />
+            <item name="Pipeline" href="devguide/pipeline.html" />
+            <item name="Profiler" href="devguide/guide-profiler.html" />
+            <item name="Profiler IP" href="devguide/guide-profiler-ip.html" />
+            <item name="PSML" href="devguide/guide-psml.html" />
+            <item name="PSML DTD" href="devguide/guide-psml-dtd.html" />	
+		</menu>
+
+        <menu name="Database">
+            <item name="Database Guide" href="devguide/dev-database.html" />
+            <item name="Data Access" href="devguide/dao.html" />
+            <item name="RDBMS" href="devguide/dev-rdbms.html" />
+		</menu>
+		
+		<menu name="APIs">
+            <item name="Jetspeed Java API" href="jetspeed-api/apidocs/index.html" />
+            <item name="Jetspeed AJAX API" href="devguide/guide-ajax-api.html" />		
+		</menu>
+		
+        <menu name="Portlet Programming">
+            <item name="Eclipse" href="devguide/jetspeed-eclipse.html" />
+            <item name="Portlet Bridges" href="devguide/guide-portlet-bridges.html" />
+            <item name="Simple Portlet" href="devguide/guide-simple-portlet.html" />
+            <item name="JSF" href="devguide/guide-simple-jsf-portlet.html" />
+            <item name="Velocity" href="devguide/guide-simple-jsf-velocity.html" />
+		</menu>
+
+        <menu name="Portal Design">
+        	<item name="Intro to Portal Design" href="devguide/guide-portal-design.html"/>
+        	<item name="Layouts" href="devguide/guide-layouts.html"/>
+        	<item name="Decorators" href="devguide/guide-decorators.html"/>
+        	<item name="Jetspeed Power Tool" href="devguide/guide-jpt.html"/>        	
+		</menu>
+    </body>
+</project>

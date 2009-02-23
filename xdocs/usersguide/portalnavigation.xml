@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Jetspeed Users Guide - Navigation</title>
+		<subtitle>Guide to Using Jetspeed</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
+		</authors>
+	</properties>
+    <body>
+        <section name="Navigating the Portal">
+			<p>
+				Tabbed Menus, Breadcrumbs and Menu Items are the main ways to Navigate through your portal. Edit, Help and other portlet bar action items can
+				display different screens, but you have not navigated to a new location. Customization of all navigation items can be configured by the
+				Administrator of the portal.  
+			</p>
+			<subsection name="Tabbed Menus">
+			<p>
+				Tabbed menus across the top contain selections for each page found in the current folder. The current Tabs may have come pre-configured as standard or may have been created and configured by the user. Each Tab 
+				can be configured with a different Theme, Layout, Portlet Theme and different Portlets.
+			</p>	
+			</subsection>
+			<subsection name="Breadcrumbs">
+			<p> 
+				Breadcrumbs are located just below the Tabbed Menus. Breadcrumbs give you a visual representation of the path you have
+				taken to reach your current location.  From the breadcrumb trail, you can navigate back out of the folder hierarchy up to previous 
+				destinations.  
+			</p>
+			</subsection>
+			<subsection name="Menu Items">
+			<p>
+				Menu Items are located in the Left Hand side menu. Each one of these links can take you to a location within the Portal or to an external
+				location such as a website. Folders you have created will appear in this menu.
+		 	</p>
+			</subsection>
+		</section>
+ 	</body>
+</document>
