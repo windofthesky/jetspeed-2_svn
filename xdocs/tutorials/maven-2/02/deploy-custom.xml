@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Deploying Decorations, Themes and Pages</title>
+		<subtitle>Deploying Decorations, Themes and Pages</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+    <section name="Deploying Decorations, Themes and Pages">
+      <p> 
+      To deploy the new resources (decorations, themes, and page) that we created in this section
+      of the tutorial, you could simply rebuild the portal by typing <b>mvn -P tomcat,min</b>.
+      Or, if your portal is aleady up and running, a simpler way is to automate the easy deployment
+      tasks with Ant. We have created a simple build.xml to copy over changed portal resources:</p>
+	 <source>
+	 <![CDATA[
+# Linux	 
+cd /JetspeedTraining/workspace/jetexpress
+cp ../../resources/build.xml .
+
+# Windows
+cd \JetspeedTraining\workspace\jetexpress
+copy  ..\..\resources\build.xml
+     ]]>
+     </source>	  	  
+	<p>To copy over the resources to the running portal, type:
+	   </p>
+	 <source>
+	 <![CDATA[
+ant	 
+     ]]>
+     </source>	  	  	   	
+     <p>Refresh the portal home page, <a href="http://localhost:8080/jetexpress/portal">http://localhost:8080/jetexpress/portal</a>
+     You should now see a portal with our new custom decorators:</p>  
+     <p>
+     <img src="../images/jetexpress-portal.png"/>
+     </p>
+     <p>
+     and desktop theme:
+     </p>
+     <p>
+     <img src="../images/jetexpress-desktop.png"/>     
+     </p>
+	  <p>
+	    <a href='default-page.html'>Previous</a> <a href='../03/portlet-app.html'>Next</a>
+	  </p>	        
+	  </section>	  
+	</body>
+</document>

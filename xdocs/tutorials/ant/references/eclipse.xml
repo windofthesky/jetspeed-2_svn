@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Portlet 101</title>
+		<subtitle>Eclipse</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Eclipse Overview">
+			<p>
+				<a href="www.eclipse.org">Eclipse</a>
+				is an free IDE originally donated to the community by
+				IBM. It has become the most dominant IDE for developing
+				Java applications as well as applications in other
+				laguages. Sun and Microsoft have alternative IDEs but
+				Eclipse has attracted the the largest following.
+			</p>
+		</section>
+		<section name="Installing Eclipse">
+			<subsection name='Installation'>
+				<p>
+					Install the
+					<a href="http://www.eclipse.org/callisto/">
+						Callisto version of Eclipse
+					</a>
+					for Java development. It contains all of the
+					plug-ins for Java development including Web Tools
+					Platform which we need.
+				</p>
+			</subsection>
+
+			<subsection name='Environment Variables'>
+				<p>
+					Eclipse does not have any environment variables of
+					its own but does want to find "JAVA_HOME" which
+					should point to your version of
+					<a href="java.html">Java.</a>
+				</p>
+			</subsection>
+
+			<subsection name='Testing Eclipse'>
+				<p>
+					If you start Eclipse and it runs, you have a good
+					installation. If not, refer to the
+					<a href="www.eclipse.org">Eclipse Site</a>
+					for help.
+				</p>
+			</subsection>
+
+
+			<subsection name='Eclipse Plugins'>
+				<p>
+					The Callisto version of Eclipse should contain the
+					WTP(Web Tools Platform) plug-ins. They show up in
+					the list of plug-ins as individual items:
+					<ul>
+						<li>Web Standard Tools (WST)</li>
+						<li>J2EE Standard Tools (JST)</li>
+						<li>AJAX Toolkit Framework (ATF)</li>
+						<li>Dali JPA Tools</li>
+						<li>JavaServer Faces Tools (JSF)</li>
+					</ul>
+				</p>
+				<p>If you are missing the any of the Eclipse Web Tools platform compents, you can download them from the <a href="http://www.eclipse.org/webtools/main.php">Eclipse site</a></p>
+			</subsection>
+
+		</section>
+	</body>
+</document>

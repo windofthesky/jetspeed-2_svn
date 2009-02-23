@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project>
+    <body>
+        <links>
+        	<item name="Jetspeed-1" href="http://portals.apache.org/jetspeed-1" target="_nw"/>
+        	<item name="Jetspeed-2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
+        	<item name="Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
+        </links>
+        <menu name="Tutorial Overview">
+            <item name="Welcome" href="index.html" />        
+        	<item name="Build Commands" href="build-commands.html" />
+        	<item name="Project Generation Archetypes" href="project-generation.html" />
+        	<item name="Project Directory Overview" href="project-directory.html" />        	
+        </menu>        
+        <menu name="01. Custom Portal Generation">
+        	<item name="Maven First Steps" href="01/first-steps.html" />                    
+            <item name="Generating a Jetspeed Portal" href="01/genapp.html" />
+        	<item name="Build and Deploy Custom Portal" href="01/build-it.html" />            
+        	<item name="Run the Custom Portal" href="01/run-it.html" />            
+        </menu>
+        <menu name="02. Customizing Your Portal Design">
+            <item name="Decorators and Themes" href="02/customizing-overview.html" />        
+            <item name="Page Decoration" href="02/page-decoration.html" />
+            <item name="Portlet Decoration" href="02/portlet-decoration.html" />            
+            <item name="Desktop Themes" href="02/desktop-theme.html" />            
+            <item name="Changing the Default Page" href="02/default-page.html" />            
+            <item name="Deploying your Customizations" href="02/deploy-custom.html"/>            
+        </menu>
+        <menu name="03. Portlet Application Configuration">
+            <item name="Generating a Portlet Application" href="03/portlet-app.html" />
+            <item name="Building and Deploying" href="03/build-it.html" />            
+            <item name="Configuring Portal Pages" href="03/pages.html" />                                    
+        </menu>
+        <menu name="04. Portlet Development 101">
+            <item name="Overview" href="04/overview.html" />
+            <item name="Eclipse" href="04/eclipse.html" />            
+            <item name="Hello World" href="04/hello.html" />                        
+            <item name="Adding a Page" href="04/tutorial-psml.html" />             
+            <item name="JSP and Portlet API Taglib" href="04/taglib.html" />                         
+        </menu>
+        <menu name="05. Jetspeed Services">
+            <item name="Services Tutorial Portlet" href="05/jetspeed-service.html" />
+        </menu>
+    </body>
+</project>
