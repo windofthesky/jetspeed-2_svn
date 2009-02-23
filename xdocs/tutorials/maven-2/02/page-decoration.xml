@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Page Decorators</title>
+		<subtitle>Customizing Page Decorators</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+		</authors>
+	</properties>
+	<body>
+    <section name="Page Decorators">
+      <p> 
+      Each Jetspeed page can be associated with a different page decoration. Page decorations
+      control some important aspect of a portal page:
+      <ul>
+      <li>The colors, images, CSS styles that skin this page</li>
+      <li>The header portion of the page</li>
+      <li>The page margins</li>
+      <li>The footer portion of the page</li>
+      <li>Menus displayed on the page</li>
+      <li>Action buttons displayed on the window</li>      
+      </ul>
+      Decorators do not control the placement of portlets. That is handled by layouts.
+      Jetspeed comes with several page decorations out of the box. The default page decorator for 
+      most pages is called <i>tigris</i>. It looks like this:
+      </p>
+      <img src="../images/tigris-page.png"/>
+      <p>
+      We are going to create a new decorator for this tutorial.
+      This new decorator can be copied into our project from the <i>/JetspeedTutorial/resources/decorations/layout/express-page/</i> directory.
+      This will save you the trouble of creating all the logo images and CSS definitions.
+      </p>
+	 <source>
+	 <![CDATA[
+# Linux	 
+cd /JetspeedTraining/workspace/jetexpress
+mkdir portal/src/webapp/decorations/layout/express-page
+cp -r ../../resources/decorations/layout/express-page/* portal/src/webapp/decorations/layout/express-page/
+
+# Windows
+cd \JetspeedTraining\workspace\jetexpress
+mkdir portal\src\webapp\decorations\layout\express-page
+xcopy /s ..\..\resources\decorations\layout\express-page\* portal\src\webapp\decorations\layout\express-page
+     ]]>
+     </source>	  	  
+    <subsection name="The Header">
+    <p>
+    Open up the <i>decorations/layout/express-page/header.vm</i>
+    This is a Velocity template, very much like JSP but simpler, with no Java compilation required.
+    Jetspeed does support JSP-based decorators. However no one has contributed one yet.
+    We could spend a lot of time teaching you about all the macros available.
+    But lets just concentrate on changing the logos first.
+    Scroll down to the banner content. Here we add our new left-hand side logo:
+    </p>
+	 <source>
+	 <![CDATA[    
+#GetPageResource('images/blueSunrisePicture.gif')    	 
+     ]]>
+     </source>	  	  
+     <p>
+     We've added a few more custom images, one in the center area of the banner:
+     </p>
+	 <source>
+	 <![CDATA[    
+<img src="#GetPageResource('images/BlueSunriseTextTahoma.gif')" height="29" width="165">	 
+     ]]>
+     </source>	  	  
+     <p>
+     and one more in the right area of the banner:
+     </p>
+	 <source>
+	 <![CDATA[    
+<img src="#GetPageResource('images/RisingEdgeSlogan.gif')" height="28" width="300">
+     ]]>
+     </source>	  	  
+     <p>
+     <i>#GetPageResource</i> is a Velocity macro. It retrieves a resource (image, CSS, HTML) from
+     the decoration folder, relative  to the root of the express-page decoration folder.
+     Besides the images, the header.vm is pretty much the same as Tigris.
+     In fact we simply cut and  paste the Tigris decorator to get us started.
+     This gives you a good  start of customizing the page.
+     </p>
+    </subsection>
+    <subsection name="Velocity Variables">    
+    <p>
+    Velocity makes several variables about the context of a decoration available for dynamic substition of menus and content:
+    </p>
+    <table>
+    <tr>
+    <th>Variable</th>
+    <th>Desc</th>    
+    <th>Usage</th>
+    </tr>
+    <tr>
+    <td>$layoutDecoration</td>
+    <td>Retrieve layout content from the decoration dir</td>
+    <td>$layoutDecoration.getResource("decorator-macros.vm")</td>
+    </tr>
+    <tr>
+    <td>$site</td>
+    <td>Retrieve menus by name</td>
+    <td>$site.getMenu("pages")</td>
+    </tr>
+    </table>
+    </subsection>
+    <subsection name="Menus">   
+     <p>
+     The remainder of the page is HTML markup mixed in with some important macros
+     for displaying Jetspeed Menus. <i>Jetspeed Menus</i> are build from a collection of portal resources
+     known as the <i>Portal Site</i>. The portal site is a content tree (like a file system) of portal
+     resources. The site can be stored in the file system or in a database. Resources can be a page,
+     folder, or link.  Lets look at some of the available macros for displaying menus on your page.
+     </p>	     
+    <p>
+    The $site always has the following menus available to you at any time:
+    <table>
+    <tr>
+    <th>Menu</th>
+    <th>Desc</th>
+    </tr>
+    <tr>
+    <td>pages</td>
+    <td>relative pages menu of pages in the current folder. Used to define the page tabs above the portal.</td>
+    </tr>
+    <tr>
+    <td>breadcrumbs</td>
+    <td>paths to page used to provide history links below the page tabs</td>
+    </tr>
+    <tr>
+    <td>navigations</td>
+    <td>relative subfolders and root level links menu used to define the navigation pane beside the portal.</td>
+    </tr>
+    <tr>
+    <td>back</td>
+    <td>parent folder menu used to define the single "back" link above the portal page tabs.</td>
+    </tr>
+    </table>
+    You can also define your own menus (not covered in this tutorial).
+    </p>
+	<p>
+	There are some helper macros for creating different styles of menus.
+	The macros are defined in the decorator-macros.vm file:	     
+     <table>
+     <tr>
+     <th>Macro</th>
+     <th>Decription</th>     
+     </tr>
+     <tr>
+     <td>#includeTabsNavigation($someMenu $LEFT_TO_RIGHT)</td>
+     <td>Displays a menu in a vertical tabbed navigation style.</td>
+     </tr>
+     <tr>
+     <td>#includeLinksNavigation($breadCrumb $LEFT_TO_RIGHT "" $BREADCRUMBS_STYLE "")</td>
+     <td>Displays a menu of links according to a given style.</td>
+     </tr>
+     <tr>
+     <td>#includeNestedLinksWithIconNavigation($standardNavs $TOP_TO_BOTTOM)</td>
+     <td>Displays a nested top-to-bottom menu navigation of folders, links, and pages.</td>
+     </tr>
+     <tr>
+     <td>#PageActionBar()</td>
+     <td>Not a menu, but the available actions (edit, view, help, print...) for this page</td>
+     </tr>
+     </table>
+     </p>
+    </subsection>    	     
+    <subsection name="The Footer">
+    <p>
+    Open up the <i>decorations/layout/express-page/footer.vm</i>
+    </p>
+	 <source>
+	 <![CDATA[    
+<img src="#GetPageResource('images/jetspeed-powered.gif')" alt="Jetspeed 2 Powered" border="0" />
+     ]]>
+     </source>	  	  
+    </subsection>    
+	  <p>
+	    <a href='customizing-overview.html'>Previous</a> <a href='portlet-decoration.html'>Next</a>
+	  </p>	      
+ </section>	  
+</body>
+</document>
