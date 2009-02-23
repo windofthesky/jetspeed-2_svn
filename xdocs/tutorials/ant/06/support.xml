@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Portlet 101</title>
+		<subtitle>Jetspeed-2 Support</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Support">
+			<p>
+				Like many open source software packages, support is
+				available from commercial companies that will provide a
+				range of services. This gives users the same or better
+				security and support than they get for proprietary
+				solutions. Since the sources are publicly available and
+				there is a strong community using and supporting
+				Jetspeed, companies adopting Jetspeed are well
+				protected.
+			</p>
+			<subsection name='Training'>
+				<p>
+					In addition to this tutorial, you can have on-site
+					classroom training from
+					<a href="www.bluesunrise.com">Bluesunrise</a>
+					.
+				</p>
+			</subsection>
+			<subsection name='Consulting'>
+				<p>
+					<a href="www.bluesunrise.com">Bluesunrise</a>
+					also provides consulting either on an project basis
+					or hourly or on a monthly committment.
+					<a />
+				</p>
+			</subsection>
+			<subsection name='Pre-constructed Portlets'>
+				<p>
+					Since Jetspeed can support any Portlet that complies
+					with the JSR-168 standard, open source and
+					commercial portlets are available for a number of
+					common functions. Some of them are listed on the
+					<a
+						href="http://portals.apache.org/jetspeed-2/portlets-community.html">
+						Jetspeed-2 site
+					</a>
+				</p>
+			</subsection>
+
+
+		</section>
+	</body>
+</document>
