@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Portlet 101</title>
+		<subtitle>Portal Builder's Knowledge</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Introduction">
+			<p>
+				Every software development tool requires that the person
+				using it has some basic knowledge before they start.
+				Jetspeed is no exception.
+			</p>
+			<p>
+				In a typical project, there is a team of people with
+				different areas of expertise. In that case, there may be
+				some tasks that not everyone on the team would be
+				comfortable in executing. This tutorial is designed to
+				show the different steps in building a portal and we
+				expect that everyone on the team should be able to
+				follow this successfully.
+			</p>
+			<p>
+				In order to successfully build this tutorial, we expect
+				that each person has some basic skills.
+			</p>
+		</section>
+		<section name="Pre-requisite Knowledge">
+			<subsection name="Installing Software">
+
+				<p>
+					We expect that you can download and install software
+					on your own workstation. This implies that you have
+					system administration privileges on your workstation
+					and can follow relatively simple instructions. None
+					of the software required is difficult to install.
+				</p>
+			</subsection>
+			<subsection name='Environment variables' />
+			<p>
+				We expect that you know how to create system-wide
+				environment variables on your workstation.
+			</p>
+			<subsection name='Editing text and XML files'>
+				<p>
+					You should be able to edit text files and XML files.
+				</p>
+			</subsection>
+		</section>
+		<section
+			name='Skills you might need for developing your own portal'>
+			<p>
+				Although programming is not required to complete this
+				tutorial, you will need to be able to program in order
+				to build your own portlets or to add functionality to
+				the basic Jetspeed-2 package. In addition, you will need
+				to understand a bit about the HTTP Request/Response
+				process to understand how a portal communicates with the
+				browser.
+			</p>
+
+			<subsection name='Programming in Java'>
+				<p>
+					Portlets are frequently written in Java and you will
+					need at least a basic knowledge of Java to modify an
+					existing portlet and fairly comprehensive knowledge
+					of Java if you want to design a portlet from
+					scratch.
+				</p>
+				<p>
+					There are many books and on-line resources for
+					learning Java.
+				</p>
+			</subsection>
+			<subsection name='Developing with JSF'>
+				<p>
+					JSF can be used to present data and to control
+					interactions with the user in a portlet. You will
+					need a basic knowledge of JSF to modify an existing
+					portlet and fairly comprehensive knowledge of JSF if
+					you are designing a portlet from scratch.
+				</p>
+				<p>
+					There are a few books and on-line resources for
+					learning JSF.
+				</p>
+			</subsection>
+			<subsection name='Developing with Velocity'>
+				<p>
+					Velocity is used extensively in Jetspeed-2 and if
+					you need to make changes to the functionality of
+					Jetspeed-2, you will need to be able to code in
+					Velocity. You will need a basic knowledge of
+					Velocity to modify an existing portlet and fairly
+					comprehensive knowledge of Velocity if you are
+					designing a portlet from scratch.
+				</p>
+				<p>
+					Velocity is a fairly simple language to learn and
+					there are very few books and on-line resources for
+					learning Velocity.
+				</p>
+			</subsection>
+			<subsection name='Developing with JSP and Taglib'>
+				<p>
+					JSP is used extensively in Jetspeed-2 and there is
+					an entire module in the tutorial that talks about
+					JSP. You will need a basic knowledge of JSP to
+					modify an existing portlet that uses JSP and fairly
+					comprehensive knowledge of JSP if you are designing
+					a portlet from scratch.
+				</p>
+				<p>
+					There are a few books and on-line resources for
+					learning JSP.
+				</p>
+			</subsection>
+
+		</section>
+		<section name="Specialist Knowledge">
+			<p>
+				In the tutorial, we have provided simplied tools for
+				data persistence and for hosting the Jetspeed Portal.
+				However, most applications require some very specialized
+				knowledge that not everyone is required to know. If you
+				are going to build a real application with Jetspeed-2
+				you will need someone in each of the following areas of
+				expertise
+			</p>
+			<subsection name='Database Technology'>
+				<p>
+					This includes both the programming and system
+					administration aspects of handling data persistence.
+					Jetspeed can handle most relational database systems
+					as well as higher level tools such as Hibernate.
+				</p>
+			</subsection>
+			<subsection name='Servlet Engines'>
+				<p>
+					This includes both the configuring and system
+					administration of a serlet engine that can deliver
+					Jetspeed-2 functionality over the Internet. Jetspeed
+					can run under a number of serlet engines and you
+					will need someone who knows how to configure the
+					servlet engine and how to deploy a web application
+					under it.
+				</p>
+			</subsection>
+						<p>
+				<a href='index.html'>Previous</a>
+				<a href='01/first-steps.html'>Next</a>
+			</p>
+			
+		</section>
+	</body>
+</document>

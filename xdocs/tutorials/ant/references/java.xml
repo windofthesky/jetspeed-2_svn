@@ -18,7 +18,7 @@
 <document>
 	<properties>
 		<title>Portlet 101</title>
-		<subtitle>Ant</subtitle>
+		<subtitle>Java</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="David Dyer"
@@ -28,24 +28,33 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="Ant Overview">
+		<section name="Java Overview">
 			<p>
-				<a href="ant.apache.org">Ant</a>
-				is a powerful platform independent scripting package.
-
+You do not have to be a Java programmer to install and configure a Jetspeed portal but you will need to have a <a href="www.java.sum.com">Java SDK(Software Development Kit)</a> installed.
+This is not the same as the Java Run-time Library.
 			</p>
 		</section>
-		<section name="installing Ant">
+		<section name="Installing Java">
 			<subsection name='Installation'>
-				<p>You can download Ant from <a href="ant.apache.org">the Ant web site</a>
-				and install it by following their instructions.</p>
+				<p>
+			Download <a href="http://java.sun.com/javase/downloads/index_jdk5.jsp">Java version 5</a>(not version 6).
+	Follow the instructions and choose the default installation configuration.
+				</p>
 			</subsection>
-			<subsection name='Environment variables' />
-			<p>Create an environmental variable called ANT_HOME and add ANT_HOME\bin to your PATH.</p>
-			<subsection />
-			<subsection name='Testing Ant'>
-				<p>If get the correct version number displayed when you type ant -version at a command prompt, you have a working ant package.</p>
+
+			<subsection name='Environment Variables'>
+				<p> 
+				You will need to set the JAVA_HOME environment variable to the root of the Java installation.
+				</p>
+				<p>In addition, you will need to add JAVA_HOME/bin or JAVA_HOME\bin (for Windows) to your PATH</p>
 			</subsection>
+
+			<subsection name='Testing Java'>
+				<p>
+Open a comand window and type "java -version". If the information typed out matches the version of Java that you installed, then you probably have a working Java SDK.
+If not check your installation and Environment variables.</p>
+			</subsection>
+
 		</section>
 	</body>
 </document>

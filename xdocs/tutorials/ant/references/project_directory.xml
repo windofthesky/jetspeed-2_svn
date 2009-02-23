@@ -1,0 +1,125 @@
+s<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Project Directory</title>
+		<subtitle>
+			Overview of the Custom Project Directory Structure
+		</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+
+		</authors>
+	</properties>
+	<body>
+		<section
+			name="Overview of the Custom Portal Directory Structure">
+			<p>
+				The directory structure for developing a custom Jetspeed
+				portal is designed to be similar to the directory
+				structure of the Jetspeed-2 core source tree.
+			</p>
+			<p>
+				Note that this directory structure only covers the
+				custom portal itself. Each portlet is a separate project
+				with its own directory structure.
+			</p>
+			<p>
+				Here is an overview of directories (directories are
+				relative to the custom portal project root):
+			</p>
+			<div>
+				<table>
+					<tr>
+						<td>
+							<strong>
+								<tt>directory</tt>
+							</strong>
+						</td>
+						<td>
+							<strong>
+								<tt>explanation</tt>
+							</strong>
+						</td>
+					</tr>
+					<tr>
+						<td>dist</td>
+						<td>
+							Distributable files(wars, jars) created
+							during the build, such as installers or web
+							applications
+						</td>
+					</tr>
+					<tr>
+						<td>src/installer</td>
+						<td>
+							Customized installation script for the
+							Jetexpress installer
+						</td>
+					</tr>
+					<tr>
+						<td>src/sql</td>
+						<td>
+							Jetspeed XML seed data to provide initial
+							test data for the portal(user, roles,
+							profiling rules...)
+						</td>
+					</tr>
+					<tr>
+						<td>src/webapp/decorations/layout</td>
+						<td>
+							Page decorations (skins) to brand the custom
+							portal (CSS, images, HTML)
+						</td>
+					</tr>
+					<tr>
+						<td>src/webapp/decorations/portlet</td>
+						<td>
+							Page decorations (skins) to brand the custom
+							portal (CSS, images, HTML)
+						</td>
+					</tr>
+					<tr>
+						<td>src/webapp/WEB-INF/pages</td>
+						<td>
+							The collection of folders and pages that
+							make up the Portal Site for the Jetexpress
+							portal
+						</td>
+					</tr>
+					<tr>
+						<td>jetexpress/target</td>
+						<td>Temporary build area used by Ant</td>
+					</tr>
+					<tr>
+						<td>jetexpress/webapps</td>
+						<td>
+							<div class="todo">Place the web application here that are
+							required to run the jetexpress portal</div>
+							
+						</td>
+					</tr>
+				</table>
+			</div>
+		</section>
+	</body>
+</document>

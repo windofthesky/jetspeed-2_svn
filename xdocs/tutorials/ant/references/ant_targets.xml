@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Build Commands</title>
+		<subtitle>Build Commands for Ant and Jetspeed</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Ant Target for Building and Deploying Jetspeed-2">
+			<subsection name="Major Targets">
+				<p>
+					Here is a quick summary of the most frequently used Ant
+					targets available in the JetExpress build.xml file.
+				</p>
+				<div>
+					<table>
+						<tr>
+							<td>
+								<strong>
+									<tt>targets</tt>
+								</strong>
+							</td>
+							<td>
+								<strong>
+									<tt>explanation</tt>
+								</strong>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>
+									<tt>create.installer</tt>
+								</strong>
+							</td>
+							<td>
+								Builds the entire jetexpress portal and
+								creates a Jetspeed Custom Installer.
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>
+									<tt>delta</tt>
+								</strong>
+							</td>
+							<td>
+								The default target. Deploys any
+								modifications to the source tree to an
+								existing, deployed portal. Note: you
+								must first build and install the portal
+								before running this goal using the
+								create.installer goal.
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>
+									<tt>deploy.decorations</tt>
+								</strong>
+							</td>
+							<td>
+								Deploys any modifications to decorations
+								to the live portal.
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>
+									<tt>deploy.pages</tt>
+								</strong>
+							</td>
+							<td>
+								Deploys any modifications to PSML pages
+								to the live portal.
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>
+									<tt>deploy.webapps</tt>
+								</strong>
+							</td>
+							<td>
+								Deploys all webapps to the live portal.
+							</td>
+						</tr>
+					</table>
+				</div>
+			</subsection>
+			<subsection name="All Targets">
+				<p>
+					You can see all of the targets available in the
+					build.xml file by selecting the build.xml file in
+					the Navigator view and selecting the Outline view
+					from the "Window" menu.</p>
+					<p>
+					<img src="../images/AntTargetOutline.png" />
+				</p>
+				<p>
+				Ant build files are a bit intimidating but are pretty easy to understand if they are well structured and you take the time to look at definitions carefully.
+				Once you understand the existing tasks, you can add your own to automate tasks that are particular to your workflow.
+				</p>
+			</subsection>
+		</section>
+		<section name="Build Properties">
+			<p>
+				It is a good practice in Ant to separate the task
+				definitions from the specifics of your installation. Ant
+				does this through a file called build.properties.
+				Definitions put into this file are available for use in
+				the build.xml file.
+			</p>
+			<p>
+				This makes is easy to distribute an Ant build that is
+				easy to customize. The person receiving the Ant build
+				configuration can usually just modify the
+				build.properties file to make the build work in their
+				enviroment without having to look through each Ant goal
+				to see where files are expected or where they are going
+				to be put by the Ant Goal
+			</p>
+			<source>
+				<![CDATA[# general properties
+portal.name = jetexpress
+
+# installation properties
+installer.src.jar = /JetspeedTraining/installers/jetspeed-2.1.1-dev-installer.jar
+installer.target = ./target
+installer.dst.jar = jetexpress-installer.jar
+
+# development deployment properties
+app.server.home = /JetspeedTraining/servers/tomcat-express
+]]>
+			</source>
+		</section>
+	</body>
+</document>
+
