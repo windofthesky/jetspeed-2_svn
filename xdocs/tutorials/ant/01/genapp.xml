@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Generating a Jetspeed Custom Portal</title>
+		<subtitle>
+			Generating a Jetspeed Portal Custom Installer
+		</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Building the Installer for the First Time">
+			<p>
+				Now that you have configured the basic portal, we are
+				ready to build the portal installer. In the Navigator view,
+				right-click on the build.xml in the root of the project.
+				Select the "Run As", then "Build ...". Check to ensure
+				that
+				<em>create.installer</em>
+				is selected and click on the "Run" button.
+			</p>
+			<p>Or, you can switch over to the command line, goto the jetexpress directory, and type <b>ant create.installer</b>.
+			   There is also a <b>clean</b> target that should be used to clean out the previous build
+			</p>
+			<p>
+				Note that we are building a minimal deployment. The Min deployment
+				only creates a Jetspeed core portal and a Jetspeed Admin
+				portlet application (j2-admin). When the build process
+				completes, you should see the message
+				<b>BUILD SUCCESSFUL</b>
+				at the end of a large amount of build logging
+				information The portal is built into a temp directory
+				named
+				<i>target</i>
+				found directory under your
+				<i>jetexpress</i>
+				project directory.
+			</p>
+			<p>
+				<a href='first-steps.html'>Previous</a>
+				<a href='install-it.html'>Next</a>
+			</p>
+		</section>
+	</body>
+</document>
+

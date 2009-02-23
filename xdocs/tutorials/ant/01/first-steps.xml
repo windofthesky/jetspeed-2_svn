@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Eclipse and Ant - First Steps</title>
+		<subtitle>Custom Project First Steps</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Installing Java, Eclipse and Ant">
+			<p>
+				If you have not already done so, install
+				<a href="../references/java.html">Java</a>
+				,
+				<a href="../references/ant.html">Ant</a>
+				and
+				<a href="../references/eclipse.html">
+					Eclipse.
+					<a />
+				</a>
+			</p>
+		</section>
+		<section name='Download the JetExpress portal source'>
+			<div class="todo"><p>
+				You can download the JetExpress source code from
+				<a href="http://people.apache.org/~taylor/tutorial/">Tutorial Download Location</a>. Additionally, you will need to download a Jetspeed final release installer.
+			</p></div>
+			<p>The distribution kit is described in more detail in the <a href="../references/tutorial_distribution.html">Tutorial Distribution Kit</a> document.</p>
+			<p>
+				Once you have downloaded the distribution kit, expand the two projects: jetexpress, express-demo, directly into your Eclipse workspace.
+			</p>
+			<subsection name="Project Directory Structure">
+				<p>
+				The structure of the JetExpress project is described in
+					<a href='../references/project_directory.html'>
+						Project Directory Overview.
+					</a>
+					Take some time to familiarize yourself with the structure.
+				</p>
+			</subsection>
+		</section>
+		<section name='Creating the JetExpress Project in Eclipse'>
+			<p>
+				Once the project is installed on your disk, it can be
+				setup as an Eclipse Project by simply importing the project in place.
+			</p>
+
+			<p>
+				The project is now ready to build but still needs some
+				property changes before it can be deployed for testing on the
+				servlet engine.
+			</p>
+
+		</section>
+		<section name="Ant Targets for JetExpress">
+			<p>
+				When Ant is used to build a project in Eclipse, the
+				project must have a file called "build.xml" in the root
+				directory. This file contains the list of tasks that Ant
+				can execute. These are called "targets".
+			</p>
+			<p>
+				Before getting started with the tutorial, review the Ant
+				targets that are available in the
+				<a href='../references/ant_targets.html'>
+					JetExpress tutorial's build.xml file.:
+				</a>
+			</p>			
+		</section>
+		<section name='Ant Properties'>
+			<p>There are a few critical properties that must be configured.
+			See the reference 
+				<a href='../references/ant_targets.html#Build Properties'>build.properties</a> which are also discussed below.
+			</p>		
+		<subsection
+			name='Change the Jetspeed-2 Server (Tomcat) Location Property'>
+			<p>
+				JetExpress comes with a built-in servlet engine. When you run the installer, you can choose which
+				directory to install the servlet engine into. The installer will allow you to select a location to install
+				the JetExpress portal into. After running the installer, please remember the directory where you installed into.
+			    There are a few development-mode targets in Ant that need to know where Tomcat is installed. Set the property in your build.properties, for example:
+			</p>
+			<source>
+				<![CDATA[		
+app.server.home = /JetspeedTraining/servers/tomcat-express
+     ]]>
+			</source>
+		</subsection>
+		<subsection
+			name='Change the Jetspeed-2 Server (Tomcat) Location Property'>
+			<p>One of the resources downloaded is the Jetspeed 2.1.2 installer.
+			Please place the installer someplace on your file system, and then update the property:
+			</p>
+			<source>
+<![CDATA[		
+installer.src.jar = /JetspeedTraining/installers/jetspeed-2.1.1-dev-installer.jar
+   ]]>
+			</source>			
+			<p>
+				<a href='genapp.html'>Next</a>
+			</p>					
+		</subsection>		
+		</section>
+	</body>
+</document>
+
