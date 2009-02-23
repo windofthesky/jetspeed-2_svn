@@ -18,7 +18,7 @@
 <document>
 	<properties>
 		<title>Portlet 101</title>
-		<subtitle>Portlet Development 101</subtitle>
+		<subtitle>Velocity</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="David Dyer"
@@ -28,37 +28,10 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="Portlet Development with the Portlet API">
+		<section name="Velocity Overview">
 			<p>
-				This section of the tutorial covers Portlet Development
-				with the Java Portlet API.
-			</p>
-			<p>
-				<ul>
-					<li>Getting started with Eclipse</li>
-					<li>
-						Bonjour Monde Portlet: the staple Hello World
-						demo to get things rolling introduces the
-						portlet.xml, as well as basic Portlet API
-						concepts.
-					</li>
-					<li>
-						The Weather Portlet: using init parameters,
-						preferences, and request parameters
-					</li>
-					<li>
-						The Stock Quote Portlet: actions, JSP, Portlet
-						API Tag Library
-					</li>
-					<li>
-						Interportlet communication, more advanced
-						Portlet programming.
-					</li>
-				</ul>
-			</p>
-			<p>
-				<a href='../03/pages.html'>Previous</a>
-				<a href='eclipse.html'>Next</a>
+				<a href="velocity.apache.org">Velocity</a> is a Java-based template engine. 
+				It permits anyone to use a simple yet powerful template language to reference objects defined in Java code.
 			</p>
 		</section>
 	</body>

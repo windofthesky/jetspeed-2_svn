@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements.  See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to You under the Apache License, Version 2.0
+	(the "License"); you may not use this file except in compliance with
+	the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<document>
+	<properties>
+		<title>Eclipse Integration</title>
+		<subtitle>Eclipse Integration</subtitle>
+		<authors>
+			<person name="David Sean Taylor" email="taylor@apache.org" />
+			<person name="David Dyer"
+				email="ddyer@artifact-software.com" />
+			<person name="Ron Wheeler"
+				email="rwheeler@artifact-software.com" />
+		</authors>
+	</properties>
+	<body>
+		<section name="Eclipse Integration">
+			<p>
+				Before getting started, lets get Eclipse setup. Lets
+				create a Eclipse project for the jetexpress project.
+				Maven-2 can create Eclipse project and classpath files
+				from your Maven-2 project POM, automatically bringing in
+				all dependencies:
+			</p>
+			<source>
+				<![CDATA[
+# Linux	 
+cd /JetspeedTraining/workspace/jetexpress
+mvn eclipse:eclipse
+cp portal/.classpath .
+cp portal/.project .
+# Windows
+cd \JetspeedTraining\workspace\jetexpress
+mvn eclipse:eclipse
+copy portal\.classpath .
+copy portal\.project .
+     ]]>
+			</source>
+			<p>
+				Lets do the same for the
+				<i>express-demo</i>
+				portlet application. You may prefer to actually create a
+				new Eclipse project to represent the portlet app
+				subproject. We recommend this, since Eclipse doesn't
+				work very well multi-Maven projects. Best to break them
+				out into one Maven project == one Eclipse project:
+			</p>
+			<source>
+				<![CDATA[
+# Linux	 
+cd /JetspeedTraining/workspace/jetexpress/applications/express-demo
+mvn eclipse:eclipse
+# Windows
+cd \JetspeedTraining\workspace\jetexpress\applications\express-demo
+mvn eclipse:eclipse
+     ]]>
+			</source>
+			<p>
+				Now lets import these new projects. From the eclipse
+				menu, select File->Import:
+			</p>
+			<img src="../images/import-project.png" />
+			<img src="../images/import-project2.png" />
+			<p>
+				Repeat for both the applications/express-demo project.
+			</p>
+			<p>
+				Next, lets setup a classpath variable to point at the
+				Maven Repo, effectively resolving the jars for Eclipse.
+				In Eclipse, go to Window->Preferences->Java->Build
+				Path->Classpath Variables->New...:
+			</p>
+			<img src="../images/eclipse-classpath.png" />
+			<p>
+				If you would like to work with the Jetspeed source from
+				the SVN Trunk, you will need to install the Subversion
+				Plugin for Eclipse. After doing so, simply check out the
+				project using the Subversion plugin:
+			</p>
+			<img src="../images/svn1.png" />
+			<img src="../images/svn2.png" />
+			<img src="../images/svn3.png" />
+			<p>We are now ready to start developing with Eclipse.</p>
+			<p>
+				<a href='overview.html'>Previous</a>
+				<a href='hello.html'>Next</a>
+			</p>
+		</section>
+	</body>
+</document>
