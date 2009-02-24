@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.mapping.ldap.setup1;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
@@ -171,6 +172,7 @@ public class UserTests extends AbstractSetup1LDAPTest
         sampleRole.setInternalId("cn=Role1, o=sevenSeas");
         sampleRole.setAttribute(DESCRIPTION_ATTR_DEF.getName(), "Role 1");
         sampleRole.setAttribute(CN_DEF.getName(), "Role1");
+        sampleRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), Collections.EMPTY_LIST );
         
         // note: we call the user DAO directly, because updating internal
         // attributes is only meant to be used internally, e.g. from within an EntityRelationDAO
