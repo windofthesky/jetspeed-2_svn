@@ -55,7 +55,7 @@ public class EntityFactoryImpl implements EntityFactory
         this.searchConfiguration = searchConfiguration;
     }
 
-    private EntityImpl internalCreateEntity(String entityId, String internalId, Set<Attribute> attributes)
+    protected EntityImpl internalCreateEntity(String entityId, String internalId, Set<Attribute> attributes)
     {
         EntityImpl entity = new EntityImpl(searchConfiguration.getEntityType(), entityId, searchConfiguration.getAttributeDefinitions());
         entity.setAttributes(attributes);
