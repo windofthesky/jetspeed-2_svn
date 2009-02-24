@@ -44,4 +44,8 @@ public class SimpleFilter implements Filter
         return sb.append(ldapFilter);
     }
 
+	public String toString() {
+		return ldapFilter;
+	}
+
 }

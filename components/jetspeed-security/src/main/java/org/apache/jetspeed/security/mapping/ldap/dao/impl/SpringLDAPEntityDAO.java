@@ -185,7 +185,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
                 filter = SearchUtil.andFilters(configuration.getSearchFilter(), filter);
             }
         }
-        String filterStr = filter.toString();
+        String filterStr = filter.encode();
         if (StringUtils.isEmpty(filterStr))
         {
             filterStr = "(objectClass=*)"; // trivial search query
