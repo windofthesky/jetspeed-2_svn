@@ -86,7 +86,18 @@
                  <td>(not casade delete)</td>                                                            
                  <td>CASCADE DELETE</td>                                                            
                 </tr>                
-            </table>     
+            </table>
+			<p>
+            Here is an example of the SQL migration scripts for the MySQL database:
+            <source><![CDATA[            
+CREATE INDEX IX_PREFS_NODE_1 ON PREFS_NODE (PARENT_NODE_ID); 
+CREATE INDEX IX_PREFS_NODE_2 ON PREFS_NODE (FULL_PATH); 
+CREATE INDEX IX_FKPPV_1 ON PREFS_PROPERTY_VALUE (NODE_ID); 
+
+ALTER TABLE PREFS_NODE ADD CONSTRAINT FK_PREFS_NODE_1 FOREIGN KEY (PARENT_NODE_ID) REFERENCES PREFS_NODE (NODE_ID) ON DELETE CASCADE; 
+ALTER TABLE PREFS_PROPERTY_VALUE ADD CONSTRAINT FK_PREFS_PROPERTY_VALUE_1 FOREIGN KEY (NODE_ID) REFERENCES PREFS_NODE (NODE_ID) ON DELETE CASCADE;
+            ]]></source>            
+            </p>                   
             <p>
             Here is an example of the SQL migration scripts for the MySQL database:
             <source><![CDATA[            
