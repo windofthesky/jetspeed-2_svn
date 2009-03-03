@@ -165,7 +165,7 @@
   </div>
 
 <div dojoType="jetspeed:SiteManagerTreeRPCController" 
-     RPCUrl="${rooturl}/ajaxapi?action=getfolderlist" 
+     RPCUrl="${rooturl}ajaxapi?action=getfolderlist" 
      widgetId="treeController" 
      DNDController="create">
 </div>
