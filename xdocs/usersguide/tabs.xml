@@ -27,14 +27,20 @@
     <body>
         <section name="Tabs">
 			<p>
-				 The page configuration area allows you to create Tabs for creating new pages across the top of the window.  enter the Page Name, Title and
+				 The page configuration area allows you to create Tabs for creating new pages across the top of the window.  Enter the Page Name, Title and
 				 Short Title.  The Short Title field will be the name of the Tab in the window.  Once you have the Tab created, you may change the name, move the page
-				 left or right and delete the page.  
+				 left or right or delete the page.  You must have some information entered into the fields for these buttons to work.  Using just the Short Title field will work.
+			</p>
+			<p>
+				<img src="images/pageconfig.png"/>
 			</p>
 			<p>
 				Once the page is created, you may also change the Decorator Theme for the Window, change the Layout Columns and set a global Portlet theme.  Add Portlets
 				to your page and you now have a new page that can only be seen by you and is completely separate from any of the other pages.  Adding Portlets is covered in the 
 				Portlet Section of Customizing.
+			</p>
+			<p>
+				<img src="images/customtab.png"/>
 			</p>
 		</section>
  	</body>

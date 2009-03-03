@@ -64,26 +64,59 @@
 			</subsection>
 		<p>In the upper right hand corner of the Jetspeed Portal Window, you will see a Logout link followed by two icons.  the first icon is the edit icon, which in this case
 		is our means to access the customization options for the entire portal window. Click on the pencil (edit) icon <img src="images/customize.png"/> and you should now see a 
-		page similar to the one below.<br/>
+		page similar to the one below.
+		</p>
+		<p>
 		<img src="images/newcustomizewindow.png"/>
+		</p>
+		<subsection name="Page/Folder Customizer">
+		<p>
 		The Page/Folder Customizer section has three options for us to configure.  Theme will set the decorator for the portal window's tabs, menu and window itself.  Layout will
 		allow us to change the amount of columns in our Jetspeed window.  The portlet theme is a global setting for all portlets contained in the portal window.  This global setting
 		can be overridden by individual portlets within the window.  If you do not set the individual portlet decorators they will inherit the Portlet Theme from this section.  Tigris is the default
 		decorator for a standard jetspeed installation.
 		</p>
 		<p>
-			Notice the Theme drop down menu does not require pushing a change button to make your selection become active.  Once you choose an option from the dropdown menu, Jetspeed will render the window
-			with your choice.
+			<img align="top" src="images/smtigris.png"/> <img align="top" src="images/dropdownlayout.png"/> <img align="top" src="images/smblueocean.png"/>
 		</p>
+		<p>
+			Notice the Theme drop down menu does not require pushing a change button to make your selection become active.  Once you choose an option from the dropdown menu, Jetspeed will render the window
+			with your choice. Only the Layout was affected, not the portlets window.
+		</p>
+		</subsection>
+		<subsection name="Layout Customizer">
 		<p>
 				Layout allows you to choose multiple column layouts or a single column for the entire window.  Jetspeed will remember the locations of portlets when altering this layout.  Changing the Layout to put
-				all the portlets into one column and changing back to Two Columns will return the portlets back to their original columns.  Add layout will insert layout options within the window with the portlet.  This allows
-				you to setup multiple columns within one column.  You will also notice arrow icons and an X icon.  These will be discussed in the Portlets section of Customizing but are moving and removing portlets.
+				all the portlets into four columns and changing back to two columns will return the portlets back to their original columns.  
 		</p>
 		<p>
+			<img align="top" src="images/dropdowncolumns.png"/>
+		</p>
+		<p>
+			<img align="top" src="images/4column.png"/> <img align="top" src="images/2column.png"/>
+		</p>
+		<p>
+		Add Layout will insert layout options within the window with the portlet.  This allows
+		you to setup multiple columns within one column. Clicking on add layout added a new Page/Customizer option below the Bookmark Portlet 2 from our 
+		previous example. The user can now customize this new layout within the layout using the options provided. You will also notice arrow icons and an X icon.  These will be discussed in the Portlets section of 
+		Customizing but they are for moving and removing portlets.
+		</p>
+		<p>
+			<img src="images/layconfig.png"/>
+		</p>
+		</subsection>
+		<subsection name="Portlet Theme Customizer">
+		<p>
 			Portlet Theme will set the decorator for all the portlets in the window.  If you have set individual decorators on your portlets, this will reset all portlets in the window to the Portlet Theme you have chosen.  You must
-			reset individual portlets after choosing this option if you wish them to have a different decorator.
-			</p>
+			reset individual portlets after choosing this option if you wish them to have a different decorator.  To have Layout and Portlets all using the same theme, you must set them to the same decorator.
+		</p>
+		<p>
+			<img align="top" src="images/smtigris2.png"/>
+		</p>
+		<p>
+			<img align="top" src="images/dropdowntheme.png"/><img align="top" src="images/smbluegrad.png"/>
+		</p>
+		</subsection>
 		</section>
  	</body>
 </document>

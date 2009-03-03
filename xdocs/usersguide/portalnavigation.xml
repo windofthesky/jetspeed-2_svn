@@ -35,20 +35,29 @@
 			<p>
 				Tabbed menus across the top contain selections for each page found in the current folder. The current Tabs may have come pre-configured as standard or may have been created and configured by the user. Each Tab 
 				can be configured with a different Theme, Layout, Portlet Theme and different Portlets.
-			</p>	
+			</p>
+			<p>
+			 <img src="images/tabbedmenu.png"/>
+			</p>
 			</subsection>
 			<subsection name="Breadcrumbs">
 			<p> 
 				Breadcrumbs are located just below the Tabbed Menus. Breadcrumbs give you a visual representation of the path you have
 				taken to reach your current location.  From the breadcrumb trail, you can navigate back out of the folder hierarchy up to previous 
-				destinations.  
+				destinations. 
 			</p>
+			<p>
+				<img src="images/breadcrumbs.png"/>
+			</p>	
 			</subsection>
 			<subsection name="Menu Items">
 			<p>
 				Menu Items are located in the Left Hand side menu. Each one of these links can take you to a location within the Portal or to an external
 				location such as a website. Folders you have created will appear in this menu.
 		 	</p>
+		 	<p> 
+				<img src="images/leftmenu.png"/>
+			</p>
 			</subsection>
 		</section>
  	</body>

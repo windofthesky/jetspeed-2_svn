@@ -36,28 +36,36 @@
 				Jetspeed desktop uses Web 2.0 technology.  Unlike Jetspeed portal, updates to the screen only occur where required.  Jetspeed
 				portal must render the entire screen when changes are made to any portlet.
 			</p>
+			<p>
+				<img align="top" src="images/desktop.png"/>
+			</p>
 			<p>	
 				Updating portions of the screen are not the only differences between the two.  Users can drag and drop portlets to a new location without entering edit mode.
 				Click and hold the mouse button on the title bar of any portlet to have the ability to move the portlet anywhere in allowable areas for portlets.
 				The portlets will adjust automatically as you move them.
 			</p>
 			<p>	
-				A new icon is now next to the minimize and maximize options.  This custom icon has the edit and help buttons included, as well as other
-				options. View, which is the normal portlet mode is now an option when you are in help and edit modes. Several options are available through this icon:
+				A new icon is now next to the minimize and maximize options.  This custom icon can have edit and help links included as well as other
+				options. View, which is the normal portlet mode, like restore, is now an option when you are in help and edit modes. 
+				Several options are available through this icon:
 				<ul>
-					<li>Portlet preferences</li>
 					<li>Tiling and untiling of portlet windows</li>
 					<li>Height options of variable and fit in window</li>
-					<li>Help</li>
 				</ul>
 			</p>
 			<p>
-				Portlet preferences are available through the edit option as they were in Jetspeed Portal.
+				<img align="top" src="images/deskcustom.png"/>
+			</p>
+			<p>
+				Portlet preferences are available through the edit icon as they were in Jetspeed Portal.
 			</p>
 			<p>	
 				A tiled window in Jetspeed is a window that does not overlap any other windows. Tiling the portlet will move the portlet window into the layout structure with the other portlets, the default option.  Untiling the portlet will move the
 				portlet to the front, or on top, of the other portlets. Clicking and holding the mouse on the title bar will allow you to place the portlet anywhere within your browser window 
 				without restrictions.
+			</p>
+			<p>
+				<img align="top" src="images/untiled.png"/>
 			</p>
 			<p>	
 				Depending on the height of the window, whether it has been modified or not, you will have the option of Fit Content or Variable under the height option.  Fit Content 
@@ -69,7 +77,10 @@
 				bring you directly to the Portlet Selector. Clicking on the arrow or [GoBack] will bring you back to the normal Portal Window				
 			</p>
 			<p>
-				The help page is available through the help option as it was in Jetspeed Portal.
+				<img align="top" src="images/deskplus.png"/>
+			</p>
+			<p>
+				The help page is available through the help icon as it was in Jetspeed Portal.
 			</p>
 		</section>
  	</body>

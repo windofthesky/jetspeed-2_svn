@@ -42,22 +42,22 @@
 		</subsection>
 		<subsection name="Portlet Action Bar">
 			<p>
-				****TODO : Screenshot of portlet action bar ******* - The portlet action bar
+				The portlet action bar <img align="top" src="images/editactionbar.png"/>
 			</p>
 			<p>
-				****TODO Pic of edit icon******The edit icon will change the portlet window to display configurable preferences for that particular portlet.  For instance, a weather portlet can give you the options to change the city it is displaying as well as other options.  Each portlet will have unique preferences.  It is possible to have two or more of the same portlets displayed, but each will use it's own set of preferences.  This would allow you to have two weather portlets displaying the weather for two different cities.
+				<img align="top" src="images/editicon.png"/> The edit icon will change the portlet window to display configurable preferences for that particular portlet.  For instance, a weather portlet can give you the options to change the city it is displaying as well as other options.  Each portlet will have unique preferences.  It is possible to have two or more of the same portlets displayed, but each will use it's own set of preferences.  This would allow you to have two weather portlets displaying the weather for two different cities.
 			</p>
 			<p>
-				****TODO Pic of help icon******The help icon will display a page that display detailed information on how to use the portlet, version numbers or anything the developer has chosen to display in this page.
+				<img align="top" src="images/helpicon.png"/> The help icon will display a page that display detailed information on how to use the portlet, version numbers or anything the developer has chosen to display in this page.
 			</p>
 			<p>
-				****TODO Pic of minimize icon******The minimize icon will reduce your portlet down to displaying the title bar of the portlet only.  ****TODO Pic of restore icon******You can click on the restore button which is now available to return the portlet to it's original window state.
+				<img align="top" src="images/minicon.png"/> The minimize icon will reduce your portlet down to displaying the title bar of the portlet only.  <img align="top" src="images/restoreicon.png"/> You can click on the restore which is available to return the portlet to it's original window state.
 			</p>
 			<p>
-				****TODO Pic of maximize icon******The maximize icon will enlarge the portlet to display only that portlet in your portal window.  ****TODO Pic of restore icon******The restore button will be available again when in this mode.  
+				<img align="top" src="images/maxicon.png"/> The maximize icon will enlarge the portlet to display only that portlet in your portal window.  <img align="top" src="images/restoreicon.png"/> The restore button will be available again when in this mode.  
 			</p>
 			<p>
-				Other icons that you may see in the icon bar are ****TODO Pic of print icon******print and other customized icons.
+				Other icons that you may see in the icon bar are <img align="top" src="images/printicon.png"/> print and other customized icons.
 			</p>
 		</subsection>
 		</section>

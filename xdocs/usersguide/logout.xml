@@ -27,6 +27,9 @@
     <body>
         <section name="Ending your Jetspeed Session">
         	<subsection name="Logout Link">
+        	<p>
+        		<img align="top" src="images/customize.png"/> The logout link is located in the upper right just above the portlet windows.
+        	</p>
 			<p>
 				There are multiple ways to end your session with Jetspeed.  The easiest and most secure is to click the logout link located in the upper
 				right of the portal window.  Logging out returns the user to the Jetspeed Welcome Page where you can login again.
