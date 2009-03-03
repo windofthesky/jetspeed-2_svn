@@ -28,12 +28,12 @@ limitations under the License.
       <p>
         Jetspeed-2 is provided with several Administrative Portlets, including for User Management.<br/>
         Using the User Management Portlets, it is very easy to define or modify concrete attributes for a user:</p>      
-      <img src="adminguide/images/definingUserAttributes.jpg"/>
+      <img src="images/definingUserAttributes.jpg"/>
       <p>
         The User Info Test demo Portlet, default deployed in Jetspeed-2 and displayed on the start page, uses
         the above example User Attribute definitions and displays the values for the logged on user (also showing that
         these can be accessed from both the PortletRequest as well as the HttpServletRequest from within a servlet):</p>
-      <img src="adminguide/images/usingUserAttributes.jpg"/>
+      <img src="images/usingUserAttributes.jpg"/>
     </section>
   </body>
 </document>

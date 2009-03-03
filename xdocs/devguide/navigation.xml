@@ -71,6 +71,7 @@
             <item name="Statistics" href="devguide/dev-statistics.html" />
 	        <item name="Localization" href="devguide/guide-l10n.html" />
             <item name="Pipeline" href="devguide/pipeline.html" />
+            <item name="Preferences" href="devguide/dev-prefs.html"/>
             <item name="Profiler" href="devguide/guide-profiler.html" />
             <item name="Profiler IP" href="devguide/guide-profiler-ip.html" />
             <item name="PSML" href="devguide/guide-psml.html" />

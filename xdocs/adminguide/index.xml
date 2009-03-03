@@ -32,32 +32,33 @@
 			</p>
 			<subsection name="Security Administration">
 			<p>
-			JODY TODO: put links here, not sure if you think its good to repeat links, if they are on the left, note the lists are not complete, see navigation.xml
 			<ul>
-			  <li>User Management</li>
-			  <li>Role Management</li>
-			  <li>Group Management</li>
-			  <li>Constraints</li>
-			  <li>Permissions</li>
-			  <li>Single Sign-on Management</li>
+			  <li><a href="users.html">User Management</a></li>
+			  <li><a href="roles.html">Role Management</a></li>
+			  <li><a href="groups.html">Group Management</a></li>
+			  <li><a href="constraints.html">Constraints</a></li>
+			  <li><a href="credentials.html">Credentials</a></li>
+			  <li><a href="permissions.html">Permissions</a></li>
+			  <li><a href="user-attributes.html">User Attributes</a></li>
+			  <li><a href="user-profiler.html">User Profile</a></li>
+			  <li><a href="sso.html">Single Sign-on Management</a></li>
 			</ul>			
 			</p>
 			</subsection>
 			<subsection name="Portal Administration">
 			<p>
-			Portal administration JODY TODO: put links    
 			<ul>
-			  <li>Remote Portlet Application Manager</li>
-			  <li>Portlet Application Manager</li>
-			  <li>Portal Site Manager</li>
-			  <li>Portlet Application Lifecycle Manager</li>
-			  <li>Profiler Administration</li>
-			  <li>Portlet Entity Manager</li>
-			  <li>Portal Statistics</li>
-			  <li>Portlet Selector</li>
-			  <li>Portlet Tracking</li>
-			  <li>Import Export Service</li>
-			  <li>Subsites</li>
+			  <li><a href="rpad.html">Remote Portlet Application Manager</a></li>
+			  <li><a href="pam.html">Portlet Application Manager</a></li>
+			  <li><a href="site.html">Portal Site Manager</a></li>
+			  <li><a href="palm.html">Portlet Application Lifecycle Manager</a></li>
+			  <li><a href="profiler.html">Profiler Administration</a></li>
+			  <li><a href="search.html">Search</a></li>
+			  <li><a href="statistics.html">Portal Statistics</a></li>
+			  <li><a href="portlet-selector.html">Portlet Selector</a></li>
+			  <li><a href="tracking.html">Portlet Tracking</a></li>
+			  <li><a href="import.html">Import Export Service</a></li>
+			  <li><a href="subsites.html">Subsites</a></li>
 			 </ul> 
 			</p>
 			</subsection>

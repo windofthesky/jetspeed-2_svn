@@ -33,7 +33,7 @@ for the current user, it will apply the profiling rule for the given user. The J
 has a tab for editing user profile information:
 </p>
 <p>    
-<img src="adminguide/images/user-profile-locator.jpg" border="1"/>               
+<img src="images/user-profile-locator.jpg" border="1"/>               
 </p>
 <p>
 Often, profiling rules are determined and then associated by portal-specific logic during user registration (or self-registration).    

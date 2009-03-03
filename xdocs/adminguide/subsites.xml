@@ -46,7 +46,7 @@
         </ul>
         <subsection name='Virtual Hosting'>
         <p>In our Virtual Hosting example, we are hosting three different portal subsites:</p>
-        <img src='adminguide/images/subsites2.jpg' border="0"/>
+        <img src='images/subsites2.jpg' border="0"/>
         <p>Here we have three subsites (four including localhost) defined for three different companies:
         </p>
         <ul>
@@ -57,7 +57,7 @@
         </subsection>
         <subsection name='Single Organization'>
         <p>In our Single Organization example, we are hosting three different portal subsites within the organization:</p>
-        <img src='adminguide/images/subsites.jpg' border="0"/>        
+        <img src='images/subsites.jpg' border="0"/>        
         <p>Here we have three subsites (four including localhost) defined for three different companies:
         </p>
         <ul>
@@ -162,7 +162,7 @@
 <p>A profiling rule contains one or more criterion. Each criterion defines an instruction on how to locate a page in the physical portal site map.
 Criterion of the type <i>navigation</i> are used to navigate down the portal site tree. 
 The <i>fallBackOrder</i> tag should normally just be listed sequential. You can almost always get by with a <i>fallBackType</i> of 2.
-All of the available criterion <i>types</i> are documented in the online <a href='guide-profiler.html'>Profiler Guide</a>.
+All of the available criterion <i>types</i> are documented in the online <a href='profiler.html'>Profiler Guide</a>.
 The table below describes each criterion in our subsite rule and how it is used in a subsite location algorithm. This rule is a subsite location rule that uses a user-role-fallback algorithm.
 User-role-fallback algorithms first look for a page in the users home directory. If not found there, they then look for a page in each of the users corresponding role directories.
 There are other algorithms provided by out of the box such as role-fallback, group-fallback, mediatype/language fallback. Or you can create your own algorithms by creating new profiling rules in the XML seed data or with
@@ -181,7 +181,7 @@ the Profiler Admininistrative portlet.
 <p>
 The screenshot below shows the directory tree for a <i>localhost</i> subsite.
 </p>
-<img src='adminguide/images/localhost-site.jpg'/>
+<img src='images/localhost-site.jpg'/>
 <p>
 Notice the _user and _role directories. These are control directories based on the runtime parameters <i>user</i> and <i>role</i>.
 The user parameter represents the username of the currently logged on user. The role parameter can represent one or more roles of the current user.
@@ -240,7 +240,7 @@ For each of the examples below, consider the following runtime parameters:
 All users are either explicity or implicity associated with a profiling rule. 
 The User Administration utility has a tab to setup the profiling rule associated with a user:
 </p>            
-<img src='adminguide/images/user-profile.jpg' border="0"/>
+<img src='images/user-profile.jpg' border="0"/>
 <p>
 Additionally, you can associate users with profiling rules in the XML seed data configuration:
 </p>
@@ -316,12 +316,12 @@ For example, with the dot prefix flag set to true, a hostname of "accounting.xyz
         	<li><b>Profiling Rule:</b> choose a profiling rule to assign to the new user that has built in subsite support such as the example used in this document: <b>subsite-by-hostname</b>.</li>
         	<li><b>Subsites:</b> from the dropdown select the subsite to assign as the home subsite to the new user, or leave blank to use default /_user home.</li>
         	</ul>
-        <img src='adminguide/images/newuser-subsite-admin.png' border="0"/>        
+        <img src='images/newuser-subsite-admin.png' border="0"/>        
         	<p>When using the <b>subsite-by-hostname</b> profiling rule, make sure to select a subsite from the subsites drop-down, as these two attributes work together.
         	The rule is the instructions on where to look for home pages, and the subsite selection tells the profiling rule which subsite will hold this user directory</p>
         	<p>Subsite management can also be delegated to managers of particular subsites. For example, you may want to setup User Manager Administration pages for each subsite.
         	By modifying the deployment descriptor for the j2-admin application, each User Manager details portlet can be configured with a different default subsite:</p>
-        <img src='adminguide/images/subsite-fields.png' border="0"/>                        	        	
+        <img src='images/subsite-fields.png' border="0"/>                        	        	
        </section> 	
         <section name="Administering Subsites with User Registration">
             <p>When creating a new user from the User Registration portlet, you can specify two fields to enable and configure subsite behavior for that new user:
@@ -330,7 +330,7 @@ For example, with the dot prefix flag set to true, a hostname of "accounting.xyz
         	<li><b>rulesValues:</b> choose a profiling rule to assign to the new user that has built in subsite support such as the example used in this document: <b>subsite-by-hostname</b>.</li>
         	<li><b>subsiteRootFolder:</b> the full path to one unique subsite root folder.</li>
         	</ul>        	
-        <img src='adminguide/images/user-reg-subsite.png' border="0"/>                        	
+        <img src='images/user-reg-subsite.png' border="0"/>                        	
         	<p>NOTE: the User Registration portlet will store these preference values on a per user basis. Usually this means the preferences are stored for the administrative user only.
         	If you will have administrators registering users, then this approach works fine. However, with <b>self-registration</b> portal, you will need to set these values in the defaults for the portlet.
         	The defaults are usually set in the portlet.xml, for example:

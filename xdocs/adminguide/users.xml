@@ -22,39 +22,281 @@
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
+			<person name="Niels van Kampenhout" email="n.vankampenhout@onehippo.com"/>
 		</authors>
 	</properties>
 	<body>
 		<section name="User Administration Guide">
 			<p>
-				Administering users with Jetspeed. 
-				<br/><br/>
+				User Management is where you manage individual portal users. You can create new users, and edit or remove existing users.
+				You can set a user's password, and manage a user's attributes, roles, group memberships, and profiling rules.
+				The User Management page is located inside the Jetspeed Administrative Portlets section.
+				The User Management page is the first tab on the administrative menu across the top.
+				Here you see the User Browser on the left, and the User Details on the right.
 			</p>
 		</section>
 		<section name="The User Browser">
 			<p>
-			TODO: overview, screenshot			
+				The User Browser portlet lists all portal users, and allows you to search for
+				a particular user.
+			</p>
+			<p>
+				<img src="images/userbrowser.png"/>	
 			</p>
 			<subsection name="Paging">
-			<p>
-			</p>
+				<p>
+					If there are more than 10 users in the system, the user listing is spread over
+					several pages each displaying 10 users. You can navigate through the pages
+					using the buttons right below the listing. Clicking on the "Refresh" button
+					will reset the user listing to the first page.
+				</p>
+				<p>
+					<img src="images/pagingbuttons.png"/>
+				</p>
 			</subsection>
 			<subsection name="Searching">
-			<p>
-			</p>
+				<p>
+					You can search for a particular user by entering the username or part of the username
+					in the search text box. After clicking on the "Search" button, the user listing
+					will show the search results, starting with the user that best matched your search
+					query, followed by increasingly less matching users.
+				</p>
+				<p>
+					<img src="images/usersearch.png"/>
+				</p>
 			</subsection>
 			<subsection name="Filtering">
-			<p>
-			</p>
+				<p>
+					To get only exact matches when searching for (part of) a particular username, check the "filter"
+					checkbox below the search text box.
+				</p>
+				<p>
+					<img src="images/userfilter.png"/>
+				</p>
 			</subsection>
 			<subsection name="Selecting for Edit">
-			<p>
-			</p>
+				<p>
+					To select one of the users in the listing for editing, click on the username.
+					A small arrow will appear in front of the username to indicate it is currently
+					selected, and the user's details will be loaded in the User Details Information
+					portlet.
+				</p>
+				<p>
+					<img src="images/userselected.png"/>
+				</p>
 			</subsection>		
 		</section>
+		
+		<section name="User Detail Information">
+			<p>
+				The User Detail Information portlet allows you to manage a particular user's
+				attributes, credentials, roles, group memberships, and profiles. Each of these
+				is represented on a different tab in the portlet.
+			</p>
+			<p>
+				<img src="images/userdetailsmall.png"/>
+			</p>
+			<subsection name="User Attributes">
+				<p>
+					User attributes are any kind of information you might want to store about your
+					users in your portal. Examples are first and last name, address, phone number,
+					or organization dependant attributes such as employee or student number.
+					Each attribute is a simple name-value pair. You can create as many attributes
+					as you like.
+				</p>
+				<p>
+					User attributes for a user are managed within the "Attributes" tab. Existing
+					attributes for the selected user are displayed in a list. The values of the attributes
+					can be edited directly in the text boxes in the "Value" column. To store your
+					changes, check the checkbox in front of each attribute you changed, and click
+					on the "Update" button. To remove attributes, check the checkbox in front of each attribute
+					you wish to delete, and click on  the "Remove" button.
+				</p>
+				<p>
+					To create a new attribute, enter a name and a value in the form directly below the
+					attribute listing. You can enter anything for the name and value. Click on the "Add"
+					button to store the new attribute. Note that if you use the name of an
+					existing attribute, its value will be overwritten.
+				</p>
+				<p>
+					For more details on user attributes see <a href="user-attributes.html">User Attributes</a>.
+				</p>
+				<p>
+					<img src="images/userdetailattribute.png"/>
+				</p>
+			</subsection>
+			<subsection name="Password Credentials">
+				<p>
+					For details on managing user credentials see <a href="credentials.html">Credentials</a>.
+				</p>
+			</subsection>
+			<subsection name="Role">
+				<p>
+					On the "Role" tab you can manage the roles that the currently selected user has been assigned. The roles itself
+					can be managed on the <a href="roles.html">Role Management</a> page. The roles the selected user
+					currently has been assigned are listed. You can assign a new role to the user by selecting a role
+					from the dropdown, and clicking on the "Add" button. The new role will immediately appear in the listing.
+					To remove a role, check the role's checkbox in the listing and click on the "Remove" button. The role
+					will disappear from the listing.
+				</p>
+				<p>
+					<img src="images/userdetailrole.png"/>
+				</p>
+			</subsection>
+			<subsection name="Group">
+				<p>
+					On the "Group" tab you can manage the group memberships of the currently selected user. The groups itself
+					can be managed on the <a href="groups.html">Group Management</a> page. The groups the selected user
+					currently is a member of are listed. You can add a user to a group by selecting the group
+					from the dropdown, and clicking on the "Add" button. The group will immediately appear in the listing.
+					To remove a user from a group, check the group's checkbox in the listing and click on the "Remove" button. The group
+					will disappear from the listing.
+				</p>
+				<p>
+					<img src="images/userdetailgroup.png"/>
+				</p>
+			</subsection>
+			<subsection name="Profile">
+				<p>
+					See <a href="user-profiler.html">User Profile</a> for details.
+				</p>
+			</subsection>
+			<subsection name="Deleting a User">
+				<p>
+					To remove a user from the system, click on the "Remove User" button.
+					A message will be shown "Node has been removed". Be aware that this action is permanent! 
+				</p>
+				<p>
+					<img src="images/userremoveuser.png"/> 
+				</p>
+				<p>
+					TODO screenshot of feedback message "Node has been removed"
+				</p>
+			</subsection>
+			<subsection name="User Details Configuration">
+				<p>
+					Configuring a User Details portlet in Edit Mode allows you to customize the view of the User Details administration window. 
+					Each tab can be optionally shown or hidden. Also, default values for roles, new user, required role, profile, user template, 
+					subsite root folder and default subsite new user can be set.
+				</p>
+				<p>
+					<img src="images/userdetailedit.png"/>
+				</p>
+				<table>
+					<tr>
+						<th>Field</th>
+						<th>Description</th>            
+					</tr>
+					<tr>
+						<td>Show User Tab</td>
+						<td>Show or hide the User tab.</td>
+					</tr>
+					<tr>
+						<td>Show Attributes Tab</td>
+						<td>Show or hide the Attributes tab.</td>
+					</tr>
+					<tr>
+						<td>Show Password Tab</td>
+						<td>Show or hide the Password tab.</td>
+					</tr>
+					<tr>
+						<td>Show Password Expiration</td>
+						<td>Show the password expiration date on the Password tab, and the options to activate/expire/extend the password.</td>
+					</tr>
+					<tr>
+						<td>Show Role Tab</td>
+						<td>Show or hide the Role tab.</td>
+					</tr>
+					<tr>
+						<td>Show Group Tab</td>
+						<td>Show or hide the Group tab.</td>
+					</tr>
+					<tr>
+						<td>Show Profile Tab</td>
+						<td>Show or hide the Profile tab.</td>
+					</tr>
+					<tr>
+						<td>Show Password on User Tab</td>
+						<td>Show or hide password information User tab. If enabled, User Tab effectively offers the same functionality as the Password tab.</td>
+					</tr>
+					<tr>
+						<td>Define default "Change Password Required on First Login" for new User</td>
+						<td>Show or hide the option to set "Change Password Required on First Login" in the Add User form.</td>
+					</tr>
+					<tr>
+						<td>Define default Role for new User</td>
+						<td>Show or hide the option to define a default role in the Add User form.</td>
+					</tr>
+					<tr>
+						<td>Define default Profile for new User</td>
+						<td>Show or hide the option to define a default profile in the Add User form.</td>
+					</tr>
+					<tr>
+						<td>Allow assignment of Subsite for new User</td>
+						<td>Show or hide the option to define a default subsite in the Add User form.</td>
+					</tr>
+					<tr>
+						<td>Default "Change Password Required on First Login"</td>
+						<td>Check or uncheck the "Change Password Required on First Login" checkbox in the Add User form (if enabled by checking Define 
+							default "Change Password Required on First Login" for new User, see above).</td>
+					</tr>
+					<tr>
+						<td>Default Role for new User</td>
+						<td>Pre-select a role in the Default Role dropdown in the Add User form.</td>
+					</tr>
+					<tr>
+						<td>Required Role for new User</td>
+						<td>Sets a required role for new users, that gets assigned to each new user regardless of the Default Role setting.</td>
+					</tr>
+					<tr>
+						<td>Default Profile for new User</td>
+						<td>Pre-select a profile in the Defaylt Profile dropdown in the Add User form.</td>
+					</tr>
+					<tr>
+						<td>New User Template Directory</td>
+						<td>TODO</td>
+					</tr>
+					<tr>
+						<td>Subsite Root Folder</td>
+						<td>TODO</td>
+					</tr>
+					<tr>
+						<td>Default Subsite for new User</td>
+						<td>TODO</td>
+					</tr>
+				</table>
+				<!--
+				<p>
+					The User Details configuration is useful for delegated security scenarios. For example, setting up a User Management 
+					page for all users with the Developer role. First, setup the User Browser preference to FilterByRole on Developer. 
+					Then you can assign a default role, required role, new user template, and subsite area all for new developers, managed 
+					by a user with the DeveloperManager role. This user then can create only developer type users complete with the correct 
+					roles and user templates. The edit mode of the User Details portlet can be secured so that the global admin can only 
+					edit the configuration, limiting the development manager to only creating or deleting developers.
+				</p>
+				-->
+			</subsection>               
+		</section>  
+		
+		
 		<section name="Adding a New User">
 			<p>
-			TODO: overview, screenshot
+				New users can be entered through the User Details portlet. If you haven't selected any user from the 
+				User Browser yet, the User Details portlet will show the "Add User" form. If you did select a user,
+				click on the "Add New User" button in the bottom of the portlet to go to the "Add User" form.
+			</p>
+			<p>
+				<img src="images/useradduserbutton.png"/>
+			</p>
+			<p>
+				<img src="images/userdetailnormal.png"/>
+			</p>
+			<p>
+				From here you can create a new user. Choose a unique username with no spaces. Then enter a secure password. 
+				You can require the password to be changed on the first login. You can also select the default role assigned 
+				to this user, as well as a default profiling rule. Last, you can assign this user to a subsite.
+			</p>
+			<!--
 			<table>
 			<tr>
 			<th>Field</th>
@@ -85,58 +327,8 @@
 			<td></td>
 			</tr>
 			</table>
-			</p>
+			-->
 		</section>
-		<section name="User Detail Information">
-		<p>
-		</p>
-		<subsection name="User Attributes">
-		<p>
-		</p>
-		</subsection>
-		<subsection name="Password Credentials">
-		<p>
-		see Security docs, screenshot, paste in here
-		</p>
-		</subsection>
-		<subsection name="Role">
-		<p>
-		</p>
-		</subsection>
-		<subsection name="Group">
-		<p>
-		</p>
-		</subsection>
-		<subsection name="Profile">
-		<p>
-		</p>
-		</subsection>
-		<subsection name="Deleting a User">
-		<p>
-		</p>
-		</subsection>
-		</section>	
-		<subsection name="User Details Configuration">
-		<p>
-		Configuring a User Details portlet in Edit Mode allows you to customize the view of the User Details administration window. 
-		Each tab can be optoinally show or hidden. Also, default values for roles, new user, required role, profile, user template, subsite root folder and default subsite new user can be set.
-	
-			TODO: overview, screenshot -- convert http://portals.apache.org/jetspeed-2.1.3/faq.html to here, put a link on FAQ to this page
-			<table>
-			<tr>
-			<th>Field</th>
-			<th>Description</th>			
-			</tr>
-			<tr>
-			<td></td>
-			<td></td>
-			</tr>
-			<tr>
-			<td></td>
-			<td></td>
-			</tr>
-			</table>
-		</p>		
-		</subsection>				
+
 	</body>
 </document>
