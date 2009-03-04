@@ -17,6 +17,7 @@
 package org.apache.jetspeed.container.state.impl;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     {
         private static final long serialVersionUID = -2730733728229116932L;
         
-        public Map<String, PortletWindowBaseNavigationalState> windowStates = new HashMap<String, PortletWindowBaseNavigationalState>();
+        public Map<String, PortletWindowBaseNavigationalState> windowStates = Collections.synchronizedMap(new HashMap<String, PortletWindowBaseNavigationalState>());
         public String maximizedWindowId;
     }
     
@@ -80,7 +81,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             removeFromCache(context, pageState.maximizedWindowId, decorationCache);                        
             pageState.maximizedWindowId = null;
         }
-
+        synchronized(pageState.windowStates){
         Iterator<String> iter = requestStates.getWindowIdIterator();
         iter = pageState.windowStates.keySet().iterator();
         String windowId;
@@ -121,7 +122,8 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 }
             }
             
-        }        
+        }      
+        } 
     }
     
     public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)    
@@ -232,6 +234,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         }
         
         // now copy missing requestStates from the pageState
+        synchronized(pageState.windowStates){
         iter = pageState.windowStates.keySet().iterator();
         String windowId;
         while ( iter.hasNext() )
@@ -253,6 +256,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                     }
                 }
             }
+        }
         }        
     }
     
