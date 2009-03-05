@@ -25,6 +25,30 @@
 		</authors>
 	</properties>
 	<body>
+	  <section name="Data Migrating from Jetspeed 2.1.3 to 2.1.4">
+	    <p>The following tables describe database schema changes from version 2.1.4 to version 2.1.3.                                  
+	    </p>
+         <subsection name="Constraint removed">
+            <table>
+                <tr>
+                <th>Table</th>
+                <th>column(s)</th>                    
+                <th>2.1.3</th>                    
+                <th>2.1.4</th>
+                </tr>
+                <tr>
+                 <td>PARAMETER</td> 
+                 <td>PARAMETER_VALUE</td> 
+                 <td>Required</td> 
+                 <td>Not required</td>                                                            
+                </tr>
+            </table>
+            <p>
+            Here is an example of the SQL migration scripts for the MySQL database:
+            <source><![CDATA[ALTER TABLE 'PARAMETER` MODIFY COLUMN `PARAMETER_VALUE` DEFAULT NULL;]]></source>            
+            </p>       
+            </subsection>                         
+	  </section>		
 	  <section name="Data Migrating from Jetspeed 2.1.2 to 2.1.3">
 	    <p>The following tables describe database schema changes from version 2.1.3 to version 2.1.2.                                  
 	    </p>
