@@ -67,7 +67,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         createRelations();
     }
 
-    public void synchronizeAll()
+    public synchronized void synchronizeAll()
     {
         setSynchronizing(true);
         try
@@ -79,7 +79,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             {
                 for (Entity entity : securityEntityManager.getAllEntities(type))
                 {
-                    recursiveSynchronizeEntity(entity, synchronizationState);
+                	// recursive is false, because that will synchronize all associated entities which are
+                	// direct associations of the principal. Because all principal types are being processed, this ensures 
+                	// all associations are being processed.
+                    recursiveSynchronizeEntity(entity, synchronizationState, false);
                 }
             }
         }
@@ -89,7 +92,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    public void synchronizePrincipalsByType(String type)
+    public synchronized void synchronizePrincipalsByType(String type, boolean recursive)
     {
         setSynchronizing(true);
         try
@@ -104,7 +107,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
             for (Entity entity : entites)
             {
-                recursiveSynchronizeEntity(entity, synchronizationState);
+                recursiveSynchronizeEntity(entity, synchronizationState, recursive);
             }
         }
         finally
@@ -113,24 +116,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    private void recursiveSynchronizeEntity(Entity entity, InternalSynchronizationState syncState)
-    {
-        JetspeedPrincipal updatedPrincipal = null;
-        if (entity != null && !syncState.isProcessed(entity))
-        {
-            // mark as processed, to avoid nasty loops
-            syncState.setProcessed(entity);
-            // update / create corresponding JetspeedPrincipal first
-            updatedPrincipal = synchronizePrincipalAttributes(entity);
-            if (updatedPrincipal != null)
-            {
-                // Synchronizing Relations
-                synchronizePrincipalRelation(updatedPrincipal, entity, syncState);
-            }
-        }
-    }
-
-    public void synchronizeUserPrincipal(String name)
+    public synchronized void synchronizeUserPrincipal(String name, boolean recursive)
     {
         setSynchronizing(true);
         try
@@ -139,7 +125,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             // amounts of data.
             // TODO: allow processing of required relations towards users.
             Collection<String> skipEntities = Arrays.asList(new String[] { JetspeedPrincipalType.USER });
-            recursiveSynchronizePrincipal(securityEntityManager.getEntity(JetspeedPrincipalType.USER, name), new InternalSynchronizationState(skipEntities));
+            recursiveSynchronizeEntity(securityEntityManager.getEntity(JetspeedPrincipalType.USER, name), new InternalSynchronizationState(skipEntities), recursive);
         }
         finally
         {
@@ -147,7 +133,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    public JetspeedPrincipal recursiveSynchronizePrincipal(Entity entity, InternalSynchronizationState syncState)
+    protected JetspeedPrincipal recursiveSynchronizeEntity(Entity entity, InternalSynchronizationState syncState, boolean recursive)
     {
         JetspeedPrincipal updatedPrincipal = null;
         if (entity != null && !syncState.isProcessed(entity))
@@ -159,13 +145,13 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             if (updatedPrincipal != null)
             {
                 // Synchronizing Relations
-                synchronizePrincipalRelation(updatedPrincipal, entity, syncState);
+                synchronizeEntityRelations(updatedPrincipal, entity, syncState, recursive);
             }
         }
         return updatedPrincipal;
     }
 
-    protected JetspeedPrincipal synchronizePrincipalRelation(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState)
+    protected JetspeedPrincipal synchronizeEntityRelations(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState, boolean recursive)
     {
         if (entityToRelationTypes.values().size() != 0)
             // loop through all relation types for this entity type
@@ -177,132 +163,78 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                 // entity
                 if (relationTypeForThisEntity.getFromEntityType().equals(entity.getType()))
                 {
-                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getToEntityType()))
+                    if (syncState.shouldFollowRelationTo(entity,true,relationTypeForThisEntity.getToEntityType()))
                     {
-                        Collection<String> updatedAssociationToNames = synchronizeAssociations(relationTypeForThisEntity, entity, principal, true, syncState);
-                        synchronizeRemovedAssociations(updatedAssociationToNames, relationTypeForThisEntity.getRelationType(), principal, true);
+                        Collection<String> updatedRelationToIds = synchronizeAddedEntityRelations(relationTypeForThisEntity, entity, principal, true, syncState, recursive);
+                        synchronizeRemovedAssociations(updatedRelationToIds, relationTypeForThisEntity.getRelationType(), principal, true);
                     }
                 }
                 // the entity can represent either side or *both* sides of
                 // the relationship, so synchronize both ways.
                 if (relationTypeForThisEntity.getToEntityType().equals(entity.getType()))
                 {
-                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getFromEntityType()))
+                    if (syncState.shouldFollowRelationTo(entity,false,relationTypeForThisEntity.getFromEntityType()))
                     {
-                        Collection<String> updatedAssociationFromNames = synchronizeAssociations(relationTypeForThisEntity, entity, principal, false, syncState);
-                        synchronizeRemovedAssociations(updatedAssociationFromNames, relationTypeForThisEntity.getRelationType(), principal, false);
+                        Collection<String> updatedRelationFromIds = synchronizeAddedEntityRelations(relationTypeForThisEntity, entity, principal, false, syncState, recursive);
+                        synchronizeRemovedAssociations(updatedRelationFromIds, relationTypeForThisEntity.getRelationType(), principal, false);
                     }
                 }
             }
         return principal;
     }
 
-    protected JetspeedPrincipal synchronizePrincipalRelations(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState)
-    {
-        if (entityToRelationTypes.values().size() != 0)
-            // loop through all relation types for this entity type
-            for (SecurityEntityRelationType relationTypeForThisEntity : entityToRelationTypes.get(entity.getType()))
-            {
-                // check at what side of the relationship this entity
-                // represents (from or to) and check whether
-                // entities on the other side should be synchronized.Entity
-                // entity
-                if (relationTypeForThisEntity.getFromEntityType().equals(entity.getType()))
-                {
-                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getToEntityType()))
-                    {
-                        Collection<String> updatedAssociationToNames = synchronizeAddedAssociations(relationTypeForThisEntity, entity, principal, true,
-                                                                                                    syncState);
-                        synchronizeRemovedAssociations(updatedAssociationToNames, relationTypeForThisEntity.getRelationType(), principal, true);
-                    }
-                }
-                // the entity can represent either side or *both* sides of
-                // the relationship, so synchronize both ways.
-                if (relationTypeForThisEntity.getToEntityType().equals(entity.getType()))
-                {
-                    if (syncState.shouldFollowRelationTo(relationTypeForThisEntity.getFromEntityType()))
-                    {
-                        Collection<String> updatedAssociationFromNames = synchronizeAddedAssociations(relationTypeForThisEntity, entity, principal, false,
-                                                                                                      syncState);
-                        synchronizeRemovedAssociations(updatedAssociationFromNames, relationTypeForThisEntity.getRelationType(), principal, false);
-                    }
-                }
-            }
-        return principal;
-    }
-
-    protected Collection<String> synchronizeAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
-                                                         boolean entityIsFromEntity, InternalSynchronizationState syncState)
+    /**
+     * Synchronizes all relations found in the backend store (e.g. LDAP). Returns a collections of all related entity IDs found. This list can be
+     * used to check whether associations found in the database should be removed, if the associated principal ID is not in this list.
+     * @param relationTypeForThisEntity the type of relation that should be synchronized
+     * @param entity the entity for which relations to other entities should be synchronized.
+     * @param principal the principal that corresponds with entity
+     * @param entityIsFromEntity the passed entity is the "from" side of a relation.
+     * @param syncState the internal synchronization state
+     * @param recursive whether related entities should be recursively synchronized (true) or not (false).
+     * @return
+     */
+    protected Collection<String> synchronizeAddedEntityRelations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
+                                                              boolean entityIsFromEntity, InternalSynchronizationState syncState, boolean recursive)
     {
         Collection<String> externalRelatedEntityIds = null;
         Collection<Entity> relatedEntities = entityIsFromEntity ? securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity)
                                                                : securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);
         externalRelatedEntityIds = new ArrayList<String>();
-        for (Entity relatedEntity : relatedEntities)
-        {
-            Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
-            Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
-            if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
+        if (relatedEntities != null){
+            for (Entity relatedEntity : relatedEntities)
             {
-                // first flag the relation as processed to
-                // prevent synchronizing the same relation from
-                // the other side.
-                syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
-                // first create/update principal
-                // JetspeedPrincipal relatedPrincipal = recursiveSynchronizePrincipal(relatedEntity, syncState);
-                
-                //TODO change for nested level of group and roles.
-                JetspeedPrincipal relatedPrincipal = null;
-                JetspeedPrincipalManager principalManager = principalManagerProvider
-                                                                                    .getManager(principalManagerProvider
-                                                                                                                        .getPrincipalType(relatedEntity
-                                                                                                                                                       .getType()));
-                if (principalManager != null)
+                Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
+                Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
+                if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
                 {
-                    relatedPrincipal = principalManager.getPrincipal(relatedEntity.getId());
+                    // first flag the relation as processed to
+                    // prevent synchronizing the same relation from
+                    // the other side.
+                    syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
+                    // first create/update principal
+                    JetspeedPrincipal relatedPrincipal = null;
+                    if (recursive){
+                        relatedPrincipal = recursiveSynchronizeEntity(relatedEntity, syncState,recursive);
+                    } else {
+                        // don't recursively synchronize the related entity. Only add an association (if missing) when the related entity was previously synchronized.
+                        JetspeedPrincipalManager principalManager = principalManagerProvider.getManager(principalManagerProvider.getPrincipalType(relatedEntity.getType()));
+                        if (principalManager != null)
+                        {
+                            relatedPrincipal = principalManager.getPrincipal(relatedEntity.getId());
+                        }
+                    }
+                    // .. then update associations to / from it
+                    JetspeedPrincipal fromPrincipal = entityIsFromEntity ? principal : relatedPrincipal;
+                    JetspeedPrincipal toPrincipal = entityIsFromEntity ? relatedPrincipal : principal;
+                    // does association exist in DB ?
+                    if (relatedPrincipal != null && !associationExists(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType()))
+                    {
+                        synchronizeAddedPrincipalAssocation(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType());
+                        externalRelatedEntityIds.add(relatedPrincipal.getName());
+                    }
+                    
                 }
-                // .. then update associations to / from it
-                JetspeedPrincipal fromPrincipal = entityIsFromEntity ? principal : relatedPrincipal;
-                JetspeedPrincipal toPrincipal = entityIsFromEntity ? relatedPrincipal : principal;
-                // does association exist in DB ?
-                if (relatedPrincipal != null && !associationExists(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType()))
-                {
-                    synchronizeAddedPrincipalAssocation(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType());
-                    externalRelatedEntityIds.add(relatedPrincipal.getName());
-                }
-            }
-        }
-        return externalRelatedEntityIds;
-    }
-
-    protected Collection<String> synchronizeAddedAssociations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
-                                                              boolean entityIsFromEntity, InternalSynchronizationState syncState)
-    {
-        Collection<String> externalRelatedEntityIds = null;
-        Collection<Entity> relatedEntities = entityIsFromEntity ? securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity)
-                                                               : securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);
-        externalRelatedEntityIds = new ArrayList<String>();
-        for (Entity relatedEntity : relatedEntities)
-        {
-            Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
-            Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
-            if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
-            {
-                // first flag the relation as processed to
-                // prevent synchronizing the same relation from
-                // the other side.
-                syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
-                // first create/update principal
-                JetspeedPrincipal relatedPrincipal = recursiveSynchronizePrincipal(relatedEntity, syncState);
-                // .. then update associations to / from it
-                JetspeedPrincipal fromPrincipal = entityIsFromEntity ? principal : relatedPrincipal;
-                JetspeedPrincipal toPrincipal = entityIsFromEntity ? relatedPrincipal : principal;
-                // does association exist in DB ?
-                if (relatedPrincipal != null && !associationExists(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType()))
-                {
-                    synchronizeAddedPrincipalAssocation(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType());
-                }
-                externalRelatedEntityIds.add(relatedPrincipal.getName());
             }
         }
         return externalRelatedEntityIds;
@@ -522,7 +454,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    private class InternalSynchronizationState
+    protected class InternalSynchronizationState
     {
         // entity type to processed entity IDs map
         Map<String, Set<String>> processedEntities = new HashMap<String, Set<String>>();
@@ -544,18 +476,18 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             this.skipEntities = skipEntities;
         }
 
-        private boolean isProcessed(Entity entity)
+        protected boolean isProcessed(Entity entity)
         {
             Set<String> processedEntitiesByType = processedEntities.get(entity.getType());
             return processedEntitiesByType != null && processedEntitiesByType.contains(entity.getId());
         }
 
-        private boolean shouldFollowRelationTo(String relationType)
+        protected boolean shouldFollowRelationTo(Entity entity, boolean isFromEntity, String relationType)
         {
             return !skipEntities.contains(relationType);
         }
 
-        private void setProcessed(Entity entity)
+        protected void setProcessed(Entity entity)
         {
             Set<String> processedEntitiesByType = processedEntities.get(entity.getType());
             if (processedEntitiesByType == null)
@@ -565,7 +497,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             processedEntitiesByType.add(entity.getId());
         }
 
-        private boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
+        protected boolean isRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
         {
             Map<String, Collection<String>> e2eMap = processedEntityRelationsFromTo.get(relationType);
             if (e2eMap != null)
@@ -576,7 +508,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             return false;
         }
 
-        private void setRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom)
+        protected void setRelationProcessed(SecurityEntityRelationType relationType, Entity startEntity, Entity endEntity, boolean startEntityIsFrom)
         {
             if (startEntityIsFrom)
             {
@@ -588,7 +520,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             }
         }
 
-        private void setRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
+        protected void setRelationProcessed(SecurityEntityRelationType relationType, Entity fromEntity, Entity toEntity)
         {
             Map<String, Collection<String>> e2eMap = processedEntityRelationsFromTo.get(relationType);
             if (e2eMap == null)

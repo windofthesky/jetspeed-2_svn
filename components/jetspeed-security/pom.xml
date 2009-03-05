@@ -109,6 +109,7 @@
         <dependency>      
             <artifactId>spring-ldap</artifactId>
             <groupId>org.springframework.ldap</groupId>
+            <classifier>all</classifier>
         </dependency>
 
         <dependency>      

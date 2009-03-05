@@ -35,18 +35,20 @@ public class OnStartupSecuritySynchronizationBean implements RefreshableBean
     private JetspeedSecuritySynchronizer synchronizer;
     private boolean synchronizeAllUser;
     private String synchronizeEntityType;
+    private boolean recursiveSynchronization;
 
     /**
      * @param synchronizer
      * @param userManager
      */
     public OnStartupSecuritySynchronizationBean(JetspeedSecuritySynchronizer synchronizer, UserManager userManager, boolean synchronizeAllUser,
-                                     String synchronizeEntityType)
+                                     String synchronizeEntityType, boolean recursiveSynchronization)
     {
         this.synchronizer = synchronizer;
         this.userManager = userManager;
         this.synchronizeAllUser = synchronizeAllUser;
         this.synchronizeEntityType = synchronizeEntityType;
+        this.recursiveSynchronization=recursiveSynchronization;
     }
     
     public void refresh()
@@ -57,7 +59,7 @@ public class OnStartupSecuritySynchronizationBean implements RefreshableBean
             {
                 if (userManager.getUser(userManager.getAnonymousUser()) == null)
                 {
-                    synchronizer.synchronizeUserPrincipal(userManager.getAnonymousUser());
+                    synchronizer.synchronizeUserPrincipal(userManager.getAnonymousUser(),false);
                 }
                 
                 if (synchronizeAllUser)
@@ -68,7 +70,7 @@ public class OnStartupSecuritySynchronizationBean implements RefreshableBean
                 {
                     if (StringUtils.isNotEmpty(synchronizeEntityType))
                     {
-                        synchronizer.synchronizePrincipalsByType(synchronizeEntityType);
+                        synchronizer.synchronizePrincipalsByType(synchronizeEntityType,recursiveSynchronization);
                     }
                 }
             }

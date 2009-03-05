@@ -22,10 +22,24 @@ package org.apache.jetspeed.security.spi;
  */
 public interface JetspeedSecuritySynchronizer
 {
-    void synchronizeUserPrincipal(String name);
+	
+	/**
+	 * Synchronizes the user principal with the specified name. 
+	 * @param name
+	 */
+    void synchronizeUserPrincipal(String name, boolean recursive);
     
-    void synchronizePrincipalsByType(String principalTypeName);
+    /**
+     * Synchronize all principals of a certain type.
+     * @param principalTypeName
+     * @param recursive if true, all nested principals associated to this principal will be synchronized. If false, only the direct (first level) associated
+     *          principals will be synchronized.
+     */
+    void synchronizePrincipalsByType(String principalTypeName, boolean recursive);
     
+    /**
+     *  Synchronizes all principals.
+     */
     void synchronizeAll();
     
 }

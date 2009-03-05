@@ -107,7 +107,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     {
         if (synchronizer != null)
         {
-            synchronizer.synchronizeUserPrincipal(userName);
+            synchronizer.synchronizeUserPrincipal(userName,false);
         }
         return manager.getUser(userName);
     }

@@ -55,22 +55,25 @@ import org.springframework.ldap.filter.OrFilter;
 public class SpringLDAPEntityDAO implements EntityDAO
 {
 
-    private enum UpdateMode {
+    protected enum UpdateMode {
         MAPPED, INTERNAL, ALL
     };
 
     protected LdapTemplate ldapTemplate;
 
-    protected LDAPEntityDAOConfiguration configuration;
+    protected final LDAPEntityDAOConfiguration configuration;
+    protected final DistinguishedName searchDN;
 
-    private ContextMapper contextMapper;
+    protected ContextMapper contextMapper;
 
-    private EntityFactory entityFactory;
-
+    protected EntityFactory entityFactory;
+    
+    
     public SpringLDAPEntityDAO(LDAPEntityDAOConfiguration configuration)
     {
         super();
         this.configuration = configuration;
+        searchDN = new DistinguishedName(getConfiguration().getSearchDN());
         this.entityFactory = new EntityFactoryImpl(configuration);
         this.contextMapper = new DefaultEntityContextMapper(entityFactory);
     }
@@ -142,25 +145,44 @@ public class SpringLDAPEntityDAO implements EntityDAO
         final Collection<Entity> resultSet = new ArrayList<Entity>();
         for (Iterator<String> iterator = internalIds.iterator(); iterator.hasNext();)
         {
-            String internalId = (String) iterator.next();
-            DistinguishedName principalDN = getRelativeDN(internalId);
-            internalId = principalDN.toString();
-            Entity resultEntity = null;
-            ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-            try
-            {
-                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                resultEntity = (Entity) ldapTemplate.lookup(internalId, getContextMapper());
-            } finally
-            {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-            }
+            Entity resultEntity = getEntityByInternalId(iterator.next());
             if (resultEntity != null)
             {
                 resultSet.add(resultEntity);
             }
         }
         return resultSet;
+    }
+    
+    public Entity getEntityByInternalId(String internalId){
+        Entity resultEntity = null;
+        DistinguishedName principalDN = getRelativeDN(internalId);
+        String relativeDN = principalDN.toCompactString();
+        String searchDNStr = searchDN.toCompactString();
+        if (relativeDN.equals(searchDNStr) || relativeDN.endsWith(searchDNStr)){
+            internalId = principalDN.toCompactString();
+            
+            ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+            try
+            {
+                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                
+                resultEntity = (Entity) ldapTemplate.lookup(internalId, getContextMapper());
+            } finally
+            {
+                Thread.currentThread().setContextClassLoader(currentClassLoader);
+            }
+            
+        }
+        return resultEntity;
+    }
+
+    public Entity getParentEntity(Entity childEntity)
+    {
+        
+        DistinguishedName parentDN = new DistinguishedName(childEntity.getInternalId());
+        parentDN.removeLast();
+        return getEntityByInternalId(parentDN.encode());
     }
 
     protected DistinguishedName getRelativeDN(String fullDN)
@@ -203,6 +225,25 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
             results = (Collection<Entity>) ldapTemplate.search(configuration.getSearchDN(), filterStr, SearchControls.SUBTREE_SCOPE, getContextMapper());
+        } finally{
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
+        }
+
+        return results;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Collection<Entity> getEntities(Entity parent, Filter filter)
+    {
+        String filterStr = createSearchFilter(filter);
+        Collection<Entity> results = null;
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+            String parentId = parent.getInternalId();
+            DistinguishedName parentDN = getRelativeDN(parentId);
+            results = (Collection<Entity>) ldapTemplate.search(parentDN.encode(), filterStr, SearchControls.ONELEVEL_SCOPE, getContextMapper());
         } finally{
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }

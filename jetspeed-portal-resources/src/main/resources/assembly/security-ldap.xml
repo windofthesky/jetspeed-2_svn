@@ -57,8 +57,11 @@
       <bean class="org.apache.jetspeed.security.spi.impl.OnStartupSecuritySynchronizationBean">
         <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
         <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
+        <!-- synchronized all users ? -->
         <constructor-arg index="2" type="boolean" value="false" />
         <constructor-arg index="3" value="group" />
+        <!-- recursive synchronization -->
+        <constructor-arg index="4" type="boolean" value="false" />
       </bean>
     </constructor-arg>
   </bean>

@@ -33,6 +33,24 @@ public class StubEntityDAO implements EntityDAO
 
     private Map<String,Entity> entities = new HashMap<String,Entity>();
     
+    public Collection<Entity> getEntities(Entity parentEntity, Filter filter)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Entity getEntityByInternalId(String internalId)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Entity getParentEntity(Entity childEntity)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public void addEntity(Entity entity)
     {
         entities.put(entity.getId(),entity);
