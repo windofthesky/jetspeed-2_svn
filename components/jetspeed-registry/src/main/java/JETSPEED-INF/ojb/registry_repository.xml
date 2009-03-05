@@ -339,6 +339,16 @@
       >
          <inverse-foreignkey field-ref="applicationId"/>
       </collection-descriptor>
+
+   <collection-descriptor
+         name="securityConstraints"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.SecurityConstraintImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="applicationId"/>
+      </collection-descriptor>
       
    </class-descriptor>
 
@@ -2067,5 +2077,112 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
       </collection-descriptor>
 
    </class-descriptor>
+
+  <!--
+   - P A  S E C U R I T Y  C O N S T R A I N T
+  -->
+     <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.SecurityConstraintImpl"
+      table="PA_SECURITY_CONSTRAINT"
+   >
+
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="applicationId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor             
+         name="userDataConstraints::transportGuarantee"         
+         column="TRANSPORT"
+         jdbc-type="VARCHAR"
+      />
+    
+      <collection-descriptor
+         name="displayNames"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.DisplayNameImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+     <collection-descriptor
+         name="portletNames"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.SecuredPortletImpl"
+         auto-delete="true"
+         auto-update = "true"
+         auto-retrieve = "true"
+
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+         name="userDataConstraints::descriptions"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.DescriptionImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+	</class-descriptor>
 	
+<!--
+   - S E C U R E D  P O R T L E T
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.SecuredPortletImpl"
+      table="SECURED_PORTLET"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="ownerId"
+         column="OWNER_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+		
 </descriptor-repository>

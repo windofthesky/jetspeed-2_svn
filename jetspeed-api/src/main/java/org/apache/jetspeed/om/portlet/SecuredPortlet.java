@@ -15,19 +15,8 @@
  */
 package org.apache.jetspeed.om.portlet;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
 
-/**
- * 
- * @version $Id$
- *
- */
-public interface UserDataConstraint extends org.apache.pluto.om.portlet.UserDataConstraint, Serializable
+public interface SecuredPortlet
 {
-	Description getDescription(Locale locale);
-    List<Description> getDescriptions();
-    Description addDescription(String lang);
-    void setTransportGuarantee(String transport);    
+    String getName();
 }

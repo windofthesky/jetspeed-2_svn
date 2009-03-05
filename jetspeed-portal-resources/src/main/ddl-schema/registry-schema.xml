@@ -416,5 +416,23 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>  
         <column name="LISTENER_CLASS" required="false" size="255" type="VARCHAR"/>
     </table> 
+
+   <!--                                                                   
+	   PORTLET SECURITY CONSTRAINT
+    -->                                                                     
+    <table name="PA_SECURITY_CONSTRAINT">                                            
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="APPLICATION_ID" required="true" type="INTEGER"/>  
+        <column name="TRANSPORT" required="true" size="40" type="VARCHAR"/>
+    </table> 
+
+   <!--                                                                   
+	    SECURED PORTLET NAME                                                       
+    -->                                                                     
+    <table name="SECURED_PORTLET">                                            
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="OWNER_ID" required="true" type="INTEGER"/>
+        <column name="NAME" required="true" size="150" type="VARCHAR"/>
+    </table> 
 	              
 </database>

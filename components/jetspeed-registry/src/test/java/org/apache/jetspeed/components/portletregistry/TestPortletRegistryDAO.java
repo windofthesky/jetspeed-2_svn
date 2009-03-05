@@ -44,6 +44,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
+import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
@@ -51,6 +52,7 @@ import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.pluto.om.portlet.UserDataConstraint;
 
 /**
  * <p>
@@ -431,6 +433,30 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         dn7.setDisplayName("Listen!");
         DisplayName dn8 = listener2.addDisplayName("fr");
         dn8.setDisplayName("Écoutez!");
+        
+        SecurityConstraint sc = app.addSecurityConstraint(UserDataConstraint.INTEGRAL);
+        DisplayName scdn1 = sc.addDisplayName("en");
+        scdn1.setDisplayName("Integral Security Transport");
+        DisplayName scdn2 = sc.addDisplayName("fr");
+        scdn2.setDisplayName("Transport Intégral de Sécurité");
+        sc.addPortletName("PortletOne");
+        sc.addPortletName("PortletTwo");
+        sc.addPortletName("PortletThree");
+        Description des1 = sc.getUserDataConstraint().addDescription("en");
+        des1.setDescription("This is the Integral Security Transport");
+        Description des2 = sc.getUserDataConstraint().addDescription("fr");
+        des2.setDescription("Ceci est le Transport Intégral de Sécurité");
+        SecurityConstraint sc2 = app.addSecurityConstraint(UserDataConstraint.CONFIDENTIAL);
+        scdn1 = sc2.addDisplayName("en");
+        scdn1.setDisplayName("Confidential Security Transport");
+        scdn2 = sc2.addDisplayName("fr");
+        scdn2.setDisplayName("Transport Confidentiel de Sécurité");
+        sc2.addPortletName("PortletA");
+        sc2.addPortletName("PortletB");
+        des1 = sc2.getUserDataConstraint().addDescription("en");
+        des1.setDescription("This is the Confidential Security Transport");
+        des2 = sc2.getUserDataConstraint().addDescription("fr");
+        des2.setDescription("Ceci est le Transport Confidentiel de Sécurité");
     }
 
     public static void verifyPortlet20Data(PortletApplication app, PortletDefinition portlet)
@@ -619,6 +645,41 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         dn6 = dnames.get(1);
         assertEquals(dn6.getLang(), "fr");
         assertEquals(dn6.getDisplayName(), "Écoutez!");
+        
+        List<SecurityConstraint> scs = app.getSecurityConstraints();
+        assertEquals(scs.size(), 2);
+        SecurityConstraint sc1 = scs.get(0);
+        assertEquals(sc1.getUserDataConstraint().getTransportGuarantee(), UserDataConstraint.INTEGRAL);
+        DisplayName scdn1 = sc1.getDisplayName(new Locale("en"));
+        assertEquals(scdn1.getLang(), "en");
+        assertEquals(scdn1.getDisplayName(), "Integral Security Transport");
+        DisplayName scdn2 = sc1.getDisplayName(new Locale("fr"));
+        assertEquals(scdn2.getDisplayName(), "Transport Intégral de Sécurité");
+        assertEquals(sc1.getPortletNames().get(0), "PortletOne");
+        assertEquals(sc1.getPortletNames().get(1), "PortletTwo");
+        assertEquals(sc1.getPortletNames().get(2), "PortletThree");
+        Description des1 = sc1.getUserDataConstraint().getDescription(new Locale("en"));
+        assertEquals(des1.getLang(), "en");
+        assertEquals(des1.getDescription(), "This is the Integral Security Transport");
+        Description des2 = sc1.getUserDataConstraint().getDescription(new Locale("fr"));
+        assertEquals(des2.getLang(), "fr");
+        assertEquals(des2.getDescription(), "Ceci est le Transport Intégral de Sécurité");
+
+        SecurityConstraint sc2 = scs.get(1);
+        assertEquals(sc2.getUserDataConstraint().getTransportGuarantee(), UserDataConstraint.CONFIDENTIAL);
+        scdn1 = sc2.getDisplayName(new Locale("en"));
+        assertEquals(scdn1.getLang(), "en");
+        assertEquals(scdn1.getDisplayName(), "Confidential Security Transport");
+        scdn2 = sc2.getDisplayName(new Locale("fr"));
+        assertEquals(scdn2.getDisplayName(), "Transport Confidentiel de Sécurité");
+        assertEquals(sc2.getPortletNames().get(0), "PortletA");
+        assertEquals(sc2.getPortletNames().get(1), "PortletB");
+        des1 = sc2.getUserDataConstraint().getDescription(new Locale("en"));
+        assertEquals(des1.getLang(), "en");
+        assertEquals(des1.getDescription(), "This is the Confidential Security Transport");
+        des2 = sc2.getUserDataConstraint().getDescription(new Locale("fr"));
+        assertEquals(des2.getLang(), "fr");
+        assertEquals(des2.getDescription(), "Ceci est le Transport Confidentiel de Sécurité");        
     }
 
 }

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.FilterLifecycle;
+import org.apache.jetspeed.om.portlet.SecuredPortlet;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.UserDataConstraint;
 import org.apache.jetspeed.util.JetspeedLocale;
@@ -33,8 +35,8 @@ import org.apache.jetspeed.util.JetspeedLocale;
  */
 public class SecurityConstraintImpl implements SecurityConstraint, Serializable
 {
-    protected UserDataConstraint userDataConstraint;
-    protected List<String> portletNames;
+    protected UserDataConstraintImpl userDataConstraints;
+    protected List<SecuredPortlet> portletNames;
     protected List<DisplayName> displayNames;
     
     public DisplayName getDisplayName(Locale locale)
@@ -69,29 +71,39 @@ public class SecurityConstraintImpl implements SecurityConstraint, Serializable
     {
         if (portletNames == null)
         {
-            portletNames = new ArrayList<String>();
+            portletNames = new ArrayList<SecuredPortlet>();
         }
-        return portletNames;
+        List<String> result = new ArrayList<String>();
+        for (SecuredPortlet sp : portletNames)
+        {
+            result.add(sp.toString());
+        }
+        return result;
     }
     
     public void addPortletName(String portletName)
     {
-        for (String name : getPortletNames())
+        if (portletNames == null)
         {
-            if (name.equals(portletName))
+            portletNames = new ArrayList<SecuredPortlet>();
+        }
+        for (SecuredPortlet sp : portletNames)
+        {
+            if (sp.equals(portletName))
             {
-                throw new IllegalArgumentException("Portlet name: "+name+" already defined");
+                throw new IllegalArgumentException("Support for security constraint portlet name with identifier: " + portletName + " already defined");
             }
         }
-        portletNames.add(portletName);        
+        portletNames.add(new SecuredPortletImpl(portletName));        
     }
 
     public UserDataConstraint getUserDataConstraint()
     {
-        if (userDataConstraint == null)
+        if (userDataConstraints == null)
         {
-            userDataConstraint = new UserDataConstraintImpl();
+            userDataConstraints = new UserDataConstraintImpl();
         }
-        return userDataConstraint;
+        return userDataConstraints;
     }
+    
 }

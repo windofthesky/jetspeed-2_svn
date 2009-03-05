@@ -55,6 +55,7 @@ import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
+import org.apache.pluto.om.portlet.UserDataConstraint;
 
 /**
  *
@@ -705,15 +706,50 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return securityConstraints;
     }
 
+    private final String[]TRANSPORTS = 
+    {
+            UserDataConstraint.NONE,
+            UserDataConstraint.INTEGRAL,
+            UserDataConstraint.CONFIDENTIAL
+    };
+    
     public SecurityConstraint addSecurityConstraint(String transportGuarantee)
     {
-        SecurityConstraintImpl sc = new SecurityConstraintImpl();
-        ((UserDataConstraintImpl)sc.getUserDataConstraint()).setTransportGuarantee(transportGuarantee);
-        getSecurityConstraints();
+        if (getSecurityConstraint(transportGuarantee) != null)
+        {
+            throw new IllegalArgumentException("Security Constraint with name: " + transportGuarantee + " already defined");
+        }
+        boolean isValid = false;
+        for (String t : TRANSPORTS)
+        {
+            if (transportGuarantee.equalsIgnoreCase(t))
+            {
+                isValid = true;
+                break;
+            }
+        }
+        if (!isValid)
+        {
+            throw new IllegalArgumentException("Security Constraint with name: " + transportGuarantee + " is not a valid transport name");            
+        }
+        SecurityConstraint sc = new SecurityConstraintImpl();
+        sc.getUserDataConstraint().setTransportGuarantee(transportGuarantee);
         getSecurityConstraints().add(sc);
         return sc;        
     }
 
+    public SecurityConstraint getSecurityConstraint(String transport)
+    {
+        for (SecurityConstraint sc : getSecurityConstraints())
+        {
+            if (sc.getUserDataConstraint().getTransportGuarantee().equals(transport))
+            {
+                return sc;
+            }
+        }
+        return null;
+    }
+    
     public Filter getFilter(String filterName)
     {
         for (Filter f : getFilters())
