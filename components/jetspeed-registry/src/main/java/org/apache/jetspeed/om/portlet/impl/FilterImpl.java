@@ -25,7 +25,9 @@ import java.util.Locale;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.Filter;
+import org.apache.jetspeed.om.portlet.FilterLifecycle;
 import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.SupportedPublicRenderParameter;
 import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
@@ -36,7 +38,7 @@ public class FilterImpl implements Filter, Serializable
 {
     protected String filterName;
     protected String filterClass;
-    protected List<String> lifecycle;
+    protected List<FilterLifecycle> lifecycles;
     protected List<InitParam> initParams;
     protected List<Description> descriptions;
     protected List<DisplayName> displayNames;
@@ -119,17 +121,32 @@ public class FilterImpl implements Filter, Serializable
 
     public List<String> getLifecycles()
     {
-        if (lifecycle == null)
+        if (lifecycles == null)
         {
-            lifecycle = new ArrayList<String>();
+            lifecycles = new ArrayList<FilterLifecycle>();
         }
-        return lifecycle;
+        List<String> result = new ArrayList<String>();
+        for (FilterLifecycle flc : lifecycles)
+        {
+            result.add(flc.toString());
+        }
+        return result;
     }
     
     public void addLifecycle(String name)
     {
-        // TODO: check valid name and duplicates
-        getLifecycles().add(name);
+        if (lifecycles == null)
+        {
+            lifecycles = new ArrayList<FilterLifecycle>();
+        }
+        for (FilterLifecycle flc : this.lifecycles)
+        {
+            if (flc.equals(name))
+            {
+                throw new IllegalArgumentException("Support for filter lifecycle parameter with identifier: "+name+" already defined");
+            }
+        }
+        lifecycles.add(new FilterLifecycleImpl(name));        
     }
     
     public InitParam getInitParam(String name)

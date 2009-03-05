@@ -38,7 +38,6 @@ import org.apache.jetspeed.om.portlet.CustomWindowState;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.EventDefinition;
-import org.apache.jetspeed.om.portlet.EventDefinitionReference;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
@@ -719,7 +718,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     {
         for (Filter f : getFilters())
         {
-            if (f.getFilterName().equals(name))
+            if (f.getFilterName().equals(filterName))
             {
                 return f;
             }
@@ -738,12 +737,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     public Filter addFilter(String filterName)
     {
-        if (getFilter(name) != null)
+        if (getFilter(filterName) != null)
         {
             throw new IllegalArgumentException("Filter with name: "+name+" already defined");
         }
         FilterImpl f = new FilterImpl();
-        f.setFilterName(name);
+        f.setFilterName(filterName);
         getFilters().add(f);
         return f;        
     }
@@ -752,7 +751,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     {
         for (FilterMapping f : getFilterMappings())
         {
-            if (f.getFilterName().equals(name))
+            if (f.getFilterName().equals(filterName))
             {
                 return f;
             }
@@ -771,12 +770,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     public FilterMapping addFilterMapping(String filterName)
     {
-        if (getFilterMapping(name) != null)
+        if (getFilterMapping(filterName) != null)
         {
             throw new IllegalArgumentException("Filtermapping for filter: "+name+" already defined");
         }
         FilterMappingImpl fm = new FilterMappingImpl();
-        fm.setFilterName(name);
+        fm.setFilterName(filterName);
         getFilterMappings().add(fm);
         return fm;        
     }

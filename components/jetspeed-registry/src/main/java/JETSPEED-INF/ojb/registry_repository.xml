@@ -309,6 +309,36 @@
       >
          <inverse-foreignkey field-ref="ownerId"/>
       </collection-descriptor>
+
+   <collection-descriptor
+         name="filters"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.FilterImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="applicationId"/>
+      </collection-descriptor>
+
+   <collection-descriptor
+         name="filterMappings"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.FilterMappingImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="applicationId"/>
+      </collection-descriptor>
+
+   <collection-descriptor
+         name="listeners"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.ListenerImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="applicationId"/>
+      </collection-descriptor>
       
    </class-descriptor>
 
@@ -1766,5 +1796,276 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
       </collection-descriptor>
    
 	</class-descriptor>
+
+
+  <!--
+   - F I L T E R
+  -->
+     <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.FilterImpl"
+      table="PORTLET_FILTER"
+   >
+
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="applicationId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="filterName"
+         column="FILTER_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="filterClass"
+         column="FILTER_CLASS"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.DescriptionImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+      <collection-descriptor
+         name="displayNames"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.DisplayNameImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+        <collection-descriptor
+         name="initParams"
+         proxy="false"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.InitParamImpl"
+         auto-delete="true"
+         auto-update = "true"
+         auto-retrieve = "true"         
+      >
+
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+     <collection-descriptor
+         name="lifecycles"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.FilterLifecycleImpl"
+         auto-delete="true"
+         auto-update = "true"
+         auto-retrieve = "true"
+
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+      </collection-descriptor>
+
+   </class-descriptor>
+
+<!--
+   - P O R T L E T  F I L T E R  L I F E C Y C L E
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.FilterLifecycleImpl"
+      table="FILTER_LIFECYCLE"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="ownerId"
+         column="OWNER_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+
+<!--
+   - P O R T L E T  F I L T E R  M A P P I N G
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.FilterMappingImpl"
+      table="FILTER_MAPPING"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="applicationId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="filterName"
+         column="FILTER_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+	 <collection-descriptor
+         name="portletNames"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.FilteredPortletImpl"
+         auto-delete="true"
+         auto-update = "true"
+         auto-retrieve = "true"
+
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+      </collection-descriptor>
+
+    </class-descriptor>
+
+<!--
+   - F I L T E R E D  P O R T L E T
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.FilteredPortletImpl"
+      table="FILTERED_PORTLET"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="ownerId"
+         column="OWNER_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+
+  <!--
+   - L I S T E N E R
+  -->
+     <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.ListenerImpl"
+      table="PORTLET_LISTENER"
+   >
+
+        <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="applicationId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="listenerClass"
+         column="LISTENER_CLASS"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+         name="descriptions"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.DescriptionImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+      <collection-descriptor
+         name="displayNames"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.DisplayNameImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.CollectionOwnerClassDiscriminatorQueryCustomizer">
+            <attribute
+              attribute-name="discriminatorField"
+              attribute-value="owner"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
+   </class-descriptor>
 	
 </descriptor-repository>

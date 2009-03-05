@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.portlet.FilterMapping;
+import org.apache.jetspeed.om.portlet.FilteredPortlet;
 
 /**
  * @version $Id$
@@ -30,7 +31,7 @@ import org.apache.jetspeed.om.portlet.FilterMapping;
 public class FilterMappingImpl implements FilterMapping, Serializable
 {
     protected String filterName;
-    protected List<String> portletName;
+    protected List<FilteredPortlet> portletNames;
     
     public String getFilterName()
     {
@@ -44,16 +45,31 @@ public class FilterMappingImpl implements FilterMapping, Serializable
 
     public List<String> getPortletNames()
     {
-        if (portletName == null)
+        if (portletNames == null)
         {
-            portletName = new ArrayList<String>();
+            portletNames = new ArrayList<FilteredPortlet>();
         }
-        return portletName;
+        List<String> result = new ArrayList<String>();
+        for (FilteredPortlet fp : portletNames)
+        {
+            result.add(fp.toString());
+        }
+        return result;        
     }
     
     public void addPortletName(String name)
     {
-        // TODO: check for duplicates
-        getPortletNames().add(name);
+        if (portletNames == null)
+        {
+            portletNames = new ArrayList<FilteredPortlet>();
+        }
+        for (FilteredPortlet fp : this.portletNames)
+        {
+            if (fp.equals(name))
+            {
+                throw new IllegalArgumentException("Support for filter-mapping portlet name parameter with identifier: "+name+" already defined");
+            }
+        }
+        portletNames.add(new FilteredPortletImpl(name));        
     }
 }
