@@ -74,7 +74,7 @@ limitations under the License.
 		<constructor-arg><ref bean="org.apache.pluto.services.PropertyManager"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.FilterManager"/></constructor-arg>
 		<constructor-arg><ref bean="org.apache.pluto.services.PortletURLListener"/></constructor-arg>
-		<constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>		
+		<constructor-arg><ref bean="org.apache.pluto.services.EventCoordinationService"/></constructor-arg>		
     </bean>
 
 
@@ -83,11 +83,25 @@ limitations under the License.
       <meta key="j2:cat" value="default" />		  
 	</bean>
 	
-	<bean id='org.apache.pluto.services.EventProvider'
-	      class='org.apache.jetspeed.container.providers.EventProviderImpl'>
-      <meta key="j2:cat" value="default" />
+	<bean id='org.apache.jetspeed.events.PortletEventQueue'
+	      class='org.apache.jetspeed.events.PortletEventQueueImpl'>
+      <meta key="j2:cat" value="default" />          
 	</bean>
-
+	
+	<bean id='org.apache.pluto.services.EventCoordinationService'
+		  class='org.apache.jetspeed.events.EventCoordinationServiceImpl'>
+        <meta key="j2:cat" value="default" />          		  
+		<constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>				  	
+		<constructor-arg><ref bean="org.apache.jetspeed.events.PortletEventQueue"/></constructor-arg>
+		<constructor-arg><ref bean="PortalStatistics"/></constructor-arg>
+	    <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager"/></constructor-arg>
+	    <constructor-arg><ref bean="org.apache.jetspeed.security.SecurityAccessController" /></constructor-arg>
+	    <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
+	      before rendering a portlet. If security check fails, do not fire events
+	    -->
+	    <constructor-arg type="boolean"><value>true</value></constructor-arg>					  	
+	</bean>
+	
 	<bean id='org.apache.pluto.services.FilterManager'
 	      class='org.apache.jetspeed.container.providers.FilterManagerImpl'>
       <meta key="j2:cat" value="default" />	      

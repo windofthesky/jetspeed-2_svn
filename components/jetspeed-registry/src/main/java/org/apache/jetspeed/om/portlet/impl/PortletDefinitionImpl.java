@@ -852,7 +852,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
                 return ref;
             }
         }
-        EventDefinitionReferenceImpl edr = new ProcessingEventReferenceImpl(qname);
+        EventDefinitionReferenceImpl edr = new PublishingEventReferenceImpl(qname);
         supportedPublishingEvents.add(edr);
         return edr;
     }

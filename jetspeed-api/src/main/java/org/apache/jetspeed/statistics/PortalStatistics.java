@@ -83,6 +83,10 @@ public interface PortalStatistics
 
     public static final String HTTP_INTERNAL_ERROR = "500";
 
+    // Codes for logging actions and events
+    public static final String HTTP_ACTION = "900";
+    public static final String HTTP_EVENT = "901";
+    
     /**
      * Logs an access to a portlet.
      * 
