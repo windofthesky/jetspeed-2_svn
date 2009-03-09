@@ -339,6 +339,13 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
                     log.error("Failed to stream for de-serialization: " + value, e);
                     xml = null;
                 }
+                finally
+                {
+                    if (xml == null)
+                    {
+                        Thread.currentThread().setContextClassLoader(savedLoader);
+                    }
+                }                
             }           
             if (xml != null) 
             {
@@ -355,10 +362,12 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
                     log.error("Failed to de-serializee: " + value, e);
                     xml = null;
                 }
-
+                finally
+                {
+                    Thread.currentThread().setContextClassLoader(savedLoader);                            
+                }
             }
         }
-        Thread.currentThread().setContextClassLoader(savedLoader);        
         return deserializedValue;
     }
     
