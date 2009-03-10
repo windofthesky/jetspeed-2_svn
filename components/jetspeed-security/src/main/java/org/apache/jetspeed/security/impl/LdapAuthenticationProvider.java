@@ -116,10 +116,8 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     {
         try
         {
-            Hashtable env = context.getCtx().getEnvironment();
+            Hashtable env = (Hashtable) context.getCtx().getEnvironment().clone();
             // String savedPassword = String.valueOf(getPassword(uid));
-            String oldCredential = (String) env.get(Context.SECURITY_CREDENTIALS);
-            String oldUsername = (String) env.get(Context.SECURITY_PRINCIPAL);
             String dn = lookupByUid(userName);
             if (dn == null)
             {
@@ -138,8 +136,6 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             env.put(Context.SECURITY_PRINCIPAL, dn);
             env.put(Context.SECURITY_CREDENTIALS, password);
             new InitialContext(env);
-            env.put(Context.SECURITY_PRINCIPAL, oldUsername);
-            env.put(Context.SECURITY_CREDENTIALS, oldCredential);
             return true;
         }
         catch (AuthenticationException aex)
