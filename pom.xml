@@ -299,8 +299,8 @@
     <javax.sql.version>2.0</javax.sql.version>
     <javax.transaction.version>1.0.1B</javax.transaction.version>
     <jaxen.version>1.0-FCS</jaxen.version>
-    <jaxb.version>2.1.10</jaxb.version>
-    <jaxb-impl.version>2.1.10</jaxb-impl.version>
+    <jaxb.version>2.1</jaxb.version>
+    <jaxb-impl.version>2.1.9</jaxb-impl.version>
     <jdom.version>1.0</jdom.version>
     <log4j.version>1.2.14</log4j.version>
     <lucene.version>2.0.0</lucene.version>
