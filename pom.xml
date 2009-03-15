@@ -837,6 +837,10 @@
             <artifactId>clover</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>jaxme</groupId>
+            <artifactId>jaxme-api</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>stax</groupId>
             <artifactId>stax-ri</artifactId>
           </exclusion>
