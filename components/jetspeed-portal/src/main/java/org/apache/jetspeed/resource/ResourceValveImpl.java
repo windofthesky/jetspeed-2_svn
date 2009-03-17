@@ -35,8 +35,8 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.container.PortletContainer;
+import org.apache.pluto.container.PortletContainerException;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**

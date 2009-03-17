@@ -16,15 +16,15 @@
  */
 package org.apache.jetspeed.factory;
 
-import org.apache.jetspeed.container.InternalPortletContext;
+import org.apache.jetspeed.container.JetspeedPortletContext;
 
 
 class PortletFactoryInfo
 {
     private ClassLoader classLoader;
-    private InternalPortletContext context;
+    private JetspeedPortletContext context;
 
-    PortletFactoryInfo(ClassLoader loader, InternalPortletContext context)
+    PortletFactoryInfo(ClassLoader loader, JetspeedPortletContext context)
     {
         this.classLoader = loader;
         this.context = context;
@@ -35,7 +35,7 @@ class PortletFactoryInfo
         return classLoader;
     }
     
-    public InternalPortletContext getContext()
+    public JetspeedPortletContext getContext()
     {
         return context;
     }    

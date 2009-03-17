@@ -24,6 +24,6 @@ import org.apache.jetspeed.i18n.LocalizedObject;
  * @version $Id$
  *
  */
-public interface Description extends org.apache.pluto.om.portlet.Description, LocalizedObject, Serializable
+public interface Description extends org.apache.pluto.container.om.portlet.Description, LocalizedObject, Serializable
 {
 }

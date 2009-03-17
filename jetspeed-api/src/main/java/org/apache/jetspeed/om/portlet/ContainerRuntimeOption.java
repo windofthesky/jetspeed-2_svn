@@ -22,6 +22,6 @@ import java.io.Serializable;
  * @version $Id$
  *
  */
-public interface ContainerRuntimeOption extends org.apache.pluto.om.portlet.ContainerRuntimeOption, Serializable
+public interface ContainerRuntimeOption extends org.apache.pluto.container.om.portlet.ContainerRuntimeOption, Serializable
 {
 }

@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.container.namespace;
 
-import org.apache.pluto.NamespaceMapper;
+import org.apache.pluto.container.NamespaceMapper;
 
 /**
  * Jetspeed NamespaceMapper interface extension

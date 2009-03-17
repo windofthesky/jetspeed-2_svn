@@ -46,7 +46,7 @@ import javax.servlet.ServletContext;
 import javax.portlet.UnavailableException;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.container.InternalPortletConfig;
+import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Supports;
@@ -295,7 +295,7 @@ public class PortletObjectProxy extends BaseObjectProxy
         {
             try
             {
-                InternalPortletConfig config = (InternalPortletConfig) portlet.getPortletConfig();
+                JetspeedPortletConfig config = (JetspeedPortletConfig) portlet.getPortletConfig();
                 PortletDefinition portletDef = config.getPortletDefinition();
                 this.supports = portletDef.getSupports();
             }
@@ -328,10 +328,9 @@ public class PortletObjectProxy extends BaseObjectProxy
             PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
             ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
             
-            PortletDefinition portletDef = (PortletDefinition) registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
-            PortletApplication portletApp = (PortletApplication) portletDef.getApplication();
-            String portletAppName = portletApp.getContextRoot();
-            ServletContext portletAppContext = portalAppContext.getContext(portletAppName);
+            PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
+            PortletApplication portletApp = portletDef.getApplication();
+            ServletContext portletAppContext = portalAppContext.getContext(portletApp.getContextPath());
             
             setPortletObjectProxied(true);
             this.customConfigModePortletInstance = portletFactory.getPortletInstance(portletAppContext, portletDef);

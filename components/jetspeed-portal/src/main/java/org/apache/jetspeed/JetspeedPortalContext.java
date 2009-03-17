@@ -17,8 +17,10 @@
 package org.apache.jetspeed;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -27,7 +29,6 @@ import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.container.PortletRequestContext;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.pluto.util.Enumerator;
 
 /**
  * Implementation of Portal Context associated with running thread of the engine
@@ -202,7 +203,19 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getPropertyNames()
     {
-        return new Enumerator(configuration.getKeys());
+        final Iterator<String> keys = configuration.getKeys(); 
+        return new Enumeration<String>()
+        {
+            public boolean hasMoreElements()
+            {
+                return keys.hasNext();
+            }
+
+            public String nextElement()
+            {
+                return keys.next();
+            }
+        };
     }
     
     private Collection getSupportedModes()
@@ -221,7 +234,7 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getSupportedPortletModes()
     {
-        return new Enumerator(getSupportedModes());
+        return Collections.enumeration(getSupportedModes());
     }
     
     public boolean isPortletModeAllowed(PortletMode mode)
@@ -245,7 +258,7 @@ public class JetspeedPortalContext implements PortalContext
      */
     public Enumeration getSupportedWindowStates()
     {
-        return new Enumerator(getSupportedStates());
+        return Collections.enumeration(getSupportedStates());
     }
     
     public boolean isWindowStateAllowed(WindowState state)

@@ -22,10 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.pluto.OptionalContainerServices;
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.RequiredContainerServices;
-import org.apache.pluto.core.PortletContainerImpl;
+import org.apache.pluto.container.OptionalContainerServices;
+import org.apache.pluto.container.PortletContainer;
+import org.apache.pluto.container.RequiredContainerServices;
+import org.apache.pluto.container.impl.PortletContainerImpl;
 
 /**
  * Desktop Portlet Container implementation. This implementation 

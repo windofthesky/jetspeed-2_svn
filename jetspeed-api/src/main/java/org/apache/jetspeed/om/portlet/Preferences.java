@@ -23,7 +23,7 @@ import java.util.List;
  * @version $Id$
  *
  */
-public interface Preferences extends org.apache.pluto.om.portlet.Preferences, Serializable
+public interface Preferences extends org.apache.pluto.container.om.portlet.Preferences, Serializable
 {
     Preference getPortletPreference(String name);
 	List<Preference> getPortletPreferences();

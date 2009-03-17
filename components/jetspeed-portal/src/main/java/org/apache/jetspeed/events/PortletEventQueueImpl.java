@@ -22,8 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.pluto.PortletWindow;
-
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>

@@ -20,7 +20,7 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.container.om.portlet.PortletDefinition;
 
 public class PortletRequestContext
 {

@@ -39,7 +39,7 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.spi.FilterManager;
+import org.apache.pluto.container.FilterManager;
 
 /**
  * ServletPortletInvoker invokes portlets in another web application, calling a 
@@ -101,7 +101,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.container.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
      */
     public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
@@ -144,14 +144,14 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             portletDefinition = this.portletDefinition;
         }
         
-        PortletApplication app = (PortletApplication)portletDefinition.getApplication();
+        PortletApplication app = portletDefinition.getApplication();
 
-        String portletApplicationName = app.getContextRoot();
+        String appContextPath = app.getContextPath();
 
-        ServletContext appContext = jetspeedContext.getContext(portletApplicationName);
+        ServletContext appContext = jetspeedContext.getContext(appContextPath);
         if (null == appContext)
         {
-            String message = "Failed to find Servlet context for Portlet Application: " + portletApplicationName;
+            String message = "Failed to find Servlet context for Portlet Application: " + appContextPath;
             log.error(message);
             throw new PortletException(message);
         }
@@ -161,7 +161,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         {
             String message =
                 "Failed to get Request Dispatcher for Portlet Application: "
-                    + portletApplicationName
+                    + appContextPath
                     + ", servlet: "
                     + servletMappingName;
             log.error(message);
@@ -227,7 +227,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         catch (Exception e)
         {
             String message =
-                "Failed to dispatch."+(useForward?"forward":"include")+" for Portlet Application: " + portletApplicationName + ", servlet: " + servletMappingName;
+                "Failed to dispatch."+(useForward?"forward":"include")+" for Portlet Application: " + appContextPath + ", servlet: " + servletMappingName;
             log.error(message, e);
             throw new PortletException(message, e);
         }

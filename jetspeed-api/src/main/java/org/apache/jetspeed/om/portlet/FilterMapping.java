@@ -22,6 +22,6 @@ import java.io.Serializable;
  * @version $Id$
  *
  */
-public interface FilterMapping extends org.apache.pluto.om.portlet.FilterMapping, Serializable
+public interface FilterMapping extends org.apache.pluto.container.om.portlet.FilterMapping, Serializable
 {
 }

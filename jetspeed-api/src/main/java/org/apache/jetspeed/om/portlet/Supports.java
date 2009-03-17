@@ -22,6 +22,6 @@ import java.io.Serializable;
  * @version $Id$
  *
  */
-public interface Supports extends org.apache.pluto.om.portlet.Supports, Serializable
+public interface Supports extends org.apache.pluto.container.om.portlet.Supports, Serializable
 {
 }

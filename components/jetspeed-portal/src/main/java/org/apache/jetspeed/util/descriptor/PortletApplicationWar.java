@@ -41,7 +41,7 @@ import org.apache.jetspeed.tools.pamanager.PortletApplicationException;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
-import org.apache.pluto.om.portlet.SecurityRoleRef;
+import org.apache.pluto.container.om.portlet.SecurityRoleRef;
 
 /**
  * <p>
@@ -162,10 +162,10 @@ public class PortletApplicationWar
         }
         try
         {
-            portletApp = descriptorService.read(webXmlStream, portletXmlStream, extStream, classLoader);
+            portletApp = descriptorService.read(paName, webAppContextRoot, webXmlStream, portletXmlStream, extStream, classLoader);
             validate();
             portletApp.setName(paName);
-            portletApp.setContextRoot(webAppContextRoot);
+            portletApp.setContextPath(webAppContextRoot);
             portletApp.setChecksum(paChecksum);
             return portletApp;
         }

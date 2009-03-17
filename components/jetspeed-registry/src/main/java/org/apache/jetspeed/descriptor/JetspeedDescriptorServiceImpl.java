@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.xml.XMLConstants;
@@ -62,12 +63,12 @@ import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Portlet;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.PortletApp;
 import org.apache.jetspeed.om.portlet.jetspeed.jaxb.Service;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.portlet.CustomPortletMode;
-import org.apache.pluto.om.portlet.CustomWindowState;
-import org.apache.pluto.om.portlet.Description;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.om.portlet.PortletInfo;
-import org.apache.pluto.services.PortletAppDescriptorService;
+import org.apache.pluto.container.om.portlet.CustomPortletMode;
+import org.apache.pluto.container.om.portlet.CustomWindowState;
+import org.apache.pluto.container.om.portlet.Description;
+import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.container.om.portlet.PortletInfo;
+import org.apache.pluto.container.PortletAppDescriptorService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -138,9 +139,9 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         this.plutoDescriptorService = plutoDescriptorService;
     }
     
-    public PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor, ClassLoader paClassLoader) throws Exception
+    public PortletApplication read(String name, String contextPath, InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor, ClassLoader paClassLoader) throws Exception
     {
-        PortletApplicationDefinition pad = plutoDescriptorService.read(portletDescriptor);
+        PortletApplicationDefinition pad = plutoDescriptorService.read(name, contextPath, portletDescriptor);
         PortletApplication pa = null;
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try
@@ -315,12 +316,12 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         jpa.setDefaultNamespace(pa.getDefaultNamespace());
         jpa.setResourceBundle(pa.getResourceBundle());
         jpa.setVersion(pa.getVersion());
-        for (org.apache.pluto.om.portlet.PortletDefinition pd : pa.getPortlets())
+        for (org.apache.pluto.container.om.portlet.PortletDefinition pd : pa.getPortlets())
         {
             PortletDefinition jpd = jpa.addPortlet(pd.getPortletName());
             upgradePortlet(jpd, pd);
         }
-        for (org.apache.pluto.om.portlet.ContainerRuntimeOption cro : pa.getContainerRuntimeOptions())
+        for (org.apache.pluto.container.om.portlet.ContainerRuntimeOption cro : pa.getContainerRuntimeOptions())
         {
             ContainerRuntimeOption jcro = jpa.addContainerRuntimeOption(cro.getName());
             for (String value : cro.getValues())
@@ -328,26 +329,26 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 jcro.addValue(value);
             }
         }
-        for (org.apache.pluto.om.portlet.CustomPortletMode cpm : pa.getCustomPortletModes())
+        for (org.apache.pluto.container.om.portlet.CustomPortletMode cpm : pa.getCustomPortletModes())
         {
             CustomPortletMode jcpm = jpa.addCustomPortletMode(cpm.getPortletMode());
             jcpm.setPortalManaged(cpm.isPortalManaged());
-            for (org.apache.pluto.om.portlet.Description desc : cpm.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : cpm.getDescriptions())
             {
                 Description jdesc = jcpm.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }            
         }
-        for (org.apache.pluto.om.portlet.CustomWindowState cws : pa.getCustomWindowStates())
+        for (org.apache.pluto.container.om.portlet.CustomWindowState cws : pa.getCustomWindowStates())
         {
             CustomWindowState jcws = jpa.addCustomWindowState(cws.getWindowState());
-            for (org.apache.pluto.om.portlet.Description desc : cws.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : cws.getDescriptions())
             {
                 Description jdesc = jcws.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }            
         }        
-        for (org.apache.pluto.om.portlet.EventDefinition ed : pa.getEventDefinitions())
+        for (org.apache.pluto.container.om.portlet.EventDefinition ed : pa.getEventDefinitions())
         {
             EventDefinition jed = null;
             if (ed.getQName() != null)
@@ -363,13 +364,13 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             {
                 jed.addAlias(alias);
             }
-            for (org.apache.pluto.om.portlet.Description desc : ed.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : ed.getDescriptions())
             {
                 Description jdesc = jed.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }                        
         }
-        for (org.apache.pluto.om.portlet.FilterMapping fm : pa.getFilterMappings())
+        for (org.apache.pluto.container.om.portlet.FilterMapping fm : pa.getFilterMappings())
         {
             FilterMapping jfm = jpa.addFilterMapping(fm.getFilterName());
             for (String portletName : fm.getPortletNames())
@@ -377,25 +378,25 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 jfm.addPortletName(portletName);
             }
         }
-        for (org.apache.pluto.om.portlet.Filter f : pa.getFilters())
+        for (org.apache.pluto.container.om.portlet.Filter f : pa.getFilters())
         {
             Filter jf = jpa.addFilter(f.getFilterName());
             jf.setFilterClass(f.getFilterClass());
-            for (org.apache.pluto.om.portlet.Description desc : f.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : f.getDescriptions())
             {
                 Description jdesc = jf.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }                                   
-            for (org.apache.pluto.om.portlet.DisplayName dn : f.getDisplayNames())
+            for (org.apache.pluto.container.om.portlet.DisplayName dn : f.getDisplayNames())
             {
                 DisplayName jdn = jf.addDisplayName(dn.getLang());
                 jdn.setDisplayName(dn.getDisplayName());
             }
-            for (org.apache.pluto.om.portlet.InitParam ip : f.getInitParams())
+            for (org.apache.pluto.container.om.portlet.InitParam ip : f.getInitParams())
             {
                 InitParam jip = jf.addInitParam(ip.getParamName());
                 jip.setParamValue(ip.getParamValue());
-                for (org.apache.pluto.om.portlet.Description desc : ip.getDescriptions())
+                for (org.apache.pluto.container.om.portlet.Description desc : ip.getDescriptions())
                 {
                     Description jdesc = jip.addDescription(desc.getLang());
                     jdesc.setDescription(desc.getDescription());
@@ -406,21 +407,21 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 jf.addLifecycle(lc);
             }            
         }
-        for (org.apache.pluto.om.portlet.Listener l : pa.getListeners())
+        for (org.apache.pluto.container.om.portlet.Listener l : pa.getListeners())
         {
             Listener jl = jpa.addListener(l.getListenerClass());
-            for (org.apache.pluto.om.portlet.Description desc : l.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : l.getDescriptions())
             {
                 Description jdesc = jl.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }                                        
-            for (org.apache.pluto.om.portlet.DisplayName dn : l.getDisplayNames())
+            for (org.apache.pluto.container.om.portlet.DisplayName dn : l.getDisplayNames())
             {
                 DisplayName jdn = jl.addDisplayName(dn.getLang());
                 jdn.setDisplayName(dn.getDisplayName());
             }
         }
-        for (org.apache.pluto.om.portlet.PublicRenderParameter prd : pa.getPublicRenderParameters())
+        for (org.apache.pluto.container.om.portlet.PublicRenderParameter prd : pa.getPublicRenderParameters())
         {            
             PublicRenderParameter jprp = null;
             if (prd.getQName() != null)
@@ -435,16 +436,16 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             {
                 jprp.addAlias(alias);
             }
-            for (org.apache.pluto.om.portlet.Description desc : prd.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : prd.getDescriptions())
             {
                 Description jdesc = jprp.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }
         }
-        for (org.apache.pluto.om.portlet.SecurityConstraint sc :  pa.getSecurityConstraints())
+        for (org.apache.pluto.container.om.portlet.SecurityConstraint sc :  pa.getSecurityConstraints())
         {
             SecurityConstraint jsc = jpa.addSecurityConstraint(sc.getUserDataConstraint().getTransportGuarantee());
-            for (org.apache.pluto.om.portlet.DisplayName dn : sc.getDisplayNames())
+            for (org.apache.pluto.container.om.portlet.DisplayName dn : sc.getDisplayNames())
             {
                 DisplayName jdn = jsc.addDisplayName(dn.getLang());
                 jdn.setDisplayName(dn.getDisplayName());
@@ -454,26 +455,35 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 jsc.addPortletName(portletName);
             }            
         }
-        for (org.apache.pluto.om.portlet.UserAttribute ua : pa.getUserAttributes())
+        for (org.apache.pluto.container.om.portlet.UserAttribute ua : pa.getUserAttributes())
         {
             UserAttribute jua = jpa.addUserAttribute(ua.getName());
-            for (org.apache.pluto.om.portlet.Description desc : ua.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : ua.getDescriptions())
             {
                 Description jdesc = jua.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }                                                    
         }
+        for (String urlPattern : pa.getServletMappingURLPatterns())
+        {
+            jpa.addServletMappingURLPattern(urlPattern);
+        }
+        
+        for (Map.Entry<Locale, String> entry : pa.getLocaleEncodingMappings().entrySet())
+        {
+            jpa.addLocaleEncodingMapping(entry.getKey(), entry.getValue());
+        }
         return jpa;
     }
 
-    protected void upgradePortlet(PortletDefinition jpd, org.apache.pluto.om.portlet.PortletDefinition pd)
+    protected void upgradePortlet(PortletDefinition jpd, org.apache.pluto.container.om.portlet.PortletDefinition pd)
     {
         jpd.setCacheScope(pd.getCacheScope());
         jpd.setExpirationCache(pd.getExpirationCache());
         jpd.setPortletClass(pd.getPortletClass());
         jpd.setResourceBundle(pd.getResourceBundle());
         jpd.setPreferenceValidatorClassname(pd.getPortletPreferences().getPreferencesValidator());
-        for (org.apache.pluto.om.portlet.Preference preference : pd.getPortletPreferences().getPortletPreferences())
+        for (org.apache.pluto.container.om.portlet.Preference preference : pd.getPortletPreferences().getPortletPreferences())
         {
             Preference jpref = jpd.getDescriptorPreferences().addPreference(preference.getName());
             jpref.setReadOnly(preference.isReadOnly());
@@ -483,7 +493,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             }
             
         }        
-        for (org.apache.pluto.om.portlet.ContainerRuntimeOption cro : pd.getContainerRuntimeOptions())
+        for (org.apache.pluto.container.om.portlet.ContainerRuntimeOption cro : pd.getContainerRuntimeOptions())
         {
             ContainerRuntimeOption jcro = jpd.addContainerRuntimeOption(cro.getName());
             for (String value : cro.getValues())
@@ -491,27 +501,27 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 jcro.addValue(value);
             }
         }
-        for (org.apache.pluto.om.portlet.Description desc : pd.getDescriptions())
+        for (org.apache.pluto.container.om.portlet.Description desc : pd.getDescriptions())
         {
             Description jdesc = jpd.addDescription(desc.getLang());
             jdesc.setDescription(desc.getDescription());
         }                        
-        for (org.apache.pluto.om.portlet.DisplayName dn : pd.getDisplayNames())
+        for (org.apache.pluto.container.om.portlet.DisplayName dn : pd.getDisplayNames())
         {
             DisplayName jdn = jpd.addDisplayName(dn.getLang());
             jdn.setDisplayName(dn.getDisplayName());
         }
-        for (org.apache.pluto.om.portlet.InitParam ip : pd.getInitParams())
+        for (org.apache.pluto.container.om.portlet.InitParam ip : pd.getInitParams())
         {
             InitParam jip = jpd.addInitParam(ip.getParamName());
             jip.setParamValue(ip.getParamValue());
-            for (org.apache.pluto.om.portlet.Description desc : ip.getDescriptions())
+            for (org.apache.pluto.container.om.portlet.Description desc : ip.getDescriptions())
             {
                 Description jdesc = jip.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }                                        
         }
-        for (org.apache.pluto.om.portlet.SecurityRoleRef srr : pd.getSecurityRoleRefs())
+        for (org.apache.pluto.container.om.portlet.SecurityRoleRef srr : pd.getSecurityRoleRefs())
         {
             SecurityRoleRef jsrr = jpd.addSecurityRoleRef(srr.getRoleName());
             jsrr.setRoleLink(srr.getRoleLink());
@@ -528,7 +538,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             }
         }
         
-        for (org.apache.pluto.om.portlet.EventDefinitionReference ed : pd.getSupportedProcessingEvents())
+        for (org.apache.pluto.container.om.portlet.EventDefinitionReference ed : pd.getSupportedProcessingEvents())
         {
             if (ed.getQName() != null)
             {
@@ -543,7 +553,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         {
             jpd.addSupportedPublicRenderParameter(sprd);
         }
-        for (org.apache.pluto.om.portlet.EventDefinitionReference ed : pd.getSupportedPublishingEvents())
+        for (org.apache.pluto.container.om.portlet.EventDefinitionReference ed : pd.getSupportedPublishingEvents())
         {
             if (ed.getQName() != null)
             {
@@ -554,7 +564,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 jpd.addSupportedPublishingEvent(ed.getName());
             }
         }
-        for (org.apache.pluto.om.portlet.Supports supports : pd.getSupports())
+        for (org.apache.pluto.container.om.portlet.Supports supports : pd.getSupports())
         {
             Supports jsupports = jpd.addSupports(supports.getMimeType());
             for (String pm : supports.getPortletModes())

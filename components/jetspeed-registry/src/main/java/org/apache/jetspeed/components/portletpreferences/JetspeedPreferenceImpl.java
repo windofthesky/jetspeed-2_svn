@@ -16,8 +16,7 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import org.apache.pluto.internal.InternalPortletPreference;
-import org.apache.pluto.internal.impl.PortletPreferenceImpl;
+import org.apache.pluto.container.impl.PortletPreferenceImpl;
 
 /**
  * <p>
@@ -27,7 +26,7 @@ import org.apache.pluto.internal.impl.PortletPreferenceImpl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class JetspeedPreferenceImpl extends PortletPreferenceImpl implements InternalPortletPreference
+public class JetspeedPreferenceImpl extends PortletPreferenceImpl
 {
     public JetspeedPreferenceImpl(String name, String[] values)
     {

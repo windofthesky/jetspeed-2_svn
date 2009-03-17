@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pluto.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -34,12 +34,12 @@ public class ProcessEventImpl implements ProcessEvent
     private QName qname;
     private java.io.Serializable value;
     private String className;
-    private EventCoordinationService eventService;
+    private JetspeedEventCoordinationService eventService;
     private boolean processed = false;
     private static Log log = LogFactory.getLog(ProcessEventImpl.class);
     
 
-    public ProcessEventImpl(PortletWindow window, QName qname, String className, java.io.Serializable value, EventCoordinationService eventService)
+    public ProcessEventImpl(PortletWindow window, QName qname, String className, java.io.Serializable value, JetspeedEventCoordinationService eventService)
     {
         this.window = window;
         this.qname = qname;

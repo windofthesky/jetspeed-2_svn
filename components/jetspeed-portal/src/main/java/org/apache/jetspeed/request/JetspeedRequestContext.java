@@ -35,6 +35,7 @@ import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
@@ -85,9 +86,10 @@ public class JetspeedRequestContext implements RequestContext
     private PortletWindow actionWindow;
     private String encoding;
     private String requestPath = null;
-    private Map requestsForWindows;
-    private Map responsesForWindows;
+    private Map<PortletWindowID, HttpServletRequest> requestsForWindows;
+    private Map<PortletWindowID, HttpServletResponse> responsesForWindows;
     private final Map<String, Object> objects;
+    private final Map<PortletWindowID, Map<String, Object>> portletWindowAttributesMap;
     
     /**
      * Create a new Request Context
@@ -109,9 +111,10 @@ public class JetspeedRequestContext implements RequestContext
         this.response = response;
         this.config = config;
         this.session = request.getSession();
-        this.requestsForWindows = new HashMap();
-        this.responsesForWindows = new HashMap();
+        this.requestsForWindows = new HashMap<PortletWindowID, HttpServletRequest>();
+        this.responsesForWindows = new HashMap<PortletWindowID, HttpServletResponse>();
         this.objects = objects;
+        this.portletWindowAttributesMap = new HashMap<PortletWindowID,Map<String, Object>>();
 
         // set context in Request for later use
         if (null != this.request)
@@ -415,11 +418,6 @@ public class JetspeedRequestContext implements RequestContext
         return request.getParameter(key);
     }
     
-    public void setRequestParameter(String key, String value)
-    {
-        request.getParameterMap().put(key, value);
-    }
-
     /**
      * @see org.apache.jetspeed.request.RequestContext#getParameterMap()
      */
@@ -507,7 +505,7 @@ public class JetspeedRequestContext implements RequestContext
      * getPreferedLanguage
      * </p>
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.om.portlet.PortletDefinition)
+     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.container.om.portlet.PortletDefinition)
      * @param portlet
      * @return
      */
@@ -652,5 +650,21 @@ public class JetspeedRequestContext implements RequestContext
     public Map<String, Object> getObjects()
     {
         return objects;
+    }
+    
+    public synchronized Map<String, Object> getPortletWindowAttributes(PortletWindow window)
+    {
+        Map<String, Object> attributes = portletWindowAttributesMap.get(window.getId());
+        if (attributes == null)
+        {
+            attributes = new HashMap<String, Object>();
+            attributes.put(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, this);
+            if (getObjects() != null)
+            {
+                attributes.put(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, getObjects());
+            }
+            portletWindowAttributesMap.put(window.getId(), attributes);
+        }
+        return attributes;
     }
 }

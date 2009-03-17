@@ -108,7 +108,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
 
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("PA-001");
-        app.setContextRoot("/pa-001");
+        app.setContextPath("/pa-001");
 
         UserAttributeRef uaRef = app.addUserAttributeRef("user-name-family");
         uaRef.setNameLink("user.name.family");

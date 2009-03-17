@@ -34,5 +34,5 @@ public interface JetspeedDescriptorService
      * @return Object representation of the descriptor.
      * @throws Exception if an loading or parsing error occurs.
      */
-    PortletApplication read(InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor, ClassLoader paClassLoader) throws Exception;
+    PortletApplication read(String name, String contextPath, InputStream webDescriptor, InputStream portletDescriptor, InputStream jetspeedPortletDescriptor, ClassLoader paClassLoader) throws Exception;
 }

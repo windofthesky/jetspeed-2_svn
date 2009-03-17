@@ -20,8 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletWindow;
-import org.apache.pluto.spi.ResourceURLProvider;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.pluto.container.ResourceURLProvider;
 
 /**
  * <p>

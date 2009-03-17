@@ -475,7 +475,7 @@ public class MockRequestContext implements RequestContext
      * getPreferedLanguage
      * </p>
      *
-     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.om.portlet.PortletDefinition)
+     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.container.om.portlet.PortletDefinition)
      * @param portlet
      * @return
      */

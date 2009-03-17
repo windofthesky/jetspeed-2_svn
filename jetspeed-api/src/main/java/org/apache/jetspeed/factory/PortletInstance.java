@@ -18,7 +18,7 @@ package org.apache.jetspeed.factory;
 
 import javax.portlet.Portlet;
 
-import org.apache.jetspeed.container.InternalPortletConfig;
+import org.apache.jetspeed.container.JetspeedPortletConfig;
 
 /**
  * PortletInstance
@@ -29,6 +29,6 @@ import org.apache.jetspeed.container.InternalPortletConfig;
  */
 public interface PortletInstance extends Portlet
 {
-    InternalPortletConfig getConfig();
+    JetspeedPortletConfig getConfig();
     Portlet getRealPortlet();
 }

@@ -276,9 +276,16 @@ implements JetspeedEngineConstants, HttpSessionListener
                 res.setHeader("Expires", "0");                               // HTTP/1.0 browser/proxy
 
                 // send request through pipeline
-                RequestContext context = contextComponent.create(req, res, getServletConfig());
-                engine.service(context);
-                contextComponent.release(context);
+                RequestContext context = null;
+                try
+                {
+                    context = contextComponent.create(req, res, getServletConfig());
+                    engine.service(context);
+                }
+                finally
+                {
+                    contextComponent.release(context);
+                }
             }
 
         }

@@ -310,7 +310,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
 			if (paType == PortletApplication.LOCAL)
 			{
-				pa.setContextRoot("<portal>");
+				pa.setContextPath("<portal>");
 			}
 
             // Make sure existing entities are refreshed with the most

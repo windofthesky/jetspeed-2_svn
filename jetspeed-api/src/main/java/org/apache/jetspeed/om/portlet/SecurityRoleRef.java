@@ -25,7 +25,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface SecurityRoleRef extends org.apache.pluto.om.portlet.SecurityRoleRef, Serializable
+public interface SecurityRoleRef extends org.apache.pluto.container.om.portlet.SecurityRoleRef, Serializable
 {
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

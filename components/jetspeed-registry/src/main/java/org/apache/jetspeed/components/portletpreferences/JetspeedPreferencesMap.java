@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.jetspeed.cache.DistributedCacheObject;
-import org.apache.pluto.internal.InternalPortletPreference;
+import org.apache.pluto.container.PortletPreference;
 
 /**
  * <p>
@@ -32,17 +32,17 @@ import org.apache.pluto.internal.InternalPortletPreference;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class JetspeedPreferencesMap implements Map<String, InternalPortletPreference>, DistributedCacheObject
+public class JetspeedPreferencesMap implements Map<String, PortletPreference>, DistributedCacheObject
 {
     private static final long serialVersionUID = 1L;
     
-    private Map<String, InternalPortletPreference> map = new HashMap<String, InternalPortletPreference>();
+    private Map<String, PortletPreference> map = new HashMap<String, PortletPreference>();
     
     public JetspeedPreferencesMap()
     {
     }
 
-    public JetspeedPreferencesMap(Map<String, InternalPortletPreference> copy)
+    public JetspeedPreferencesMap(Map<String, PortletPreference> copy)
     {
         this.putAll(copy);
     }
@@ -62,12 +62,12 @@ public class JetspeedPreferencesMap implements Map<String, InternalPortletPrefer
         return map.containsValue(value);
     }
 
-    public Set<java.util.Map.Entry<String, InternalPortletPreference>> entrySet()
+    public Set<java.util.Map.Entry<String, PortletPreference>> entrySet()
     {
         return map.entrySet();
     }
 
-    public InternalPortletPreference get(Object key)
+    public PortletPreference get(Object key)
     {
         return map.get(key);
     }
@@ -82,19 +82,19 @@ public class JetspeedPreferencesMap implements Map<String, InternalPortletPrefer
         return map.keySet();
     }
 
-    public InternalPortletPreference put(String key,
-            InternalPortletPreference value)
+    public PortletPreference put(String key,
+            PortletPreference value)
     {
         return map.put(key, value);
     }
 
     public void putAll(
-            Map<? extends String, ? extends InternalPortletPreference> other)
+            Map<? extends String, ? extends PortletPreference> other)
     {
         map.putAll(other);
     }
 
-    public InternalPortletPreference remove(Object key)
+    public PortletPreference remove(Object key)
     {
         return map.remove(key);
     }
@@ -104,7 +104,7 @@ public class JetspeedPreferencesMap implements Map<String, InternalPortletPrefer
         return map.size();
     }
 
-    public Collection<InternalPortletPreference> values()
+    public Collection<PortletPreference> values()
     {
         return map.values();
     }

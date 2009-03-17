@@ -27,7 +27,7 @@ import javax.portlet.PortletMode;
  * @version $Id$
  *
  */
-public interface CustomPortletMode extends org.apache.pluto.om.portlet.CustomPortletMode, Serializable
+public interface CustomPortletMode extends org.apache.pluto.container.om.portlet.CustomPortletMode, Serializable
 {
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

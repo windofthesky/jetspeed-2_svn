@@ -24,7 +24,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  * @version $Id$
  *
  */
-public interface PortletEntity extends org.apache.pluto.PortletEntity
+public interface PortletEntity extends org.apache.pluto.container.PortletEntity
 {
     Long getOid();
     String getId();

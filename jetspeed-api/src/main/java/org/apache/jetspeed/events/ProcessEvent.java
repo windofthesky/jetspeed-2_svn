@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 import javax.portlet.Event;
 
-import org.apache.pluto.PortletWindow;
+import org.apache.pluto.container.PortletWindow;
 
 /**
  * ProcessEvent extends the Portlet API Event to give Jetspeed internals access to processing status as well other state information

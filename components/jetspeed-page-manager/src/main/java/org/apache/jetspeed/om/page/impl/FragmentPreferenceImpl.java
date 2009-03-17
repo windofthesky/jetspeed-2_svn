@@ -55,7 +55,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#getName()
-     * @see org.apache.pluto.om.common.Preference#getName()
+     * @see org.apache.pluto.container.om.common.Preference#getName()
      */
     public String getName()
     {
@@ -64,7 +64,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#setName(java.lang.String)
-     * @see org.apache.pluto.om.common.PreferenceCtrl#setName(java.lang.String)
+     * @see org.apache.pluto.container.om.common.PreferenceCtrl#setName(java.lang.String)
      */
     public void setName(String name)
     {
@@ -73,7 +73,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#isReadOnly()
-     * @see org.apache.pluto.om.common.Preference#isReadOnly()
+     * @see org.apache.pluto.container.om.common.Preference#isReadOnly()
      */
     public boolean isReadOnly()
     {

@@ -27,7 +27,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.UnavailableException;
 
-import org.apache.jetspeed.container.InternalPortletConfig;
+import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.factory.PortletInstance;
 
 /**
@@ -40,7 +40,7 @@ import org.apache.jetspeed.factory.PortletInstance;
 public class JetspeedPortletInstance implements PortletInstance
 {
   private Portlet portlet;
-  private InternalPortletConfig config;
+  private JetspeedPortletConfig config;
   private boolean destroyed;
   private final String portletName;
   
@@ -84,10 +84,10 @@ public class JetspeedPortletInstance implements PortletInstance
   public void init(PortletConfig config) throws PortletException
   {
     portlet.init(config);
-    this.config = (InternalPortletConfig)config;
+    this.config = (JetspeedPortletConfig)config;
   }
   
-  public InternalPortletConfig getConfig()
+  public JetspeedPortletConfig getConfig()
   {
       return config;
   }

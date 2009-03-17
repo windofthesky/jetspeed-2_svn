@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -38,10 +37,9 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.UserImpl;
-import org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl;
+import org.apache.pluto.container.impl.PortletAppDescriptorServiceImpl;
 
 /**
  * <p>
@@ -95,11 +93,8 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
         InputStream portletDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/portlet.xml");
         InputStream jetspeedPortletDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml");
         ClassLoader paClassLoader = Thread.currentThread().getContextClassLoader();
-        portletApp = descriptorService.read(webDescriptor, portletDescriptor, jetspeedPortletDescriptor, paClassLoader);
+        portletApp = descriptorService.read("TestRegistry", "/TestRegistry", webDescriptor, portletDescriptor, jetspeedPortletDescriptor, paClassLoader);
         assertNotNull("App is null", portletApp);
-        
-        portletApp.setName("TestRegistry");
-        portletApp.setContextRoot("/TestRegistry");
         
         // persist the app
         try

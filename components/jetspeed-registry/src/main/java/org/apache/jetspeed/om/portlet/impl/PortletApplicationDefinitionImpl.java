@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -55,7 +57,7 @@ import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.pluto.om.portlet.UserDataConstraint;
+import org.apache.pluto.container.om.portlet.UserDataConstraint;
 
 /**
  *
@@ -80,7 +82,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     /** Holds value of property name. */
     private String name;
     
-    private String contextRoot;
+    private String contextPath;
 
     /** Metadata property */
     private Collection<LocalizedField> metadataFields = null;
@@ -107,6 +109,9 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     private List<UserAttributeRef> userAttributeRefs;
     private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
+
+    private Set<String> servletMappingURLPatterns;
+    private Map<Locale, String> localeEncodingMappings;
     
     private transient Map<PortletMode,PortletMode> supportedCustomModes;
     private transient Map<WindowState,WindowState> supportedCustomStates;
@@ -193,14 +198,14 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         this.revision = revision;
     }
     
-    public void setContextRoot(String contextRoot)
+    public void setContextPath(String contextPath)
     {
-        this.contextRoot = contextRoot;
+        this.contextPath = contextPath;
     }
     
-    public String getContextRoot()
+    public String getContextPath()
     {
-        return contextRoot;
+        return contextPath;
     }
     
     public String getDefaultNamespace()
@@ -475,7 +480,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             // make sure transient cache is setup
             getSupportedPortletModes();
-            return (PortletMode)supportedCustomModes.get(mode);
+            return supportedCustomModes.get(mode);
         }
         return null;            
     }
@@ -529,7 +534,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             // make sure transient cache is setup
             getSupportedWindowStates();
-            return (WindowState)supportedCustomStates.get(state);
+            return supportedCustomStates.get(state);
         }
         return null;            
     }
@@ -613,7 +618,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         else if ( getSupportedPortletModes().contains(mode) )
         {
-            return (PortletMode)mappedCustomModes.get(mode);
+            return mappedCustomModes.get(mode);
         }
         return null;
     }
@@ -626,7 +631,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         else if ( getSupportedWindowStates().contains(state) )
         {
-            return (WindowState)mappedCustomStates.get(state);
+            return mappedCustomStates.get(state);
         }
         return null;
     }
@@ -871,7 +876,35 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         getContainerRuntimeOptions().add(cro);
         return cro;        
     }
-
+    
+    public Set<String> getServletMappingURLPatterns()
+    {
+        if (servletMappingURLPatterns == null)
+        {
+            servletMappingURLPatterns = new HashSet<String>();
+        }
+        return servletMappingURLPatterns;
+    }
+    
+    public void addServletMappingURLPattern(String servletMappingURLPattern)
+    {
+        getServletMappingURLPatterns().add(servletMappingURLPattern);
+    }
+    
+    public Map<Locale, String> getLocaleEncodingMappings()
+    {
+        if (localeEncodingMappings == null)
+        {
+            localeEncodingMappings = new HashMap<Locale,String>();
+        }
+        return localeEncodingMappings;
+    }
+    
+    public void addLocaleEncodingMapping(Locale locale, String encoding)
+    {
+        getLocaleEncodingMappings().put(locale, encoding);
+    }
+    
     public List<JetspeedServiceReference> getJetspeedServices()
     {
         if (services == null)
@@ -899,7 +932,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     {
         if (this.getMetadata() != null)
         {
-            Collection c = this.getMetadata().getFields("layout-app");
+            Collection<LocalizedField> c = this.getMetadata().getFields("layout-app");
             if (c != null)
             {
                 if (!c.isEmpty())

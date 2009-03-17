@@ -38,8 +38,8 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.ojb.broker.util.ClassHelper;
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
+import org.apache.pluto.container.PortletContainer;
+import org.apache.pluto.container.PortletContainerException;
 
 
 /**

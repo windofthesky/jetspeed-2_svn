@@ -16,14 +16,20 @@
  */
 package org.apache.jetspeed.container;
 
+import javax.portlet.PortletContext;
+import javax.servlet.ServletContext;
+
+import org.apache.jetspeed.om.portlet.PortletApplication;
+
 /**
- * Interface to communicate to HttpServleRequest and HttpServletResponse implementations if they
- * are currently dispatched from PortletDispatcher so that they can enforce the JSR-168 PLT.16.3.3 restrictions.
+ * This interface defines the internal methods used on the Portlet Context.
+ * 
  *
- * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
+ * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface PortletDispatcherIncludeAware
+public interface JetspeedPortletContext extends PortletContext
 {
-    public void setPortletDispatcherIncluded(boolean included);
+    PortletApplication getApplicationDefinition(); 
+    ServletContext getServletContext();
 }

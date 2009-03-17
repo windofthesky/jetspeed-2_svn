@@ -26,7 +26,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceServingPortlet;
 
-import org.apache.pluto.spi.FilterManager;
+import org.apache.pluto.container.FilterManager;
 
 /**
  * TODO: 2.2 implement 

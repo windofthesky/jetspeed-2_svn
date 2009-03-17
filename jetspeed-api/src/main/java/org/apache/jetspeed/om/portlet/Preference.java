@@ -22,6 +22,6 @@ import java.io.Serializable;
  * @version $Id$
  *
  */
-public interface Preference extends org.apache.pluto.om.portlet.Preference, Serializable
+public interface Preference extends org.apache.pluto.container.om.portlet.Preference, Serializable
 {
 }

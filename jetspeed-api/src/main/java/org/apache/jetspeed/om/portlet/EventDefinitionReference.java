@@ -22,6 +22,6 @@ import java.io.Serializable;
  * @version $Id$
  *
  */
-public interface EventDefinitionReference extends org.apache.pluto.om.portlet.EventDefinitionReference, Serializable
+public interface EventDefinitionReference extends org.apache.pluto.container.om.portlet.EventDefinitionReference, Serializable
 {
 }

@@ -32,7 +32,7 @@ import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
-import org.apache.pluto.descriptors.services.jaxb.PortletAppDescriptorServiceImpl;
+import org.apache.pluto.container.impl.PortletAppDescriptorServiceImpl;
 
 /**
  * TestPortletDescriptorSecurityRoles - test and validate security roles and

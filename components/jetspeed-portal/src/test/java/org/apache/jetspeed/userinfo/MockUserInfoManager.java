@@ -22,8 +22,8 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.PortletWindow;
+import org.apache.pluto.container.PortletContainerException;
+import org.apache.pluto.container.PortletWindow;
 
 
 public class MockUserInfoManager implements UserInfoManager
@@ -34,7 +34,7 @@ public class MockUserInfoManager implements UserInfoManager
     {}
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.userinfo.UserInfoManager#getUserInfoMap(org.apache.pluto.om.common.ObjectID, org.apache.jetspeed.request.RequestContext)
+     * @see org.apache.jetspeed.userinfo.UserInfoManager#getUserInfoMap(org.apache.pluto.container.om.common.ObjectID, org.apache.jetspeed.request.RequestContext)
      */
     public Map<String, String> getUserInfoMap(String appName, RequestContext context)
     {

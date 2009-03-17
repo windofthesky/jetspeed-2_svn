@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface EventDefinition extends org.apache.pluto.om.portlet.EventDefinition, Serializable
+public interface EventDefinition extends org.apache.pluto.container.om.portlet.EventDefinition, Serializable
 {
 	Description getDescription(Locale locale);
     List<Description> getDescriptions();

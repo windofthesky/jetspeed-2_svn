@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface PublicRenderParameter extends org.apache.pluto.om.portlet.PublicRenderParameter, Serializable
+public interface PublicRenderParameter extends org.apache.pluto.container.om.portlet.PublicRenderParameter, Serializable
 {
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

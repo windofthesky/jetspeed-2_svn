@@ -18,8 +18,10 @@ package org.apache.jetspeed.container;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.portlet.PortletRequestDispatcher;
 import javax.servlet.RequestDispatcher;
@@ -31,8 +33,7 @@ import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
-import org.apache.pluto.internal.impl.PortletContextImpl;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 /**
  * Implements the Portlet API Portlet Context class
@@ -42,7 +43,7 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  */
-public class JetspeedPortletContext extends PortletContextImpl implements InternalPortletContext
+public class JetspeedPortletContextImpl implements JetspeedPortletContext
 {
     /**
      * The path to the Local Portlet Apps directory
@@ -52,9 +53,9 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
     protected PortletFactory factory;
     protected PortalContext portalContext;
     
-    public JetspeedPortletContext(PortalContext portalContext, ServletContext servletContext, PortletApplication application, PortletFactory factory)
+    public JetspeedPortletContextImpl(PortalContext portalContext, ServletContext servletContext, PortletApplication application, PortletFactory factory)
     {
-        super(servletContext, (PortletApplicationDefinition)application);
+// TODO        super(servletContext, (PortletApplicationDefinition)application);
         this.portalContext = portalContext;
         this.factory = factory;
     }
@@ -71,44 +72,17 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
 
     public javax.portlet.PortletRequestDispatcher getRequestDispatcher(String path)
     {
-        String localizedPath = localizePath(path, (PortletApplication)this.portletApp);
-        RequestDispatcher rd = null;        
-        try
-        {
-            rd = servletContext.getRequestDispatcher(localizedPath);
-        }
-        catch (Exception e)
-        {
-            // Portlet API says: return null
-        }
-        if (rd != null)
-        {
-            return factory.createRequestDispatcher(rd, path);
-        }
-        return null;
+        return null;// TODO
     }
 
     public PortletRequestDispatcher getNamedDispatcher(String name)
     {
-        RequestDispatcher rd = null;
-        try
-        {
-            rd = servletContext.getNamedDispatcher(name);
-        }
-        catch (Exception e)
-        {
-            // Portlet API says: return null
-        }
-        if (rd != null)
-        {
-            return factory.createRequestDispatcher(rd);
-        }
-        return null;
+        return null;// TODO
     }
 
     public InputStream getResourceAsStream(String path)
     {
-        return servletContext.getResourceAsStream(localizePath(path, (PortletApplication)this.portletApp));
+        return null;// TODO
     }
 
     public java.lang.Object getAttribute(java.lang.String name)
@@ -123,7 +97,7 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
             String serviceName = name.substring("cps:".length());
             
             // validate service
-            Collection<JetspeedServiceReference> validServices = ((PortletApplication)portletApp).getJetspeedServices();
+            Collection<JetspeedServiceReference> validServices = getApplicationDefinition().getJetspeedServices();
             if (null == validServices)
             {
                 return null;
@@ -145,17 +119,17 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
             PortletServices services = JetspeedPortletServices.getSingleton();
             return services.getService(serviceName);
         }
-        return servletContext.getAttribute(name);
+        return null; //TODO return servletContext.getAttribute(name);
     }
 
     public String getRealPath(String path)
     {
-        return servletContext.getRealPath(localizePath(path, (PortletApplication)this.portletApp));
+        return null; //TODO return servletContext.getRealPath(localizePath(path, (PortletApplication)this.portletApp));
     }
 
     public java.net.URL getResource(String path) throws java.net.MalformedURLException
     {
-        return servletContext.getResource(localizePath(path, (PortletApplication)this.portletApp));
+        return null; //TODO return servletContext.getResource(localizePath(path, (PortletApplication)this.portletApp));
     }
 
     public String getServerInfo()
@@ -175,7 +149,7 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
     
     public PortletApplication getPortletApplicationDefinition()
     {
-        return (PortletApplication)this.portletApp;
+        return null; //TODO return (PortletApplication)this.portletApp;
     }
 
     private List<String> DUMMY_CONFIGURATION = new LinkedList<String>(); // TODO: 2.2 implement
@@ -188,18 +162,130 @@ public class JetspeedPortletContext extends PortletContextImpl implements Intern
 
     public PortletApplication getApplicationDefinition()
     {
-        return (PortletApplication)this.portletApp;
+        return null; //TODO return (PortletApplication)this.portletApp;
     }
     
     public String getContextPath()
     {
-        if (getApplicationDefinition().getApplicationType() == PortletApplication.WEBAPP)
-        {
-            return super.getContextPath();
-        }
-        else
-        {
-            return portalContext.getContextPath();
-        }
+        return null; //TODO 
+//        
+//        if (getApplicationDefinition().getApplicationType() == PortletApplication.WEBAPP)
+//        {
+//            return super.getContextPath();
+//        }
+//        else
+//        {
+//            return portalContext.getContextPath();
+//        }
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.JetspeedPortletContext#getServletContext()
+     */
+    public ServletContext getServletContext()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getAttributeNames()
+     */
+    public Enumeration<String> getAttributeNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getContainerRuntimeOptions()
+     */
+    public Enumeration<String> getContainerRuntimeOptions()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getInitParameter(java.lang.String)
+     */
+    public String getInitParameter(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getInitParameterNames()
+     */
+    public Enumeration<String> getInitParameterNames()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getMimeType(java.lang.String)
+     */
+    public String getMimeType(String file)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getPortletContextName()
+     */
+    public String getPortletContextName()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#getResourcePaths(java.lang.String)
+     */
+    public Set<String> getResourcePaths(String path)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#log(java.lang.String, java.lang.Throwable)
+     */
+    public void log(String message, Throwable throwable)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#log(java.lang.String)
+     */
+    public void log(String msg)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#removeAttribute(java.lang.String)
+     */
+    public void removeAttribute(String name)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.portlet.PortletContext#setAttribute(java.lang.String, java.lang.Object)
+     */
+    public void setAttribute(String name, Object object)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    
 }

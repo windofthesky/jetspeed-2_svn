@@ -18,7 +18,7 @@ package org.apache.jetspeed.events;
 
 import java.util.List;
 
-import org.apache.pluto.PortletWindow;
+import org.apache.jetspeed.container.PortletWindow;
 
 
 /**

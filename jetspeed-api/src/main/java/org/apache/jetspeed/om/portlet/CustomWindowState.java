@@ -27,7 +27,7 @@ import javax.portlet.WindowState;
  * @version $Id$
  *
  */
-public interface CustomWindowState extends org.apache.pluto.om.portlet.CustomWindowState, Serializable
+public interface CustomWindowState extends org.apache.pluto.container.om.portlet.CustomWindowState, Serializable
 {
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

@@ -39,8 +39,7 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.internal.InternalPortletRequest;
-import org.apache.pluto.spi.FilterManager;
+import org.apache.pluto.container.FilterManager;
 
 /**
  * LocalPortletInvoker invokes local (internal) portlet applications.
@@ -66,7 +65,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
     protected boolean activated = false;
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.container.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
      */
     public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
@@ -135,7 +134,8 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
 
             Thread.currentThread().setContextClassLoader(paClassLoader);
             
-            ((InternalPortletRequest)portletRequest).init(portletInstance.getConfig().getPortletContext(), servletRequest);
+//TODO            
+//            ((InternalPortletRequest)portletRequest).init(portletInstance.getConfig().getPortletContext(), servletRequest);
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
@@ -192,7 +192,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
+     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.container.om.portlet.PortletDefinition, javax.servlet.ServletConfig, java.lang.String)
      */
     public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig, String servletMappingName)
     {

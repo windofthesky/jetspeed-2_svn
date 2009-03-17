@@ -24,13 +24,13 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.xml.namespace.QName;
 
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 
 /**
  * PortletApplication
  *
- * Extends the <code>org.apache.pluto.om.portlet.PortletApplicationDefinition</code>
+ * Extends the <code>org.apache.pluto.container.om.portlet.PortletApplicationDefinition</code>
  * interface adding methods for those attributes that do not have them
  * so as to make manipulating the portlet OM easier.
  *
@@ -39,9 +39,6 @@ import org.apache.pluto.om.portlet.PortletApplicationDefinition;
  */
 public interface PortletApplication extends PortletApplicationDefinition, Serializable
 {
-    String getContextRoot();
-    void setContextRoot(String contextRoot);
-    
     /**
      * Marks this application as a standard web application,
      * stored in the web application server's web application space.

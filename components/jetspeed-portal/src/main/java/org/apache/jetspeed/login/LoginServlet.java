@@ -63,19 +63,26 @@ public class LoginServlet extends HttpServlet
         {
             request.setAttribute(PortalReservedParameters.PIPELINE, PortalReservedParameters.LOGIN_PIPELINE);
             Engine engine = Jetspeed.getEngine();
+            RequestContextComponent contextComponent = null;
+            RequestContext context = null;
             try
             {
-                RequestContextComponent contextComponent = (RequestContextComponent) Jetspeed.getComponentManager()
-                        .getComponent(RequestContextComponent.class);
-                RequestContext context = contextComponent.create(request, response, getServletConfig());
+                contextComponent = (RequestContextComponent) Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+                context = contextComponent.create(request, response, getServletConfig());
                 engine.service(context);
-                contextComponent.release(context);
-            }
+            }            
             catch (JetspeedException e)
             {
                 log.warn("Jetspeed engine does not work properly.", e);
                 // forward to JetspeedServlet 
                 response.sendRedirect(response.encodeURL(request.getContextPath() + "/"));
+            }
+            finally
+            {
+                if (contextComponent != null)
+                {
+                    contextComponent.release(context);
+                }
             }
         }
         else

@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.container.namespace;
 
-import org.apache.pluto.PortletWindowID;
+import org.apache.pluto.container.PortletWindowID;
 
 
 /**

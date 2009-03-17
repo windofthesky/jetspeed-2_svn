@@ -26,7 +26,7 @@ import javax.portlet.WindowState;
  * @version $Id$
  *
  */
-public interface PortletWindow extends org.apache.pluto.PortletWindow, Serializable
+public interface PortletWindow extends org.apache.pluto.container.PortletWindow, Serializable
 {
     PortletWindowID getId();
     void setId(String id);

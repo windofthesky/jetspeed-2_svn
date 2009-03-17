@@ -25,7 +25,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface InitParam extends org.apache.pluto.om.portlet.InitParam, Serializable
+public interface InitParam extends org.apache.pluto.container.om.portlet.InitParam, Serializable
 {
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

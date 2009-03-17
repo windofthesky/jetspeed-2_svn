@@ -19,7 +19,7 @@ package org.apache.jetspeed.userinfo;
 import java.util.Map;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.spi.optional.UserInfoService;
+import org.apache.pluto.container.UserInfoService;
 
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 

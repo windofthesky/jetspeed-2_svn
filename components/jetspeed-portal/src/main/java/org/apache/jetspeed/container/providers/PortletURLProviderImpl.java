@@ -16,18 +16,21 @@
  */
 package org.apache.jetspeed.container.providers;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
+import javax.portlet.PortletSecurityException;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.spi.PortletURLProvider;
+import org.apache.pluto.container.PortletURLProvider;
 
 /**
  * Provides access to the Portal URL manipulation 
@@ -149,4 +152,76 @@ public class PortletURLProviderImpl implements PortletURLProvider
     public void setProperties(Map<String, List<String>> properties)
     {
     }
+
+    public String getCacheability()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PortletMode getPortletMode()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Map<String, String[]> getPublicRenderParameters()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getResourceID()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public TYPE getType()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public WindowState getWindowState()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isSecure()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void setCacheability(String cacheLevel)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setResourceID(String resourceID)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setSecure(boolean secure) throws PortletSecurityException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public String toURL(boolean absolute)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void write(Writer out, boolean escapeXML) throws IOException
+    {
+        // TODO Auto-generated method stub
+        
+    }    
 }

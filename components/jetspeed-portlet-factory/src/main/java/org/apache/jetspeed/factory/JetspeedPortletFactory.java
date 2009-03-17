@@ -31,14 +31,14 @@ import javax.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.InternalPortletConfig;
-import org.apache.jetspeed.container.InternalPortletContext;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletContext;
+import org.apache.jetspeed.container.JetspeedPortletConfigImpl;
+import org.apache.jetspeed.container.JetspeedPortletContextImpl;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletObjectProxy;
-import org.apache.pluto.internal.impl.PortletRequestDispatcherImpl;
+import org.apache.pluto.container.impl.PortletRequestDispatcherImpl;
 
 /**
  * <p>
@@ -299,24 +299,25 @@ public class JetspeedPortletFactory implements PortletFactory
                         log.error(msg, e);
                         throw new UnavailableException(msg);
                     }
-                    InternalPortletContext portletContext = new JetspeedPortletContext(portalContext, servletContext, pa, this);                    
-                    InternalPortletConfig portletConfig = new JetspeedPortletConfig(portletContext, pd); 
+                    JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(portalContext, servletContext, pa, this);                    
+                    JetspeedPortletConfig portletConfig = new JetspeedPortletConfigImpl(portletContext, pd); 
                     try
                     {
                         try
                         {
                             Thread.currentThread().setContextClassLoader(paCl);
-                            portlet.init(portletConfig);
+                            //TODO portlet.init(portletConfig);
                         }
                         finally
                         {
                             Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                         }
                     }
-                    catch (PortletException e1)
+                    catch (RuntimeException re)
+                    // TODO catch (PortletException e1)
                     {
-                        log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+paName, e1);
-                        throw e1;
+//                        log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+paName, e1);
+//                        throw e1;
                     }                   
                     if (instanceCache == null)
                     {
@@ -349,7 +350,7 @@ public class JetspeedPortletFactory implements PortletFactory
                 PortletInstance instance = instanceCache != null ? instanceCache.get(pd.getPortletName()) : null;
                 if (instance != null)
                 {
-                    JetspeedPortletConfig config = (JetspeedPortletConfig)instance.getConfig();
+                    JetspeedPortletConfigImpl config = (JetspeedPortletConfigImpl)instance.getConfig();
                     config.setPortletDefinition(pd);
                 }                
             }            
@@ -378,12 +379,12 @@ public class JetspeedPortletFactory implements PortletFactory
     public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher)
     {
         // return new JetspeedRequestDispatcher(requestDispatcher);
-        return new PortletRequestDispatcherImpl(requestDispatcher);
+        return null; //TODO return new PortletRequestDispatcherImpl(requestDispatcher);
     }
     
     public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path)
     {
         // return new JetspeedRequestDispatcher(requestDispatcher);
-        return new PortletRequestDispatcherImpl(requestDispatcher, path);
+        return null; //TODO return new PortletRequestDispatcherImpl(requestDispatcher, path);
     }    
 }

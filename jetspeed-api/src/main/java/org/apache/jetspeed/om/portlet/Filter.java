@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface Filter extends org.apache.pluto.om.portlet.Filter, Serializable
+public interface Filter extends org.apache.pluto.container.om.portlet.Filter, Serializable
 {
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

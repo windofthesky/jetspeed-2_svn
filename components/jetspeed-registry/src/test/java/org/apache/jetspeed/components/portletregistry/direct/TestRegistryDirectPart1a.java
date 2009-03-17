@@ -83,7 +83,7 @@ public class TestRegistryDirectPart1a extends AbstractRegistryTest
         // Create an Application and a Web app      
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
-        app.setContextRoot("/app1");
+        app.setContextPath("/app1");
 
         UserAttributeRef uaRef = app.addUserAttributeRef("user-name-family");
         uaRef.setNameLink("user.name.family");

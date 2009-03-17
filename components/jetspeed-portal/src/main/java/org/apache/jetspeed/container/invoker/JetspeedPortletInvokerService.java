@@ -36,9 +36,11 @@ import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.PortletWindow;
-import org.apache.pluto.spi.FilterManager;
-import org.apache.pluto.spi.optional.PortletInvokerService;
+import org.apache.pluto.container.PortletContainerException;
+import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.PortletWindow;
+import org.apache.pluto.container.FilterManager;
+import org.apache.pluto.container.PortletInvokerService;
 
 /**
  * <p>
@@ -80,7 +82,43 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         this.unwrapper = unwrapper;
         this.servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);                                
     }
-   
+    
+    public void action(PortletRequestContext ctx, ActionRequest req, ActionResponse res, FilterManager filterManager)
+    throws IOException, PortletException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void admin(PortletRequestContext ctx, PortletRequest req, PortletResponse res)
+    throws IOException, PortletException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void event(PortletRequestContext ctx, EventRequest request, EventResponse response, FilterManager filterManager)
+    throws IOException, PortletException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void load(PortletRequestContext ctx, PortletRequest req, PortletResponse res)
+    throws IOException, PortletException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void render(PortletRequestContext ctx, RenderRequest req, RenderResponse res, FilterManager filterManager)
+    throws IOException, PortletException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public void serveResource(PortletRequestContext ctx, ResourceRequest req, ResourceResponse res, FilterManager filterManager)
+    throws IOException, PortletException, PortletContainerException
+    {
+        // TODO Auto-generated method stub
+    }
+
     public void action(ActionRequest request,
             ActionResponse response, PortletWindow window, FilterManager filter)
             throws IOException, PortletException

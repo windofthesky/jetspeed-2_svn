@@ -54,7 +54,7 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.pluto.PortletContainer;
+import org.apache.pluto.container.PortletContainer;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
 

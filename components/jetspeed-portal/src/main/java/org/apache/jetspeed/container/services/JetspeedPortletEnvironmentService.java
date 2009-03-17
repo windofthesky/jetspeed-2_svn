@@ -17,17 +17,7 @@
 
 package org.apache.jetspeed.container.services;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.resource.ResourceRenderResponseImpl;
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletWindow;
-import org.apache.pluto.core.DefaultPortletEnvironmentService;
-import org.apache.pluto.internal.InternalRenderResponse;
-import org.apache.pluto.internal.impl.RenderResponseImpl;
+import org.apache.pluto.container.impl.PortletEnvironmentServiceImpl;
 
 /**
  * Extension of the Pluto DefaultPortletEnvironment
@@ -37,8 +27,9 @@ import org.apache.pluto.internal.impl.RenderResponseImpl;
  * @version $Id$
  *
  */
-public class JetspeedPortletEnvironmentService extends DefaultPortletEnvironmentService
+public class JetspeedPortletEnvironmentService extends PortletEnvironmentServiceImpl
 {
+/* TODO    
     public InternalRenderResponse createRenderResponse(PortletContainer container,
                                                        HttpServletRequest request,
                                                        HttpServletResponse response,
@@ -57,5 +48,5 @@ public class JetspeedPortletEnvironmentService extends DefaultPortletEnvironment
         }
         return new RenderResponseImpl(container, portletWindow, request, response);
     }
-
+*/
 }

@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface UserDataConstraint extends org.apache.pluto.om.portlet.UserDataConstraint, Serializable
+public interface UserDataConstraint extends org.apache.pluto.container.om.portlet.UserDataConstraint, Serializable
 {
 	Description getDescription(Locale locale);
     List<Description> getDescriptions();

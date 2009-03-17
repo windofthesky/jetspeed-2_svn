@@ -36,7 +36,7 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 import org.jmock.Mock;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
@@ -260,7 +260,7 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
 
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName(TEST_APP);
-        app.setContextRoot("/app1");
+        app.setContextPath("/app1");
 
         PortletDefinition portlet = app.addPortlet(TEST_PORTLET);
         portlet.setPortletClass("org.apache.Portlet");

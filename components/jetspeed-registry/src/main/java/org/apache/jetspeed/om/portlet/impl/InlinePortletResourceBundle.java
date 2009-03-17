@@ -19,8 +19,6 @@ package org.apache.jetspeed.om.portlet.impl;
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 
-import org.apache.pluto.Constants;
-
 /**
  * InlinePortletResourceBundle implementation which provides the inline title, short-title, and keywords as properties
  * from the bundle. Borrowed and improved upon the one provided by the Pluto container.
@@ -29,6 +27,10 @@ import org.apache.pluto.Constants;
  */
 class InlinePortletResourceBundle extends ListResourceBundle
 {
+    private final static String TITLE_KEY = "javax.portlet.title";
+    private final static String SHORT_TITLE_KEY = "javax.portlet.short-title";
+    private final static String KEYWORDS_KEY = "javax.portlet.keywords";
+
     private Object[][] contents;
 
     public InlinePortletResourceBundle(String title, String shortTitle, String keywords)
@@ -38,9 +40,9 @@ class InlinePortletResourceBundle extends ListResourceBundle
     
     public InlinePortletResourceBundle(String title, String shortTitle, String keywords, ResourceBundle parent)
     {
-        contents = new Object[][]{ { Constants.TITLE_KEY, deriveValue(parent, Constants.TITLE_KEY, title) },
-                                   { Constants.SHORT_TITLE_KEY, deriveValue(parent, Constants.SHORT_TITLE_KEY, shortTitle) },
-                                   { Constants.KEYWORDS_KEY, deriveValue(parent, Constants.KEYWORDS_KEY, keywords) }};
+        contents = new Object[][]{ { TITLE_KEY, deriveValue(parent, TITLE_KEY, title) },
+                                   { SHORT_TITLE_KEY, deriveValue(parent, SHORT_TITLE_KEY, shortTitle) },
+                                   { KEYWORDS_KEY, deriveValue(parent, KEYWORDS_KEY, keywords) }};
         setParent(parent);
     }
     

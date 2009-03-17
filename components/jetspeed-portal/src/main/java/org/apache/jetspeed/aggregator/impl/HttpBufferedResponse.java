@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.pluto.util.PrintWriterServletOutputStream;
+import org.apache.pluto.container.util.PrintWriterServletOutputStream;
 
 public class HttpBufferedResponse extends javax.servlet.http.HttpServletResponseWrapper
 {

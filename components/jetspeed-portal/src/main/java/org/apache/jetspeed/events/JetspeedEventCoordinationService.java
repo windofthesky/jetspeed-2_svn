@@ -21,11 +21,13 @@ import java.util.List;
 
 import javax.portlet.Event;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 
-import org.apache.pluto.PortletWindow;
-import org.apache.pluto.EventContainer;
-import org.apache.pluto.spi.EventProvider;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.pluto.container.EventCoordinationService;
+import org.apache.pluto.container.EventProvider;
+import org.apache.pluto.container.PortletContainer;
 
 /**
  * TODO: Extend from Pluto's service when checked in and building 
@@ -34,22 +36,14 @@ import org.apache.pluto.spi.EventProvider;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface EventCoordinationService
+public interface JetspeedEventCoordinationService extends EventCoordinationService
 {
     /**
      * Process all events for a given portlet window and given list of events. 
      * @param portletWindow The window to processs events for
      * @param events The list of one or more events
      */
-    void processEvents(PortletWindow portletWindow, List<Event> events);
-    
-    /**
-     * 
-     * @param eventContainer
-     * @param window
-     * @param request
-     */
-    public void fireEvents(EventContainer eventContainer, PortletWindow window, HttpServletRequest request);
+    void processEvents(PortletContainer container, org.apache.pluto.container.PortletWindow portletWindow, HttpServletRequest request, HttpServletResponse response, List<Event> events);
     
     /**
      * 
@@ -57,7 +51,7 @@ public interface EventCoordinationService
      * @param value
      * @param window
      */
-    public void registerToFireEvent(QName qname, Serializable value, PortletWindow window);
+    public Event createEvent(HttpServletRequest request, PortletWindow window, QName qname, Serializable value);
     
     /**
      * 
@@ -65,8 +59,7 @@ public interface EventCoordinationService
      * @param portletWindow
      * @return
      */
-    public EventProvider createEventProvider(HttpServletRequest request, 
-            org.apache.pluto.PortletWindow portletWindow);
+    public EventProvider createEventProvider(HttpServletRequest request, org.apache.pluto.container.PortletWindow portletWindow);
     
     /**
      * Serialize an event value class representation into a Jetspeed-specific seriaizable form, such as String or XML.

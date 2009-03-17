@@ -20,21 +20,19 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.portlet.Event;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.logging.Log;
@@ -50,11 +48,11 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.pluto.EventContainer;
-import org.apache.pluto.om.portlet.EventDefinition;
-import org.apache.pluto.om.portlet.EventDefinitionReference;
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.spi.EventProvider;
+import org.apache.pluto.container.EventProvider;
+import org.apache.pluto.container.PortletContainer;
+import org.apache.pluto.container.om.portlet.EventDefinition;
+import org.apache.pluto.container.om.portlet.EventDefinitionReference;
+import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 /**
  * Event Coordination service default implementation. Uses JAXB to serialize/deserialize events.
@@ -69,12 +67,11 @@ import org.apache.pluto.spi.EventProvider;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class EventCoordinationServiceImpl implements EventCoordinationService
+public class EventCoordinationServiceImpl implements JetspeedEventCoordinationService
 {
     private static Log log = LogFactory.getLog(EventProviderImpl.class);
 
     private final PortletWindowAccessor windowAccessor;
-    private final PortletEventQueue eventQueue;
     private final PortalStatistics statistics;
     private final PortletTrackingManager portletTracking;
     private final SecurityAccessController accessController;
@@ -85,21 +82,19 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
             boolean checkSecurityConstraints)
     {
         this.windowAccessor = windowAccessor;
-        this.eventQueue = eventQueue;
         this.statistics = statistics;
         this.portletTracking = portletTracking;
         this.accessController = accessController;
         this.checkSecurityConstraints = checkSecurityConstraints;
     }
 
-    public EventProvider createEventProvider(HttpServletRequest request, org.apache.pluto.PortletWindow portletWindow)
+    public EventProvider createEventProvider(HttpServletRequest request, org.apache.pluto.container.PortletWindow portletWindow)
     {
-        return new EventProviderImpl(request, portletWindow, this);
+        return new EventProviderImpl(request, (PortletWindow)portletWindow, this);
     }
 
-    public void registerToFireEvent(QName qname, Serializable value, org.apache.pluto.PortletWindow wnd) throws IllegalArgumentException
+    public Event createEvent(HttpServletRequest request, PortletWindow portletWindow, QName qname, Serializable value ) throws IllegalArgumentException
     {
-        PortletWindow portletWindow = (PortletWindow)wnd;
         if (isDeclaredAsPublishingEvent(portletWindow, qname))
         {
             if (value != null && !isValueInstanceOfDefinedClass(portletWindow, qname, value)) 
@@ -111,10 +106,6 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
             {
                 throw new IllegalArgumentException("Object payload must be not null");
             }
-            else if (!(value instanceof Serializable))
-            {
-                throw new IllegalArgumentException("Object payload must implement Serializable");
-            }
             else
             {
                 String result = null;
@@ -125,26 +116,30 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
                 }
                 if (result != null)
                 {
-                    eventQueue.publishEvent(new ProcessEventImpl(portletWindow, qname, value.getClass().getName(), (Serializable) result, this));
+                    return new ProcessEventImpl(portletWindow, qname, value.getClass().getName(), (Serializable) result, this);
                 }
                 else
                 {
-                    eventQueue.publishEvent(new ProcessEventImpl(portletWindow, qname, value.getClass().getName(), value, this));
+                    return new ProcessEventImpl(portletWindow, qname, value.getClass().getName(), value, this);
                 }
             }
         }
+        return null;
     }
 
-    public void fireEvents(EventContainer eventContainer, org.apache.pluto.PortletWindow wnd, HttpServletRequest servletRequest)
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.events.JetspeedEventCoordinationService#processEvents(org.apache.pluto.container.PortletContainer, org.apache.pluto.container.PortletWindow, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.util.List)
+     */
+    public void processEvents(PortletContainer container, org.apache.pluto.container.PortletWindow wnd,
+                              HttpServletRequest servletRequest, HttpServletResponse response, List<Event> events)
     {
         PortletWindow portletWindow = (PortletWindow)wnd;
         RequestContext rc = (RequestContext) servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        List<ProcessEvent> events = eventQueue.dequeueEvents(portletWindow);
-        if (events == null)
-            return;
         long start = System.currentTimeMillis();        
-        for (ProcessEvent event : events)
+        for (Event portletEvent : events)
         {
+            ProcessEvent event = (ProcessEvent)portletEvent;
             if (event.isProcessed())
                 continue;
             event.setProcessed(true);
@@ -157,7 +152,7 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
                 request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, rc.getObjects());
                 try
                 {
-                    eventContainer.fireEvent(request, rc.getResponseForWindow(window), window, event);
+                    container.doEvent(window, request, rc.getResponseForWindow(window), event);
                 }
                 catch (Exception e)
                 {
@@ -174,7 +169,7 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
 
     private boolean isDeclaredAsPublishingEvent(PortletWindow portletWindow, QName qname)
     {
-        PortletDefinition pd = (PortletDefinition) portletWindow.getPortletEntity().getPortletDefinition();
+        PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
         List<? extends EventDefinitionReference> events = pd.getSupportedPublishingEvents();
         if (events != null)
         {
@@ -235,14 +230,14 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
         if (portletWindow == null)
             return eventTargets;
 
-        PortletDefinition portlet = (PortletDefinition) portletWindow.getPortletEntity().getPortletDefinition();
+        PortletDefinition portlet = portletWindow.getPortletEntity().getPortletDefinition();
 
         if (checkSecurityConstraints && !checkSecurityConstraint(portlet, fragment)) 
         {
             return eventTargets;
         }
 
-        if (portletTracking.isOutOfService((org.apache.jetspeed.container.PortletWindow)portletWindow))
+        if (portletTracking.isOutOfService(portletWindow))
         {
             return eventTargets;
         }
@@ -280,12 +275,6 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
         return false;
     }
 
-    // TODO: implement after Ate's refactoring completed
-    public void processEvents(org.apache.pluto.PortletWindow portletWindow, List<Event> events)
-    {
-
-    }
-
     public Serializable serialize(Serializable value, QName eventQName) 
     {
         Serializable xmlData = null;
@@ -314,9 +303,6 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
         }
         return xmlData;
     }    
-    
-    
- 
     
     public Serializable deserialize(Event event)  
     {
@@ -370,5 +356,4 @@ public class EventCoordinationServiceImpl implements EventCoordinationService
         }
         return deserializedValue;
     }
-    
 }

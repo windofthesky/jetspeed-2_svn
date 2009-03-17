@@ -29,7 +29,9 @@ import javax.portlet.ActionResponse;
 import javax.portlet.EventPortlet;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
@@ -42,7 +44,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.container.session.PortalSessionsManager;
@@ -53,7 +54,9 @@ import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.pluto.internal.InternalPortletRequest;
+import org.apache.pluto.container.PortletInvokerService;
+import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.PortletResponseContext;
 
 /**
  * Jetspeed Container entry point.
@@ -229,6 +232,14 @@ public class JetspeedContainerServlet extends HttpServlet
         boolean destroyPortlet = false;
         boolean isParallelMode = false;
         
+        PortletConfig portletConfig;
+        PortletRequest portletRequest;
+        PortletResponse portletResponse;
+        PortletRequestContext requestContext;
+        PortletResponseContext responseContext;
+        // TODO: add FilterManager support
+        //FilterManager filterManager;
+        
         try
         {
             isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
@@ -245,86 +256,55 @@ public class JetspeedContainerServlet extends HttpServlet
             {
                 return;
             }
-            // Inject the current webcontainer provided request *above* the PortletRequest wrapped Jetspeed portlet specific servletRequest (o.a.j.engine.servlet.ServletRequestImpl).
-            // This makes it possible to access the path encoded portlet parameters using the servlet.getParameterMap() which the jetspeed servlet takes care of.
-            // Injecting the webcontainer provided request *above* it is needed to ensure the "cross-context" specific state and handling is still provided correctly
-            PortletRequest portletRequest = (PortletRequest)request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-            HttpServletRequestWrapper jetspeedServletWrapper = (HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest();
-            jetspeedServletWrapper.setRequest(request);
+            
             if (isParallelMode)
             {
+                portletConfig = (PortletConfig)CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_CONFIG);
+                portletRequest = (PortletRequest)CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                portletResponse = (PortletResponse)CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                requestContext = (PortletRequestContext)CurrentWorkerContext.getAttribute(PortletInvokerService.REQUEST_CONTEXT);
+                responseContext = (PortletResponseContext)CurrentWorkerContext.getAttribute(PortletInvokerService.RESPONSE_CONTEXT);
+                //filterManager = (FilterManager)CurrentWorkerContext.getAttribute(PortletInvokerService.FILTER_MANAGER);
                 portlet = (PortletInstance) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET);
                 portletName = (String) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_NAME);
             }
             else
             {
+                portletConfig = (PortletConfig)request.getAttribute(ContainerConstants.PORTLET_CONFIG);
+                portletRequest = (PortletRequest)request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+                portletResponse = (PortletResponse)request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+                requestContext = (PortletRequestContext)request.getAttribute(PortletInvokerService.REQUEST_CONTEXT);
+                responseContext = (PortletResponseContext)request.getAttribute(PortletInvokerService.RESPONSE_CONTEXT);
+                //filterManager = (FilterManager)request.getAttribute(PortletInvokerService.FILTER_MANAGER);
                 portlet = (PortletInstance)request.getAttribute(ContainerConstants.PORTLET);
                 portletName = (String)request.getAttribute(ContainerConstants.PORTLET_NAME);
-                request.removeAttribute(ContainerConstants.PORTLET);
             }
+
+            requestContext.init(portletConfig.getPortletContext(), getServletContext(), request, response);
+            responseContext.init(request, response);
 
             if (method == ContainerConstants.METHOD_ACTION)
             {
-                ActionRequest actionRequest = (ActionRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                ActionResponse actionResponse = (ActionResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                ((InternalPortletRequest)actionRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                ActionRequest actionRequest = (ActionRequest)portletRequest;
+                ActionResponse actionResponse = (ActionResponse)portletResponse;
                 portlet.processAction(actionRequest, actionResponse);
             }
             else if (method == ContainerConstants.METHOD_RENDER)
             {
-                RenderRequest renderRequest = null;
-                RenderResponse renderResponse =  null;
-
-                if (isParallelMode)
-                {
-                    renderRequest = (RenderRequest) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                    renderResponse = (RenderResponse) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                }
-                else
-                {
-                    renderRequest = (RenderRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                    renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-
-                }
-                ((InternalPortletRequest)renderRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                RenderRequest renderRequest = (RenderRequest)portletRequest;
+                RenderResponse renderResponse =  (RenderResponse)portletResponse;
                 portlet.render(renderRequest, renderResponse);
             }
-            else if (method == ContainerConstants.METHOD_EVENT)
+            else if (method == ContainerConstants.METHOD_EVENT && portlet.getRealPortlet() instanceof EventPortlet)
             {
-                EventRequest eventRequest = null;
-                EventResponse eventResponse =  null;
-
-                if (isParallelMode)
-                {
-                    eventRequest = (EventRequest) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                    eventResponse = (EventResponse) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                }
-                else
-                {
-                    eventRequest = (EventRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                    eventResponse = (EventResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-
-                }
-                ((InternalPortletRequest)eventRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                EventRequest eventRequest = (EventRequest)portletRequest;
+                EventResponse eventResponse =  (EventResponse)portletResponse;
                 ((EventPortlet)portlet.getRealPortlet()).processEvent(eventRequest, eventResponse);
             }
             else if (method == ContainerConstants.METHOD_RESOURCE && portlet.getRealPortlet() instanceof ResourceServingPortlet)
             {
-                ResourceRequest resourceRequest = null;
-                ResourceResponse resourceResponse = null;
-
-                if (isParallelMode)
-                {
-                    resourceRequest = (ResourceRequest) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                    resourceResponse = (ResourceResponse) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                }
-                else
-                {
-                    resourceRequest = (ResourceRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                    resourceResponse = (ResourceResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-
-                }
-                ((InternalPortletRequest)resourceRequest).init(portlet.getConfig().getPortletContext(), jetspeedServletWrapper);
+                ResourceRequest resourceRequest = (ResourceRequest)portletRequest;
+                ResourceResponse resourceResponse = (ResourceResponse)portletResponse;
                 ((ResourceServingPortlet)portlet.getRealPortlet()).serveResource(resourceRequest, resourceResponse);
             }
 
@@ -395,9 +375,9 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         finally
         {
-            if ( destroyPortlet )
+            if ( destroyPortlet && portlet != null)
             {
-                // portlet throwed UnavailableException: take it out of service
+                // portlet threw UnavailableException: take it out of service
                 try
                 {
                     portlet.destroy();

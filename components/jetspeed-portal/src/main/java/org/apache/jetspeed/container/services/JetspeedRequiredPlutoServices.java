@@ -18,10 +18,11 @@ package org.apache.jetspeed.container.services;
 
 import javax.portlet.PortalContext;
 
-import org.apache.pluto.RequiredContainerServices;
-import org.apache.pluto.spi.CCPPProfileService;
-import org.apache.pluto.spi.ContainerInvocationService;
-import org.apache.pluto.spi.PortalCallbackService;
+import org.apache.pluto.container.EventCoordinationService;
+import org.apache.pluto.container.FilterManagerService;
+import org.apache.pluto.container.PortletRequestContextService;
+import org.apache.pluto.container.PortletURLListenerService;
+import org.apache.pluto.container.RequiredContainerServices;
 
 /**
  * Service accessor for all Pluto *required* container services and callbacks
@@ -31,33 +32,11 @@ import org.apache.pluto.spi.PortalCallbackService;
  */
 public class JetspeedRequiredPlutoServices implements RequiredContainerServices
 {
-    private CCPPProfileService profileService;
-    private ContainerInvocationService invocationService;
-    private PortalCallbackService callbackService;
     private PortalContext portalContext;
     
-    public JetspeedRequiredPlutoServices(CCPPProfileService profileService, ContainerInvocationService invocationService,
-            PortalCallbackService callbackService, PortalContext portalContext)
+    public JetspeedRequiredPlutoServices(PortalContext portalContext)
     {
-        this.profileService = profileService;
-        this.invocationService = invocationService;
-        this.callbackService = callbackService;
         this.portalContext = portalContext;
-    }
-
-    public CCPPProfileService getCCPPProfileService()
-    {
-        return this.profileService;
-    }
-
-    public ContainerInvocationService getContainerInvocationService()
-    {
-        return this.invocationService;
-    }
-
-    public PortalCallbackService getPortalCallbackService()
-    {
-        return this.callbackService;
     }
 
     public PortalContext getPortalContext()
@@ -65,4 +44,27 @@ public class JetspeedRequiredPlutoServices implements RequiredContainerServices
         return this.portalContext;
     }
 
+    public EventCoordinationService getEventCoordinationService()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public FilterManagerService getFilterManagerService()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PortletRequestContextService getPortletRequestContextService()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PortletURLListenerService getPortletURLListenerService()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -52,7 +52,7 @@ import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.pluto.om.portlet.UserDataConstraint;
+import org.apache.pluto.container.om.portlet.UserDataConstraint;
 
 /**
  * <p>
@@ -171,7 +171,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
 
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
-        app.setContextRoot("/app1");
+        app.setContextPath("/app1");
 
         app.addDescription(Locale.FRENCH.toString()).setDescription("Description: Le fromage est dans mon pantalon!");
         app.addDisplayName(Locale.FRENCH.toString()).setDisplayName("Display Name: Le fromage est dans mon pantalon!");
@@ -340,7 +340,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         Description en1 = event.addDescription("en");
         en1.setDescription("The Plain Old Event");
         Description fr1 = event.addDescription("fr");
-        fr1.setDescription("Le Vieux Ordinaire ŽvŽnement");        
+        fr1.setDescription("Le Vieux Ordinaire ï¿½vï¿½nement");        
         
         QName q2 = new QName("http:portals.apache.org/events", "qualifiedEvent");
         EventDefinition event2 = app.addEventDefinition(q2);
@@ -419,44 +419,44 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         Description d5 = listener1.addDescription("en");
         d5.setDescription("Listen to me once");
         Description d6 = listener1.addDescription("fr");
-        d6.setDescription("ƒcoutez moi une fois");
+        d6.setDescription("ï¿½coutez moi une fois");
         DisplayName dn5 = listener1.addDisplayName("en");
         dn5.setDisplayName("Listen to me twice");
         DisplayName dn6 = listener1.addDisplayName("fr");
-        dn6.setDisplayName("ƒcoutez moi deux fois");
+        dn6.setDisplayName("ï¿½coutez moi deux fois");
         Listener listener2 = app.addListener("org.apache.listener.ListenerTwo");
         Description d7 = listener2.addDescription("en");
         d7.setDescription("Don't listen to me");
         Description d8 = listener2.addDescription("fr");
-        d8.setDescription("N'Žcoutez pas moi");
+        d8.setDescription("N'ï¿½coutez pas moi");
         DisplayName dn7 = listener2.addDisplayName("en");
         dn7.setDisplayName("Listen!");
         DisplayName dn8 = listener2.addDisplayName("fr");
-        dn8.setDisplayName("ƒcoutez!");
+        dn8.setDisplayName("ï¿½coutez!");
         
         SecurityConstraint sc = app.addSecurityConstraint(UserDataConstraint.INTEGRAL);
         DisplayName scdn1 = sc.addDisplayName("en");
         scdn1.setDisplayName("Integral Security Transport");
         DisplayName scdn2 = sc.addDisplayName("fr");
-        scdn2.setDisplayName("Transport IntŽgral de SŽcuritŽ");
+        scdn2.setDisplayName("Transport Intï¿½gral de Sï¿½curitï¿½");
         sc.addPortletName("PortletOne");
         sc.addPortletName("PortletTwo");
         sc.addPortletName("PortletThree");
         Description des1 = sc.getUserDataConstraint().addDescription("en");
         des1.setDescription("This is the Integral Security Transport");
         Description des2 = sc.getUserDataConstraint().addDescription("fr");
-        des2.setDescription("Ceci est le Transport IntŽgral de SŽcuritŽ");
+        des2.setDescription("Ceci est le Transport Intï¿½gral de Sï¿½curitï¿½");
         SecurityConstraint sc2 = app.addSecurityConstraint(UserDataConstraint.CONFIDENTIAL);
         scdn1 = sc2.addDisplayName("en");
         scdn1.setDisplayName("Confidential Security Transport");
         scdn2 = sc2.addDisplayName("fr");
-        scdn2.setDisplayName("Transport Confidentiel de SŽcuritŽ");
+        scdn2.setDisplayName("Transport Confidentiel de Sï¿½curitï¿½");
         sc2.addPortletName("PortletA");
         sc2.addPortletName("PortletB");
         des1 = sc2.getUserDataConstraint().addDescription("en");
         des1.setDescription("This is the Confidential Security Transport");
         des2 = sc2.getUserDataConstraint().addDescription("fr");
-        des2.setDescription("Ceci est le Transport Confidentiel de SŽcuritŽ");
+        des2.setDescription("Ceci est le Transport Confidentiel de Sï¿½curitï¿½");
     }
 
     public static void verifyPortlet20Data(PortletApplication app, PortletDefinition portlet)
@@ -480,7 +480,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         Description en = event1.getDescription(new Locale("en"));
         assertEquals(en.getDescription(), "The Plain Old Event");
         Description fr = event1.getDescription(new Locale("fr"));
-        assertEquals(fr.getDescription(), "Le Vieux Ordinaire ŽvŽnement");        
+        assertEquals(fr.getDescription(), "Le Vieux Ordinaire ï¿½vï¿½nement");        
         
         EventDefinition event2 = events.get(1);
         assertNotNull(event2);
@@ -617,7 +617,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(d5.getDescription(), "Listen to me once");
         Description d6 = descs.get(1);
         assertEquals(d6.getLang(), "fr");
-        assertEquals(d6.getDescription(), "ƒcoutez moi une fois");
+        assertEquals(d6.getDescription(), "ï¿½coutez moi une fois");
         dnames = listener1.getDisplayNames();
         assertEquals(dnames.size(), 2);
         DisplayName dn5 = dnames.get(0);
@@ -625,7 +625,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(dn5.getDisplayName(), "Listen to me twice");
         DisplayName dn6 = dnames.get(1);
         assertEquals(dn6.getLang(), "fr");
-        assertEquals(dn6.getDisplayName(), "ƒcoutez moi deux fois");
+        assertEquals(dn6.getDisplayName(), "ï¿½coutez moi deux fois");
 
         Listener listener2 = listeners.get(1);
         assertEquals(listener2.getListenerClass(), "org.apache.listener.ListenerTwo");
@@ -636,7 +636,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(d5.getDescription(), "Don't listen to me");
         d6 = descs.get(1);
         assertEquals(d6.getLang(), "fr");
-        assertEquals(d6.getDescription(), "N'Žcoutez pas moi");
+        assertEquals(d6.getDescription(), "N'ï¿½coutez pas moi");
         dnames = listener2.getDisplayNames();
         assertEquals(dnames.size(), 2);
         dn5 = dnames.get(0);
@@ -644,7 +644,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(dn5.getDisplayName(), "Listen!");
         dn6 = dnames.get(1);
         assertEquals(dn6.getLang(), "fr");
-        assertEquals(dn6.getDisplayName(), "ƒcoutez!");
+        assertEquals(dn6.getDisplayName(), "ï¿½coutez!");
         
         List<SecurityConstraint> scs = app.getSecurityConstraints();
         assertEquals(scs.size(), 2);
@@ -654,7 +654,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(scdn1.getLang(), "en");
         assertEquals(scdn1.getDisplayName(), "Integral Security Transport");
         DisplayName scdn2 = sc1.getDisplayName(new Locale("fr"));
-        assertEquals(scdn2.getDisplayName(), "Transport IntŽgral de SŽcuritŽ");
+        assertEquals(scdn2.getDisplayName(), "Transport Intï¿½gral de Sï¿½curitï¿½");
         assertEquals(sc1.getPortletNames().get(0), "PortletOne");
         assertEquals(sc1.getPortletNames().get(1), "PortletTwo");
         assertEquals(sc1.getPortletNames().get(2), "PortletThree");
@@ -663,7 +663,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(des1.getDescription(), "This is the Integral Security Transport");
         Description des2 = sc1.getUserDataConstraint().getDescription(new Locale("fr"));
         assertEquals(des2.getLang(), "fr");
-        assertEquals(des2.getDescription(), "Ceci est le Transport IntŽgral de SŽcuritŽ");
+        assertEquals(des2.getDescription(), "Ceci est le Transport Intï¿½gral de Sï¿½curitï¿½");
 
         SecurityConstraint sc2 = scs.get(1);
         assertEquals(sc2.getUserDataConstraint().getTransportGuarantee(), UserDataConstraint.CONFIDENTIAL);
@@ -671,7 +671,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(scdn1.getLang(), "en");
         assertEquals(scdn1.getDisplayName(), "Confidential Security Transport");
         scdn2 = sc2.getDisplayName(new Locale("fr"));
-        assertEquals(scdn2.getDisplayName(), "Transport Confidentiel de SŽcuritŽ");
+        assertEquals(scdn2.getDisplayName(), "Transport Confidentiel de Sï¿½curitï¿½");
         assertEquals(sc2.getPortletNames().get(0), "PortletA");
         assertEquals(sc2.getPortletNames().get(1), "PortletB");
         des1 = sc2.getUserDataConstraint().getDescription(new Locale("en"));
@@ -679,7 +679,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(des1.getDescription(), "This is the Confidential Security Transport");
         des2 = sc2.getUserDataConstraint().getDescription(new Locale("fr"));
         assertEquals(des2.getLang(), "fr");
-        assertEquals(des2.getDescription(), "Ceci est le Transport Confidentiel de SŽcuritŽ");        
+        assertEquals(des2.getDescription(), "Ceci est le Transport Confidentiel de Sï¿½curitï¿½");        
     }
 
 }

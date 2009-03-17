@@ -19,7 +19,7 @@ package org.apache.jetspeed;
 
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
-import org.apache.pluto.PortletContainer;
+import org.apache.pluto.container.PortletContainer;
 
 /**
  * @author <a href="mailto:scott.t.weaver@gmail.com">Scott T. Weaver</a>

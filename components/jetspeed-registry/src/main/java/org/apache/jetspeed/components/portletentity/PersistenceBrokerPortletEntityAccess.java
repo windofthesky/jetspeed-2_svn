@@ -137,7 +137,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * getPortletEntities
      * </p>
      * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#getPortletEntities(org.apache.pluto.om.portlet.PortletDefinition)
+     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#getPortletEntities(org.apache.pluto.container.om.portlet.PortletDefinition)
      * @param portletDefinition
      * @return
      */

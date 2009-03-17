@@ -56,7 +56,7 @@ import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
-import org.apache.pluto.internal.InternalPortletPreference;
+import org.apache.pluto.container.PortletPreference;
 
 /**
  * 
@@ -202,10 +202,10 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         {
             return new PreferencesImpl();            
         }
-        Map<String, InternalPortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.getDefaultPreferences(this);        
+        Map<String, PortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.getDefaultPreferences(this);        
         Preferences preferences = new PreferencesImpl();
         List<Preference> list = preferences.getPortletPreferences();
-        for (InternalPortletPreference pref : prefMap.values())
+        for (PortletPreference pref : prefMap.values())
         {
             Preference p = preferences.addPreference(pref.getName());
             p.setReadOnly(pref.isReadOnly());
@@ -473,7 +473,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
      * portletDefinition.
      * </p>
      * 
-     * @see org.apache.pluto.om.portlet.PortletDefinition#store()
+     * @see org.apache.pluto.container.om.portlet.PortletDefinition#store()
      * @throws java.io.IOException
      */
     public void store() throws IOException

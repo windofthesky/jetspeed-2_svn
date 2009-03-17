@@ -78,7 +78,7 @@ public class TestRegistryDirectAll extends AbstractRegistryTest
         // Create an Application and a Web app      
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
         app.setName("App_1");
-        app.setContextRoot("/app1");
+        app.setContextPath("/app1");
         
         app.addDescription(Locale.FRENCH.toString()).setDescription("Description: Le fromage est dans mon pantalon!");
         app.addDisplayName(Locale.FRENCH.toString()).setDisplayName("Display Name: Le fromage est dans mon pantalon!");

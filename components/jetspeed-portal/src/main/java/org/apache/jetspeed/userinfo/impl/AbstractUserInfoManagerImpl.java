@@ -18,7 +18,6 @@ package org.apache.jetspeed.userinfo.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,8 +30,8 @@ import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.PortletWindow;
+import org.apache.pluto.container.PortletContainerException;
+import org.apache.pluto.container.PortletWindow;
 
 /**
  * <p> Common user info management support

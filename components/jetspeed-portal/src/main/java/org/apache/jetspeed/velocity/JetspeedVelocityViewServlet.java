@@ -42,6 +42,7 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.desktop.JetspeedDesktopContext;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
@@ -50,7 +51,6 @@ import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.Constants;
 import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
@@ -260,9 +260,9 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             return super.handleRequest(request, response, ctx);            
         }
         // configure velocity context
-        PortletRequest renderRequest = (PortletRequest) request.getAttribute(Constants.PORTLET_REQUEST);
-        RenderResponse renderResponse = (RenderResponse) request.getAttribute(Constants.PORTLET_RESPONSE);
-        PortletConfig portletConfig = (PortletConfig) request.getAttribute(Constants.PORTLET_CONFIG);
+        PortletRequest renderRequest = (PortletRequest) request.getAttribute(ContainerConstants.PORTLET_REQUEST);
+        RenderResponse renderResponse = (RenderResponse) request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
+        PortletConfig portletConfig = (PortletConfig) request.getAttribute(ContainerConstants.PORTLET_CONFIG);
         if (renderRequest != null)
         {
             renderRequest.setAttribute(VELOCITY_CONTEXT_ATTR, ctx);

@@ -43,9 +43,9 @@ import org.apache.jetspeed.security.User;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.internal.InternalPortletPreference;
-import org.apache.pluto.om.portlet.PortletDefinition;
+import org.apache.pluto.container.PortletContainerException;
+import org.apache.pluto.container.PortletPreference;
+import org.apache.pluto.container.om.portlet.PortletDefinition;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -109,14 +109,14 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         preloadEntities = false;
     }
     
-    public Map<String, InternalPortletPreference> getDefaultPreferences(
-            org.apache.pluto.PortletWindow pw, PortletRequest request)
+    public Map<String, PortletPreference> getDefaultPreferences(
+            org.apache.pluto.container.PortletWindow pw, PortletRequest request)
             throws PortletContainerException
     {
         PortletWindow window = (PortletWindow)pw;
         org.apache.jetspeed.om.portlet.PortletDefinition pd = window.getPortletEntity().getPortletDefinition();
         String entityId = window.getPortletEntity().getId();
-        Map<String, InternalPortletPreference> defaultsMap = this.getDefaultPreferences(pd);
+        Map<String, PortletPreference> defaultsMap = this.getDefaultPreferences(pd);
         // retrieve entity preferences
         if (useEntityPreferences)
         {
@@ -154,7 +154,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             if (entityMap != null && entityMap.size() > 0)
             {
                 JetspeedPreferencesMap mergedMap = new JetspeedPreferencesMap(defaultsMap);                 
-                for (Entry<String, InternalPortletPreference> entry : entityMap.entrySet())
+                for (Entry<String, PortletPreference> entry : entityMap.entrySet())
                 {
                     mergedMap.put(entry.getKey(), entry.getValue());
                 }
@@ -164,8 +164,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return defaultsMap;
     }
 
-    public Map<String, InternalPortletPreference> getStoredPreferences(
-            org.apache.pluto.PortletWindow pw, PortletRequest request)
+    public Map<String, PortletPreference> getStoredPreferences(
+            org.apache.pluto.container.PortletWindow pw, PortletRequest request)
             throws PortletContainerException
     {
         PortletWindow window = (PortletWindow)pw;
@@ -211,8 +211,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return map;        
     }
 
-    public void store(org.apache.pluto.PortletWindow pw, PortletRequest request,
-            Map<String, InternalPortletPreference> map)
+    public void store(org.apache.pluto.container.PortletWindow pw, PortletRequest request,
+            Map<String, PortletPreference> map)
             throws PortletContainerException
     {
         PortletWindow window = (PortletWindow)pw;
@@ -241,12 +241,12 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         Map<String, DatabasePreference> mergeMap = new HashMap<String, DatabasePreference>();
         List<DatabasePreference> deletes = new LinkedList<DatabasePreference>();
         List<DatabasePreference> updates = new LinkedList<DatabasePreference>();
-        List<InternalPortletPreference> inserts = new LinkedList<InternalPortletPreference>();        
+        List<PortletPreference> inserts = new LinkedList<PortletPreference>();        
         Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         while (preferences.hasNext())
         {
             DatabasePreference preference = preferences.next();
-            InternalPortletPreference found = map.get(preference.getName());
+            PortletPreference found = map.get(preference.getName());
             if (found == null)
             {
                 deletes.add(preference);
@@ -258,7 +258,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             mergeMap.put(preference.getName(), preference); 
             
         }
-        for (InternalPortletPreference preference : map.values())
+        for (PortletPreference preference : map.values())
         {
             DatabasePreference dbPref = mergeMap.get(preference.getName());
             if (dbPref == null)
@@ -271,7 +271,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         {
             getPersistenceBrokerTemplate().delete(dbPref);
         }
-        for (InternalPortletPreference preference : inserts)
+        for (PortletPreference preference : inserts)
         {
             DatabasePreference dbPref = new DatabasePreference();
             dbPref.setDtype(DISCRIMINATOR_USER);
@@ -295,7 +295,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         for (DatabasePreference dbPref : updates)
         {
             dbPref.getPreferenceValues().clear();
-            InternalPortletPreference preference = map.get(dbPref.getName());
+            PortletPreference preference = map.get(dbPref.getName());
             short index = 0;
             for (String value : preference.getValues())
             {
@@ -449,7 +449,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));                    
     }
 
-    public  Map<String, InternalPortletPreference>  retrieveEntityPreferences(PortletWindow window, PortletRequest request)
+    public  Map<String, PortletPreference>  retrieveEntityPreferences(PortletWindow window, PortletRequest request)
     {
         // TODO: 2.2 implement - need to better look at use cases for edit defaults mode
         // we are currently not storing entity preferences in the database. 
@@ -457,7 +457,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     }
     
     public void storeEntityPreferences(PortletWindow pw, PortletRequest request,
-            Map<String, InternalPortletPreference> map)
+            Map<String, PortletPreference> map)
             throws PortletContainerException
     {
         // TODO: 2.2 implement - need to better look at use cases for edit defaults mode
@@ -493,7 +493,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
     }
 
-    public Map<String, InternalPortletPreference> getDefaultPreferences(org.apache.jetspeed.om.portlet.PortletDefinition pd)
+    public Map<String, PortletPreference> getDefaultPreferences(org.apache.jetspeed.om.portlet.PortletDefinition pd)
     {
         String appName = pd.getApplication().getName();
         String portletName = pd.getPortletName();        

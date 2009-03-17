@@ -20,7 +20,8 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.internal.InternalPortletPreference;
+import org.apache.pluto.container.PortletPreference;
+import org.apache.pluto.container.PortletPreferencesService;
 
 
 /**
@@ -28,7 +29,7 @@ import org.apache.pluto.internal.InternalPortletPreference;
  * @version $Id$
  *
  */
-public interface PortletPreferencesProvider extends org.apache.pluto.spi.optional.PortletPreferencesService
+public interface PortletPreferencesProvider extends PortletPreferencesService
 {
     public void preloadApplicationPreferences(String portletApplicationName);
     public void preloadAllEntities();    
@@ -36,5 +37,5 @@ public interface PortletPreferencesProvider extends org.apache.pluto.spi.optiona
     public void storeDefaults(PortletApplication app);
     public void removeDefaults(PortletDefinition pd);
     public void removeDefaults(PortletApplication app);
-    public Map<String, InternalPortletPreference> getDefaultPreferences(PortletDefinition pd);
+    public Map<String, PortletPreference> getDefaultPreferences(PortletDefinition pd);
 }

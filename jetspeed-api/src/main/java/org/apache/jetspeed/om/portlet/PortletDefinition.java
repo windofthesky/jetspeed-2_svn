@@ -31,7 +31,7 @@ import javax.xml.namespace.QName;
  * @version $Id$
  *
  */
-public interface PortletDefinition extends org.apache.pluto.om.portlet.PortletDefinition, Serializable
+public interface PortletDefinition extends org.apache.pluto.container.om.portlet.PortletDefinition, Serializable
 {
     PortletApplication getApplication();
     InitParam getInitParam(String paramName);

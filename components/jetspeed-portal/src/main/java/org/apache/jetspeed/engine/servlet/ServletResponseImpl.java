@@ -23,15 +23,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.apache.jetspeed.container.PortletDispatcherIncludeAware;
-
 /**
  * Factory implementation for creating HTTP Response Wrappers
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ServletResponseImpl extends HttpServletResponseWrapper implements PortletDispatcherIncludeAware
+public class ServletResponseImpl extends HttpServletResponseWrapper
 {
     private boolean included;
     
@@ -40,19 +38,6 @@ public class ServletResponseImpl extends HttpServletResponseWrapper implements P
         super(response);
     }
 
-    public void setResponse(HttpServletResponse response) 
-    {
-        super.setResponse(response);
-    }   
-
-    /**
-     * @param included when true, JSR-168 PLT.16.3.3 rules need to be enforced
-     */
-    public void setPortletDispatcherIncluded(boolean included)
-    {
-        this.included = included;
-    }
-    
     /*
      * JSR-168 PLT.16.3.3 .cxxxviii
      * @deprecated use encodeRedirectURL instead

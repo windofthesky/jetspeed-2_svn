@@ -18,13 +18,13 @@ package org.apache.jetspeed.container.providers;
 
 import java.io.Serializable;
 
+import javax.portlet.Event;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.events.EventCoordinationService;
-import org.apache.pluto.EventContainer;
-import org.apache.pluto.spi.EventProvider;
+import org.apache.jetspeed.events.JetspeedEventCoordinationService;
+import org.apache.pluto.container.EventProvider;
 
 /**
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -34,29 +34,18 @@ public class EventProviderImpl implements EventProvider, Cloneable
 {
     private final PortletWindow portletWindow;    
     private final HttpServletRequest request;
-    private final EventCoordinationService eventCoordinator;
+    private final JetspeedEventCoordinationService eventCoordinator;
     
-    public EventProviderImpl(final HttpServletRequest request, final org.apache.pluto.PortletWindow window, final EventCoordinationService eventCoordinator)
+    public EventProviderImpl(final HttpServletRequest request, final PortletWindow window, final JetspeedEventCoordinationService eventCoordinator)
     {
         this.request = request;
-        this.portletWindow = (PortletWindow)window;
+        this.portletWindow = window;
         this.eventCoordinator = eventCoordinator;
     }
     
-    // FOR ATE's REFACTORING:
-    //public Event createEvent(QName name, Serializable value)
-   // throws IllegalArgumentException;
-    
-    
-    public void registerToFireEvent(QName qname, Serializable value)
+    public Event createEvent(QName qname, Serializable value)
             throws IllegalArgumentException
     {
-        eventCoordinator.registerToFireEvent(qname, value, portletWindow);
+        return eventCoordinator.createEvent(request, portletWindow, qname, value);
     }
-
-    public void fireEvents(EventContainer eventContainer)
-    {
-        eventCoordinator.fireEvents(eventContainer, portletWindow, request);
-    }
-        
 }

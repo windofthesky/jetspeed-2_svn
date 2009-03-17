@@ -23,6 +23,6 @@ import java.io.Serializable;
  * @version $Id$
  *
  */
-public interface PortletWindowID  extends org.apache.pluto.PortletWindowID, Serializable
+public interface PortletWindowID  extends org.apache.pluto.container.PortletWindowID, Serializable
 {
 }

@@ -14,28 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.container.providers;
+package org.apache.jetspeed.container;
 
-import javax.portlet.BaseURL;
-
-import org.apache.pluto.om.portlet.PortletApplicationDefinition;
-import org.apache.pluto.spi.PortletURLListener;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
- * TODO: 2.2 implement 
+ * This interface defines the internal methods used on the Portlet Config.
  * 
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id$
  */
-public class PortletURLListenerImpl implements PortletURLListener
+public interface JetspeedPortletConfig
 {
-    public PortletURLListenerImpl()
-    {}
-    
-    public void callListener(PortletApplicationDefinition portletApp, BaseURL baseURL, boolean isAction, boolean isResource)
-    {
-        // TODO
-        //throw new UnsupportedOperationException();        
-    }
-
+    JetspeedPortletContext getPortletContext();
+    PortletDefinition getPortletDefinition();
+    void setPortletDefinition(PortletDefinition pd);
 }

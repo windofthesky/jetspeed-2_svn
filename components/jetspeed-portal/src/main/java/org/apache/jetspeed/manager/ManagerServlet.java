@@ -166,7 +166,7 @@ public class ManagerServlet extends HttpServlet
         while (iter.hasNext())
         {
             pa = (PortletApplication) iter.next();
-            writer.println(pa.getName() + ":" + pa.getContextRoot()
+            writer.println(pa.getName() + ":" + pa.getContextPath()
                            + ":" + (portletFactory.isPortletApplicationRegistered(pa) ? "ACTIVE" : "INACTIVE"));
         }
         return OK;
@@ -203,7 +203,7 @@ public class ManagerServlet extends HttpServlet
         {
             try
             {
-                ApplicationServerManagerResult result = asm.start(pa.getContextRoot());
+                ApplicationServerManagerResult result = asm.start(pa.getContextPath());
                 if (result.isOk())
                 {
                     writer.println("Portlet Application " + paName + " started");
@@ -257,7 +257,7 @@ public class ManagerServlet extends HttpServlet
         {
             try
             {
-                ApplicationServerManagerResult result = asm.stop(pa.getContextRoot());
+                ApplicationServerManagerResult result = asm.stop(pa.getContextPath());
                 if (result.isOk())
                 {
                     writer.println("Portlet Application " + paName + " stopped");
@@ -296,7 +296,7 @@ public class ManagerServlet extends HttpServlet
         PortletApplication pa = registry.getPortletApplication(paName);
         try
         {
-            ApplicationServerManagerResult result = asm.undeploy(pa.getContextRoot());
+            ApplicationServerManagerResult result = asm.undeploy(pa.getContextPath());
             if (result.isOk())
             {
                 writer.println("Portlet Application " + paName + " undeployed");

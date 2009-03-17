@@ -27,12 +27,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
-import org.apache.pluto.EventContainer;
-import org.apache.pluto.OptionalContainerServices;
-import org.apache.pluto.PortletContainer;
-import org.apache.pluto.PortletContainerException;
-import org.apache.pluto.PortletWindow;
-import org.apache.pluto.RequiredContainerServices;
+import org.apache.pluto.container.OptionalContainerServices;
+import org.apache.pluto.container.PortletContainer;
+import org.apache.pluto.container.PortletContainerException;
+import org.apache.pluto.container.PortletWindow;
+import org.apache.pluto.container.RequiredContainerServices;
 
 /**
  * Portlet Container Wrapper to secure access to portlet container.
@@ -160,11 +159,11 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
         this.responseFactory = responseFactory;
     }
 
-    public void fireEvent(HttpServletRequest request,
-            HttpServletResponse response, PortletWindow window, Event event)
+    public void doEvent(PortletWindow window, HttpServletRequest request,
+            HttpServletResponse response, Event event)
             throws PortletException, IOException, PortletContainerException
     {
-        ((EventContainer)pluto).fireEvent(request, response, window, event);
+        pluto.doEvent(window, request, response, event);
     }
     
 

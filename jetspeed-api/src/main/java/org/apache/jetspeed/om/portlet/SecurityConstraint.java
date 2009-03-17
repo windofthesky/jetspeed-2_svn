@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface SecurityConstraint extends org.apache.pluto.om.portlet.SecurityConstraint, Serializable
+public interface SecurityConstraint extends org.apache.pluto.container.om.portlet.SecurityConstraint, Serializable
 {    
     UserDataConstraint getUserDataConstraint();
 

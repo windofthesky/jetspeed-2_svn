@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface Listener extends org.apache.pluto.om.portlet.Listener, Serializable
+public interface Listener extends org.apache.pluto.container.om.portlet.Listener, Serializable
 {    
     Description getDescription(Locale locale);
     List<Description> getDescriptions();

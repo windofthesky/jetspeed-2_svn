@@ -24,7 +24,7 @@ import java.util.Locale;
  * @version $Id$
  *
  */
-public interface UserAttribute extends org.apache.pluto.om.portlet.UserAttribute, Serializable
+public interface UserAttribute extends org.apache.pluto.container.om.portlet.UserAttribute, Serializable
 {    
     Description getDescription(Locale locale);
     List<Description> getDescriptions();
