@@ -46,7 +46,7 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
                 PortletStateAwareResponseContext
 {
     private List<Event> events;
-    private PortletURLProvider portletURLProvider;
+    private PortletURLProviderImpl portletURLProvider;
     
     public PortletStateAwareResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                                 HttpServletResponse containerResponse, PortletWindow window)
@@ -63,7 +63,7 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
         {
             super.close();
             new PortletURLImpl(this, portletURLProvider).filterURL();
-            
+            portletURLProvider.apply();
         }
     }
     
