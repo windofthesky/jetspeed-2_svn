@@ -17,6 +17,9 @@
 
 package org.apache.jetspeed.container.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,9 +50,28 @@ public class PortletActionResponseContextImpl extends PortletStateAwareResponseC
         {
             close();
             if (!redirect || renderURLParamName != null)
-            {
-                // TODO
-                return null;
+            {               
+                if (redirect)
+                {
+                    String portalURL = getPortalURL().getPortalURL();
+                    if (redirectLocation.indexOf("://") != -1 && portalURL.indexOf("://")==-1)
+                    {
+                        portalURL = getPortalURL().getBaseURL() + portalURL;
+                    }
+                    try
+                    {
+                        return redirectLocation + "?" + URLEncoder.encode(renderURLParamName, "UTF-8") + "=" + URLEncoder.encode(portalURL, "UTF-8");
+                    }
+                    catch (UnsupportedEncodingException e)
+                    {
+                        // Cannot happen: UTF-8 is a buildin/required encoder
+                        return null;
+                    }
+                }
+                else
+                {
+                    return getPortalURL().getPortalURL();
+                }
             }
             else
             {

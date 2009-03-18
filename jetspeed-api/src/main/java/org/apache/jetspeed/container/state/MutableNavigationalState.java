@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.container.state;
 
+import java.util.Map;
+
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
@@ -78,4 +80,6 @@ public interface MutableNavigationalState extends NavigationalState
      * Remove state for the given (possibly invalid) portlet window
      */
     void removeState(PortletWindow window);
+    
+    void setParametersMap(PortletWindow window, Map<String, String[]> parametersMap);
 }

@@ -30,8 +30,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.pluto.container.EventProvider;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletStateAwareResponseContext;
+import org.apache.pluto.container.PortletURLProvider;
+import org.apache.pluto.container.impl.PortletURLImpl;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.providers.PortletURLProviderImpl;
 import org.apache.jetspeed.events.JetspeedEventCoordinationService;
+import org.apache.jetspeed.request.JetspeedRequestContext;
 
 /**
  * @version $Id$
@@ -41,11 +46,14 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
                 PortletStateAwareResponseContext
 {
     private List<Event> events;
+    private PortletURLProvider portletURLProvider;
     
     public PortletStateAwareResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                                 HttpServletResponse containerResponse, PortletWindow window)
     {
         super(container, containerRequest, containerResponse, window);
+        JetspeedRequestContext rc = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);        
+        this.portletURLProvider = new PortletURLProviderImpl(rc.getPortalURL(), window, PortletURLProvider.TYPE.RENDER);
     }
     
     @Override
@@ -54,7 +62,8 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
         if (!isClosed())
         {
             super.close();
-            // TODO
+            new PortletURLImpl(this, portletURLProvider).filterURL();
+            
         }
     }
     
@@ -62,7 +71,7 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
     public void release()
     {
         events = null;
-        // TODO
+        portletURLProvider = null;
         super.release();
     }
     
@@ -81,29 +90,29 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
 
     public PortletMode getPortletMode()
     {
-        return isClosed() ? null : null; //TODO
+        return isClosed() ? null : portletURLProvider.getPortletMode();
     }
 
     public Map<String, String[]> getPublicRenderParameters()
     {
-        return isClosed() ? null : null; //TODO
+        return isClosed() ? null : portletURLProvider.getPublicRenderParameters();
     }
 
     public Map<String, String[]> getRenderParameters()
     {
-        return isClosed() ? null : null; //TODO
+        return isClosed() ? null : portletURLProvider.getRenderParameters();
     }
 
     public WindowState getWindowState()
     {
-        return isClosed() ? null : null; //TODO
+        return isClosed() ? null : portletURLProvider.getWindowState();
     }
 
     public void setPortletMode(PortletMode portletMode)
     {
         if (!isClosed())
         {
-            //TODO
+            portletURLProvider.setPortletMode(portletMode);
         }
     }
 
@@ -111,7 +120,7 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
     {
         if (!isClosed())
         {
-            //TODO
+            portletURLProvider.setWindowState(windowState);
         }
     }
 

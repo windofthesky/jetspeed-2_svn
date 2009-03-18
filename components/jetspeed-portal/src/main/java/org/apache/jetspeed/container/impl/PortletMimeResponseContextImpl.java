@@ -29,10 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletMimeResponseContext;
 import org.apache.pluto.container.PortletURLProvider;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.PortletURLProviderImpl;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.PortletURLProvider.TYPE;
 
 /**
@@ -206,11 +204,7 @@ public abstract class PortletMimeResponseContextImpl extends PortletResponseCont
     {
         if (!isClosed())
         {
-            RequestContext rc = (RequestContext) getServletRequest().getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            return new PortletURLProviderImpl(rc, (org.apache.jetspeed.container.PortletWindow)getPortletWindow()
-                                              //TODO
-                                              //, type
-                                              );
+            return new PortletURLProviderImpl(getPortalURL(), getPortletWindow(), type);
         }
         return null;
     }

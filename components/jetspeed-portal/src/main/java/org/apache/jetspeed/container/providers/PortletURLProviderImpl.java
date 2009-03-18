@@ -24,12 +24,12 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletSecurityException;
+import javax.portlet.ResourceURL;
 import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.PortletURLProvider;
 
 /**
@@ -41,187 +41,184 @@ import org.apache.pluto.container.PortletURLProvider;
  */
 public class PortletURLProviderImpl implements PortletURLProvider
 {
-    private PortalURL.URLType urlType = PortalURL.URLType.RENDER;
-    private PortletWindow portletWindow = null;
-    private PortletMode mode = null;
-    private WindowState state = null;
-    private boolean secure = false;
-    private Map<String, String[]> privateParameters = null;
-    private Map<String, String[]> publicParameters = null;
-    private Map<String, String[]> requestParameters = null;
+    private PortletWindow portletWindow;
+    private TYPE type;
+    private boolean secure;
+    private PortletMode portletMode;
+    private WindowState windowState;
+    private String cacheLevel;
+    private String resourceID;
+    private Map<String, String[]> renderParameters;
+    private Map<String, String[]> publicRenderParameters;
+    private Map<String, List<String>> properties;
 
     private PortalURL url;
     
-    public PortletURLProviderImpl(RequestContext context, PortletWindow portletWindow)
+    public PortletURLProviderImpl(PortalURL url, PortletWindow portletWindow, TYPE type)
     {
+        this.url = url;
         this.portletWindow = portletWindow;
-        
-        url = context.getPortalURL();
-        privateParameters = url.getNavigationalState().getParameterMap(portletWindow);
-    }
-
-    public void setPortletMode(PortletMode mode)
-    {
-        this.mode = mode;
-    }
-
-    public void setWindowState(WindowState state)
-    {
-        this.state = state;
-    }
-
-    public void setSecure()
-    {
-        secure = true;
-    }
-
-    public void clearParameters()
-    {
-        // TODO: old comment "not used, handled by JetspeedNavigationalStateCodec itself" ???
-        privateParameters = null;
-    }
-
-    public String toString()
-    {
-        // TODO: handle publicParameters, resource url, resourceID, cacheability (last two needs to be added to the PortletURLPRovider interface)
-        return url.createPortletURL(portletWindow,privateParameters,mode,state,urlType,secure);
-    }
-    
-    public void setParameters(Map parameters)
-    {
-        this.privateParameters = parameters;
-    }
-
-    public String[] getPrivateRenderParameters(String name)
-    {
-        return privateParameters != null ? privateParameters.get(name) : null;
-    }
-
-    public String[] getPublicRenderParameters(String name)
-    {
-        // TODO
-        return null;
-    }
-
-    public boolean isResourceServing()
-    {
-        return PortalURL.URLType.RESOURCE.equals(urlType);
-    }
-
-    public boolean isSecureSupported()
-    {
-        // TODO: review logic in Pluto PortletURLProviderImpl and PortletContainerImpl usage of this method (seems wrong...).
-        return false;
-    }
-
-    public void savePortalURL(HttpServletRequest request)
-    {
-        // TODO: what should be done here?
-    }
-
-    public void setAction(boolean isAction)
-    {
-        urlType = isAction ? PortalURL.URLType.ACTION : PortalURL.URLType.RENDER;
-    }
-
-    public void setPublicRenderParameters(Map parameters)
-    {
-        // TODO        
-    }
-
-    public void setResourceServing(boolean isResourceServing)
-    {
-        urlType = isResourceServing ? PortalURL.URLType.RESOURCE : PortalURL.URLType.RENDER;
-    }
-
-    public Map<String, String[]> getRenderParameters()
-    {
-        return this.requestParameters;
-    }
-
-    public Map<String, String[]> parseRenderParameters(Map<String, String[]> parentMap, String queryString)
-    {
-        return this.requestParameters = parentMap;
-    }
-
-    public Map<String, List<String>> getProperties()
-    {
-        return null;
-    }
-
-    public void setProperties(Map<String, List<String>> properties)
-    {
-    }
-
-    public String getCacheability()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public PortletMode getPortletMode()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Map<String, String[]> getPublicRenderParameters()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getResourceID()
-    {
-        // TODO Auto-generated method stub
-        return null;
+        this.type = type;
     }
 
     public TYPE getType()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return type;
+    }
+    
+    public void setPortletMode(PortletMode mode)
+    {
+        this.portletMode = mode;
+    }
+    
+    public PortletMode getPortletMode()
+    {
+        return portletMode;
+    }
+
+    public void setWindowState(WindowState state)
+    {
+        this.windowState = state;
     }
 
     public WindowState getWindowState()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return windowState;
     }
 
+    public void setSecure(boolean secure) throws PortletSecurityException {
+        this.secure = secure;
+    }
+    
     public boolean isSecure()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return secure;
+    }
+    
+    public Map<String,String[]> getRenderParameters()
+    {
+        if (renderParameters == null)
+        {
+            renderParameters = new HashMap<String,String[]>();
+        }
+        return renderParameters;
+    }
+    
+    public Map<String,String[]> getPublicRenderParameters()
+    {
+        if (publicRenderParameters == null)
+        {
+            publicRenderParameters = new HashMap<String,String[]>();
+        }
+        return publicRenderParameters;
+    }
+    
+    public String getCacheability()
+    {
+        return cacheLevel;
     }
 
     public void setCacheability(String cacheLevel)
     {
-        // TODO Auto-generated method stub
-        
+        this.cacheLevel = cacheLevel;
+    }
+
+    public String getResourceID()
+    {
+        return resourceID;
     }
 
     public void setResourceID(String resourceID)
     {
-        // TODO Auto-generated method stub
-        
+        this.resourceID = resourceID;
+    }
+    
+    public void apply()
+    {
+        apply(false);
     }
 
-    public void setSecure(boolean secure) throws PortletSecurityException
+    public String toURL()
     {
-        // TODO Auto-generated method stub
-        
+        return apply(true);
     }
-
-    public String toURL(boolean absolute)
+    
+    private String apply(boolean toURL)
     {
-        // TODO Auto-generated method stub
-        return null;
+        PortalURL.URLType urlType;
+        Map<String, String[]> privateRenderParms = null;
+        Map<String, String[]> renderParms = new HashMap<String, String[]>();
+        Map<String, String[]> publicRenderParms = new HashMap<String, String[]>();
+        if (TYPE.ACTION == type)
+        {
+            urlType = PortalURL.URLType.ACTION;
+        }
+        else if (TYPE.RENDER == type)
+        {
+            urlType = PortalURL.URLType.RENDER;
+        }
+        else
+        {
+            urlType = PortalURL.URLType.RESOURCE;
+            if (!ResourceURL.FULL.equals(cacheLevel))
+            {
+                privateRenderParms = url.getNavigationalState().getParameterMap(portletWindow);
+            }
+        }
+        if (renderParameters != null)
+        {
+            for (Map.Entry<String,String[]> entry : renderParameters.entrySet())
+            {
+                if (publicRenderParameters == null || !publicRenderParameters.containsKey(entry.getKey()))
+                {
+                    renderParms.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        if (publicRenderParameters != null)
+        {
+            for (Map.Entry<String,String[]> entry : publicRenderParameters.entrySet())
+            {
+                publicRenderParms.put(entry.getKey(), entry.getValue() != null ? entry.getValue() : new String[]{null});
+            }
+        }
+        
+        if (toURL)
+        {
+            // TODO: handle public and private render parameters, resourceID, cacheLevel, actionScopeID
+            return url.createPortletURL(portletWindow,renderParms,portletMode,windowState,urlType,secure);
+        }
+        else
+        {
+            MutableNavigationalState navState = (MutableNavigationalState)url.getNavigationalState();
+            navState.setMode(portletWindow, portletMode);
+            navState.setState(portletWindow, windowState);
+            navState.setParametersMap(portletWindow, renderParms);
+            // TODO: privateRenderParms, publicRenderParms, resourceID, cacheLevel, actionScopeID
+            return null;
+        }
     }
 
     public void write(Writer out, boolean escapeXML) throws IOException
     {
-        // TODO Auto-generated method stub
-        
-    }    
+        String result = toURL();
+        if (escapeXML)
+        {
+            result = result.replaceAll("&", "&amp;");
+            result = result.replaceAll("<", "&lt;");
+            result = result.replaceAll(">", "&gt;");
+            result = result.replaceAll("\'", "&#039;");
+            result = result.replaceAll("\"", "&#034;");
+        }
+        out.write(result);
+    }
+
+    public Map<String, List<String>> getProperties()
+    {
+        if (properties == null)
+        {
+            properties = new HashMap<String, List<String>>();
+        }
+        return properties;
+    }
 }

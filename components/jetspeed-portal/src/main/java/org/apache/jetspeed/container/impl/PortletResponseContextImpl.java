@@ -26,6 +26,8 @@ import org.apache.pluto.container.PortletResponseContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
+import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.ResourceURLProvider;
 import org.w3c.dom.Element;
@@ -44,6 +46,7 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     private PortletWindow window;
     private boolean closed;
     private boolean released;
+    private PortalURL portalURL;
     
     public PortletResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                       HttpServletResponse containerResponse, PortletWindow window)
@@ -52,7 +55,13 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
         this.containerRequest = containerRequest;
         this.containerResponse = containerResponse;
         this.window = window;
-        //TODO
+        JetspeedRequestContext rc = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        portalURL = rc.getPortalURL();
+    }
+    
+    protected PortalURL getPortalURL()
+    {
+        return portalURL;
     }
     
     protected boolean isClosed()
@@ -75,23 +84,27 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     {
         if (!isClosed())
         {
-            //TODO
+            containerResponse.addCookie(cookie);
+            // TODO: consider if these should be "transported" from ActionResponse to EventRequest?
         }
     }
 
     public void addProperty(String key, Element element)
     {
-        //TODO
+        // default no-op, see PortletRenderResponseContextImpl for MARKUP_HEAD_ELEMENT support 
     }
 
     public void addProperty(String key, String value)
     {
-        //TODO
+        if (!isClosed())
+        {
+            containerResponse.addHeader(key, value);
+            // TODO: consider if these should be "transported" from ActionResponse to EventRequest?
+        }
     }
 
     public void close()
     {
-        //TODO
         closed = true;
     }
 
@@ -133,12 +146,15 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
         servletRequest = null;
         servletResponse = null;
         window = null;
-        //TODO?
     }
 
     public void setProperty(String key, String value)
     {
-        //TODO
+        if (!isClosed())
+        {
+            containerResponse.setHeader(key, value);
+            // TODO: consider if these should be "transported" from ActionResponse to EventRequest?
+        }
     }
 
     public ResourceURLProvider getResourceURLProvider()
