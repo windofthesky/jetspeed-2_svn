@@ -22,7 +22,7 @@ import javax.servlet.ServletContext;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 
 /**
- * This interface defines the internal methods used on the Portlet Context.
+ * This interface defines the Jetspeed specific methods added on the Portlet Context.
  * 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>

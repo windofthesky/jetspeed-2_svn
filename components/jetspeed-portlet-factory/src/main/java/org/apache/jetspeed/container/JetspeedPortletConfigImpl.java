@@ -16,42 +16,34 @@
  */
 package org.apache.jetspeed.container;
 
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-import javax.xml.namespace.QName;
-
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.container.impl.AbstractPortletConfigImpl;
 
 /**
  * Implements the Portlet API Portlet Config class
- * TODO: 2.2 deprecate ContainerInfo and use central configuration (see ContainerRuntimeOptions)
  * 
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
  */
-public class JetspeedPortletConfigImpl implements PortletConfig, JetspeedPortletConfig
+public class JetspeedPortletConfigImpl extends AbstractPortletConfigImpl implements JetspeedPortletConfig
 {
-    PortletDefinition portlet;
-    
     public JetspeedPortletConfigImpl(JetspeedPortletContext portletContext, PortletDefinition portlet)
     {
-//TODO        super(portletContext, portlet, portlet.getApplication());
+        super(portletContext, portlet);
     }
 
     public void setPortletDefinition(PortletDefinition pd)
     {
-        this.portlet = pd;        
+        this.portlet = pd;
+        // clear internal cache
+        this.containerRuntimeOptions = null;
     }
     
-    //  internal portlet config implementation
+    @Override
     public PortletDefinition getPortletDefinition()
     {
         return (PortletDefinition)portlet;
@@ -60,99 +52,5 @@ public class JetspeedPortletConfigImpl implements PortletConfig, JetspeedPortlet
     public ResourceBundle getResourceBundle(Locale locale)
     {
         return getPortletDefinition().getResourceBundle(locale);
-    }
-
-    private List<String> DUMMY_CONFIGURATION = new LinkedList<String>(); // TODO: 2.2 implement
-    
-    protected List<String> getSupportedContainerRuntimeOptions()
-    {
-        // TODO: 2.2 - pull these out of jetspeed.properties or something similiar
-        return DUMMY_CONFIGURATION;
-    }
-    
-    public JetspeedPortletContext getPortletContext()
-    {
-        return null; // TODO (JetspeedPortletContext)super.getPortletContext();
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getContainerRuntimeOptions()
-     */
-    public Map<String, String[]> getContainerRuntimeOptions()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getDefaultNamespace()
-     */
-    public String getDefaultNamespace()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getInitParameter(java.lang.String)
-     */
-    public String getInitParameter(String name)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getInitParameterNames()
-     */
-    public Enumeration<String> getInitParameterNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getPortletName()
-     */
-    public String getPortletName()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getProcessingEventQNames()
-     */
-    public Enumeration<QName> getProcessingEventQNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getPublicRenderParameterNames()
-     */
-    public Enumeration<String> getPublicRenderParameterNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getPublishingEventQNames()
-     */
-    public Enumeration<QName> getPublishingEventQNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletConfig#getSupportedLocales()
-     */
-    public Enumeration<Locale> getSupportedLocales()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

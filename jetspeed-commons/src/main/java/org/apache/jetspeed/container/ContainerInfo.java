@@ -23,46 +23,53 @@ import java.util.ResourceBundle;
  *
  * @author <a href="mailto:shinsuke@yahoo.co.jp">Shinsuke Sugaya</a>
  */
-public final class ContainerInfo
+public final class ContainerInfo implements org.apache.pluto.container.ContainerInfo
 {
-    public static final ResourceBundle CONTAINER_INFO;
-
-    static
+    public static final ResourceBundle CONTAINER_INFO = ResourceBundle.getBundle("org.apache.jetspeed.container.resources.ContainerInfo");
+    
+    private static final ContainerInfo instance = new ContainerInfo();
+    
+    public static ContainerInfo getInfo()
     {
-        CONTAINER_INFO = ResourceBundle.getBundle("org.apache.jetspeed.container.resources.ContainerInfo");
+        return instance;
     }
-
-    public static final String getPortletContainerName()
+    
+    private ContainerInfo()
     {
-        return CONTAINER_INFO.getString("jetspeed.container.name");
     }
-
-    public static final String getPortletContainerMajorVersion()
-    {
-        return CONTAINER_INFO.getString("jetspeed.container.version.major");
-    }
-
-    public static final String getPortletContainerMinorVersion()
-    {
-        return CONTAINER_INFO.getString("jetspeed.container.version.minor");
-    }
-
-    public static final int getMajorSpecificationVersion()
+    
+    public int getMajorSpecificationVersion()
     {
         return Integer.parseInt(CONTAINER_INFO.getString("javax.portlet.version.major"));
     }
 
-    public static final int getMinorSpecificationVersion()
+    public int getMinorSpecificationVersion()
     {
         return Integer.parseInt(CONTAINER_INFO.getString("javax.portlet.version.minor"));
     }
 
-    public static final String getServerInfo()
+    public String getPortletContainerName()
     {
-        StringBuffer sb = new StringBuffer(getPortletContainerName()).append(
-                CONTAINER_INFO.getString("jetspeed.container.separator")).append(getPortletContainerMajorVersion())
-                .append(".").append(getPortletContainerMinorVersion());
-        return sb.toString();
+        return CONTAINER_INFO.getString("jetspeed.container.name");
     }
 
+    public String getPortletContainerMajorVersion()
+    {
+        return CONTAINER_INFO.getString("jetspeed.container.version.major");
+    }
+
+    public String getPortletContainerMinorVersion()
+    {
+        return CONTAINER_INFO.getString("jetspeed.container.version.minor");
+    }
+
+    public String getPortletContainerVersion()
+    {
+        return getPortletContainerMajorVersion()+"."+getPortletContainerMinorVersion();
+    }
+
+    public String getServerInfo()
+    {
+        return getPortletContainerName()+"/"+getPortletContainerMajorVersion()+"."+getPortletContainerMinorVersion();
+    }
 }

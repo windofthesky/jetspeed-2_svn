@@ -16,18 +16,19 @@
  */
 package org.apache.jetspeed.container;
 
+import javax.portlet.PortletConfig;
+
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
- * This interface defines the internal methods used on the Portlet Config.
+ * This interface defines the Jetspeed specific methods added on the Portlet Config.
  * 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public interface JetspeedPortletConfig
+public interface JetspeedPortletConfig extends PortletConfig
 {
-    JetspeedPortletContext getPortletContext();
     PortletDefinition getPortletDefinition();
     void setPortletDefinition(PortletDefinition pd);
 }

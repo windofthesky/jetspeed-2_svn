@@ -21,7 +21,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
 import org.apache.jetspeed.factory.PortletInstance;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
 

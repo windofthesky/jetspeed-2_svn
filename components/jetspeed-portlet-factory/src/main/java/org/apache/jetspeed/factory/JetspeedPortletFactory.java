@@ -22,15 +22,14 @@ import java.util.Map;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.UnavailableException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.container.ContainerInfo;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.JetspeedPortletConfigImpl;
@@ -38,7 +37,6 @@ import org.apache.jetspeed.container.JetspeedPortletContextImpl;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.PortletObjectProxy;
-import org.apache.pluto.container.impl.PortletRequestDispatcherImpl;
 
 /**
  * <p>
@@ -137,7 +135,7 @@ public class JetspeedPortletFactory implements PortletFactory
         {
             synchronized (portletCache)
             {
-                PortletFactoryInfo info = (PortletFactoryInfo) classLoaderMap.remove(pa.getName());
+                PortletFactoryInfo info = classLoaderMap.remove(pa.getName());
                 if (info != null)
                 {
                     ClassLoader cl = info.getClassLoader();
@@ -177,7 +175,7 @@ public class JetspeedPortletFactory implements PortletFactory
                 validator = (instanceCache != null) ? instanceCache.get(pdName) : null; 
                 if (validator == null)
                 {
-                    String className = ((PortletDefinition) pd).getPreferenceValidatorClassname();
+                    String className = pd.getPreferenceValidatorClassname();
                     if (className != null)
                     {
                         PortletFactoryInfo info = classLoaderMap.get(paName);
@@ -299,25 +297,24 @@ public class JetspeedPortletFactory implements PortletFactory
                         log.error(msg, e);
                         throw new UnavailableException(msg);
                     }
-                    JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(portalContext, servletContext, pa, this);                    
+                    JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(servletContext, pa, ContainerInfo.getInfo(), portalContext.getConfiguration());                    
                     JetspeedPortletConfig portletConfig = new JetspeedPortletConfigImpl(portletContext, pd); 
                     try
                     {
                         try
                         {
                             Thread.currentThread().setContextClassLoader(paCl);
-                            //TODO portlet.init(portletConfig);
+                            portlet.init(portletConfig);
                         }
                         finally
                         {
                             Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                         }
                     }
-                    catch (RuntimeException re)
-                    // TODO catch (PortletException e1)
+                    catch (PortletException e1)
                     {
-//                        log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+paName, e1);
-//                        throw e1;
+                        log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+paName, e1);
+                        throw e1;
                     }                   
                     if (instanceCache == null)
                     {
@@ -375,16 +372,4 @@ public class JetspeedPortletFactory implements PortletFactory
     {
         return getPortletApplicationClassLoader(pa) != null;
     }
-
-    public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher)
-    {
-        // return new JetspeedRequestDispatcher(requestDispatcher);
-        return null; //TODO return new PortletRequestDispatcherImpl(requestDispatcher);
-    }
-    
-    public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path)
-    {
-        // return new JetspeedRequestDispatcher(requestDispatcher);
-        return null; //TODO return new PortletRequestDispatcherImpl(requestDispatcher, path);
-    }    
 }

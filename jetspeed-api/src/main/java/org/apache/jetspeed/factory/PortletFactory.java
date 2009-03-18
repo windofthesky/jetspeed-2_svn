@@ -17,9 +17,7 @@
 package org.apache.jetspeed.factory;
 
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PreferencesValidator;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.PortalContext;
@@ -49,6 +47,4 @@ public interface PortletFactory
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
     PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
-    PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher);
-    PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path);
 }
