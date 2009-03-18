@@ -38,7 +38,7 @@ public class PortletRequestContextServiceImpl implements PortletRequestContextSe
     public PortletRequestContext getPortletActionRequestContext(PortletContainer container, HttpServletRequest containerRequest,
                                                                 HttpServletResponse containerResponse, PortletWindow window)
     {
-        return new PortletRequestContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window, true);
+        return new PortletRequestContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window);
     }
 
     public PortletActionResponseContext getPortletActionResponseContext(PortletContainer container,
@@ -52,7 +52,7 @@ public class PortletRequestContextServiceImpl implements PortletRequestContextSe
     public PortletRequestContext getPortletEventRequestContext(PortletContainer container, HttpServletRequest containerRequest,
                                                                HttpServletResponse containerResponse, PortletWindow window)
     {
-        return new PortletRequestContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window, false);
+        return new PortletRequestContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window);
     }
 
     public PortletEventResponseContext getPortletEventResponseContext(PortletContainer container,
@@ -65,7 +65,7 @@ public class PortletRequestContextServiceImpl implements PortletRequestContextSe
     public PortletRequestContext getPortletRenderRequestContext(PortletContainer container, HttpServletRequest containerRequest,
                                                                 HttpServletResponse containerResponse, PortletWindow window)
     {
-        return new PortletRequestContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window, false);
+        return new PortletRequestContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window);
     }
 
     public PortletRenderResponseContext getPortletRenderResponseContext(PortletContainer container,

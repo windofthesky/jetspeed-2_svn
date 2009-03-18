@@ -36,7 +36,7 @@ public class PortletResourceRequestContextImpl extends PortletRequestContextImpl
     public PortletResourceRequestContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                              HttpServletResponse containerResponse, PortletWindow window)
     {
-        super(container, containerRequest, containerResponse, window, true);
+        super(container, containerRequest, containerResponse, window);
     }
 
     public String getCacheability()

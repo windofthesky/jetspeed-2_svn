@@ -18,14 +18,17 @@
 package org.apache.jetspeed.container.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;
@@ -63,24 +66,19 @@ public class PortletRequestContextImpl implements PortletRequestContext
     private PortletContext portletContext;
     private ServletContext servletContext;
     private Cookie cookies[];
-    private boolean useRequestParameters;
+    private Map<String, Object> windowAttributes;
     
     private Map<String, String[]> privateParameters;
     
-    
-    // request attributes map which is cached for each paralleled worker.
-    // this should be re-created when it is called for the first time or when some attributes are added/modified/removed.
-    private Map<String, Object> cachedAttributes;
-
     public PortletRequestContextImpl(PortletContainer container, HttpServletRequest containerRequest,
-                                     HttpServletResponse containerResponse, PortletWindow window, boolean useRequestParameters)
+                                     HttpServletResponse containerResponse, PortletWindow window)
     {
         this.container = container;
         this.containerRequest = containerRequest;
         this.containerResponse = containerResponse;
         this.window = window;
-        this.useRequestParameters = useRequestParameters;
-        //TODO
+        JetspeedRequestContext rc = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        windowAttributes = rc.getPortletWindowAttributes(window);
     }
     
     private static boolean getMetaDataBooleanValue(GenericMetadata metaData, String fieldName, boolean defaultValue )
@@ -309,33 +307,69 @@ public class PortletRequestContextImpl implements PortletRequestContext
     
     public Object getAttribute(String name)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Object value = servletRequest.getAttribute(name);        
+        return value != null ? value : windowAttributes.get(name);
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration<String> getAttributeNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        HashSet<String> names = new HashSet<String>();
+        Enumeration<String> e;
+        for (e = servletRequest.getAttributeNames(); e.hasMoreElements();  )
+        {
+            try
+            {
+                names.add(e.nextElement());
+            }
+            catch(NoSuchElementException nse)
+            {
+                // ignore potential concurrent changes when run in parallel mode
+            }
+        }
+        for (String name : windowAttributes.keySet())
+        {
+            names.add(name);
+        }
+        return Collections.enumeration(names);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.pluto.container.PortletRequestContext#setAttribute(java.lang.String, java.lang.Object)
-     */
     public void setAttribute(String name, Object value)
     {
-        // TODO Auto-generated method stub
+        if (value == null)
+        {
+            windowAttributes.remove(name);
+        }
+        else
+        {
+            windowAttributes.put(name,value);
+        }
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, String[]> getProperties()
     {
-        // TODO Auto-generated method stub
-        return null;
+        HashMap<String, String[]> properties = new HashMap<String, String[]>();
+        for (Enumeration<String> names = servletRequest.getHeaderNames(); names.hasMoreElements(); )
+        {
+            String name = names.nextElement();
+            ArrayList<String> values = new ArrayList<String>();
+            for (Enumeration<String> headers = servletRequest.getHeaders(name); headers.hasMoreElements(); )
+            {
+                values.add(headers.nextElement());
+            }
+            int size = values.size();
+            if (size > 0)
+            {
+                properties.put(name, values.toArray(new String[size]));
+            }
+        }
+        return properties;
     }
 
     public Map<String, String[]> getPublicParameterMap()
     {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO: waiting for public parameters implementation
+        return Collections.emptyMap();
     }
 }
