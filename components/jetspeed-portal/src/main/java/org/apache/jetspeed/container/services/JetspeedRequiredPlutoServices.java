@@ -33,10 +33,20 @@ import org.apache.pluto.container.RequiredContainerServices;
 public class JetspeedRequiredPlutoServices implements RequiredContainerServices
 {
     private PortalContext portalContext;
-    
-    public JetspeedRequiredPlutoServices(PortalContext portalContext)
+    private EventCoordinationService eventCoordinationService;
+    private PortletRequestContextService portletRequestContextService;
+    private FilterManagerService filterManagerService;
+    private PortletURLListenerService portletURLListenerService;
+
+    public JetspeedRequiredPlutoServices(PortalContext portalContext, EventCoordinationService eventCoordinationService,
+                                         PortletRequestContextService portletRequestContextService, FilterManagerService filterManagerService,
+                                         PortletURLListenerService portletURLListenerService)
     {
         this.portalContext = portalContext;
+        this.eventCoordinationService = eventCoordinationService;
+        this.portletRequestContextService = portletRequestContextService;
+        this.filterManagerService = filterManagerService;
+        this.portletURLListenerService = portletURLListenerService;
     }
 
     public PortalContext getPortalContext()
@@ -46,25 +56,21 @@ public class JetspeedRequiredPlutoServices implements RequiredContainerServices
 
     public EventCoordinationService getEventCoordinationService()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.eventCoordinationService;
     }
 
     public FilterManagerService getFilterManagerService()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.filterManagerService;
     }
 
     public PortletRequestContextService getPortletRequestContextService()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.portletRequestContextService;
     }
 
     public PortletURLListenerService getPortletURLListenerService()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.portletURLListenerService;
     }
 }

@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.portlet.PortletURLGenerationListener;
+
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.Listener;
@@ -36,6 +38,7 @@ public class ListenerImpl implements Listener, Serializable
     protected String listenerClass;
     protected List<Description> descriptions;
     protected List<DisplayName> displayNames;
+    protected PortletURLGenerationListener listenerInstance;
 
     
     public String getListenerClass()
@@ -102,5 +105,17 @@ public class ListenerImpl implements Listener, Serializable
         }
         displayNames.add(d);
         return d;
+    }
+    
+    public PortletURLGenerationListener getListenerInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException 
+    {
+        if (this.listenerInstance == null) 
+        {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            Class<? extends Object> clazz = loader.loadClass(getListenerClass());
+            this.listenerInstance = (PortletURLGenerationListener) clazz.newInstance();
+        }
+        
+        return this.listenerInstance;
     }
 }

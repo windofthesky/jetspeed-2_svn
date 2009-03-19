@@ -28,6 +28,10 @@ limitations under the License.
           class="org.apache.jetspeed.container.services.JetspeedRequiredPlutoServices">
       <meta key="j2:cat" value="default" />          
       <constructor-arg><ref bean="PortalContext"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.services.EventCoordinationService"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.container.PortletRequestContextService"/></constructor-arg>
+      <constructor-arg><null/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.container.PortletURLListenerService"/></constructor-arg>
     </bean>
     
     <bean id="org.apache.pluto.services.CCPPProfileService"
@@ -42,22 +46,34 @@ limitations under the License.
     
     <bean id='org.apache.pluto.services.EventCoordinationService'
           class='org.apache.jetspeed.events.EventCoordinationServiceImpl'>
-        <meta key="j2:cat" value="default" />                 
-        <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>                 
-        <constructor-arg><ref bean="org.apache.jetspeed.events.PortletEventQueue"/></constructor-arg>
-        <constructor-arg><ref bean="PortalStatistics"/></constructor-arg>
-        <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager"/></constructor-arg>
-        <constructor-arg><ref bean="org.apache.jetspeed.security.SecurityAccessController" /></constructor-arg>
-        <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
-          before rendering a portlet. If security check fails, do not fire events
-        -->
-        <constructor-arg type="boolean"><value>true</value></constructor-arg>                       
+      <meta key="j2:cat" value="default" />                 
+      <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>                 
+      <constructor-arg><ref bean="org.apache.jetspeed.events.PortletEventQueue"/></constructor-arg>
+      <constructor-arg><ref bean="PortalStatistics"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.jetspeed.security.SecurityAccessController" /></constructor-arg>
+      <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
+        before rendering a portlet. If security check fails, do not fire events
+      -->
+      <constructor-arg type="boolean"><value>true</value></constructor-arg>                       
+    </bean>
+    
+    <bean id="org.apache.pluto.container.PortletRequestContextService"
+          class="org.apache.jetspeed.container.impl.PortletRequestContextServiceImpl">
+      <meta key="j2:cat" value="default" />
+      <constructor-arg><ref bean="DynamicTitleService"/></constructor-arg>   
     </bean>
     
     <bean id='org.apache.pluto.services.FilterManager'
           class='org.apache.jetspeed.container.providers.FilterManagerImpl'>
       <meta key="j2:cat" value="default" />       
     </bean>
+    
+    <bean id="org.apache.pluto.container.PortletURLListenerService"
+          class="org.apache.jetspeed.container.services.JetspeedPortletURLListenerService">
+      <meta key="j2:cat" value="default" />       
+    </bean>
+    
 
     <!-- ====================================================== -->
     <!-- Declare Pluto Service Accessors, Optional              -->
