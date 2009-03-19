@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.portalsite;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.GenericMetadata;
@@ -27,7 +28,7 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface MenuElement
+public interface MenuElement extends Serializable
 {
     /**
      * MENU_ELEMENT_TYPE - element type of menu elements

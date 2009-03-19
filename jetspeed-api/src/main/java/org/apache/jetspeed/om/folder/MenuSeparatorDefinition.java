@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.folder;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.GenericMetadata;
@@ -27,7 +28,7 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface MenuSeparatorDefinition
+public interface MenuSeparatorDefinition extends Serializable
 {
     /**
      * getSkin - get skin name for separator

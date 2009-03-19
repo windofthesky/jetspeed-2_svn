@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.folder;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,7 +30,7 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface MenuDefinition
+public interface MenuDefinition extends Serializable
 {
     /**
      * ANY_PROFILE_LOCATOR - wildcard value for profile locator names

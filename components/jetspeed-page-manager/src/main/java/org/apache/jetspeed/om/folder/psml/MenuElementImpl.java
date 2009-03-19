@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import java.io.Serializable;
+
 /**
  * This class implements a wrapper used to implement
  * the ordered polymorphic menu elements collection.
@@ -23,7 +25,7 @@ package org.apache.jetspeed.om.folder.psml;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class MenuElementImpl
+public class MenuElementImpl implements Serializable
 {
     /**
      * element - wrapped menu element

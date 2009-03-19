@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.folder;
 
+import java.io.Serializable;
+
 /**
  * This interface describes the object used to define
  * portal site menu included menus.
@@ -23,7 +25,7 @@ package org.apache.jetspeed.om.folder;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface MenuIncludeDefinition
+public interface MenuIncludeDefinition extends Serializable
 {
     /**
      * getName - get menu name to nest or with options to include
