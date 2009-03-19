@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.portlet.filter.PortletFilter;
+
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterLifecycle;
 import org.apache.jetspeed.om.portlet.InitParam;
-import org.apache.jetspeed.om.portlet.SupportedPublicRenderParameter;
 import org.apache.jetspeed.util.JetspeedLocale;
 
 /**
@@ -42,6 +43,7 @@ public class FilterImpl implements Filter, Serializable
     protected List<InitParam> initParams;
     protected List<Description> descriptions;
     protected List<DisplayName> displayNames;
+    protected PortletFilter filterInstance;
     
     public Description getDescription(Locale locale)
     {
@@ -180,5 +182,16 @@ public class FilterImpl implements Filter, Serializable
         getInitParams();
         initParams.add(param);
         return param;
+    }
+    
+    public PortletFilter getFilterInstance(ClassLoader loader) throws InstantiationException, IllegalAccessException, ClassNotFoundException 
+    {
+        if (this.filterInstance == null) 
+        {
+            Class<? extends Object> clazz = loader.loadClass(getFilterClass());
+            this.filterInstance = (PortletFilter) clazz.newInstance();
+        }
+        
+        return this.filterInstance;
     }
 }

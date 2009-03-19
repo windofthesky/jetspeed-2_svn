@@ -36,5 +36,5 @@ public interface Listener extends org.apache.pluto.container.om.portlet.Listener
     List<DisplayName> getDisplayNames();
     DisplayName addDisplayName(String lang);
     
-    PortletURLGenerationListener getListenerInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException;
+    PortletURLGenerationListener getListenerInstance(ClassLoader loader) throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 }

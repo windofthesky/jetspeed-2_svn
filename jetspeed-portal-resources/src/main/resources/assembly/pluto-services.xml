@@ -30,7 +30,7 @@ limitations under the License.
       <constructor-arg><ref bean="PortalContext"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.EventCoordinationService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.container.PortletRequestContextService"/></constructor-arg>
-      <constructor-arg><null/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.container.FilterManagerService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.container.PortletURLListenerService"/></constructor-arg>
     </bean>
     
@@ -64,8 +64,8 @@ limitations under the License.
       <constructor-arg><ref bean="DynamicTitleService"/></constructor-arg>   
     </bean>
     
-    <bean id='org.apache.pluto.services.FilterManager'
-          class='org.apache.jetspeed.container.providers.FilterManagerImpl'>
+    <bean id="org.apache.pluto.container.FilterManagerService"
+          class="org.apache.jetspeed.container.services.JetspeedFilterManagerService">
       <meta key="j2:cat" value="default" />       
     </bean>
     

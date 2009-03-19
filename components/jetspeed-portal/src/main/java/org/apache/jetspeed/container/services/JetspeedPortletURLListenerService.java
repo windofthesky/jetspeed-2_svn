@@ -42,7 +42,7 @@ public class JetspeedPortletURLListenerService implements PortletURLListenerServ
         if (portletURLFilterList != null){
             for (Listener listener : portletURLFilterList) {
                 try {
-                    listeners.add(listener.getListenerInstance());
+                    listeners.add(listener.getListenerInstance(Thread.currentThread().getContextClassLoader()));
                 } catch (ClassNotFoundException e) {
                     String message = "The listener class isn't found: " + listener.getListenerClass();
                     LOG.error(message);

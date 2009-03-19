@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
+import javax.portlet.filter.PortletFilter;
+
 /**
  * 
  * @version $Id$
@@ -37,4 +39,6 @@ public interface Filter extends org.apache.pluto.container.om.portlet.Filter, Se
 	InitParam getInitParam(String paramName);
 	List<InitParam> getInitParams();
 	InitParam addInitParam(String paramName);
+	
+	PortletFilter getFilterInstance(ClassLoader loader) throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 }
