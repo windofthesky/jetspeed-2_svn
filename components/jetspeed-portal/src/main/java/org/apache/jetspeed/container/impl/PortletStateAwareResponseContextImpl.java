@@ -32,11 +32,9 @@ import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletStateAwareResponseContext;
 import org.apache.pluto.container.PortletURLProvider;
 import org.apache.pluto.container.impl.PortletURLImpl;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.PortletURLProviderImpl;
 import org.apache.jetspeed.events.JetspeedEventCoordinationService;
-import org.apache.jetspeed.request.JetspeedRequestContext;
 
 /**
  * @version $Id$
@@ -52,8 +50,7 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
                                                 HttpServletResponse containerResponse, PortletWindow window)
     {
         super(container, containerRequest, containerResponse, window);
-        JetspeedRequestContext rc = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);        
-        this.portletURLProvider = new PortletURLProviderImpl(rc.getPortalURL(), window, PortletURLProvider.TYPE.RENDER);
+        this.portletURLProvider = new PortletURLProviderImpl(getRequestContext().getPortalURL(), window, PortletURLProvider.TYPE.RENDER);
     }
     
     @Override

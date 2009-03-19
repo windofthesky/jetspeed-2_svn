@@ -51,12 +51,12 @@ public class PortletActionResponseContextImpl extends PortletStateAwareResponseC
             close();
             if (!redirect || renderURLParamName != null)
             {               
+                String portalURL = getRequestContext().getPortalURL().getPortalURL();
                 if (redirect)
                 {
-                    String portalURL = getPortalURL().getPortalURL();
                     if (redirectLocation.indexOf("://") != -1 && portalURL.indexOf("://")==-1)
                     {
-                        portalURL = getPortalURL().getBaseURL() + portalURL;
+                        portalURL = getRequestContext().getPortalURL().getBaseURL() + portalURL;
                     }
                     try
                     {
@@ -70,7 +70,7 @@ public class PortletActionResponseContextImpl extends PortletStateAwareResponseC
                 }
                 else
                 {
-                    return getPortalURL().getPortalURL();
+                    return portalURL;
                 }
             }
             else

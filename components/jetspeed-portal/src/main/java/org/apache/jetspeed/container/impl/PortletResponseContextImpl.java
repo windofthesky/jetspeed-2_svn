@@ -26,9 +26,7 @@ import org.apache.pluto.container.PortletResponseContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
-import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.ResourceURLProvider;
 import org.w3c.dom.Element;
 
@@ -46,7 +44,7 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     private PortletWindow window;
     private boolean closed;
     private boolean released;
-    private PortalURL portalURL;
+    private JetspeedRequestContext requestContext;
     
     public PortletResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                       HttpServletResponse containerResponse, PortletWindow window)
@@ -55,13 +53,12 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
         this.containerRequest = containerRequest;
         this.containerResponse = containerResponse;
         this.window = window;
-        JetspeedRequestContext rc = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        portalURL = rc.getPortalURL();
+        this.requestContext = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
     }
     
-    protected PortalURL getPortalURL()
+    protected JetspeedRequestContext getRequestContext()
     {
-        return portalURL;
+        return requestContext;
     }
     
     protected boolean isClosed()
@@ -145,6 +142,7 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
         container = null;
         servletRequest = null;
         servletResponse = null;
+        requestContext = null;
         window = null;
     }
 
@@ -161,8 +159,7 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     {
         if (!isReleased())
         {
-            RequestContext rc = (RequestContext) servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            return new ResourceURLProviderImpl(rc, window);
+            return new ResourceURLProviderImpl(requestContext, window);
         }
         return null;
     

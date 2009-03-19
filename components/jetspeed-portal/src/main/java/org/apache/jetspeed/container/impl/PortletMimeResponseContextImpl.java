@@ -17,9 +17,6 @@
 
 package org.apache.jetspeed.container.impl;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.Locale;
 
 import javax.portlet.CacheControl;
@@ -92,7 +89,6 @@ public abstract class PortletMimeResponseContextImpl extends PortletResponseCont
     }
     
     private CacheControl cacheControl;
-    private OutputStream outputStream;
     
     public PortletMimeResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                           HttpServletResponse containerResponse, PortletWindow window)
@@ -103,21 +99,7 @@ public abstract class PortletMimeResponseContextImpl extends PortletResponseCont
     public void close()
     {
         cacheControl = null;
-        outputStream = null;
         super.close();
-    }
-
-    public void flushBuffer() throws IOException
-    {
-        if (!isClosed())
-        {
-            // TODO
-        }
-    }
-
-    public int getBufferSize()
-    {
-        return 0; // TODO
     }
 
     public CacheControl getCacheControl()
@@ -128,83 +110,31 @@ public abstract class PortletMimeResponseContextImpl extends PortletResponseCont
         }        
         if (cacheControl == null)
         {
-            // TODO
+            cacheControl = new CacheControlImpl();
         }
         return cacheControl;
     }
 
     public String getCharacterEncoding()
     {
-        return isClosed() ? null : null; // TODO
+        return isClosed() ? null : getServletResponse().getCharacterEncoding();
     }
 
     public String getContentType()
     {
-        return isClosed() ? null : null; //TODO
+        return isClosed() ? null : getServletResponse().getContentType();
     }
 
     public Locale getLocale()
     {
-        return isClosed() ? null : null; //TODO
-    }
-
-    public OutputStream getOutputStream() throws IOException, IllegalStateException
-    {
-        if (isClosed())
-        {
-            return null;
-        }
-        if (outputStream == null)
-        {
-            // TODO
-        }
-        return outputStream;
-    }
-
-    public PrintWriter getWriter() throws IOException, IllegalStateException
-    {
-        return isClosed() ? null : null; //TODO
-    }
-
-    public boolean isCommitted()
-    {
-        return false; //TODO
-    }
-
-    public void reset()
-    {
-        //TODO
-    }
-
-    public void resetBuffer()
-    {
-        if (!isClosed())
-        {
-            //TODO
-        }
-    }
-
-    public void setBufferSize(int size)
-    {
-        if (!isClosed())
-        {
-            //TODO
-        }
-    }
-
-    public void setContentType(String contentType)
-    {
-        if (!isClosed())
-        {
-            //TODO
-        }
+        return isClosed() ? null : getServletResponse().getLocale();
     }
 
     public PortletURLProvider getPortletURLProvider(TYPE type)
     {
         if (!isClosed())
         {
-            return new PortletURLProviderImpl(getPortalURL(), getPortletWindow(), type);
+            return new PortletURLProviderImpl(getRequestContext().getPortalURL(), getPortletWindow(), type);
         }
         return null;
     }

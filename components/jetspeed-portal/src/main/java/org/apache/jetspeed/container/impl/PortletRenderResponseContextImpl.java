@@ -17,6 +17,9 @@
 
 package org.apache.jetspeed.container.impl;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Collection;
 
 import javax.portlet.PortletMode;
@@ -25,7 +28,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletRenderResponseContext;
+import org.apache.pluto.container.util.PrintWriterServletOutputStream;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.services.title.DynamicTitleService;
 
 /**
  * @version $Id$
@@ -34,64 +41,92 @@ import org.apache.jetspeed.container.PortletWindow;
 public class PortletRenderResponseContextImpl extends PortletMimeResponseContextImpl implements
                 PortletRenderResponseContext
 {
+    private boolean committed;
+    private PortletContent portletContent;
+    private OutputStream outputStream;
+    private DynamicTitleService titleService;
+    
     public PortletRenderResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
-                                            HttpServletResponse containerResponse, PortletWindow window)
+                                            HttpServletResponse containerResponse, PortletWindow window, DynamicTitleService titleService)
     {
         super(container, containerRequest, containerResponse, window);
+        this.portletContent = (PortletContent)getRequestContext().getPortletWindowAttributes(getPortletWindow()).get(PortalReservedParameters.PORTLET_CONTENT_ATTRIBUTE);
     }
 
+    public void flushBuffer() throws IOException
+    {
+        committed = true;
+    }
+
+    public int getBufferSize()
+    {
+        return Integer.MAX_VALUE;
+    }
+    
+    public boolean isCommitted()
+    {
+        return committed;
+    }
+    
+    public OutputStream getOutputStream() throws IOException, IllegalStateException
+    {
+        if (isClosed())
+        {
+            return null;
+        }
+        if (outputStream == null)
+        {
+            outputStream = new PrintWriterServletOutputStream(portletContent.getWriter(),
+                                                              getServletResponse().getCharacterEncoding());
+        }
+        return outputStream;
+    }
+
+    public PrintWriter getWriter() throws IOException, IllegalStateException
+    {
+        return portletContent.getWriter();
+    }
+    
     public void setNextPossiblePortletModes(Collection<PortletMode> portletModes)
     {
         //TODO
+    }
+
+    public void reset()
+    {
+        if (!isClosed())
+        {
+            // TODO
+        }
+    }
+
+    public void resetBuffer()
+    {
+        if (!isClosed())
+        {
+            // TODO
+        }
+    }
+
+    public void setBufferSize(int size)
+    {
+        // ignore
+    }
+
+    public void setContentType(String contentType)
+    {
+        if (!isClosed())
+        {
+            // TODO
+        }
     }
 
     public void setTitle(String title)
     {
         if (!isClosed())
         {
-            //TODO
-
-            // TODO: 2.2 jetspeed uses a title service        
-//            String title = null;
-//            if (titleArg == null || titleArg.length() == 0)
-//            {
-//                title = getTitleFromPortletDefinition(portletWindow, request);
-//            }
-//            else
-//            {
-//                title = titleArg;
-//            }
-//            request.setAttribute(
-//                    PortalReservedParameters.OVERRIDE_PORTLET_TITLE_ATTR
-//                            + "::window.id::" + portletWindow.getId(), title);        
-
+            portletContent.setTitle(title);
+            titleService.setDynamicTitle(getPortletWindow(), getContainerRequest(), title);
         }
-    }
-    
-//    protected final String getTitleFromPortletDefinition(org.apache.pluto.PortletWindow window, HttpServletRequest request)
-//    {
-//        String title = null;
-//        RequestContext requestContext = (RequestContext) request
-//                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-//        
-//        org.apache.jetspeed.container.PortletWindow  jsWindow = (org.apache.jetspeed.container.PortletWindow)window;
-//        PortletEntity entity = jsWindow.getPortletEntity();
-//        if (entity != null && entity.getPortletDefinition() != null)
-//        {
-//            title = requestContext.getPreferedLanguage(
-//                    entity.getPortletDefinition()).getTitle();
-//        }
-//
-//        if (title == null && entity.getPortletDefinition() != null)
-//        {
-//            title = entity.getPortletDefinition().getPortletName();
-//        }
-//        else if (title == null)
-//        {
-//            title = "Invalid portlet entity " + entity.getId();
-//        }
-//        
-//        return title;
-//    }
-    
+    } 
 }

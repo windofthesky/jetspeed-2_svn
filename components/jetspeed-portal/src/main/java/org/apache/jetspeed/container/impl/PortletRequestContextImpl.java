@@ -66,6 +66,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
     private PortletContext portletContext;
     private ServletContext servletContext;
     private Cookie cookies[];
+    private JetspeedRequestContext requestContext;
     private Map<String, Object> windowAttributes;
     
     private Map<String, String[]> privateParameters;
@@ -77,8 +78,13 @@ public class PortletRequestContextImpl implements PortletRequestContext
         this.containerRequest = containerRequest;
         this.containerResponse = containerResponse;
         this.window = window;
-        JetspeedRequestContext rc = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        windowAttributes = rc.getPortletWindowAttributes(window);
+        this.requestContext = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        windowAttributes = requestContext.getPortletWindowAttributes(window);
+    }
+    
+    protected JetspeedRequestContext getRequestContext()
+    {
+        return requestContext;
     }
     
     private static boolean getMetaDataBooleanValue(GenericMetadata metaData, String fieldName, boolean defaultValue )
@@ -128,21 +134,17 @@ public class PortletRequestContextImpl implements PortletRequestContext
             
             // get portlet *private* navigational params
             privateParameters = new HashMap<String, String[]>();
-            JetspeedRequestContext context = (JetspeedRequestContext) getAttribute("org.apache.jetspeed.request.RequestContext");
-            if (context != null)
+            NavigationalState ns = requestContext.getPortalURL().getNavigationalState();
+            mergeRequestParameters = ns.getPortletWindowOfAction() != null || ns.getPortletWindowOfResource() != null;
+            Iterator<String> iter = ns.getParameterNames(getPortletWindow());
+            while (iter.hasNext())
             {
-                NavigationalState ns = context.getPortalURL().getNavigationalState();
-                mergeRequestParameters = ns.getPortletWindowOfAction() != null || ns.getPortletWindowOfResource() != null;
-                Iterator<String> iter = ns.getParameterNames(getPortletWindow());
-                while (iter.hasNext())
-                {
-                    String name = iter.next();
-                    String[] values = ns.getParameterValues(getPortletWindow(), name);
-                    privateParameters.put(name, values);
-                }
+                String name = iter.next();
+                String[] values = ns.getParameterValues(getPortletWindow(), name);
+                privateParameters.put(name, values);
             }
             
-            PortletDefinition portletDef = getPortletWindow().getPortletEntity().getPortletDefinition();
+            PortletDefinition portletDef = window.getPortletEntity().getPortletDefinition();
             if(portletDef != null)
             {
                 GenericMetadata metaData = portletDef.getMetadata();
@@ -169,18 +171,17 @@ public class PortletRequestContextImpl implements PortletRequestContext
             //get request params
             if (mergeRequestParameters)
             {
-                String encoding = (String)getContainerRequest().getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
-                boolean decode = getContainerRequest().getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
+                String encoding = (String)containerRequest.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
+                boolean decode = containerRequest.getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
                         && encoding != null;
                 if (decode)
                 {
-                    getContainerRequest().setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,
-                            new Boolean(true));
+                    containerRequest.setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,new Boolean(true));
                 }
-                for (Enumeration parameters = getContainerRequest().getParameterNames(); parameters.hasMoreElements();)
+                for (Enumeration parameters = containerRequest.getParameterNames(); parameters.hasMoreElements();)
                 {
                     String paramName = (String) parameters.nextElement();
-                    String[] paramValues = getContainerRequest().getParameterValues(paramName);
+                    String[] paramValues = containerRequest.getParameterValues(paramName);
 
                     if (decode)
                     {
@@ -292,9 +293,8 @@ public class PortletRequestContextImpl implements PortletRequestContext
     
     public Locale getPreferredLocale()
     {
-        RequestContext requestContext = (RequestContext)getContainerRequest().getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         Locale preferedLocale = requestContext.getLocale();
-        return preferedLocale != null ? preferedLocale : getContainerRequest().getLocale();
+        return preferedLocale != null ? preferedLocale : containerRequest.getLocale();
     }
 
     public void init(PortletContext portletContext, ServletContext servletContext, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
