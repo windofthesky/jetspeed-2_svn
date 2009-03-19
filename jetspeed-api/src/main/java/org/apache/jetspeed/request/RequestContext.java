@@ -35,6 +35,7 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletWindowRequestContext;
 
 /**
  * Portal Request Context is associated with each request
@@ -219,6 +220,9 @@ public interface RequestContext
      */
     public void setCharacterEncoding(String enc);
 
+
+    public PortletWindowRequestContext getCurrentPortletWindowRequestContext();
+    
     /**
      *
      * <p>

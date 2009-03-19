@@ -30,27 +30,6 @@ import org.apache.pluto.container.PortletResponseContext;
  */
 public interface PortletWindowRequestContext
 {
-    final class Current
-    {
-        private static final ThreadLocal<PortletWindowRequestContext> current = new ThreadLocal<PortletWindowRequestContext>();
-        
-        public static PortletWindowRequestContext create(PortletWindowRequestContext context)
-        {
-            current.set(context);
-            return context;
-        }
-        public static PortletWindowRequestContext get()
-        {
-            return current.get();
-        }
-        public static PortletWindowRequestContext remove()
-        {
-            PortletWindowRequestContext pwrc = current.get();
-            current.remove();
-            return pwrc;
-        }
-    }
-    
     enum Action { NOOP, LOAD, ACTION, EVENT, RESOURCE, RENDER };
     
     Action getAction();

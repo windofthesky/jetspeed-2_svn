@@ -38,6 +38,7 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.PortletWindowRequestContext;
 
 
 
@@ -564,5 +565,13 @@ public class MockRequestContext implements RequestContext
     public void setObjects(Map objects)
     {
         this.objects = objects;
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getCurrentPortletWindowRequestContext()
+     */
+    public PortletWindowRequestContext getCurrentPortletWindowRequestContext()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

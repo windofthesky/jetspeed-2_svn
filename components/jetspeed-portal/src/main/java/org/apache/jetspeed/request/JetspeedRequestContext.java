@@ -36,6 +36,7 @@ import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
+import org.apache.jetspeed.container.PortletWindowRequestContext;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
 import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
@@ -52,7 +53,6 @@ import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.impl.LanguageImpl;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -66,6 +66,9 @@ import org.apache.jetspeed.om.portlet.impl.LanguageImpl;
 public class JetspeedRequestContext implements RequestContext
 {
     private static final String ACTION_ERROR_ATTR = "org.apache.jetspeed.action.error:";
+    
+    private final ThreadLocal<PortletWindowRequestContext> pwrc = new ThreadLocal<PortletWindowRequestContext>();
+    
     private RequestContextComponent rcc;
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -302,6 +305,23 @@ public class JetspeedRequestContext implements RequestContext
         }
 
         this.encoding = enc;
+    }
+
+    public PortletWindowRequestContext getCurrentPortletWindowRequestContext()
+    {
+        return pwrc.get();
+    }
+    
+    public void setCurrentPortletWindowRequestContext(PortletWindowRequestContext value)
+    {
+        if (value == null)
+        {
+            pwrc.remove();
+        }
+        else
+        {
+            pwrc.set(value);
+        }
     }
 
     /**

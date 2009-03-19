@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import javax.portlet.PortletContext;
+import javax.portlet.PortletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +63,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
     private PortletWindow window;
-    private PortletContext portletContext;
+    private PortletConfig portletConfig;
     private ServletContext servletContext;
     private Cookie cookies[];
     private JetspeedRequestContext requestContext;
@@ -256,9 +256,9 @@ public class PortletRequestContextImpl implements PortletRequestContext
         return cookies.length > 0 ? cookies.clone() : null;
     }
 
-    public PortletContext getPortletContext()
+    public PortletConfig getPortletConfig()
     {
-        return portletContext;
+        return portletConfig;
     }
 
     public ServletContext getServletContext()
@@ -297,9 +297,9 @@ public class PortletRequestContextImpl implements PortletRequestContext
         return preferedLocale != null ? preferedLocale : containerRequest.getLocale();
     }
 
-    public void init(PortletContext portletContext, ServletContext servletContext, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+    public void init(PortletConfig portletConfig, ServletContext servletContext, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
     {
-        this.portletContext = portletContext;
+        this.portletConfig = portletConfig;
         this.servletContext = servletContext;
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;

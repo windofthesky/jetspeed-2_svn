@@ -29,9 +29,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.EventPortlet;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
@@ -46,17 +43,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.session.PortalSessionsManager;
-import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.pluto.container.PortletInvokerService;
-import org.apache.pluto.container.PortletRequestContext;
-import org.apache.pluto.container.PortletResponseContext;
 
 /**
  * Jetspeed Container entry point.
@@ -226,86 +219,52 @@ public class JetspeedContainerServlet extends HttpServlet
      */
     public final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
-        String portletName = null;
-        Integer method = ContainerConstants.METHOD_NOOP;
-        PortletInstance portlet = null;
         boolean destroyPortlet = false;
-        boolean isParallelMode = false;
         
-        PortletConfig portletConfig;
-        PortletRequest portletRequest;
-        PortletResponse portletResponse;
-        PortletRequestContext requestContext;
-        PortletResponseContext responseContext;
-        // TODO: add FilterManager support
-        //FilterManager filterManager;
+        RequestContext rc = Jetspeed.getCurrentRequestContext();
+        if (rc == null)
+        {
+            return;
+        }
+        PortletWindowRequestContext pwrc = rc.getCurrentPortletWindowRequestContext();
+        if (pwrc == null)
+        {
+            return;
+        }
         
+        if (PortletWindowRequestContext.Action.NOOP.equals(pwrc.getAction()))
+        {
+            return;
+        }
+                        
         try
         {
-            isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
+            pwrc.getPortletRequestContext().init(pwrc.getPortletInstance().getConfig(), getServletContext(), request, response);
+            pwrc.getPortletResponseContext().init(request, response);
 
-            if (isParallelMode)
+            if (PortletWindowRequestContext.Action.ACTION.equals(pwrc.getAction()))
             {
-                method = (Integer) CurrentWorkerContext.getAttribute(ContainerConstants.METHOD_ID);
+                ActionRequest actionRequest = (ActionRequest)pwrc.getPortletRequest();
+                ActionResponse actionResponse = (ActionResponse)pwrc.getPortletResponse();
+                pwrc.getPortletInstance().processAction(actionRequest, actionResponse);
             }
-            else
+            else if (PortletWindowRequestContext.Action.RENDER.equals(pwrc.getAction()))
             {
-                method = (Integer) request.getAttribute(ContainerConstants.METHOD_ID);
+                RenderRequest renderRequest = (RenderRequest)pwrc.getPortletRequest();
+                RenderResponse renderResponse =  (RenderResponse)pwrc.getPortletResponse();
+                pwrc.getPortletInstance().render(renderRequest, renderResponse);
             }
-            if (method == ContainerConstants.METHOD_NOOP)
+            else if (PortletWindowRequestContext.Action.EVENT.equals(pwrc.getAction()) && pwrc.getPortletInstance().getRealPortlet() instanceof EventPortlet)
             {
-                return;
+                EventRequest eventRequest = (EventRequest)pwrc.getPortletRequest();
+                EventResponse eventResponse =  (EventResponse)pwrc.getPortletResponse();
+                ((EventPortlet)pwrc.getPortletInstance().getRealPortlet()).processEvent(eventRequest, eventResponse);
             }
-            
-            if (isParallelMode)
+            else if (PortletWindowRequestContext.Action.RESOURCE.equals(pwrc.getAction()) && pwrc.getPortletInstance().getRealPortlet() instanceof ResourceServingPortlet)
             {
-                portletConfig = (PortletConfig)CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_CONFIG);
-                portletRequest = (PortletRequest)CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                portletResponse = (PortletResponse)CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                requestContext = (PortletRequestContext)CurrentWorkerContext.getAttribute(PortletInvokerService.REQUEST_CONTEXT);
-                responseContext = (PortletResponseContext)CurrentWorkerContext.getAttribute(PortletInvokerService.RESPONSE_CONTEXT);
-                //filterManager = (FilterManager)CurrentWorkerContext.getAttribute(PortletInvokerService.FILTER_MANAGER);
-                portlet = (PortletInstance) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET);
-                portletName = (String) CurrentWorkerContext.getAttribute(ContainerConstants.PORTLET_NAME);
-            }
-            else
-            {
-                portletConfig = (PortletConfig)request.getAttribute(ContainerConstants.PORTLET_CONFIG);
-                portletRequest = (PortletRequest)request.getAttribute(ContainerConstants.PORTLET_REQUEST);
-                portletResponse = (PortletResponse)request.getAttribute(ContainerConstants.PORTLET_RESPONSE);
-                requestContext = (PortletRequestContext)request.getAttribute(PortletInvokerService.REQUEST_CONTEXT);
-                responseContext = (PortletResponseContext)request.getAttribute(PortletInvokerService.RESPONSE_CONTEXT);
-                //filterManager = (FilterManager)request.getAttribute(PortletInvokerService.FILTER_MANAGER);
-                portlet = (PortletInstance)request.getAttribute(ContainerConstants.PORTLET);
-                portletName = (String)request.getAttribute(ContainerConstants.PORTLET_NAME);
-            }
-
-            requestContext.init(portletConfig.getPortletContext(), getServletContext(), request, response);
-            responseContext.init(request, response);
-
-            if (method == ContainerConstants.METHOD_ACTION)
-            {
-                ActionRequest actionRequest = (ActionRequest)portletRequest;
-                ActionResponse actionResponse = (ActionResponse)portletResponse;
-                portlet.processAction(actionRequest, actionResponse);
-            }
-            else if (method == ContainerConstants.METHOD_RENDER)
-            {
-                RenderRequest renderRequest = (RenderRequest)portletRequest;
-                RenderResponse renderResponse =  (RenderResponse)portletResponse;
-                portlet.render(renderRequest, renderResponse);
-            }
-            else if (method == ContainerConstants.METHOD_EVENT && portlet.getRealPortlet() instanceof EventPortlet)
-            {
-                EventRequest eventRequest = (EventRequest)portletRequest;
-                EventResponse eventResponse =  (EventResponse)portletResponse;
-                ((EventPortlet)portlet.getRealPortlet()).processEvent(eventRequest, eventResponse);
-            }
-            else if (method == ContainerConstants.METHOD_RESOURCE && portlet.getRealPortlet() instanceof ResourceServingPortlet)
-            {
-                ResourceRequest resourceRequest = (ResourceRequest)portletRequest;
-                ResourceResponse resourceResponse = (ResourceResponse)portletResponse;
-                ((ResourceServingPortlet)portlet.getRealPortlet()).serveResource(resourceRequest, resourceResponse);
+                ResourceRequest resourceRequest = (ResourceRequest)pwrc.getPortletRequest();
+                ResourceResponse resourceResponse = (ResourceResponse)pwrc.getPortletResponse();
+                ((ResourceServingPortlet)pwrc.getPortletInstance().getRealPortlet()).serveResource(resourceRequest, resourceResponse);
             }
 
             // if we get this far we are home free
@@ -319,10 +278,10 @@ public class JetspeedContainerServlet extends HttpServlet
                 destroyPortlet = true;
             }
             
-            if (method != ContainerConstants.METHOD_ACTION)
+            if (PortletWindowRequestContext.Action.ACTION.equals(pwrc.getAction()))
             {
                 ServletContext context = getServletContext();
-                context.log(JCS + "Error rendering portlet \"" + portletName + "\": " + t.toString(), t);
+                context.log(JCS + "Error rendering portlet \"" + pwrc.getPortletWindow().getPortletEntity().getPortletUniqueName() + "\": " + t.toString(), t);
                 try
                 {
                     String errorTemplate = getInitParameter("portal.error.page");
@@ -341,12 +300,12 @@ public class JetspeedContainerServlet extends HttpServlet
                     }
                     else
                     {
-                        displayPortletNotAvailableMessage(t, response, portletName);
+                        displayPortletNotAvailableMessage(t, response, pwrc.getPortletWindow().getPortletEntity().getPortletUniqueName());
                     }
                 }
                 catch (Throwable e)
                 {
-                    displayPortletNotAvailableMessage(t, response, portletName);
+                    displayPortletNotAvailableMessage(t, response, pwrc.getPortletWindow().getPortletEntity().getPortletUniqueName());
                 }
                 finally
                 {
@@ -375,12 +334,12 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         finally
         {
-            if ( destroyPortlet && portlet != null)
+            if ( destroyPortlet)
             {
                 // portlet threw UnavailableException: take it out of service
                 try
                 {
-                    portlet.destroy();
+                    pwrc.getPortletInstance().destroy();
                 }
                 catch (Exception e)
                 {
@@ -389,7 +348,6 @@ public class JetspeedContainerServlet extends HttpServlet
             }
             if (psm != null)
             {
-                RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
                 psm.checkMonitorSession(contextName,rc.getRequest().getSession(),request.getSession(false));
             }
         }
