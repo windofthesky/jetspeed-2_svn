@@ -34,6 +34,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.container.PortletWindowRequestContext;
@@ -123,6 +124,7 @@ public class JetspeedRequestContext implements RequestContext
         if (null != this.request)
         {
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, this);
+            this.request.setAttribute(ContainerConstants.PORTAL_CONTEXT, this.request.getContextPath());
             PortalRequestFactory prf = null;
             try
             {
