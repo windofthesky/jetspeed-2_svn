@@ -357,7 +357,7 @@
           auto-update = "true"
           auto-retrieve = "true"
       >
-         <inverse-foreignkey field-ref="ownerId"/>
+         <inverse-foreignkey field-ref="applicationId"/>
       </collection-descriptor>
 
    <collection-descriptor
@@ -367,7 +367,7 @@
           auto-update = "true"
           auto-retrieve = "true"
       >
-         <inverse-foreignkey field-ref="ownerId"/>
+         <inverse-foreignkey field-ref="applicationId"/>
       </collection-descriptor>
 
    </class-descriptor>
