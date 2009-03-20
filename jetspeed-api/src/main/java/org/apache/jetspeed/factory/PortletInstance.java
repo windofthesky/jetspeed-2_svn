@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.factory;
 
+import javax.portlet.EventPortlet;
 import javax.portlet.Portlet;
+import javax.portlet.ResourceServingPortlet;
 
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 
@@ -27,7 +29,7 @@ import org.apache.jetspeed.container.JetspeedPortletConfig;
  * @version $Id$
  *
  */
-public interface PortletInstance extends Portlet
+public interface PortletInstance extends Portlet, EventPortlet, ResourceServingPortlet
 {
     JetspeedPortletConfig getConfig();
     Portlet getRealPortlet();

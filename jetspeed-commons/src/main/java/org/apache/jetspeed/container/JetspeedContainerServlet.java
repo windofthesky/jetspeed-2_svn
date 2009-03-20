@@ -26,14 +26,12 @@ import java.util.TimerTask;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.EventPortlet;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -254,17 +252,17 @@ public class JetspeedContainerServlet extends HttpServlet
                 RenderResponse renderResponse =  (RenderResponse)pwrc.getPortletResponse();
                 pwrc.getPortletInstance().render(renderRequest, renderResponse);
             }
-            else if (PortletWindowRequestContext.Action.EVENT.equals(pwrc.getAction()) && pwrc.getPortletInstance().getRealPortlet() instanceof EventPortlet)
+            else if (PortletWindowRequestContext.Action.EVENT.equals(pwrc.getAction()))
             {
                 EventRequest eventRequest = (EventRequest)pwrc.getPortletRequest();
                 EventResponse eventResponse =  (EventResponse)pwrc.getPortletResponse();
-                ((EventPortlet)pwrc.getPortletInstance().getRealPortlet()).processEvent(eventRequest, eventResponse);
+                pwrc.getPortletInstance().processEvent(eventRequest, eventResponse);
             }
-            else if (PortletWindowRequestContext.Action.RESOURCE.equals(pwrc.getAction()) && pwrc.getPortletInstance().getRealPortlet() instanceof ResourceServingPortlet)
+            else if (PortletWindowRequestContext.Action.RESOURCE.equals(pwrc.getAction()))
             {
                 ResourceRequest resourceRequest = (ResourceRequest)pwrc.getPortletRequest();
                 ResourceResponse resourceResponse = (ResourceResponse)pwrc.getPortletResponse();
-                ((ResourceServingPortlet)pwrc.getPortletInstance().getRealPortlet()).serveResource(resourceRequest, resourceResponse);
+                pwrc.getPortletInstance().serveResource(resourceRequest, resourceResponse);
             }
 
             // if we get this far we are home free

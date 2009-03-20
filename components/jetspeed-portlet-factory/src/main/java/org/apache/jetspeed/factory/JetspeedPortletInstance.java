@@ -20,11 +20,17 @@ import java.io.IOException;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.EventPortlet;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
 
 import org.apache.jetspeed.container.JetspeedPortletConfig;
@@ -109,12 +115,29 @@ public class JetspeedPortletInstance implements PortletInstance
       return portlet.toString();
   }
 
+  public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException
+  {
+      if (portlet instanceof EventPortlet)
+      {
+          checkAvailable();
+          ((EventPortlet)portlet).processEvent(request, response);
+      }
+  }
 
-/**
- * @return Returns the portlet.
- */
-public Portlet getRealPortlet()
-{
-    return portlet;
-}
+  public void serveResource(ResourceRequest request, ResourceResponse response) throws PortletException, IOException
+  {
+      if (portlet instanceof ResourceServingPortlet)
+      {
+          checkAvailable();
+          ((ResourceServingPortlet)portlet).serveResource(request, response);
+      }
+  }
+
+  /**
+   * @return Returns the portlet.
+   */
+  public Portlet getRealPortlet()
+  {
+      return portlet;
+  }
 }
