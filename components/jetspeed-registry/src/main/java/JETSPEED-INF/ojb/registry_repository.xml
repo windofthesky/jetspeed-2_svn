@@ -350,6 +350,26 @@
          <inverse-foreignkey field-ref="applicationId"/>
       </collection-descriptor>
       
+   <collection-descriptor
+         name="servletMappingURLPatternList"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.ServletMappingURLPatternImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+      </collection-descriptor>
+
+   <collection-descriptor
+         name="localeEncodingMappingList"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.ServletMappingURLPatternImpl"
+          auto-delete="true"
+          auto-update = "true"
+          auto-retrieve = "true"
+      >
+         <inverse-foreignkey field-ref="ownerId"/>
+      </collection-descriptor>
+
    </class-descriptor>
 
 <!--
@@ -2184,5 +2204,77 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
       />
 
     </class-descriptor>
+
+<!--
+   - S E R V L E T  M A P P I N G  U R L P A T T E R N
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.ServletMappingURLPatternImpl"
+      table="SERVLET_MAPPING_URLPATTERN"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="applicationId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="urlPattern"
+         column="VALUE"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+
+<!--
+   - L O C A L E   E N C O D I N G   M A P P I N G
+ -->
+   <class-descriptor
+      class="org.apache.jetspeed.om.portlet.impl.LocaleEncodingMappingImpl"
+      table="LOCALE_ENCODING_MAPPING"
+   >
+
+      <field-descriptor
+         name="id"
+         column="ID"
+         jdbc-type="BIGINT"
+         primarykey="true"
+         autoincrement="true"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="applicationId"
+         column="APPLICATION_ID"
+         jdbc-type="BIGINT"
+         access="anonymous"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />
+
+      <field-descriptor
+         name="encoding"
+         column="ENCODING"
+         jdbc-type="VARCHAR"
+      />
+
+    </class-descriptor>
+
 		
 </descriptor-repository>

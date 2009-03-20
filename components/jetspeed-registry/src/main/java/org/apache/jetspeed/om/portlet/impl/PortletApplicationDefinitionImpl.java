@@ -45,12 +45,14 @@ import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.Listener;
+import org.apache.jetspeed.om.portlet.LocaleEncodingMapping;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.SecurityRole;
+import org.apache.jetspeed.om.portlet.ServletMappingURLPattern;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.util.JetspeedLocale;
@@ -110,8 +112,8 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private List<UserAttributeRef> userAttributeRefs;
     private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
 
-    private Set<String> servletMappingURLPatterns;
-    private Map<Locale, String> localeEncodingMappings;
+    private List<ServletMappingURLPattern> servletMappingURLPatternList;
+    private List<LocaleEncodingMapping> localeEncodingMappingList;
     
     private transient Map<PortletMode,PortletMode> supportedCustomModes;
     private transient Map<WindowState,WindowState> supportedCustomStates;
@@ -119,6 +121,8 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private transient Map<WindowState,WindowState> mappedCustomStates;    
     private transient List<PortletMode> supportedPortletModes;
     private transient List<WindowState> supportedWindowStates;
+    private transient Set<String> servletMappingURLPatterns;
+    private transient Map<Locale, String> localeEncodingMappings;
     
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
@@ -874,28 +878,56 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl(this, name);
         getContainerRuntimeOptions().add(cro);
-        return cro;        
+        return cro;
     }
     
     public Set<String> getServletMappingURLPatterns()
     {
         if (servletMappingURLPatterns == null)
         {
-            servletMappingURLPatterns = new HashSet<String>();
-        }
+            if (servletMappingURLPatternList == null)
+            {
+                servletMappingURLPatterns = Collections.emptySet();
+            }
+            else
+            {
+                Set<String> patterns = new HashSet<String>();
+                for (ServletMappingURLPattern pat : servletMappingURLPatternList)
+                {
+                    patterns.add(pat.getURLPattern());
+                }
+                servletMappingURLPatterns = Collections.unmodifiableSet(patterns);
+            }
+        }                        
         return servletMappingURLPatterns;
     }
     
     public void addServletMappingURLPattern(String servletMappingURLPattern)
     {
-        getServletMappingURLPatterns().add(servletMappingURLPattern);
+        if (servletMappingURLPatternList == null)
+        {
+            servletMappingURLPatternList = new ArrayList<ServletMappingURLPattern>();
+        }
+        servletMappingURLPatternList.add(new ServletMappingURLPatternImpl(servletMappingURLPattern));
     }
     
     public Map<Locale, String> getLocaleEncodingMappings()
     {
         if (localeEncodingMappings == null)
         {
-            localeEncodingMappings = new HashMap<Locale,String>();
+            if (localeEncodingMappingList == null)
+            {
+                localeEncodingMappings = Collections.emptyMap();
+            }
+            else
+            {
+                Map<Locale, String> map = new HashMap<Locale,String>();
+                for (LocaleEncodingMapping lem : localeEncodingMappingList)
+                {
+                    map.put(lem.getLocale(), lem.getEncoding());
+                }
+                localeEncodingMappings = Collections.unmodifiableMap(map);
+            }
         }
         return localeEncodingMappings;
     }
