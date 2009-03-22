@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 
 /**
- * This class implements the MenuOptionsDefinition
- * interface in a persistent object form for use by
- * the page manager component.
+ * This class implements the MenuOptionsDefinition interface in a persistent object form for use by the page manager component.
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
@@ -32,37 +32,31 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
      * options - comma separated option paths specification for menu
      */
     private String options;
-
     /**
      * depth - depth of inclusion for folder options
      */
     private int depth;
-
     /**
      * paths - generate ordered path options for options
      */
     private boolean paths;
-
     /**
      * regexp - interpret specified optionsas regexp
      */
     private boolean regexp;
-
     /**
      * profile - profile locator name filter for options
      */
     private String profile;
-    
     /**
      * order - comma separated list of ordering patterns for options
      */
     private String order;
-    
     /**
      * skin - skin name for menu
      */
     private String skin;
-    
+
     /**
      * MenuOptionsDefinitionImpl - constructor
      */
@@ -72,7 +66,7 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * getOptions - get comma separated menu options
-     *
+     * 
      * @return option paths specification
      */
     public String getOptions()
@@ -82,8 +76,9 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * setOptions - set comma separated menu options
-     *
-     * @param options option paths specification
+     * 
+     * @param options
+     *            option paths specification
      */
     public void setOptions(String options)
     {
@@ -92,7 +87,7 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * getDepth - get depth of inclusion for folder options
-     *
+     * 
      * @return inclusion depth
      */
     public int getDepth()
@@ -102,8 +97,9 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * setDepth - set depth of inclusion for folder options
-     *
-     * @param depth inclusion depth
+     * 
+     * @param depth
+     *            inclusion depth
      */
     public void setDepth(int depth)
     {
@@ -112,27 +108,28 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * isPaths - get generate ordered path options
-     *
+     * 
      * @return paths options flag
      */
     public boolean isPaths()
     {
         return paths;
     }
-    
+
     /**
      * setPaths - set generate ordered path options
-     *
-     * @param paths paths options flag
+     * 
+     * @param paths
+     *            paths options flag
      */
     public void setPaths(boolean paths)
     {
         this.paths = paths;
     }
-    
+
     /**
      * isRegexp - get regexp flag for interpreting options
-     *
+     * 
      * @return regexp flag
      */
     public boolean isRegexp()
@@ -142,8 +139,9 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * setRegexp - set regexp flag for interpreting options
-     *
-     * @param regexp regexp flag
+     * 
+     * @param regexp
+     *            regexp flag
      */
     public void setRegexp(boolean regexp)
     {
@@ -152,7 +150,7 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * getProfile - get profile locator used to filter options
-     *
+     * 
      * @return profile locator name
      */
     public String getProfile()
@@ -162,8 +160,9 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * setProfile - set profile locator used to filter options
-     *
-     * @param locatorName profile locator name
+     * 
+     * @param locatorName
+     *            profile locator name
      */
     public void setProfile(String locatorName)
     {
@@ -172,7 +171,7 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * getOrder - get comma separated regexp ordering patterns
-     *
+     * 
      * @return ordering patterns list
      */
     public String getOrder()
@@ -182,8 +181,9 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * setOrder - set comma separated regexp ordering patterns
-     *
-     * @param order ordering patterns list
+     * 
+     * @param order
+     *            ordering patterns list
      */
     public void setOrder(String order)
     {
@@ -192,7 +192,7 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * getSkin - get skin name for options
-     *
+     * 
      * @return skin name
      */
     public String getSkin()
@@ -202,11 +202,32 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
 
     /**
      * setSkin - set skin name for options
-     *
-     * @param name skin name
+     * 
+     * @param name
+     *            skin name
      */
     public void setSkin(String name)
     {
         skin = name;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MenuOptionsDefinition))
+        {
+            return false;
+        }
+        else
+        {
+            MenuOptionsDefinition definition = (MenuOptionsDefinition) obj;
+            if (!StringUtils.equals(definition.getOptions(), options) || !StringUtils.equals(definition.getProfile(), profile) ||
+                !StringUtils.equals(definition.getOrder(), order) || !StringUtils.equals(definition.getSkin(), skin) || definition.getDepth() != depth ||
+                definition.isPaths() != paths || definition.isRegexp() != regexp)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
