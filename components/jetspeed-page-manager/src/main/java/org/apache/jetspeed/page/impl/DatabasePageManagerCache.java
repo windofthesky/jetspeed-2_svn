@@ -489,7 +489,7 @@ public class DatabasePageManagerCache implements ObjectCache
     /**
      * Clear transactions registered with current thread.
      */
-    public synchronized static void clearTransactions()
+    public static void clearTransactions()
     {
         transactionedOperations.remove();
     }
