@@ -566,11 +566,13 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                                                           PortalURL.URLType urlType, boolean navParamsStateFull, 
                                                           boolean renderParamsStateFull, boolean encodePublicRenderParams)
     {
+        // encode required url type
         StringBuffer buffer = new StringBuffer();
         buffer.append(URLTYPE_ID_KEYS[urlType.ordinal()]);
         buffer.append(windowId);
         boolean encoded = !PortalURL.URLType.RENDER.equals(urlType);
-        
+
+        // encode portlet mode and window state
         if (PortalURL.URLType.ACTION.equals(urlType) || !navParamsStateFull)
         {
             if (state.getPortletMode() != null)
@@ -589,6 +591,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             }
         }
 
+        // encode render parameters, (can be optionally be held in session state)
         if ((PortalURL.URLType.ACTION.equals(urlType) || !renderParamsStateFull))
         {
             if (state.getParametersMap() != null)
@@ -612,6 +615,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                     buffer.append(encodeArgument(state.getActionScopeId(), PARAMETER_SEPARATOR));
                 }
             }
+        }
+
+        // encode resource urls specific parameters
+        if (PortalURL.URLType.RESOURCE.equals(urlType))
+        {
             if (state.getCacheLevel() != null)
             {
                 encoded = true;
@@ -623,7 +631,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             {
                 encoded = true;
                 buffer.append(PARAMETER_SEPARATOR);
-                buffer.append(CACHE_LEVEL_KEY);
+                buffer.append(RESOURCE_ID_KEY);
                 buffer.append(encodeArgument(state.getResourceId(), PARAMETER_SEPARATOR));
             }
             if (state.getPrivateRenderParametersMap() != null)
@@ -631,7 +639,8 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 encoded = encodeParameterMap(encoded, PRIVATE_RENDER_PARAM_KEY, state.getPrivateRenderParametersMap(), buffer);
             }
         }
-        
+
+        // encode special case clear render parameters
         if (state.isClearParameters())
         {
             // Special case: for a targeted PortletWindow for which no parameters are specified 
@@ -642,7 +651,8 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             buffer.append(CLEAR_PARAMS_KEY);            
             encoded = true;
         }
-        
+
+        // encode public render parameters for single state, (can be optionally be held in session state)
         if (encodePublicRenderParams && (state.getPublicRenderParametersMap() != null) && (PortalURL.URLType.ACTION.equals(urlType) || !renderParamsStateFull))
         {
             // generate subset of public render parameters for this state
@@ -659,7 +669,8 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             }
             encoded = encodeParameterMap(encoded, PUBLIC_RENDER_PARAM_KEY, publicRenderParams, buffer);
         }
-        
+
+        // return encoded result if state other than url type is encoded
         return encoded ? buffer.toString() : "";
     }
     
@@ -774,8 +785,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                             }
                             case PRIVATE_RENDER_PARAM_KEY:
                             {
-                                // set private render parameter state
-                                currentState.setPrivateRenderParameters(parameterName[0], parameterValues[0]);
+                                // set private render parameter state for resource urls
+                                if (PortalURL.URLType.RESOURCE.equals(states.getURLType()))
+                                {
+                                    currentState.setPrivateRenderParameters(parameterName[0], parameterValues[0]);
+                                }
                                 break;
                             }
                             case PUBLIC_RENDER_PARAM_KEY:
@@ -807,22 +821,32 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                     {                        
                         case CACHE_LEVEL_KEY:
                         {
-                            currentState.setCacheLevel(parameter);
+                            // set cache level state for resource urls
+                            if (PortalURL.URLType.RESOURCE.equals(states.getURLType()))
+                            {
+                                currentState.setCacheLevel(parameter);
+                            }
                             break;
                         }
                         case RESOURCE_ID_KEY:
                         {
-                            currentState.setResourceId(parameter);
+                            // set resource id state for resource urls
+                            if (PortalURL.URLType.RESOURCE.equals(states.getURLType()))
+                            {
+                                currentState.setResourceId(parameter);
+                            }
                             break;                            
                         }
                         case ACTION_SCOPE_ID_KEY:
                         {
+                            // set action scope state
                             currentState.setActionScopeId(parameter);
                             currentState.setActionScopeRendered(false);
                             break;
                         }
                         case RENDERED_ACTION_SCOPE_ID_KEY:
                         {
+                            // set action scope state
                             currentState.setActionScopeId(parameter);
                             currentState.setActionScopeRendered(true);
                             break;
