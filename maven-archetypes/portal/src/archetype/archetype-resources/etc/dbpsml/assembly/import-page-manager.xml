@@ -44,6 +44,11 @@ limitations under the License.
         </property>
         <property name="transactionAttributes">
             <props>
+              <!--
+                  note: set cache transaction method name patterns in pageManagerInterceptor
+                  for methods that directly or indirectly add cache transactions so that
+                  they can properly rollback and cleanup thread local storage
+              -->
               <prop key="getPage*">PROPAGATION_SUPPORTS</prop>  
               <prop key="getLink*">PROPAGATION_SUPPORTS</prop>  
               <prop key="getFolder*">PROPAGATION_SUPPORTS</prop>  

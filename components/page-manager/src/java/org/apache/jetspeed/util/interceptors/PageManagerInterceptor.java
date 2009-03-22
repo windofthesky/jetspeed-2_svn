@@ -16,6 +16,10 @@
  */
 package org.apache.jetspeed.util.interceptors;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.jetspeed.page.impl.DatabasePageManagerCache;
@@ -27,28 +31,81 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerCache;
  */
 public class PageManagerInterceptor implements MethodInterceptor
 {
-
     /** Serialization version identifier */
     private static final long serialVersionUID = -1316279974504594833L;
-
+    
+    private final String[] cacheTransactionMethodsPrefix;
+    private final String[] cacheTransactionMethods;
+    
+    public PageManagerInterceptor(List cacheTransactionMethods)
+    {
+        List cacheTransactionMethodsPrefixList = new ArrayList();
+        List cacheTransactionMethodsList = new ArrayList();
+        for (Iterator iter = cacheTransactionMethods.iterator(); iter.hasNext();)
+        {
+            String cacheTransactionMethod = (String)iter.next();
+            if (cacheTransactionMethod.endsWith("*"))
+            {
+                cacheTransactionMethodsPrefixList.add(cacheTransactionMethod.substring(0,cacheTransactionMethod.length()-1));
+            }
+            else
+            {
+                cacheTransactionMethodsPrefixList.add(cacheTransactionMethod);
+            }
+        }
+        this.cacheTransactionMethodsPrefix = (String[]) cacheTransactionMethodsPrefixList.toArray(new String[cacheTransactionMethodsPrefixList.size()]);
+        this.cacheTransactionMethods = (String[]) cacheTransactionMethodsList.toArray(new String[cacheTransactionMethodsList.size()]);
+    }
+    
     /**
      * Encloses <code>super.invoke()</code> in a try/catch block, where the
      * catch block contains additional retry logic.
      */
     public Object invoke(MethodInvocation invocation) throws Throwable
     {
+        // filter DBPM cache transactional processing by method name
+        String methodName = invocation.getMethod().getName();
+        boolean performCacheTransactionProcessing = false;
+        for (int i = 0; (i < cacheTransactionMethodsPrefix.length); i++)
+        {
+            if (methodName.startsWith(cacheTransactionMethodsPrefix[i]))
+            {
+                performCacheTransactionProcessing = true;
+                break;
+            }
+        }
+        if (!performCacheTransactionProcessing)
+        {
+            for (int i = 0; (i < cacheTransactionMethods.length); i++)
+            {
+                if (methodName.equals(cacheTransactionMethods[i]))
+                {
+                    performCacheTransactionProcessing = true;
+                    break;
+                }
+            }
+        }
+        // invoke DBPM entry point
         try
         {            
             return invocation.proceed();
         } 
         catch (Exception exp)
         {
-            DatabasePageManagerCache.rollbackTransactions();
+            // rollback cache transactions
+            if (performCacheTransactionProcessing)
+            {
+                DatabasePageManagerCache.rollbackTransactions();
+            }
             throw exp;
         }
         finally
         {
-            DatabasePageManagerCache.clearTransactions();            
+            // clear cache transaction tracking
+            if (performCacheTransactionProcessing)
+            {
+                DatabasePageManagerCache.clearTransactions();
+            }
         }
     }
 

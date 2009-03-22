@@ -24,6 +24,17 @@
 <beans>
 
     <bean id="pageManagerInterceptor" class="org.apache.jetspeed.util.interceptors.PageManagerInterceptor">
+        <!--
+            set cache transaction method name patterns for methods that
+            directly or indirectly add cache transactions so that they
+            can properly rollback and cleanup thread local storage
+        -->
+        <constructor-arg> 
+            <list>
+                <value>update*</value>
+                <value>addPages</value>
+            </list>
+        </constructor-arg>
     </bean>
 
 
