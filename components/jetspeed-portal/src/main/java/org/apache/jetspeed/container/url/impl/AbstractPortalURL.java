@@ -104,14 +104,25 @@ public abstract class AbstractPortalURL implements PortalURL
     
     public String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action)
     {
-        return createNavigationalEncoding(window, parameters, mode, state, action ? URLType.ACTION : URLType.RENDER);
+        return createNavigationalEncoding(window, parameters, null, false, null, null, null, null, 
+                                          mode, state, action ? URLType.ACTION : URLType.RENDER);
     }
     
     public String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType)
     {
+        return createNavigationalEncoding(window, parameters, null, false, null, null, null, null, 
+                                          mode, state, urlType);
+    }
+
+    public String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                                             String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                                             PortletMode mode, WindowState state, URLType urlType)
+    {
         try
         {
-            return getNavigationalStateParameterName() + ":" + getNavigationalState().encode(window, parameters, mode, state, urlType);
+            String ns = getNavigationalState().encode(window, parameters, actionScopeId, actionScopeRendered, cacheLevel, resourceId, privateRenderParameters, publicRenderParameters,
+                                                      mode, state, urlType);
+            return getNavigationalStateParameterName() + ":" + ns;
         }
         catch (UnsupportedEncodingException e)
         {
@@ -124,7 +135,8 @@ public abstract class AbstractPortalURL implements PortalURL
     {
         try
         {
-            return getNavigationalStateParameterName() + ":" + getNavigationalState().encode(window, mode, state);
+            String ns = getNavigationalState().encode(window, mode, state);
+            return getNavigationalStateParameterName() + ":" + ns;
         }
         catch (UnsupportedEncodingException e)
         {
@@ -259,14 +271,25 @@ public abstract class AbstractPortalURL implements PortalURL
 
     public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
     {
-        return createPortletURL(window, parameters, mode, state, action ? URLType.ACTION : URLType.RENDER, secure);
+        return createPortletURL(window, parameters, null, false, null, null, null, null,
+                                mode, state, action ? URLType.ACTION : URLType.RENDER, secure);
     }
     
     public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType, boolean secure)
     {
+        return createPortletURL(window, parameters, null, false, null, null, null, null,
+                                mode, state, urlType, secure);
+    }
+    
+    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                                   String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                                   PortletMode mode, WindowState state, URLType urlType, boolean secure)
+    {
         try
         {
-            return createPortletURL(navState.encode(window,parameters,mode,state,urlType), secure);
+            String ns = getNavigationalState().encode(window, parameters, actionScopeId, actionScopeRendered, cacheLevel, resourceId, privateRenderParameters, publicRenderParameters,
+                                                      mode, state, urlType);
+            return createPortletURL(ns, secure);
         }
         catch (UnsupportedEncodingException e)
         {
@@ -281,7 +304,8 @@ public abstract class AbstractPortalURL implements PortalURL
     {
         try
         {
-            return createPortletURL(navState.encode(window,mode,state), secure);
+            String ns = navState.encode(window,mode,state);
+            return createPortletURL(ns, secure);
         }
         catch (UnsupportedEncodingException e)
         {

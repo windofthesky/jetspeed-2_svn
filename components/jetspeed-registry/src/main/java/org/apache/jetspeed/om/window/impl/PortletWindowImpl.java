@@ -25,6 +25,8 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * <P>

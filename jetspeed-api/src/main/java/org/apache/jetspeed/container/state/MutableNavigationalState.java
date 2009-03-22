@@ -62,6 +62,11 @@ public interface MutableNavigationalState extends NavigationalState
     void setState(PortletWindow window, WindowState windowState);
     
     /**
+     * Remove state for the given (possibly invalid) portlet window
+     */
+    void removeState(PortletWindow window);
+    
+    /**
      * Sets the portlet mode for the given portlet window.
      * 
      * @param window
@@ -76,10 +81,17 @@ public interface MutableNavigationalState extends NavigationalState
      */
     void clearParameters(PortletWindow window);
     
-    /**
-     * Remove state for the given (possibly invalid) portlet window
-     */
-    void removeState(PortletWindow window);
-    
     void setParametersMap(PortletWindow window, Map<String, String[]> parametersMap);
+
+    void setActionScopeId(PortletWindow window, String actionScopeId);
+    
+    void setActionScopeRendered(PortletWindow window, boolean actionScopeRendered);
+
+    void setCacheLevel(PortletWindow window, String cacheLevel);
+
+    void setResourceId(PortletWindow window, String resourceId);
+    
+    void setPrivateRenderParametersMap(PortletWindow window, Map<String, String[]> privateRenderParametersMap);
+
+    void setPublicRenderParametersMap(PortletWindow window, Map<String, String[]> publicRenderParametersMap);
 }

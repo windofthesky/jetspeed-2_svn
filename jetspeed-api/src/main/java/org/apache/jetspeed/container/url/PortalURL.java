@@ -133,8 +133,32 @@ public interface PortalURL
      * @param urlType indicates if an actionURL, Resource or renderURL is to created
      * @param secure indicates if a secure url is required 
      * @return a new actionURL or renderURL as String
+     * @deprecated
      */
     String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType, boolean secure);
+
+    /**
+     * Create a new PortletURL for a PortletWindow including request or action parameters.
+     * <br>
+     * The Portal Navigational State is encoded within the URL
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param actionScopeId the new action scope for the PortalWindow
+     * @param actionScopeRendered the new action scope rendered flag for the PortalWindow
+     * @param cacheLevel the new cache level for the PortalWindow resource
+     * @param resourceId the new resource id for the PortalWindow resource
+     * @param privateRenderParameters the new private render parameters for the PortalWindow resource
+     * @param publicRenderParameters the new request, action, or resource public render parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param urlType indicates if an actionURL, Resource or renderURL is to created
+     * @param secure indicates if a secure url is required 
+     * @return a new actionURL or renderURL as String
+     */
+    String createPortletURL(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                            String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                            PortletMode mode, WindowState state, URLType urlType, boolean secure);
 
     /**
      * Create a new PortletURL for a PortletWindow retaining its (request) parameters.
@@ -185,8 +209,31 @@ public interface PortalURL
      * @param urlType indicates if an actionURL, Resource or renderURL is to created
      * @param secure indicates if a secure url is required 
      * @return a new navigational state as String
+     * @deprecated
      */
     String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType);
+
+    /**
+     * Creates the navigational encoding for a given window
+     * Similiar to createPortletURL above
+     * 
+     * @param window the PortalWindow
+     * @param parameters the new request or action parameters for the PortalWindow
+     * @param actionScopeId the new action scope for the PortalWindow
+     * @param actionScopeRendered the new action scope rendered flag for the PortalWindow
+     * @param cacheLevel the new cache level for the PortalWindow resource
+     * @param resourceId the new resource id for the PortalWindow resource
+     * @param privateRenderParameters the new private render parameters for the PortalWindow resource
+     * @param publicRenderParameters the new request, action, or resource public render parameters for the PortalWindow
+     * @param mode the new PortletMode for the PortalWindow
+     * @param state the new WindowState for the PortalWindow
+     * @param urlType indicates if an actionURL, Resource or renderURL is to created
+     * @param secure indicates if a secure url is required 
+     * @return a new navigational state as String
+     */
+    String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                                      String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                                      PortletMode mode, WindowState state, URLType urlType);
     
     /**
      * Creates the navigational encoding for a given window

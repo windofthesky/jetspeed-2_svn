@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 
@@ -31,6 +33,7 @@ public class PortletWindowRequestNavigationalStates
     private PortletWindow maximizedWindow;
     private PortletWindow actionWindow;
     private PortletWindow resourceWindow;
+    private Map<QName, String[]> publicRenderParametersMap;
     
     public PortletWindowRequestNavigationalStates(String characterEncoding)
     {
@@ -112,5 +115,33 @@ public class PortletWindowRequestNavigationalStates
     public PortletWindow getResourceWindow()
     {
         return resourceWindow;
+    }
+
+    public Map<QName, String[]> getPublicRenderParametersMap()
+    {
+        return publicRenderParametersMap;
+    }
+
+    public void setPublicRenderParametersMap(Map<QName, String[]> publicRenderParametersMap)
+    {
+        this.publicRenderParametersMap = publicRenderParametersMap;
+    }
+
+    public void setPublicRenderParameters(QName qname, String[] values)
+    {
+        if (publicRenderParametersMap == null)
+        {
+            publicRenderParametersMap = new HashMap<QName, String[]>();
+        }
+        publicRenderParametersMap.put(qname, values);
+    }    
+    
+    public void addPublicRenderParametersMap(Map<QName, String[]> publicRenderParametersMap)
+    {
+        if (this.publicRenderParametersMap == null)
+        {
+            this.publicRenderParametersMap = new HashMap<QName, String[]>();
+        }
+        this.publicRenderParametersMap.putAll(publicRenderParametersMap);
     }
 }

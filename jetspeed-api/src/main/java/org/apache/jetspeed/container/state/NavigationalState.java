@@ -140,7 +140,29 @@ public interface NavigationalState
     String[] getParameterValues(PortletWindow window, String parameterName);
 
     Map<String, String[]> getParameterMap(PortletWindow window);
+
+    boolean isActionScopedRequestAttributes(PortletWindow window);
     
+    String getActionScopeId(PortletWindow window);
+    
+    boolean isActionScopeRendered(PortletWindow window);
+
+    String getCacheLevel(PortletWindow window);
+
+    String getResourceId(PortletWindow window);
+    
+    Iterator<String> getPrivateRenderParameterNames(PortletWindow window);
+    
+    String[] getPrivateRenderParameterValues(PortletWindow window, String parameterName);
+
+    Map<String, String[]> getPrivateRenderParameterMap(PortletWindow window);
+    
+    Iterator<String> getPublicRenderParameterNames(PortletWindow window);
+    
+    String[] getPublicRenderParameterValues(PortletWindow window, String parameterName);
+
+    Map<String, String[]> getPublicRenderParameterMap(PortletWindow window);
+
     PortalURL.URLType getURLType();
     
     PortletWindow getPortletWindowOfAction();
@@ -162,13 +184,21 @@ public interface NavigationalState
      * 
      * @param window the PortalWindow
      * @param parameters the new request or action parameters for the PortalWindow
+     * @param actionScopeId the new action scope for the PortalWindow
+     * @param actionScopeRendered the new action scope rendered flag for the PortalWindow
+     * @param cacheLevel the new cache level for the PortalWindow resource
+     * @param resourceId the new resource id for the PortalWindow resource
+     * @param privateRenderParameters the new private render parameters for the PortalWindow resource
+     * @param publicRenderParameters the new request, action, or resource public render parameters for the PortalWindow
      * @param mode the new PortletMode for the PortalWindow
      * @param state the new WindowState for the PortalWindow
      * @param action indicates if to be used in an actionURL or renderURL
      * @return encoded new Navigational State
      * @deprecated
      */
-    String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action) throws UnsupportedEncodingException;
+    String encode(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                  String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                  PortletMode mode, WindowState state, boolean action) throws UnsupportedEncodingException;
 
     /**
      * Encodes the Navigational State with overrides for a specific PortletWindow into a string to be embedded within a 
@@ -176,12 +206,20 @@ public interface NavigationalState
      * 
      * @param window the PortalWindow
      * @param parameters the new request or action parameters for the PortalWindow
+     * @param actionScopeId the new action scope for the PortalWindow
+     * @param actionScopeRendered the new action scope rendered flag for the PortalWindow
+     * @param cacheLevel the new cache level for the PortalWindow resource
+     * @param resourceId the new resource id for the PortalWindow resource
+     * @param privateRenderParameters the new private render parameters for the PortalWindow resource
+     * @param publicRenderParameters the new request, action, or resource public render parameters for the PortalWindow
      * @param mode the new PortletMode for the PortalWindow
      * @param state the new WindowState for the PortalWindow
      * @param urlType indicates if to be used in an actionURL, ResourceURL or renderURL
      * @return encoded new Navigational State
      */
-    String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, PortalURL.URLType urlType) throws UnsupportedEncodingException;
+    String encode(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                  String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                  PortletMode mode, WindowState state, PortalURL.URLType urlType) throws UnsupportedEncodingException;
 
     /**
      * Encodes the Navigational State with overrides for a specific PortletWindow while retaining its (request) 

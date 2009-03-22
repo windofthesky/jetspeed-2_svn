@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.ContentCacheKey;
@@ -44,14 +45,18 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         public Map<String, PortletWindowBaseNavigationalState> windowStates = Collections.synchronizedMap(new HashMap<String, PortletWindowBaseNavigationalState>());
         public String maximizedWindowId;
     }
-    
+
+    private final SessionNavigationalState navState;
     private final boolean storeParameters;
     private Map<String, PageState> pageStates = new HashMap<String, PageState>();
+    private Map<QName, String[]> publicRenderParametersMap = Collections.synchronizedMap(new HashMap<QName, String[]>());
 
-    public PortletWindowSessionNavigationalStates(boolean storeParameters)
+    public PortletWindowSessionNavigationalStates(SessionNavigationalState navState, boolean storeParameters)
     {
+        this.navState = navState;
         this.storeParameters = storeParameters;
     }
+    
     /*
      * JS2-806 patch
      * <p>
@@ -63,11 +68,15 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         final PortletMode viewMode = PortletMode.VIEW;
         final WindowState normalWindowState = WindowState.NORMAL;
         
-        PageState pageState = (PageState)pageStates.get(page.getId());
-        if ( pageState == null )
+        PageState pageState = null;
+        synchronized (pageStates)
         {
-            pageState = new PageState();
-            pageStates.put(page.getId(), pageState);
+            pageState = pageStates.get(page.getId());
+            if (pageState == null)
+            {
+                pageState = new PageState();
+                pageStates.put(page.getId(), pageState);
+            }
         }
         
         PortletWindowRequestNavigationalState requestState = null;
@@ -81,58 +90,62 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             removeFromCache(context, pageState.maximizedWindowId, decorationCache);                        
             pageState.maximizedWindowId = null;
         }
-        synchronized(pageState.windowStates){
-        Iterator<String> iter = requestStates.getWindowIdIterator();
-        iter = pageState.windowStates.keySet().iterator();
-        String windowId;
-        while ( iter.hasNext() )
+        synchronized (pageState.windowStates)
         {
-            windowId = (String)iter.next();
-            requestState = requestStates.getPortletWindowNavigationalState(windowId);
-            if ( requestState == null )
+            Iterator<String> iter = requestStates.getWindowIdIterator();
+            iter = pageState.windowStates.keySet().iterator();
+            String windowId;
+            while ( iter.hasNext() )
             {
-                requestState = new PortletWindowRequestNavigationalState(windowId);
-            }
-            //regardless, reset portlet mode and window state
-            requestState.setPortletMode(viewMode);
-            requestState.setWindowState(normalWindowState);
-            // get the session case just in case and create a new one
-            sessionState = (PortletWindowBaseNavigationalState)pageState.windowStates.get(requestState.getWindowId());
-            if ( sessionState == null )
-            {
-                if ( storeParameters )
+                windowId = (String)iter.next();
+                requestState = requestStates.getPortletWindowNavigationalState(windowId);
+                if ( requestState == null )
                 {
-                    sessionState = new PortletWindowExtendedNavigationalState();
+                    requestState = new PortletWindowRequestNavigationalState(windowId, navState.getActionScopedRequestAttributes(windowId));
                 }
-                else
+                //regardless, reset portlet mode and window state
+                requestState.setPortletMode(viewMode);
+                requestState.setWindowState(normalWindowState);
+                // get the session case just in case and create a new one
+                sessionState = (PortletWindowBaseNavigationalState)pageState.windowStates.get(requestState.getWindowId());
+                if ( sessionState == null )
                 {
-                    sessionState = new PortletWindowBaseNavigationalState();
+                    if ( storeParameters )
+                    {
+                        sessionState = new PortletWindowExtendedNavigationalState(requestState.isActionScopedRequestAttributes());
+                    }
+                    else
+                    {
+                        sessionState = new PortletWindowBaseNavigationalState();
+                    }
+                    pageState.windowStates.put(requestState.getWindowId(),sessionState);
                 }
-                pageState.windowStates.put(requestState.getWindowId(),sessionState);
-            }
-            //Now, sync up. NOTE we should not be in this method if there is an portlet action request.
-            boolean changed = syncStates(false, requestState,(PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
-            if (changed)
-            {
-                removeFromCache(context, requestState.getWindowId(), cache);
-                removeFromCache(context, page.getId(), decorationCache);                    
-                if (storeParameters)
+                //Now, sync up. NOTE we should not be in this method if there is an portlet action request.
+                boolean changed = syncStates(false, requestStates, requestState, (PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
+                if (changed)
                 {
-                    ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                    removeFromCache(context, requestState.getWindowId(), cache);
+                    removeFromCache(context, page.getId(), decorationCache);                    
+                    if (storeParameters)
+                    {
+                        ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                    }
                 }
-            }
-            
-        }      
+            }      
         } 
     }
     
     public void sync(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)    
     {
-        PageState pageState = (PageState)pageStates.get(page.getId());
-        if ( pageState == null )
+        PageState pageState = null;
+        synchronized (pageStates)
         {
-            pageState = new PageState();
-            pageStates.put(page.getId(), pageState);
+            pageState = (PageState)pageStates.get(page.getId());
+            if (pageState == null)
+            {
+                pageState = new PageState();
+                pageStates.put(page.getId(), pageState);
+            }
         }
         
         PortletWindowRequestNavigationalState requestState = null;
@@ -199,10 +212,10 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             pageState.maximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
         }
         
+        // now synchronize requestStates and sessionStates
         Iterator<String> iter = requestStates.getWindowIdIterator();
         String actionWindowId = requestStates.getActionWindow() != null ? requestStates.getActionWindow().getId().toString() : null;
         boolean actionRequestState = false;
-        // now synchronize requestStates and sessionStates
         while ( iter.hasNext() )
         {
             requestState = requestStates.getPortletWindowNavigationalState((String)iter.next());
@@ -211,7 +224,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             {
                 if ( storeParameters )
                 {
-                    sessionState = new PortletWindowExtendedNavigationalState();
+                    sessionState = new PortletWindowExtendedNavigationalState(requestState.isActionScopedRequestAttributes());
                 }
                 else
                 {
@@ -221,7 +234,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             }
 
             actionRequestState = actionWindowId != null && actionWindowId.equals(requestState.getWindowId());
-            boolean changed = syncStates(actionRequestState, requestState, sessionState);      
+            boolean changed = syncStates(actionRequestState, requestStates, requestState, sessionState);      
             if (changed)
             {
                 removeFromCache(context, requestState.getWindowId(), cache);
@@ -232,32 +245,146 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 }
             }
         }
-        
+
         // now copy missing requestStates from the pageState
-        synchronized(pageState.windowStates){
-        iter = pageState.windowStates.keySet().iterator();
-        String windowId;
-        while ( iter.hasNext() )
+        synchronized (pageState.windowStates)
         {
-            windowId = (String)iter.next();
-            requestState = requestStates.getPortletWindowNavigationalState(windowId);
-            if ( requestState == null )
+            iter = pageState.windowStates.keySet().iterator();
+            String windowId;
+            while ( iter.hasNext() )
             {
-                requestState = new PortletWindowRequestNavigationalState(windowId);
-                boolean changed = syncStates(false, requestState,(PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
-                requestStates.addPortletWindowNavigationalState(windowId, requestState);
-                if (changed)
+                windowId = (String)iter.next();
+                requestState = requestStates.getPortletWindowNavigationalState(windowId);
+                if ( requestState == null )
                 {
-                    removeFromCache(context, requestState.getWindowId(), cache);
-                    removeFromCache(context, page.getId(), decorationCache);                    
-                    if (storeParameters)
+                    requestState = new PortletWindowRequestNavigationalState(windowId, navState.getActionScopedRequestAttributes(windowId));
+                    boolean changed = syncStates(false, requestStates, requestState, (PortletWindowBaseNavigationalState)pageState.windowStates.get(windowId));
+                    requestStates.addPortletWindowNavigationalState(windowId, requestState);
+                    if (changed)
                     {
-                        ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                        removeFromCache(context, requestState.getWindowId(), cache);
+                        removeFromCache(context, page.getId(), decorationCache);                    
+                        if (storeParameters)
+                        {
+                            sessionState = pageState.windowStates.get(windowId);
+                            ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                        }
+                    }
+                }
+            }
+        }        
+
+        // sync session states public render parameters
+        Map<QName, String[]> changedPublicRenderParametersMap = null;
+        requestStates.setPublicRenderParametersMap(new HashMap<QName, String[]>());
+        iter = requestStates.getWindowIdIterator();
+        while (iter.hasNext())
+        {
+            String windowId = iter.next();
+            requestState = requestStates.getPortletWindowNavigationalState(windowId);
+            if (requestState.getPublicRenderParametersMap() != null)
+            {
+                // determine changed session states public render parameters
+                for (Map.Entry<String, String[]> parameter : requestState.getPublicRenderParametersMap().entrySet())
+                {
+                    String parameterName = parameter.getKey();
+                    String[] requestParameterValues = parameter.getValue();
+                    // get qname for request public render parameter name
+                    QName parameterQName = navState.getPublicRenderParameterQName(windowId, parameterName);
+                    if (parameterQName != null)
+                    {
+                        String[] sessionParameterValues = publicRenderParametersMap.get(parameterQName);
+                        if (changedParameterValues(requestParameterValues, sessionParameterValues))
+                        {
+                            // track changed public render parameter qnames and values
+                            if (changedPublicRenderParametersMap == null)
+                            {
+                                changedPublicRenderParametersMap = new HashMap<QName, String[]>();
+                            }
+                            changedPublicRenderParametersMap.put(parameterQName, requestParameterValues);
+                        }
                     }
                 }
             }
         }
-        }        
+        
+        // sync session states public render parameter changes
+        if (changedPublicRenderParametersMap != null)
+        {
+            for (Map.Entry<QName, String[]> parameterChange : changedPublicRenderParametersMap.entrySet())
+            {
+                QName changedParameterQName = parameterChange.getKey();
+                String[] changedParameterValues = parameterChange.getValue();
+                if (changedParameterValues != null)
+                {
+                    // sync new or updated public render parameter value
+                    publicRenderParametersMap.put(changedParameterQName, changedParameterValues);
+                }
+                else
+                {
+                    // null public render parameter value implies delete
+                    publicRenderParametersMap.remove(changedParameterQName);                    
+                }
+            }
+        }
+        
+        // clear cached contexts and encodings if public render parameters have changed
+        if (changedPublicRenderParametersMap != null)
+        {
+            // find pages and windows in session state that have public render parameters
+            synchronized (pageStates)
+            {
+                for (Map.Entry<String, PageState> sessionPageState : pageStates.entrySet())
+                {
+                    String pageId = sessionPageState.getKey();
+                    Map<String, PortletWindowBaseNavigationalState> windowStates = sessionPageState.getValue().windowStates;
+                    for (Map.Entry<String, PortletWindowBaseNavigationalState> windowState : windowStates.entrySet())
+                    {
+                        String windowId = windowState.getKey();
+                        sessionState = windowState.getValue();
+                        // test window for changed public render parameter qnames
+                        if (navState.hasPublicRenderParameterQNames(windowId, changedPublicRenderParametersMap.keySet()))
+                        {
+                            // clear cached items associated with window
+                            removeFromCache(context, windowId, cache);
+                            removeFromCache(context, pageId, decorationCache);                    
+                            if (storeParameters)
+                            {
+                                ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
+                            }                            
+                        }
+                    }
+                }
+            }
+        }
+        
+        // reset and sync request states public render parameters
+        requestStates.setPublicRenderParametersMap(null);
+        iter = requestStates.getWindowIdIterator();
+        while (iter.hasNext())
+        {
+            String windowId = iter.next();
+            requestState = requestStates.getPortletWindowNavigationalState(windowId);
+            requestState.setPublicRenderParametersMap(null);
+            // get all public render parameter names for window
+            Map<String, QName> parameterNames = navState.getPublicRenderParameterNamesMap(windowId);
+            if (parameterNames != null)
+            {
+                // get synced session public render parameter values 
+                for (Map.Entry<String, QName> parameterNamesEntry : parameterNames.entrySet())
+                {
+                    QName parameterQName = parameterNamesEntry.getValue();
+                    String[] parameterValues = publicRenderParametersMap.get(parameterQName);
+                    if (parameterValues != null)
+                    {
+                        // refresh request state and states public render parameters
+                        String parameterName = parameterNamesEntry.getKey();
+                        requestState.setPublicRenderParameters(parameterName, parameterValues);
+                        requestStates.setPublicRenderParameters(parameterQName, parameterValues);
+                    }
+                }
+            }
+        }
     }
     
     private boolean modeChanged(PortletMode req, PortletMode ses)
@@ -301,13 +428,15 @@ public class PortletWindowSessionNavigationalStates implements Serializable
     }
 
     
-    private boolean syncStates(boolean actionRequestState, PortletWindowRequestNavigationalState requestState, PortletWindowBaseNavigationalState sessionState)
+    private boolean syncStates(boolean actionRequestState, PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, PortletWindowBaseNavigationalState sessionState)
     {
         boolean changed = false;
         
-        if (modeChanged(requestState.getPortletMode(), sessionState.getPortletMode())
-                || stateChanged(requestState.getWindowState(), sessionState.getWindowState()))
+        if (modeChanged(requestState.getPortletMode(), sessionState.getPortletMode()) ||
+            stateChanged(requestState.getWindowState(), sessionState.getWindowState()))
+        {
             changed = true;
+        }
                        
         if ( requestState.getPortletMode() != null )
         {
@@ -351,6 +480,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         
         if (storeParameters)
         {
+            // sync parameters
             PortletWindowExtendedNavigationalState extendedSessionState = (PortletWindowExtendedNavigationalState)sessionState;
             if ( requestState.getParametersMap() != null )
             {
@@ -364,47 +494,97 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                     if (changedParameters(requestState.getParametersMap(), extendedSessionState.getParametersMap()))
                     {
                         changed = true;
+                        extendedSessionState.setParametersMap(new HashMap<String, String[]>(requestState.getParametersMap()));
                     }
-                    extendedSessionState.setParametersMap(new HashMap<String, String[]>(requestState.getParametersMap()));
                 }
             }
             else if ( requestState.isClearParameters() )
             {
                 extendedSessionState.setParametersMap(null);
-                requestState.setClearParameters(false);
-                //changed = true;
             }            
             else if ( extendedSessionState.getParametersMap() != null )
             {
                 requestState.setParametersMap(new HashMap<String, String[]>(extendedSessionState.getParametersMap()));
             }
+            
+            // sync action scope parameter
+            if (requestState.isActionScopedRequestAttributes() && extendedSessionState.isActionScopedRequestAttributes())
+            {
+                if (requestState.getActionScopeId() != null)
+                {
+                    if (changedActionScope(requestState.getActionScopeId(), extendedSessionState.getActionScopeId()))
+                    {
+                        changed = true;
+                    }
+                    extendedSessionState.setActionScopeId(requestState.getActionScopeId());
+                    extendedSessionState.setActionScopeRendered(requestState.isActionScopeRendered());
+                }
+                else if (requestState.isClearParameters())
+                {
+                    extendedSessionState.setActionScopeId(null);
+                    extendedSessionState.setActionScopeRendered(false);
+                }
+                else if (extendedSessionState.getActionScopeId() != null)
+                {
+                    requestState.setActionScopeId(extendedSessionState.getActionScopeId());
+                    requestState.setActionScopeRendered(extendedSessionState.isActionScopeRendered());                
+                }
+            }
+
+            // reset clear parameters
+            if (requestState.isClearParameters())
+            {
+                requestState.setClearParameters(false);
+            }            
         }
         return changed;
     }    
 
     protected boolean changedParameters(Map<String, String[]> requestMap, Map<String, String[]> sessionMap)
     {
-        if (sessionMap == null || requestMap == null)
+        if (requestMap == null || sessionMap == null)
+        {
             return true;
+        }
         if (requestMap.size() != sessionMap.size())
+        {
             return true;
+        }
         Iterator<Map.Entry<String, String[]>> ri = requestMap.entrySet().iterator();
-        Iterator<Map.Entry<String, String[]>> si = sessionMap.entrySet().iterator();
-        while (ri.hasNext() && si.hasNext())
+        while (ri.hasNext())
         {
             Map.Entry<String, String[]> r = ri.next();
-            Map.Entry<String, String[]> s = si.next();
-            if (!r.getKey().equals(s.getKey()))
-                return true;
-            String[] rvals = r.getValue();
-            String[] svals = s.getValue();            
-            for (int ix = 0; ix < rvals.length; ix++)
+            if (changedParameterValues(r.getValue(), sessionMap.get(r.getKey())))
             {
-                if (!rvals[ix].equals(svals[ix]))
-                    return true;
+                return true;
             }
         }
         return false;
+    }
+    
+    protected boolean changedParameterValues(String[] requestValues, String[] sessionValues)
+    {
+        if ((requestValues == null) || (sessionValues == null) || (requestValues.length != sessionValues.length))
+        {
+            return true;
+        }
+        for (int ix = 0; ix < requestValues.length; ix++)
+        {
+            if (!requestValues[ix].equals(sessionValues[ix]))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean changedActionScope(String requestActionScope, String sessionActionScope)
+    {
+        if ((requestActionScope == null) || (sessionActionScope == null))
+        {
+            return true;
+        }
+        return !requestActionScope.equals(sessionActionScope);
     }
     
     protected void removeFromCache(RequestContext context, String id, JetspeedContentCache cache)

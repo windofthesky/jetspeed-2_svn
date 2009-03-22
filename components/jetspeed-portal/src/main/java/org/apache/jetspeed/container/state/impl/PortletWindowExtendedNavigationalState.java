@@ -64,10 +64,21 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
         }
     }
     
+    public PortletWindowExtendedNavigationalState(boolean actionScopedRequestAttributes)
+    {
+        this.actionScopedRequestAttributes = actionScopedRequestAttributes;
+    }
+    
     private Map<String, String[]> parametersMap;
+
+    private boolean actionScopedRequestAttributes;
+    
+    private String actionScopeId;
+    
+    private boolean actionScopeRendered;
     
     private Map<ModeStateKey, String> decoratorActionEncodings;
-        
+
     public Map<String, String[]> getParametersMap()
     {
         return parametersMap;
@@ -85,6 +96,31 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     public void setParametersMap(Map<String, String[]> parametersMap)
     {
         this.parametersMap = parametersMap;
+    }
+    
+    public boolean isActionScopedRequestAttributes()
+    {
+        return actionScopedRequestAttributes;
+    }
+    
+    public String getActionScopeId()
+    {
+        return actionScopeId;
+    }
+    
+    public void setActionScopeId(String actionScopeId)
+    {
+        this.actionScopeId = actionScopeId;
+    }
+    
+    public boolean isActionScopeRendered()
+    {
+        return actionScopeRendered;
+    }
+    
+    public void setActionScopeRendered(boolean actionScopeRendered)
+    {
+        this.actionScopeRendered = actionScopeRendered;
     }
     
     public void resetDecoratorActionEncodings()

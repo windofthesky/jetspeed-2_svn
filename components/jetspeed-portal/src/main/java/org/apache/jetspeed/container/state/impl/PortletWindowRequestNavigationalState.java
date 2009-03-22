@@ -16,6 +16,9 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * PortletWindowRequestNavigationalState
  *
@@ -26,7 +29,11 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
 {
     private static final long serialVersionUID = 3807035638733358425L;
 
-    private String  windowId;
+    private String windowId;
+    private String cacheLevel;
+    private String resourceId;
+    private Map<String, String[]> privateRenderParametersMap;
+    private Map<String, String[]> publicRenderParametersMap;
     
     /**
      * true if for a targeted PortletWindow using StateFullParameters the saved (in the session) render parameters
@@ -37,8 +44,9 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
      */
     private boolean clearParameters;
 
-    public PortletWindowRequestNavigationalState(String windowId)
+    public PortletWindowRequestNavigationalState(String windowId, boolean actionScopedRequestAttributes)
     {
+        super(actionScopedRequestAttributes);
         this.windowId = windowId;
     }
 
@@ -47,6 +55,64 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
         return windowId;
     }
         
+    public String getCacheLevel()
+    {
+        return cacheLevel;
+    }
+
+    public void setCacheLevel(String cacheLevel)
+    {
+        this.cacheLevel = cacheLevel;
+    }
+
+    public String getResourceId()
+    {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId)
+    {
+        this.resourceId = resourceId;
+    }
+
+    public Map<String, String[]> getPrivateRenderParametersMap()
+    {
+        return privateRenderParametersMap;
+    }
+
+    public void setPrivateRenderParameters(String name, String[] values)
+    {
+        if (privateRenderParametersMap == null)
+        {
+            privateRenderParametersMap = new HashMap<String, String[]>();
+        }
+        privateRenderParametersMap.put(name, values);
+    }    
+    
+    public void setPrivateRenderParametersMap(Map<String, String[]> privateRenderParametersMap)
+    {
+        this.privateRenderParametersMap = privateRenderParametersMap;
+    }
+    
+    public Map<String, String[]> getPublicRenderParametersMap()
+    {
+        return publicRenderParametersMap;
+    }
+
+    public void setPublicRenderParameters(String name, String[] values)
+    {
+        if ( publicRenderParametersMap == null )
+        {
+            publicRenderParametersMap = new HashMap<String, String[]>();
+        }
+        publicRenderParametersMap.put(name, values);
+    }    
+    
+    public void setPublicRenderParametersMap(Map<String, String[]> publicRenderParametersMap)
+    {
+        this.publicRenderParametersMap = publicRenderParametersMap;
+    }
+    
     public boolean isClearParameters()
     {
         return clearParameters;

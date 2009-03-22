@@ -24,4 +24,5 @@ import java.io.Serializable;
  */
 public interface ContainerRuntimeOption extends org.apache.pluto.container.om.portlet.ContainerRuntimeOption, Serializable
 {
+    public static final String ACTION_SCOPED_REQUEST_ATTRIBUTES_OPTION = "javax.portlet.actionScopedRequestAttributes";
 }

@@ -18,24 +18,46 @@ package org.apache.jetspeed.container.state.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 
 public interface NavigationalStateCodec
 {
-    PortletWindowRequestNavigationalStates decode(String parameters, String characterEncoding) throws UnsupportedEncodingException;
+    PortletWindowRequestNavigationalStates decode(String parameters, String characterEncoding)
+        throws UnsupportedEncodingException;
 
     String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, PortletMode portletMode,
-            WindowState windowState, boolean navParamsStateFull, boolean renderParamsStateFull) throws UnsupportedEncodingException;
+                  WindowState windowState, boolean navParamsStateFull, boolean renderParamsStateFull)
+        throws UnsupportedEncodingException;
 
     String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, Map<String, String[]> parameters,
-            PortletMode portletMode, WindowState windowState, PortalURL.URLType urlType, boolean navParamsStateFull, 
-            boolean renderParamsStateFull) throws UnsupportedEncodingException;
+                  String actionScopeId, boolean actionScopeRendered, String cacheLevel, String resourceId,
+                  Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                  PortletMode portletMode, WindowState windowState, PortalURL.URLType urlType, boolean navParamsStateFull, 
+                  boolean renderParamsStateFull)
+        throws UnsupportedEncodingException;
 
     String encode(PortletWindowRequestNavigationalStates states, boolean navParamsStateFull, boolean renderParamsStateFull) 
-            throws UnsupportedEncodingException;
+        throws UnsupportedEncodingException;
+
+    void setStatePublicRenderParametersMap(PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, Map<String, String[]> publicRenderParametersMap);
+    void updateStatesPublicRenderParametersMap(PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, Map<String, String[]> publicRenderParametersMap);
+
+    boolean getActionScopedRequestAttributes(PortletWindow window);
+    boolean getActionScopedRequestAttributes(String windowId);
+
+    QName getPublicRenderParameterQName(PortletWindow window, String identifier);
+    QName getPublicRenderParameterQName(String windowId, String identifier);
+
+    Map<String, QName> getPublicRenderParameterNamesMap(PortletWindow window);
+    Map<String, QName> getPublicRenderParameterNamesMap(String windowId);
+
+    boolean hasPublicRenderParameterQNames(PortletWindow window, Set<QName> qnames);
+    boolean hasPublicRenderParameterQNames(String windowId, Set<QName> qnames);
 }

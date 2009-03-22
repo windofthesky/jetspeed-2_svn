@@ -199,12 +199,9 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         return buffer.toString();
     }        
     
-    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action, boolean secure)
-    {
-        return createPortletURL(window, parameters, mode, state, action ? URLType.ACTION : URLType.RENDER ,secure);
-    }
-    
-    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, URLType urlType, boolean secure)
+    public String createPortletURL(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+            String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+            PortletMode mode, WindowState state, URLType urlType, boolean secure)
     {
         try
         {
@@ -214,7 +211,9 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
             	desktopRequestNotAjax = true;
             	parameters.remove(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER);
             }
-            return createPortletURL(this.getNavigationalState().encode(window,parameters,mode,state,urlType), secure, window, urlType, desktopRequestNotAjax);
+            String ns = getNavigationalState().encode(window, parameters, actionScopeId, actionScopeRendered, cacheLevel, resourceId, privateRenderParameters, publicRenderParameters,
+                                                      mode, state, urlType);
+            return createPortletURL(ns, secure, window, urlType, desktopRequestNotAjax);
         }
         catch (UnsupportedEncodingException e)
         {

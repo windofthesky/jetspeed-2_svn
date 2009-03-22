@@ -109,7 +109,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
                 PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
                 if ( sessionStates == null )
                 {
-                    sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
+                    sessionStates = new PortletWindowSessionNavigationalStates(this, isRenderParameterStateFull());
                     session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
                 }
                 Page page = context.getPage();

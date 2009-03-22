@@ -46,26 +46,56 @@ public class HybridNavigationalState extends SessionNavigationalState
         this.prefix = prefix;
     }
     
-    public String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, boolean action)
+    public String encode(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
+                         String cacheLevel, String resourceId, Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                         PortletMode mode, WindowState state, PortalURL.URLType urlType)
     throws UnsupportedEncodingException
     {
-        return encode(window, parameters, mode, state, action ? PortalURL.URLType.ACTION : PortalURL.URLType.RENDER);
-    }
-    public String encode(PortletWindow window, Map<String, String[]> parameters, PortletMode mode, WindowState state, PortalURL.URLType urlType)
-    throws UnsupportedEncodingException
-    {
-        Map<String, String[]> subset = new HashMap<String, String[]>();
-        Iterator<String> params = parameters.keySet().iterator();
-        while (params.hasNext())
+        // only encode render parameters that start with prefix
+        Map<String, String[]> paramsSubset = null;
+        if (parameters != null)
         {
-            String key = params.next();
-            if (key.startsWith(prefix))
+            paramsSubset = new HashMap<String, String[]>();
+            Iterator<String> params = parameters.keySet().iterator();
+            while (params.hasNext())
             {
-                // only encode params that start with prefix
-                subset.put(key, parameters.get(key));
+                String key = params.next();
+                if (key.startsWith(prefix))
+                {
+                    paramsSubset.put(key, parameters.get(key));
+                }
             }
         }
-        return super.encode(window, subset, mode, state, urlType);
+        Map<String, String[]> privateRenderParamsSubset = null;
+        if (privateRenderParameters != null)
+        {
+            privateRenderParamsSubset = new HashMap<String, String[]>();
+            Iterator<String> params = privateRenderParameters.keySet().iterator();
+            while (params.hasNext())
+            {
+                String key = params.next();
+                if (key.startsWith(prefix))
+                {
+                    privateRenderParamsSubset.put(key, privateRenderParameters.get(key));
+                }
+            }
+        }
+        Map<String, String[]> publicRenderParamsSubset = null;
+        if (publicRenderParameters != null)
+        {
+            publicRenderParamsSubset = new HashMap<String, String[]>();
+            Iterator<String> params = publicRenderParameters.keySet().iterator();
+            while (params.hasNext())
+            {
+                String key = params.next();
+                if (key.startsWith(prefix))
+                {
+                    publicRenderParamsSubset.put(key, publicRenderParameters.get(key));
+                }
+            }
+        }
+        // encode using subsets
+        return super.encode(window, paramsSubset, actionScopeId, actionScopeRendered, cacheLevel, resourceId, privateRenderParamsSubset, publicRenderParamsSubset, mode, state, urlType);
     }
 
     public boolean isNavigationalParameterStateFull()

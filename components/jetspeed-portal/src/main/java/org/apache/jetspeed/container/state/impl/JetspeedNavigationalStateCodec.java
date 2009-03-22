@@ -18,21 +18,27 @@ package org.apache.jetspeed.container.state.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 
 /**
  * JetspeedNavigationalStateCodec
@@ -54,6 +60,12 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected static final char PARAM_KEY = 'e';
     protected static final char CLEAR_PARAMS_KEY = 'f';
     protected static final char RESOURCE_WINDOW_ID_KEY = 'g';
+    protected static final char CACHE_LEVEL_KEY = 'h';
+    protected static final char RESOURCE_ID_KEY = 'i';
+    protected static final char PRIVATE_RENDER_PARAM_KEY = 'j';
+    protected static final char PUBLIC_RENDER_PARAM_KEY = 'k';
+    protected static final char ACTION_SCOPE_ID_KEY = 'l';
+    protected static final char RENDERED_ACTION_SCOPE_ID_KEY = 'm';
     protected static final char[] URLTYPE_ID_KEYS = { 'b', 'g', 'a' };
     
     protected static final String keytable = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -91,18 +103,19 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             throw new UnsupportedOperationException("Too many supported WindowModes found. Can only handle max: "+keytable.length());
         }
     }
-    
+
     public PortletWindowRequestNavigationalStates decode(String parameters, String characterEncoding)
     throws UnsupportedEncodingException
     {
         PortletWindowRequestNavigationalStates states = new PortletWindowRequestNavigationalStates(characterEncoding);
         if ( parameters != null && parameters.length() > 0 ) 
         {
+            // decode parameters
             String decodedParameters = decodeParameters(parameters, characterEncoding);
-            
+
+            // decode arguments and parameters into states
             int position = 0;
-            StringBuffer buffer = new StringBuffer();
-            
+            StringBuffer buffer = new StringBuffer();            
             PortletWindowRequestNavigationalState currentState = null;
             String parameter;
             while ( (position = decodeArgument(position, decodedParameters, buffer, PARAMETER_SEPARATOR )) != -1 )
@@ -110,7 +123,35 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 parameter = buffer.toString();
                 currentState = decodeParameter( windowAccessor, states, currentState, parameter);
             }
-            
+
+            // propagate public parameter state to states
+            if (states.getPublicRenderParametersMap() != null)
+            {
+                Iterator<String> windowIdIter = states.getWindowIdIterator();
+                while (windowIdIter.hasNext())
+                {
+                    PortletWindowRequestNavigationalState state = states.getPortletWindowNavigationalState(windowIdIter.next());
+                    PortletWindow window = windowAccessor.getPortletWindow(state.getWindowId());
+                    if (window != null)
+                    {
+                        PortletApplication pa = window.getPortletEntity().getPortletDefinition().getApplication();
+                        if (pa.getPublicRenderParameters() != null)
+                        {
+                            for (PublicRenderParameter publicRenderParameter : pa.getPublicRenderParameters())
+                            {
+                                QName parameterQName = publicRenderParameter.getQName();
+                                String[] parameterValues = states.getPublicRenderParametersMap().get(parameterQName);
+                                if (parameterValues != null)
+                                {
+                                    state.setPublicRenderParameters(publicRenderParameter.getIdentifier(), parameterValues);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // debug decode
             if ( log.isDebugEnabled() )
             {
                 logDecode(states, buffer);
@@ -155,49 +196,80 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             {
                 buffer.append(",state:"+currentState.getWindowState());
             }
+            if (currentState.getCacheLevel() != null )
+            {
+                buffer.append(",cache level:"+currentState.getCacheLevel());
+            }
+            if (currentState.getResourceId() != null )
+            {
+                buffer.append(",resource id:"+currentState.getResourceId());
+            }
+            if (currentState.isActionScopedRequestAttributes())
+            {
+                if (currentState.getActionScopeId() != null )
+                {
+                    buffer.append(",action scope id:"+currentState.getActionScopeId());
+                    buffer.append(",action scope rendered:"+currentState.isActionScopeRendered());
+                }
+            }
             if (!currentState.isClearParameters())
             {
                 if (currentState.getParametersMap() != null)
                 {
-                    buffer.append(",parameters:[");
-                    boolean first = true;
-                    Iterator<String> parIter = currentState.getParametersMap().keySet().iterator();
-                    while ( parIter.hasNext() ) 
-                    {
-                        if ( first )
-                        {
-                            first = false;
-                        }
-                        else
-                        {
-                            buffer.append(",");
-                        }
-                        String name = parIter.next();
-                        buffer.append(name+":[");
-                        String[] values = currentState.getParametersMap().get(name);
-                        for ( int i = 0; i < values.length; i++ )
-                        {
-                            if ( i > 0 )
-                            {
-                                buffer.append(",");
-                            }                                    
-                            buffer.append(values[i]);
-                        }
-                        buffer.append("]");
-                    }
+                    logDecode("parameters", currentState.getParametersMap(), buffer);
+                }
+                if (currentState.getPrivateRenderParametersMap() != null)
+                {
+                    logDecode("private render parameters", currentState.getPrivateRenderParametersMap(), buffer);
+                }
+                if (currentState.getPublicRenderParametersMap() != null)
+                {
+                    logDecode("public render parameters", currentState.getPublicRenderParametersMap(), buffer);
                 }
             }
             buffer.append("]");
         }
     }
     
+    private void logDecode(String parameterNameMap, Map<String, String[]> parametersMap, StringBuffer buffer)
+    {
+        buffer.append(",");
+        buffer.append(parameterNameMap);
+        buffer.append(":[");
+        boolean first = true;
+        Iterator<String> parIter = parametersMap.keySet().iterator();
+        while ( parIter.hasNext() ) 
+        {
+            if ( first )
+            {
+                first = false;
+            }
+            else
+            {
+                buffer.append(",");
+            }
+            String name = parIter.next();
+            buffer.append(name+":[");
+            String[] values = parametersMap.get(name);
+            for ( int i = 0; i < values.length; i++ )
+            {
+                if ( i > 0 )
+                {
+                    buffer.append(",");
+                }                                    
+                buffer.append(values[i]);
+            }
+            buffer.append("]");
+        }        
+    }
+
     public String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, PortletMode portletMode, 
-            WindowState windowState, boolean navParamsStateFull, boolean renderParamsStateFull)
+                         WindowState windowState, boolean navParamsStateFull, boolean renderParamsStateFull)
     throws UnsupportedEncodingException
     {
         String windowId = window.getId().toString();
         PortletWindowRequestNavigationalState currentState = states.getPortletWindowNavigationalState(windowId);
-        PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId);
+        PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId, getActionScopedRequestAttributes(window));
         targetState.setPortletMode(portletMode != null ? portletMode : currentState != null ? currentState.getPortletMode() : null);
         targetState.setWindowState(windowState != null ? windowState : currentState != null ? currentState.getWindowState() : null);
 
@@ -220,17 +292,25 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         return encode(states, windowId, targetState, PortalURL.URLType.RENDER, navParamsStateFull, renderParamsStateFull);
     }
 
-    public String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, Map<String, String[]> parameters, 
-            PortletMode portletMode, WindowState windowState, PortalURL.URLType urlType, boolean navParamsStateFull, 
-            boolean renderParamsStateFull)
+    public String encode(PortletWindowRequestNavigationalStates states, PortletWindow window, Map<String, String[]> parameters,
+                         String actionScopeId, boolean actionScopeRendered, String cacheLevel, String resourceId,
+                         Map<String, String[]> privateRenderParameters, Map<String, String[]> publicRenderParameters,
+                         PortletMode portletMode, WindowState windowState, PortalURL.URLType urlType, boolean navParamsStateFull, 
+                         boolean renderParamsStateFull)
     throws UnsupportedEncodingException
     {
         String windowId = window.getId().toString();
         PortletWindowRequestNavigationalState currentState = states.getPortletWindowNavigationalState(windowId);
-        PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId);
+        PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId, getActionScopedRequestAttributes(window));
         targetState.setPortletMode(portletMode != null ? portletMode : currentState != null ? currentState.getPortletMode() : null);
         targetState.setWindowState(windowState != null ? windowState : currentState != null ? currentState.getWindowState() : null);
         targetState.setParametersMap(parameters);
+        targetState.setActionScopeId(actionScopeId);
+        targetState.setActionScopeRendered(actionScopeRendered);
+        targetState.setCacheLevel(cacheLevel);
+        targetState.setResourceId(resourceId);
+        targetState.setPrivateRenderParametersMap(privateRenderParameters);
+        setStatePublicRenderParametersMap(states, targetState, publicRenderParameters);
         if ( renderParamsStateFull && parameters == null )
         {
             // Indicate that the saved (in the session) render parameters for this PortletWindow must be cleared
@@ -240,39 +320,80 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         return encode(states, windowId, targetState, urlType, navParamsStateFull, renderParamsStateFull);
     }
 
+    public void setStatePublicRenderParametersMap(PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, Map<String, String[]> publicRenderParametersMap)
+    {
+        // set public render parameters map for state
+        boolean resetStatesPublicRenderParameters = (requestState.getPublicRenderParametersMap() != null);
+        requestState.setPublicRenderParametersMap(publicRenderParametersMap);
+        if (resetStatesPublicRenderParameters)
+        {
+            // reset request states public render parameters map
+            requestStates.setPublicRenderParametersMap(null);
+            // repopulate request states public render parameters map
+            Iterator<String> iter = requestStates.getWindowIdIterator();
+            while (iter.hasNext())
+            {
+                String iterWindowId = iter.next();
+                PortletWindowRequestNavigationalState iterRequestState = requestStates.getPortletWindowNavigationalState(iterWindowId);
+                if (iterRequestState != requestState)
+                {
+                    updateStatesPublicRenderParametersMap(requestStates, iterRequestState, iterRequestState.getPublicRenderParametersMap());
+                }
+            }
+        }
+        // update request states public render parameters map
+        updateStatesPublicRenderParametersMap(requestStates, requestState, publicRenderParametersMap);
+    }
+        
+    public void updateStatesPublicRenderParametersMap(PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, Map<String, String[]> publicRenderParametersMap)
+    {
+        if (publicRenderParametersMap != null)
+        {
+            // update request states public render parameters map
+            String windowId = requestState.getWindowId();
+            for (Map.Entry<String, String[]> parameter : publicRenderParametersMap.entrySet())
+            {
+                String parameterName = parameter.getKey();
+                String[] parameterValues = parameter.getValue();
+                // get qname for request public render parameter name
+                QName parameterQName = getPublicRenderParameterQName(windowId, parameterName);
+                if (parameterQName != null)
+                {
+                    requestStates.setPublicRenderParameters(parameterQName, parameterValues);
+                }
+            }
+        }            
+    }
+        
     public String encode(PortletWindowRequestNavigationalStates states, boolean navParamsStateFull, boolean renderParamsStateFull)
     throws UnsupportedEncodingException
     {
         return encode(states, null, null, PortalURL.URLType.RENDER, navParamsStateFull, renderParamsStateFull);
     }
+    
     protected String encode(PortletWindowRequestNavigationalStates states, String targetWindowId, 
-            PortletWindowRequestNavigationalState targetState, PortalURL.URLType urlType, boolean navParamsStateFull, 
-            boolean renderParamsStateFull)
+                            PortletWindowRequestNavigationalState targetState, PortalURL.URLType urlType,
+                            boolean navParamsStateFull, boolean renderParamsStateFull)
     throws UnsupportedEncodingException
     {
         StringBuffer buffer = new StringBuffer();
-        String encodedState;
         boolean haveState = false;
+        boolean encodeTargetWindowPublicRenderParams = true;
         
         // skip other states if all non-targeted PortletWindow states are kept in the session
-        if ( !navParamsStateFull || !renderParamsStateFull )
+        if (!navParamsStateFull || !renderParamsStateFull)
         {
-            PortletWindowRequestNavigationalState pwfns;
-            String windowId;
+            // encode individual request states, (skip target request state encoded below)
             Iterator<String> iter = states.getWindowIdIterator();
-            while ( iter.hasNext() )
+            while (iter.hasNext())
             {
-                windowId = iter.next();
-                pwfns = states.getPortletWindowNavigationalState(windowId);
-                if ( targetWindowId != null && windowId.equals(targetWindowId))
+                String windowId = iter.next();
+                PortletWindowRequestNavigationalState requestState = states.getPortletWindowNavigationalState(windowId);
+                if ((targetWindowId == null) || !windowId.equals(targetWindowId))
                 {
-                    // skip it for now, it will be encoded as the last one below
-                }
-                else
-                {
-                    encodedState = encodePortletWindowNavigationalState(windowId, pwfns, PortalURL.URLType.RENDER, navParamsStateFull, 
-                            renderParamsStateFull);
-                    if ( encodedState.length() > 0 )
+                    encodeTargetWindowPublicRenderParams = false;
+                    String encodedState = encodePortletWindowNavigationalState(windowId, requestState, PortalURL.URLType.RENDER, navParamsStateFull, renderParamsStateFull, false);
+                    if (encodedState.length() > 0)
                     {
                         if ( !haveState )
                         {
@@ -287,10 +408,29 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
             }
         }
+        // encode target request state
         if (targetWindowId != null)
         {
-            encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, urlType, false, false); 
-            if ( encodedState.length() > 0 )
+            String encodedState = encodePortletWindowNavigationalState(targetWindowId, targetState, urlType, false, false, encodeTargetWindowPublicRenderParams);
+            if (encodedState.length() > 0)
+            {
+                if (!haveState)
+                {
+                    haveState = true;
+                }
+                else
+                {
+                    buffer.append(PARAMETER_SEPARATOR);
+                }
+                buffer.append(encodedState);
+            }
+        }
+        // encode shared public render parameter request states
+        // if they have not been encoded on the target window
+        if (haveState && !encodeTargetWindowPublicRenderParams)
+        {
+            String encodedState = encodePublicRenderParameterState(states, urlType, navParamsStateFull, renderParamsStateFull);
+            if (encodedState.length() > 0)
             {
                 if ( !haveState )
                 {
@@ -302,24 +442,136 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 }
                 buffer.append(encodedState);
             }
-        }
-        String encodedNavState = null;
-        if ( haveState )
-        {
-            encodedNavState = encodeParameters(buffer.toString(), states.getCharacterEncoding());
-        }
-        return encodedNavState;
+        }            
+        // return encoded state
+        return (haveState ? encodeParameters(buffer.toString(), states.getCharacterEncoding()) : null);
     }
     
+    public boolean getActionScopedRequestAttributes(PortletWindow window)
+    {
+        // get action scoped request attributes option from portlet definition
+        PortletDefinition pd = window.getPortletEntity().getPortletDefinition();
+        ContainerRuntimeOption actionScopedRequestAttributesOption = pd.getContainerRuntimeOption(ContainerRuntimeOption.ACTION_SCOPED_REQUEST_ATTRIBUTES_OPTION);
+        if (actionScopedRequestAttributesOption == null)
+        {
+            actionScopedRequestAttributesOption = pd.getApplication().getContainerRuntimeOption(ContainerRuntimeOption.ACTION_SCOPED_REQUEST_ATTRIBUTES_OPTION);                    
+        }
+        return ((actionScopedRequestAttributesOption != null) && (actionScopedRequestAttributesOption.getValues() != null) && (actionScopedRequestAttributesOption.getValues().size() > 0) && "true".equals(actionScopedRequestAttributesOption.getValues().get(0)));
+    }
+    
+    public boolean getActionScopedRequestAttributes(String windowId)
+    {
+        // access portlet window and get action scoped request attributes option
+        PortletWindow window = windowAccessor.getPortletWindow(windowId);
+        if ( window != null )
+        {
+            return getActionScopedRequestAttributes(window);
+        }
+        return false;
+    }
+
+    public QName getPublicRenderParameterQName(PortletWindow window, String identifier)
+    {
+        // get public render parameter qname from portlet application
+        PortletApplication pa = window.getPortletEntity().getPortletDefinition().getApplication();
+        PublicRenderParameter publicRenderParameter = pa.getPublicRenderParameter(identifier);
+        return publicRenderParameter.getQName();
+    }
+    
+    public QName getPublicRenderParameterQName(String windowId, String identifier)
+    {
+        // access portlet window and get public render parameter qname
+        PortletWindow window = windowAccessor.getPortletWindow(windowId);
+        if (window != null)
+        {
+            return getPublicRenderParameterQName(window, identifier);
+        }
+        return null;
+    }
+
+    public Map<String, QName> getPublicRenderParameterNamesMap(PortletWindow window)
+    {
+        // get public render parameter names from portlet application
+        PortletApplication pa = window.getPortletEntity().getPortletDefinition().getApplication();
+        if (pa.getPublicRenderParameters() != null)
+        {
+            Map<String, QName> parameterNames = new HashMap<String, QName>();
+            for (PublicRenderParameter publicRenderParameter : pa.getPublicRenderParameters())
+            {
+                parameterNames.put(publicRenderParameter.getIdentifier(), publicRenderParameter.getQName());
+            }
+            return parameterNames;
+        }
+        return null;
+    }
+    
+    public Map<String, QName> getPublicRenderParameterNamesMap(String windowId)
+    {
+        // access portlet window and get public render parameter names
+        PortletWindow window = windowAccessor.getPortletWindow(windowId);
+        if (window != null)
+        {
+            return getPublicRenderParameterNamesMap(window);
+        }
+        return null;
+    }
+
+    public boolean hasPublicRenderParameterQNames(PortletWindow window, Set<QName> qnames)
+    {
+        // test public render parameter qnames from portlet application
+        PortletApplication pa = window.getPortletEntity().getPortletDefinition().getApplication();
+        if (pa.getPublicRenderParameters() != null)
+        {
+            for (PublicRenderParameter publicRenderParameter : pa.getPublicRenderParameters())
+            {
+                if (qnames.contains(publicRenderParameter.getQName()))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean hasPublicRenderParameterQNames(String windowId, Set<QName> qnames)
+    {
+        // access portlet window and test public render parameter qnames
+        PortletWindow window = windowAccessor.getPortletWindow(windowId);
+        if (window != null)
+        {
+            return hasPublicRenderParameterQNames(window, qnames);
+        }
+        return false;
+    }
+
+    protected String encodePublicRenderParameterState(PortletWindowRequestNavigationalStates states, 
+                                                      PortalURL.URLType urlType, boolean navParamsStateFull, 
+                                                      boolean renderParamsStateFull)
+    {
+        StringBuffer buffer = new StringBuffer();
+        boolean encoded = false;
+        
+        if ((PortalURL.URLType.ACTION.equals(urlType) || !renderParamsStateFull))
+        {
+            if (states.getPublicRenderParametersMap() != null)
+            {
+                encoded = encodeParameterMap(encoded, PARAM_KEY, states.getPublicRenderParametersMap(), buffer);
+            }
+        }
+        
+        return encoded ? buffer.toString() : "";
+    }
+
     protected String encodePortletWindowNavigationalState(String windowId, PortletWindowRequestNavigationalState state, 
                                                           PortalURL.URLType urlType, boolean navParamsStateFull, 
-                                                          boolean renderParamsStateFull)
+                                                          boolean renderParamsStateFull, boolean encodePublicRenderParams)
     {
         StringBuffer buffer = new StringBuffer();
         buffer.append(URLTYPE_ID_KEYS[urlType.ordinal()]);
         buffer.append(windowId);
         boolean encoded = !PortalURL.URLType.RENDER.equals(urlType);
-        if ( PortalURL.URLType.ACTION.equals(urlType) || !navParamsStateFull )
+        
+        if (PortalURL.URLType.ACTION.equals(urlType) || !navParamsStateFull)
         {
             if (state.getPortletMode() != null)
             {
@@ -328,7 +580,6 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 buffer.append(encodePortletMode(state.getPortletMode()));
                 encoded = true;
             }
-
             if (state.getWindowState() != null)
             {
                 buffer.append(PARAMETER_SEPARATOR);
@@ -338,38 +589,50 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             }
         }
 
-        if (state.getParametersMap() != null && (PortalURL.URLType.ACTION.equals(urlType) || !renderParamsStateFull) )
+        if ((PortalURL.URLType.ACTION.equals(urlType) || !renderParamsStateFull))
         {
-            Map.Entry<String, String[]> entry;
-            String   parameterName;
-            String[] parameterValues;
-
-            StringBuffer paramBuffer = new StringBuffer();
-            Iterator<Map.Entry<String,String[]>> iter = state.getParametersMap().entrySet().iterator();
-            while ( iter.hasNext() )
+            if (state.getParametersMap() != null)
+            {
+                encoded = encodeParameterMap(encoded, PARAM_KEY, state.getParametersMap(), buffer);
+            }
+            if (state.isActionScopedRequestAttributes())
+            {
+                if (state.getActionScopeId() != null)
+                {
+                    encoded = true;
+                    buffer.append(PARAMETER_SEPARATOR);
+                    if (state.isActionScopeRendered())
+                    {                        
+                        buffer.append(RENDERED_ACTION_SCOPE_ID_KEY);
+                    }
+                    else
+                    {
+                        buffer.append(ACTION_SCOPE_ID_KEY);
+                    }
+                    buffer.append(encodeArgument(state.getActionScopeId(), PARAMETER_SEPARATOR));
+                }
+            }
+            if (state.getCacheLevel() != null)
             {
                 encoded = true;
-                entry = iter.next();
-                parameterName = entry.getKey();
-                parameterValues = entry.getValue();
-               
                 buffer.append(PARAMETER_SEPARATOR);
-                buffer.append(PARAM_KEY);
-                
-                paramBuffer.setLength(0);
-                paramBuffer.append(encodeArgument(parameterName, PARAMETER_ELEMENT_SEPARATOR));
-                paramBuffer.append(PARAMETER_ELEMENT_SEPARATOR);
-                paramBuffer.append(Integer.toHexString(parameterValues.length));
-                for ( int i = 0; i < parameterValues.length; i++ )
-                {
-                    paramBuffer.append(PARAMETER_ELEMENT_SEPARATOR);
-                    paramBuffer.append(encodeArgument(parameterValues[i], PARAMETER_ELEMENT_SEPARATOR));
-                }
-                
-                buffer.append(encodeArgument(paramBuffer.toString(),PARAMETER_SEPARATOR));
+                buffer.append(CACHE_LEVEL_KEY);
+                buffer.append(encodeArgument(state.getActionScopeId(), PARAMETER_SEPARATOR));
+            }
+            if (state.getResourceId() != null)
+            {
+                encoded = true;
+                buffer.append(PARAMETER_SEPARATOR);
+                buffer.append(CACHE_LEVEL_KEY);
+                buffer.append(encodeArgument(state.getResourceId(), PARAMETER_SEPARATOR));
+            }
+            if (state.getPrivateRenderParametersMap() != null)
+            {
+                encoded = encodeParameterMap(encoded, PRIVATE_RENDER_PARAM_KEY, state.getPrivateRenderParametersMap(), buffer);
             }
         }
-        else if ( state.isClearParameters() )
+        
+        if (state.isClearParameters())
         {
             // Special case: for a targeted PortletWindow for which no parameters are specified 
             // indicate its saved (in the session) request parameters must be cleared instead of copying them when
@@ -379,7 +642,52 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             buffer.append(CLEAR_PARAMS_KEY);            
             encoded = true;
         }
+        
+        if (encodePublicRenderParams && (state.getPublicRenderParametersMap() != null) && (PortalURL.URLType.ACTION.equals(urlType) || !renderParamsStateFull))
+        {
+            // generate subset of public render parameters for this state
+            Map<QName, String[]> publicRenderParams = new HashMap<QName, String[]>();
+            for (Map.Entry<String, String[]> publicRenderParam : state.getPublicRenderParametersMap().entrySet())
+            {
+                String parameterName = publicRenderParam.getKey();
+                String[] parameterValues = publicRenderParam.getValue();
+                QName parameterQName = getPublicRenderParameterQName(windowId, parameterName);
+                if (parameterQName != null)
+                {
+                    publicRenderParams.put(parameterQName, parameterValues);
+                }
+            }
+            encoded = encodeParameterMap(encoded, PUBLIC_RENDER_PARAM_KEY, publicRenderParams, buffer);
+        }
+        
         return encoded ? buffer.toString() : "";
+    }
+    
+    protected boolean encodeParameterMap(boolean encoded, char paramsKey, Map<? extends Object, String[]> params, StringBuffer buffer)
+    {
+        StringBuffer paramBuffer = new StringBuffer();
+        for (Map.Entry<? extends Object, String[]> entry : params.entrySet())
+        {
+            encoded = true;
+            buffer.append(PARAMETER_SEPARATOR);
+
+            Object parameterNameObject = entry.getKey();
+            String parameterName = ((parameterNameObject instanceof QName) ? encodeQName((QName)parameterNameObject): parameterNameObject.toString());
+            String [] parameterValues = entry.getValue();
+            paramBuffer.setLength(0);
+            paramBuffer.append(encodeArgument(parameterName, PARAMETER_ELEMENT_SEPARATOR));
+            paramBuffer.append(PARAMETER_ELEMENT_SEPARATOR);
+            paramBuffer.append(Integer.toHexString(parameterValues.length));
+            for ( int i = 0; i < parameterValues.length; i++ )
+            {
+                paramBuffer.append(PARAMETER_ELEMENT_SEPARATOR);
+                paramBuffer.append(encodeArgument(parameterValues[i], PARAMETER_ELEMENT_SEPARATOR));
+            }
+
+            buffer.append(paramsKey);
+            buffer.append(encodeArgument(paramBuffer.toString(),PARAMETER_SEPARATOR));
+        }
+        return encoded;
     }
     
     protected PortletWindowRequestNavigationalState decodeParameter(PortletWindowAccessor accessor, PortletWindowRequestNavigationalStates states, PortletWindowRequestNavigationalState currentState, String parameter)
@@ -404,7 +712,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 {
                     window = accessor.createPortletWindow(windowId);
                 }
-                currentState = new PortletWindowRequestNavigationalState(windowId);
+                currentState = new PortletWindowRequestNavigationalState(windowId, getActionScopedRequestAttributes(window));
                 states.addPortletWindowNavigationalState(windowId, currentState);
                 if ( parameterType == ACTION_WINDOW_ID_KEY )
                 {
@@ -417,9 +725,9 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 states.setURLType(urlType);
             }
         }
-        else if ( currentState != null )
+        else if (currentState != null)
         {
-            switch ( parameterType )
+            switch (parameterType)
             {
                 case MODE_KEY:
                 {
@@ -449,33 +757,35 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                     break;
                 }
                 case PARAM_KEY:
+                case PRIVATE_RENDER_PARAM_KEY:
+                case PUBLIC_RENDER_PARAM_KEY:
                 {
-                    int position = 1;
-                    StringBuffer buffer = new StringBuffer();
-                    String parameterName = null;
-                    int parameterValueCount = -1;
-                    String parameterValues[] = null;
-                    int parameterValueIndex = -1;
-                    while ( (position = decodeArgument(position, parameter, buffer, PARAMETER_ELEMENT_SEPARATOR)) != -1 )
+                    String [] parameterName = new String[1];
+                    String [][] parameterValues = new String[1][1];
+                    if (decodeParamsParameter(parameter, parameterName, parameterValues))
                     {
-                        if ( parameterName == null )
+                        switch (parameterType)
                         {
-                            parameterName = buffer.toString();
-                            parameterValueCount = -1;                        
-                        }
-                        else if ( parameterValueCount == -1 )
-                        {
-                            parameterValueCount = Integer.parseInt(buffer.toString(), 16);
-                            parameterValues = new String[parameterValueCount];
-                            parameterValueIndex = 0;
-                        }
-                        else
-                        {
-                            parameterValues[parameterValueIndex++] = buffer.toString();
-                            parameterValueCount--;
-                            if ( parameterValueCount == 0 )
+                            case PARAM_KEY:
                             {
-                                currentState.setParameters(parameterName, parameterValues);
+                                // set parameter state
+                                currentState.setParameters(parameterName[0], parameterValues[0]);
+                                break;
+                            }
+                            case PRIVATE_RENDER_PARAM_KEY:
+                            {
+                                // set private render parameter state
+                                currentState.setPrivateRenderParameters(parameterName[0], parameterValues[0]);
+                                break;
+                            }
+                            case PUBLIC_RENDER_PARAM_KEY:
+                            {
+                                // set public render parameter states
+                                QName parameterQName = decodeQName(parameterName[0]);
+                                if (parameterQName != null)
+                                {
+                                    states.setPublicRenderParameters(parameterQName, parameterValues[0]);
+                                }
                                 break;
                             }
                         }
@@ -485,11 +795,97 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                 case CLEAR_PARAMS_KEY:
                 {
                     currentState.setClearParameters(true);
+                    break;
+                }
+                case CACHE_LEVEL_KEY:
+                case RESOURCE_ID_KEY:
+                case ACTION_SCOPE_ID_KEY:
+                case RENDERED_ACTION_SCOPE_ID_KEY:
+                {
+                    parameter = parameter.substring(1);
+                    switch (parameterType)
+                    {                        
+                        case CACHE_LEVEL_KEY:
+                        {
+                            currentState.setCacheLevel(parameter);
+                            break;
+                        }
+                        case RESOURCE_ID_KEY:
+                        {
+                            currentState.setResourceId(parameter);
+                            break;                            
+                        }
+                        case ACTION_SCOPE_ID_KEY:
+                        {
+                            currentState.setActionScopeId(parameter);
+                            currentState.setActionScopeRendered(false);
+                            break;
+                        }
+                        case RENDERED_ACTION_SCOPE_ID_KEY:
+                        {
+                            currentState.setActionScopeId(parameter);
+                            currentState.setActionScopeRendered(true);
+                            break;
+                        }
+                    }
+                    break;
                 }
             }
         }
+        else
+        {
+            switch (parameterType)
+            {
+                case PUBLIC_RENDER_PARAM_KEY:
+                {
+                    String [] parameterName = new String[1];
+                    String [][] parameterValues = new String[1][1];
+                    if (decodeParamsParameter(parameter, parameterName, parameterValues))
+                    {
+                        // set public render parameter states
+                        QName parameterQName = decodeQName(parameterName[0]);
+                        if (parameterQName != null)
+                        {
+                            states.setPublicRenderParameters(parameterQName, parameterValues[0]);
+                        }
+                    }
+                    break;
+                }
+            }            
+        }
         return currentState;
-        
+    }
+
+    protected boolean decodeParamsParameter(String parameter, String [] parameterName, String [][] parameterValues)
+    {
+        int position = 1;
+        StringBuffer buffer = new StringBuffer();
+        int parameterValueCount = -1;
+        int parameterValueIndex = -1;
+        while ( (position = decodeArgument(position, parameter, buffer, PARAMETER_ELEMENT_SEPARATOR)) != -1 )
+        {
+            if ( parameterName[0] == null )
+            {
+                parameterName[0] = buffer.toString();
+                parameterValueCount = -1;                        
+            }
+            else if ( parameterValueCount == -1 )
+            {
+                parameterValueCount = Integer.parseInt(buffer.toString(), 16);
+                parameterValues[0] = new String[parameterValueCount];
+                parameterValueIndex = 0;
+            }
+            else
+            {
+                parameterValues[0][parameterValueIndex++] = buffer.toString();
+                parameterValueCount--;
+                if ( parameterValueCount == 0 )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     protected PortletMode decodePortletMode(char mode)
@@ -628,5 +1024,53 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             }
         }
         return buffer.length() > 0 ? position : -1; 
+    }
+    
+    protected QName decodeQName(String qnameString)
+    {
+        int namespacePrefixSeparator = qnameString.indexOf("//:");
+        if (namespacePrefixSeparator != -1)
+        {
+            int prefixLocalpartSeparator = qnameString.indexOf(":", namespacePrefixSeparator+3);
+            if (prefixLocalpartSeparator != -1)
+            {
+                String namespace = (namespacePrefixSeparator > 0) ? qnameString.substring(0, namespacePrefixSeparator) : null;
+                String prefix = (prefixLocalpartSeparator-namespacePrefixSeparator > 3) ? qnameString.substring(namespacePrefixSeparator+3, namespacePrefixSeparator): null;
+                String localpart = (namespacePrefixSeparator+1 < qnameString.length()) ? qnameString.substring(namespacePrefixSeparator+1) : null;
+                if (localpart != null)
+                {
+                    if (namespace == null)
+                    {
+                        return new QName(localpart);
+                    }
+                    else if (prefix == null)
+                    {
+                        return new QName(namespace, localpart);                    
+                    }
+                    else
+                    {
+                        return new QName(namespace, localpart, prefix);                        
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    protected String encodeQName(QName qname)
+    {
+        String namespace = qname.getNamespaceURI();
+        namespace = (namespace != null) ? namespace : "";
+        String prefix = qname.getPrefix();
+        prefix = (prefix != null) ? prefix : "";
+        String localpart = qname.getLocalPart();
+        
+        StringBuilder builder = new StringBuilder();
+        builder.append(namespace);
+        builder.append("//:");
+        builder.append(prefix);
+        builder.append(":");
+        builder.append(localpart);
+        return builder.toString();
     }
 }

@@ -51,6 +51,8 @@ public class PortletURLProviderImpl implements PortletURLProvider
     private Map<String, String[]> renderParameters;
     private Map<String, String[]> publicRenderParameters;
     private Map<String, List<String>> properties;
+    private String actionScopeID;
+    private boolean actionScopeRendered;
 
     private PortalURL url;
     
@@ -132,6 +134,26 @@ public class PortletURLProviderImpl implements PortletURLProvider
     {
         this.resourceID = resourceID;
     }
+
+    public String getActionScopeID()
+    {
+        return actionScopeID;
+    }
+    
+    public void setActionScopeID(String actionScopeID)
+    {
+        this.actionScopeID = actionScopeID;
+    }
+    
+    public boolean isActionScopeRendered()
+    {
+        return actionScopeRendered;
+    }
+    
+    public void setActionScopeRendered(boolean actionScopeRendered)
+    {
+        this.actionScopeRendered = actionScopeRendered;
+    }
     
     public void apply()
     {
@@ -185,8 +207,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
         
         if (toURL)
         {
-            // TODO: handle public and private render parameters, resourceID, cacheLevel, actionScopeID
-            return url.createPortletURL(portletWindow,renderParms,portletMode,windowState,urlType,secure);
+            return url.createPortletURL(portletWindow, renderParms, actionScopeID, actionScopeRendered, cacheLevel, resourceID, privateRenderParms, publicRenderParms, portletMode, windowState, urlType, secure);
         }
         else
         {
@@ -194,7 +215,12 @@ public class PortletURLProviderImpl implements PortletURLProvider
             navState.setMode(portletWindow, portletMode);
             navState.setState(portletWindow, windowState);
             navState.setParametersMap(portletWindow, renderParms);
-            // TODO: privateRenderParms, publicRenderParms, resourceID, cacheLevel, actionScopeID
+            navState.setActionScopeId(portletWindow, actionScopeID);
+            navState.setActionScopeRendered(portletWindow, actionScopeRendered);
+            navState.setCacheLevel(portletWindow, cacheLevel);
+            navState.setResourceId(portletWindow, resourceID);
+            navState.setPrivateRenderParametersMap(portletWindow, privateRenderParms);
+            navState.setPublicRenderParametersMap(portletWindow, publicRenderParms);
             return null;
         }
     }
