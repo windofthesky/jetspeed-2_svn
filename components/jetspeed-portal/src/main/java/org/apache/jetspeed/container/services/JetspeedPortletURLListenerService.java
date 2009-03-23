@@ -16,45 +16,28 @@
  */
 package org.apache.jetspeed.container.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.portlet.PortletURLGenerationListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.om.portlet.Listener;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.pluto.container.PortletURLListenerService;
 import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 public class JetspeedPortletURLListenerService implements PortletURLListenerService
 {
-    /** Logger. */
-    private static final Log LOG = LogFactory.getLog(JetspeedPortletURLListenerService.class);
+    
+    protected PortletFactory portletFactory;
+    
+    public JetspeedPortletURLListenerService(PortletFactory portletFactory)
+    {
+        this.portletFactory = portletFactory;
+    }
 
     public List<PortletURLGenerationListener> getPortletURLGenerationListeners(PortletApplicationDefinition app)
     {
-        List<PortletURLGenerationListener> listeners = new ArrayList<PortletURLGenerationListener>();
-        //this list is needed for the classnames
-        List<? extends Listener> portletURLFilterList = ((PortletApplication) app).getListeners();
-        //Iterate over the classnames and for each entry in the list the filter..URL is called.
-        if (portletURLFilterList != null){
-            for (Listener listener : portletURLFilterList) {
-                try {
-                    listeners.add(listener.getListenerInstance(Thread.currentThread().getContextClassLoader()));
-                } catch (ClassNotFoundException e) {
-                    String message = "The listener class isn't found: " + listener.getListenerClass();
-                    LOG.error(message);
-                } catch (InstantiationException e) {
-                    String message = "The listener class instantiation fail: " + listener.getListenerClass();
-                    LOG.error(message);
-                } catch (IllegalAccessException e) {
-                    String message = "IllegalAccessException on the listener class: " + listener.getListenerClass();
-                    LOG.error(message);
-                }
-            }
-        }
-        return listeners;
+        return this.portletFactory.getPortletApplicationListeners((PortletApplication) app);
     }
+    
 }

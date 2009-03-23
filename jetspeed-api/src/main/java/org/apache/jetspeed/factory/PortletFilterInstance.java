@@ -16,22 +16,21 @@
  */
 package org.apache.jetspeed.factory;
 
-import javax.portlet.EventPortlet;
-import javax.portlet.Portlet;
-import javax.portlet.ResourceServingPortlet;
+import javax.portlet.filter.FilterConfig;
+import javax.portlet.filter.PortletFilter;
 
-import org.apache.jetspeed.container.JetspeedPortletConfig;
+import org.apache.jetspeed.om.portlet.Filter;
 
 /**
- * PortletInstance
+ * PortletFilterInstance
  * 
- * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  *
  */
-public interface PortletInstance extends Portlet, EventPortlet, ResourceServingPortlet
+public interface PortletFilterInstance extends PortletFilter
 {
-    JetspeedPortletConfig getConfig();
-    Portlet getRealPortlet();
-    boolean isProxyInstance();
+    boolean isInitialized();
+    Filter getFilter();
+    FilterConfig getFilterConfig();
+    PortletFilter getRealPortletFilter();
 }

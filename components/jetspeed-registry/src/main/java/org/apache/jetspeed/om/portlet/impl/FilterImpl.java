@@ -183,15 +183,4 @@ public class FilterImpl implements Filter, Serializable
         initParams.add(param);
         return param;
     }
-    
-    public PortletFilter getFilterInstance(ClassLoader loader) throws InstantiationException, IllegalAccessException, ClassNotFoundException 
-    {
-        if (this.filterInstance == null) 
-        {
-            Class<? extends Object> clazz = loader.loadClass(getFilterClass());
-            this.filterInstance = (PortletFilter) clazz.newInstance();
-        }
-        
-        return this.filterInstance;
-    }
 }

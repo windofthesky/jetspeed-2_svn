@@ -66,12 +66,14 @@ limitations under the License.
     
     <bean id="org.apache.pluto.container.FilterManagerService"
           class="org.apache.jetspeed.container.services.JetspeedFilterManagerService">
-      <meta key="j2:cat" value="default" />       
+      <meta key="j2:cat" value="default" />
+      <constructor-arg><ref bean="portletFactory" /></constructor-arg>
     </bean>
     
     <bean id="org.apache.pluto.container.PortletURLListenerService"
           class="org.apache.jetspeed.container.services.JetspeedPortletURLListenerService">
       <meta key="j2:cat" value="default" />       
+      <constructor-arg><ref bean="portletFactory" /></constructor-arg>
     </bean>
     
 

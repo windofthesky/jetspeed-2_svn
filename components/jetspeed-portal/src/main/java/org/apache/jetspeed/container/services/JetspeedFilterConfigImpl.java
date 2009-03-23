@@ -17,23 +17,22 @@
 package org.apache.jetspeed.container.services;
 
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Vector;
 
 import javax.portlet.PortletContext;
 import javax.portlet.filter.FilterConfig;
 
-import org.apache.pluto.container.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Filter;
+import org.apache.jetspeed.om.portlet.InitParam;
 
-public class JetspeedFilterConfig implements FilterConfig
+public class JetspeedFilterConfigImpl implements FilterConfig
 {
-    private final String filterName;
-    private final List<? extends InitParam> initParameters;
+    private final Filter filter;
     private final PortletContext portletContext;
+    private Vector<String> initParamNames;
 
-    public JetspeedFilterConfig(String filterName, List<? extends InitParam> initParameters, PortletContext portletContext){
-        this.filterName = filterName;
-        this.initParameters = initParameters;
+    public JetspeedFilterConfigImpl(Filter filter, PortletContext portletContext){
+        this.filter = filter;
         this.portletContext = portletContext;
     }
 
@@ -41,40 +40,38 @@ public class JetspeedFilterConfig implements FilterConfig
      * @see javax.portlet.filter.FilterConfig#getFilterName()
      */
     public String getFilterName() {
-        return filterName;
+        return this.filter.getFilterName();
     }
 
     /**
      * @see javax.portlet.filter.FilterConfig#getInitParameter(java.lang.String)
      */
     public String getInitParameter(String name) {
-        if (initParameters != null) {
-            for (InitParam initParameter2 : initParameters) {
-                if (initParameter2.getParamName().equals(name)){
-                    return initParameter2.getParamValue();
-                }
-            }
-        }
-        return null;
+        InitParam initParam = this.filter.getInitParam(name);
+        return (initParam != null ? initParam.getParamValue() : null);
     }
 
     /**
      * @see javax.portlet.filter.FilterConfig#getInitParameterNames()
      */
     public Enumeration<String> getInitParameterNames() {
-        Vector<String> enum1 = new Vector<String>();
-        if ( initParameters != null ) {
-            for(InitParam ip : this.initParameters ) {
-                enum1.add(ip.getParamName());
+        if (this.initParamNames == null)
+        {
+            this.initParamNames = new Vector<String>();
+            
+            for (InitParam initParam : this.filter.getInitParams())
+            {
+                this.initParamNames.add(initParam.getParamName());
             }
         }
-        return enum1.elements();
+        
+        return this.initParamNames.elements();
     }
 
     /**
      * @see javax.portlet.filter.FilterConfig#getPortletContext()
      */
     public PortletContext getPortletContext() {
-        return portletContext;
+        return this.portletContext;
     }
 }

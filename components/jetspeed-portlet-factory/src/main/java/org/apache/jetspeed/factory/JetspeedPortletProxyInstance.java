@@ -33,4 +33,9 @@ public class JetspeedPortletProxyInstance extends JetspeedPortletInstance
     {
         super(portletName, (Portlet) PortletObjectProxy.createProxy(portlet, autoSwitchEditDefaultsModeToEditMode, autoSwitchConfigMode, customConfigModePortletUniqueName));
     }
+    
+    public boolean isProxyInstance()
+    {
+        return true;
+    }
 }

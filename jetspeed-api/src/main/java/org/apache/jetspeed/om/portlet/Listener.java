@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
-import javax.portlet.PortletURLGenerationListener;
-
 /**
  * 
  * @version $Id$
@@ -35,6 +33,4 @@ public interface Listener extends org.apache.pluto.container.om.portlet.Listener
 	DisplayName getDisplayName(Locale locale);
     List<DisplayName> getDisplayNames();
     DisplayName addDisplayName(String lang);
-    
-    PortletURLGenerationListener getListenerInstance(ClassLoader loader) throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 }

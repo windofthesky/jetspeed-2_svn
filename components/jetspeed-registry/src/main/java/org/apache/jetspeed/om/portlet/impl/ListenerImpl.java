@@ -106,15 +106,4 @@ public class ListenerImpl implements Listener, Serializable
         displayNames.add(d);
         return d;
     }
-    
-    public PortletURLGenerationListener getListenerInstance(ClassLoader loader) throws ClassNotFoundException, InstantiationException, IllegalAccessException 
-    {
-        if (this.listenerInstance == null) 
-        {
-            Class<? extends Object> clazz = loader.loadClass(getListenerClass());
-            this.listenerInstance = (PortletURLGenerationListener) clazz.newInstance();
-        }
-        
-        return this.listenerInstance;
-    }
 }

@@ -16,7 +16,10 @@
  */
 package org.apache.jetspeed.factory;
 
+import java.util.List;
+
 import javax.portlet.PortletException;
+import javax.portlet.PortletURLGenerationListener;
 import javax.portlet.PreferencesValidator;
 import javax.servlet.ServletContext;
 
@@ -45,6 +48,9 @@ public interface PortletFactory
     boolean isPortletApplicationRegistered(PortletApplication pa);
     ClassLoader getPortletApplicationClassLoader(PortletApplication pa);
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd ) throws PortletException;
+    PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd, boolean noProxy ) throws PortletException;
     PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
+    List<PortletURLGenerationListener> getPortletApplicationListeners(PortletApplication pa) throws PortletException;
+    PortletFilterInstance getPortletFilterInstance(PortletApplication pa, String filterName) throws PortletException;
 }

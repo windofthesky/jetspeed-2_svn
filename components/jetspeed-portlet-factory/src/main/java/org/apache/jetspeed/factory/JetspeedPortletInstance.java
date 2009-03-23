@@ -140,4 +140,9 @@ public class JetspeedPortletInstance implements PortletInstance
   {
       return portlet;
   }
+  
+  public boolean isProxyInstance()
+  {
+      return false;
+  }
 }

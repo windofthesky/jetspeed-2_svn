@@ -62,23 +62,6 @@ import org.apache.jetspeed.factory.PortletInstance;
 public class PortletObjectProxy extends BaseObjectProxy
 {
     
-    private static ThreadLocal tlPortletObjectProxied =
-        new ThreadLocal() {
-            protected synchronized Object initialValue() {
-                return new boolean [] { false };
-            }
-        };
-    
-    public static void setPortletObjectProxied(boolean portletObjectProxied)
-    {
-        ((boolean []) tlPortletObjectProxied.get())[0] = portletObjectProxied;
-    }
-        
-    public static boolean isPortletObjectProxied()
-    {
-        return ((boolean []) tlPortletObjectProxied.get())[0];
-    }
-    
     private static Method renderMethod;
     private static Method processActionMethod;
     
@@ -320,28 +303,17 @@ public class PortletObjectProxy extends BaseObjectProxy
         return false;
     }
        
-    private void refreshCustomConfigModePortletInstance()
+    private void refreshCustomConfigModePortletInstance() throws PortletException
     {
-        try
-        {
-            PortletRegistry registry = (PortletRegistry) Jetspeed.getComponentManager().getComponent("portletRegistry");
-            PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
-            ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
-            
-            PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
-            PortletApplication portletApp = portletDef.getApplication();
-            ServletContext portletAppContext = portalAppContext.getContext(portletApp.getContextPath());
-            
-            setPortletObjectProxied(true);
-            this.customConfigModePortletInstance = portletFactory.getPortletInstance(portletAppContext, portletDef);
-        }
-        catch (Exception e)
-        {
-        }
-        finally
-        {
-            setPortletObjectProxied(false);
-        }
+        PortletRegistry registry = (PortletRegistry) Jetspeed.getComponentManager().getComponent("portletRegistry");
+        PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
+        ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
+        
+        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
+        PortletApplication portletApp = portletDef.getApplication();
+        ServletContext portletAppContext = portalAppContext.getContext(portletApp.getContextPath());
+        
+        this.customConfigModePortletInstance = portletFactory.getPortletInstance(portletAppContext, portletDef, false);
     }
     
 }

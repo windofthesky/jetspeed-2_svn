@@ -20,49 +20,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     
-    <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
     
-    <artifactId>jetspeed-portlet-factory</artifactId>
-    <name>Jetspeed-2 Portlet Factory</name>
-    <description>Jetspeed-2 Portlet Factory</description>
-    <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>components</artifactId>
-        <version>2.2-SNAPSHOT</version>
-    </parent>
-    <packaging>jar</packaging>
+  <artifactId>jetspeed-portlet-factory</artifactId>
+  <name>Jetspeed-2 Portlet Factory</name>
+  <description>Jetspeed-2 Portlet Factory</description>
+  <parent>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>components</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </parent>
+  <packaging>jar</packaging>
 
-    <!-- Dependencies -->
+  <!-- Dependencies -->
 
-    <dependencies>
+  <dependencies>
 
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-      <dependency>
-        <groupId>org.apache.pluto</groupId>
-        <artifactId>pluto-container-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.pluto</groupId>
-        <artifactId>pluto-container</artifactId>
-      </dependency>
-        
-    </dependencies>
+	<!-- Build Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pluto</groupId>
+      <artifactId>pluto-container-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pluto</groupId>
+      <artifactId>pluto-container</artifactId>
+    </dependency>
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 
 </project>
