@@ -94,7 +94,8 @@
 			var pgCol = document.getElementById("exportAns");
 			var	a = document.createElement("a");
 			a.innerHTML ='Download';
-			a.href = refName;
+			var fileName = '${renderRequest.getUserPrincipal().getName()}/ldapExport.xml';
+			a.href = refName + '?file=' + fileName;
 			a.setAttribute("target","_blank");
 			a.setAttribute("onClick","javascript:downloadObject()");
 			pgCol.appendChild(a);              
