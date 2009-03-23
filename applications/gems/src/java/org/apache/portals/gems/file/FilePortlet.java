@@ -117,7 +117,10 @@ public class FilePortlet extends GenericServletPortlet
         // NOTE: this is Jetspeed specific
         HttpServletRequest req = getHttpServletRequest(request);
         String fileName =  req.getParameter("file");
-
+        if(fileName==null)
+        {
+            fileName = (String) req.getSession().getAttribute("file");
+        }
         if (fileName != null && !fileName.equals(""))
         {
             InputStream is = null;
