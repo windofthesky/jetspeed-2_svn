@@ -18,8 +18,11 @@ package org.apache.jetspeed.container.services;
 
 import java.util.List;
 
+import javax.portlet.PortletException;
 import javax.portlet.PortletURLGenerationListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.pluto.container.PortletURLListenerService;
@@ -27,6 +30,7 @@ import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 public class JetspeedPortletURLListenerService implements PortletURLListenerService
 {
+    private static final Log log = LogFactory.getLog(JetspeedPortletURLListenerService.class);
     
     protected PortletFactory portletFactory;
     
@@ -37,7 +41,18 @@ public class JetspeedPortletURLListenerService implements PortletURLListenerServ
 
     public List<PortletURLGenerationListener> getPortletURLGenerationListeners(PortletApplicationDefinition app)
     {
-        return this.portletFactory.getPortletApplicationListeners((PortletApplication) app);
+        List<PortletURLGenerationListener> listeners = null;
+        
+        try
+        {
+            listeners = this.portletFactory.getPortletApplicationListeners((PortletApplication) app);
+        }
+        catch (PortletException e)
+        {
+            log.error("Failed to retrieve portlet application listeners: " + e.getMessage(), e);
+        }
+        
+        return listeners;
     }
     
 }
