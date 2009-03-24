@@ -16,13 +16,17 @@
  */
 package org.apache.jetspeed;
 
+import java.util.List;
+
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletURLGenerationListener;
 import javax.portlet.PreferencesValidator;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.factory.PortletFilterInstance;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -50,4 +54,22 @@ public final class PortletFactoryMock implements PortletFactory
     public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher) { return null; }
     
     public PortletRequestDispatcher createRequestDispatcher(RequestDispatcher requestDispatcher, String path) { return null; }
+
+    public List<PortletURLGenerationListener> getPortletApplicationListeners(PortletApplication pa)
+    throws PortletException
+    {
+        return null;
+    }
+
+    public PortletFilterInstance getPortletFilterInstance(PortletApplication pa, String filterName)
+    throws PortletException
+    {
+        return null;
+    }
+
+    public PortletInstance getPortletInstance(ServletContext servletContext, PortletDefinition pd, boolean noProxy)
+    throws PortletException
+    {
+        return null;
+    }
 }
