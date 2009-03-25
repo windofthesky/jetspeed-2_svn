@@ -241,7 +241,7 @@
 
     <!-- Default Build Properties -->
 
-    <maven.test.skip>true</maven.test.skip>
+    <skipTests>true</skipTests>
 
     <!-- default test jdbc driver artifact definition which is *required* to have proper default values to keep installed POMs valid -->
     <org.apache.jetspeed.test.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
@@ -1547,12 +1547,12 @@
       <id>test</id>
       <activation>
         <property>
-          <name>maven.test.skip</name>
+          <name>skipTests</name>
           <value>false</value>
         </property>
       </activation>
       <properties>
-        <maven.test.skip>false</maven.test.skip>
+        <skipTests>false</skipTests>
       </properties>
       <modules>
         <module>jetspeed-api</module>
