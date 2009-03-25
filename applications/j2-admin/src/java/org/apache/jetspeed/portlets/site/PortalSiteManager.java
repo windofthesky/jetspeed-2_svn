@@ -233,12 +233,14 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
                         if (fileItem.getFieldName().equals("psmlFile")) {
                             synchronized (this) {
                                 fileName = fileItem.getName();
+                                int lastPathSeparatorIndex = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+                                if (lastPathSeparatorIndex!=-1)
+                                    fileName = fileName.substring(lastPathSeparatorIndex + 1);
+                                
                                 usrFolder = getTempFolder(request);
                                 path= System.getProperty("file.separator");
-                                String filePath = usrFolder + path + fileItem.getName();
-                                FileOutputStream out = new FileOutputStream(filePath);
-                                out.write(fileItem.get());
-                                out.close();
+                                String filePath = usrFolder + path + fileName;
+                                fileItem.write(new File(filePath));
                             }
                         }else if(fileItem.isFormField() && fileItem.getFieldName().equalsIgnoreCase("importPath")){
                             destPath= fileItem.getString();
@@ -271,6 +273,7 @@ public class PortalSiteManager extends AbstractDojoVelocityPortlet
                     request.getPortletSession().setAttribute("status","false"); 
                  }
             } catch (Exception e) {
+                e.printStackTrace();
                 request.getPortletSession().setAttribute("status","false");
                 //throw new PortletException("Error occured in file uplodad");
             }
