@@ -133,7 +133,12 @@ public class PortletRequestContextImpl implements PortletRequestContext
             privateParameters = new HashMap<String, String[]>();
             NavigationalState ns = requestContext.getPortalURL().getNavigationalState();
             mergeRequestParameters = ns.getPortletWindowOfAction() != null || ns.getPortletWindowOfResource() != null;
-            privateParameters.putAll(ns.getParameterMap(window));
+            Map<String, String[]> paramMap = ns.getParameterMap(window);
+            
+            if (paramMap != null)
+            {
+                privateParameters.putAll(paramMap);
+            }
             
             PortletDefinition portletDef = window.getPortletDefinition();
             GenericMetadata metaData = portletDef.getMetadata();
@@ -342,6 +347,12 @@ public class PortletRequestContextImpl implements PortletRequestContext
         {
             publicRenderParameters = requestContext.getPortalURL().getNavigationalState().getPublicRenderParameterMap(window);
         }
+        
+        if (publicRenderParameters == null)
+        {
+            publicRenderParameters = Collections.emptyMap();
+        }
+        
         // no need to clone: the container is supposed to do so
         return publicRenderParameters;
     }

@@ -74,6 +74,7 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
     {
         this.requestContext = requestContext;
         this.id = fragment.getId();
+        this.fragment = fragment;
         this.pd = pd;
     }
 

@@ -50,6 +50,7 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     {
         super(container, containerRequest, containerResponse, window);
         this.portletContent = window.getFragment().getPortletContent();
+        this.titleService = titleService;
     }
 
     public void flushBuffer() throws IOException
