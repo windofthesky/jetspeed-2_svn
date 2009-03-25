@@ -16,7 +16,10 @@
  */
 package org.apache.jetspeed.layout;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.apache.jetspeed.request.RequestContext;
 
@@ -28,5 +31,5 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public interface JetspeedPowerToolFactory
 {
-    JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext) throws PortletException;
+    JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException;
 }

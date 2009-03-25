@@ -28,15 +28,17 @@ import javax.portlet.RenderResponse;
 import javax.portlet.UnavailableException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.FilterManager;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.container.FilterManager;
 import org.apache.pluto.container.PortletInvokerService;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
@@ -120,10 +122,17 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         {
             PortletResponseContext responseContext = (PortletResponseContext)portletRequest.getAttribute(PortletInvokerService.RESPONSE_CONTEXT);
             ((JetspeedRequestContext)window.getRequestContext()).setCurrentPortletWindow(window);
+            
             window.setInvocationState(action, requestContext, responseContext, portletRequest, portletResponse, portletInstance);
             window.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, window.getFragment());
             window.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, window);
             window.setAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, portletDefinition);
+            
+            // initialize request/response for portletRequestContext
+            HttpServletRequest request = requestContext.getContainerRequest();
+            HttpServletResponse response = requestContext.getContainerResponse();
+            requestContext.init(window.getPortletInstance().getConfig(), this.jetspeedContext, request, response);
+            window.getPortletResponseContext().init(request, response);
             
             Thread.currentThread().setContextClassLoader(paClassLoader);
             

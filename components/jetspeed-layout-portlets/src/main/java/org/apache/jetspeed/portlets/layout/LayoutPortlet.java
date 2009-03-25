@@ -125,7 +125,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     {
         RequestContext context = getRequestContext(request);
         response.setContentType(context.getMimeType());        
-        JetspeedPowerTool jpt = getJetspeedPowerTool(request);
+        JetspeedPowerTool jpt = getJetspeedPowerTool(request, response);
 
         String absHelpPage = "";
 
@@ -153,7 +153,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             if (ct == null)
             {
                 TemplateDescriptor template = null;
-                Configuration props = getConfiguration(request, helpPage);
+                Configuration props = getConfiguration(request, response, helpPage);
                 String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
                 String path = helpPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + "-help" + ext;                               
                 template = jpt.getTemplate(path, JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE);
@@ -212,7 +212,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         String absViewPage = null;
         try
         {
-            JetspeedPowerTool jpt = getJetspeedPowerTool(request);
+            JetspeedPowerTool jpt = getJetspeedPowerTool(request, response);
             if (maximized)
             {
                 viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX);                       
@@ -269,7 +269,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             if (ct == null)
             {
                 TemplateDescriptor template = null;
-                Configuration props = getConfiguration(request, viewPage);
+                Configuration props = getConfiguration(request, response, viewPage);
                 String ext = (String) props.getString(TEMPLATE_EXTENSION_KEY);
                 String path = viewPage + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ext;
                 
@@ -414,7 +414,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      * @return
      * @throws PortletException
      */
-    protected JetspeedPowerTool getJetspeedPowerTool( RenderRequest request ) throws PortletException
+    protected JetspeedPowerTool getJetspeedPowerTool( RenderRequest request, RenderResponse response ) throws PortletException
     {
         JetspeedPowerTool tool = (JetspeedPowerTool) request.getAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE);
         RequestContext requestContext = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
@@ -431,7 +431,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                                     + "the HttpServletRequest.");
                 }
 
-                tool = this.jptFactory.getJetspeedPowerTool(requestContext);
+                tool = this.jptFactory.getJetspeedPowerTool(requestContext, getPortletConfig(), request, response );
                 request.setAttribute(PortalReservedParameters.JETSPEED_POWER_TOOL_REQ_ATTRIBUTE, tool);
             }
 
@@ -647,7 +647,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      * @return <code>java.util.Properties</code> representing the configuration
      * object.
      */
-    protected Configuration getConfiguration( RenderRequest request, String name )
+    protected Configuration getConfiguration( RenderRequest request, RenderResponse response, String name )
     {
         Configuration props = null;
         JetspeedPowerTool jpt = null;
@@ -655,7 +655,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         String key = name;
         try
         {
-            jpt = getJetspeedPowerTool(request);
+            jpt = getJetspeedPowerTool(request, response);
             templatePropertiesPath = jpt.getTemplate(name + "/" + JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE + ".properties",
                     JetspeedPowerTool.LAYOUT_TEMPLATE_TYPE).getAbsolutePath();
         } 

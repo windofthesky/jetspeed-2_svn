@@ -129,7 +129,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     
     private PortletRenderer renderer;
 
-    public JetspeedPowerToolImpl(RequestContext requestContext, DynamicTitleService titleService,PortletRenderer renderer) throws Exception
+    public JetspeedPowerToolImpl(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse, DynamicTitleService titleService,PortletRenderer renderer) throws Exception
     {
         HttpServletRequest request = requestContext.getRequest();
         this.requestContext = requestContext;
@@ -143,10 +143,9 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
             // BasePortalURL is optional: ignore (org.springframework.beans.factory.NoSuchBeanDefinitionException)
         }
         
-        renderRequest = (RenderRequest) request.getAttribute(RENDER_REQUEST_ATTR);
-        renderResponse = (RenderResponse) request.getAttribute(RENDER_RESPONSE_ATTR);
-        portletConfig = (PortletConfig) request.getAttribute(PORTLET_CONFIG_ATTR);
-
+        this.portletConfig = portletConfig;
+        this.renderRequest = renderRequest;
+        this.renderResponse = renderResponse;
 
         templateLocator = (TemplateLocator) getComponent("TemplateLocator");
         decorationLocator = (TemplateLocator) getComponent("DecorationLocator");

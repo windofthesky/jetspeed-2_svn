@@ -18,7 +18,10 @@ package org.apache.jetspeed.velocity;
 
 import java.lang.reflect.Constructor;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,17 +47,17 @@ public class JetspeedPowerToolFactory implements org.apache.jetspeed.layout.Jets
         jptClass = Thread.currentThread().getContextClassLoader().loadClass(jptClassName);
         constructor =
             jptClass.getConstructor(
-                new Class[] {RequestContext.class, DynamicTitleService.class, PortletRenderer.class});        
+                new Class[] {RequestContext.class, PortletConfig.class, RenderRequest.class, RenderResponse.class, DynamicTitleService.class, PortletRenderer.class});        
         this.titleService = titleService;
         this.renderer = renderer;
     }
        
-    public JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext)
+    public JetspeedPowerTool getJetspeedPowerTool(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse)
     throws PortletException
     {
         try
         {
-        	Object [] initArgs = { requestContext, this.titleService, this.renderer };
+        	Object [] initArgs = { requestContext, portletConfig, renderRequest, renderResponse, this.titleService, this.renderer };
             return (JetspeedPowerTool)constructor.newInstance(initArgs);
         }
         catch (Exception e)
