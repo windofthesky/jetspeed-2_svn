@@ -24,17 +24,6 @@
     <meta key="j2:cat" value="default" />
   </bean>
 
-  <bean id="ServletRequestFactory" name="javax.servlet.http.HttpServletRequest"
-    class="org.apache.jetspeed.engine.servlet.ServletRequestFactoryImpl">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg><ref bean="org.apache.pluto.services.NamespaceMapper"/></constructor-arg>   
-  </bean>
-
-  <bean id="ServletResponseFactory" name="javax.servlet.http.HttpServletResponse"
-    class="org.apache.jetspeed.engine.servlet.ServletResponseFactoryImpl">
-    <meta key="j2:cat" value="default" />
-  </bean>
-  
   <!--  
     PortletRequestResponseUnwrapper finds servlet request or servlet response from portlet request or portlet response by unwrapping.
     Third-party module can provide an implementation to decorate the real request or response object of a servlet container.

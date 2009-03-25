@@ -71,10 +71,9 @@
   <bean id="org.apache.jetspeed.request.RequestContextComponent"
     class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
     <meta key="j2:cat" value="default,registry" />
-    <constructor-arg index='0'><ref bean="ServletRequestFactory" /></constructor-arg>
-    <constructor-arg index='1'><ref bean="ServletResponseFactory" /></constructor-arg>
-    <constructor-arg index='2'><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
-    <constructor-arg index='3'><ref bean="RequestContextObjects" /></constructor-arg>
+    <constructor-arg index='0'><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" /></constructor-arg>
+    <constructor-arg index='1'><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
+    <constructor-arg index='2'><ref bean="RequestContextObjects" /></constructor-arg>
   </bean>
 
   <bean class="org.apache.jetspeed.components.factorybeans.NullReferenceFactoryBean">
@@ -102,12 +101,6 @@
     <constructor-arg>
       <value>${portal.name}</value>
     </constructor-arg>
-    <property name="requestFactory">
-      <ref bean="ServletRequestFactory" />
-    </property>
-    <property name="responseFactory">
-      <ref bean="ServletResponseFactory" />
-    </property>
   </bean>
 
   <!-- HeaderResource Factory -->
