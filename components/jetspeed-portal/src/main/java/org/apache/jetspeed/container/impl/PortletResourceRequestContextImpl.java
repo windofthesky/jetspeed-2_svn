@@ -38,22 +38,19 @@ public class PortletResourceRequestContextImpl extends PortletRequestContextImpl
     {
         super(container, containerRequest, containerResponse, window);
     }
-
+    
     public String getCacheability()
     {
-        //TODO
-        return null;
+        return getRequestContext().getPortalURL().getNavigationalState().getCacheLevel(getPortletWindow());
     }
 
     public Map<String, String[]> getPrivateRenderParameterMap()
     {
-        //TODO
-        return null;
+        return getRequestContext().getPortalURL().getNavigationalState().getPrivateRenderParameterMap(getPortletWindow());
     }
 
     public String getResourceID()
     {
-        //TODO
-        return null;
+        return getRequestContext().getPortalURL().getNavigationalState().getResourceID(getPortletWindow());
     }
 }

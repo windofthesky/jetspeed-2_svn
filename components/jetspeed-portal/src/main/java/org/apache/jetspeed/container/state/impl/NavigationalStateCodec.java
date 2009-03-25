@@ -18,11 +18,9 @@ package org.apache.jetspeed.container.state.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -45,19 +43,4 @@ public interface NavigationalStateCodec
 
     String encode(PortletWindowRequestNavigationalStates states, boolean navParamsStateFull, boolean renderParamsStateFull) 
         throws UnsupportedEncodingException;
-
-    void setStatePublicRenderParametersMap(PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, Map<String, String[]> publicRenderParametersMap);
-    void updateStatesPublicRenderParametersMap(PortletWindowRequestNavigationalStates requestStates, PortletWindowRequestNavigationalState requestState, Map<String, String[]> publicRenderParametersMap);
-
-    boolean getActionScopedRequestAttributes(PortletWindow window);
-    boolean getActionScopedRequestAttributes(String windowId);
-
-    QName getPublicRenderParameterQName(PortletWindow window, String identifier);
-    QName getPublicRenderParameterQName(String windowId, String identifier);
-
-    Map<String, QName> getPublicRenderParameterNamesMap(PortletWindow window);
-    Map<String, QName> getPublicRenderParameterNamesMap(String windowId);
-
-    boolean hasPublicRenderParameterQNames(PortletWindow window, Set<QName> qnames);
-    boolean hasPublicRenderParameterQNames(String windowId, Set<QName> qnames);
 }

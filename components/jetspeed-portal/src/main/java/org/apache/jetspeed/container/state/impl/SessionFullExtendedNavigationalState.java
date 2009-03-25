@@ -65,7 +65,7 @@ public class SessionFullExtendedNavigationalState extends SessionFullNavigationa
     	return result;
     }
     
-    public synchronized void sync(RequestContext context)
+    public synchronized boolean sync(RequestContext context)
     {
         // JS2-806, check the session for a psuedo inter page navigation.
         boolean resetPagePortlets = false;
@@ -81,6 +81,6 @@ public class SessionFullExtendedNavigationalState extends SessionFullNavigationa
         // push the informaion up to SessionNavigationalState, so that we can handle it appropriately there
         setClearPortletsModeAndWindowStateEnabled(resetPagePortlets);
         //Inform the super
-        super.sync(context);
+        return super.sync(context);
     }
 }

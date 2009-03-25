@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,7 +42,6 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.jetspeed.container.PortletWindow;
@@ -67,9 +65,9 @@ public class PortletRequestContextImpl implements PortletRequestContext
     private ServletContext servletContext;
     private Cookie cookies[];
     private JetspeedRequestContext requestContext;
-    private Map<String, Object> windowAttributes;
     
     private Map<String, String[]> privateParameters;
+    private Map<String, String[]> publicRenderParameters;
     
     public PortletRequestContextImpl(PortletContainer container, HttpServletRequest containerRequest,
                                      HttpServletResponse containerResponse, PortletWindow window)
@@ -78,8 +76,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
         this.containerRequest = containerRequest;
         this.containerResponse = containerResponse;
         this.window = window;
-        this.requestContext = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        windowAttributes = requestContext.getPortletWindowAttributes(window);
+        this.requestContext = (JetspeedRequestContext)window.getRequestContext();
     }
     
     protected JetspeedRequestContext getRequestContext()
@@ -112,7 +109,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
     
     protected boolean isPublicRenderParameter(String name)
     {
-        List<String> publicRenderParameterNames = window.getPortletEntity().getPortletDefinition().getSupportedPublicRenderParameters();
+        List<String> publicRenderParameterNames = window.getPortletDefinition().getSupportedPublicRenderParameters();
         return publicRenderParameterNames.isEmpty() ? false : publicRenderParameterNames.contains(name);
     }
         
@@ -136,37 +133,23 @@ public class PortletRequestContextImpl implements PortletRequestContext
             privateParameters = new HashMap<String, String[]>();
             NavigationalState ns = requestContext.getPortalURL().getNavigationalState();
             mergeRequestParameters = ns.getPortletWindowOfAction() != null || ns.getPortletWindowOfResource() != null;
-            Iterator<String> iter = ns.getParameterNames(getPortletWindow());
-            while (iter.hasNext())
-            {
-                String name = iter.next();
-                String[] values = ns.getParameterValues(getPortletWindow(), name);
-                privateParameters.put(name, values);
-            }
+            privateParameters.putAll(ns.getParameterMap(window));
             
-            PortletDefinition portletDef = window.getPortletEntity().getPortletDefinition();
-            if(portletDef != null)
+            PortletDefinition portletDef = window.getPortletDefinition();
+            GenericMetadata metaData = portletDef.getMetadata();
+            if (!mergeRequestParameters)
             {
-                GenericMetadata metaData = portletDef.getMetadata();
-                if (!mergeRequestParameters)
-                {
-                    mergeRequestParameters = 
-                        getMetaDataBooleanValue(
-                            metaData,
-                            PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_WITH_PORTLET_PARAMETERS,
-                            mergePortalParametersWithPortletParameters.booleanValue());
-                }
-                mergeRequestParametersBefore = 
+                mergeRequestParameters = 
                     getMetaDataBooleanValue(
                         metaData,
-                        PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_BEFORE_PORTLET_PARAMETERS,
-                        mergePortalParametersBeforePortletParameters.booleanValue());
-                
+                        PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_WITH_PORTLET_PARAMETERS,
+                        mergePortalParametersWithPortletParameters.booleanValue());
             }
-            else
-            {
-                // This happens when an entity is referencing a non-existent portlet
-            }
+            mergeRequestParametersBefore = 
+                getMetaDataBooleanValue(
+                    metaData,
+                    PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_BEFORE_PORTLET_PARAMETERS,
+                    mergePortalParametersBeforePortletParameters.booleanValue());
             
             //get request params
             if (mergeRequestParameters)
@@ -220,22 +203,8 @@ public class PortletRequestContextImpl implements PortletRequestContext
                 }
             }
         }
-        if (!privateParameters.isEmpty())
-        {
-            Map<String, String[]> result = new HashMap<String, String[]>(privateParameters.size());
-            for (Map.Entry<String,String[]> entry : privateParameters.entrySet())
-            {
-                if (entry.getValue() != null)
-                {
-                    result.put(entry.getKey(), entry.getValue().clone());
-                }
-            }
-            return Collections.unmodifiableMap(result);
-        }
-        else
-        {
-            return Collections.emptyMap();
-        }
+        // no need to clone: container is supposed to do so
+        return privateParameters;
     }
 
     public PortletContainer getContainer()
@@ -308,7 +277,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
     public Object getAttribute(String name)
     {
         Object value = servletRequest.getAttribute(name);        
-        return value != null ? value : windowAttributes.get(name);
+        return value != null ? value : window.getAttribute(name);
     }
 
     @SuppressWarnings("unchecked")
@@ -327,7 +296,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
                 // ignore potential concurrent changes when run in parallel mode
             }
         }
-        for (String name : windowAttributes.keySet())
+        for (String name : window.getAttributes().keySet())
         {
             names.add(name);
         }
@@ -338,11 +307,11 @@ public class PortletRequestContextImpl implements PortletRequestContext
     {
         if (value == null)
         {
-            windowAttributes.remove(name);
+            window.removeAttribute(name);
         }
         else
         {
-            windowAttributes.put(name,value);
+            window.setAttribute(name,value);
         }
     }
 
@@ -369,7 +338,11 @@ public class PortletRequestContextImpl implements PortletRequestContext
 
     public Map<String, String[]> getPublicParameterMap()
     {
-        // TODO: waiting for public parameters implementation
-        return Collections.emptyMap();
+        if (publicRenderParameters == null)
+        {
+            publicRenderParameters = requestContext.getPortalURL().getNavigationalState().getPublicRenderParameterMap(window);
+        }
+        // no need to clone: the container is supposed to do so
+        return publicRenderParameters;
     }
 }

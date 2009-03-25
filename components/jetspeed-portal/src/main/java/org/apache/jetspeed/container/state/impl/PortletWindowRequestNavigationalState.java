@@ -16,8 +16,15 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.container.om.portlet.PublicRenderParameter;
 
 /**
  * PortletWindowRequestNavigationalState
@@ -30,10 +37,15 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     private static final long serialVersionUID = 3807035638733358425L;
 
     private String windowId;
+    private PortletDefinition pd;
     private String cacheLevel;
     private String resourceId;
     private Map<String, String[]> privateRenderParametersMap;
+    private Map<String, String[]> targetPublicRenderParmaetersMap;
     private Map<String, String[]> publicRenderParametersMap;
+    private Map<QName, String> qnameToIdentifierMap;
+    private Map<String, QName> identifierToQNameMap;
+    private boolean targetted;
     
     /**
      * true if for a targeted PortletWindow using StateFullParameters the saved (in the session) render parameters
@@ -44,15 +56,75 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
      */
     private boolean clearParameters;
 
-    public PortletWindowRequestNavigationalState(String windowId, boolean actionScopedRequestAttributes)
+    public PortletWindowRequestNavigationalState(String windowId)
     {
-        super(actionScopedRequestAttributes);
         this.windowId = windowId;
     }
 
     public String getWindowId()
     {
         return windowId;
+    }
+    
+    public void setPortletDefinition(PortletDefinition pd)
+    {
+        this.pd = pd;
+    }
+    
+    public void resolveActionScopedRequestAttributes()
+    {
+        if (pd != null)
+        {
+            ContainerRuntimeOption actionScopedRequestAttributesOption = 
+                pd.getContainerRuntimeOption(ContainerRuntimeOption.ACTION_SCOPED_REQUEST_ATTRIBUTES_OPTION);
+            if (actionScopedRequestAttributesOption == null)
+            {
+                actionScopedRequestAttributesOption = 
+                    pd.getApplication().getContainerRuntimeOption(ContainerRuntimeOption.ACTION_SCOPED_REQUEST_ATTRIBUTES_OPTION);
+            }
+            setActionScopedRequestAttributes((actionScopedRequestAttributesOption != null) &&
+                                             (actionScopedRequestAttributesOption.getValues() != null) &&
+                                             (actionScopedRequestAttributesOption.getValues().size() > 0) &&
+                                             Boolean.parseBoolean(actionScopedRequestAttributesOption.getValues().get(0)));
+        }
+    }
+    
+    public void resolvePublicRenderParametersMapping()
+    {
+        if (pd != null && qnameToIdentifierMap != null)
+        {
+            qnameToIdentifierMap = new HashMap<QName, String>();
+            identifierToQNameMap = new HashMap<String, QName>();
+            for (String identifier : pd.getSupportedPublicRenderParameters())
+            {
+                PublicRenderParameter prp = pd.getApplication().getPublicRenderParameter(identifier);
+                if (prp != null)
+                {
+                    qnameToIdentifierMap.put(prp.getQName(), identifier);
+                    identifierToQNameMap.put(identifier, prp.getQName());
+                }
+            }
+        }
+    }
+    
+    public PortletDefinition getPortletDefinition()
+    {
+        return pd;
+    }
+    
+    public Map<QName, String> getPublicRenderParametersQNameToIdentifierMap()
+    {
+        return qnameToIdentifierMap;
+    }
+    
+    public QName getPublicRenderParameterQNameByIdentifier(String identifier)
+    {
+        return identifierToQNameMap != null ? identifierToQNameMap.get(identifier) : null;
+    }
+        
+    public String getPublicRenderParameterIdentifierByQName(QName qname)
+    {
+        return qnameToIdentifierMap != null ? qnameToIdentifierMap.get(qname) : null;
     }
         
     public String getCacheLevel()
@@ -77,6 +149,10 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
 
     public Map<String, String[]> getPrivateRenderParametersMap()
     {
+        if (privateRenderParametersMap == null)
+        {
+            privateRenderParametersMap = Collections.emptyMap();
+        }
         return privateRenderParametersMap;
     }
 
@@ -84,7 +160,7 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     {
         if (privateRenderParametersMap == null)
         {
-            privateRenderParametersMap = new HashMap<String, String[]>();
+            privateRenderParametersMap = Collections.emptyMap();
         }
         privateRenderParametersMap.put(name, values);
     }    
@@ -96,21 +172,28 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     
     public Map<String, String[]> getPublicRenderParametersMap()
     {
+        // leave handling null return value to caller
         return publicRenderParametersMap;
     }
 
     public void setPublicRenderParameters(String name, String[] values)
     {
-        if ( publicRenderParametersMap == null )
-        {
-            publicRenderParametersMap = new HashMap<String, String[]>();
-        }
         publicRenderParametersMap.put(name, values);
     }    
     
     public void setPublicRenderParametersMap(Map<String, String[]> publicRenderParametersMap)
     {
         this.publicRenderParametersMap = publicRenderParametersMap;
+    }
+    
+    public Map<String, String[]> getTargetPublicRenderParametersMap()
+    {
+        return this.targetPublicRenderParmaetersMap;
+    }
+    
+    public void setTargetPublicRenderParametersMap(Map<String, String[]> map)
+    {
+        this.targetPublicRenderParmaetersMap = map;
     }
     
     public boolean isClearParameters()
@@ -121,5 +204,15 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     public void setClearParameters(boolean ignoreParameters)
     {
         this.clearParameters = ignoreParameters;
+    }
+    
+    public boolean isTargetted()
+    {
+        return targetted;
+    }
+    
+    public void setTargetted(boolean targetted)
+    {
+        this.targetted = targetted;
     }
 }

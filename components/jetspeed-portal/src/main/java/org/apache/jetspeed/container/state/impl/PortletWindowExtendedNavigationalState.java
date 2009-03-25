@@ -64,15 +64,8 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
         }
     }
     
-    public PortletWindowExtendedNavigationalState(boolean actionScopedRequestAttributes)
-    {
-        this.actionScopedRequestAttributes = actionScopedRequestAttributes;
-    }
-    
     private Map<String, String[]> parametersMap;
 
-    private boolean actionScopedRequestAttributes;
-    
     private String actionScopeId;
     
     private boolean actionScopeRendered;
@@ -96,11 +89,6 @@ public class PortletWindowExtendedNavigationalState extends PortletWindowBaseNav
     public void setParametersMap(Map<String, String[]> parametersMap)
     {
         this.parametersMap = parametersMap;
-    }
-    
-    public boolean isActionScopedRequestAttributes()
-    {
-        return actionScopedRequestAttributes;
     }
     
     public String getActionScopeId()

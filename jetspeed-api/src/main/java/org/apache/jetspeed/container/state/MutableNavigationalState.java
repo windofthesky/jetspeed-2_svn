@@ -79,6 +79,9 @@ public interface MutableNavigationalState extends NavigationalState
      * 
      * @param window
      */
+    
+    void setTargetted(PortletWindow window);
+    
     void clearParameters(PortletWindow window);
     
     void setParametersMap(PortletWindow window, Map<String, String[]> parametersMap);

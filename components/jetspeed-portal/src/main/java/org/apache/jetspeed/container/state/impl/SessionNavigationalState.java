@@ -55,78 +55,99 @@ public class SessionNavigationalState extends AbstractNavigationalState
     public SessionNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache, JetspeedContentCache decorationCache)
     {
         super(codec, cache, decorationCache);
-    }    
-
-    public synchronized void sync(RequestContext context)
+    }
+    
+    public boolean sync(RequestContext context)
     {
-        PortletWindowRequestNavigationalStates requestStates = getPortletWindowRequestNavigationalStates();
-        
-        // for Resource (PortletURL) requests, session state is never synchronized
-        boolean transientNavState = requestStates.getResourceWindow() != null;
-        
-        String clearCacheWindowId = null;
-        
-        if (!transientNavState)
+        HttpSession session = context.getRequest().getSession();
+        Object syncLock = session;
+        if (syncLock == null)
         {
-            // Check if a maximized window is set in the request.
-            // This can mean a window with state MAXIMIZED *or* SOLO.
-            // With a SOLO state, also skip all synchroniziations!
-            String requestMaximizedWindowId = null;
-            
-            if ( requestStates.getMaximizedWindow() != null )
-            {
-                requestMaximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
-                WindowState state = requestStates.getPortletWindowNavigationalState(requestMaximizedWindowId).getWindowState();
-                transientNavState = JetspeedActions.SOLO_STATE.equals(state);
-                clearCacheWindowId = requestMaximizedWindowId;
-            }
-            
+            syncLock = new Object();
         }
-        if (transientNavState)
+        synchronized (syncLock)
         {
-            // no navState synchronizations
+            boolean result = resolvePortletWindows(context);
+            resolvePublicParametersMap();
+            PortletWindowRequestNavigationalStates requestStates = getPortletWindowRequestNavigationalStates();
             
-            if (clearCacheWindowId != null)
+            // for Resource (PortletURL) requests, session state is never synchronized/updated
+            boolean transientNavState = requestStates.getResourceWindow() != null;
+            
+            String clearCacheWindowId = null;
+            
+            if (!transientNavState)
             {
-                HttpSession session = context.getRequest().getSession();
+                // Check if a maximized window is set in the request.
+                // This can mean a window with state MAXIMIZED *or* SOLO.
+                // With a SOLO state, also don't update session state!
+                String requestMaximizedWindowId = null;
+                
+                if ( requestStates.getMaximizedWindow() != null )
+                {
+                    requestMaximizedWindowId = requestStates.getMaximizedWindow().getId().toString();
+                    WindowState state = requestStates.getPortletWindowNavigationalState(requestMaximizedWindowId).getWindowState();
+                    transientNavState = JetspeedActions.SOLO_STATE.equals(state);
+                    clearCacheWindowId = requestMaximizedWindowId;
+                }
+                
+            }
+            if (transientNavState)
+            {
+                // no navState synchronizations
+                
+                if (clearCacheWindowId != null)
+                {
+                    if ( session != null )
+                    {
+                        PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
+                        if ( sessionStates != null )
+                        {
+                            sessionStates.removeFromCache(context, clearCacheWindowId, cache);
+                            ContentPage page = context.getPage();
+                            sessionStates.removeFromCache(context, page.getId(), decorationCache);                        
+                        }
+                    }
+                }
                 if ( session != null )
                 {
                     PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
                     if ( sessionStates != null )
                     {
-                        sessionStates.removeFromCache(context, clearCacheWindowId, cache);
-                        ContentPage page = context.getPage();
-                        sessionStates.removeFromCache(context, page.getId(), decorationCache);                        
+                        sessionStates.syncPublicRequestParameters(context, requestStates, true, cache, decorationCache);
                     }
                 }
             }
-        }
-        else
-        {
-            HttpSession session = context.getRequest().getSession();
-            if ( session != null )
+            else
             {
-                PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
-                if ( sessionStates == null )
+                if ( session != null )
                 {
-                    sessionStates = new PortletWindowSessionNavigationalStates(this, isRenderParameterStateFull());
-                    session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
-                }
-                Page page = context.getPage();
-                // JS2-806
-                if (isClearPortletsModeAndWindowStateEnabled())
-                {
-                    sessionStates.changeAllPortletsToViewModeAndNormalWindowState(context, page, requestStates, cache, decorationCache);
-                }
-                else
-                {
-                    sessionStates.sync(context, (Page) context.getPage(), requestStates, cache, decorationCache);
-                }
-                if (isNavigationalParameterStateFull() && isRenderParameterStateFull())
-                {
-                    currentPageWindowStates = sessionStates.getWindowStates(page);
+                    PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
+                    if ( sessionStates == null )
+                    {
+                        sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
+                        session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
+                    }
+                    Page page = context.getPage();
+                    // JS2-806
+                    if (isClearPortletsModeAndWindowStateEnabled())
+                    {
+                        sessionStates.changeAllPortletsToViewModeAndNormalWindowState(context, page, requestStates, cache, decorationCache);
+                    }
+                    else
+                    {
+                        sessionStates.sync(context, context.getPage(), requestStates, cache, decorationCache);
+                    }
+                    if (isNavigationalParameterStateFull() && isRenderParameterStateFull())
+                    {
+                        currentPageWindowStates = sessionStates.getWindowStates(page);
+                    }
                 }
             }
+            
+            this.resetRequestPortletWindowPublicRenderParameters();
+            
+            return result;
         }
     }
     

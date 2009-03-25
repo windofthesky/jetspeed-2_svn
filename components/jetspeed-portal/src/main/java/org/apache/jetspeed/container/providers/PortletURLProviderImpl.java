@@ -169,8 +169,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
     {
         PortalURL.URLType urlType;
         Map<String, String[]> privateRenderParms = null;
-        Map<String, String[]> renderParms = new HashMap<String, String[]>();
-        Map<String, String[]> publicRenderParms = new HashMap<String, String[]>();
+        Map<String, String[]> renderParms = null;
         if (TYPE.ACTION == type)
         {
             urlType = PortalURL.URLType.ACTION;
@@ -189,38 +188,62 @@ public class PortletURLProviderImpl implements PortletURLProvider
         }
         if (renderParameters != null)
         {
-            for (Map.Entry<String,String[]> entry : renderParameters.entrySet())
+            if (publicRenderParameters == null)
             {
-                if (publicRenderParameters == null || !publicRenderParameters.containsKey(entry.getKey()))
-                {
-                    renderParms.put(entry.getKey(), entry.getValue());
-                }
+                renderParms = renderParameters;
             }
-        }
-        if (publicRenderParameters != null)
-        {
-            for (Map.Entry<String,String[]> entry : publicRenderParameters.entrySet())
+            else
             {
-                publicRenderParms.put(entry.getKey(), entry.getValue() != null ? entry.getValue() : new String[]{null});
+                renderParms = new HashMap<String,String[]>();
+                for (Map.Entry<String,String[]> entry : renderParameters.entrySet())
+                {
+                    if (publicRenderParameters == null || !publicRenderParameters.containsKey(entry.getKey()))
+                    {
+                        renderParms.put(entry.getKey(), entry.getValue());
+                    }
+                }
             }
         }
         
         if (toURL)
         {
-            return url.createPortletURL(portletWindow, renderParms, actionScopeID, actionScopeRendered, cacheLevel, resourceID, privateRenderParms, publicRenderParms, portletMode, windowState, urlType, secure);
+            return url.createPortletURL(portletWindow, renderParms, actionScopeID, actionScopeRendered, cacheLevel, resourceID, privateRenderParms, publicRenderParameters, portletMode, windowState, urlType, secure);
         }
         else
         {
             MutableNavigationalState navState = (MutableNavigationalState)url.getNavigationalState();
-            navState.setMode(portletWindow, portletMode);
-            navState.setState(portletWindow, windowState);
-            navState.setParametersMap(portletWindow, renderParms);
-            navState.setActionScopeId(portletWindow, actionScopeID);
-            navState.setActionScopeRendered(portletWindow, actionScopeRendered);
-            navState.setCacheLevel(portletWindow, cacheLevel);
-            navState.setResourceId(portletWindow, resourceID);
-            navState.setPrivateRenderParametersMap(portletWindow, privateRenderParms);
-            navState.setPublicRenderParametersMap(portletWindow, publicRenderParms);
+            // block possible other concurrent processEvent trying to do the same
+            synchronized (navState)
+            {
+                navState.setTargetted(portletWindow);
+                navState.setMode(portletWindow, portletMode);
+                navState.setState(portletWindow, windowState);
+                navState.setActionScopeId(portletWindow, actionScopeID);
+                navState.setActionScopeRendered(portletWindow, actionScopeRendered);
+                navState.setCacheLevel(portletWindow, cacheLevel);
+                navState.setResourceId(portletWindow, resourceID);
+                navState.setPrivateRenderParametersMap(portletWindow, privateRenderParms);                
+                if (publicRenderParameters == null)
+                {
+                    navState.setParametersMap(portletWindow, renderParms);
+                }
+                else
+                {
+                    if (renderParameters == null)
+                    {
+                        navState.setParametersMap(portletWindow, null);
+                    }
+                    else
+                    {
+                        for (String key : publicRenderParameters.keySet())
+                        {
+                            renderParameters.remove(key);
+                        }
+                        navState.setParametersMap(portletWindow, renderParameters);
+                    }
+                    navState.setPublicRenderParametersMap(portletWindow, publicRenderParameters);
+                }
+            }
             return null;
         }
     }

@@ -33,6 +33,7 @@ public class PortletWindowRequestNavigationalStates
     private PortletWindow maximizedWindow;
     private PortletWindow actionWindow;
     private PortletWindow resourceWindow;
+    private String targetWindowId;
     private Map<QName, String[]> publicRenderParametersMap;
     
     public PortletWindowRequestNavigationalStates(String characterEncoding)
@@ -43,6 +44,11 @@ public class PortletWindowRequestNavigationalStates
     public String getCharacterEncoding()
     {
         return characterEncoding;
+    }
+    
+    public Map<String, PortletWindowRequestNavigationalState> getPortletWindowRequestNavigationalStates()
+    {
+        return pwnStates;
     }
     
     public Iterator<String> getWindowIdIterator()
@@ -82,7 +88,7 @@ public class PortletWindowRequestNavigationalStates
     
     public PortletWindowRequestNavigationalState getPortletWindowNavigationalState(String windowId)
     {
-        return (PortletWindowRequestNavigationalState)pwnStates.get(windowId);
+        return pwnStates.get(windowId);
     }
     
     public void addPortletWindowNavigationalState(String windowId, PortletWindowRequestNavigationalState pwnState)
@@ -116,32 +122,50 @@ public class PortletWindowRequestNavigationalStates
     {
         return resourceWindow;
     }
+    
+    public void setTargetWindowId(String windowId)
+    {
+        this.targetWindowId = windowId;
+    }
+    
+    public String getTargetWindowId()
+    {
+        return targetWindowId;
+    }
 
     public Map<QName, String[]> getPublicRenderParametersMap()
     {
         return publicRenderParametersMap;
     }
-
+    
+    public Map<String, String[]> getPublicRenderParametersMap(String windowId)
+    {
+        Map<String, String[]> map = null;
+        PortletWindowRequestNavigationalState state = pwnStates.get(windowId);
+        if (state != null && state.getPublicRenderParametersMap() == null)
+        {
+            if (publicRenderParametersMap != null && state.getPublicRenderParametersQNameToIdentifierMap() != null)
+            {
+                for (Map.Entry<QName, String> entry : state.getPublicRenderParametersQNameToIdentifierMap().entrySet())
+                {
+                    String[] values = publicRenderParametersMap.get(entry.getKey());
+                    if (values != null)
+                    {
+                        if (map == null)
+                        {
+                            map = new HashMap<String, String[]>();
+                        }
+                        map.put(entry.getValue(), values);
+                    }
+                }
+            }
+            state.setPublicRenderParametersMap(map);
+        }        
+        return map;
+    }
+    
     public void setPublicRenderParametersMap(Map<QName, String[]> publicRenderParametersMap)
     {
         this.publicRenderParametersMap = publicRenderParametersMap;
-    }
-
-    public void setPublicRenderParameters(QName qname, String[] values)
-    {
-        if (publicRenderParametersMap == null)
-        {
-            publicRenderParametersMap = new HashMap<QName, String[]>();
-        }
-        publicRenderParametersMap.put(qname, values);
-    }    
-    
-    public void addPublicRenderParametersMap(Map<QName, String[]> publicRenderParametersMap)
-    {
-        if (this.publicRenderParametersMap == null)
-        {
-            this.publicRenderParametersMap = new HashMap<QName, String[]>();
-        }
-        this.publicRenderParametersMap.putAll(publicRenderParametersMap);
     }
 }

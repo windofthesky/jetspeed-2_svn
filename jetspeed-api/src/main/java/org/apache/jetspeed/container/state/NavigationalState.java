@@ -55,11 +55,11 @@ public interface NavigationalState
     /**
      * Synchronize the Navigational State with saved state (if used).
      * <br>
-     * Should be called by the PortalURL impl right after calling {@link #init(String)}
      *
      * @param context The RequestContext for this Navigational State
+     * @return false if the target PortletWindow (action or resource) could not be resolved
      */
-    void sync(RequestContext context);
+    boolean sync(RequestContext context);
 
     /**
      * Gets the window state for given portlet window.
@@ -135,10 +135,6 @@ public interface NavigationalState
      */
     PortletWindow getMaximizedWindow();
         
-    Iterator<String> getParameterNames(PortletWindow window);
-    
-    String[] getParameterValues(PortletWindow window, String parameterName);
-
     Map<String, String[]> getParameterMap(PortletWindow window);
 
     boolean isActionScopedRequestAttributes(PortletWindow window);
@@ -149,18 +145,10 @@ public interface NavigationalState
 
     String getCacheLevel(PortletWindow window);
 
-    String getResourceId(PortletWindow window);
+    String getResourceID(PortletWindow window);
     
-    Iterator<String> getPrivateRenderParameterNames(PortletWindow window);
-    
-    String[] getPrivateRenderParameterValues(PortletWindow window, String parameterName);
-
     Map<String, String[]> getPrivateRenderParameterMap(PortletWindow window);
     
-    Iterator<String> getPublicRenderParameterNames(PortletWindow window);
-    
-    String[] getPublicRenderParameterValues(PortletWindow window, String parameterName);
-
     Map<String, String[]> getPublicRenderParameterMap(PortletWindow window);
 
     PortalURL.URLType getURLType();

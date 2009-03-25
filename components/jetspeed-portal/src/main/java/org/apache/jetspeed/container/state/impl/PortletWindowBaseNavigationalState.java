@@ -32,6 +32,7 @@ public class PortletWindowBaseNavigationalState implements Serializable
     private static final long serialVersionUID = 4188214497281562619L;
     private String modeName;
     private String stateName;
+    private boolean actionScopedRequestAttributes;
     
     private transient PortletMode portletMode;
     private transient WindowState windowState;
@@ -64,5 +65,15 @@ public class PortletWindowBaseNavigationalState implements Serializable
     {
         this.windowState = windowState;
         this.stateName = windowState == null ? null : windowState.toString();
+    }
+
+    public void setActionScopedRequestAttributes(boolean actionScopedRequestAttributes)
+    {
+        this.actionScopedRequestAttributes = actionScopedRequestAttributes;
+    }
+    
+    public boolean isActionScopedRequestAttributes()
+    {
+        return actionScopedRequestAttributes;
     }
 }

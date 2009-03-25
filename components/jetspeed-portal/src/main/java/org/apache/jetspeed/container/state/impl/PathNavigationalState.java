@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -34,8 +36,21 @@ public class PathNavigationalState extends AbstractNavigationalState
         super(codec, cache);
     }
 
-    public void sync(RequestContext context)
+    public boolean sync(RequestContext context)
     {        
+        HttpSession session = context.getRequest().getSession();
+        Object syncLock = session;
+        if (syncLock == null)
+        {
+            syncLock = new Object();
+        }
+        synchronized (syncLock)
+        {
+            boolean result = resolvePortletWindows(context);
+            resolvePublicParametersMap();
+            resetRequestPortletWindowPublicRenderParameters();
+            return result;
+        }
     }
 
     public boolean isNavigationalParameterStateFull()
