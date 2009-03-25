@@ -81,8 +81,8 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         context.getResponse().getWriter().write(root.getRenderedContent());
         if (null != window)
         {
-            context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
-            context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
+            window.removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
+            window.removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
         releaseBuffers(root, context);        
     }
@@ -106,9 +106,8 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
         if (maxedContentFragment != null)
         {
-            context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
-            context.getRequest().setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, maxedContentFragment);
-            context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
+            window.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
+            window.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
 
             try
             {

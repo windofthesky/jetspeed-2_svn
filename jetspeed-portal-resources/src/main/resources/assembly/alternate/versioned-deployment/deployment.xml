@@ -28,12 +28,6 @@
       <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     </constructor-arg>
     <constructor-arg>
-      <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" />
-    </constructor-arg>
-    <constructor-arg>
       <ref bean="org.apache.jetspeed.security.PermissionManager" />
     </constructor-arg>
     <constructor-arg>

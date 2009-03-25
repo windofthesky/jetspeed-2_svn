@@ -32,17 +32,16 @@ import javax.servlet.http.HttpSession;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
+import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.container.PortletWindowID;
-import org.apache.jetspeed.container.PortletWindowRequestContext;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
-import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
@@ -54,6 +53,7 @@ import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -67,8 +67,9 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 public class JetspeedRequestContext implements RequestContext
 {
     private static final String ACTION_ERROR_ATTR = "org.apache.jetspeed.action.error:";
+    private static final String INSTANT_WINDOWS_SESSION_KEY = "org.apache.jetspeed.instant.windows";
     
-    private final ThreadLocal<PortletWindowRequestContext> pwrc = new ThreadLocal<PortletWindowRequestContext>();
+    private final ThreadLocal<PortletWindow> currentWindow = new ThreadLocal<PortletWindow>();
     
     private RequestContextComponent rcc;
     private HttpServletRequest request;
@@ -90,10 +91,8 @@ public class JetspeedRequestContext implements RequestContext
     private PortletWindow actionWindow;
     private String encoding;
     private String requestPath = null;
-    private Map<PortletWindowID, HttpServletRequest> requestsForWindows;
-    private Map<PortletWindowID, HttpServletResponse> responsesForWindows;
     private final Map<String, Object> objects;
-    private final Map<PortletWindowID, Map<String, Object>> portletWindowAttributesMap;
+    private final Map<String, PortletWindow> portletWindows;
     
     /**
      * Create a new Request Context
@@ -115,16 +114,16 @@ public class JetspeedRequestContext implements RequestContext
         this.response = response;
         this.config = config;
         this.session = request.getSession();
-        this.requestsForWindows = new HashMap<PortletWindowID, HttpServletRequest>();
-        this.responsesForWindows = new HashMap<PortletWindowID, HttpServletResponse>();
         this.objects = objects;
-        this.portletWindowAttributesMap = new HashMap<PortletWindowID,Map<String, Object>>();
+        this.portletWindows = new HashMap<String,PortletWindow>();
 
         // set context in Request for later use
         if (null != this.request)
         {
             this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, this);
             this.request.setAttribute(ContainerConstants.PORTAL_CONTEXT, this.request.getContextPath());
+            this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, objects);
+            
             PortalRequestFactory prf = null;
             try
             {
@@ -182,6 +181,10 @@ public class JetspeedRequestContext implements RequestContext
     public void setPage( ContentPage page )
     {
         this.page = page;
+        if (page != null)
+        {
+            getRequest().setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, page);
+        }
     }
 
     public PortletDefinition getPortletDefinition()
@@ -307,81 +310,6 @@ public class JetspeedRequestContext implements RequestContext
         }
 
         this.encoding = enc;
-    }
-
-    public PortletWindowRequestContext getCurrentPortletWindowRequestContext()
-    {
-        return pwrc.get();
-    }
-    
-    public void setCurrentPortletWindowRequestContext(PortletWindowRequestContext value)
-    {
-        if (value == null)
-        {
-            pwrc.remove();
-        }
-        else
-        {
-            pwrc.set(value);
-        }
-    }
-
-    /**
-     * <p>
-     * getRequestForWindow
-     * </p>
-     * 
-     * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.jetspeed.container.PortletWindow)
-     * @param window
-     * @return
-     */
-    public HttpServletRequest getRequestForWindow( PortletWindow window )
-    {
-        if (!requestsForWindows.containsKey(window.getId()))
-        {            
-            ServletRequestFactory reqFactory = rcc.getServletRequestFactory(); 
-            HttpServletRequest requestWrapper = reqFactory.getServletRequest(request, window);
-            requestsForWindows.put(window.getId(), requestWrapper);
-            return requestWrapper;
-        }
-        else
-        {
-            return (HttpServletRequest) requestsForWindows.get(window.getId());
-        }
-
-    }
-
-    /**
-     * <p>
-     * getResponseForWindow
-     * </p>
-     * 
-     * @see org.apache.jetspeed.request.RequestContext#getResponseForWindow(org.apache.jetspeed.container.PortletWindow)
-     * @param window
-     * @return
-     */
-    public HttpServletResponse getResponseForWindow( PortletWindow window )
-    {
-        HttpServletResponse wrappedResponse = null;
-
-        if (!responsesForWindows.containsKey(window.getId()))
-        {
-            if (getContentDispatcher() != null)
-            {
-                wrappedResponse = ((ContentDispatcherCtrl) getContentDispatcher()).getResponseForWindow(window, this);
-            }
-            else
-            {
-                ServletResponseFactory rspFactory = rcc.getServletResponseFactory(); 
-                wrappedResponse = rspFactory.getServletResponse(this.response);
-            }
-            responsesForWindows.put(window.getId(), wrappedResponse);
-            return wrappedResponse;
-        }
-        else
-        {
-            return (HttpServletResponse) responsesForWindows.get(window.getId());
-        }
     }
 
     /**
@@ -674,19 +602,120 @@ public class JetspeedRequestContext implements RequestContext
         return objects;
     }
     
-    public synchronized Map<String, Object> getPortletWindowAttributes(PortletWindow window)
+    public PortletWindow getCurrentPortletWindow()
     {
-        Map<String, Object> attributes = portletWindowAttributesMap.get(window.getId());
-        if (attributes == null)
+        return currentWindow.get();
+    }
+    
+    public void setCurrentPortletWindow(PortletWindow window)
+    {
+        currentWindow.set(window);
+    }
+    
+    public synchronized PortletWindow getPortletWindow(String windowId)
+    {
+        return portletWindows.get(windowId);
+    }
+    
+    public synchronized PortletWindow getPortletWindow(ContentFragment fragment)
+    {
+        PortletWindow window = portletWindows.get(fragment.getId());
+        if (window == null)
         {
-            attributes = new HashMap<String, Object>();
-            attributes.put(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, this);
-            if (getObjects() != null)
+            PortletDefinition pd = rcc.getPortletRegistry().getPortletDefinitionByUniqueName(fragment.getName());
+            if (pd != null)
             {
-                attributes.put(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, getObjects());
+                window = new PortletWindowImpl(this, fragment, pd);
+                portletWindows.put(window.getWindowId(), window);
             }
-            portletWindowAttributesMap.put(window.getId(), attributes);
+            else
+            {
+                fragment.overrideRenderedContent("Failed to retrieve Portlet Definition for " + fragment.getName());
+            }
         }
-        return attributes;
+        return window;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public PortletWindow getInstantlyCreatedPortletWindow(String windowId)
+    {
+        PortletWindow window = null;
+        HttpSession session = getRequest().getSession();
+        if (session != null)
+        {
+            synchronized (session)
+            {
+                Map<String,Map<String,String>> pages = (Map<String,Map<String,String>>)session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);
+                if (pages != null)
+                {
+                    Map<String,String> instantWindows = pages.get(getPage().getId());
+                    if (instantWindows != null)
+                    {
+                        String portletId = instantWindows.get(windowId);
+                        if (portletId != null)
+                        {
+                            Fragment fragment = new PortletAggregatorFragmentImpl(windowId);
+                            fragment.setType(Fragment.PORTLET);
+                            fragment.setName(portletId);
+                            window = getPortletWindow(new ContentFragmentImpl(fragment, new HashMap(), true));
+                        }
+                    }
+                }
+            }
+        }
+        return window;
+    }
+    
+    public PortletWindow resolvePortletWindow(String windowId)
+    {
+        PortletWindow window = portletWindows.get(windowId);
+        if (window == null)
+        {
+            ContentFragment fragment = getPage().getContentFragmentById(windowId);
+            if (fragment == null)
+            {
+                window = getInstantlyCreatedPortletWindow(windowId);
+            }
+            else
+            {
+                window = getPortletWindow(fragment);
+            }
+        }
+        return window;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow)
+    {
+        HttpSession session = getRequest().getSession(true);
+        synchronized (session)
+        {
+            Map<String,Map<String,String>> pages = (Map<String,Map<String,String>>)session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);            
+            if (pages == null)
+            {
+                pages = new HashMap<String,Map<String,String>>();
+                session.setAttribute(INSTANT_WINDOWS_SESSION_KEY, pages);
+            }
+            String pageId = getPage().getId();
+            Map<String,String> instantWindows = pages.get(pageId);
+            if (instantWindows == null)
+            {
+                instantWindows = new HashMap<String,String>();
+                pages.put(pageId, instantWindows);
+            }
+            instantWindows.put(portletWindow.getWindowId(), portletWindow.getPortletDefinition().getUniqueName());
+        }
+    }
+
+    public boolean ensureThreadContext()
+    {
+        RequestContext current = rcc.getRequestContext();
+        rcc.setRequestContext(this);
+        return current == null || current != this;
+    }
+    
+    public void clearThreadContext()
+    {
+        rcc.setRequestContext(null);
     }
 }

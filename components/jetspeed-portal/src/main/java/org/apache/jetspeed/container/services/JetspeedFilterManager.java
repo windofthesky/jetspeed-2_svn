@@ -34,7 +34,7 @@ import org.apache.jetspeed.factory.PortletFilterInstance;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.pluto.container.FilterManager;
+import org.apache.jetspeed.container.FilterManager;
 
 public class JetspeedFilterManager implements FilterManager
 {

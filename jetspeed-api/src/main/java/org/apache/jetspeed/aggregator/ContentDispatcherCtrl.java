@@ -16,12 +16,6 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
-
 /**
  * <p>The ContentDispatcher control interface used for updating the content of
  *    a ContentDispatcher</p>
@@ -31,24 +25,4 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public interface ContentDispatcherCtrl extends ContentDispatcher
 {
-    /**
-     * Return the HttpServletResponse to use for a given PortletWindow
-     * in order to be able to capture parallel rendering portlets
-     */
-    public HttpServletResponse getResponseForWindow(PortletWindow window, RequestContext request);
-    
-    /**
-     * 
-     * <p>
-     * getResponseForFragment
-     * </p>
-     * <p>
-     *  Return the HttpServletResponse to use for a given Fragment
-     *  in order to be able to capture parallel rendering portlets
-     * </p>
-     * @param fragment
-     * @param request
-     * @return
-     */
-    public HttpServletResponse getResponseForFragment( Fragment fragment, RequestContext request );
 }

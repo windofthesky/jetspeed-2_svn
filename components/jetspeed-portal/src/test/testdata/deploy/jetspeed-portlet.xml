@@ -92,7 +92,6 @@ limitations under the License.
     
     <js:services>
     	<js:service name='PortletRegistryComponent' />
-    	<js:service name='PortletEntityAccessComponent'/>		
     </js:services>
     
     <js:user-attribute-ref>

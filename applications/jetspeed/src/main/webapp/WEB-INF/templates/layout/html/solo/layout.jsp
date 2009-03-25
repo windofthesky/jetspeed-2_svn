@@ -30,7 +30,7 @@ limitations under the License.
       pageContext.setAttribute("frag", maxFragment, PAGE_SCOPE);
       
       //title
-      String title = _jpt.getTitle(_jpt.getCurrentPortletEntity(),maxFragment);
+      String title = _jpt.getTitle(maxFragment);
       if (null == title)
         title = "";
       pageContext.setAttribute("title",title, PAGE_SCOPE);

@@ -40,9 +40,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
@@ -83,8 +81,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected PageManager pageManager;
     protected JetspeedPowerToolFactory jptFactory;
     protected TemplateLocator templateLocator;
-    protected PortletEntityAccessComponent entityAccess;
-    protected PortletWindowAccessor windowAccess;
     protected TemplateLocator decorationLocator;
     protected boolean storeViewPageInSession;
     
@@ -114,18 +110,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             throw new PortletException("Failed to find the JPT Factory on portlet initialization");
         }        
         
-        entityAccess = (PortletEntityAccessComponent) getPortletContext().getAttribute(CommonPortletServices.CPS_ENTITY_ACCESS_COMPONENT);
-        if (null == entityAccess)
-        {
-            throw new PortletException("Failed to find the Entity Access on portlet initialization");
-        }        
-        
-        windowAccess = (PortletWindowAccessor) getPortletContext().getAttribute(CommonPortletServices.CPS_WINDOW_ACCESS_COMPONENT);
-        if (null == windowAccess)
-        {
-            throw new PortletException("Failed to find the Window Access on portlet initialization");
-        }        
-
         PortalConfiguration portalConfiguration = (PortalConfiguration) getPortletContext().getAttribute(CommonPortletServices.CPS_PORTAL_CONFIGURATION);
         if (null == portalConfiguration)
         {
@@ -315,7 +299,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         }
         super.doView(request, response);
 
-        request.removeAttribute(PortalReservedParameters.PAGE_ATTRIBUTE);
         request.removeAttribute("fragment");
         request.removeAttribute("layout");
         request.removeAttribute("dispatcher");

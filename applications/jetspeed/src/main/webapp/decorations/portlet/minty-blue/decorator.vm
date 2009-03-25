@@ -31,7 +31,7 @@ limitations under the License.
     <td class="PTitleLeft" style="font-size:1pt;" nowrap="true">&nbsp;</td>
 
     <td align="left" valign="middle" class="PTitle" >
-       $!jetspeed.getTitle($jetspeed.getPortletEntity($f), $f)
+       $!jetspeed.getTitle($f)
     </td>
     <td align="right" valign="middle" class="PTitle" >
       <table border="0" cellpadding="0" cellspacing="0" >

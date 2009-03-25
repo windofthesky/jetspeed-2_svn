@@ -18,7 +18,7 @@ package org.apache.jetspeed.container.services;
 
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.pluto.container.FilterManager;
+import org.apache.jetspeed.container.FilterManager;
 import org.apache.pluto.container.FilterManagerService;
 import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
@@ -36,5 +36,4 @@ public class JetspeedFilterManagerService implements FilterManagerService
     {
         return new JetspeedFilterManager(this.portletFactory, (PortletApplication) portletAppDD, portletName, lifeCycle);
     }
-    
 }

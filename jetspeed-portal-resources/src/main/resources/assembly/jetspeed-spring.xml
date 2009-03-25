@@ -83,28 +83,6 @@
     <property name="objectType" value="org.apache.jetspeed.request.RequestContextComponent"></property>
   </bean>
 
-  <!-- Portlet Window Component -->
-  <bean id="PortletWindowAccessor" class="org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl"
-    name="org.apache.jetspeed.container.window.PortletWindowAccessor">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg index='0'>
-      <ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
-    </constructor-arg>
-    <constructor-arg index='1'>
-      <ref bean="portletFactory" />
-    </constructor-arg>
-    <constructor-arg index='2'>
-      <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
-    </constructor-arg>
-    <constructor-arg index='3'>
-      <ref bean="portletWindowCache" />
-    </constructor-arg>
-    <!-- enable window validation -->
-    <constructor-arg type="boolean" index='4'>
-      <value>false</value>
-    </constructor-arg>
-  </bean>
-
   <!-- Pluto Portlet Container -->
   <bean id="Pluto" class="org.apache.pluto.container.impl.PortletContainerImpl">
     <meta key="j2:cat" value="default" />

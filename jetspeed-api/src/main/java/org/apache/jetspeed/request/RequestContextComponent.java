@@ -20,8 +20,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
-import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 
@@ -34,7 +33,7 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
 public interface RequestContextComponent 
 {
     /**
-     * Creates a request context for the given servlet request.
+     * Creates a request context for the given servlet request and stores it on the current thread
      * 
      * @param req
      * @param resp
@@ -44,25 +43,20 @@ public interface RequestContextComponent
     RequestContext create(HttpServletRequest req, HttpServletResponse resp, ServletConfig config);
 
     /**
-     * Release a request context back to the context pool.
-     * 
-     * @param context
+     * Get the request context on the current thread
+     * @return
      */
-    void release(RequestContext context);
+    RequestContext getRequestContext();
     
     /**
-     * The servlet request can always get you back to the Request Context if you need it
-     * This static accessor provides this capability
-     *
-     * @param request
-     * @return RequestContext
+     * Set a new request context on the current (possibly spawned) thread
+     * Note: providing a null value effectively clears the request context from the current thread.
+     * 
+     * @param requestContext
      */
-    RequestContext getRequestContext(HttpServletRequest request);    
-    RequestContext getRequestContext();    
+    void setRequestContext(RequestContext requestContext);
     
-    
-    ServletRequestFactory getServletRequestFactory();
-    ServletResponseFactory getServletResponseFactory();
     UserInfoManager getUserInfoManager();
+    PortletRegistry getPortletRegistry();
     
 }

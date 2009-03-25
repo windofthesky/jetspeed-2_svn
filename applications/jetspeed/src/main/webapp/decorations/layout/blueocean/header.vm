@@ -124,7 +124,7 @@ limitations under the License.
         &nbsp;
 #end
      <!-- Page Action Bar -->
-##    <span style="position:absolute;right:5em">$jetspeed.renderPortletEntity("theClock", "j2-admin::DateTimePortlet")</span>
+##    <span style="position:absolute;right:5em">$jetspeed.renderPortletWindow("theClock", "j2-admin::DateTimePortlet")</span>
 #if($portalFilter)
 <span style="position:absolute;right:5em"></span>   
 #else

@@ -31,6 +31,7 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.pipeline.Pipeline;
@@ -38,7 +39,6 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.container.PortletWindowRequestContext;
 
 
 
@@ -566,12 +566,62 @@ public class MockRequestContext implements RequestContext
     {
         this.objects = objects;
     }
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#getCurrentPortletWindowRequestContext()
-     */
-    public PortletWindowRequestContext getCurrentPortletWindowRequestContext()
+    
+    public PortletWindow getCurrentPortletWindow()
     {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public PortletWindow getPortletWindow(ContentFragment fragment)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public PortletWindow getPortletWindow(String windowId)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#getInstantlyCreatedPortletWindow(java.lang.String)
+     */
+    public PortletWindow getInstantlyCreatedPortletWindow(String windowId)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#registerInstantlyCreatedPortletWindow(org.apache.jetspeed.container.PortletWindow)
+     */
+    public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#resolvePortletWindow(java.lang.String)
+     */
+    public PortletWindow resolvePortletWindow(String windowId)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#clearThreadContext()
+     */
+    public void clearThreadContext()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#ensureThreadContext()
+     */
+    public boolean ensureThreadContext()
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

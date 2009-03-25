@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
@@ -31,7 +30,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PortletEntityImpl.java,v 1.9 2005/04/29 13:59:08 weaver Exp $
  */
-public class PortletEntityImpl implements PortletEntity, RenderTrackable
+public class PortletEntityImpl implements PortletEntity
 {   
     private static PortletRegistry registry;
 
@@ -42,9 +41,6 @@ public class PortletEntityImpl implements PortletEntity, RenderTrackable
     protected String portletName;
     protected String appName;
     private Fragment fragment;
-    
-    protected transient int timeoutCount = 0;
-    protected transient long expiration = 0;
     
     public PortletEntityImpl(Fragment fragment)
     {
@@ -152,36 +148,6 @@ public class PortletEntityImpl implements PortletEntity, RenderTrackable
     public void setFragment(Fragment fragment)
     {
         this.fragment = fragment;
-    }
-
-    public int getRenderTimeoutCount()
-    {
-        return timeoutCount;
-    }
-    
-    public synchronized void incrementRenderTimeoutCount()
-    {
-        timeoutCount++;
-    }
-    
-    public synchronized void setExpiration(long expiration)
-    {
-        this.expiration = expiration;
-    }
-    
-    public long getExpiration()
-    {
-        return this.expiration;
-    }
-    
-    public void success()
-    {
-        timeoutCount = 0;
-    }
-    
-    public void setRenderTimeoutCount(int timeoutCount)
-    {
-        this.timeoutCount = timeoutCount;
     }
 
     protected String getEntityFragmentKey()

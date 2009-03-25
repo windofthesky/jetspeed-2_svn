@@ -28,7 +28,6 @@ import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.aggregator.impl.BaseAggregatorImpl;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -62,8 +61,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
 
     /**
      * Builds the portlet set defined in the context into a portlet tree.
-     * 
-     * @return Unique Portlet Entity ID
      */
     public void build( RequestContext context ) throws JetspeedException, IOException
     {
@@ -92,8 +89,8 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         context.getResponse().getWriter().write(root.getRenderedContent());
         if (null != window)
         {
-            context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
-            context.getRequest().removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
+            window.removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
+            window.removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
         releaseBuffers(root, context);                
     }
@@ -117,9 +114,8 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
         if (maxedContentFragment != null)
         {
-            context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
-            context.getRequest().setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, maxedContentFragment);
-            context.getRequest().setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
+            window.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
+            window.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
             try
             {
                 renderer.renderNow(maxedContentFragment, context);
@@ -198,8 +194,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
             log.info("Aggregating " + page.getPath() + ". Parallel: " + parallelJobCount + ", Sequential: " + sequentialJobCount);
         }
         
-        CurrentWorkerContext.setParallelRenderingMode(parallelJobCount > 0);
-
         // kick off the parallel rendering jobs
         Iterator iter = parallelJobs.iterator();
         while (iter.hasNext())
@@ -218,9 +212,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
 
         // synchronize on completion of all jobs
         renderer.waitForRenderingJobs(parallelJobs);
-        
-        // Now, restore it to non parallel mode for rendering layout portlets.
-        CurrentWorkerContext.setParallelRenderingMode(false);
         
         // render layout fragments.
         iter = layoutFragments.iterator();

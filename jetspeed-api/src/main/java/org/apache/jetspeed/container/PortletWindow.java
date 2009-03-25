@@ -18,9 +18,17 @@
 package org.apache.jetspeed.container;
 
 import java.io.Serializable;
+import java.util.Map;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+
+import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.PortletResponseContext;
 
 /**
  * @version $Id$
@@ -29,9 +37,26 @@ import javax.portlet.WindowState;
 public interface PortletWindow extends org.apache.pluto.container.PortletWindow, Serializable
 {
     PortletWindowID getId();
-    void setId(String id);
-    PortletEntity getPortletEntity();
-    void setPortletEntity(PortletEntity entity);
-    void setPortletMode(PortletMode mode);
-    void setWindowState(WindowState state);
+    String getWindowId();
+    String getPortletEntityId();
+    PortletDefinition getPortletDefinition();
+    ContentFragment getFragment();
+    boolean isInstantlyRendered();
+    Map<String, Object> getAttributes();
+    Object getAttribute(String name);
+    void setAttribute(String name, Object value);
+    void removeAttribute(String name);
+    
+    RequestContext getRequestContext();
+    
+    // PortletWindow invocation support: may only be used / accessed during invocation
+    
+    enum Action { NOOP, LOAD, ACTION, EVENT, RESOURCE, RENDER };
+    
+    Action getAction();
+    PortletRequest getPortletRequest();
+    PortletResponse getPortletResponse();
+    PortletRequestContext getPortletRequestContext();
+    PortletResponseContext getPortletResponseContext();
+    PortletInstance getPortletInstance();
 }

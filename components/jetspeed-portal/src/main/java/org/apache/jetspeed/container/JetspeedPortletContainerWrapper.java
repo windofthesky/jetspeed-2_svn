@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
-import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
 import org.apache.pluto.container.OptionalContainerServices;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletContainerException;
@@ -43,13 +41,9 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
 {
     private boolean initialized = false;
     private static final Log log = LogFactory.getLog(JetspeedPortletContainerWrapper.class);
-    private final String INVALID_WINDOW_TYPE = "Window is not of valid type: ";    
     private final PortletContainer pluto;
     private final String containerId;
     
-    private ServletRequestFactory requestFactory;
-    private ServletResponseFactory responseFactory;
-
     public JetspeedPortletContainerWrapper(PortletContainer pluto, String containerId)
     {
         this.pluto = pluto;
@@ -71,45 +65,25 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
     }
     
     public void doRender(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
-        throws PortletException, IOException, PortletContainerException
+    throws PortletException, IOException, PortletContainerException
     {                
-        if(portletWindow.getPortletEntity() == null)
-        {
-            log.warn("Could not render PortletWindow "+ portletWindow.getId() + " as it has no PortletEntity defined.");
-            return;
-        }        
-        
-        if(portletWindow.getPortletEntity().getPortletDefinition() == null)
-        {
-            log.warn("Could not render PortletWindow"+ portletWindow.getId() + " as it has no PortletDefintion defined.");
-            return;
-        }
         pluto.doRender(portletWindow, servletRequest, servletResponse);
     }
 
-    public void doAction(
-        PortletWindow portletWindow,
-        HttpServletRequest servletRequest,
-        HttpServletResponse servletResponse)
-        throws PortletException, IOException, PortletContainerException
+    public void doAction(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+    throws PortletException, IOException, PortletContainerException
     {
         pluto.doAction(portletWindow, servletRequest, servletResponse);
     }
-
     
     public void doLoad(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
-        throws PortletException, IOException, PortletContainerException
+    throws PortletException, IOException, PortletContainerException
     {
-        if (portletWindow instanceof org.apache.jetspeed.container.PortletWindow)
-            throw new PortletException(INVALID_WINDOW_TYPE + org.apache.jetspeed.container.PortletWindow.class);
-        org.apache.jetspeed.container.PortletWindow jpw = (org.apache.jetspeed.container.PortletWindow)portletWindow;
-        pluto.doLoad(portletWindow, 
-            requestFactory.getServletRequest(servletRequest, jpw),
-            responseFactory.getServletResponse(servletResponse));
+        pluto.doLoad(portletWindow, servletRequest, servletResponse);
     }
 
     public void doAdmin(PortletWindow portletWindow, HttpServletRequest servletRequest, HttpServletResponse servletResponse)
-        throws PortletException, IOException, PortletContainerException
+    throws PortletException, IOException, PortletContainerException
     {
         pluto.doAdmin(portletWindow, servletRequest, servletResponse);
     }
@@ -120,6 +94,12 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
         pluto.doServeResource(portletWindow, servletRequest, servletResponse);
     }
 
+    public void doEvent(PortletWindow portletWindow, HttpServletRequest request, HttpServletResponse response, Event event)
+    throws PortletException, IOException, PortletContainerException
+    {
+        pluto.doEvent(portletWindow, request, response, event);
+    }
+                
     public String getName()
     {
         return this.containerId;
@@ -135,36 +115,8 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
         return pluto.getRequiredContainerServices();
     }
 
-    
-    /**
-     * <p>
-     * isInitialized
-     * </p>
-     *
-     * @see org.apache.pluto.PortletContainer#isInitialized()
-     * @return
-     */
     public boolean isInitialized()
     {
         return initialized;
     }
-
-    public void setRequestFactory(ServletRequestFactory requestFactory)
-    {
-        this.requestFactory = requestFactory;
-    }
-
-    public void setResponseFactory(ServletResponseFactory responseFactory)
-    {
-        this.responseFactory = responseFactory;
-    }
-
-    public void doEvent(PortletWindow window, HttpServletRequest request,
-            HttpServletResponse response, Event event)
-            throws PortletException, IOException, PortletContainerException
-    {
-        pluto.doEvent(window, request, response, event);
-    }
-    
-
 }

@@ -21,9 +21,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.request.RequestContext;
 
 public class DynamicTitleServiceImpl implements DynamicTitleService
 {
@@ -59,26 +57,12 @@ public class DynamicTitleServiceImpl implements DynamicTitleService
     protected final String getTitleFromPortletDefinition(PortletWindow window,
             HttpServletRequest request)
     {
-        String title = null;
-        RequestContext requestContext = (RequestContext) request
-                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        
-        PortletEntity entity = window.getPortletEntity();
-        if (entity != null && entity.getPortletDefinition() != null)
+        String title = null;        
+        title = window.getRequestContext().getPreferedLanguage(window.getPortletDefinition()).getTitle();
+        if (title == null)
         {
-            title = requestContext.getPreferedLanguage(
-                    entity.getPortletDefinition()).getTitle();
+            title = window.getPortletDefinition().getPortletName();
         }
-
-        if (title == null && entity.getPortletDefinition() != null)
-        {
-            title = entity.getPortletDefinition().getPortletName();
-        }
-        else if (title == null)
-        {
-            title = "Invalid portlet entity " + entity.getId();
-        }
-        
         return title;
     }
 

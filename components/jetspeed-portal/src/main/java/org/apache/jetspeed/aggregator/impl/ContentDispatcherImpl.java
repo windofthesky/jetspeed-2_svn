@@ -16,13 +16,9 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <p>
@@ -43,16 +39,6 @@ public class ContentDispatcherImpl implements ContentDispatcherCtrl
     public ContentDispatcherImpl(PortletContent content)
     {
         this.content = content;
-    }
-
-    public HttpServletResponse getResponseForWindow( PortletWindow window, RequestContext request )
-    {
-        return new HttpBufferedResponse(request.getResponse(), this.content.getWriter());
-    }
-    
-    public HttpServletResponse getResponseForFragment( Fragment fragment, RequestContext request )
-    {
-        return new HttpBufferedResponse(request.getResponse(), this.content.getWriter());
     }
 
     /**

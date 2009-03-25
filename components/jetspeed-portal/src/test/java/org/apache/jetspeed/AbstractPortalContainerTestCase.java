@@ -17,8 +17,6 @@
 package org.apache.jetspeed;
 
 
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.container.window.impl.PortletWindowAccessorImpl;
 import org.apache.pluto.container.PortletContainer;
 
 /**
@@ -27,8 +25,6 @@ import org.apache.pluto.container.PortletContainer;
  */
 public class AbstractPortalContainerTestCase extends AbstractRequestContextTestCase
 {
-    protected PortletWindowAccessor windowAccessor;
-
     protected PortletContainer portletContainer;
 
     /*
@@ -39,9 +35,5 @@ public class AbstractPortalContainerTestCase extends AbstractRequestContextTestC
     protected void setUp() throws Exception
     {
         super.setUp();
-        windowAccessor = new PortletWindowAccessorImpl(entityAccess,
-            PortletFactoryMock.instance,
-            new HashMapWindowCache(),
-            true);
     }
 }

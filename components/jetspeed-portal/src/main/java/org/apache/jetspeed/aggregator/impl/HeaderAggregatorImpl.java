@@ -33,7 +33,6 @@ import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.factory.PortletFactory;
@@ -65,7 +64,6 @@ public class HeaderAggregatorImpl implements PageAggregator
     protected final static String EOL = "\r\n";   // html eol
 
     private PortletFactory factory;
-    private PortletWindowAccessor windowAccessor;
     private HeaderResourceFactory headerResourceFactory;
     private DecorationFactory decorationFactory;
     
@@ -82,18 +80,16 @@ public class HeaderAggregatorImpl implements PageAggregator
     
     
     public HeaderAggregatorImpl( PortletFactory factory,
-                                 PortletWindowAccessor windowAccessor,
                                  HeaderResourceFactory headerResourceFactory,
                                  boolean isDesktop,
                                  Map headerConfiguration,
                                  Map headerResourceRegistry,
                                  DecorationFactory decorationFactory )
     {
-        this( factory, windowAccessor, headerResourceFactory, isDesktop, headerConfiguration, headerResourceRegistry, decorationFactory, null );
+        this( factory, headerResourceFactory, isDesktop, headerConfiguration, headerResourceRegistry, decorationFactory, null );
     }
     
     public HeaderAggregatorImpl( PortletFactory factory,
-                                 PortletWindowAccessor windowAccessor,
                                  HeaderResourceFactory headerResourceFactory,
                                  boolean isDesktop,
                                  Map headerConfiguration,
@@ -102,7 +98,6 @@ public class HeaderAggregatorImpl implements PageAggregator
                                  BasePortalURL baseUrlAccess )
     {
         this.factory = factory;
-        this.windowAccessor = windowAccessor;
         this.headerResourceFactory = headerResourceFactory;
         this.isDesktop = isDesktop;
         this.baseUrlAccess = baseUrlAccess;
@@ -1111,21 +1106,24 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             if ( !fragment.getType().equals( ContentFragment.LAYOUT ) )
             {
-                PortletWindow portletWindow = getPortletWindowAccessor().getPortletWindow( fragment );
-                PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
-                if ( pd != null && getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
+                PortletWindow portletWindow = context.getPortletWindow( fragment );
+                if (portletWindow != null)
                 {
-                    String portletApplicationContextPath = pd.getApplication().getContextPath();
-                    Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
-                    if ( portlet != null && portlet instanceof SupportsHeaderPhase )
+                    PortletDefinition pd = portletWindow.getPortletDefinition();
+                    if ( getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
                     {
-                        log.debug( "renderHeaderFragment: " + pd.getPortletName() + " supports header phase" );
-                        
-                        HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
-                        PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );
-                        PortletHeaderResponse headerResponse = new PortletHeaderResponseImpl( context, hr, isDesktop(), getHeaderConfiguration(), getHeaderResourceRegistry() );
-                        ((SupportsHeaderPhase)portlet).doHeader( headerRequest, headerResponse );
-                        return true;
+                        String portletApplicationContextPath = pd.getApplication().getContextPath();
+                        Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
+                        if ( portlet != null && portlet instanceof SupportsHeaderPhase )
+                        {
+                            log.debug( "renderHeaderFragment: " + pd.getPortletName() + " supports header phase" );
+                            
+                            HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
+                            PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );
+                            PortletHeaderResponse headerResponse = new PortletHeaderResponseImpl( context, hr, isDesktop(), getHeaderConfiguration(), getHeaderResourceRegistry() );
+                            ((SupportsHeaderPhase)portlet).doHeader( headerRequest, headerResponse );
+                            return true;
+                        }
                     }
                 }
             }
@@ -1141,10 +1139,6 @@ public class HeaderAggregatorImpl implements PageAggregator
     protected PortletFactory getPortletFactory()
     {
         return this.factory;
-    }
-    protected PortletWindowAccessor getPortletWindowAccessor()
-    {
-        return this.windowAccessor;
     }
     protected HeaderResourceFactory getHeaderResourceFactory()
     {

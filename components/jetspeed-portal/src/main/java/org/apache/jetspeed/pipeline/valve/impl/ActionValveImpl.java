@@ -18,8 +18,6 @@ package org.apache.jetspeed.pipeline.valve.impl;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,16 +28,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.container.state.MutableNavigationalState;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -68,21 +61,18 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
 
     private static final Log log = LogFactory.getLog(ActionValveImpl.class);
     private PortletContainer container;
-    private PortletWindowAccessor windowAccessor;
     private boolean patchResponseCommitted = false;
     private JetspeedContentCache portletContentCache;
 
-    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, JetspeedContentCache portletContentCache)
+    public ActionValveImpl(PortletContainer container, JetspeedContentCache portletContentCache)
     {
         this.container = container;
-        this.windowAccessor = windowAccessor;
         this.portletContentCache = portletContentCache;
     }
     
-    public ActionValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor, JetspeedContentCache portletContentCache, boolean patchResponseCommitted)
+    public ActionValveImpl(PortletContainer container, JetspeedContentCache portletContentCache, boolean patchResponseCommitted)
     {
         this.container = container;
-        this.windowAccessor = windowAccessor;
         this.portletContentCache = portletContentCache;        
         this.patchResponseCommitted = patchResponseCommitted;
     }
@@ -98,60 +88,13 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             PortletWindow actionWindow = request.getActionWindow();
             if (actionWindow != null)
             {
-                // If portlet entity is null, try to refresh the actionWindow.
-                // Under some clustered environments, a cached portlet window could have null entity.
-                if (null == actionWindow.getPortletEntity())
-                {
-                    try 
-                    {
-                        Fragment fragment = request.getPage().getFragmentById(actionWindow.getId().toString());
-                        
-                        if (fragment != null)
-                        {
-                            ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
-                            actionWindow = this.windowAccessor.getPortletWindow(contentFragment);
-                        }
-                    } 
-                    catch (Exception e)
-                    {
-                        log.error("Failed to refresh action window.", e);
-                    }
-                }
+                HttpServletRequest servletRequest = request.getRequest();
+                HttpServletResponse serlvetResponse = request.getResponse();
                 
-                if (actionWindow.getPortletEntity() == null)
-                {
-                    // a session is expired and the target actionWindow doesn't have portlet entity.
-                    // Redirect the user back to the target page (with possibly retaining the other windows navigational state).
-                    log.warn("Portlet action was canceled because the session was expired. The actionWindow's id is " + actionWindow.getId());
-                    
-                    request.setActionWindow(null);
-                    MutableNavigationalState state = (MutableNavigationalState) request.getPortalURL().getNavigationalState();
-                    
-                    if (state != null)
-                    {
-                        state.removeState(actionWindow);
-                        state.sync(request);
-                        request.getResponse().sendRedirect(request.getPortalURL().getPortalURL());
-                        return;
-                    }
-                }
-
-                initWindow(actionWindow, request);
-                HttpServletResponse response = request.getResponseForWindow(actionWindow);
-                HttpServletRequest requestForWindow = request.getRequestForWindow(actionWindow);
-                requestForWindow.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);
-                
-                //PortletMessagingImpl msg = new PortletMessagingImpl(windowAccessor);
-                
-                requestForWindow.setAttribute("JETSPEED_ACTION", request);
-                container.doAction(
-                    actionWindow,
-                    requestForWindow,
-                    response);
+                actionWindow.setAttribute("JETSPEED_ACTION", request);
+                container.doAction(actionWindow,servletRequest,serlvetResponse);
                 // The container redirects the client after PortletAction processing
                 // so there is no need to continue the pipeline
-                
-                //msg.processActionMessage("todo", request);
                 
                 // clear the cache for all portlets on the current page
                 clearPortletCacheForPage(request, actionWindow);
@@ -162,7 +105,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 }
                 else
                 {
-                    responseCommitted = response.isCommitted();
+                    responseCommitted = serlvetResponse.isCommitted();
                 }
                 request.setAttribute(PortalReservedParameters.PIPELINE, null); // clear the pipeline
             }
@@ -228,7 +171,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             
             // if the fragment is rendered from a decorator template, the target cache would not be cleared by the above notification.
             // so, let's clear target cache of action window directly again.
-            String fragmentId = actionWindow.getId().toString();
+            String fragmentId = actionWindow.getWindowId();
             if (page.getFragmentById(fragmentId) == null)
             {
                 clearTargetCache(fragmentId, request);
@@ -236,7 +179,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         }
         else
         {
-            ContentFragment fragment = page.getContentFragmentById(actionWindow.getId().toString());
+            ContentFragment fragment = page.getContentFragmentById(actionWindow.getWindowId());
             
             if (fragment != null)
             {
@@ -260,24 +203,11 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
      */    
     protected boolean isNonStandardAction(PortletWindow actionWindow)
     {
-        PortletEntity entity = actionWindow.getPortletEntity();
-        if (entity != null)
+        PortletDefinition portletDefinition = actionWindow.getPortletDefinition();
+        Collection<LocalizedField> actionList = portletDefinition.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_NON_STANDARD_ACTION);
+        if (actionList != null && !actionList.isEmpty()) 
         {
-            PortletDefinition portletDefinition = (PortletDefinition)entity.getPortletDefinition();
-            if (portletDefinition != null)
-            {
-                Collection actionList = null;
-        
-                if (portletDefinition != null)
-                {
-                    actionList = portletDefinition.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_NON_STANDARD_ACTION);
-                }
-                if (actionList != null) 
-                {
-                    if (!actionList.isEmpty())
-                        return true;
-                }
-            }
+            return true;
         }
         return false;
     }
@@ -286,15 +216,13 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     {
         if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
         {
-            Iterator children = f.getContentFragments().iterator();
-            while (children.hasNext())
+            for (Object child : f.getContentFragments())
             {
-                ContentFragment child = (ContentFragment) children.next();
                 if (!"hidden".equals(f.getState()))
                 {
-                    notifyFragments(child, context, page);
+                    notifyFragments((ContentFragment)child, context, page);
                 }
-            } 
+            }
         }    
         ContentCacheKey cacheKey = portletContentCache.createCacheKey(context, f.getId());
         if (portletContentCache.isKeyInCache(cacheKey))
@@ -328,22 +256,4 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         // TODO Auto-generated method stub
         return "ActionValveImpl";
     }
-    
-    /**
-     * Makes sure that this PortletWindow's PortletEntity is set to have the
-     * current requests fragment.
-     * @param window
-     * @param request
-     */
-    protected void initWindow(PortletWindow window, RequestContext request)
-    {
-        Page page = request.getPage();
-        Fragment fragment = page.getFragmentById(window.getId().toString());
-        
-        if (fragment != null)
-        {
-            window.getPortletEntity().setFragment(fragment);
-        }
-    }
-
 }

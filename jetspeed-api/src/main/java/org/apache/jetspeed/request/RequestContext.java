@@ -29,13 +29,13 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.container.PortletWindowRequestContext;
 
 /**
  * Portal Request Context is associated with each request
@@ -220,46 +220,13 @@ public interface RequestContext
      */
     public void setCharacterEncoding(String enc);
 
-
-    public PortletWindowRequestContext getCurrentPortletWindowRequestContext();
+    public PortletWindow getPortletWindow(String windowId);
+    public PortletWindow getPortletWindow(ContentFragment fragment);
+    public PortletWindow getInstantlyCreatedPortletWindow(String windowId);
+    public PortletWindow resolvePortletWindow(String windowId);
+    public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow);
+    public PortletWindow getCurrentPortletWindow();
     
-    /**
-     *
-     * <p>
-     * getRequestForWindow
-     * </p>
-     *
-     * Takes a PortletWindow and generates a HttpServletRequest that
-     * accurately represents that PortletWindow's request parameters
-     *
-     *
-     * @param window PortletWindow that we are build a request for
-     * @return HttpServletRequest that wraps the existing servlet
-     * container's request that can interpret encoded portlet information
-     * for this PortletWindow
-     *
-     */
-    HttpServletRequest getRequestForWindow(PortletWindow window);
-
-    /**
-     *
-     * <p>
-     * getResponseForWindow
-     * </p>
-     *
-     * Takes a PortletWindow and generates a HttpServletResponse that
-     * accurately represents that PortletWindow's request parameters.
-     *
-     *
-     * @param window PortletWindow that we are build a response for
-     * @return HttpServletRequest that wraps the existing servlet
-     * container's request that can interpret encoded portlet information
-     * for this PortletWindow
-     *
-     *
-     */
-    HttpServletResponse getResponseForWindow(PortletWindow window);
-
     /**
      * Gets the subject associated with the authorized entity.
      * This subject can be used to provide credentials and principals.
@@ -450,5 +417,25 @@ public interface RequestContext
      * @since 2.1.2
      */
     Map<String, Object> getObjects();
+    
+    /**
+     * The RequestContext itself is kept in a ThreadLocal, calling this method from another (parallel)
+     * thread ensures its ThreadLocal instance will be synchronized with this instance as well.
+     * <p>
+     * This method will return true if this thread its ThreadLocal didn't yet have <em>this</em>
+     * RequestContext value set. In that case the calling code block, preferably in a finally
+     * statement should call clearThreadContext() to ensure the reference to this instance
+     * is removed again from its ThreadLocal instance as Thread Pool solutions might reuse
+     * threads.
+     * </p>
+     * @return true if the current thread didn't have this request context set
+     *         <em>or</em> contained a different (stale/left over?) request context 
+     */
+    boolean ensureThreadContext();
+    
+    /**
+     * Clears the request context from the current thread
+     */
+    void clearThreadContext();
 }
 

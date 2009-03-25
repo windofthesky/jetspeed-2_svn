@@ -52,9 +52,6 @@
         <entry key="EntityAccessor">
           <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent' />
         </entry>
-        <entry key="WindowAccessor">
-          <ref bean='org.apache.jetspeed.container.window.PortletWindowAccessor' />
-        </entry>
         <entry key="PortletFactory">
           <ref bean="portletFactory" />
         </entry>

@@ -33,10 +33,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
 import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -76,8 +73,6 @@ public class DecorationValve extends AbstractValve implements Valve
     
     private final DecorationFactory decorationFactory;
 
-    private final PortletWindowAccessor windowAccessor;
-    
     private HashMap decoratorActionsAdapterCache = new HashMap();
     
     private DecoratorActionsFactory defaultDecoratorActionsFactory;
@@ -107,23 +102,22 @@ public class DecorationValve extends AbstractValve implements Valve
       */
      protected SecurityAccessController accessController;
 
-     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,SecurityAccessController accessController)
+     public DecorationValve(DecorationFactory decorationFactory, SecurityAccessController accessController)
      {
-         this(decorationFactory, windowAccessor, accessController, null);
+         this(decorationFactory, accessController, null);
      }
      
-     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+     public DecorationValve(DecorationFactory decorationFactory,
                             SecurityAccessController accessController, JetspeedContentCache cache)
      {    
-         this(decorationFactory, windowAccessor, accessController, cache, false);
+         this(decorationFactory, accessController, cache, false);
      }
      
-     public DecorationValve(DecorationFactory decorationFactory, PortletWindowAccessor windowAccessor,
+     public DecorationValve(DecorationFactory decorationFactory,
                                  SecurityAccessController accessController, JetspeedContentCache cache,
                                  boolean useSessionForThemeCaching)
      {       
         this.decorationFactory = decorationFactory;
-        this.windowAccessor = windowAccessor;
         this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();        
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
@@ -329,23 +323,20 @@ public class DecorationValve extends AbstractValve implements Valve
      * @param requestContext RequestContext of the current portal request.
      * @param fragment Fragment to initialize modes and states for.
      * @return
-     * @throws PortletEntityNotStoredException 
-     * @throws FailedToRetrievePortletWindow 
      */
     protected boolean initActionsForFragment(RequestContext requestContext, 
                                              ContentFragment fragment, 
                                              PageActionAccess pageActionAccess, 
                                              Decoration decoration,
-                                             boolean isAjaxRequest) throws FailedToRetrievePortletWindow, PortletEntityNotStoredException
+                                             boolean isAjaxRequest)
     {
         boolean fragmentSupportsActions = false;
-        PortletWindow window = windowAccessor.getPortletWindow(fragment); 
-        PortletDefinition portlet = (PortletDefinition) window.getPortletEntity().getPortletDefinition();
-        
-        if (null == portlet)
+        PortletWindow window = requestContext.getPortletWindow(fragment); 
+        if (window == null)
         {
             return fragmentSupportsActions; // allow nothing
         }
+        PortletDefinition portlet = window.getPortletDefinition();
 
         List actions = Collections.EMPTY_LIST;
         
@@ -362,7 +353,7 @@ public class DecorationValve extends AbstractValve implements Valve
         {
             fragmentSupportsActions = true;
             String fragmentId = fragment.getId();
-            PortletApplication pa = (PortletApplication)window.getPortletEntity().getPortletDefinition().getApplication();
+            PortletApplication pa = window.getPortletDefinition().getApplication();
 
             String portletName = portlet.getUniqueName();
 
@@ -474,7 +465,6 @@ public class DecorationValve extends AbstractValve implements Valve
      * @param window
      * @param fragment
      * @return <code>java.util.List</code> of modes excluding the current one.
-     * @throws PortletEntityNotStoredException 
      */
     protected List getPageModes(RequestContext requestContext, PortletWindow window, List<Supports> supports, 
                                 PortletMode mode, WindowState state, PageActionAccess pageActionAccess, Decoration decoration,
@@ -508,8 +498,6 @@ public class DecorationValve extends AbstractValve implements Valve
                     ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true)                                              
                     : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString() );
                 pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
-                
-                //window.getPortletEntity().getPortletDefinition().getInitParameterSet().get( "xxxx" );
                 
                 if (supportsPortletMode(supports,PortletMode.HELP))
                 {

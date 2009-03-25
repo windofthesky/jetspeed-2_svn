@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletRenderResponseContext;
 import org.apache.pluto.container.util.PrintWriterServletOutputStream;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.services.title.DynamicTitleService;
@@ -50,7 +49,7 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
                                             HttpServletResponse containerResponse, PortletWindow window, DynamicTitleService titleService)
     {
         super(container, containerRequest, containerResponse, window);
-        this.portletContent = (PortletContent)getRequestContext().getPortletWindowAttributes(getPortletWindow()).get(PortalReservedParameters.PORTLET_CONTENT_ATTRIBUTE);
+        this.portletContent = window.getFragment().getPortletContent();
     }
 
     public void flushBuffer() throws IOException

@@ -20,8 +20,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
-import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -36,33 +35,22 @@ public class MockRequestContextComponent implements RequestContextComponent
         return null;
     }
 
-    public RequestContext getRequestContext(HttpServletRequest request)
-    {
-        return null;
-    }
-
     public RequestContext getRequestContext()
     {
         return null;
     }
 
-    public void release(RequestContext context)
+    public void setRequestContext(RequestContext context)
     {
-    }
-
-    public ServletRequestFactory getServletRequestFactory()
-    {
-        return null;
-    }
-
-    public ServletResponseFactory getServletResponseFactory()
-    {
-        return null;
     }
 
     public UserInfoManager getUserInfoManager()
     {
         return null;
     }
-    
+
+    public PortletRegistry getPortletRegistry()
+    {
+        return null;
+    }
 }

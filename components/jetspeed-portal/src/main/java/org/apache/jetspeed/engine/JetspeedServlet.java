@@ -284,7 +284,7 @@ implements JetspeedEngineConstants, HttpSessionListener
                 }
                 finally
                 {
-                    contextComponent.release(context);
+                    contextComponent.setRequestContext(null);
                 }
             }
 

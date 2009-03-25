@@ -39,7 +39,24 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public interface PortalURL
 {
-    enum URLType { ACTION, RESOURCE, RENDER }
+    enum URLType
+    { 
+        ACTION("action"), 
+        RESOURCE("resource"), 
+        RENDER("render"); 
+        
+        private final String name;
+        
+        private URLType(String name)
+        {
+            this.name = name;
+        }
+        
+        public String toString()
+        {
+            return name;
+        }
+    }
 
     /** HTTP protocol. */
     public static final String HTTP = "http";

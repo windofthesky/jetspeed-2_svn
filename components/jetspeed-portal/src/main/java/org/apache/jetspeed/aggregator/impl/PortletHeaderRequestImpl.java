@@ -54,7 +54,7 @@ public class PortletHeaderRequestImpl implements PortletHeaderRequest
     {
         if (pd == null)
         {
-            pd = portletWindow.getPortletEntity().getPortletDefinition();
+            pd = portletWindow.getPortletDefinition();
         }
         InitParam param = pd.getInitParam(name);
         return param != null ? param.getParamValue() : null;

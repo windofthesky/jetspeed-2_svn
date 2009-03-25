@@ -266,9 +266,6 @@ public class MultiColumnPortlet extends LayoutPortlet
                             // layout portlet change
                             targetFragment.setName(layout);
                             pageManager.updatePage(requestPage);
-                            entityAccess.updatePortletEntity(window.getPortletEntity(), targetFragment);
-                            entityAccess.storePortletEntity(window.getPortletEntity());
-                            windowAccess.createPortletWindow(window.getPortletEntity(), targetFragment.getId());
                             clearLayoutAttributes(request);
                             return;
                         }

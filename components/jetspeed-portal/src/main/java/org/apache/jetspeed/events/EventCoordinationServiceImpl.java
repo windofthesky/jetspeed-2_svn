@@ -38,11 +38,9 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.EventProviderImpl;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
@@ -71,17 +69,15 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
 {
     private static Log log = LogFactory.getLog(EventProviderImpl.class);
 
-    private final PortletWindowAccessor windowAccessor;
     private final PortalStatistics statistics;
     private final PortletTrackingManager portletTracking;
     private final SecurityAccessController accessController;
     private boolean checkSecurityConstraints = true;
 
-    public EventCoordinationServiceImpl(final PortletWindowAccessor windowAccessor, final PortletEventQueue eventQueue,
+    public EventCoordinationServiceImpl(final PortletEventQueue eventQueue,
             final PortalStatistics statistics, PortletTrackingManager portletTracking, SecurityAccessController accessController,
             boolean checkSecurityConstraints)
     {
-        this.windowAccessor = windowAccessor;
         this.statistics = statistics;
         this.portletTracking = portletTracking;
         this.accessController = accessController;
@@ -132,10 +128,9 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
      * @see org.apache.jetspeed.events.JetspeedEventCoordinationService#processEvents(org.apache.pluto.container.PortletContainer, org.apache.pluto.container.PortletWindow, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.util.List)
      */
     public void processEvents(PortletContainer container, org.apache.pluto.container.PortletWindow wnd,
-                              HttpServletRequest servletRequest, HttpServletResponse response, List<Event> events)
+                              HttpServletRequest servletRequest, HttpServletResponse servletResponse, List<Event> events)
     {
         PortletWindow portletWindow = (PortletWindow)wnd;
-        RequestContext rc = (RequestContext) servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         long start = System.currentTimeMillis();        
         for (Event portletEvent : events)
         {
@@ -143,16 +138,12 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
             if (event.isProcessed())
                 continue;
             event.setProcessed(true);
-            List<PortletWindow> windows = getAllPortletsRegisteredForEvent(rc, event);
+            List<PortletWindow> windows = getAllPortletsRegisteredForEvent(portletWindow.getRequestContext(), event);
             for (PortletWindow window : windows)
             {
-                HttpServletRequest request = rc.getRequestForWindow(window);
-                request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, rc.getPage());
-                request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, rc);
-                request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, rc.getObjects());
                 try
                 {
-                    container.doEvent(window, request, rc.getResponseForWindow(window), event);
+                    container.doEvent(window, servletRequest, servletResponse, event);
                 }
                 catch (Exception e)
                 {
@@ -163,13 +154,14 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
         long end = System.currentTimeMillis();        
         if (statistics != null)
         {
-            statistics.logPortletAccess(rc, portletWindow.getPortletEntity().getPortletDefinition().getUniqueName(), PortalStatistics.HTTP_EVENT, end - start);
+            statistics.logPortletAccess(portletWindow.getRequestContext(), portletWindow.getPortletDefinition().getUniqueName(), 
+                                        PortalStatistics.HTTP_EVENT, end - start);
         }
     }
 
     private boolean isDeclaredAsPublishingEvent(PortletWindow portletWindow, QName qname)
     {
-        PortletDefinition pd = portletWindow.getPortletEntity().getPortletDefinition();
+        PortletDefinition pd = portletWindow.getPortletDefinition();
         List<? extends EventDefinitionReference> events = pd.getSupportedPublishingEvents();
         if (events != null)
         {
@@ -189,7 +181,7 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
 
     private boolean isValueInstanceOfDefinedClass(PortletWindow portletWindow, QName qname, Serializable value)
     {
-        PortletApplicationDefinition app = portletWindow.getPortletEntity().getPortletDefinition().getApplication();
+        PortletApplicationDefinition app = portletWindow.getPortletDefinition().getApplication();
         List<? extends EventDefinition> events = app.getEventDefinitions();
         if (events != null)
         {
@@ -213,24 +205,24 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
     {
         Fragment root = rc.getPage().getRootFragment();
         List<PortletWindow> eventTargets = new LinkedList<PortletWindow>();
-        return getPortletsRegisteredOnPage(root, event, eventTargets);
+        return getPortletsRegisteredOnPage(rc, root, event, eventTargets);
     }
 
-    private List<PortletWindow> getPortletsRegisteredOnPage(Fragment fragment, Event event, List<PortletWindow> eventTargets)
+    private List<PortletWindow> getPortletsRegisteredOnPage(RequestContext rc, Fragment fragment, Event event, List<PortletWindow> eventTargets)
     {
         List<Fragment> fragments = fragment.getFragments();
         if (fragments != null && fragments.size() > 0)
         {
             for (Fragment child : fragments)
             {
-                getPortletsRegisteredOnPage(child, event, eventTargets);
+                getPortletsRegisteredOnPage(rc, child, event, eventTargets);
             }
         }
-        PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment.getId());
+        PortletWindow portletWindow = rc.getPortletWindow(fragment.getId());
         if (portletWindow == null)
             return eventTargets;
 
-        PortletDefinition portlet = portletWindow.getPortletEntity().getPortletDefinition();
+        PortletDefinition portlet = portletWindow.getPortletDefinition();
 
         if (checkSecurityConstraints && !checkSecurityConstraint(portlet, fragment)) 
         {

@@ -47,7 +47,6 @@ limitations under the License.
     <bean id='org.apache.pluto.services.EventCoordinationService'
           class='org.apache.jetspeed.events.EventCoordinationServiceImpl'>
       <meta key="j2:cat" value="default" />                 
-      <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>                 
       <constructor-arg><ref bean="org.apache.jetspeed.events.PortletEventQueue"/></constructor-arg>
       <constructor-arg><ref bean="PortalStatistics"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager"/></constructor-arg>

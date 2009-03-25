@@ -19,9 +19,8 @@ package org.apache.jetspeed.container;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.state.MutableNavigationalState;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
+import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -46,45 +45,26 @@ public class ContainerValve extends AbstractValve
             request.getRequest().getSession(true);
 
             // PortletContainerServices.prepare();
-            MutableNavigationalState state = (MutableNavigationalState)request.getPortalURL().getNavigationalState();
+            NavigationalState state = request.getPortalURL().getNavigationalState();
             if (state != null)
             {
-                boolean redirect = false;
-                Page page = request.getPage();
-                PortletWindow window = state.getPortletWindowOfResource();
-                if (window != null && page.getFragmentById(window.getId().toString()) == null)
+                boolean syncResult = state.sync(request);
+                if (!syncResult)
                 {
-                    // target window doesn't exists anymore or the target page is not accessible (anymore)
-                    request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-                    return;
-                }
-                window = state.getPortletWindowOfAction();
-                if (window != null && page.getFragmentById(window.getId().toString()) == null)
-                {
-                    if (!((PortletWindowImpl) window).isInstantlyRendered())
+                    if (PortalURL.URLType.ACTION == state.getURLType())
                     {
-                        // target window doesn't exists anymore or the target page is not accessible (anymore)
-                        // remove any navigational state for the window
-                        state.removeState(window);
-                        // as this is an action request which cannot be handled, perform a direct redirect after sync state (for the other windows)
-                        redirect = true;
+                        // target page doesn't contain (anymore) the targeted windowOfAction 
+                        // this can also occur when a session is expired and the target page isn't accessible for the anonymous user
+                        // Redirect the user back to the target page (with possibly retaining the other windows navigational state).
+                        request.getResponse().sendRedirect(request.getPortalURL().getPortalURL());
+                        return;
                     }
-                }
-                window = state.getMaximizedWindow();
-                if (window != null && page.getFragmentById(window.getId().toString()) == null)
-                {
-                    // target window doesn't exists anymore or the target page is not accessible (anymore)
-                    // remove any navigational state for the window
-                    state.removeState(window);
-                }
-                state.sync(request);
-                if (redirect)
-                {
-                    // target page doesn't contain (anymore) the targeted windowOfAction 
-                    // this can also occur when a session is expired and the target page isn't accessible for the anonymous user
-                    // Redirect the user back to the target page (with possibly retaining the other windows navigational state).
-                    request.getResponse().sendRedirect(request.getPortalURL().getPortalURL());
-                    return;
+                    else
+                    {
+                        // target resource window doesn't exists anymore or the target page is not accessible (anymore)
+                        request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
                 }
 
                 PortletWindow actionWindow = state.getPortletWindowOfAction();

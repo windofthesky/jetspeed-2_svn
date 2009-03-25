@@ -27,7 +27,7 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * JetspeedPowerTool
@@ -121,20 +121,13 @@ public interface JetspeedPowerTool
 
     /**
      * 
-     * @return
-     * @throws Exception
-     */
-    PortletEntity getCurrentPortletEntity() throws Exception;
-
-    /**
-     * 
      * @param f
-     *                  Fragment whose <code>PortletEntity</code> we want to
-     *                  retreive.
-     * @return The PortletEntity represented by the current fragment.
+     *                  Fragment whose <code>PortletWindow</code> we want to
+     *                  retrieve.
+     * @return The PortletWindow represented by the current fragment.
      * @throws Exception
      */
-    PortletEntity getPortletEntity(ContentFragment f) throws Exception;
+    PortletWindow getPortletWindow(ContentFragment f) throws Exception;
 
     /**
      * Checks the the visibilty of this fragment with respect to the current
@@ -215,10 +208,10 @@ public interface JetspeedPowerTool
      * </p>
      * Returns the appropriate for the title based on locale prferences
      * 
-     * @param entity
+     * @param f
      * @return
      */
-    String getTitle(PortletEntity entity, ContentFragment f);
+    String getTitle(ContentFragment f);
 
     /**
      * 
@@ -227,10 +220,9 @@ public interface JetspeedPowerTool
      * </p>
      * Returns the appropriate for the title based on locale prferences
      * 
-     * @param entity
      * @return
      */
-    String getTitle(PortletEntity entity);
+    String getTitle();
 
     Object getComponent(String name);
 
@@ -244,5 +236,5 @@ public interface JetspeedPowerTool
 
     String getPageBasePath();    
     
-    String renderPortletEntity(String entityId, String portletId);
+    String renderPortletWindow(String windowId, String portletId);
 }

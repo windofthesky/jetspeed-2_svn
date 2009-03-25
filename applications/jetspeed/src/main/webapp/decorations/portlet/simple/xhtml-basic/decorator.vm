@@ -14,14 +14,13 @@
 ## limitations under the License.
 #set($myPage = $jetspeed.page)
 #set($myF = $jetspeed.currentFragment)
-#set($myPE = $jetspeed.currentPortletEntity)
 #set($actions = $myF.decoration.actions)
 ## Begin portlet/html/simple/decorator.vm
 <div id="${myF.id}" class="portlet-simple">
 ##
 ## Portlet Title Bar
 ##
-<div class="PTitleContent">$!jetspeed.getTitle($myPE, $myF)
+<div class="PTitleContent">$!jetspeed.getTitle($myF)
 #foreach ($action in $actions)
 <a href="${action.Action}" title="${action.Name}"><img src="${action.Link}" alt="${action.Alt}" class="noborder"/></a>
 #end

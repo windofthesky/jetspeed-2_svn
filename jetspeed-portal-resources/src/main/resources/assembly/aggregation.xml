@@ -21,17 +21,14 @@
   <bean id="org.apache.jetspeed.aggregator.PortletTrackingManager"
     class="org.apache.jetspeed.aggregator.impl.PortletTrackingManagerImpl">
     <meta key="j2:cat" value="default" />
-    <constructor-arg index='0'>
-      <ref bean="PortletWindowAccessor" />
-    </constructor-arg>
     <!-- Default portlet timeout in milliseconds:
       Zero means no portlet timeout option by default.
     -->
-    <constructor-arg index='1'>
+    <constructor-arg index='0'>
       <value>${portal.core.aggregator.portlet.timeout}</value>
     </constructor-arg>
     <!--  Out of service limit, if a portlet entity times out past its limit (or default limit) n consecutive times, it is taken out of service -->
-    <constructor-arg index="2">
+    <constructor-arg index="1">
       <value>${portal.core.aggregator.portlet.service.limit}</value>
     </constructor-arg>
   </bean>
@@ -60,9 +57,6 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" />
     </constructor-arg>
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.WorkerMonitor" />
@@ -96,9 +90,6 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor" />
     </constructor-arg>
     <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.WorkerMonitor" />
@@ -206,21 +197,18 @@
       <ref bean="portletFactory" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="PortletWindowAccessor" />
-    </constructor-arg>
-    <constructor-arg index="2">
       <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
     </constructor-arg>
-    <constructor-arg index="3" type="boolean">
+    <constructor-arg index="2" type="boolean">
       <value>false</value><!-- isDesktop == false -->
     </constructor-arg>
-    <constructor-arg index="4">
+    <constructor-arg index="3">
       <ref bean="HeaderResourceConfigurationPortal" />
     </constructor-arg>
-    <constructor-arg index="5">
+    <constructor-arg index="4">
       <ref bean="HeaderResourceRegistry" />
     </constructor-arg>
-    <constructor-arg index="6">
+    <constructor-arg index="5">
       <ref bean="DecorationFactory" />
     </constructor-arg>
 
@@ -234,21 +222,18 @@
       <ref bean="portletFactory" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="PortletWindowAccessor" />
-    </constructor-arg>
-    <constructor-arg index="2">
       <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
     </constructor-arg>
-    <constructor-arg index="3" type="boolean">
+    <constructor-arg index="2" type="boolean">
       <value>true</value><!-- isDesktop == true -->
     </constructor-arg>
-    <constructor-arg index="4">
+    <constructor-arg index="3">
       <ref bean="HeaderResourceConfigurationDesktop" />
     </constructor-arg>
-    <constructor-arg index="5">
+    <constructor-arg index="4">
       <ref bean="HeaderResourceRegistry" />
     </constructor-arg>
-    <constructor-arg index="6">
+    <constructor-arg index="5">
       <ref bean="DecorationFactory" />
     </constructor-arg>
 

@@ -24,22 +24,21 @@ import javax.portlet.PortletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.jetspeed.container.ContainerConstants;
-import org.apache.jetspeed.container.PortletRequestContext;
+import org.apache.jetspeed.container.FilterManager;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.container.FilterManager;
+import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
+import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.pluto.container.PortletInvokerService;
+import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.PortletResponseContext;
 
 /**
  * ServletPortletInvoker invokes portlets in another web application, calling a 
@@ -72,37 +71,11 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     protected boolean activated = false;
     protected String servletMappingName;
     
-    /**
-     * requestResponseUnwrapper used to unwrap portlet request or portlet response
-     * to find the real servlet request or servlet response.
-     */
-    protected PortletRequestResponseUnwrapper requestResponseUnwrapper;
-    
-    public ServletPortletInvoker(PortletRequestResponseUnwrapper requestResponseUnwrapper, String servletMappingName)
+    public ServletPortletInvoker(String servletMappingName)
     {
-        this.requestResponseUnwrapper = requestResponseUnwrapper;
         this.servletMappingName = servletMappingName;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#passivate()
-     */
-    public void passivate()
-    {
-        activated = false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#isActivated()
-     */
-    public boolean isActivated()
-    {
-        return activated;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.container.invoker.JetspeedPortletInvoker#activate(PortletFactory,org.apache.pluto.container.om.portlet.PortletDefinition, javax.servlet.ServletConfig)
-     */
     public void activate(PortletFactory portletFactory, PortletDefinition portletDefinition, ServletConfig servletConfig)
     {
         this.portletFactory = portletFactory;
@@ -110,6 +83,16 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         jetspeedContext = servletConfig.getServletContext();
         this.portletDefinition = portletDefinition;
         activated = true;
+    }
+
+    public void passivate()
+    {
+        activated = false;
+    }
+
+    public boolean isActivated()
+    {
+        return activated;
     }
 
     /**
@@ -123,27 +106,12 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
      * @throws PortletException
      * @throws IOException
      */
-    public void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer methodID, FilterManager filter)
+    public void invoke(PortletRequestContext requestContext, PortletRequest portletRequest, PortletResponse portletResponse, 
+                       PortletWindow.Action action, FilterManager filter)
         throws PortletException, IOException
     {
-        // In case of parallel mode, the portletDefinition member is not thread-safe.
-        // So, hide the member variable by the following local variable.
-        PortletDefinition portletDefinition = null;
-
-        // In case of parallel mode, get portlet definition object from the worker thread context.
-        // Otherwise, refer the member variable.
-        boolean isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
-
-        if (isParallelMode)
-        {
-            portletDefinition = (PortletDefinition) CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
-        }
-        
-        if (portletDefinition == null)
-        {
-            portletDefinition = this.portletDefinition;
-        }
-        
+        PortletWindowImpl window = (PortletWindowImpl)requestContext.getPortletWindow();
+        PortletDefinition portletDefinition = window.getPortletDefinition();
         PortletApplication app = portletDefinition.getApplication();
 
         String appContextPath = app.getContextPath();
@@ -159,103 +127,43 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
         RequestDispatcher dispatcher = appContext.getRequestDispatcher(servletMappingName);
         if (null == dispatcher)
         {
-            String message =
-                "Failed to get Request Dispatcher for Portlet Application: "
-                    + appContextPath
-                    + ", servlet: "
-                    + servletMappingName;
+            String message = "Failed to get Request Dispatcher for Portlet Application: "+appContextPath+", servlet: "+servletMappingName;
             log.error(message);
             throw new PortletException(message);
         }
 
-        // gather all required data from request and response
-        ServletRequest servletRequest = this.requestResponseUnwrapper.unwrapPortletRequest(portletRequest);
-        ServletResponse servletResponse = this.requestResponseUnwrapper.unwrapPortletResponse(portletResponse);
-        boolean useForward = servletRequest.getAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD) != null;
+        boolean useForward = window.getAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD) != null;
 
         try
         {
-            RequestContext requestContext = (RequestContext) servletRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            
-            if (isParallelMode)
-            {
-                synchronized (servletRequest)
-                {
-                    servletRequest.setAttribute(ContainerConstants.PORTLET, portletInstance);
-                    servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
-                    servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
-                    servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
-                    servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
-                    servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getPortletName());
-                    servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest) servletRequest).getContextPath());
-                }
-            }
-            else
-            {
-                servletRequest.setAttribute(ContainerConstants.PORTLET, portletInstance);
-                servletRequest.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
-                servletRequest.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
-                servletRequest.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
-                servletRequest.setAttribute(ContainerConstants.METHOD_ID, methodID);
-                servletRequest.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getPortletName());
-                servletRequest.setAttribute(ContainerConstants.PORTAL_CONTEXT, requestContext.getRequest().getContextPath());
-            }
+            PortletResponseContext responseContext = (PortletResponseContext)portletRequest.getAttribute(PortletInvokerService.RESPONSE_CONTEXT);
+            ((JetspeedRequestContext)window.getRequestContext()).setCurrentPortletWindow(window);
+            window.setInvocationState(action, requestContext, responseContext, portletRequest, portletResponse, portletInstance);
+            window.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, window.getFragment());
+            window.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, window);
+            window.setAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, portletDefinition);
 
-            // Store same request attributes into the worker in parallel mode.
-            if (isParallelMode)
-            {
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET, portletInstance);
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_CONFIG, portletInstance.getConfig());
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_REQUEST, portletRequest);
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_RESPONSE, portletResponse);
-                CurrentWorkerContext.setAttribute(ContainerConstants.METHOD_ID, methodID);
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTLET_NAME, app.getName()+"::"+portletDefinition.getPortletName());
-                CurrentWorkerContext.setAttribute(ContainerConstants.PORTAL_CONTEXT, ((HttpServletRequest) servletRequest).getContextPath());                
-            }
 
-            PortletRequestContext.createContext(portletDefinition, portletInstance, portletRequest, portletResponse);
             if (useForward)
             {
-                dispatcher.forward(servletRequest, servletResponse);
+                dispatcher.forward(requestContext.getContainerRequest(), requestContext.getContainerResponse());
             }
             else
             {
-                dispatcher.include(servletRequest, servletResponse);
+                dispatcher.include(requestContext.getContainerRequest(), requestContext.getContainerResponse());
             }
             
         }
         catch (Exception e)
         {
             String message =
-                "Failed to dispatch."+(useForward?"forward":"include")+" for Portlet Application: " + appContextPath + ", servlet: " + servletMappingName;
+                "Failed to dispatch."+(useForward?"forward":"include")+" for Portlet Application: "+appContextPath+", servlet: "+servletMappingName;
             log.error(message, e);
             throw new PortletException(message, e);
         }
         finally
         {
-            PortletRequestContext.clearContext();
-
-            // In parallel mode, remove all attributes of worker context.
-            if (isParallelMode)
-            {
-                CurrentWorkerContext.removeAttribute(ContainerConstants.PORTLET);
-                CurrentWorkerContext.removeAttribute(ContainerConstants.PORTLET_CONFIG);
-                CurrentWorkerContext.removeAttribute(ContainerConstants.PORTLET_REQUEST);
-                CurrentWorkerContext.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
-                CurrentWorkerContext.removeAttribute(ContainerConstants.METHOD_ID);
-                CurrentWorkerContext.removeAttribute(ContainerConstants.PORTLET_NAME);
-                CurrentWorkerContext.removeAttribute(ContainerConstants.PORTAL_CONTEXT);
-            }
-
-            servletRequest.removeAttribute(ContainerConstants.PORTLET);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_CONFIG);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_REQUEST);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_RESPONSE);
-            servletRequest.removeAttribute(ContainerConstants.METHOD_ID);
-            servletRequest.removeAttribute(ContainerConstants.PORTLET_NAME);
-            servletRequest.removeAttribute(ContainerConstants.PORTAL_CONTEXT);
+            ((JetspeedRequestContext)window.getRequestContext()).setCurrentPortletWindow(null);
         }
-
     }
-
 }

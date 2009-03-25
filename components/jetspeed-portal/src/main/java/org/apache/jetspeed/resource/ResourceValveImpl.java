@@ -17,7 +17,6 @@
 package org.apache.jetspeed.resource;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -52,12 +47,10 @@ public class ResourceValveImpl extends AbstractValve
 
     private static final Log log = LogFactory.getLog(ResourceValveImpl.class);
     private PortletContainer container;
-    private PortletWindowAccessor windowAccessor;
 
-    public ResourceValveImpl(PortletContainer container, PortletWindowAccessor windowAccessor)
+    public ResourceValveImpl(PortletContainer container)
     {
         this.container = container;
-        this.windowAccessor = windowAccessor;
     }
     
     /**
@@ -71,39 +64,17 @@ public class ResourceValveImpl extends AbstractValve
         {
             try
             {            
-                Page page = request.getPage();
-                Fragment fragment = page.getFragmentById(resourceWindow.getId().toString());
-                // If portlet entity is null, try to refresh the resourceWindow.
-                // Under some clustered environments, a cached portlet window could have null entity.
-                if (null == resourceWindow.getPortletEntity())
+                Fragment fragment = resourceWindow.getFragment();
+                HttpServletRequest servletRequest = request.getRequest();
+                HttpServletResponse servletResponse = request.getResponse();
+                resourceWindow.setAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD, Boolean.TRUE);
+                if (resourceWindow.getPortletDefinition().getApplication().getVersion().equals("1.0"))
                 {
-                    try 
-                    {
-                        ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
-                        resourceWindow = this.windowAccessor.getPortletWindow(contentFragment);
-                    } 
-                    catch (Exception e)
-                    {
-                        log.error("Failed to refresh resource window.", e);
-                    }
-                }
-                resourceWindow.getPortletEntity().setFragment(fragment);
-                HttpServletResponse response = request.getResponse();
-                HttpServletRequest requestForWindow = request.getRequestForWindow(resourceWindow);
-                requestForWindow.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, request);
-                requestForWindow.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, request.getPage());
-                requestForWindow.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
-                request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, request.getObjects());                        
-                request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE));
-                request.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, resourceWindow);
-                request.setAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD, Boolean.TRUE);
-                if (resourceWindow.getPortletEntity().getPortletDefinition().getApplication().getVersion().equals("1.0"))
-                {
-                    container.doRender(resourceWindow, requestForWindow, response);
+                    container.doRender(resourceWindow, servletRequest, servletResponse);
                 }
                 else
                 {
-                    container.doServeResource(resourceWindow, requestForWindow, response);
+                    container.doServeResource(resourceWindow, servletRequest, servletResponse);
                 }
             }
             catch (PortletContainerException e)

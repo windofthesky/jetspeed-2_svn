@@ -25,7 +25,9 @@ import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.container.FilterManager;
+import org.apache.jetspeed.container.FilterManager;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.pluto.container.PortletRequestContext;
 
 /**
  * JetspeedPortletInvoker extends Pluto's portlet invoker model and extends it
@@ -60,15 +62,17 @@ public interface JetspeedPortletInvoker
     boolean isActivated();
 
     /**
-     * Invoke a method
+     * Invoke an action
+     * @param requestContext
      * @param portletRequest
      * @param portletResponse
-     * @param method
+     * @param action
      * @param filter
      * @throws PortletException
      * @throws IOException
      */
-    void invoke(PortletRequest portletRequest, PortletResponse portletResponse, Integer method, FilterManager filter)
+    void invoke(PortletRequestContext requestContext, PortletRequest portletRequest, PortletResponse portletResponse, 
+                PortletWindow.Action action, FilterManager filter)
         throws PortletException, IOException;
     
 }

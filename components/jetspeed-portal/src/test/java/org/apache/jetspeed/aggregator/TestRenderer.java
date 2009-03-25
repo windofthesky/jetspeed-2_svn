@@ -50,7 +50,7 @@ public class TestRenderer extends AbstractPortalContainerTestCase
         monitor = new WorkerMonitorImpl(5, 20, 5, 10);
         monitor.start();
         
-        renderer = new PortletRendererImpl(portletContainer, windowAccessor, monitor, null);       
+        renderer = new PortletRendererImpl(portletContainer, monitor, null);       
     }
     
     protected void tearDown() throws Exception

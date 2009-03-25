@@ -81,7 +81,7 @@ public class LoginServlet extends HttpServlet
             {
                 if (contextComponent != null)
                 {
-                    contextComponent.release(context);
+                    contextComponent.setRequestContext(null);
                 }
             }
         }

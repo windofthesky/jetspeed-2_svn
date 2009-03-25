@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 
 /**
@@ -37,7 +36,6 @@ public abstract class RegistrySupportedTestCase extends TransactionCacheEnabledS
 {
 
     protected PortletRegistry portletRegistry;
-    protected PortletEntityAccessComponent entityAccess;
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -46,7 +44,6 @@ public abstract class RegistrySupportedTestCase extends TransactionCacheEnabledS
     {       
         super.setUp();
         portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
-        entityAccess = (PortletEntityAccessComponent) scm.getComponent("portletEntityAccess");
     }   
     
     protected String[] getConfigurations()

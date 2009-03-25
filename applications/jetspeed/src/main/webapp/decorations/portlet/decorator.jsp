@@ -35,7 +35,7 @@ limitations under the License.
       WindowState _ws = _jpt.getMappedWindowState();
       pageContext.setAttribute("ws", _ws, DEFAULT_SCOPE);
   
-      String _pTitle = _jpt.getTitle(_jpt.getCurrentPortletEntity(), _jpt.getCurrentFragment());
+      String _pTitle = _jpt.getTitle();
       pageContext.setAttribute("pTitle", _pTitle, DEFAULT_SCOPE);
       
       pageContext.setAttribute("isMinimized",_ws.toString().equalsIgnoreCase("minimized"), DEFAULT_SCOPE);

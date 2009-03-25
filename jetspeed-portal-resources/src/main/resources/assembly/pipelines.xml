@@ -195,9 +195,6 @@
       <ref bean="org.apache.pluto.PortletContainer" />
     </constructor-arg>
     <constructor-arg>
-      <ref bean="PortletWindowAccessor" />
-    </constructor-arg>
-    <constructor-arg>
       <ref bean="portletContentCache" />
     </constructor-arg>
     <!-- 
@@ -215,9 +212,6 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.DesktopPortletContainer" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="PortletWindowAccessor" />
     </constructor-arg>
     <constructor-arg>
       <ref bean="portletContentCache" />
@@ -313,9 +307,6 @@
       <ref bean="DecorationFactory" />
     </constructor-arg>
     <constructor-arg index='1'>
-      <ref bean="PortletWindowAccessor" />
-    </constructor-arg>
-    <constructor-arg index='2'>
       <ref bean="org.apache.jetspeed.security.SecurityAccessController" />
     </constructor-arg>
     <!-- 
@@ -363,9 +354,6 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <ref bean="org.apache.pluto.PortletContainer" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="PortletWindowAccessor" />
     </constructor-arg>
   </bean>
 
@@ -567,6 +555,7 @@
         <ref bean="localizationValve" />
         <ref bean="capabilityValve" />
         <ref bean="portalURLValve" />
+        <ref bean="profilerValve" />
         <ref bean="containerValve" />
         <ref bean="actionValve" />
       </list>

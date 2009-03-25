@@ -29,7 +29,6 @@ import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.container.PortletEntity;
 
 /**
  * DesktopEncodingPortalURL encodes action URLs to target desktop specific /action pipeline,
@@ -186,9 +185,8 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         {
         	if ( ! desktopRequestNotAjax )
             {
-        		PortletEntity pe = window.getPortletEntity();
-        		buffer.append( "?entity=" ).append( pe.getId() );
-        		buffer.append( "&portlet=" ).append( pe.getPortletDefinition().getUniqueName() );
+                buffer.append( "?entity=" ).append( window.getId().toString() );
+                buffer.append( "&portlet=" ).append( window.getPortletDefinition().getUniqueName() );
             }
         }
         else

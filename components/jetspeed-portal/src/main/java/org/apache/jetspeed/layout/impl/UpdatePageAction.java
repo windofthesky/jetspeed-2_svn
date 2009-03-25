@@ -25,10 +25,6 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -38,7 +34,6 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * Update Page action -- updates various parts of the PSML page
@@ -66,20 +61,14 @@ public class UpdatePageAction
     implements AjaxAction, AjaxBuilder, Constants
 {
     protected Log log = LogFactory.getLog(UpdatePageAction.class);
-    protected PortletWindowAccessor windowAccess;
-    protected PortletEntityAccessComponent entityAccess;
     
     public UpdatePageAction(String template, 
                             String errorTemplate, 
                             PageManager pm,
-                            PortletWindowAccessor windowAccess,
-                            PortletEntityAccessComponent entityAccess,
                             PortletActionSecurityBehavior securityBehavior)                            
                             
     {
         super(template, errorTemplate, pm, securityBehavior);
-        this.windowAccess = windowAccess;
-        this.entityAccess = entityAccess;
     }
     
     public boolean run(RequestContext requestContext, Map resultMap)
@@ -255,7 +244,6 @@ public class UpdatePageAction
     }
     
     protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String portletDecorator)
-    throws PortletEntityNotStoredException, FailedToRetrievePortletWindow
     {
     	int count = 0;
     	Fragment fragment = page.getFragmentById(fragmentId);
@@ -268,7 +256,6 @@ public class UpdatePageAction
     }
     
     protected int updateFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String layout)
-    throws PortletEntityNotStoredException, FailedToRetrievePortletWindow
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -278,24 +265,17 @@ public class UpdatePageAction
             if (!layout.equals(fragment.getName()))
             {
                 fragment.setName(layout);
-                ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());                    
-                PortletWindow window = windowAccess.getPortletWindow(contentFragment);
-                if (window != null)
+                ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
+                count++;
+                if ( isBlank(sizes) )
                 {
-                    entityAccess.updatePortletEntity(window.getPortletEntity(), contentFragment);
-                    entityAccess.storePortletEntity(window.getPortletEntity());
-                    windowAccess.createPortletWindow(window.getPortletEntity(), contentFragment.getId());
-                    count++;
-                    if ( isBlank(sizes) )
-                    {
-                        fragment.setLayoutSizes(null);
-                    }
-                    else
-                    {
-                        fragment.setLayoutSizes(sizes);
-                    }
-                    count++;
+                    fragment.setLayoutSizes(null);
                 }
+                else
+                {
+                    fragment.setLayoutSizes(sizes);
+                }
+                count++;
             }
             else
             {

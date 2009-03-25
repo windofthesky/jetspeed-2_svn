@@ -28,9 +28,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.AbstractRequestContextTestCase;
-import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.deployment.impl.StandardDeploymentManager;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -60,7 +57,6 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
     protected String testDb;
     protected File webAppsDirFile;
     protected File copyFrom;
-    protected PortletWindowAccessor windowAccess;
     protected PortletFactory portletFactory;
     protected ApplicationServerManager manager;
  
@@ -308,15 +304,7 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
         
         PortletApplication app = portletRegistry.getPortletApplication(TEST_PORTLET_APP_NAME);
         
-        PortletDefinition portlet = (PortletDefinition) app.getPortlets().iterator().next();
-        
-        PortletEntity entity = entityAccess.newPortletEntityInstance(portlet);
-        entity.setId("testEnity");
-        
-        entityAccess.storePortletEntity(entity);
-        
-        
-        
+        PortletDefinition portlet = app.getPortlets().iterator().next();
     }
 
     /**
@@ -373,7 +361,6 @@ public class TestSimpleDeployment extends AbstractRequestContextTestCase
 //            testDb = new File("src/test/db/hsql/Registry").getCanonicalPath();           
             
             copyDeployables();
-//            windowAccess = new PortletWindowAccessorImpl(entityAccess, true);  
         }
         catch (Exception e)
         {

@@ -43,13 +43,9 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletentity.PortletEntityNotGeneratedException;
-import org.apache.jetspeed.components.portletentity.PortletEntityNotStoredException;
-import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
+import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -62,7 +58,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.Path;
-import org.apache.jetspeed.container.PortletEntity;
 import org.apache.velocity.context.Context;
 
 /**
@@ -120,13 +115,9 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     protected TemplateLocator templateLocator;
 
-    protected PortletEntityAccessComponent entityAccess;
-
     protected TemplateLocator decorationLocator;
 
     protected LocatorDescriptor decorationLocatorDescriptor;
-
-    protected PortletWindowAccessor windowAccess;
 
     protected RequestContext requestContext;
 
@@ -143,8 +134,6 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         HttpServletRequest request = requestContext.getRequest();
         this.requestContext = requestContext;
         this.titleService = titleService;
-        windowAccess = (PortletWindowAccessor) getComponent(PortletWindowAccessor.class.getName());
-        entityAccess = (PortletEntityAccessComponent) getComponent(PortletEntityAccessComponent.class.getName());
         try
         {
             baseUrlAccess = (BasePortalURL) getComponent("BasePortalURL");
@@ -200,8 +189,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         try
         {
-            NavigationalState nav = getRequestContext().getPortalURL().getNavigationalState();
-            return nav.getState(windowAccess.getPortletWindow(getCurrentFragment()));
+            return getRequestContext().getPortalURL().getNavigationalState().getState(getPortletWindow(getCurrentFragment()));
         }
         catch (Exception e)
         {
@@ -220,8 +208,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         try
         {
-            NavigationalState nav = getRequestContext().getPortalURL().getNavigationalState();
-            return nav.getMappedState(windowAccess.getPortletWindow(getCurrentFragment()));
+            return getRequestContext().getPortalURL().getNavigationalState().getMappedState(getPortletWindow(getCurrentFragment()));
         }
         catch (Exception e)
         {
@@ -238,13 +225,11 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      */
     public PortletMode getPortletMode() throws Exception
     {
-
-        NavigationalState nav = getRequestContext().getPortalURL().getNavigationalState();
         try
         {
-            return nav.getMode(windowAccess.getPortletWindow(getCurrentFragment()));
+            return getRequestContext().getPortalURL().getNavigationalState().getMode(getPortletWindow(getCurrentFragment()));
         }
-        catch (FailedToRetrievePortletWindow e)
+        catch (Exception e)
         {
             handleError(e, e.toString(), getCurrentFragment());
             return null;
@@ -259,13 +244,11 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      */
     public PortletMode getMappedPortletMode() throws Exception
     {
-
-        NavigationalState nav = getRequestContext().getPortalURL().getNavigationalState();
         try
         {
-            return nav.getMappedMode(windowAccess.getPortletWindow(getCurrentFragment()));
+            return getRequestContext().getPortalURL().getNavigationalState().getMappedMode(getPortletWindow(getCurrentFragment()));
         }
-        catch (FailedToRetrievePortletWindow e)
+        catch (Exception e)
         {
             handleError(e, e.toString(), getCurrentFragment());
             return null;
@@ -344,58 +327,22 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     /**
      * 
-     * @return
-     * @throws Exception
-     */
-    public PortletEntity getCurrentPortletEntity() throws Exception
-    {
-        try
-        {
-            return windowAccess.getPortletWindow(getCurrentFragment()).getPortletEntity();
-        }
-        catch (Exception e)
-        {
-            handleError(e, "JetspeedPowerTool failed to retreive the current PortletEntity.  " + e.toString(),
-                    getCurrentFragment());
-            return null;
-        }
-    }
-
-    /**
-     * 
      * @param f
-     *            Fragment whose <code>PortletEntity</code> we want to
-     *            retreive.
-     * @return The PortletEntity represented by the current fragment.
+     *            Fragment whose <code>PortletWindow</code> we want to
+     *            retrieve.
+     * @return The PortletWindow represented by the current fragment.
      * @throws Exception
      */
-    public PortletEntity getPortletEntity(ContentFragment f) throws Exception
+    public PortletWindow getPortletWindow(ContentFragment f) throws Exception
     {
-        PortletEntity portletEntity = windowAccess.getPortletWindow(f).getPortletEntity();
-        // This API hits the DB: PortletEntity portletEntity = entityAccess.getPortletEntityForFragment(f);
-        if (portletEntity == null)
+        PortletWindow window = getRequestContext().getPortletWindow(f);
+        if (window == null)
         {
-            try
-            {
-                portletEntity = entityAccess.generateEntityFromFragment(f);
-                entityAccess.storePortletEntity(portletEntity);
-            }
-            catch (PortletEntityNotGeneratedException e)
-            {
-                String msg = "JetspeedPowerTool failed to retreive a PortletEntity for Fragment " + f.getId() + ".  "
-                        + e.toString();
-                handleError(e, msg, f);
-            }
-            catch (PortletEntityNotStoredException e)
-            {
-                String msg = "JetspeedPowerTool failed to store a PortletEntity for Fragment " + f.getId() + ".  "
-                        + e.toString();
-                handleError(e, msg, f);
-            }
+            throw new FailedToCreateWindowException("Portlet Window creation failed for fragment: "+ f.getId() + ", " + f.getName());
         }
-        return portletEntity;
+        return window;
     }
-
+    
     /**
      * Checks the the visibilty of this fragment with respect to the current
      * RenderReqeust.
@@ -728,7 +675,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      * @param entity
      * @return
      */
-    public String getTitle(PortletEntity entity, ContentFragment f)
+    public String getTitle(ContentFragment f)
     {
         String title = null;
 
@@ -742,7 +689,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
             try
             {
 
-                return titleService.getDynamicTitle(windowAccess.getPortletWindow(f), getRequestContext().getRequest());
+                return titleService.getDynamicTitle(getPortletWindow(f), getRequestContext().getRequest());
             }
             catch (Exception e)
             {
@@ -761,22 +708,11 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      * </p>
      * Returns the appropriate for the title based on locale prferences
      * 
-     * @param entity
      * @return
      */
-    public String getTitle(PortletEntity entity)
+    public String getTitle()
     {
-        try
-        {
-            return titleService.getDynamicTitle(windowAccess.getPortletWindow(getCurrentFragment()),
-                    getRequestContext().getRequest());
-        }
-        catch (Exception e)
-        {
-            log.error("Unable to reteive portlet title: " + e.getMessage(), e);
-            return "Title Error: " + e.getMessage();
-        }
-
+        return getTitle(getCurrentFragment());
     }
 
     public Object getComponent(String name)
@@ -857,18 +793,32 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         }
     }
     
-    public String renderPortletEntity(String entityId, String portletId)
+    public String renderPortletWindow(String windowId, String portletId)
     {
-
         RequestContext context = getRequestContext();
-
-        PortletAggregatorFragmentImpl fragment = new PortletAggregatorFragmentImpl(
-                entityId);
-        fragment.setType(Fragment.PORTLET);
-        fragment.setName(portletId);
-        ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap(), true);
-        renderer.renderNow(contentFragment, context);
-        return contentFragment.getRenderedContent();
+        PortletWindow window = context.getPortletWindow(windowId);
+        try
+        {
+            if (window == null)
+            {
+                PortletAggregatorFragmentImpl fragment = new PortletAggregatorFragmentImpl(windowId);
+                fragment.setType(Fragment.PORTLET);
+                fragment.setName(portletId);
+                ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap(), true);
+                window = getPortletWindow(contentFragment);
+                context.registerInstantlyCreatedPortletWindow(window);
+                renderer.renderNow(window.getFragment(), context, true);
+                return window.getFragment().getRenderedContent();
+            }
+            else
+            {
+                throw new IllegalArgumentException("PortletWindow "+windowId+" already exists on this page");
+            }
+        }
+        catch (Exception e)
+        {
+            handleError(e, e.toString(), getCurrentFragment());
+            return "";
+        }
     }
-
 }

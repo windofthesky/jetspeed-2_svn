@@ -19,14 +19,11 @@ package org.apache.jetspeed.aggregator.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderTrackable;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -52,11 +49,8 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
      */
     protected int outOfServiceLimit;
     
-    protected PortletWindowAccessor windowAccessor;
-    
-    public PortletTrackingManagerImpl(PortletWindowAccessor windowAccessor, long defaultPortletTimeout, int outOfServiceLimit)
+    public PortletTrackingManagerImpl(long defaultPortletTimeout, int outOfServiceLimit)
     {
-        this.windowAccessor = windowAccessor;
         this.defaultPortletTimeout = defaultPortletTimeout;
         this.outOfServiceLimit = outOfServiceLimit;
     }
@@ -68,7 +62,7 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
 
     public boolean exceededTimeout(long renderTime, PortletWindow window)
     {
-        RenderTrackable trackInfo = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackInfo = (RenderTrackable)window;
         long defaultTimeout = this.getDefaultPortletTimeout();
         if (trackInfo.getExpiration() > 0)
         {
@@ -83,7 +77,7 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
     
     public boolean isOutOfService(PortletWindow window)
     {
-        RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackable = (RenderTrackable)window;
         if (trackable.getRenderTimeoutCount() > this.outOfServiceLimit)
         {
             return true;
@@ -98,79 +92,50 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
     
     public void incrementRenderTimeoutCount(PortletWindow window)
     {
-        RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackable = (RenderTrackable)window;
         trackable.incrementRenderTimeoutCount();       
     }
    
     public void success(PortletWindow window)
     {
-        RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackable = (RenderTrackable)window;
         trackable.success();
     }
     
     public void setExpiration(PortletWindow window, long expiration)
     {
-        RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackable = (RenderTrackable)window;
         trackable.setExpiration(expiration); // * 1000);                
     }
         
     public void takeOutOfService(PortletWindow window)
     {
-        RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackable = (RenderTrackable)window;
         trackable.setRenderTimeoutCount((int)this.defaultPortletTimeout + 1);
     }
     
     public void putIntoService(PortletWindow window)
     {
-        RenderTrackable trackable = (RenderTrackable)window.getPortletEntity();
+        RenderTrackable trackable = (RenderTrackable)window;
         trackable.setRenderTimeoutCount(0);        
     }
     
     public void putIntoService(List fullPortletNames)
     {
-        Iterator windows = this.windowAccessor.getPortletWindows().iterator();
-        while (windows.hasNext())
-        {
-            PortletWindow window = (PortletWindow)windows.next();
-            PortletDefinition pd = (PortletDefinition)window.getPortletEntity().getPortletDefinition();          
-            for (int ix = 0; ix < fullPortletNames.size(); ix++)
-            {
-                if (pd.getUniqueName().equals(fullPortletNames.get(ix)))
-                {
-                    putIntoService(window);
-                }
-            }
-        }        
+        // TODO
     }
     
     public List getOutOfServiceList(String fullPortletName)
     {
         List outs = new ArrayList();
-        Iterator windows = this.windowAccessor.getPortletWindows().iterator();
-        while (windows.hasNext())
-        {
-            PortletWindow window = (PortletWindow)windows.next();
-            PortletDefinition pd = (PortletDefinition)window.getPortletEntity().getPortletDefinition();
-            if (pd.getUniqueName().equals(fullPortletName) && isOutOfService(window))
-            {
-                outs.add(window);
-            }
-        }
+        // TODO
         return outs;
     }
     
     public List getOutOfServiceList()
     {
         List outs = new ArrayList();
-        Iterator windows = this.windowAccessor.getPortletWindows().iterator();
-        while (windows.hasNext())
-        {
-            PortletWindow window = (PortletWindow)windows.next();
-            if (isOutOfService(window))
-            {
-                outs.add(window);                
-            }
-        }
+        // TODO
         return outs;
     }
 }

@@ -32,13 +32,12 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.ServletConfig;
 
 import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.ContainerConstants;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.container.PortletContainerException;
 import org.apache.pluto.container.PortletRequestContext;
-import org.apache.pluto.container.PortletWindow;
 import org.apache.pluto.container.FilterManager;
 import org.apache.pluto.container.PortletInvokerService;
 
@@ -71,118 +70,79 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
     
     private ServletConfig servletConfig;
     private PortletFactory portletFactory;
-    private PortletRequestResponseUnwrapper unwrapper;
     private String servletMappingName;
     
-    public JetspeedPortletInvokerService(ServletConfig servletConfig, PortalContext portalContext, 
-            PortletFactory portletFactory, PortletRequestResponseUnwrapper unwrapper)
+    public JetspeedPortletInvokerService(ServletConfig servletConfig, PortalContext portalContext, PortletFactory portletFactory)
     {
         this.servletConfig = servletConfig;
         this.portletFactory = portletFactory;
-        this.unwrapper = unwrapper;
         this.servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);                                
     }
     
-    public void action(PortletRequestContext ctx, ActionRequest req, ActionResponse res, FilterManager filterManager)
+    public void action(PortletRequestContext requestContext, ActionRequest request, ActionResponse response, FilterManager filterManager)
     throws IOException, PortletException, PortletContainerException
     {
-        // TODO Auto-generated method stub
+        getInvoker(requestContext).invoke(requestContext, 
+                                          request, response, 
+                                          PortletWindow.Action.ACTION, 
+                                          (org.apache.jetspeed.container.FilterManager)filterManager);
     }
 
-    public void admin(PortletRequestContext ctx, PortletRequest req, PortletResponse res)
+    public void admin(PortletRequestContext requestContext, PortletRequest request, PortletResponse response)
     throws IOException, PortletException, PortletContainerException
     {
-        // TODO Auto-generated method stub
+        throw new PortletContainerException("Unsupported action ADMIN");
     }
 
-    public void event(PortletRequestContext ctx, EventRequest request, EventResponse response, FilterManager filterManager)
+    public void event(PortletRequestContext requestContext, EventRequest request, EventResponse response, FilterManager filterManager)
     throws IOException, PortletException, PortletContainerException
     {
-        // TODO Auto-generated method stub
+        getInvoker(requestContext).invoke(requestContext, 
+                                          request, response, 
+                                          PortletWindow.Action.EVENT, 
+                                          (org.apache.jetspeed.container.FilterManager)filterManager);
     }
 
-    public void load(PortletRequestContext ctx, PortletRequest req, PortletResponse res)
+    public void load(PortletRequestContext requestContext, PortletRequest request, PortletResponse response)
     throws IOException, PortletException, PortletContainerException
     {
-        // TODO Auto-generated method stub
+        getInvoker(requestContext).invoke(requestContext, 
+                                          request, response, 
+                                          PortletWindow.Action.LOAD, null);
     }
 
-    public void render(PortletRequestContext ctx, RenderRequest req, RenderResponse res, FilterManager filterManager)
+    public void render(PortletRequestContext requestContext, RenderRequest request, RenderResponse response, FilterManager filterManager)
     throws IOException, PortletException, PortletContainerException
     {
-        // TODO Auto-generated method stub
+        getInvoker(requestContext).invoke(requestContext, 
+                                          request, response, 
+                                          PortletWindow.Action.RENDER, 
+                                          (org.apache.jetspeed.container.FilterManager)filterManager);
     }
 
-    public void serveResource(PortletRequestContext ctx, ResourceRequest req, ResourceResponse res, FilterManager filterManager)
+    public void serveResource(PortletRequestContext requestContext, ResourceRequest request, ResourceResponse response, FilterManager filterManager)
     throws IOException, PortletException, PortletContainerException
     {
-        // TODO Auto-generated method stub
+        getInvoker(requestContext).invoke(requestContext, 
+                                          request, response, 
+                                          PortletWindow.Action.RESOURCE, 
+                                          (org.apache.jetspeed.container.FilterManager)filterManager);
     }
 
-    public void action(ActionRequest request,
-            ActionResponse response, PortletWindow window, FilterManager filter)
-            throws IOException, PortletException
+    protected JetspeedPortletInvoker getInvoker(PortletRequestContext requestContext)
     {
-        JetspeedPortletInvoker invoker = getInvoker(window);
-        invoker.invoke(request, response, ContainerConstants.METHOD_ACTION, filter);
-    }
-
-    public void admin(PortletRequest request,
-            PortletResponse response, PortletWindow window) throws IOException,
-            PortletException
-    {
-        JetspeedPortletInvoker invoker = getInvoker(window);
-        invoker.invoke(request, response, ContainerConstants.METHOD_ADMIN, null);        
-    }
-
-    public void event(EventRequest request,
-            EventResponse response, PortletWindow window, FilterManager filter)
-            throws IOException, PortletException
-    {
-        JetspeedPortletInvoker invoker = getInvoker(window);
-        invoker.invoke(request, response, ContainerConstants.METHOD_EVENT, filter);
-    }
-
-    public void load(PortletRequest request,
-            PortletResponse response, PortletWindow window) throws IOException,
-            PortletException
-    {
-        JetspeedPortletInvoker invoker = getInvoker(window);
-        invoker.invoke(request, response, ContainerConstants.METHOD_NOOP, null);
-    }   
-    
-    public void render(RenderRequest request,
-            RenderResponse response, PortletWindow window, FilterManager filter)
-            throws IOException, PortletException
-    {
-        JetspeedPortletInvoker invoker = getInvoker(window);
-        invoker.invoke(request, response, ContainerConstants.METHOD_RENDER, filter);
-    }
-
-    public void serveResource(ResourceRequest request,
-            ResourceResponse response, PortletWindow window, FilterManager filter)
-            throws IOException, PortletException
-    {
-        JetspeedPortletInvoker invoker = getInvoker(window);
-        invoker.invoke(request, response, ContainerConstants.METHOD_RESOURCE, filter);
-    }
-    
-    protected JetspeedPortletInvoker getInvoker(PortletWindow window)
-    {
-        PortletDefinition portletDefinition = (PortletDefinition)window.getPortletEntity().getPortletDefinition();
-        PortletApplication app = (PortletApplication)portletDefinition.getApplication();
         JetspeedPortletInvoker invoker;
-        if (app.getApplicationType() == PortletApplication.LOCAL)
+        PortletDefinition portletDefinition = (PortletDefinition)requestContext.getPortletWindow().getPortletEntity().getPortletDefinition();
+        if (portletDefinition.getApplication().getApplicationType() == PortletApplication.LOCAL)
         {
             invoker = new LocalPortletInvoker();
         }
         else
         {
-            invoker =  new ServletPortletInvoker(this.unwrapper, servletMappingName);
+            invoker =  new ServletPortletInvoker(servletMappingName);
 
         }
         invoker.activate(portletFactory, portletDefinition, servletConfig);
         return invoker;        
     }
-    
 }

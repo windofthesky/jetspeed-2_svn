@@ -23,9 +23,6 @@
     <constructor-arg>
       <ref bean="PortalContext" />
     </constructor-arg>
-    <constructor-arg>
-      <ref bean="PortletWindowAccessor" />
-    </constructor-arg>
   </bean>
 
   <!-- Navigation state we are currently using -->

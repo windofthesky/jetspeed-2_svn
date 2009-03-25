@@ -21,7 +21,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.container.window.FailedToRetrievePortletWindow;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.PortletWindow;
@@ -43,17 +42,25 @@ public interface PortletRenderer
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
      * @throws FailedToRenderFragmentException
-     * @throws FailedToRetrievePortletWindow
      * @throws UnknownPortletDefinitionException
      * @throws PortletAccessDeniedException
      */
     public void renderNow(ContentFragment fragment, RequestContext request) ;
 
     /**
+     * Render the specified Page fragment in a separate Thread from the current (rendering) Thread
+     * Result is returned in the PortletResponse.
+     * @throws FailedToRenderFragmentException
+     * @throws UnknownPortletDefinitionException
+     * @throws PortletAccessDeniedException
+    */
+    public void renderNow(ContentFragment fragment, RequestContext request, boolean spawned) ;
+
+
+    /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
      * @throws FailedToRenderFragmentException
-     * @throws FailedToRetrievePortletWindow
      * @throws UnknownPortletDefinitionException
      * @throws PortletAccessDeniedException
      */
@@ -74,7 +81,6 @@ public interface PortletRenderer
      * Create a rendering job for the specified Page fragment.
      * The method returns a rendering job which should be passed to 'processRenderingJob(RenderingJob job)' method.
      * @return portlet rendering job to pass to render(RenderingJob job) method
-     * @throws FailedToRetrievePortletWindow
      * @throws UnknownPortletDefinitionException
      * @throws PortletAccessDeniedException
      */

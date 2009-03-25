@@ -19,23 +19,16 @@ package org.apache.jetspeed.tools.pamanager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cluster.NodeManager;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
-import org.apache.jetspeed.components.portletentity.PortletEntityNotDeletedException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
-import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
@@ -60,10 +53,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
     private static int DEFAULT_MAX_RETRIED_STARTS = 10; // 10 times retry PA
     private static final Log    log = LogFactory.getLog("deployment");
 
-    protected PortletEntityAccessComponent entityAccess;
     protected PortletFactory        portletFactory;
     protected PortletRegistry       registry;
-    protected PortletWindowAccessor windowAccess;
     protected SearchEngine          searchEngine;
     protected RoleManager           roleManager;
     protected PermissionManager     permissionManager;
@@ -85,15 +76,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	 * Creates a new PortletApplicationManager object.
 	 */
 	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
-		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List<String> permissionRoles, NodeManager nodeManager, String appRoot,
         JetspeedDescriptorService descriptorService)
 	{
 		this.portletFactory     = portletFactory;
 		this.registry		    = registry;
-		this.entityAccess	    = entityAccess;
-		this.windowAccess	    = windowAccess;
         this.permissionManager  = permissionManager;
         this.searchEngine       = searchEngine;
         this.roleManager        = roleManager;        
@@ -312,22 +300,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			{
 				pa.setContextPath("<portal>");
 			}
-
-            // Make sure existing entities are refreshed with the most
-            // recent PortletDefintion.
-            for (PortletDefinition pd : pa.getPortlets())
-            {
-                Collection portletEntites = entityAccess.getPortletEntities(pd);
-                if(portletEntites != null && portletEntites.size() > 0)
-                {
-                    Iterator peItr = portletEntites.iterator();
-                    while(peItr.hasNext())
-                    {
-                        PortletEntity portletEntity = (PortletEntity) peItr.next();
-                        portletEntity.setPortletDefinition(pd);
-                    }
-                }
-            }
 		}
 		catch (Exception e)
 		{
@@ -692,35 +664,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	{
 
 		updateSearchEngine(true,pa);
-		log.info("Remove all registry entries defined for portlet application " + pa.getName());
-
-		for (PortletDefinition portletDefinition : pa.getPortlets())
-		{
-			Iterator		  entities = entityAccess.getPortletEntities(portletDefinition)
-													 .iterator();
-
-			while (entities.hasNext())
-			{
-				PortletEntity entity = (PortletEntity) entities.next();
-
-				if (purgeEntityInfo)
-				{
-					try
-					{
-						entityAccess.removePortletEntity(entity);
-					}
-					catch (PortletEntityNotDeletedException e)
-					{
-						String msg = "Failed to delete Portlet Entity " + entity.getId();
-						log.error(msg, e);
-						throw new RegistryException(msg, e);
-					}
-				}
-
-				entityAccess.removeFromCache(entity);
-				windowAccess.removeWindows(entity);
-			}
-		}
+        // TODO: PortletDefinition cache invalidation?
+//		log.info("Remove all registry entries defined for portlet application " + pa.getName());
 
 		// todo keep (User)Prefs?
 		registry.removeApplication(pa);

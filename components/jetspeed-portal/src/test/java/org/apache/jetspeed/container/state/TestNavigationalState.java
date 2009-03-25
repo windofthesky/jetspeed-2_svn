@@ -17,7 +17,7 @@
 package org.apache.jetspeed.container.state;
 
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -36,21 +36,11 @@ import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.container.url.impl.AbstractPortalURL;
 import org.apache.jetspeed.container.url.impl.PathInfoEncodingPortalURL;
 import org.apache.jetspeed.container.url.impl.QueryStringEncodingPortalURL;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
-import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.window.MockPortletWindow;
 import org.apache.jetspeed.container.PortletWindow;
-import org.jmock.Mock;
-import org.jmock.core.matcher.AnyArgumentsMatcher;
-import org.jmock.core.matcher.NoArgumentsMatcher;
-import org.jmock.core.stub.ReturnStub;
-import org.jmock.core.stub.VoidStub;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
@@ -98,23 +88,6 @@ public class TestNavigationalState extends JetspeedTestCase
         engineHelper = new SpringEngineHelper(context);
         engineHelper.setUp(getBaseDir());
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
-        // mock test PortletWindow, PortletEntity, PortletDefinition and PortletApplication
-        Mock entityMock = new Mock(PortletEntity.class);        
-        Mock portletDefinitionMock = new Mock(PortletDefinition.class);
-        Mock portletApplicationMock = new Mock(PortletApplication.class);
-        portletDefinitionMock.expects(new AnyArgumentsMatcher()).method("getApplication").withNoArguments().will(new ReturnStub(portletApplicationMock.proxy()));
-        portletApplicationMock.expects(new NoArgumentsMatcher()).method("getName").withNoArguments().will(new ReturnStub("app1"));
-        entityMock.expects(new AnyArgumentsMatcher()).method("getPortletDefinition").withNoArguments().will(new ReturnStub(portletDefinitionMock.proxy()));
-        entityMock.expects(new AnyArgumentsMatcher()).method("setPortletWindow").withAnyArguments().will(new VoidStub());
-        PortletWindowAccessor accessor = (PortletWindowAccessor) engine.getComponentManager().getComponent(PortletWindowAccessor.class);        
-        accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "111");
-        accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "222");
-        accessor.createPortletWindow((PortletEntity)entityMock.proxy(), "333");
-        
-        // register mocked PortletApplication in PortletFactory so the PortletWindowAccessor check for it won't break the tests
-        PortletFactory portletFactory = (PortletFactory)engine.getComponentManager().getComponent("portletFactory");
-        portletFactory.registerPortletApplication((PortletApplication)portletApplicationMock.proxy(),Thread.currentThread().getContextClassLoader());
-        
         codec = (NavigationalStateCodec) engine.getComponentManager().getComponent("NavigationalStateCodec");
         portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");  
         cache = (JetspeedContentCache) engine.getComponentManager().getComponent("portletContentCache");
@@ -174,13 +147,14 @@ public class TestNavigationalState extends JetspeedTestCase
 
         portalURL.setRequest(request);
         portalURL.setCharacterEncoding("UTF-8");
+        portalURL.getNavigationalState().sync(new MockRequestContext());
 
-        PortletWindow window = new PortletWindowImpl("111");
+        PortletWindow window = new MockPortletWindow("111");
 
-        HashMap parameters = new HashMap();
+        HashMap<String,String[]> parameters = new HashMap<String, String[]>();
         parameters.put("test",new String[]{"one","two","three"});
 
-        String portletURL = portalURL.createPortletURL(window,parameters,PortletMode.EDIT,WindowState.MAXIMIZED,true,false);
+        String portletURL = portalURL.createPortletURL(window,parameters,PortletMode.EDIT,WindowState.MAXIMIZED,PortalURL.URLType.ACTION,false);
         
         String navStateParameterName = engine.getContext().getConfigurationProperty("portalurl.navigationalstate.parameter.name", AbstractPortalURL.DEFAULT_NAV_STATE_PARAMETER); 
 
@@ -201,7 +175,7 @@ public class TestNavigationalState extends JetspeedTestCase
       portalURL.setRequest(request);
       portalURL.setCharacterEncoding("UTF-8");
       
-      PortletWindow window = new PortletWindowImpl("111");
+      PortletWindow window = new MockPortletWindow("111");
       NavigationalState nav = portalURL.getNavigationalState();
 
       // Check that they come out correctly
@@ -215,18 +189,14 @@ public class TestNavigationalState extends JetspeedTestCase
       assertNotNull("maximized window is null", maximizedWindow);
       assertEquals("maximized window should equal window 111", maximizedWindow.getId().getStringId(), "111");
 
-      Iterator iter = nav.getParameterNames(target);
-      assertTrue("There should be one parameter",iter.hasNext());
-      while ( iter.hasNext() ) {
-          assertEquals("parameter name should equals \"test\"", (String)iter.next(), "test");
-          String[] values = nav.getParameterValues(target,"test");
-          assertNotNull("parameter name has no values", values);
-          assertEquals("parameter test should have 3 values", values.length, 3);
-          assertEquals("parameter test[0] should be \"one\"", values[0], "one");
-          assertEquals("parameter test[1] should be \"two\"", values[1], "two");
-          assertEquals("parameter test[2] should be \"three\"", values[2], "three");
-      }
-        
+      Map<String,String[]> parameters = nav.getParameterMap(target);
+      assertTrue("There should be one parameter",parameters.size()==1);
+      String[] values = parameters.get("test");
+      assertNotNull("parameter name has no values", values);
+      assertEquals("parameter test should have 3 values", values.length, 3);
+      assertEquals("parameter test[0] should be \"one\"", values[0], "one");
+      assertEquals("parameter test[1] should be \"two\"", values[1], "two");
+      assertEquals("parameter test[2] should be \"three\"", values[2], "three");
     }
 
 

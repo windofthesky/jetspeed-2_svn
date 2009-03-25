@@ -28,7 +28,6 @@ import javax.portlet.PreferencesValidator;
 import javax.portlet.ValidatorException;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
@@ -37,7 +36,6 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.ojb.broker.query.Criteria;
@@ -114,8 +112,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             throws PortletContainerException
     {
         PortletWindow window = (PortletWindow)pw;
-        org.apache.jetspeed.om.portlet.PortletDefinition pd = window.getPortletEntity().getPortletDefinition();
-        String entityId = window.getPortletEntity().getId();
+        org.apache.jetspeed.om.portlet.PortletDefinition pd = window.getPortletDefinition();
+        String entityId = window.getPortletEntityId();
         Map<String, PortletPreference> defaultsMap = this.getDefaultPreferences(pd);
         // retrieve entity preferences
         if (useEntityPreferences)
@@ -131,7 +129,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             }            
             else
             {
-                List<FragmentPreference> fragmentPrefs = window.getPortletEntity().getFragment().getPreferences();
+                List<FragmentPreference> fragmentPrefs = window.getFragment().getPreferences();
                 if (fragmentPrefs.size() > 0)
                 {
                     entityMap = new JetspeedPreferencesMap();                 
@@ -173,14 +171,13 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         {
             return retrieveEntityPreferences(window, request);
         }
-        String appName = window.getPortletEntity().getPortletDefinition().getApplication().getName();
-        String portletName = window.getPortletEntity().getPortletDefinition().getPortletName();
-        String entityId = window.getPortletEntity().getId();
+        String appName = window.getPortletDefinition().getApplication().getName();
+        String portletName = window.getPortletDefinition().getPortletName();
+        String entityId = window.getPortletEntityId();
         String userName = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if (userName == null)
         {
-            RequestContext rc = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            userName = SubjectHelper.getPrincipal(rc.getSubject(), User.class).getName();
+            userName = SubjectHelper.getPrincipal(window.getRequestContext().getSubject(), User.class).getName();
         }
         String cacheKey = getUserPreferenceKey(appName, portletName, entityId, userName);
         // first search in cache        
@@ -221,14 +218,13 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             storeEntityPreferences(window, request, map);
             return;
         }        
-        String appName = window.getPortletEntity().getPortletDefinition().getApplication().getName();
-        String portletName = window.getPortletEntity().getPortletDefinition().getPortletName();
-        String entityId = window.getPortletEntity().getId();
+        String appName = window.getPortletDefinition().getApplication().getName();
+        String portletName = window.getPortletDefinition().getPortletName();
+        String entityId = window.getPortletEntityId();
         String userName = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if (userName == null)
         {
-            RequestContext rc = (RequestContext)request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            userName = SubjectHelper.getPrincipal(rc.getSubject(), User.class).getName();
+            userName = SubjectHelper.getPrincipal(window.getRequestContext().getSubject(), User.class).getName();
         }
         // always read in to get a fresh copy for merge
         Criteria c = new Criteria();

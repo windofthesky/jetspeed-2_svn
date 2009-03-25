@@ -37,7 +37,7 @@ limitations under the License.
 	
     #includeHeaderResource()
 
-    <title>$!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)</title>
+    <title>$!jetspeed.getTitle($f)</title>
 
     <meta name="keywords" content="" />
     <meta name="description" content="#PageDescription()" />

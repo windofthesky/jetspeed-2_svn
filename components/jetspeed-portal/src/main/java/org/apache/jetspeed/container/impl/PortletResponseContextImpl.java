@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletResponseContext;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
@@ -53,7 +52,7 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
         this.containerRequest = containerRequest;
         this.containerResponse = containerResponse;
         this.window = window;
-        this.requestContext = (JetspeedRequestContext)containerRequest.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        this.requestContext = (JetspeedRequestContext)window.getRequestContext();
     }
     
     protected JetspeedRequestContext getRequestContext()

@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.jetspeed.aggregator.impl.WorkerMonitorImpl;
-import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
+import org.apache.jetspeed.window.MockPortletWindow;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -69,7 +69,7 @@ public class TestWorkerMonitor extends TestCase
         List jobs = new ArrayList(JOB_COUNT);
         for (int ix = 0; ix < JOB_COUNT; ix++)
         {
-            PortletWindow window = new PortletWindowImpl("w" + String.valueOf(ix));       
+            PortletWindow window = new MockPortletWindow("w" + String.valueOf(ix));       
             jobs.add(new MockRenderJob("Job-" + (ix + 1), 4000, window));
         }
         assertNotNull("monitor is null", monitor);

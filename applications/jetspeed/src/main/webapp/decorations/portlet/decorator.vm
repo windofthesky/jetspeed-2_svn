@@ -35,7 +35,7 @@ the root of your decortaion.  This will be used instead of the default.
       <div class="PTitleContent">	
         #set ($ws=$jetspeed.MappedWindowState)
         
-        $!jetspeed.getTitle($jetspeed.getCurrentPortletEntity(), $f)
+        $!jetspeed.getTitle($f)
       </div>
     
       #PortletActionBar($decoration)

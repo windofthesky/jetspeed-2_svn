@@ -31,9 +31,7 @@ import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.capabilities.Capabilities;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -61,10 +59,10 @@ public class TestSpringEngine extends AbstractEngineTest
     public TestSpringEngine()
     {        
         keysToCheck = new Object[] {"IdGenerator", "DecorationLocator", "TemplateLocator", "IdGenerator", "PageFileCache", PageManager.class, 
-                                     PortletRegistry.class, PortletEntityAccessComponent.class, "PortalServices",
+                                     PortletRegistry.class, "PortalServices",
                                      Profiler.class, Capabilities.class, UserManager.class,
                                      GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class,
-                                     UserInfoManager.class, RequestContextComponent.class, PortletWindowAccessor.class,
+                                     UserInfoManager.class, RequestContextComponent.class, 
                                      PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
                                      "deploymentManager", "portletFactory", ServletConfig.class, 
                                       "NavigationalStateCodec", "PortalURL", "NavigationalStateComponent"};

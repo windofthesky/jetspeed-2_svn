@@ -31,7 +31,6 @@ import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -60,28 +59,24 @@ public class ChangePortletAction
     protected String action;
     protected Map validWindowStates = new HashMap();
     protected Map validPortletModes = new HashMap();
-    protected PortletWindowAccessor windowAccessor;
     
     public ChangePortletAction(String template, 
             String errorTemplate, 
-            String action,
-            PortletWindowAccessor windowAccessor)            
+            String action)            
     throws AJAXException    
     {
-        this(template, errorTemplate, action, null, windowAccessor, null);
+        this(template, errorTemplate, action, null, null);
     }
     
     public ChangePortletAction(String template, 
                              String errorTemplate, 
                              String action,
                              PageManager pageManager,
-                             PortletWindowAccessor windowAccessor,                             
                              PortletActionSecurityBehavior securityBehavior)
     throws AJAXException
     {
         super(template, errorTemplate, pageManager, securityBehavior);
         this.action = action;
-        this.windowAccessor = windowAccessor;
         
         // Build the maps of allowed (internal) modes and states
         Iterator modes = JetspeedActions.getStandardPortletModes().iterator();        
@@ -157,13 +152,19 @@ public class ChangePortletAction
             		throw new Exception( "cannot change action for root layout fragment due to null PageActionAccess object" );
             	}
             	//pageActionAccess.
-            	PortletWindow window = windowAccessor.getPortletWindow(fragment);
+            	PortletWindow window = requestContext.getPortletWindow(fragment);
+            	if (window == null)
+            	{
+            	    throw new Exception("Portlet Window creation failed for fragment: "+ fragment.getId() + ", " + fragment.getName());
+            	}
             	PortletMode currentMode = requestContext.getPortalURL().getNavigationalState().getMode( window );
             	WindowState currentState = requestContext.getPortalURL().getNavigationalState().getState( window );
             	
             	boolean requestedModeAlreadySet = false;
             	if ( requestedMode == null )
+            	{
             		requestedModeAlreadySet = true;
+            	}
             	else
             	{
             		if ( requestedMode.equals( PortletMode.EDIT.toString() ) )
@@ -226,7 +227,7 @@ public class ChangePortletAction
 	            
 	            // Now Change the transient navigational state
 	            MutableNavigationalState navState = (MutableNavigationalState)requestContext.getPortalURL().getNavigationalState();
-	            PortletWindow portletWindow = windowAccessor.getPortletWindow(fragment);
+	            PortletWindow portletWindow = requestContext.getPortletWindow(fragment);
 	            if (portletWindow != null)
 	            {
 	                oldState = navState.getState(portletWindow).toString();

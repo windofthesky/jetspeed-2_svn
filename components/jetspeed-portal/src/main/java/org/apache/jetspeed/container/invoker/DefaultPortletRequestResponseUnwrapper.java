@@ -20,12 +20,12 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.apache.jetspeed.Jetspeed;
 
 /**
  * DefaultPortletRequestResponseUnwrapper implements PortletRequestResponseUnwrapper
- * and finds servlet request or servlet response by simple unwrapping.
+ * and finds servlet request or servlet response
  *
  * @author <a href="mailto:woonsan@apache.org">Woonsan Ko</a>
  * @version $Id: $
@@ -34,13 +34,11 @@ public class DefaultPortletRequestResponseUnwrapper implements PortletRequestRes
 {
     public ServletRequest unwrapPortletRequest(PortletRequest portletRequest)
     {
-        ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper)((HttpServletRequestWrapper)portletRequest).getRequest()).getRequest()).getRequest();
-        return servletRequest;
+        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerRequest();
     }
     
     public ServletResponse unwrapPortletResponse(PortletResponse portletResponse)
     {
-        ServletResponse servletResponse = ((HttpServletResponseWrapper) portletResponse).getResponse();
-        return servletResponse;
+        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerResponse();
     }
 }

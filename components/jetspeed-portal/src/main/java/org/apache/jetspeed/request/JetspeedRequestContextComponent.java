@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.request;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
@@ -26,10 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
-import org.apache.jetspeed.engine.servlet.ServletRequestFactory;
-import org.apache.jetspeed.engine.servlet.ServletResponseFactory;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -40,28 +35,24 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
  */
 public class JetspeedRequestContextComponent implements RequestContextComponent
 {
-    ServletRequestFactory requestFactory;
-    ServletResponseFactory responseFactory;
+    private PortletRegistry registry;
     private UserInfoManager userInfoMgr;
-    private ThreadLocal tlRequestContext = new ThreadLocal();
     private Map<String, Object> requestContextObjects;
+    private ThreadLocal<RequestContext> tlRequestContext = new ThreadLocal<RequestContext>();
     
     private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
 
 
-    public JetspeedRequestContextComponent(ServletRequestFactory requestFactory, ServletResponseFactory responseFactory, 
-            UserInfoManager userInfoMgr,
-            Map<String, Object> requestContextObjects)
+    public JetspeedRequestContextComponent(PortletRegistry registry, UserInfoManager userInfoMgr, Map<String, Object> requestContextObjects)
     {
-        this.requestFactory = requestFactory;
-        this.responseFactory = responseFactory;
+        this.registry = registry;
         this.userInfoMgr = userInfoMgr;
         this.requestContextObjects = requestContextObjects;        
     }
     
     public RequestContext create(HttpServletRequest request, HttpServletResponse response, ServletConfig config)
     {
-        RequestContext context = null;
+        JetspeedRequestContext context = null;
 
         try
         {
@@ -73,61 +64,25 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
             String msg = "JetspeedRequestContextComponent: Failed to create a Class object for RequestContext: " + e.toString();
             log.error(msg);
         }
-        tlRequestContext.set(context);        
+        setRequestContext(context);
         return context;
     }
-
-    public void release(RequestContext context)
-    {
-        tlRequestContext.set(null);
-    }
-
-    /**
-     * The servlet request can always get you back to the Request Context if you need it
-     * This static accessor provides this capability
-     *
-     * @param request
-     * @return RequestContext
-     */
-    public RequestContext getRequestContext(HttpServletRequest request)
-    {
-        RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        if(rc != null)
-        {
-            return rc;
-        }
-        else
-        {
-            log.error("Cannot call getRequestContext(HttpServletRequest request) before it has been created and set for this thread.");
-            throw new IllegalStateException("Cannot call getRequestContext(HttpServletRequest request) before it has been created and set for this thread.");
-        }
-    }
     
+    public void setRequestContext(RequestContext context)
+    {
+        tlRequestContext.set(context);
+    }
+
     public RequestContext getRequestContext()
     {
-        RequestContext rc = null;
-
-        if (CurrentWorkerContext.getParallelRenderingMode())
-        {
-            rc = (RequestContext) CurrentWorkerContext.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-        }
-        else
-        {
-            rc = (RequestContext) tlRequestContext.get();        
-        }
-        return rc;
-    }
-
-    public ServletRequestFactory getServletRequestFactory()
-    {
-        return this.requestFactory;
+        return tlRequestContext.get();
     }
     
-    public ServletResponseFactory getServletResponseFactory()
+    public PortletRegistry getPortletRegistry()
     {
-        return this.responseFactory;
+        return registry;
     }
-    
+
     public UserInfoManager getUserInfoManager()
     {
         return this.userInfoMgr;

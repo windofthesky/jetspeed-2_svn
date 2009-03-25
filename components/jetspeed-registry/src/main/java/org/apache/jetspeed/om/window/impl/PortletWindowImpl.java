@@ -17,16 +17,24 @@
 package org.apache.jetspeed.om.window.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.portlet.PortletMode;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.aggregator.RenderTrackable;
+import org.apache.pluto.container.PortletEntity;
+import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.PortletResponseContext;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
-import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * <P>
@@ -38,26 +46,41 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  **/
-public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serializable
+public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletWindowID, RenderTrackable, Serializable
 {
     private static final long serialVersionUID = 6578938580906866201L;
     
-    private transient PortletEntity portletEntity = null;
     private String id;
-    private PortletMode portletMode;
-    private WindowState windowState;
+    private transient ContentFragment fragment;
+    private transient Map<String, Object> attributes;
     
-    private boolean instantlyRendered;
-
-    public PortletWindowImpl(String id)
+    protected transient int timeoutCount = 0;
+    protected transient long expiration = 0;
+    
+    private transient PortletDefinition pd;
+    
+    private transient RequestContext requestContext;
+    
+    // PortletWindow invocation state
+    
+    private transient Action action;
+    private transient PortletRequest portletRequest;
+    private transient PortletResponseContext portletResponseContext;
+    private transient PortletRequestContext portletRequestContext;
+    private transient PortletResponse portletResponse;
+    private transient PortletInstance portletInstance;
+    
+    public PortletWindowImpl(RequestContext requestContext, ContentFragment fragment, PortletDefinition pd)
     {
-        this.id = id;
+        this.requestContext = requestContext;
+        this.id = fragment.getId();
+        this.pd = pd;
     }
 
-    public PortletWindowImpl()
+    public String getWindowId()
     {
-        super();
-    }    
+        return id;
+    }
 
     /**
     * Returns the identifier of this portlet instance window as object id
@@ -67,6 +90,11 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serial
     public PortletWindowID getId()
     {
         return this;
+    }
+    
+    public String getPortletEntityId()
+    {
+        return id;
     }
 
     public String toString()
@@ -80,72 +108,167 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Serial
     }
     
     /**
-     * Returns the portlet entity
+     * Returns the portlet definition
      *
-     * @return the portlet entity
+     * @return the portlet definition
      **/
+    public PortletDefinition getPortletDefinition()
+    {
+        return pd;
+    }
+    
+    public ContentFragment getFragment()
+    {
+        return fragment;
+    }
+    
     public PortletEntity getPortletEntity()
     {
-        return portletEntity;
+        return pd != null ? this : null;
     }
 
-    // controller impl
-    /**
-     * binds an identifier to this portlet window
-     *
-     * @param id the new identifier
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * binds a portlet instance to this portlet window
-     * 
-     * @param portletEntity a portlet entity object
-     **/
-    public void setPortletEntity(PortletEntity portletEntity)
-    {
-        this.portletEntity = portletEntity;
-        this.portletEntity.setPortletWindow(this);
-    }
-    
-    /**
-     * Sets flag that the content is instantly rendered from JPT.
-     */
-    public void setInstantlyRendered(boolean instantlyRendered)
-    {
-        this.instantlyRendered = instantlyRendered;
-    }
-    
     /**
      * Checks if the content is instantly rendered from JPT.
      */
     public boolean isInstantlyRendered()
     {
-        return this.instantlyRendered;
+        return fragment.isInstantlyRendered();
+    }
+    
+    public RequestContext getRequestContext()
+    {
+        return requestContext;
     }
 
     public PortletMode getPortletMode()
     {
-        // TODO: 2.2 this works, but we might want to better wire things in
-        return Jetspeed.getCurrentRequestContext().getPortalURL().getNavigationalState().getMode(this);
-    }
-
-    public void setPortletMode(PortletMode portletMode)
-    {
-        this.portletMode = portletMode;
+        return requestContext.getPortalURL().getNavigationalState().getMode(this);
     }
 
     public WindowState getWindowState()
     {
-        // TODO: 2.2 this works, but we might want to better wire things in
-        return Jetspeed.getCurrentRequestContext().getPortalURL().getNavigationalState().getState(this);
+        return requestContext.getPortalURL().getNavigationalState().getState(this);
     }
 
-    public void setWindowState(WindowState windowState)
+    public Map<String,Object> getAttributes()
     {
-        this.windowState = windowState;
+        if (attributes == null)
+        {
+            attributes = new HashMap<String,Object>();
+        }
+        return attributes;
+    }
+    
+    public Object getAttribute(String name)
+    {
+        return getAttributes().get(name);
+    }
+    
+    public void setAttribute(String name, Object value)
+    {
+        if (name == null)
+        {
+            throw new IllegalArgumentException("name parameter is required");
+        }
+        if (value == null)
+        {
+            getAttributes().remove(name);
+        }
+        else
+        {
+            getAttributes().put(name, value);
+        }            
+    }
+    
+    public void removeAttribute(String name)
+    {
+        setAttribute(name, null);
+    }
+
+    // --- RenderTrackable implementation
+    
+    public int getRenderTimeoutCount()
+    {
+        return timeoutCount;
+    }
+    
+    public synchronized void incrementRenderTimeoutCount()
+    {
+        timeoutCount++;
+    }
+    
+    public synchronized void setExpiration(long expiration)
+    {
+        this.expiration = expiration;
+    }
+    
+    public long getExpiration()
+    {
+        return this.expiration;
+    }
+    
+    public void success()
+    {
+        timeoutCount = 0;
+    }
+    
+    public void setRenderTimeoutCount(int timeoutCount)
+    {
+        this.timeoutCount = timeoutCount;
+    }
+    
+    // PortletWindow invocation state
+    public void setInvocationState(Action action, 
+                                   PortletRequestContext portletRequestContext,
+                                   PortletResponseContext portletResponseContext,
+                                   PortletRequest portletRequest, PortletResponse portletResponse, 
+                                   PortletInstance portletInstance)
+    {
+        this.action = action;
+        this.portletRequest = portletRequest;
+        this.portletResponseContext = portletResponseContext;
+        this.portletRequestContext = portletRequestContext;
+        this.portletResponse = portletResponse;
+        this.portletInstance = portletInstance;
+    }
+    
+    public void clearInvocationState()
+    {
+        this.action = null;
+        this.portletRequest = null;
+        this.portletResponseContext = null;
+        this.portletRequestContext = null;
+        this.portletResponse = null;
+        this.portletInstance = null;
+    }
+
+    public Action getAction()
+    {
+        return action;
+    }
+
+    public PortletRequest getPortletRequest()
+    {
+        return portletRequest;
+    }
+
+    public PortletResponseContext getPortletResponseContext()
+    {
+        return portletResponseContext;
+    }
+
+    public PortletRequestContext getPortletRequestContext()
+    {
+        return portletRequestContext;
+    }
+
+    public PortletResponse getPortletResponse()
+    {
+        return portletResponse;
+    }
+
+    public PortletInstance getPortletInstance()
+    {
+        return portletInstance;
     }
 }

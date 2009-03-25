@@ -224,45 +224,45 @@ public class JetspeedContainerServlet extends HttpServlet
         {
             return;
         }
-        PortletWindowRequestContext pwrc = rc.getCurrentPortletWindowRequestContext();
-        if (pwrc == null)
+        PortletWindow window = rc.getCurrentPortletWindow();
+        if (window == null)
         {
             return;
         }
         
-        if (PortletWindowRequestContext.Action.NOOP.equals(pwrc.getAction()))
+        if (PortletWindow.Action.NOOP.equals(window.getAction()))
         {
             return;
         }
                         
         try
         {
-            pwrc.getPortletRequestContext().init(pwrc.getPortletInstance().getConfig(), getServletContext(), request, response);
-            pwrc.getPortletResponseContext().init(request, response);
+            window.getPortletRequestContext().init(window.getPortletInstance().getConfig(), getServletContext(), request, response);
+            window.getPortletResponseContext().init(request, response);
 
-            if (PortletWindowRequestContext.Action.ACTION.equals(pwrc.getAction()))
+            if (PortletWindow.Action.ACTION.equals(window.getAction()))
             {
-                ActionRequest actionRequest = (ActionRequest)pwrc.getPortletRequest();
-                ActionResponse actionResponse = (ActionResponse)pwrc.getPortletResponse();
-                pwrc.getPortletInstance().processAction(actionRequest, actionResponse);
+                ActionRequest actionRequest = (ActionRequest)window.getPortletRequest();
+                ActionResponse actionResponse = (ActionResponse)window.getPortletResponse();
+                window.getPortletInstance().processAction(actionRequest, actionResponse);
             }
-            else if (PortletWindowRequestContext.Action.RENDER.equals(pwrc.getAction()))
+            else if (PortletWindow.Action.RENDER.equals(window.getAction()))
             {
-                RenderRequest renderRequest = (RenderRequest)pwrc.getPortletRequest();
-                RenderResponse renderResponse =  (RenderResponse)pwrc.getPortletResponse();
-                pwrc.getPortletInstance().render(renderRequest, renderResponse);
+                RenderRequest renderRequest = (RenderRequest)window.getPortletRequest();
+                RenderResponse renderResponse =  (RenderResponse)window.getPortletResponse();
+                window.getPortletInstance().render(renderRequest, renderResponse);
             }
-            else if (PortletWindowRequestContext.Action.EVENT.equals(pwrc.getAction()))
+            else if (PortletWindow.Action.EVENT.equals(window.getAction()))
             {
-                EventRequest eventRequest = (EventRequest)pwrc.getPortletRequest();
-                EventResponse eventResponse =  (EventResponse)pwrc.getPortletResponse();
-                pwrc.getPortletInstance().processEvent(eventRequest, eventResponse);
+                EventRequest eventRequest = (EventRequest)window.getPortletRequest();
+                EventResponse eventResponse =  (EventResponse)window.getPortletResponse();
+                window.getPortletInstance().processEvent(eventRequest, eventResponse);
             }
-            else if (PortletWindowRequestContext.Action.RESOURCE.equals(pwrc.getAction()))
+            else if (PortletWindow.Action.RESOURCE.equals(window.getAction()))
             {
-                ResourceRequest resourceRequest = (ResourceRequest)pwrc.getPortletRequest();
-                ResourceResponse resourceResponse = (ResourceResponse)pwrc.getPortletResponse();
-                pwrc.getPortletInstance().serveResource(resourceRequest, resourceResponse);
+                ResourceRequest resourceRequest = (ResourceRequest)window.getPortletRequest();
+                ResourceResponse resourceResponse = (ResourceResponse)window.getPortletResponse();
+                window.getPortletInstance().serveResource(resourceRequest, resourceResponse);
             }
 
             // if we get this far we are home free
@@ -276,10 +276,10 @@ public class JetspeedContainerServlet extends HttpServlet
                 destroyPortlet = true;
             }
             
-            if (PortletWindowRequestContext.Action.ACTION.equals(pwrc.getAction()))
+            if (PortletWindow.Action.ACTION.equals(window.getAction()))
             {
                 ServletContext context = getServletContext();
-                context.log(JCS + "Error rendering portlet \"" + pwrc.getPortletWindow().getPortletEntity().getPortletUniqueName() + "\": " + t.toString(), t);
+                context.log(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
                 try
                 {
                     String errorTemplate = getInitParameter("portal.error.page");
@@ -298,12 +298,12 @@ public class JetspeedContainerServlet extends HttpServlet
                     }
                     else
                     {
-                        displayPortletNotAvailableMessage(t, response, pwrc.getPortletWindow().getPortletEntity().getPortletUniqueName());
+                        displayPortletNotAvailableMessage(t, response, window.getPortletDefinition().getUniqueName());
                     }
                 }
                 catch (Throwable e)
                 {
-                    displayPortletNotAvailableMessage(t, response, pwrc.getPortletWindow().getPortletEntity().getPortletUniqueName());
+                    displayPortletNotAvailableMessage(t, response, window.getPortletDefinition().getUniqueName());
                 }
                 finally
                 {
@@ -337,7 +337,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 // portlet threw UnavailableException: take it out of service
                 try
                 {
-                    pwrc.getPortletInstance().destroy();
+                    window.getPortletInstance().destroy();
                 }
                 catch (Exception e)
                 {

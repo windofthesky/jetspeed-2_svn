@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -29,7 +28,6 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.jetspeed.container.PortletEntity;
-import org.apache.jetspeed.container.PortletWindow;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 /**
@@ -49,7 +47,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
             PortletEntityAccessComponent
 {
     private PortletRegistry registry;
-    private PortletWindowAccessor windowAccessor = null;
     
     // 2006-08-22: by default, do not merge preferences from the shared preferences area 
     // up until this point, all preferences were shared. With JS2-449, preferences are now
@@ -257,15 +254,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
     
     public void removeFromCache(PortletEntity entity)
     {
-        if (windowAccessor != null)
-        {
-            String windowId = entity.getId().toString();
-            PortletWindow window = windowAccessor.getPortletWindow(windowId);
-            if (window != null)
-            {
-                windowAccessor.removeWindow(window);
-            }
-        }
     }
 
     public void removePortletEntities( PortletDefinition portletDefinition ) throws PortletEntityNotDeletedException

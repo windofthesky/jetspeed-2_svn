@@ -17,30 +17,23 @@
 
 package org.apache.jetspeed.aggregator.impl;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Arrays;
 
 import javax.portlet.UnavailableException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
-import org.apache.jetspeed.aggregator.CurrentWorkerContext;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.components.portletentity.PortletEntityImpl;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.container.PortletContainer;
@@ -80,8 +73,10 @@ public class RenderingJobImpl implements RenderingJob
     protected boolean contentIsCached;
     
     protected int expirationCache = 0;
+    
+    protected Map<String, Object> workerAttributes;
 
-    protected Map workerAttributes;
+    protected boolean parallel;
 
     protected long startTimeMillis = 0;
     protected long timeout;
@@ -112,33 +107,8 @@ public class RenderingJobImpl implements RenderingJob
         this.requestContext = requestContext; 
         this.window = window;
         this.portletContent = portletContent; 
-        window.getPortletEntity().setFragment(fragment);
         this.expirationCache = expirationCache;
         this.contentIsCached = contentIsCached;
-    }
-
-    public RenderingJobImpl(PortletContainer container, 
-                            PortletRenderer renderer,
-                            PortletDefinition portletDefinition,
-                            PortletContent portletContent, 
-                            ContentFragment fragment,
-                            ContentDispatcherCtrl dispatcher,
-                            HttpServletRequest request, 
-                            HttpServletResponse response, 
-                            RequestContext requestContext, 
-                            PortletWindow window,
-                            PortalStatistics statistics,
-                            int expirationCache,
-                            boolean contentIsCached,
-                            Map workerAttrs)
-    {
-        this(container, renderer, portletDefinition, portletContent, fragment, dispatcher,
-                        request, response, requestContext, window, statistics, expirationCache, contentIsCached);
-        
-        if (workerAttrs != null)
-        {
-            this.workerAttributes = Collections.synchronizedMap(workerAttrs);
-        }
     }
 
     /**
@@ -171,12 +141,13 @@ public class RenderingJobImpl implements RenderingJob
      * the WorkerMonitor. When done, pause until next scheduled scan.
      */
     public void run()
-    {       
+    {      
+        parallel = true;
+        boolean clearContext = requestContext.ensureThreadContext();
         try
         {
             if (this.timeout > 0) 
             {
-                CurrentWorkerContext.setParallelRenderingMode(true);
                 this.startTimeMillis = System.currentTimeMillis();
             }
 
@@ -186,6 +157,11 @@ public class RenderingJobImpl implements RenderingJob
         }
         finally
         {
+            if (clearContext)
+            {
+                requestContext.clearThreadContext();
+            }
+            parallel = false;
             synchronized (portletContent)
             {
                if (log.isDebugEnabled()) log.debug("Notifying completion of rendering job for fragment " + fragment.getId());                
@@ -204,68 +180,10 @@ public class RenderingJobImpl implements RenderingJob
     public void execute()
     {
         long start = System.currentTimeMillis();
-        boolean isParallelMode = false;
         PortletWindow curWindow = this.window;
         try
         {
             if (log.isDebugEnabled()) log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
-
-            // if the current thread is worker, then store attribues in that.
-            if (this.workerAttributes != null)
-            {
-                isParallelMode = CurrentWorkerContext.getParallelRenderingMode();
-                if (isParallelMode)
-                {
-                    Collection attrNames = Arrays.asList(this.workerAttributes.keySet().toArray());
-                    
-                    Iterator itAttrNames = attrNames.iterator();
-                    while (itAttrNames.hasNext()) 
-                    {
-                        String name = (String) itAttrNames.next();
-                        CurrentWorkerContext.setAttribute(name, this.workerAttributes.get(name));
-                    }
-                    
-                    // The portletEntity stores its portletDefinition into the ThreadLocal member,
-                    // before the worker starts doing a rendering job.
-                    // So the thread contexts are different from each other.
-                    // Therefore, in parallel mode, we have to clear threadlocal fragmentPortletDefinition cache
-                    // of portletEntity and to replace the portletDefinition with one of current worker context.
-                    // Refer to org.apache.jetspeed.components.portletentity.PortletEntityImpl class
-                    
-                    curWindow = (PortletWindow) 
-                        CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE); 
-                    PortletEntityImpl curEntity = (PortletEntityImpl) curWindow.getPortletEntity();
-                    PortletDefinition oldPortletDefinition = curEntity.getPortletDefinition();
-                    PortletDefinition curPortletDefinition = (PortletDefinition)
-                        CurrentWorkerContext.getAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE);
-                    
-                    if (!oldPortletDefinition.isSameIdentity(curPortletDefinition)) {
-                        curEntity.setPortletDefinition(curPortletDefinition);
-                    }
-                }
-            }
-            
-            if (isParallelMode)
-            {
-                ServletRequest servletRequest = ((HttpServletRequestWrapper)((HttpServletRequestWrapper) this.request).getRequest()).getRequest();
-                
-                synchronized (servletRequest)
-                {
-                    this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
-                    this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
-                    this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
-                    this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
-                  //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
-                }
-            }
-            else
-            {
-                this.request.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, fragment);
-                this.request.setAttribute(PortalReservedParameters.PAGE_ATTRIBUTE, requestContext.getPage());
-                this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE, requestContext);
-                this.request.setAttribute(PortalReservedParameters.REQUEST_CONTEXT_OBJECTS, requestContext.getObjects());            
-              //  this.request.setAttribute(PortalReservedParameters.CONTENT_DISPATCHER_ATTRIBUTE,dispatcher);
-            }
             container.doRender(this.window, this.request, this.response);               
             this.response.flushBuffer();                           
         }
@@ -286,16 +204,14 @@ public class RenderingJobImpl implements RenderingJob
         {
             try
             {
-                if (isParallelMode)
+                if (parallel)
                 {
                     this.renderer.addTitleToHeader(curWindow, fragment,
                                                    this.request, this.response,
                                                    this.dispatcher, this.contentIsCached);
-                
-                    CurrentWorkerContext.removeAllAttributes();
                 }
                 
-                if (fragment.getType().equals(ContentFragment.PORTLET))
+                if (fragment.getType().equals(Fragment.PORTLET))
                 {
                     long end = System.currentTimeMillis();
                     boolean exceededTimeout = portletTracking.exceededTimeout(end - start, window);
@@ -307,7 +223,7 @@ public class RenderingJobImpl implements RenderingJob
                     if (exceededTimeout)
                     {
                         // took too long to render
-                        log.info("Portlet Exceeded timeout: " + curWindow.getPortletEntity().getPortletDefinition().getPortletName() + " for window " + curWindow.getId());
+                        log.info("Portlet Exceeded timeout: " + curWindow.getPortletDefinition().getPortletName() + " for window " + curWindow.getId());
                         portletTracking.incrementRenderTimeoutCount(curWindow);
                     }
                     else
@@ -403,7 +319,7 @@ public class RenderingJobImpl implements RenderingJob
     {
         if (this.workerAttributes == null)
         {
-            this.workerAttributes = Collections.synchronizedMap(new HashMap());
+            this.workerAttributes = Collections.synchronizedMap(new HashMap<String, Object>());
         }
         
         if (value != null)

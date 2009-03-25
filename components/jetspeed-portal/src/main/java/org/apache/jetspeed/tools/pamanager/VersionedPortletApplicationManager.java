@@ -23,10 +23,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
-import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.LocalizedField;
@@ -56,16 +54,15 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
 
 
-public class VersionedPortletApplicationManager extends PortletApplicationManager implements PortletApplicationManagement
+public class VersionedPortletApplicationManager extends PortletApplicationManager
 {
     private static final Log    log = LogFactory.getLog("deployment");
         
     public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry, 
-            PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
             PermissionManager permissionManager, SearchEngine searchEngine,  RoleManager roleManager,
             List<String> permissionRoles, /* node manager, */ String appRoot, JetspeedDescriptorService descriptorService)
     {
-        super(portletFactory, registry, entityAccess, windowAccess, permissionManager, 
+        super(portletFactory, registry, permissionManager, 
                 searchEngine, roleManager, permissionRoles, null, appRoot, descriptorService); 
                
     }
