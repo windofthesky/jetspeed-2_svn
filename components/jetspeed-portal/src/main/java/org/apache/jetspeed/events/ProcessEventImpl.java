@@ -60,7 +60,7 @@ public class ProcessEventImpl implements ProcessEvent
     
     public java.io.Serializable getValue()
     {        
-        if (value instanceof String)
+        if (value != null && value instanceof String)
         {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try

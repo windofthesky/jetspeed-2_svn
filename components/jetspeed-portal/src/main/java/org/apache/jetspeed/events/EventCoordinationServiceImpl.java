@@ -100,7 +100,7 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
             }
             if (value == null)
             {
-                throw new IllegalArgumentException("Object payload must be not null");
+                return new ProcessEventImpl(portletWindow, qname, null, null, this);
             }
             else
             {
