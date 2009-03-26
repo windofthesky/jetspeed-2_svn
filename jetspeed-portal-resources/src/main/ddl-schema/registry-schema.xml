@@ -284,7 +284,7 @@ limitations under the License.
         <column name="LOCAL_PART" required="true" size="80" type="VARCHAR"/>
         <column name="NAMESPACE" required="false" size="80" type="VARCHAR"/>
         <column name="PREFIX" required="false" size="20" type="VARCHAR"/>        
-        <column name="VALUE_TYPE" required="true" size="120" type="VARCHAR"/>
+        <column name="VALUE_TYPE" required="false" size="255" type="VARCHAR"/>
         <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_EVENT_DEFINITION_1" onDelete="cascade">                        
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>            
         </foreign-key>    	

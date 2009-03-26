@@ -187,14 +187,17 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
         {
             for (EventDefinition def : events)
             {
-                if (def.getQName() != null)
+                if (def.getValueType() != null)
                 {
-                    if (def.getQName().equals(qname)) { return value.getClass().getName().equals(def.getValueType()); }
-                }
-                else
-                {
-                    QName tmp = new QName(app.getDefaultNamespace(), def.getName());
-                    if (tmp.equals(qname)) { return value.getClass().getName().equals(def.getValueType()); }
+                    if (def.getQName() != null)
+                    {
+                        if (def.getQName().equals(qname)) { return value.getClass().getName().equals(def.getValueType()); }
+                    }
+                    else
+                    {
+                        QName tmp = new QName(app.getDefaultNamespace(), def.getName());
+                        if (tmp.equals(qname)) { return value.getClass().getName().equals(def.getValueType()); }
+                    }
                 }
             }
         }
