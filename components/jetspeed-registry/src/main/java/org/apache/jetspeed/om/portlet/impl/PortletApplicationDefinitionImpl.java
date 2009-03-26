@@ -934,7 +934,11 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     
     public void addLocaleEncodingMapping(Locale locale, String encoding)
     {
-        getLocaleEncodingMappings().put(locale, encoding);
+        if (localeEncodingMappingList == null)
+        {
+            localeEncodingMappingList = new ArrayList<LocaleEncodingMapping>();
+        }
+        localeEncodingMappingList.add(new LocaleEncodingMappingImpl(locale, encoding));
     }
     
     public List<JetspeedServiceReference> getJetspeedServices()

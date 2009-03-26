@@ -362,7 +362,7 @@
 
    <collection-descriptor
          name="localeEncodingMappingList"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.ServletMappingURLPatternImpl"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.LocaleEncodingMappingImpl"
           auto-delete="true"
           auto-update = "true"
           auto-retrieve = "true"

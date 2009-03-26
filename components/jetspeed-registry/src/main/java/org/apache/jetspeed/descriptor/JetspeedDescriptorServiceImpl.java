@@ -202,6 +202,7 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         }
         
         NodeList nodes;
+        NodeList children;
         Element element;
         
         // retrieve display-name entries
@@ -256,7 +257,6 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         nodes = (NodeList)xpath.evaluate("/"+prefix+"web-app/"+prefix+"security-role", document, XPathConstants.NODESET);
         if (nodes != null)
         {
-            NodeList children;
             String roleName;
             SecurityRole r;
             Description d;
@@ -307,7 +307,57 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             }
         }
         
-        // TODO 2.2: retrieve locale-encoding-mapping-list, see Portlet Spec 2.0, PLT.25.1
+        // retrieve servlet-mapping url patterns
+        nodes = (NodeList)xpath.evaluate("/"+prefix+"web-app/"+prefix+"servlet-mapping", document, XPathConstants.NODESET);
+        if (nodes != null)
+        {
+            String urlPattern;
+            
+            for (int i = 0, nsize = nodes.getLength(); i < nsize; i++)
+            {
+                element = (Element)nodes.item(i);
+                children = element.getElementsByTagName("url-pattern");
+                if (children != null && children.getLength() != 0)
+                {
+                    urlPattern = children.item(0).getTextContent().trim();
+                    if (urlPattern.length() > 0)
+                    {
+                        pa.addServletMappingURLPattern(urlPattern);
+                    }
+                }
+            }
+        }
+        
+        // retrieve locale-encoding-mapping
+        nodes = (NodeList)xpath.evaluate("/"+prefix+"web-app/"+prefix+"locale-encoding-mapping-list/"+prefix+"locale-encoding-mapping", document, XPathConstants.NODESET);
+        if (nodes != null)
+        {
+            String locale;
+            String encoding;
+            
+            for (int i = 0, nsize = nodes.getLength(); i < nsize; i++)
+            {
+                element = (Element)nodes.item(i);
+                children = element.getElementsByTagName("locale");
+                if (children != null && children.getLength() != 0)
+                {
+                    locale = children.item(0).getTextContent().trim();
+                    if (locale.length() > 0)
+                    {
+                        
+                        children = element.getElementsByTagName("encoding");
+                        if (children != null && children.getLength() != 0)
+                        {
+                            encoding = children.item(0).getTextContent().trim();
+                            if (encoding.length() > 0)
+                            {
+                                pa.addLocaleEncodingMapping(JetspeedLocale.convertStringToLocale(locale), encoding);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     protected PortletApplication upgrade(PortletApplicationDefinition pa)
@@ -463,15 +513,6 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
                 Description jdesc = jua.addDescription(desc.getLang());
                 jdesc.setDescription(desc.getDescription());
             }                                                    
-        }
-        for (String urlPattern : pa.getServletMappingURLPatterns())
-        {
-            jpa.addServletMappingURLPattern(urlPattern);
-        }
-        
-        for (Map.Entry<Locale, String> entry : pa.getLocaleEncodingMappings().entrySet())
-        {
-            jpa.addLocaleEncodingMapping(entry.getKey(), entry.getValue());
         }
         return jpa;
     }
