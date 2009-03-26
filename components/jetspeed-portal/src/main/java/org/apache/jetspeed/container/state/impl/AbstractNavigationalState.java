@@ -91,7 +91,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                     {
                         requestStates.setActionWindow(window);
                     }
-                    else
+                    else if (PortalURL.URLType.RESOURCE == requestStates.getURLType())
                     {
                         requestStates.setResourceWindow(window);
                     }
