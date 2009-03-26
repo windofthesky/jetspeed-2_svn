@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 406 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#MultipleForwardsServeResourceForwardTest</title>
+  <fragment id="tck-406" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-406-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::MultipleForwardsServeResourceForwardTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 174 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionResponse/URLClient.java#SendRedirectIllegalArgumentExceptionTest</title>
+  <fragment id="tck-174" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-174-0" type="portlet" name="portlet_jp_ActionResponse_web::SendRedirectIllegalArgumentExceptionTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 402 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#AccessToPathServeResourceForwardTest</title>
+  <fragment id="tck-402" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-402-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::AccessToPathServeResourceForwardTestPortlet"/>
+  </fragment>
+</page>

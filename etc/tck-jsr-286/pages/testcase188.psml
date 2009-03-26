@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 188 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionResponse/URLClient.java#SetUndeclaredPortletModeTest</title>
+  <fragment id="tck-188" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-188-0" type="portlet" name="portlet_jp_ActionResponse_web::SetUndeclaredPortletModeTestPortlet"/>
+  </fragment>
+</page>

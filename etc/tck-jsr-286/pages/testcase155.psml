@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 155 for test: com/sun/ts/tests/portlet/api/javax_portlet/Portlet/URLClient.java#RenderTest</title>
+  <fragment id="tck-155" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-155-0" type="portlet" name="portlet_jp_Portlet_web::RenderTestPortlet"/>
+  </fragment>
+</page>

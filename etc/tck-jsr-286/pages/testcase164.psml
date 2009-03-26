@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 164 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSessionUtil/URLClient.java#DecodeScopeAppScopeTest</title>
+  <fragment id="tck-164" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-164-0" type="portlet" name="portlet_jp_PortletSessionUtil_web::DecodeScopeAppScopeTestPortlet"/>
+  </fragment>
+</page>

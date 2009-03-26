@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 305 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletException/URLClient.java#PrintStackTraceWriterTest</title>
+  <fragment id="tck-305" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-305-0" type="portlet" name="portlet_jp_PortletException_web::PrintStackTraceWriterTestPortlet"/>
+  </fragment>
+</page>

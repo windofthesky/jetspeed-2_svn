@@ -1,0 +1,9 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 157 for test: com/sun/ts/tests/portlet/api/javax_portlet/Portlet/SpecURLClient.java#InitFailedDestroyNotCalledTest</title>
+  <fragment id="tck-157" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-157-0" type="portlet" name="portlet_jp_Portlet_web::InitFailedDestroyNotCalledTestPortlet"/>
+    <fragment id="tck-157-1" type="portlet" name="portlet_jp_Portlet_web::InitFailedDestroyNotCalledTestPortlet"/>
+    <fragment id="tck-157-2" type="portlet" name="portlet_jp_Portlet_web::InitFailedDestroyNotCalledTestPortlet"/>
+  </fragment>
+</page>

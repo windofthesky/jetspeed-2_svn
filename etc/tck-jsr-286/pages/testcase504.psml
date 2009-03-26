@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 504 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletPreferences/URLClient.java#StoreIllegalStateExceptionTest</title>
+  <fragment id="tck-504" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-504-0" type="portlet" name="portlet_jp_PortletPreferences_web::StoreIllegalStateExceptionTestPortlet"/>
+  </fragment>
+</page>

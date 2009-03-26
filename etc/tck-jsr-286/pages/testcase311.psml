@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 311 for test: com/sun/ts/tests/portlet/api/javax_portlet/WindowState/URLClient.java#CheckWindowStateNormalTest</title>
+  <fragment id="tck-311" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-311-0" type="portlet" name="portlet_jp_WindowState_web::CheckWindowStateNormalTestPortlet"/>
+  </fragment>
+</page>

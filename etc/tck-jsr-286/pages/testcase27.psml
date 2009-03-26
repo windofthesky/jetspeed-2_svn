@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 27 for test: com/sun/ts/tests/portlet/api/javax_portlet/ResourceServing/SpecURLClient.java#CheckNoFULLResourceURLTest</title>
+  <fragment id="tck-27" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-27-0" type="portlet" name="portlet_jp_ResourceServing_web::CheckNoFULLResourceURLTestPortlet"/>
+  </fragment>
+</page>

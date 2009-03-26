@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 580 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSessionPrivatescope/URLClient.java#GetAttributeTest</title>
+  <fragment id="tck-580" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-580-0" type="portlet" name="portlet_jp_PortletSession_privatescope_web::GetAttributeTestPortlet"/>
+  </fragment>
+</page>

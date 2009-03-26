@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 511 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletURL/SpecURLClient.java#CheckDefaultPortletModeTest</title>
+  <fragment id="tck-511" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-511-0" type="portlet" name="portlet_jp_PortletURL_web::CheckDefaultPortletModeTestPortlet"/>
+  </fragment>
+</page>

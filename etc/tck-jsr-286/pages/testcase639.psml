@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 639 for test: com/sun/ts/tests/portlet/ee/taglib/SpecURLClient.java#ResourceURLVarInLoopTest</title>
+  <fragment id="tck-639" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-639-0" type="portlet" name="portlet_jp_taglib_web::ResourceURLVarInLoopTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 350 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#RequestMethodsLocaleMiscServeResourceIncludeTest</title>
+  <fragment id="tck-350" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-350-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::RequestMethodsLocaleMiscServeResourceIncludeTestPortlet"/>
+  </fragment>
+</page>

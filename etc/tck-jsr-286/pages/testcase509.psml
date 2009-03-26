@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 509 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletURL/SpecURLClient.java#CheckSetParameterNameTest</title>
+  <fragment id="tck-509" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-509-0" type="portlet" name="portlet_jp_PortletURL_web::CheckSetParameterNameTestPortlet"/>
+  </fragment>
+</page>

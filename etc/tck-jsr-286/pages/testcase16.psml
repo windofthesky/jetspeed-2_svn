@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 16 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletConfig/SpecURLClient.java#GetPublishingProcessingEventNamesTest</title>
+  <fragment id="tck-16" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-16-0" type="portlet" name="portlet_jp_PortletConfig_web::GetPublishingProcessingEventNamesTestPortlet"/>
+  </fragment>
+</page>

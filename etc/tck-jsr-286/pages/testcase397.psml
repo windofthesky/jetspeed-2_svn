@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 397 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#SameThreadRenderIncludeTest</title>
+  <fragment id="tck-397" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-397-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::SameThreadRenderIncludeTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 87 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionRequest/SpecURLClient.java#CheckActionRequestParameterTest</title>
+  <fragment id="tck-87" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-87-0" type="portlet" name="portlet_jp_ActionRequest_web::CheckActionRequestParameterTestPortlet"/>
+  </fragment>
+</page>

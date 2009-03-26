@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 38 for test: com/sun/ts/tests/portlet/api/javax_portlet/GenericPortlet/URLClient.java#GetInitParameterTest</title>
+  <fragment id="tck-38" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-38-0" type="portlet" name="portlet_jp_GenericPortlet_web::GetInitParameterTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 502 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletPreferences/URLClient.java#StoreWithValidatorTest</title>
+  <fragment id="tck-502" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-502-0" type="portlet" name="portlet_jp_PortletPreferences_web::StoreWithValidatorTestPortlet"/>
+  </fragment>
+</page>

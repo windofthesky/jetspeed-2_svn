@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 535 for test: com/sun/ts/tests/portlet/api/javax_portlet/EventRequest/SpecURLClient.java#GetParameterValuesTest</title>
+  <fragment id="tck-535" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-535-0" type="portlet" name="portlet_jp_EventRequest_web::GetParameterValuesTestPortlet"/>
+  </fragment>
+</page>

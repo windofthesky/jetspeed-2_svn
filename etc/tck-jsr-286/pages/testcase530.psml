@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 530 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletFilter/SpecURLClient.java#WrapperTest</title>
+  <fragment id="tck-530" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-530-0" type="portlet" name="portlet_jp_PortletFilter_web::WrapperTestPortlet"/>
+  </fragment>
+</page>

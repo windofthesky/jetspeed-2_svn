@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 302 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletException/URLClient.java#PortletExceptionCtr4Test</title>
+  <fragment id="tck-302" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-302-0" type="portlet" name="portlet_jp_PortletException_web::PortletExceptionCtr4TestPortlet"/>
+  </fragment>
+</page>

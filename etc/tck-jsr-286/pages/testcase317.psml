@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 317 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/URLClient.java#ServletCannotChangeStatusCodeTest</title>
+  <fragment id="tck-317" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-317-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::ServletCannotChangeStatusCodeTestPortlet"/>
+  </fragment>
+</page>

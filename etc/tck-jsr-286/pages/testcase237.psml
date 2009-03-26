@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 237 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletContext/URLClient.java#GetServerInfoTest</title>
+  <fragment id="tck-237" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-237-0" type="portlet" name="portlet_jp_PortletContext_web::GetServerInfoTestPortlet"/>
+  </fragment>
+</page>

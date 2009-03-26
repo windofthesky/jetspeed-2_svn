@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 268 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderResponse/URLClient.java#FlushBufferTest</title>
+  <fragment id="tck-268" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-268-0" type="portlet" name="portlet_jp_RenderResponse_web::FlushBufferTestPortlet"/>
+  </fragment>
+</page>

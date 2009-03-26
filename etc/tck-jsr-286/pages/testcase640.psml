@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 640 for test: com/sun/ts/tests/portlet/ee/taglib/SpecURLClient.java#ResourceURLVarOverwriteTest</title>
+  <fragment id="tck-640" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-640-0" type="portlet" name="portlet_jp_taglib_web::ResourceURLVarOverwriteTestPortlet"/>
+  </fragment>
+</page>

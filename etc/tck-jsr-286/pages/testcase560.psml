@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 560 for test: com/sun/ts/tests/portlet/api/javax_portlet/EventResponse/SpecURLClient.java#SetUndeclaredPortletModeTest</title>
+  <fragment id="tck-560" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-560-0" type="portlet" name="portlet_jp_EventResponse_web::SetUndeclaredPortletModeTestPortlet"/>
+  </fragment>
+</page>

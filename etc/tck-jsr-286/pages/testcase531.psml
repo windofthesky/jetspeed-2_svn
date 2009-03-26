@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 531 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletFilter/SpecURLClient.java#OneFilterObjectPerJVMTest</title>
+  <fragment id="tck-531" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-531-0" type="portlet" name="portlet_jp_PortletFilter_web::OneFilterObjectPerJVMTestPortlet"/>
+  </fragment>
+</page>

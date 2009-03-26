@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 308 for test: com/sun/ts/tests/portlet/api/javax_portlet/WindowState/URLClient.java#ToStringTest</title>
+  <fragment id="tck-308" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-308-0" type="portlet" name="portlet_jp_WindowState_web::ToStringTestPortlet"/>
+  </fragment>
+</page>

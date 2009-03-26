@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 566 for test: com/sun/ts/tests/portlet/api/javax_portlet/ResourceRequest/SpecURLClient.java#GetLifecyclePhaseAttributeTest</title>
+  <fragment id="tck-566" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-566-0" type="portlet" name="portlet_jp_ResourceRequest_web::GetLifecyclePhaseAttributeTestPortlet"/>
+  </fragment>
+</page>

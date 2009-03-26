@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 58 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionRequest/URLClient.java#GetLocaleTest</title>
+  <fragment id="tck-58" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-58-0" type="portlet" name="portlet_jp_ActionRequest_web::GetLocaleTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 179 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionResponse/URLClient.java#SetRenderParameterStringArrayIllegalArgumentExceptionTest</title>
+  <fragment id="tck-179" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-179-0" type="portlet" name="portlet_jp_ActionResponse_web::SetRenderParameterStringArrayIllegalArgumentExceptionTestPortlet"/>
+  </fragment>
+</page>

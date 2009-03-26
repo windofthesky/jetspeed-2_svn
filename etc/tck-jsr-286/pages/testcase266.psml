@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 266 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderResponse/URLClient.java#EncodeURLIllegalArgumentExceptionTest</title>
+  <fragment id="tck-266" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-266-0" type="portlet" name="portlet_jp_RenderResponse_web::EncodeURLIllegalArgumentExceptionTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,8 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 159 for test: com/sun/ts/tests/portlet/api/javax_portlet/Portlet/SpecURLClient.java#OnePortletObjectPerJVMTest</title>
+  <fragment id="tck-159" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-159-0" type="portlet" name="portlet_jp_Portlet_web::OnePortletObjectPerJVMTestPortlet"/>
+    <fragment id="tck-159-1" type="portlet" name="portlet_jp_Portlet_web::OnePortletObjectPerJVMTestPortlet"/>
+  </fragment>
+</page>

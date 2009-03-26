@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 576 for test: com/sun/ts/tests/portlet/api/javax_portlet/ResourceResponse/SpecURLClient.java#ResetBufferIllegalStateExceptionTest</title>
+  <fragment id="tck-576" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-576-0" type="portlet" name="portlet_jp_ResourceResponse_web::ResetBufferIllegalStateExceptionTestPortlet"/>
+  </fragment>
+</page>

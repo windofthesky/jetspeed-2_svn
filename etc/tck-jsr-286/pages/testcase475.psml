@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 475 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#ResponseMethodsMiscMiscServeResourceForwardTest</title>
+  <fragment id="tck-475" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-475-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::ResponseMethodsMiscMiscServeResourceForwardTestPortlet"/>
+  </fragment>
+</page>

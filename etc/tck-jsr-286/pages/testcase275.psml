@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 275 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderResponse/URLClient.java#GetPortletOutputStreamTest</title>
+  <fragment id="tck-275" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-275-0" type="portlet" name="portlet_jp_RenderResponse_web::GetPortletOutputStreamTestPortlet"/>
+  </fragment>
+</page>

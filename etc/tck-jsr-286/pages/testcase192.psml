@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 192 for test: com/sun/ts/tests/portlet/api/javax_portlet/ReadOnlyException/URLClient.java#ReadOnlyExceptionCtr2Test</title>
+  <fragment id="tck-192" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-192-0" type="portlet" name="portlet_jp_ReadOnlyException_web::ReadOnlyExceptionCtr2TestPortlet"/>
+  </fragment>
+</page>

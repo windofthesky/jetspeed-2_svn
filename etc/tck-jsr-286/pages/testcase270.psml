@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 270 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderResponse/URLClient.java#GetCharacterEncodingTest</title>
+  <fragment id="tck-270" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-270-0" type="portlet" name="portlet_jp_RenderResponse_web::GetCharacterEncodingTestPortlet"/>
+  </fragment>
+</page>

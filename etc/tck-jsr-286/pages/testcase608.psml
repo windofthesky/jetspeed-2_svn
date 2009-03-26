@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 608 for test: com/sun/ts/tests/portlet/ee/taglib/SpecURLClient.java#ActionURLIllegalPortletModeTest</title>
+  <fragment id="tck-608" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-608-0" type="portlet" name="portlet_jp_taglib_web::ActionURLIllegalPortletModeTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,9 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 591 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSessionAppscope/URLClient.java#GetAttributeTest</title>
+  <fragment id="tck-591" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-591-0" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeTestPortlet"/>
+    <fragment id="tck-591-1" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeTestPortlet"/>
+    <fragment id="tck-591-2" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 280 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderResponse/URLClient.java#ResetBufferTest</title>
+  <fragment id="tck-280" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-280-0" type="portlet" name="portlet_jp_RenderResponse_web::ResetBufferTestPortlet"/>
+  </fragment>
+</page>

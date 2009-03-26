@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 534 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletConfigSecond/SpecURLClient.java#GetDefaultXMLNamespaceTest</title>
+  <fragment id="tck-534" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-534-0" type="portlet" name="portlet_jp_PortletConfigSecond_web::GetDefaultXMLNamespaceTestPortlet"/>
+  </fragment>
+</page>

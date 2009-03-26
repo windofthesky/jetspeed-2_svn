@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 547 for test: com/sun/ts/tests/portlet/api/javax_portlet/EventRequest/SpecURLClient.java#CheckEventPayloadTypeTest</title>
+  <fragment id="tck-547" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-547-0" type="portlet" name="portlet_jp_EventRequest_web::CheckEventPayloadTypeTestPortlet"/>
+  </fragment>
+</page>

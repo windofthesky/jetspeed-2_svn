@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 309 for test: com/sun/ts/tests/portlet/api/javax_portlet/WindowState/URLClient.java#CheckWindowStateMaxTest</title>
+  <fragment id="tck-309" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-309-0" type="portlet" name="portlet_jp_WindowState_web::CheckWindowStateMaxTestPortlet"/>
+  </fragment>
+</page>

@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 94 for test: com/sun/ts/tests/portlet/api/javax_portlet/WindowStateException/URLClient.java#WindowStateExceptionCtr2Test</title>
+  <fragment id="tck-94" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-94-0" type="portlet" name="portlet_jp_WindowStateException_web::WindowStateExceptionCtr2TestPortlet"/>
+  </fragment>
+</page>

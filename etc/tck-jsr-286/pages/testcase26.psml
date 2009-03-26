@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 26 for test: com/sun/ts/tests/portlet/api/javax_portlet/ResourceServing/SpecURLClient.java#CheckNoFULLCachabilityTest</title>
+  <fragment id="tck-26" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-26-0" type="portlet" name="portlet_jp_ResourceServing_web::CheckNoFULLCachabilityTestPortlet"/>
+  </fragment>
+</page>

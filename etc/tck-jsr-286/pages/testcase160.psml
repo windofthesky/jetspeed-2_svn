@@ -1,0 +1,9 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 160 for test: com/sun/ts/tests/portlet/api/javax_portlet/Portlet/SpecURLClient.java#PermanentlyUnavailableTest</title>
+  <fragment id="tck-160" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-160-0" type="portlet" name="portlet_jp_Portlet_web::PermanentlyUnavailableTestPortlet"/>
+    <fragment id="tck-160-1" type="portlet" name="portlet_jp_Portlet_web::PermanentlyUnavailableTestPortlet"/>
+    <fragment id="tck-160-2" type="portlet" name="portlet_jp_Portlet_web::PermanentlyUnavailableTestPortlet"/>
+  </fragment>
+</page>

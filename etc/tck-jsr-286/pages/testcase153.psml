@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 153 for test: com/sun/ts/tests/portlet/api/javax_portlet/Portlet/URLClient.java#ProcessActionUnavailableExceptionTest</title>
+  <fragment id="tck-153" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-153-0" type="portlet" name="portlet_jp_Portlet_web::ProcessActionUnavailableExceptionTestPortlet"/>
+  </fragment>
+</page>

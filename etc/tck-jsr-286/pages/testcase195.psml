@@ -1,0 +1,9 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 195 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSession/SpecURLClient.java#CheckSessionValueForPortletsInDiffAppTest</title>
+  <fragment id="tck-195" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-195-0" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInDiffAppTestPortlet"/>
+    <fragment id="tck-195-1" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInDiffAppTestPortlet"/>
+    <fragment id="tck-195-2" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInDiffAppTestPortlet"/>
+  </fragment>
+</page>

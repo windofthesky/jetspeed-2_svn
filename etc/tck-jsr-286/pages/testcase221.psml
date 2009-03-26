@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 221 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSession/URLClient.java#SetAttributeIllegalStateTest</title>
+  <fragment id="tck-221" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-221-0" type="portlet" name="portlet_jp_PortletSession_web::SetAttributeIllegalStateTestPortlet"/>
+  </fragment>
+</page>

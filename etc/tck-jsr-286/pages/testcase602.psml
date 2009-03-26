@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 602 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletURLListener/SpecURLClient.java#IsPortletURLInPortletURLGenerationListenerTest</title>
+  <fragment id="tck-602" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-602-0" type="portlet" name="portlet_jp_PortletURLListener_web::IsPortletURLInPortletURLGenerationListenerTestPortlet"/>
+  </fragment>
+</page>

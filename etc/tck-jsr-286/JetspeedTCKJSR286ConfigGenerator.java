@@ -59,10 +59,11 @@ public class JetspeedTCKJSR286ConfigGenerator
         int num;
         FileWriter psmlFile;
         String testName;
-        new File("pages/tck-jsr286").mkdirs();
+        new File("pages").mkdirs();
         for (num = 0; num < nodes.getLength(); num++)
         {
-            testName = getText((Element) nodes.item(num), "test_name");
+            e = (Element)nodes.item(num);
+            testName = getText(e, "test_name");
             addTestURLMapping(testName, num + 1, urlMappingFile);
             psmlFile = createTestPage(testName, num+1);
             NodeList portlets = e.getElementsByTagName("test_portlet");
@@ -92,7 +93,7 @@ public class JetspeedTCKJSR286ConfigGenerator
 
     private FileWriter createTestPage(String testName, int num) throws Exception
     {
-        FileWriter writer = new FileWriter(new File("pages/tck-jsr286/testcase" + num + ".psml"));
+        FileWriter writer = new FileWriter(new File("pages/testcase" + num + ".psml"));
         writer.write(MessageFormat.format(pageHeader, Integer.toString(num), testName));
         return writer;
     }
