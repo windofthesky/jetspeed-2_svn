@@ -1,0 +1,7 @@
+<page>
+  <defaults layout-decorator="simple" portlet-decorator="clear"/>
+  <title>TCK testcase 643 for test: com/sun/ts/tests/portlet/Signature/PORTLETSigTest.java#SignatureTest</title>
+  <fragment id="tck-643" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="tck-643-0" type="portlet" name="portlet_jp_sig_web::SignatureTestPortlet"/>
+  </fragment>
+</page>
