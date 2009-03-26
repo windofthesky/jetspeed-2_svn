@@ -78,18 +78,21 @@ Running the JSR-286 TCK against Jetspeed-2 Enterprise Portal
   a) build and deploy Jetspeed, for example using:
    
      mvn jetspeed:mvn -Dtarget=min
+  
+  b) If you don't have ANT installed on your machine, install Apache ANT. (See http://ant.apache.org/.)
+     Please make sure that $ANT_HOME is properly set. 
      
-  b) Deploy the TCK portlet applications to jetspeed.
+  c) Deploy the TCK portlet applications to jetspeed.
      If you installed jetspeed under $CATALINA_HOME, then execute the following:
    
      $TS_HOME/bin/tsant deploy.all -Dwebapp.dir=$CATALINA_HOME/webapps/jetspeed/WEB-INF/deploy
      
-  c) Copy the TCK test psml files to the jetspeed installation:
+  d) Copy the TCK test psml files to the jetspeed installation:
   
      mkdir $CATALINA/HOME/webapps/jetspeed/WEB-INF/pages/tck-jsr286
      cp pages/*.psml $CATALINA_HOME/webapps/jetspeed/WEB-INF/pages/tck-jsr286/
      
-  d) Startup Jetspeed once to ensure the TCK portlet applications are deployed
+  e) Startup Jetspeed once to ensure the TCK portlet applications are deployed
 
 3) Running the TCK against Jetspeed
   
