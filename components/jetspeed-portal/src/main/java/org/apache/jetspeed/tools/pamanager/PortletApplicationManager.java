@@ -60,6 +60,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
     protected List<String>          permissionRoles;
+    protected String                portalContextPath;
+    
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
     /**
      * holds the max number of retries in case of unsuccessful PA start
@@ -89,8 +91,14 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.nodeManager		= nodeManager;
         this.appRoot            = appRoot;
         this.descriptorService  = descriptorService;
+        portalContextPath  = appRoot.replace('\\','/');
+        if (portalContextPath.endsWith("/"))
+        {
+            portalContextPath = portalContextPath.substring(0, portalContextPath.length()-1 );
+        }
+        portalContextPath = portalContextPath.substring(portalContextPath.lastIndexOf('/'));
 	}
-    
+	
     public void start()
     {
         if ( descriptorChangeMonitorInterval > 0 )
@@ -157,7 +165,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        startPA(contextName, "/"+contextName, warStruct, paClassLoader, PortletApplication.LOCAL);
+        startPA(contextName, portalContextPath, warStruct, paClassLoader, PortletApplication.LOCAL);
 	}
 
 	public void startPortletApplication(String contextName, FileSystemHelper warStruct,
@@ -294,11 +302,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
 			if (revision > 0)
 			{
 			    pa.setRevision(revision);
-			}
-
-			if (paType == PortletApplication.LOCAL)
-			{
-				pa.setContextPath("<portal>");
 			}
 		}
 		catch (Exception e)
