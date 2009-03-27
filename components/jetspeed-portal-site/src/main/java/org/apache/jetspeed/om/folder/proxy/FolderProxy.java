@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.folder.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -294,8 +295,15 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             throw new RuntimeException("Folder instance is immutable from proxy.");
         }
 
-        // attempt to invoke method on delegate Folder instance
-        return m.invoke(defaultFolder, args);
+        try
+        {
+            // attempt to invoke method on delegate Folder instance
+            return m.invoke(defaultFolder, args);
+        }
+        catch (InvocationTargetException ite)
+        {
+            throw ite.getTargetException();
+        }
     }
 
     /**

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.portlet;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Modifier;
@@ -87,6 +88,7 @@ public class PortletObjectProxy extends BaseObjectProxy
     private String customConfigModePortletUniqueName;
     private List<Supports> supports;
     
+    @SuppressWarnings("unchecked")
     public static Object createProxy(Object proxiedObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
     {
         HashSet<Class> interfaces = new HashSet<Class>();
@@ -146,34 +148,39 @@ public class PortletObjectProxy extends BaseObjectProxy
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         Object result = null;
-        boolean handledHere = false;
-        Class declaringClass = method.getDeclaringClass();
+        Class<? extends Object> declaringClass = method.getDeclaringClass();
         
-        if (declaringClass == Portlet.class || declaringClass == ResourceServingPortlet.class || declaringClass == EventPortlet.class)
+        try
         {
-            if (renderMethod.equals(method))
+            if (declaringClass == Portlet.class || declaringClass == ResourceServingPortlet.class || declaringClass == EventPortlet.class)
             {
-                proxyRender((RenderRequest) args[0], (RenderResponse) args[1]);
-                return null;
+                if (renderMethod.equals(method))
+                {
+                    proxyRender((RenderRequest) args[0], (RenderResponse) args[1]);
+                    return null;
+                }
+                else if (processActionMethod.equals(method))
+                {
+                    proxyProcessAction((ActionRequest) args[0], (ActionResponse) args[1]);
+                }
+                else
+                {
+                    result = method.invoke(this.portletObject, args);
+                }
             }
-            else if (processActionMethod.equals(method))
-            {
-                proxyProcessAction((ActionRequest) args[0], (ActionResponse) args[1]);
-            }
-            else
+            else if (declaringClass == SupportsHeaderPhase.class)
             {
                 result = method.invoke(this.portletObject, args);
             }
+            else
+            {
+                result = super.invoke(proxy, method, args);
+            }
         }
-        else if (declaringClass == SupportsHeaderPhase.class)
+        catch (InvocationTargetException ite)
         {
-            result = method.invoke(this.portletObject, args);
+            throw ite.getTargetException();
         }
-        else
-        {
-            result = super.invoke(proxy, method, args);
-        }
-        
         return result;
     }
 

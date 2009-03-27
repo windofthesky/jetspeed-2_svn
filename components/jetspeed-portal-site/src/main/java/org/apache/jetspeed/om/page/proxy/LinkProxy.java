@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -112,8 +113,15 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
             throw new RuntimeException("Link instance is immutable from proxy.");
         }
 
-        // attempt to invoke method on delegate Link instance
-        return m.invoke(link, args);
+        try
+        {
+            // attempt to invoke method on delegate Link instance
+            return m.invoke(link, args);
+        }
+        catch (InvocationTargetException ite)
+        {
+            throw ite.getTargetException();
+        }
     }
 
     /**

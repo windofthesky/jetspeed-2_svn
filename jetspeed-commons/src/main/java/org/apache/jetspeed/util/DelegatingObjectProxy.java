@@ -17,6 +17,7 @@
 package org.apache.jetspeed.util;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -88,14 +89,21 @@ public class DelegatingObjectProxy extends BaseObjectProxy
             }
         }
         
-        if (targetProxyInterface != null)
+        try
         {
-            ObjectMethodPair targetObjectMethodPair = findDelegatorObjectMethodPair(targetProxyInterface, method);
-            return targetObjectMethodPair.method.invoke(targetObjectMethodPair.object, args);
+            if (targetProxyInterface != null)
+            {
+                ObjectMethodPair targetObjectMethodPair = findDelegatorObjectMethodPair(targetProxyInterface, method);            
+                return targetObjectMethodPair.method.invoke(targetObjectMethodPair.object, args);
+            }
+            else
+            {
+                return super.invoke(proxy, method, args);
+            }
         }
-        else
+        catch (InvocationTargetException ite)
         {
-            return super.invoke(proxy, method, args);
+            throw ite.getTargetException();
         }
     }
 
