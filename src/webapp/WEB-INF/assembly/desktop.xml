@@ -44,10 +44,10 @@ limitations under the License.
              supports the settings 'desktop.decoration.layout' and 'desktop.decoration.portlet', which if
              specified, override the values set here -->
         <constructor-arg index="5">   <!-- default desktop layout decoration  -->
-            <value>tigris</value>
+            <value>${decorator.desktop.page.default}</value>
         </constructor-arg>
         <constructor-arg index="6">   <!-- default desktop portlet decoration -->
-            <value>tigris</value>
+            <value>${decorator.desktop.portlet.default}</value>
         </constructor-arg>
         
         <!-- Uncomment this to HARD CODE your portal URL -->

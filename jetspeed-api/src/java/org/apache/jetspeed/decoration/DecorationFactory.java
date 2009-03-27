@@ -203,4 +203,20 @@ public interface DecorationFactory
      * selected portlet decoration does not support /desktop.
      */
     void setDefaultDesktopPortletDecoration( String newOne );
+    
+    /**
+     * Get the default portal portlet decoration to be used when
+     * selected portlet decoration does not support /portal.
+     * 
+     * @return default desktop portlet decoration.
+     */
+    String getDefaultPortletDecoration();
+    
+    /**
+     * Get the default portlet layout decoration to be used when
+     * selected layout decoration does not support /portal.
+     * 
+     * @return default desktop layout decoration.
+     */
+    String getDefaultLayoutDecoration();    
 }

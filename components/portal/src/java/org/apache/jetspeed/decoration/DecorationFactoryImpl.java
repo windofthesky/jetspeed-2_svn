@@ -72,6 +72,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
 
     private String defaultDesktopLayoutDecoration = null;
     private String defaultDesktopPortletDecoration = null;
+    private String defaultLayoutDecoration = null;
+    private String defaultPortletDecoration = null;
     
     private Set layoutDecorationsDir = Collections.EMPTY_SET;
     private Set portletDecorationsDir = Collections.EMPTY_SET;
@@ -89,20 +91,22 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public DecorationFactoryImpl( String decorationsPath, 
                                   ResourceValidator validator )
     {
-        this( null, decorationsPath, validator, null );
+        this( null, decorationsPath, validator, null, null, null);
     }
     
     public DecorationFactoryImpl( String decorationsPath, 
                                   ResourceValidator validator,
                                   JetspeedCache decorationConfigurationCache )
     {
-        this( null, decorationsPath, validator, decorationConfigurationCache );
+        this( null, decorationsPath, validator, decorationConfigurationCache, null, null );
     }
 
     public DecorationFactoryImpl( PortletRegistry registry,
                                   String decorationsPath, 
                                   ResourceValidator validator,
-                                  JetspeedCache decorationConfigurationCache )
+                                  JetspeedCache decorationConfigurationCache,
+                                  String defLayoutDecoration,
+                                  String defPortletDecoration)                                  
     {
         this.registry =  registry;
         this.decorationsPath = new Path( decorationsPath );
@@ -112,6 +116,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
         this.portletDecorationsPathStr = this.portletDecorationsPath.toString();
         this.validator = validator;
         this.decorationConfigurationCache = decorationConfigurationCache;
+        this.defaultLayoutDecoration = defLayoutDecoration;
+        this.defaultPortletDecoration = defPortletDecoration;
     }
         
     public ResourceValidator getResourceValidator()
@@ -430,6 +436,10 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 {
                     // use page specified layout decorator name
                     decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
+                    if (decoration == null)
+                    {
+                        decoration = this.defaultLayoutDecoration;
+                    }         
                 }
                 else
                 {
@@ -441,9 +451,12 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
             {
                 // use page specified default portlet decorator name
                 decoration = page.getEffectiveDefaultDecorator(Fragment.PORTLET);
+                if (decoration == null)
+                {
+                    decoration = this.defaultPortletDecoration;
+                }                         
             }
         }
-
         return decoration;
     }
 
@@ -621,4 +634,14 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
             this.defaultDesktopPortletDecoration = newOne;
         }
     }
+    
+    public String getDefaultPortletDecoration()
+    {
+        return this.defaultPortletDecoration;
+    }
+     
+    public String getDefaultLayoutDecoration()
+    {
+        return this.defaultLayoutDecoration;        
+    }        
 }
