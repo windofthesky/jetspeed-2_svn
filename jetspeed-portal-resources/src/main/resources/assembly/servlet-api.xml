@@ -25,12 +25,12 @@
   </bean>
 
   <!--  
-    PortletRequestResponseUnwrapper finds servlet request or servlet response from portlet request or portlet response by unwrapping.
+    ContainerRequestResponseUnwrapper finds servlet request or servlet response from container request or container response by unwrapping.
     Third-party module can provide an implementation to decorate the real request or response object of a servlet container.
     For example, the real request object of a servlet container can be decorated because it is not thread-safe under Jetspeed parallel rendering mode.
   -->
-  <bean id="PortletRequestResponseUnwrapper"
-    class="org.apache.jetspeed.container.invoker.DefaultPortletRequestResponseUnwrapper">
+  <bean id="ContainerRequestResponseUnwrapper"
+    class="org.apache.jetspeed.container.invoker.DefaultContainerRequestResponseUnwrapper">
     <meta key="j2:cat" value="default" />
   </bean>
   
