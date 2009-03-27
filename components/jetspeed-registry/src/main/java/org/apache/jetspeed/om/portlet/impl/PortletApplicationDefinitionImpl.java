@@ -383,7 +383,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
 
     public EventDefinition addEventDefinition(String name)
     {
-        QName qname = new QName(name);
+        QName qname = new QName(getDefaultNamespace(), name);
         return addEventDefinition(qname);
     }
 

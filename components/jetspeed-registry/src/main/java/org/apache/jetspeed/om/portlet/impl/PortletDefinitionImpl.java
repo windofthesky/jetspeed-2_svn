@@ -829,7 +829,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     
     public EventDefinitionReference addSupportedProcessingEvent(String name)
     {
-        QName qname = new QName(name);
+        QName qname = new QName(getApplication().getDefaultNamespace(), name);
         return this.addSupportedProcessingEvent(qname);
     }
          
@@ -859,7 +859,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     
     public EventDefinitionReference addSupportedPublishingEvent(String name)
     {
-        QName qname = new QName(name);
+        QName qname = new QName(getApplication().getDefaultNamespace(), name);
         return this.addSupportedPublishingEvent(qname);
     }
 
