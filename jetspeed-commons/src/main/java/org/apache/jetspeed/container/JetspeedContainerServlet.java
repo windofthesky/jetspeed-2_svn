@@ -26,12 +26,16 @@ import java.util.TimerTask;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.EventPortlet;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
+import javax.portlet.Portlet;
+import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -42,7 +46,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.session.PortalSessionsManager;
+import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
@@ -237,32 +243,72 @@ public class JetspeedContainerServlet extends HttpServlet
                         
         try
         {
-            window.getPortletRequestContext().init(window.getPortletInstance().getConfig(), getServletContext(), request, response);
-            window.getPortletResponseContext().init(request, response);
+            PortletInstance portletInstance = window.getPortletInstance();
+            PortletConfig portletConfig = portletInstance.getConfig();
 
+            window.getPortletRequestContext().init(portletConfig, getServletContext(), request, response);
+            window.getPortletResponseContext().init(request, response);
+            
+            FilterManager filterManager = (FilterManager) window.getAttribute(PortalReservedParameters.PORTLET_FILTER_MANAGER_ATTRIBUTE);
+            ClassLoader paCl = Thread.currentThread().getContextClassLoader();
+            
+            window.removeAttribute(PortalReservedParameters.PORTLET_FILTER_MANAGER_ATTRIBUTE);
+            
             if (PortletWindow.Action.ACTION.equals(window.getAction()))
             {
                 ActionRequest actionRequest = (ActionRequest)window.getPortletRequest();
                 ActionResponse actionResponse = (ActionResponse)window.getPortletResponse();
-                window.getPortletInstance().processAction(actionRequest, actionResponse);
+                
+                if (filterManager != null)
+                {
+                    filterManager.processFilter(actionRequest, actionResponse, paCl, (Portlet) portletInstance, portletConfig.getPortletContext());
+                }
+                else
+                {
+                    portletInstance.processAction(actionRequest, actionResponse);
+                }
             }
             else if (PortletWindow.Action.RENDER.equals(window.getAction()))
             {
                 RenderRequest renderRequest = (RenderRequest)window.getPortletRequest();
                 RenderResponse renderResponse =  (RenderResponse)window.getPortletResponse();
-                window.getPortletInstance().render(renderRequest, renderResponse);
+                
+                if (filterManager != null)
+                {
+                    filterManager.processFilter(renderRequest, renderResponse, paCl, (Portlet) portletInstance, portletConfig.getPortletContext());
+                }
+                else
+                {
+                    portletInstance.render(renderRequest, renderResponse);
+                }
             }
             else if (PortletWindow.Action.EVENT.equals(window.getAction()))
             {
                 EventRequest eventRequest = (EventRequest)window.getPortletRequest();
                 EventResponse eventResponse =  (EventResponse)window.getPortletResponse();
-                window.getPortletInstance().processEvent(eventRequest, eventResponse);
+                
+                if (filterManager != null)
+                {
+                    filterManager.processFilter(eventRequest, eventResponse, paCl, (EventPortlet) portletInstance, portletConfig.getPortletContext());
+                }
+                else
+                {
+                    portletInstance.processEvent(eventRequest, eventResponse);
+                }
             }
             else if (PortletWindow.Action.RESOURCE.equals(window.getAction()))
             {
                 ResourceRequest resourceRequest = (ResourceRequest)window.getPortletRequest();
                 ResourceResponse resourceResponse = (ResourceResponse)window.getPortletResponse();
-                window.getPortletInstance().serveResource(resourceRequest, resourceResponse);
+                
+                if (filterManager != null)
+                {
+                    filterManager.processFilter(resourceRequest, resourceResponse, paCl, (ResourceServingPortlet) portletInstance, portletConfig.getPortletContext());
+                }
+                else
+                {
+                    portletInstance.serveResource(resourceRequest, resourceResponse);
+                }
             }
 
             // if we get this far we are home free

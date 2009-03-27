@@ -65,6 +65,7 @@ public interface PortalReservedParameters
     public static final String RESOVLER_CACHE_ATTR = "org.apache.jetspeed.resovler.cache";
     public static final String PORTLET_DEFINITION_ATTRIBUTE = "org.apache.jetspeed.portlet.definition";
     public static final String PORTLET_WINDOW_ATTRIBUTE = "org.apache.jetspeed.portlet.window";
+    public static final String PORTLET_FILTER_MANAGER_ATTRIBUTE = "org.apache.jetspeed.portlet.container.filterManager";
     public static final String PAGE_THEME_ATTRIBUTE = "org.apache.jetspeed.theme";
     public static final String PAGE_LAYOUT_VIEW = "org.apache.jetspeed.layout.view";
     public static final String PAGE_LAYOUT_MAX = "org.apache.jetspeed.layout.max";

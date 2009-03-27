@@ -142,7 +142,7 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             window.setAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE, window.getFragment());
             window.setAttribute(PortalReservedParameters.PORTLET_WINDOW_ATTRIBUTE, window);
             window.setAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, portletDefinition);
-
+            window.setAttribute(PortalReservedParameters.PORTLET_FILTER_MANAGER_ATTRIBUTE, filter);
 
             if (useForward)
             {
