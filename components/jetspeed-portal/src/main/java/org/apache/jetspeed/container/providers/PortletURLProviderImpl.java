@@ -197,7 +197,7 @@ public class PortletURLProviderImpl implements PortletURLProvider
                 renderParms = new HashMap<String,String[]>();
                 for (Map.Entry<String,String[]> entry : renderParameters.entrySet())
                 {
-                    if (publicRenderParameters == null || !publicRenderParameters.containsKey(entry.getKey()))
+                    if (!publicRenderParameters.containsKey(entry.getKey()))
                     {
                         renderParms.put(entry.getKey(), entry.getValue());
                     }

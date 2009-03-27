@@ -294,9 +294,11 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 requestState = requestStates.getPortletWindowNavigationalState(windowId);
                 if ( requestState == null )
                 {
-                    if (context.resolvePortletWindow(windowId) != null)
+                    PortletWindow window = context.resolvePortletWindow(windowId);
+                    if (window != null)
                     {
                         requestState = new PortletWindowRequestNavigationalState(windowId);
+                        requestState.setPortletDefinition(window.getPortletDefinition());
                         sessionState = pageState.windowStates.get(windowId);
                         requestState.setActionScopedRequestAttributes(sessionState.isActionScopedRequestAttributes());
                         requestStates.addPortletWindowNavigationalState(windowId, requestState);

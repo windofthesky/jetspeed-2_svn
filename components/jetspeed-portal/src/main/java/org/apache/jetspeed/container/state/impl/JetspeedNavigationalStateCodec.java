@@ -279,6 +279,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             states.addPortletWindowNavigationalState(windowId, currentState);
         }
         PortletWindowRequestNavigationalState targetState = new PortletWindowRequestNavigationalState(windowId);
+        targetState.setPortletDefinition(currentState.getPortletDefinition());
         targetState.setPortletMode(portletMode != null ? portletMode : currentState.getPortletMode());
         targetState.setWindowState(windowState != null ? windowState : currentState.getWindowState());
         targetState.setParametersMap(parameters);
@@ -291,7 +292,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         targetState.setCacheLevel(cacheLevel);
         targetState.setResourceId(resourceId);
         targetState.setPrivateRenderParametersMap(privateRenderParameters);
-        targetState.setPublicRenderParametersMap(publicRenderParameters);
+        targetState.setTargetPublicRenderParametersMap(publicRenderParameters);
         if ( renderParamsStateFull && parameters == null )
         {
             // Indicate that the saved (in the session) render parameters for this PortletWindow must be cleared

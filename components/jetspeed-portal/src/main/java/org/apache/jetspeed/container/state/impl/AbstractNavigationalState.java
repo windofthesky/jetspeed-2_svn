@@ -85,6 +85,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
             }
             else
             {
+                entry.getValue().setPortletDefinition(window.getPortletDefinition());
                 if (requestStates.getTargetWindowId() != null && entry.getKey().equals(requestStates.getTargetWindowId()))
                 {
                     if (PortalURL.URLType.ACTION == requestStates.getURLType())

@@ -41,7 +41,7 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     private String cacheLevel;
     private String resourceId;
     private Map<String, String[]> privateRenderParametersMap;
-    private Map<String, String[]> targetPublicRenderParmaetersMap;
+    private Map<String, String[]> targetPublicRenderParametersMap;
     private Map<String, String[]> publicRenderParametersMap;
     private Map<QName, String> qnameToIdentifierMap;
     private Map<String, QName> identifierToQNameMap;
@@ -91,7 +91,7 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     
     public void resolvePublicRenderParametersMapping()
     {
-        if (pd != null && qnameToIdentifierMap != null)
+        if (pd != null && qnameToIdentifierMap == null)
         {
             qnameToIdentifierMap = new HashMap<QName, String>();
             identifierToQNameMap = new HashMap<String, QName>();
@@ -114,17 +114,20 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     
     public Map<QName, String> getPublicRenderParametersQNameToIdentifierMap()
     {
+        resolvePublicRenderParametersMapping();
         return qnameToIdentifierMap;
     }
     
     public QName getPublicRenderParameterQNameByIdentifier(String identifier)
     {
-        return identifierToQNameMap != null ? identifierToQNameMap.get(identifier) : null;
+        resolvePublicRenderParametersMapping();
+        return identifierToQNameMap.get(identifier);
     }
         
     public String getPublicRenderParameterIdentifierByQName(QName qname)
     {
-        return qnameToIdentifierMap != null ? qnameToIdentifierMap.get(qname) : null;
+        resolvePublicRenderParametersMapping();
+        return qnameToIdentifierMap.get(qname);
     }
         
     public String getCacheLevel()
@@ -178,6 +181,10 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
 
     public void setPublicRenderParameters(String name, String[] values)
     {
+        if (publicRenderParametersMap == null)
+        {
+            publicRenderParametersMap = new HashMap<String,String[]>();
+        }
         publicRenderParametersMap.put(name, values);
     }    
     
@@ -188,12 +195,16 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     
     public Map<String, String[]> getTargetPublicRenderParametersMap()
     {
-        return this.targetPublicRenderParmaetersMap;
+        if (targetPublicRenderParametersMap == null)
+        {
+            targetPublicRenderParametersMap = new HashMap<String, String[]>(); 
+        }
+        return this.targetPublicRenderParametersMap;
     }
     
     public void setTargetPublicRenderParametersMap(Map<String, String[]> map)
     {
-        this.targetPublicRenderParmaetersMap = map;
+        this.targetPublicRenderParametersMap = map;
     }
     
     public boolean isClearParameters()
