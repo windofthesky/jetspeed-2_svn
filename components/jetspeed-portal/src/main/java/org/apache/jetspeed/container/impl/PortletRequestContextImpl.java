@@ -135,9 +135,34 @@ public class PortletRequestContextImpl implements PortletRequestContext
             mergeRequestParameters = ns.getPortletWindowOfAction() != null || ns.getPortletWindowOfResource() != null;
             Map<String, String[]> paramMap = ns.getParameterMap(window);
             
-            if (paramMap != null)
+            if (paramMap != null && !paramMap.isEmpty())
             {
                 privateParameters.putAll(paramMap);
+            }
+            
+            Map<String, String[]> privateParamMap = getPrivateRenderParameterMap();
+            
+            if (privateParamMap != null && !privateParamMap.isEmpty())
+            {
+                if (privateParameters.isEmpty())
+                {
+                    privateParameters.putAll(privateParamMap);                    
+                }
+                else for (Map.Entry<String, String[]> entry : privateParamMap.entrySet())
+                {
+                    String[] values = privateParameters.get(entry.getKey());
+                    if (values == null)
+                    {
+                        privateParameters.put(entry.getKey(), entry.getValue());
+                    }
+                    else
+                    {
+                        String[] combined = new String[values.length+entry.getValue().length];
+                        System.arraycopy(values,0,combined,0,values.length);
+                        System.arraycopy(entry.getValue(),0,combined,values.length,entry.getValue().length);
+                        privateParameters.put(entry.getKey(), combined);
+                    }
+                }
             }
             
             PortletDefinition portletDef = window.getPortletDefinition();

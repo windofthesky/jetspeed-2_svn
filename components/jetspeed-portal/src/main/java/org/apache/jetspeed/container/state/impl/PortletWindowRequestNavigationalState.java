@@ -160,7 +160,7 @@ public class PortletWindowRequestNavigationalState extends PortletWindowExtended
     {
         if (privateRenderParametersMap == null)
         {
-            privateRenderParametersMap = Collections.emptyMap();
+            privateRenderParametersMap = new HashMap<String, String[]>();
         }
         privateRenderParametersMap.put(name, values);
     }    
