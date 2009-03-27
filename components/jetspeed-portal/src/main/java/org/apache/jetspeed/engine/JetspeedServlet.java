@@ -290,10 +290,11 @@ implements JetspeedEngineConstants, HttpSessionListener
 
         }
         catch (JetspeedException e)
-        {
-            final String msg = "Fatal error encountered while processing portal request: "+e.toString();
+        {            
+            final String msg = "Fatal error encountered while processing portal request: "+e.getMessage();
             log.fatal(msg, e);
-            throw new ServletException(msg, e);
+            req.getSession(true).setAttribute("org.apache.portals.jestspeed.diagnostics", e.getLocalizedMessage());
+            res.sendRedirect(req.getContextPath() + "/diagnostics");
         }
     }
 

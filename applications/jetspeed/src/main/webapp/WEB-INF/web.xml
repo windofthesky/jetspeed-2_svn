@@ -146,6 +146,16 @@ limitations under the License.
     <servlet-class>org.apache.jetspeed.manager.ManagerServlet</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>DiagnosticsServlet</servlet-name>
+ 	<jsp-file>/server-diag.jsp</jsp-file>
+  </servlet>
+
+  <servlet-mapping>
+      <servlet-name>DiagnosticsServlet</servlet-name>
+       <url-pattern>/diagnostics/*</url-pattern>  	   
+  </servlet-mapping>
+    
   <servlet-mapping>
        <servlet-name>
           jetspeed
