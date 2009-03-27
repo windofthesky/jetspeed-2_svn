@@ -571,7 +571,6 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         addLanguage(jpd, pd.getPortletInfo(), JetspeedLocale.getDefaultLocale());
         for (String locale : pd.getSupportedLocales())
         {
-            jpd.addSupportedLocale(locale);
             Locale l = JetspeedLocale.convertStringToLocale(locale);
             if (!l.equals(JetspeedLocale.getDefaultLocale()))
             {

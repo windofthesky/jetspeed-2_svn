@@ -95,7 +95,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     private List<EventDefinitionReference> supportedPublishingEvents;
     private List<SecurityRoleRef> securityRoleRefs;
     private List<Supports> supports;
-    private List<String> supportedLocales;
     private List<Language> languages;
     private List<ContainerRuntimeOption> containerRuntimeOptions;    
     private List<SupportedPublicRenderParameter> supportedPublicRenderParameters;
@@ -639,23 +638,18 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     
     public List<String> getSupportedLocales()
     {
-        if (supportedLocales == null)
+        List<Language> languages = getLanguages();
+        List<String> locales = new ArrayList<String>();
+        for (Language l : languages)
         {
-            supportedLocales = new ArrayList<String>();
+            locales.add(l.getLocale().toString());
         }
-        return supportedLocales;
+        return locales;
     }
     
     public void addSupportedLocale(String lang)
     {
-        for (String l : getSupportedLocales())
-        {
-            if (l.equals(lang))
-            {
-                throw new IllegalArgumentException("Supported locale: "+lang+" already defined");
-            }
-        }
-        supportedLocales.add(lang);    
+        // noop: use addLanguage(Locale) instead
     }
 
     public List<String> getSupportedPublicRenderParameters()
