@@ -3,7 +3,7 @@
   <title>TCK testcase 196 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSession/SpecURLClient.java#CompareHttpAndPortletSessionTest</title>
   <fragment id="tck-196" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="tck-196-0" type="portlet" name="portlet_jp_PortletSession_web::CompareHttpAndPortletSessionTestPortlet"/>
-    <fragment id="tck-196-1" type="portlet" name="portlet_jp_PortletSession_web::CompareHttpAndPortletSessionTestPortlet"/>
-    <fragment id="tck-196-2" type="portlet" name="portlet_jp_PortletSession_web::CompareHttpAndPortletSessionTestPortlet"/>
+    <fragment id="tck-196-1" type="portlet" name="portlet_jp_PortletSession_web::CompareHttpAndPortletSessionTest_2_Portlet"/>
+    <fragment id="tck-196-2" type="portlet" name="portlet_jp_PortletSession_web::RefreshPortlet"/>
   </fragment>
 </page>

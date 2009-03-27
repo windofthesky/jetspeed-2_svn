@@ -48,8 +48,7 @@ public class JetspeedTCKJSR286ConfigGenerator
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File(tckTestsFile));
-        Element e = doc.getDocumentElement();
-        NodeList nodes = e.getElementsByTagName("test_case");
+        NodeList nodes = doc.getDocumentElement().getElementsByTagName("test_case");
         FileWriter urlMappingFile = new FileWriter(new File("jetspeedTestsToURLMapping.xml"));
         urlMappingFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         urlMappingFile.write("<test_case_urls xmlns=\"http://java.sun.com/xml/ns/portlet/portletTCKVendor_1_0.xsd\"\n");
@@ -57,19 +56,23 @@ public class JetspeedTCKJSR286ConfigGenerator
         urlMappingFile.write("                xsi:schemaLocation=\"http://java.sun.com/xml/ns/portlet/portletTCKVendor_1_0.xsd\n");
         urlMappingFile.write("                http://java.sun.com/xml/ns/portlet/portletTCKVendor_1_0.xsd\">\n");
         int num;
+        Element test_case;
+        Element test_portlet;
         FileWriter psmlFile;
         String testName;
         new File("pages").mkdirs();
+        
         for (num = 0; num < nodes.getLength(); num++)
         {
-            e = (Element)nodes.item(num);
-            testName = getText(e, "test_name");
+            test_case = (Element)nodes.item(num);
+            testName = getText(test_case, "test_name");
             addTestURLMapping(testName, num + 1, urlMappingFile);
             psmlFile = createTestPage(testName, num+1);
-            NodeList portlets = e.getElementsByTagName("test_portlet");
+            NodeList portlets = test_case.getElementsByTagName("test_portlet");
             for (int i = 0; i < portlets.getLength(); i++)
             {
-                addTestPortlet(psmlFile, getText(e, "app_name") + "::" + getText(e, "portlet_name"), num+1, i);
+                test_portlet = (Element)portlets.item(i);
+                addTestPortlet(psmlFile, getText(test_portlet, "app_name") + "::" + getText(test_portlet, "portlet_name"), num+1, i);
             }
             finishTestPage(psmlFile);
         }

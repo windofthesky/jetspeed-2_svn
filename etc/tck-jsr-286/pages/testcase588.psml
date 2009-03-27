@@ -3,7 +3,7 @@
   <title>TCK testcase 588 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSessionPrivatescope/SpecURLClient.java#CheckSessionAttrInPrivateScopeTest</title>
   <fragment id="tck-588" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="tck-588-0" type="portlet" name="portlet_jp_PortletSession_privatescope_web::CheckSessionAttrInPrivateScopeTestPortlet"/>
-    <fragment id="tck-588-1" type="portlet" name="portlet_jp_PortletSession_privatescope_web::CheckSessionAttrInPrivateScopeTestPortlet"/>
-    <fragment id="tck-588-2" type="portlet" name="portlet_jp_PortletSession_privatescope_web::CheckSessionAttrInPrivateScopeTestPortlet"/>
+    <fragment id="tck-588-1" type="portlet" name="portlet_jp_PortletSession_privatescope_web::CheckSessionAttrInPrivateScopeTest_1_Portlet"/>
+    <fragment id="tck-588-2" type="portlet" name="portlet_jp_PortletSession_privatescope_web::RefreshPortlet"/>
   </fragment>
 </page>

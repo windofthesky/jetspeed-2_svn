@@ -3,7 +3,7 @@
   <title>TCK testcase 194 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSession/SpecURLClient.java#CheckSessionValueForPortletsInSameAppTest</title>
   <fragment id="tck-194" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="tck-194-0" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInSameAppTestPortlet"/>
-    <fragment id="tck-194-1" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInSameAppTestPortlet"/>
-    <fragment id="tck-194-2" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInSameAppTestPortlet"/>
+    <fragment id="tck-194-1" type="portlet" name="portlet_jp_PortletSession_web::CheckSessionValueForPortletsInSameAppTest_1_Portlet"/>
+    <fragment id="tck-194-2" type="portlet" name="portlet_jp_PortletSession_web::RefreshPortlet"/>
   </fragment>
 </page>

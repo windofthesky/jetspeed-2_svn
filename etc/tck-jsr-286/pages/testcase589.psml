@@ -3,7 +3,7 @@
   <title>TCK testcase 589 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSessionAppscope/URLClient.java#GetAttributeNamesTest</title>
   <fragment id="tck-589" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="tck-589-0" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeNamesTestPortlet"/>
-    <fragment id="tck-589-1" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeNamesTestPortlet"/>
-    <fragment id="tck-589-2" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeNamesTestPortlet"/>
+    <fragment id="tck-589-1" type="portlet" name="portlet_jp_PortletSession_appscope_web::GetAttributeNamesTest_1_Portlet"/>
+    <fragment id="tck-589-2" type="portlet" name="portlet_jp_PortletSession_appscope_web::RefreshPortlet"/>
   </fragment>
 </page>

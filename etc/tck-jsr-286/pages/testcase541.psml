@@ -3,6 +3,6 @@
   <title>TCK testcase 541 for test: com/sun/ts/tests/portlet/api/javax_portlet/EventRequest/SpecURLClient.java#GetParameterOnlySeenByTargetTest</title>
   <fragment id="tck-541" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="tck-541-0" type="portlet" name="portlet_jp_EventRequest_web::GetParameterOnlySeenByTargetTestPortlet"/>
-    <fragment id="tck-541-1" type="portlet" name="portlet_jp_EventRequest_web::GetParameterOnlySeenByTargetTestPortlet"/>
+    <fragment id="tck-541-1" type="portlet" name="portlet_jp_EventRequest_web::GetParameterOnlySeenByTargetTest_1_Portlet"/>
   </fragment>
 </page>

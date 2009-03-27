@@ -3,7 +3,7 @@
   <title>TCK testcase 101 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderRequest/SpecURLClient.java#GetPublicParameterOnlySeenByTargetTest</title>
   <fragment id="tck-101" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="tck-101-0" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterOnlySeenByTargetTestPortlet"/>
-    <fragment id="tck-101-1" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterOnlySeenByTargetTestPortlet"/>
-    <fragment id="tck-101-2" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterOnlySeenByTargetTestPortlet"/>
+    <fragment id="tck-101-1" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterOnlySeenByTargetTest_1_Portlet"/>
+    <fragment id="tck-101-2" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterOnlySeenByTargetTest_2_Portlet"/>
   </fragment>
 </page>
