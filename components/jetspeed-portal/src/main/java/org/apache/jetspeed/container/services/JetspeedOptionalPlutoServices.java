@@ -23,6 +23,7 @@ import org.apache.pluto.container.PortletEnvironmentService;
 import org.apache.pluto.container.PortletInvokerService;
 import org.apache.pluto.container.PortletPreferencesService;
 import org.apache.pluto.container.UserInfoService;
+import org.apache.pluto.container.driver.impl.DummyCCPPProfileServiceImpl;
 
 /**
  * Service accessor for all Pluto *optional* container services
@@ -37,7 +38,7 @@ public class JetspeedOptionalPlutoServices implements OptionalContainerServices
     protected UserInfoService userInfoService;
     protected PortletInvokerService invokerService;
     protected PortletPreferencesService preferencesService;
-    private CCPPProfileService profileService;
+    private CCPPProfileService profileService = new DummyCCPPProfileServiceImpl();
     
     public JetspeedOptionalPlutoServices(NamespaceMapper namespaceMapper,
             PortletEnvironmentService environmentService,
