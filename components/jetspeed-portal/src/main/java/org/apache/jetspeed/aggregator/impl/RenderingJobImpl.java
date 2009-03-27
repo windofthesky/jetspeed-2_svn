@@ -185,7 +185,6 @@ public class RenderingJobImpl implements RenderingJob
         {
             if (log.isDebugEnabled()) log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
             container.doRender(this.window, this.request, this.response);               
-            this.response.flushBuffer();                           
         }
         catch (Throwable t)
         {

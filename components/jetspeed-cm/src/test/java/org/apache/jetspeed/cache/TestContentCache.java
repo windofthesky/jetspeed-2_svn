@@ -360,6 +360,34 @@ public class TestContentCache extends TestCase
         {
             this.title = title;
         }
+
+
+        public String getContentType()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+
+        public void reset()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+
+        public void resetBuffer()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+
+        public void setContentType(String contentType)
+        {
+            // TODO Auto-generated method stub
+            
+        }
     }
         
 }

@@ -96,7 +96,7 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     {
         if (!isClosed())
         {
-            // TODO
+            portletContent.reset();
         }
     }
 
@@ -104,7 +104,7 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     {
         if (!isClosed())
         {
-            // TODO
+            portletContent.resetBuffer();
         }
     }
 
@@ -117,7 +117,7 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     {
         if (!isClosed())
         {
-            // TODO
+            portletContent.setContentType(contentType);
         }
     }
 

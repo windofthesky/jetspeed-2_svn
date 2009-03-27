@@ -90,9 +90,15 @@ public interface PortletContent
      */
     void setTitle(String title);
     
+    String getContentType();
+    void setContentType(String contentType);
+    
+    void reset();
+    void resetBuffer();
+    
     /**
      * Release the buffers used by the portlet content cache. Note the actual release may not occur until garbage collection. 
      *
      */
-    void release();                
+    void release();                    
 }

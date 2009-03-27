@@ -32,6 +32,7 @@ public class PortletContentImpl implements PortletContent
     private ContentCacheKey cacheKey;
     private int expiration = 0;
     private String title;
+    private String contentType;
     private PortletRenderer renderer = null;
     
     PortletContentImpl()
@@ -152,5 +153,32 @@ public class PortletContentImpl implements PortletContent
     {
         this.title = title;
     }
-        
+    
+    public String getContentType()
+    {
+        return contentType;
+    }
+    
+    public void setContentType(String contentType)
+    {
+        this.contentType = contentType;
+    }
+     
+    public void reset()
+    {
+        if (!complete)
+        {
+            resetBuffer();
+            // TODO: clear headers
+        }
+    }
+    
+    public void resetBuffer()
+    {
+        if (!complete)
+        {
+            writer.flush();
+            cw.reset();
+        }
+    }
 }
