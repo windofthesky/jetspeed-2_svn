@@ -19,8 +19,6 @@ package org.apache.jetspeed.aggregator.impl;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
@@ -42,12 +40,9 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggregator 
 {
-    private final static Log log = LogFactory.getLog(PageAggregatorImpl.class);
-    private PortletRenderer renderer;
-
     public PageAggregatorImpl( PortletRenderer renderer)
     {
-        this.renderer = renderer;
+        super(renderer);
     }
 
     /**
@@ -85,49 +80,6 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
             window.removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
         releaseBuffers(root, context);        
-    }
-
-    /**
-     * <p>
-     * renderMaximizedWindow
-     * </p>
-     * 
-     * @param context
-     * @param page
-     * @param layoutContentFragment
-     * @param defaultPortletDecorator
-     * @param dispatcher
-     * @param window
-     * @throws FailedToRenderContentFragmentException
-     */
-    protected void renderMaximizedWindow( RequestContext context, ContentPage page, ContentFragment layoutContentFragment,
-            PortletWindow window ) throws FailedToRenderFragmentException
-    {
-        ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
-        if (maxedContentFragment != null)
-        {
-            window.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
-            window.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
-
-            try
-            {
-                renderer.renderNow(maxedContentFragment, context);
-                renderer.renderNow(layoutContentFragment, context);              
-                
-            }
-            catch (Exception e)
-            {
-                log.error(e.getMessage(), e);
-                maxedContentFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  e.getMessage());
-            }
-        }
-        else
-        {
-            String message = "Maximized fragment not found."; 
-            log.error(message);
-            if (maxedContentFragment != null)
-                maxedContentFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  message);            
-        }
     }
 
     protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )

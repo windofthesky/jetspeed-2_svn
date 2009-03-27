@@ -50,13 +50,9 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
 {
     protected final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
 
-    protected PortletRenderer renderer;
-
-    protected List fallBackContentPathes;
-
     public AsyncPageAggregatorImpl(PortletRenderer renderer)
     {
-        this.renderer = renderer;
+        super(renderer);
     }
 
     /**
@@ -93,40 +89,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
             window.removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
         releaseBuffers(root, context);                
-    }
-
-    /**
-     * <p>
-     * renderMaximizedWindow
-     * </p>
-     * 
-     * @param context
-     * @param page
-     * @param layoutContentFragment
-     * @param defaultPortletDecorator
-     * @param dispatcher
-     * @param window
-     * @throws FailedToRenderContentFragmentException
-     */
-    protected void renderMaximizedWindow( RequestContext context, ContentPage page, ContentFragment layoutContentFragment,
-            PortletWindow window ) throws FailedToRenderFragmentException
-    {
-        ContentFragment maxedContentFragment = page.getContentFragmentById(window.getId().toString());
-        if (maxedContentFragment != null)
-        {
-            window.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, maxedContentFragment);
-            window.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
-            try
-            {
-                renderer.renderNow(maxedContentFragment, context);
-                renderer.renderNow(layoutContentFragment, context);                              
-            }
-            catch (Exception e)
-            {
-                log.error(e.getMessage(), e);
-                maxedContentFragment.overrideRenderedContent("Sorry, but we were unable access the requested portlet.  Send the following message to your portal admin:  "+  e.getMessage());
-            }
-        }
     }
 
     protected void aggregateAndRender(ContentFragment f, RequestContext context, ContentPage page, boolean isRoot,
@@ -222,7 +184,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         }
         
         // Start the actual rendering process
-        String defaultPortletDecorator = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
         if (log.isDebugEnabled())
         {
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
@@ -230,6 +191,4 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         
         renderer.renderNow(f, context);
     }
-    
-
 }
