@@ -16,37 +16,40 @@
  */
 package org.apache.jetspeed.container.invoker;
 
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * PortletRequestResponseUnwrapper finds servlet request or servlet response 
- * from portlet request or portlet response by unwrapping.
+ * ContainerRequestResponseUnwrapper finds the web container servlet request
+ * or servlet response suitable for cross-context dispatching
+ * from the current container request or response by unwrapping.
  * Third-party module can provide an implementation to decorate the real request
- * or response object of a servlet container.
- * For example, the real request object of a servlet container can be decorated
- * because it is not thread-safe under Jetspeed parallel rendering mode.
+ * or response object of a servlet container for instance to ensure reliable
+ * behavior when executing multiple portlet invocations in parallel on top of
+ * the same web container request and response.
  *
  * @author <a href="mailto:woonsan@apache.org">Woonsan Ko</a>
- * @version $Id: $
+ * @version $Id$
  */
-public interface PortletRequestResponseUnwrapper
+public interface ContainerRequestResponseUnwrapper
 {
     /**
-     * Unwraps portlet request to find the real servlet request.
+     * Unwraps the container request to find the web container servlet request
+     * suitable for cross-context request dispatching.
      * 
-     * @param portletRequest The portlet request to be unwrapped.
+     * @param containerRequest The container request to be unwrapped.
      * @return servletRequest The servlet request found by unwrapping.
      */
-    ServletRequest unwrapPortletRequest(PortletRequest portletRequest);
-    
+    ServletRequest unwrapContainerRequest(HttpServletRequest containerRequest);
+
     /**
-     * Unwraps portlet response to find the real servlet response.
+     * Unwraps the container response to find the web container servlet response
+     * suitable for cross-context request dispatching.
      * 
-     * @param portletResponse The portlet response to be unwrapped.
+     * @param containerResponse The container response to be unwrapped.
      * @return servletResponse The servlet response found by unwrapping.
      */
-    ServletResponse unwrapPortletResponse(PortletResponse portletResponse);
+    ServletResponse unwrapContainerResponse(HttpServletResponse containerResponse);
 }

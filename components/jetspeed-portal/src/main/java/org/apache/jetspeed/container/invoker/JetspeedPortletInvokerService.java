@@ -70,13 +70,21 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
     
     private ServletConfig servletConfig;
     private PortletFactory portletFactory;
+    private ContainerRequestResponseUnwrapper requestResponseUnwrapper;
     private String servletMappingName;
     
     public JetspeedPortletInvokerService(ServletConfig servletConfig, PortalContext portalContext, PortletFactory portletFactory)
     {
+        this(servletConfig, portalContext, portletFactory, new DefaultContainerRequestResponseUnwrapper());
+    }
+    
+    public JetspeedPortletInvokerService(ServletConfig servletConfig, PortalContext portalContext, 
+                                         PortletFactory portletFactory, ContainerRequestResponseUnwrapper requestResponseUnwrapper)
+    {
         this.servletConfig = servletConfig;
         this.portletFactory = portletFactory;
-        this.servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);                                
+        this.requestResponseUnwrapper = requestResponseUnwrapper;
+        this.servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
     }
     
     public void action(PortletRequestContext requestContext, ActionRequest request, ActionResponse response, FilterManager filterManager)
@@ -139,7 +147,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         }
         else
         {
-            invoker =  new ServletPortletInvoker(servletMappingName);
+            invoker =  new ServletPortletInvoker(requestResponseUnwrapper, servletMappingName);
 
         }
         invoker.activate(portletFactory, portletDefinition, servletConfig);

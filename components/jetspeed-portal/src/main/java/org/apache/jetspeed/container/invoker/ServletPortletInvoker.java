@@ -24,6 +24,8 @@ import javax.portlet.PortletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,8 +73,15 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
     protected boolean activated = false;
     protected String servletMappingName;
     
-    public ServletPortletInvoker(String servletMappingName)
+    /**
+     * requestResponseUnwrapper used to unwrap container request or portlet response
+     * to find the real servlet request or servlet response.
+     */
+    protected ContainerRequestResponseUnwrapper requestResponseUnwrapper;
+
+    public ServletPortletInvoker(ContainerRequestResponseUnwrapper requestResponseUnwrapper, String servletMappingName)
     {
+        this.requestResponseUnwrapper = requestResponseUnwrapper;
         this.servletMappingName = servletMappingName;
     }
 
@@ -144,13 +153,16 @@ public class ServletPortletInvoker implements JetspeedPortletInvoker
             window.setAttribute(PortalReservedParameters.PORTLET_DEFINITION_ATTRIBUTE, portletDefinition);
             window.setAttribute(PortalReservedParameters.PORTLET_FILTER_MANAGER_ATTRIBUTE, filter);
 
+            ServletRequest request = this.requestResponseUnwrapper.unwrapContainerRequest(requestContext.getContainerRequest());
+            ServletResponse response = this.requestResponseUnwrapper.unwrapContainerResponse(requestContext.getContainerResponse());
+            
             if (useForward)
             {
-                dispatcher.forward(requestContext.getContainerRequest(), requestContext.getContainerResponse());
+                dispatcher.forward(request, response);
             }
             else
             {
-                dispatcher.include(requestContext.getContainerRequest(), requestContext.getContainerResponse());
+                dispatcher.include(request, response);
             }
             
         }

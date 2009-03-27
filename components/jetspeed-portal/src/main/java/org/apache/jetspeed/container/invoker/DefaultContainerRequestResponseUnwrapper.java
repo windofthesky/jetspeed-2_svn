@@ -20,25 +20,43 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.Jetspeed;
 
 /**
- * DefaultPortletRequestResponseUnwrapper implements PortletRequestResponseUnwrapper
+ * DefaultContainerRequestResponseUnwrapper implements ContainerRequestResponseUnwrapper
  * and finds servlet request or servlet response
  *
  * @author <a href="mailto:woonsan@apache.org">Woonsan Ko</a>
- * @version $Id: $
+ * @version $Id$
  */
-public class DefaultPortletRequestResponseUnwrapper implements PortletRequestResponseUnwrapper
+public class DefaultContainerRequestResponseUnwrapper implements ContainerRequestResponseUnwrapper
 {
     public ServletRequest unwrapPortletRequest(PortletRequest portletRequest)
     {
-        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerRequest();
+        return unwrapContainerRequest(Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerRequest());
     }
     
     public ServletResponse unwrapPortletResponse(PortletResponse portletResponse)
     {
-        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerResponse();
+        return unwrapContainerResponse(Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerResponse());
+    }
+    
+    public ServletRequest unwrapContainerRequest(HttpServletRequest containerRequest)
+    {
+        ServletRequest request = containerRequest;
+        while (request instanceof HttpServletRequestWrapper)
+        {
+            request = ((HttpServletRequestWrapper)request).getRequest();
+        }
+        return request;
+    }
+    
+    public ServletResponse unwrapContainerResponse(HttpServletResponse containerResponse)
+    {
+        return containerResponse;
     }
 }
