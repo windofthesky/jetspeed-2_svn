@@ -130,9 +130,9 @@ public class PortletWindowSessionNavigationalStates implements Serializable
             {
                 Map.Entry<QName, String[]> entry = iter.next();
                 ValuesAndWindowUsage vawu = publicRenderParametersMap.get(entry.getKey());
-                if (vawu != null && changedParameterValues(entry.getValue(), vawu.getValues()))
+                if (vawu == null || changedParameterValues(entry.getValue(), vawu.getValues()))
                 {
-                    if (vawu.getWindowIds() != null)
+                    if (vawu != null && vawu.getWindowIds() != null)
                     {
                         for (String windowId : vawu.getWindowIds())
                         {
@@ -146,6 +146,10 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                     if (entry.getValue() == null)
                     {
                         iter.remove();
+                    }
+                    else if (vawu == null)
+                    {
+                        publicRenderParametersMap.put(entry.getKey(), new ValuesAndWindowUsage(entry.getValue()));
                     }
                     else
                     {
