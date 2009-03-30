@@ -16,9 +16,15 @@
  */
 package org.apache.jetspeed.container;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.container.impl.AbstractPortletConfigImpl;
 
@@ -31,9 +37,12 @@ import org.apache.pluto.container.impl.AbstractPortletConfigImpl;
  */
 public class JetspeedPortletConfigImpl extends AbstractPortletConfigImpl implements JetspeedPortletConfig
 {
-    public JetspeedPortletConfigImpl(JetspeedPortletContext portletContext, PortletDefinition portlet)
+    private PortletFactory pf;
+    
+    public JetspeedPortletConfigImpl(PortletFactory pf, JetspeedPortletContext portletContext, PortletDefinition portlet)
     {
         super(portletContext, portlet);
+        this.pf = pf;
     }
 
     public void setPortletDefinition(PortletDefinition pd)
@@ -51,6 +60,24 @@ public class JetspeedPortletConfigImpl extends AbstractPortletConfigImpl impleme
     
     public ResourceBundle getResourceBundle(Locale locale)
     {
-        return getPortletDefinition().getResourceBundle(locale);
+        return pf.getResourceBundle(getPortletDefinition(),locale);
+    }
+    
+    /**
+     * Overriding the default implementation from Pluto AbstractPortletConfigImpl to use the Jetspeed
+     * PortletDefinition.getLanguages() instead of having to convert from Locale -> String -> Locale again
+     * @Override
+     */
+    public Enumeration<Locale> getSupportedLocales() 
+    {
+        List<Locale> locales = new ArrayList<Locale>();
+        for (Language l : getPortletDefinition().getLanguages())
+        {
+            if (l.isSupportedLocale())
+            {
+                locales.add(l.getLocale());
+            }
+        }
+        return Collections.enumeration(locales);
     }
 }

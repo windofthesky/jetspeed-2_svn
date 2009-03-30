@@ -32,6 +32,12 @@ public interface Language extends PortletInfo, Serializable
     public static final String JAVAX_PORTLET_KEYWORDS = "javax.portlet.keywords";
     
     Locale getLocale();
+    
+    /**
+     * @return true if this Language Locale is a supported-locale from or for the Portlet descriptor
+     */
+    boolean isSupportedLocale();
+    void setSupportedLocale(boolean supportedLocale);
     List<String> getKeywordList();
     void setKeywords(String keywords);
 }

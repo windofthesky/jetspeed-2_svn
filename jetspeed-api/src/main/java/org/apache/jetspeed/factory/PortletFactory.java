@@ -17,6 +17,8 @@
 package org.apache.jetspeed.factory;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletURLGenerationListener;
@@ -51,6 +53,8 @@ public interface PortletFactory
     PortletInstance getPortletInstance( ServletContext servletContext, PortletDefinition pd, boolean noProxy ) throws PortletException;
     PreferencesValidator getPreferencesValidator(PortletDefinition pd);
     void updatePortletConfig(PortletDefinition pd);
+    ResourceBundle getResourceBundle(PortletApplication pa, Locale locale);
+    ResourceBundle getResourceBundle(PortletDefinition pd, Locale locale);
     List<PortletURLGenerationListener> getPortletApplicationListeners(PortletApplication pa) throws PortletException;
     PortletFilterInstance getPortletFilterInstance(PortletApplication pa, String filterName) throws PortletException;
 }

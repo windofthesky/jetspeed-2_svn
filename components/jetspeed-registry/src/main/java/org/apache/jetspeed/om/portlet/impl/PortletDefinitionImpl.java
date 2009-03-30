@@ -21,19 +21,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
-import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
@@ -69,7 +65,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 {
     private static final long serialVersionUID = 1L;
     private static PortletRegistry registry;
-    private static PortletFactory  portletFactory;
     private static PortletPreferencesProvider portletPreferencesProvider;
 
     private PortletApplication app;
@@ -100,18 +95,9 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     private List<SupportedPublicRenderParameter> supportedPublicRenderParameters;
     private Preferences descriptorPreferences = new PreferencesImpl();    
     
-    private transient Map<Locale,InlinePortletResourceBundle> resourceBundles = new HashMap<Locale, InlinePortletResourceBundle>();
-    
-    protected List portletEntities;
-
     public static void setPortletRegistry(PortletRegistry registry)
     {
         PortletDefinitionImpl.registry = registry;
-    }
-
-    public static void setPortletFactory(PortletFactory portletFactory)
-    {
-        PortletDefinitionImpl.portletFactory = portletFactory;
     }
 
     public static void setPortletPreferencesProvider(PortletPreferencesProvider portletPreferencesProvider)
@@ -123,37 +109,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     {
     }
 
-    protected ClassLoader getPortletClassLoader()
-    {
-        return portletFactory.getPortletApplicationClassLoader(app);
-    }
-
-    protected ResourceBundle loadResourceBundle( Locale locale )
-    {
-        ResourceBundle resourceBundle = null;
-        try
-        {
-            if (getResourceBundle() != null)
-            {
-                ClassLoader cl = getPortletClassLoader();
-                if (cl != null)
-                {
-                    resourceBundle = ResourceBundle.getBundle(getResourceBundle(), locale, cl);
-                }
-                else
-                {
-                    resourceBundle = ResourceBundle.getBundle(getResourceBundle(), locale, Thread.currentThread()
-                            .getContextClassLoader());
-                }
-            }
-        }
-        catch (MissingResourceException x)
-        {
-            return null;
-        }
-        return resourceBundle;
-    }
-    
     public PortletApplication getApplication()
     {
         return app;
@@ -222,82 +177,44 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return descriptorPreferences.addPreference(name);
     }       
     
-    
-    public ResourceBundle getResourceBundle(Locale locale)
-    {
-        InlinePortletResourceBundle bundle = resourceBundles.get(locale);
-        if (bundle == null)
-        {
-            Language l = getLanguage(locale);
-            if (l == null)
-            {
-                // always returns a default language
-                l = getLanguage(JetspeedLocale.getDefaultLocale());
-            }
-            ResourceBundle loadedBundle = null;
-            if (getResourceBundle() != null)
-            {
-                loadedBundle = loadResourceBundle(locale);
-                if (loadedBundle == null && !l.equals(JetspeedLocale.getDefaultLocale()))
-                {
-                    loadedBundle = loadResourceBundle(JetspeedLocale.getDefaultLocale());
-                }
-            }
-            if (loadedBundle != null)
-            {
-                bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords(), loadedBundle);
-            }
-            else
-            {
-                bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords());
-            }
-            resourceBundles.put(locale, bundle);
-        }
-        return bundle;
-    }
-
     public Language getLanguage(Locale locale)
     {
         Language lang = null;
         Language fallback = null;
+        Language defaultLanguage = null;
+        boolean defaultLocale = locale.equals(JetspeedLocale.getDefaultLocale());
         
         for (Language l : getLanguages())
         {
-            if (l.getLocale().equals(locale))
+            if (locale.equals(l.getLocale()))
             {
                 lang = l;
                 break;
             }
-            if (l.getLocale().getLanguage().equals(locale.getLanguage()))
+            if (locale.getLanguage().equals(l.getLocale().getLanguage()))
             {
                 fallback = l;
             }            
-        }
-        if (lang == null)
-        {
-            if (fallback == null)
+            if (defaultLanguage == null && !defaultLocale && l.getLocale().equals(JetspeedLocale.getDefaultLocale()))
             {
-                if (JetspeedLocale.getDefaultLocale().equals(locale))
-                {
-                    // No default Language set/provided yet, adding it on the fly
-                    lang = addLanguage(JetspeedLocale.getDefaultLocale());
-                }
-                else
-                {
-                    // create a new locale on the fly but don't save it
-                    fallback = getLanguage(JetspeedLocale.getDefaultLocale());
-                }
+                defaultLanguage = l;
+            }
+        }        
+        if (lang == null)
+        {            
+            LanguageImpl l = new LanguageImpl();
+            l.setLocale(locale);
+            if (fallback == null && defaultLanguage != null)
+            {
+                fallback = defaultLanguage;
             }
             if (fallback != null)
             {
-                // create a copy of the fallback for the locale but don't save it
-                LanguageImpl l = new LanguageImpl();
-                l.setLocale(locale);
                 l.setTitle(fallback.getTitle());
                 l.setShortTitle(fallback.getShortTitle());
                 l.setKeywords(fallback.getKeywords());
-                lang = l;
             }
+            lang = l;
         }
         return lang;
     }
@@ -313,8 +230,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     
     public Language addLanguage(Locale locale)
     {
-        // clear resourceBundle cache
-        resourceBundles.clear();
         // ensure languages exist
         if ( languages == null )
         {
@@ -323,10 +238,8 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         
         for (Language l : languages)
         {
-            if (l.getLocale().equals(locale))
+            if (locale.equals(l.getLocale()))
             {
-                // very special usage needed for Language as the default locale might have been created on the fly
-                // and will always be returned for getLanguage(defaultLocale)
                 return l;
             }
         }
@@ -642,7 +555,10 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         List<String> locales = new ArrayList<String>();
         for (Language l : languages)
         {
-            locales.add(l.getLocale().toString());
+            if (l.isSupportedLocale())
+            {
+                locales.add(l.getLocale().toString());
+            }
         }
         return locales;
     }

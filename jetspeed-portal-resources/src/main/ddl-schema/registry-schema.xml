@@ -47,6 +47,7 @@ limitations under the License.
 		<column name="CHECKSUM" size="80" type="VARCHAR"/>
         <column name="SECURITY_REF" size="40" type="VARCHAR"/>
         <column name="DEFAULT_NAMESPACE" size="120" type="VARCHAR"/>
+        <column name="RESOURCE_BUNDLE" size="255" type="VARCHAR"/>
         <unique name="UK_APPLICATION">
             <unique-column name="APP_NAME"/>
         </unique>
@@ -86,9 +87,10 @@ limitations under the License.
     <table name="LANGUAGE">
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PORTLET_ID" required="true" type="INTEGER"/>
+        <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
+        <column name="SUPPORTED_LOCALE" required="true" type="BOOLEANINT"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="100" type="VARCHAR"/>
-        <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
         <column name="KEYWORDS" type="LONGVARCHAR"/>
     </table>
     

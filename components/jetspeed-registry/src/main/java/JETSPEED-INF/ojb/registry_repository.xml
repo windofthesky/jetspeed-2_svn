@@ -166,6 +166,12 @@
          jdbc-type="VARCHAR"
       />
             
+      <field-descriptor
+         name="resourceBundle"
+         column="RESOURCE_BUNDLE"
+         jdbc-type="VARCHAR"
+      />
+
       <collection-descriptor
          name="metadataFields"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletApplicationLocalizedFieldImpl"
@@ -631,6 +637,21 @@
       />
 
       <field-descriptor
+         name="locale"
+         column="LOCALE_STRING"
+         jdbc-type="VARCHAR"
+         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
+      />
+
+      <field-descriptor
+          name="supportedLocale"
+          column="SUPPORTED_LOCALE"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      />
+      
+      <field-descriptor
          name="title"
          column="TITLE"
          jdbc-type="VARCHAR"
@@ -645,13 +666,6 @@
          name="keywords"
          column="KEYWORDS"
          jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="locale"
-         column="LOCALE_STRING"
-         jdbc-type="VARCHAR"
-         conversion="org.apache.jetspeed.util.ojb.LocaleFieldConversion"
       />
 
    </class-descriptor>

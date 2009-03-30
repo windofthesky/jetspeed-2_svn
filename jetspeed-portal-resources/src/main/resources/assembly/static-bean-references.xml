@@ -29,17 +29,6 @@
     </property>
   </bean>
 
-  <bean id="_portletDefinitionImplPortletFactoryInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="className" value="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" />
-    <property name="methodName" value="setPortletFactory" />
-    <property name="typeName" value="org.apache.jetspeed.factory.PortletFactory" />
-    <property name="value">
-      <ref bean="portletFactory" />
-    </property>
-  </bean>
-
   <bean id="_portletDefinitionImplPortletPreferencesProviderInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,registry" />

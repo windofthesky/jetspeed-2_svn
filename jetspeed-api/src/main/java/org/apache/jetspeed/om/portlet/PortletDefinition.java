@@ -76,8 +76,6 @@ public interface PortletDefinition extends org.apache.pluto.container.om.portlet
     List<Language> getLanguages();
     Language addLanguage(Locale locale);
     
-    ResourceBundle getResourceBundle(Locale locale);
-    
     /**
      * A portlet's unique name is a string formed by the combination of a portlet's
      * unique within it's parent application plus the parent application's

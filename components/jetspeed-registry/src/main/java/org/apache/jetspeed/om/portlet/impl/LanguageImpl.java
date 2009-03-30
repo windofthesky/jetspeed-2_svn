@@ -45,6 +45,7 @@ public class LanguageImpl implements Language, Serializable
     private String title;
     private String shortTitle;
     private Locale locale;
+    private boolean supportedLocale;
     private String keywords;
     private transient List<String> keywordList;
 
@@ -55,6 +56,16 @@ public class LanguageImpl implements Language, Serializable
     public Locale getLocale()
     {
         return locale;
+    }
+    
+    public boolean isSupportedLocale()
+    {
+        return supportedLocale;
+    }
+    
+    public void setSupportedLocale(boolean supportedLocale)
+    {
+        this.supportedLocale = supportedLocale;
     }
 
     public String getTitle()
@@ -67,7 +78,6 @@ public class LanguageImpl implements Language, Serializable
         return shortTitle;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getKeywordList()
     {
         if ( keywordList == null )

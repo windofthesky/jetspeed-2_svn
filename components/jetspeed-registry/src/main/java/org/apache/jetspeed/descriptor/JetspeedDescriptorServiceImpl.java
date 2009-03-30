@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.xml.XMLConstants;
@@ -568,13 +568,18 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
             jsrr.setRoleLink(srr.getRoleLink());
         }
         
-        addLanguage(jpd, pd.getPortletInfo(), JetspeedLocale.getDefaultLocale());
-        for (String locale : pd.getSupportedLocales())
+        // First load the required default PortletInfo Language using the English Locale
+        Language defaultLanguage = addLanguage(jpd, pd.getPortletInfo(), JetspeedLocale.getDefaultLocale(), false);
+        for (String localeString : pd.getSupportedLocales())
         {
-            Locale l = JetspeedLocale.convertStringToLocale(locale);
-            if (!l.equals(JetspeedLocale.getDefaultLocale()))
+            Locale locale = JetspeedLocale.convertStringToLocale(localeString);
+            if (locale.equals(JetspeedLocale.getDefaultLocale()))
             {
-                addLanguage(jpd, pd.getPortletInfo(), l);
+                defaultLanguage.setSupportedLocale(true);
+            }
+            else
+            {
+                addLanguage(jpd, pd.getPortletInfo(), locale, true);
             }
         }
         
@@ -618,44 +623,41 @@ public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
         }
     }
     
-    protected Language addLanguage(PortletDefinition jpd, PortletInfo info, Locale locale)
-    {        
+    protected Language addLanguage(PortletDefinition jpd, PortletInfo info, Locale locale, boolean supportedLocale)
+    {                
         Language l = jpd.addLanguage(locale);
-        // first *not* initializing the language yet with the default PortletInfo
-        // so getResourceBundle(locale) will create one using the potentially provided values from the loaded resource bundle (if any)
-        ResourceBundle bundle = jpd.getResourceBundle(locale);
-        String value = bundle.getString(Language.JAVAX_PORTLET_TITLE);
-        if (value.equals(""))
+        l.setSupportedLocale(supportedLocale);
+        l.setTitle(info.getTitle());
+        l.setShortTitle(info.getShortTitle());
+        l.setKeywords(info.getKeywords());
+        if (locale != null && jpd.getResourceBundle() != null)
         {
-            // resourceBundle didn't provide a title, initialize with the PortletInfo default (if any)
-            l.setTitle(info.getTitle());
-        }
-        else
-        {
-            // initialize with the value provided by the resource bundle
-            l.setTitle(value);
-        }
-        value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
-        if (value.equals(""))
-        {
-            // resourceBundle didn't provide a short title, initialize with the PortletInfo default (if any)
-            l.setShortTitle(info.getShortTitle());
-        }
-        else
-        {
-            // initialize with the value provided by the resource bundle
-            l.setShortTitle(value);
-        }
-        value = bundle.getString(Language.JAVAX_PORTLET_KEYWORDS);
-        if (value.equals(""))
-        {
-            // resourceBundle didn't provide keywords, initialize with the PortletInfo default (if any)
-            l.setKeywords(info.getKeywords());
-        }
-        else
-        {
-            // initialize with the value provided by the resource bundle
-            l.setKeywords(value);
+            try
+            {
+                ResourceBundle bundle = ResourceBundle.getBundle(jpd.getResourceBundle(), locale, Thread.currentThread().getContextClassLoader());
+                String value = bundle.getString(Language.JAVAX_PORTLET_TITLE);
+                if (value != null && !value.equals(""))
+                {
+                    // use the value provided by the resource bundle
+                    l.setTitle(value);
+                }
+                value = bundle.getString(Language.JAVAX_PORTLET_SHORT_TITLE);
+                if (value != null && !value.equals(""))
+                {
+                    // use the value provided by the resource bundle
+                    l.setShortTitle(value);
+                }
+                value = bundle.getString(Language.JAVAX_PORTLET_KEYWORDS);
+                if (value != null && !value.equals(""))
+                {
+                    // user the value provided by the resource bundle
+                    l.setKeywords(value);
+                }
+            }
+            catch (MissingResourceException e)
+            {
+                // ignore
+            }
         }
         return l;
     }

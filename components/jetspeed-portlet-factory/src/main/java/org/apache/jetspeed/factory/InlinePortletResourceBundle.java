@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.portlet.impl;
+package org.apache.jetspeed.factory;
 
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
  * 
  * @version: $Id$
  */
-class InlinePortletResourceBundle extends ListResourceBundle
+public class InlinePortletResourceBundle extends ListResourceBundle
 {
     private final static String TITLE_KEY = "javax.portlet.title";
     private final static String SHORT_TITLE_KEY = "javax.portlet.short-title";

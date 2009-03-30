@@ -17,6 +17,8 @@
 package org.apache.jetspeed;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
@@ -69,6 +71,16 @@ public final class PortletFactoryMock implements PortletFactory
 
     public PortletInstance getPortletInstance(ServletContext servletContext, PortletDefinition pd, boolean noProxy)
     throws PortletException
+    {
+        return null;
+    }
+
+    public ResourceBundle getResourceBundle(PortletDefinition pd, Locale locale)
+    {
+        return null;
+    }
+
+    public ResourceBundle getResourceBundle(PortletApplication pa, Locale locale)
     {
         return null;
     }
