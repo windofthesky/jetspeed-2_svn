@@ -26,9 +26,8 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.administration.PortalConfiguration;
-import org.apache.jetspeed.container.PortletRequestContext;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.om.portlet.PortletApplication;
 
 /**
  * Implementation of Portal Context associated with running thread of the engine
@@ -220,11 +219,10 @@ public class JetspeedPortalContext implements PortalContext
     
     private Collection getSupportedModes()
     {
-        PortletRequestContext ctx = PortletRequestContext.getContext();
-        if ( ctx != null )
+        PortletWindow window = Jetspeed.getCurrentRequestContext().getCurrentPortletWindow();
+        if (window != null)
         {
-            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getApplication());
-            return pa.getSupportedPortletModes();
+            return window.getPortletDefinition().getApplication().getSupportedPortletModes();
         }
         return JetspeedActions.getStandardPortletModes();
     }
@@ -244,11 +242,10 @@ public class JetspeedPortalContext implements PortalContext
 
     private Collection getSupportedStates()
     {
-        PortletRequestContext ctx = PortletRequestContext.getContext();
-        if ( ctx != null )
+        PortletWindow window = Jetspeed.getCurrentRequestContext().getCurrentPortletWindow();
+        if (window != null)
         {
-            PortletApplication pa = ((PortletApplication)ctx.getPortletDefinition().getApplication());
-            return pa.getSupportedWindowStates();
+            return window.getPortletDefinition().getApplication().getSupportedWindowStates();
         }
         return JetspeedActions.getStandardWindowStates();
     }

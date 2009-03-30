@@ -23,9 +23,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.JetspeedPortletContext;
-import org.apache.pluto.container.PortletInvokerService;
-import org.apache.pluto.container.PortletRequestContext;
 import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
@@ -36,10 +35,6 @@ import org.apache.portals.bridges.common.ServletContextProvider;
  */
 public class ServletContextProviderImpl implements ServletContextProvider 
 {
-    private PortletRequestContext getRequestContext(PortletRequest request)
-    {
-        return ((PortletRequestContext)request.getAttribute(PortletInvokerService.REQUEST_CONTEXT));
-    }
     public ServletContext getServletContext(GenericPortlet portlet) 
     {
         return ((JetspeedPortletContext)portlet.getPortletContext()).getServletContext();
@@ -47,11 +42,11 @@ public class ServletContextProviderImpl implements ServletContextProvider
 
     public HttpServletRequest getHttpServletRequest(GenericPortlet portlet, PortletRequest request) 
     {
-        return getRequestContext(request).getServletRequest();
+        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getServletRequest();
     }
 
     public HttpServletResponse getHttpServletResponse(GenericPortlet portlet, PortletResponse response) 
     {
-        return getRequestContext(org.apache.jetspeed.container.PortletRequestContext.getContext().getRequest()).getServletResponse();
+        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getServletResponse();
     }
 }
