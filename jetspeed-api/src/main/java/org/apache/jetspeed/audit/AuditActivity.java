@@ -60,6 +60,12 @@ public interface AuditActivity
     public static final String USER_DELETE_ATTRIBUTE = "user-delete-attr";
     public static final String USER_UPDATE_ATTRIBUTE = "user-update-attr";
     
+    public static final String REGISTRY_DEPLOY = "registry-deploy";
+    public static final String REGISTRY_UNDEPLOY = "registry-undeploy";
+    public static final String REGISTRY_STOP = "registry-stop";
+    public static final String REGISTRY_START = "registry-start";
+    public static final String REGISTRY_DELETE = "registry-delete";
+    
     // General Categories
     public static final String CAT_USER_AUTHENTICATION = "authentication";
     public static final String CAT_USER_ATTRIBUTE = "user-attribute";
@@ -67,6 +73,7 @@ public interface AuditActivity
     public static final String CAT_ADMIN_CREDENTIAL_MAINTENANCE = "credential";
     public static final String CAT_ADMIN_ATTRIBUTE_MAINTENANCE = "attribute";
     public static final String CAT_ADMIN_AUTHORIZATION_MAINTENANCE = "authorization";    
+    public static final String CAT_ADMIN_REGISTRY_MAINTENANCE = "registry";    
     
     /**
      * Enable or disable the service at runtime
@@ -116,7 +123,7 @@ public interface AuditActivity
     public void logAdminAuthorizationActivity(String username, String ipaddress, String targetUser, String activity, String name, String description);
     
     /**
-     * Log auditable activity by an administrator on attirbutes on behalf of a user
+     * Log auditable activity by an administrator on attributes on behalf of a user
      * 
      * @param username
      * @param ipaddress
@@ -130,7 +137,7 @@ public interface AuditActivity
     public void logAdminAttributeActivity(String username, String ipaddress, String targetUser, String activity, String name, String beforeValue, String afterValue, String description);
 
     /**
-     * Log auditable activity by an administrator on attirbutes on behalf of a user
+     * Log auditable activity by an administrator on attributes on behalf of a user
      * 
      * @param username
      * @param ipaddress
@@ -142,6 +149,16 @@ public interface AuditActivity
      */
     public void logUserAttributeActivity(String username, String ipaddress, String activity, String name, String beforeValue, String afterValue, String description);
 
+    /**
+     * Log auditable activity by an administrator on registry maintenance
+     * 
+     * @param adminUser
+     * @param ipaddress
+     * @param activity
+     * @param description
+     */
+    public void logAdminRegistryActivity(String adminUser, String ipaddress, String activity, String description);
+    
     /**
      * @return DataSource in use by the logger useful for writing decent tests
      */

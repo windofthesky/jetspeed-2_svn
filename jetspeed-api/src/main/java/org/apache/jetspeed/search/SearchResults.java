@@ -27,11 +27,11 @@ public interface SearchResults
 {
     public int size();
     
-    public Iterator iterator();
+    public Iterator<ParsedObject> iterator();
     
     public ParsedObject get(int index);
     
-    public List getResults();
+    public List<ParsedObject> getResults();
     
-    public List getResults(int fromIndex, int toIndex);
+    public List<ParsedObject> getResults(int fromIndex, int toIndex);
 }

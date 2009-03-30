@@ -27,7 +27,7 @@ import java.net.URL;
  */
 public interface ParsedObject
 {
-
+    public static final String ID = "ID";
     public static final String FIELDNAME_KEY = "fieldname.key";
     public static final String FIELDNAME_KEY_DEFAULT = "Key";
     public static final String FIELDNAME_TYPE = "fieldname.type";
@@ -163,7 +163,7 @@ public interface ParsedObject
      * 
      * @return 
      */
-    public Map getFields();
+    public Map<String, String> getFields();
 
     /**
      * 
@@ -171,7 +171,7 @@ public interface ParsedObject
      * 
      * @param fields
      */
-    public void setFields(Map fields);
+    public void setFields(Map<String, String> fields);
         
     /**
      * @return
