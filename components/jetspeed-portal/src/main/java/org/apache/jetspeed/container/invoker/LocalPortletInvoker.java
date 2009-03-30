@@ -31,11 +31,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.FilterManager;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
@@ -60,14 +62,16 @@ import org.apache.pluto.container.PortletResponseContext;
  */
 public class LocalPortletInvoker implements JetspeedPortletInvoker
 {
+    protected PortalContext portalContext;
     protected PortletFactory portletFactory;
     protected ServletContext jetspeedContext;
     protected ServletConfig jetspeedConfig;
     protected PortletDefinition portletDefinition;
     protected boolean activated = false;
     
-    public LocalPortletInvoker()
+    public LocalPortletInvoker(PortalContext portalContext)
     {
+        this.portalContext = portalContext;
         activated = false;
     }
     
@@ -114,7 +118,10 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
         
         PortletWindowImpl window = (PortletWindowImpl)requestContext.getPortletWindow();
         
-        ClassLoader paClassLoader = portletFactory.getPortletApplicationClassLoader(portletDefinition.getApplication());
+        PortletApplication pa = portletDefinition.getApplication();
+        pa.setLocalContextPath(portalContext.getContextPath());
+
+        ClassLoader paClassLoader = portletFactory.getPortletApplicationClassLoader(pa);
         PortletInstance portletInstance = portletFactory.getPortletInstance(jetspeedContext, portletDefinition);
         
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();

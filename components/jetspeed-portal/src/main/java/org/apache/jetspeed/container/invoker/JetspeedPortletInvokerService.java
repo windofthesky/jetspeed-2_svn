@@ -69,6 +69,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
     public final static String DEFAULT_MAPPING_NAME = "/container";
     
     private ServletConfig servletConfig;
+    private PortalContext portalContext;
     private PortletFactory portletFactory;
     private ContainerRequestResponseUnwrapper requestResponseUnwrapper;
     private String servletMappingName;
@@ -82,6 +83,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
                                          PortletFactory portletFactory, ContainerRequestResponseUnwrapper requestResponseUnwrapper)
     {
         this.servletConfig = servletConfig;
+        this.portalContext = portalContext;
         this.portletFactory = portletFactory;
         this.requestResponseUnwrapper = requestResponseUnwrapper;
         this.servletMappingName = portalContext.getConfigurationProperty(INVOKER_SERVLET_MAPPING_NAME, DEFAULT_MAPPING_NAME);
@@ -143,7 +145,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         PortletDefinition portletDefinition = (PortletDefinition)requestContext.getPortletWindow().getPortletEntity().getPortletDefinition();
         if (portletDefinition.getApplication().getApplicationType() == PortletApplication.LOCAL)
         {
-            invoker = new LocalPortletInvoker();
+            invoker = new LocalPortletInvoker(portalContext);
         }
         else
         {

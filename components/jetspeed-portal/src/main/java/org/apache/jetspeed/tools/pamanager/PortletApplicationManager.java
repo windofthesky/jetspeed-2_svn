@@ -45,7 +45,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
  * PortletApplicationManager
  *
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
- * @version $Id: PortletApplicationManager.java,v 1.21 2005/04/09 00:24:44 shinsuke Exp $
+ * @version $Id$
  */
 public class PortletApplicationManager implements PortletApplicationManagement
 {
@@ -60,8 +60,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected PermissionManager     permissionManager;
     protected boolean               autoCreateRoles;
     protected List<String>          permissionRoles;
-    protected String                portalContextPath;
-    
     protected int  descriptorChangeMonitorInterval = DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL;
     /**
      * holds the max number of retries in case of unsuccessful PA start
@@ -75,30 +73,24 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected JetspeedDescriptorService descriptorService;
     
     /**
-	 * Creates a new PortletApplicationManager object.
-	 */
-	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
+     * Creates a new PortletApplicationManager object.
+     */
+    public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
         PermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List<String> permissionRoles, NodeManager nodeManager, String appRoot,
         JetspeedDescriptorService descriptorService)
-	{
-		this.portletFactory     = portletFactory;
-		this.registry		    = registry;
+    {
+        this.portletFactory     = portletFactory;
+        this.registry           = registry;
         this.permissionManager  = permissionManager;
         this.searchEngine       = searchEngine;
         this.roleManager        = roleManager;        
         this.permissionRoles    = permissionRoles;
-        this.nodeManager		= nodeManager;
+        this.nodeManager        = nodeManager;
         this.appRoot            = appRoot;
         this.descriptorService  = descriptorService;
-        portalContextPath  = appRoot.replace('\\','/');
-        if (portalContextPath.endsWith("/"))
-        {
-            portalContextPath = portalContextPath.substring(0, portalContextPath.length()-1 );
-        }
-        portalContextPath = portalContextPath.substring(portalContextPath.lastIndexOf('/'));
-	}
-	
+    }
+    
     public void start()
     {
         if ( descriptorChangeMonitorInterval > 0 )
@@ -147,10 +139,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.autoCreateRoles = autoCreateRoles;
     }
 
-	public void setSearchEngine(SearchEngine searchEngine)
-	{
-		this.searchEngine = searchEngine;
-	}
+    public void setSearchEngine(SearchEngine searchEngine)
+    {
+        this.searchEngine = searchEngine;
+    }
     
     protected void checkStarted()
     {
@@ -160,21 +152,21 @@ public class PortletApplicationManager implements PortletApplicationManagement
         }
     }
 
-	public void startLocalPortletApplication(String contextName, FileSystemHelper warStruct,
-		ClassLoader paClassLoader)
-		throws RegistryException
-	{
+    public void startLocalPortletApplication(String contextName, FileSystemHelper warStruct,
+        ClassLoader paClassLoader)
+        throws RegistryException
+    {
         checkStarted();
-        startPA(contextName, portalContextPath, warStruct, paClassLoader, PortletApplication.LOCAL);
-	}
+        startPA(contextName, "/"+contextName, warStruct, paClassLoader, PortletApplication.LOCAL);
+    }
 
-	public void startPortletApplication(String contextName, FileSystemHelper warStruct,
-		ClassLoader paClassLoader)
-		throws RegistryException
-	{
+    public void startPortletApplication(String contextName, FileSystemHelper warStruct,
+        ClassLoader paClassLoader)
+        throws RegistryException
+    {
          startPortletApplication(contextName, "/"+contextName, warStruct, paClassLoader);
-	}
-	
+    }
+    
     public void startPortletApplication(String contextName, String contextPath, FileSystemHelper warStruct,
             ClassLoader paClassLoader) throws RegistryException
     {
@@ -192,15 +184,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
         
     }    
 
-	public void stopLocalPortletApplication(String contextName)
-		throws RegistryException
-	{
-		stopPA(contextName, PortletApplication.LOCAL);
-	}
+    public void stopLocalPortletApplication(String contextName)
+        throws RegistryException
+    {
+        stopPA(contextName, PortletApplication.LOCAL);
+    }
 
-	public void stopPortletApplication(String contextName)
-		throws RegistryException
-	{
+    public void stopPortletApplication(String contextName)
+        throws RegistryException
+    {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
@@ -211,11 +203,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
-	}
+    }
 
-	public void unregisterPortletApplication(String paName)
-		throws RegistryException
-	{
+    public void unregisterPortletApplication(String paName)
+        throws RegistryException
+    {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
@@ -247,7 +239,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
                 catch (Exception ee)
                 {
-                	// we actually do not care about an exception in the remove operation...
+                    // we actually do not care about an exception in the remove operation...
                 }
             }
         }
@@ -255,80 +247,85 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
-	}
+    }
     
-	protected void checkValidContextName(String contextName, boolean local)
-		throws RegistryException
-	{
-		int prefixLength = LOCAL_PA_PREFIX.length();
+    protected void checkValidContextName(String contextName, boolean local)
+        throws RegistryException
+    {
+        int prefixLength = LOCAL_PA_PREFIX.length();
 
-		if ((contextName.length() >= prefixLength)
-			&& contextName.substring(0, prefixLength).equalsIgnoreCase(LOCAL_PA_PREFIX))
-		{
-			if (!local)
-			{
-				throw new RegistryException("Prefix \"" + LOCAL_PA_PREFIX
-					+ "\" is reserved for Local Portlet Applications only.");
-			}
-		}
-		else if (local)
-		{
-			throw new RegistryException("Prefix \"" + LOCAL_PA_PREFIX
-				+ "\" is required for Local Portlet Applications.");
-		}
-	}
+        if ((contextName.length() >= prefixLength)
+            && contextName.substring(0, prefixLength).equalsIgnoreCase(LOCAL_PA_PREFIX))
+        {
+            if (!local)
+            {
+                throw new RegistryException("Prefix \"" + LOCAL_PA_PREFIX
+                    + "\" is reserved for Local Portlet Applications only.");
+            }
+        }
+        else if (local)
+        {
+            throw new RegistryException("Prefix \"" + LOCAL_PA_PREFIX
+                + "\" is required for Local Portlet Applications.");
+        }
+    }
 
-	protected PortletApplication registerPortletApplication(PortletApplicationWar paWar,
-		PortletApplication oldPA, int paType, ClassLoader paClassLoader)
-		throws RegistryException
-	{
-	    long revision = 0;
-		if (oldPA != null)
-		{
-		    revision = oldPA.getRevision();
-			unregisterPortletApplication(oldPA, false);
-			oldPA = null;
-		}
+    protected PortletApplication registerPortletApplication(PortletApplicationWar paWar,
+        PortletApplication oldPA, int paType, ClassLoader paClassLoader)
+        throws RegistryException
+    {
+        long revision = 0;
+        if (oldPA != null)
+        {
+            revision = oldPA.getRevision();
+            unregisterPortletApplication(oldPA, false);
+            oldPA = null;
+        }
 
-		PortletApplication pa		 = null;
-		boolean					  registered = false;
-		String					  paName     = paWar.getPortletApplicationName();
+        PortletApplication pa        = null;
+        boolean                   registered = false;
+        String                    paName     = paWar.getPortletApplicationName();
 
-		try
-		{
+        try
+        {
             log.info("Loading deployment descriptors for "+paName+" ....");
-			pa = paWar.createPortletApp(paClassLoader);
+            pa = paWar.createPortletApp(paClassLoader);
             pa.setApplicationType(paType);
-			if (revision > 0)
-			{
-			    pa.setRevision(revision);
-			}
-		}
-		catch (Exception e)
-		{
-			String msg = "Failed to load portlet application for "
-				+ paWar.getPortletApplicationName();
-			log.error(msg, e);
-			throw new RegistryException(msg);
-		}
+            if (revision > 0)
+            {
+                pa.setRevision(revision);
+            }
 
-		// register the portlet application
-		try
-		{
-			registry.registerPortletApplication(pa);
-			registered = true;
-			log.info("Registered the portlet application " + paName);
+            if (paType == PortletApplication.LOCAL)
+            {
+                pa.setContextPath("<portal>");
+            }
+        }
+        catch (Exception e)
+        {
+            String msg = "Failed to load portlet application for "
+                + paWar.getPortletApplicationName();
+            log.error(msg, e);
+            throw new RegistryException(msg);
+        }
 
-			// add to search engine result
-			this.updateSearchEngine(false, pa);
-			
-			// and add to the current node info
+        // register the portlet application
+        try
+        {
+            registry.registerPortletApplication(pa);
+            registered = true;
+            log.info("Registered the portlet application " + paName);
+
+            // add to search engine result
+            this.updateSearchEngine(false, pa);
+            
+            // and add to the current node info
             if (nodeManager != null)
             {            
                 nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
             }
             // grant default permissions to portlet application
-			grantDefaultPermissions(paName);
+            grantDefaultPermissions(paName);
             
             if ( autoCreateRoles && roleManager != null && pa.getSecurityRoles() != null )
             {
@@ -347,40 +344,40 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
             }
 
-			return pa;
-		}
-		catch (Exception e)
-		{
-			String msg = "Failed to register portlet application, " + paName;
-			log.error(msg, e);
+            return pa;
+        }
+        catch (Exception e)
+        {
+            String msg = "Failed to register portlet application, " + paName;
+            log.error(msg, e);
 
-			if (registered)
-			{
-				try
-				{
-					unregisterPortletApplication(pa, (paType == PortletApplication.LOCAL));
-				}
-				catch (Exception re)
-				{
-					log.error("Failed to rollback registration of portlet application " + paName, re);
-				}
-			}
+            if (registered)
+            {
+                try
+                {
+                    unregisterPortletApplication(pa, (paType == PortletApplication.LOCAL));
+                }
+                catch (Exception re)
+                {
+                    log.error("Failed to rollback registration of portlet application " + paName, re);
+                }
+            }
 
-			throw new RegistryException(msg, e);
-		}
-	}
+            throw new RegistryException(msg, e);
+        }
+    }
 
-	protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
-	        ClassLoader paClassLoader, int paType)
-	throws RegistryException
-	{
-	    startPA(contextName, contextPath, warStruct, paClassLoader, paType, 0);
-	}
-	
-	protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
-	        ClassLoader paClassLoader, int paType, long checksum)
-	throws RegistryException
-	{
+    protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
+            ClassLoader paClassLoader, int paType)
+    throws RegistryException
+    {
+        startPA(contextName, contextPath, warStruct, paClassLoader, paType, 0);
+    }
+    
+    protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
+            ClassLoader paClassLoader, int paType, long checksum)
+    throws RegistryException
+    {
         boolean register = true;
         boolean monitored = false;
         DescriptorChangeMonitor changeMonitor = this.monitor;
@@ -393,8 +390,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
             log.debug("Is portlet application " + contextName + " monitored? -> " + monitored);
         }
         PortletApplicationWar paWar = null;
-		try
-		{
+        try
+        {
             if (log.isDebugEnabled())
             {
                 log.debug("Try to start portlet application " + contextName + ".");
@@ -428,15 +425,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 register = false;
             }
 
-			// try to get the PA from database by context name
-			PortletApplication pa = registry.getPortletApplication(contextName);
+            // try to get the PA from database by context name
+            PortletApplication pa = registry.getPortletApplication(contextName);
 
             if (pa != null)
             {
                 if (log.isDebugEnabled())
                 {
                     log.debug("Portlet Application " + contextName + " found in registry.");
-            	}
+                }
                 if ( pa.getApplicationType() != paType )
                 {
                     throw new RegistryException("Cannot start portlet application "+contextName+": as Application Types don't match: " + pa.getApplicationType() + " != " + paType);
@@ -454,125 +451,125 @@ public class PortletApplicationManager implements PortletApplicationManagement
 //            if (register && (pa == null || checksum != pa.getChecksum()))
             if (register)
             {
-            	if (pa == null)
-            	{ 
-            		// new
-	                try
-	                {
-	                    if (log.isDebugEnabled())
+                if (pa == null)
+                { 
+                    // new
+                    try
+                    {
+                        if (log.isDebugEnabled())
                         {
-	                        log.debug("Register new portlet application " + contextName + ".");
+                            log.debug("Register new portlet application " + contextName + ".");
                         }
-	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
-	                }
-	                catch (Exception e)
-	                {
-	                    String msg = "Error register new portlet application " + contextName + ".";
-	                	
-	                    if (log.isDebugEnabled())
-	                	{
-	                	    log.debug(msg);
-	                	}
-                    	throw new RegistryException(msg);
-	                    
-	                }
-            	}
-            	else
-            	{
+                        pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
+                    }
+                    catch (Exception e)
+                    {
+                        String msg = "Error register new portlet application " + contextName + ".";
+                        
+                        if (log.isDebugEnabled())
+                        {
+                            log.debug(msg);
+                        }
+                        throw new RegistryException(msg);
+                        
+                    }
+                }
+                else
+                {
                     if (log.isDebugEnabled())
                     {
                         log.debug("Re-register existing portlet application " + contextName + ".");
                     }
-            		int status = nodeManager.checkNode(new Long(pa.getRevision()), pa.getName());
-        			boolean reregister = false;
-        			boolean deploy = false;
-        			switch (status)
-        			{
-        				case  NodeManager.NODE_NEW:
-        				{
+                    int status = nodeManager.checkNode(new Long(pa.getRevision()), pa.getName());
+                    boolean reregister = false;
+                    boolean deploy = false;
+                    switch (status)
+                    {
+                        case  NodeManager.NODE_NEW:
+                        {
                             if (log.isDebugEnabled())
                             {
                                 log.debug("Node for Portlet application " + contextName + " is NEW.");
                             }
-            				//only reason is that the file got somehow corrupted 
-            				// so we really do not know what is going on here...
-            				// the best chance at this point is to reregister (which might be the absolute wrong choice)
-            				log.warn("The portlet application " + pa.getName() + " is registered in the database but not locally .... we will reregister");
-            				reregister = true;
-        					if (checksum != pa.getChecksum())
-        					{
-        					    log.warn("The provided portlet application " + pa.getName() + " is a different version than in the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will redeploy (also to the database)");
-    							deploy = true;
-        					}
-        					break;
-        				}
-        				case  NodeManager.NODE_SAVED:
-        				{
+                            //only reason is that the file got somehow corrupted 
+                            // so we really do not know what is going on here...
+                            // the best chance at this point is to reregister (which might be the absolute wrong choice)
+                            log.warn("The portlet application " + pa.getName() + " is registered in the database but not locally .... we will reregister");
+                            reregister = true;
+                            if (checksum != pa.getChecksum())
+                            {
+                                log.warn("The provided portlet application " + pa.getName() + " is a different version than in the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will redeploy (also to the database)");
+                                deploy = true;
+                            }
+                            break;
+                        }
+                        case  NodeManager.NODE_SAVED:
+                        {
                             if (log.isDebugEnabled())
                             {
                                 log.debug("Node for Portlet application " + contextName + " is SAVED.");
                             }
-        					if (checksum != pa.getChecksum())
-                    		{	
-        					    log.warn("The provided portlet application " + pa.getName() + " is a different version than in the local node info and the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will reregister AND redeploy (also to the database)");
-        						//database and local node info are in synch, so we assume that this is a brand new
-        						// war .... let's deploy
-        						reregister = true;
-        						deploy = true;
-                    		}
-        					break;
-        				}
-        				case  NodeManager.NODE_OUTDATED:
-        				{
-                            // new version in database, maybe changed by a different cluster node
-        				    if (log.isDebugEnabled())
-        				    {
-        				        log.debug("Node for Portlet application " + contextName + " is OUTDATED (local PA.id < DB PA.id).");
-        				    }
-            				//database version is older (determined by id) than the database 
-        					//let's deploy and reregister
-        				    if (checksum != pa.getChecksum())
-        				    {
-        					    log.error("The portlet application " + pa.getName() + " provided for the upgrade IS WRONG. The database checksum= " + pa.getChecksum() + ", but the local=" + checksum + "....THIS NEEDS TO BE CORRECTED");
-        					    // if the checksums do not match make sure the database is updated with the new PA from file system
-        					    // I've observed "unavailable PA" in clustered env for the cluster node that reported OUTDATED state
-        					    deploy = true;
-        					}
-        				    reregister = true;
-        				    break;
-        				}
-        			}
-        			if (deploy)
-        			{
-        			    if (log.isDebugEnabled())
-        			    {
-        			        log.debug("Register (deploy=true) Portlet application " + contextName + " in database.");
+                            if (checksum != pa.getChecksum())
+                            {   
+                                log.warn("The provided portlet application " + pa.getName() + " is a different version than in the local node info and the database (db-checksum=" + pa.getChecksum() + ", local-checksum=: " + checksum + ") .... we will reregister AND redeploy (also to the database)");
+                                //database and local node info are in synch, so we assume that this is a brand new
+                                // war .... let's deploy
+                                reregister = true;
+                                deploy = true;
+                            }
+                            break;
                         }
-	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
-        			}
-        			else
-        				if (reregister)
-        				{
+                        case  NodeManager.NODE_OUTDATED:
+                        {
+                            // new version in database, maybe changed by a different cluster node
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Node for Portlet application " + contextName + " is OUTDATED (local PA.id < DB PA.id).");
+                            }
+                            //database version is older (determined by id) than the database 
+                            //let's deploy and reregister
+                            if (checksum != pa.getChecksum())
+                            {
+                                log.error("The portlet application " + pa.getName() + " provided for the upgrade IS WRONG. The database checksum= " + pa.getChecksum() + ", but the local=" + checksum + "....THIS NEEDS TO BE CORRECTED");
+                                // if the checksums do not match make sure the database is updated with the new PA from file system
+                                // I've observed "unavailable PA" in clustered env for the cluster node that reported OUTDATED state
+                                deploy = true;
+                            }
+                            reregister = true;
+                            break;
+                        }
+                    }
+                    if (deploy)
+                    {
+                        if (log.isDebugEnabled())
+                        {
+                            log.debug("Register (deploy=true) Portlet application " + contextName + " in database.");
+                        }
+                        pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
+                    }
+                    else
+                        if (reregister)
+                        {
                             if (log.isDebugEnabled())
                             {
                                 log.debug("Re-Register (reregister=true) Portlet application " + contextName + ".");
                             }
-        					// add to search engine result
-        					this.updateSearchEngine(true, pa);
-        					this.updateSearchEngine(false, pa);
-        					
-        					// and add to the current node info
-        					try
-        					{
-        						nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
-        					} catch (Exception e)
-        					{
-        					    log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
-        					}
-        				}
-        				
-            	
-            	}
+                            // add to search engine result
+                            this.updateSearchEngine(true, pa);
+                            this.updateSearchEngine(false, pa);
+                            
+                            // and add to the current node info
+                            try
+                            {
+                                nodeManager.addNode(new Long(pa.getRevision()), pa.getName());
+                            } catch (Exception e)
+                            {
+                                log.error("Adding node for portlet application " + pa.getName() + " caused exception" , e);
+                            }
+                        }
+                        
+                
+                }
             }
             if (register)
             {
@@ -591,7 +588,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                 }
                 changeMonitor.monitor(contextName, contextPath, paClassLoader, paType, warStruct.getRootDirectory(), checksum);
             }
-		}
+        }
         catch (Exception e)
         {
             String msg = "Error starting portlet application " + contextName;
@@ -611,12 +608,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
             throw new RegistryException(msg);
         }
-	}
+    }
 
-	protected void stopPA(String contextName, int paType)
-		throws RegistryException
-	{
-		PortletApplication pa = null;
+    protected void stopPA(String contextName, int paType)
+        throws RegistryException
+    {
+        PortletApplication pa = null;
         
         try
         {
@@ -635,45 +632,45 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             monitor.remove(contextName);
         }
-		if (pa != null)
-		{
+        if (pa != null)
+        {
             portletFactory.unregisterPortletApplication(pa);
-		}
-	}
+        }
+    }
 
-	
-	protected void updateSearchEngine(boolean remove,PortletApplication pa )
-	{
-		if (searchEngine != null)
-		{
-			if (remove)
-			{
-				searchEngine.remove(pa);
-				searchEngine.remove(pa.getPortlets());
-				log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
-			}
-			else
-			{
-			    searchEngine.add(pa);
+    
+    protected void updateSearchEngine(boolean remove,PortletApplication pa )
+    {
+        if (searchEngine != null)
+        {
+            if (remove)
+            {
+                searchEngine.remove(pa);
+                searchEngine.remove(pa.getPortlets());
+                log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
+            }
+            else
+            {
+                searchEngine.add(pa);
                 searchEngine.add(pa.getPortlets());
                 log.info("Registered the portlet application in the search engine... " + pa.getName());
-			}
-		}
-		
-	}
-	protected void unregisterPortletApplication(PortletApplication pa,
-		boolean purgeEntityInfo)
-		throws RegistryException
-	{
+            }
+        }
+        
+    }
+    protected void unregisterPortletApplication(PortletApplication pa,
+        boolean purgeEntityInfo)
+        throws RegistryException
+    {
 
-		updateSearchEngine(true,pa);
+        updateSearchEngine(true,pa);
         // TODO: PortletDefinition cache invalidation?
-//		log.info("Remove all registry entries defined for portlet application " + pa.getName());
+//      log.info("Remove all registry entries defined for portlet application " + pa.getName());
 
-		// todo keep (User)Prefs?
-		registry.removeApplication(pa);
+        // todo keep (User)Prefs?
+        registry.removeApplication(pa);
         revokeDefaultPermissions(pa.getName());
-	}
+    }
     
     protected void grantDefaultPermissions(String paName)
     {
@@ -817,16 +814,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         descriptorModificationTime = newDescriptorModificationTime;
                         extendedDescriptorModificationTime = newExtendedDescriptorModificationTime;
                         long newChecksum = MultiFileChecksumHelper.getChecksum(descriptors);
-                    	if (log.isDebugEnabled())
+                        if (log.isDebugEnabled())
                         {
-                    		log.debug("checksum check for descriptors for application " + contextName + ": old (" + checksum + ") new (" + newChecksum + ").");
-                    	}
+                            log.debug("checksum check for descriptors for application " + contextName + ": old (" + checksum + ") new (" + newChecksum + ").");
+                        }
                         if ( checksum != newChecksum )
                         {
-                        	if (log.isDebugEnabled())
+                            if (log.isDebugEnabled())
                             {
-                        		log.debug("portlet descriptors for application " + contextName + " have changed.");
-                        	}
+                                log.debug("portlet descriptors for application " + contextName + " have changed.");
+                            }
                             checksum = newChecksum;
                             // reset this to restart unsuccessful PA start handling for evers PA descriptor change
                             unsuccessfulStarts = 0;
@@ -949,11 +946,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
         
         public boolean isMonitored(String contextName)
         {
-        	DescriptorChangeMonitorInfo monitorInfo = this.get(contextName);
-        	if (monitorInfo != null && !monitorInfo.isObsolete())
+            DescriptorChangeMonitorInfo monitorInfo = this.get(contextName);
+            if (monitorInfo != null && !monitorInfo.isObsolete())
             {
-        		return true;
-        	}
+                return true;
+            }
             return false;
         }
         
@@ -961,10 +958,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             int size = monitorInfos.size();
 
-        	if (log.isDebugEnabled())
+            if (log.isDebugEnabled())
             {
-        		log.debug("check for portlet application descriptor changes.");
-        	}
+                log.debug("check for portlet application descriptor changes.");
+            }
             
             for (int i = size-1; i > -1; i--)
             {

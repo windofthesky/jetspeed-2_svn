@@ -238,6 +238,20 @@
               <td></td>
               <td>BOOLEANINT, Required</td>
             </tr>
+            <tr>
+              <td>PORTLET_APPLICATION</td>
+              <td>CONTEXT_ROOT</td>
+              <td>DROP</td>
+              <td>VARCHAR(255), Required</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>PORTLET_APPLICATION</td>
+              <td>CONTEXT_PATH</td>
+              <td>ADD</td>
+              <td></td>
+              <td>VARCHAR(255), Required</td>
+            </tr>
           </table>
         </subsection>
         <subsection name="Added Indexes">

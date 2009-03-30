@@ -124,6 +124,8 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private transient Set<String> servletMappingURLPatterns;
     private transient Map<Locale, String> localeEncodingMappings;
     
+    private transient String localContextPath;
+    
     /** Creates a new instance of BaseApplication */
     public PortletApplicationDefinitionImpl()
     {
@@ -209,7 +211,14 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     
     public String getContextPath()
     {
-        return contextPath;
+        if (applicationType == PortletApplication.LOCAL && localContextPath != null)
+        {
+            return localContextPath;
+        }
+        else
+        {
+            return contextPath;
+        }
     }
     
     public String getDefaultNamespace()
@@ -1020,5 +1029,15 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     public void beforeUpdate(PersistenceBroker arg0) throws PersistenceBrokerException
     {
         revision++;
+    }
+
+    public String getLocalContextPath()
+    {
+        return localContextPath;
+    }
+
+    public void setLocalContextPath(String localContextPath)
+    {
+        this.localContextPath = localContextPath;
     }
 }

@@ -40,7 +40,7 @@ limitations under the License.
     <table name="PORTLET_APPLICATION">
         <column name="APPLICATION_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="APP_NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="CONTEXT_ROOT" required="true" size="255" type="VARCHAR"/>
+        <column name="CONTEXT_PATH" required="true" size="255" type="VARCHAR"/>
         <column name="REVISION" required="true" type="INTEGER"/>
         <column name="VERSION" size="80" type="VARCHAR"/>
         <column name="APP_TYPE" type="INTEGER"/>

@@ -146,7 +146,7 @@
       />
       <field-descriptor
          name="contextPath"
-         column="CONTEXT_ROOT"
+         column="CONTEXT_PATH"
          jdbc-type="VARCHAR"
       />
 

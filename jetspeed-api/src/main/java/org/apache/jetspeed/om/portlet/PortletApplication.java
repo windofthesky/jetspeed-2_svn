@@ -203,4 +203,18 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
      * @return true when this app is a Jetspeed layout application
      */
     boolean isLayoutApplication();    
+
+    /**
+     * Returns the context path of local portlet application.
+     * If the application is not local, then returns null.
+     * @return
+     */
+    String getLocalContextPath();
+    
+    /**
+     * Sets the context path of local portlet application.
+     * @param localContextPath
+     */
+    void setLocalContextPath(String localContextPath);
+
 }
