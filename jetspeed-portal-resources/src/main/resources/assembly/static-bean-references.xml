@@ -18,17 +18,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="_portletDefinitionImplPortletRegistryInitializer"
-    class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default,registry" />
-    <property name="className" value="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl" />
-    <property name="methodName" value="setPortletRegistry" />
-    <property name="typeName" value="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
-    <property name="value">
-      <ref bean="portletRegistry" />
-    </property>
-  </bean>
-
   <bean id="_portletDefinitionImplPortletPreferencesProviderInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default,registry" />

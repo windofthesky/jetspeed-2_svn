@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.om.portlet.impl;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,8 +27,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.om.common.Support;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
@@ -64,7 +61,6 @@ import org.apache.pluto.container.PortletPreference;
 public class PortletDefinitionImpl implements PortletDefinition, Serializable, Support, PersistenceBrokerAware
 {
     private static final long serialVersionUID = 1L;
-    private static PortletRegistry registry;
     private static PortletPreferencesProvider portletPreferencesProvider;
 
     private PortletApplication app;
@@ -95,11 +91,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     private List<SupportedPublicRenderParameter> supportedPublicRenderParameters;
     private Preferences descriptorPreferences = new PreferencesImpl();    
     
-    public static void setPortletRegistry(PortletRegistry registry)
-    {
-        PortletDefinitionImpl.registry = registry;
-    }
-
     public static void setPortletPreferencesProvider(PortletPreferencesProvider portletPreferencesProvider)
     {
         PortletDefinitionImpl.portletPreferencesProvider = portletPreferencesProvider;
@@ -377,28 +368,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
             hasher.append(app.getName());
         }
         return hasher.toHashCode();
-    }
-
-    /**
-     * <p>
-     * store will attempt to perform an atomic persistence call against this
-     * portletDefinition.
-     * </p>
-     * 
-     * @see org.apache.pluto.container.om.portlet.PortletDefinition#store()
-     * @throws java.io.IOException
-     */
-    public void store() throws IOException
-    {
-        try
-        {
-            registry.savePortletDefinition(this);
-        }
-        catch (RegistryException e)
-        {
-            IOException ioe = new IOException("Failed to store portlet definition: "+e.getMessage());
-            ioe.initCause(e);
-        }
     }
 
     public void storeChildren()
