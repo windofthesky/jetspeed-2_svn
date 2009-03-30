@@ -45,15 +45,15 @@ public class ContentFragmentImpl implements ContentFragment
     private boolean instantlyRendered;
     
 
-    public ContentFragmentImpl(Fragment fragment, Map cachedFagments)
+    public ContentFragmentImpl(Fragment fragment, Map cachedFragments)
     {
-        this(fragment, cachedFagments, false);
+        this(fragment, cachedFragments, false);
     }
 
-    public ContentFragmentImpl(Fragment fragment, Map cachedFagments, boolean instantlyRendered)
+    public ContentFragmentImpl(Fragment fragment, Map cachedFragments, boolean instantlyRendered)
     {
         this.fragment = fragment;
-        this.cachedFragments = cachedFagments;
+        this.cachedFragments = cachedFragments;
         this.instantlyRendered = instantlyRendered;
     }
 
