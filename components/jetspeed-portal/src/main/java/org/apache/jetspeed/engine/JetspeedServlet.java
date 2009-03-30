@@ -289,7 +289,7 @@ implements JetspeedEngineConstants, HttpSessionListener
             }
 
         }
-        catch (JetspeedException e)
+        catch (Throwable e)
         {            
             final String msg = "Fatal error encountered while processing portal request: "+e.getMessage();
             log.fatal(msg, e);
