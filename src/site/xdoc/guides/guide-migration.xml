@@ -47,6 +47,21 @@
             <tr>
               <td>PREFS_PROPERTY_VALUE</td>
             </tr>
+            <tr>
+              <td>SSO_COOKIE</td>
+            </tr>
+            <tr>
+              <td>SSO_SITE_TO_PRINCIPALS</td>
+            </tr>
+            <tr>
+              <td>SSO_PRINCIPAL_TO_REMOTE</td>
+            </tr>
+            <tr>
+              <td>SSO_SITE_TO_REMOTE</td>
+            </tr>
+            <tr>
+              <td>SSO_COOKIE_TO_REMOTE</td>
+            </tr>
           </table>
         </subsection>
         <subsection name="Added Tables">
@@ -65,6 +80,63 @@
             </tr>
             <tr>
               <td>SECURITY_PRINCIPAL_ASSOC</td>
+            </tr>
+            <tr>
+              <td>SECURITY_DOMAIN</td>
+            </tr>
+            <tr>
+              <td>EVENT_DEFINITION</td>
+            </tr>
+            <tr>
+              <td>EVENT_ALIAS</td>
+            </tr>
+            <tr>
+              <td>PARAMETER_ALIAS</td>
+            </tr>
+            <tr>
+              <td>PUBLISHING_EVENT</td>
+            </tr>
+            <tr>
+              <td>PROCESSING_EVENT</td>
+            </tr>
+            <tr>
+              <td>NAMED_PARAMETER</td>
+            </tr>
+            <tr>
+              <td>RUNTIME_OPTION</td>
+            </tr>
+            <tr>
+              <td>RUNTIME_VALUE</td>
+            </tr>
+            <tr>
+              <td>PUBLIC_PARAMETER</td>
+            </tr>
+            <tr>
+              <td>PORTLET_FILTER</td>
+            </tr>
+            <tr>
+              <td>FILTER_LIFECYCLE</td>
+            </tr>
+            <tr>
+              <td>FILTER_MAPPING</td>
+            </tr>
+            <tr>
+              <td>FILTERED_PORTLET</td>
+            </tr>
+            <tr>
+              <td>PORTLET_LISTENER</td>
+            </tr>
+            <tr>
+              <td>PA_SECURITY_CONSTRAINT</td>
+            </tr>
+            <tr>
+              <td>SECURED_PORTLET</td>
+            </tr>
+            <tr>
+              <td>SERVLET_MAPPING_URLPATTERN</td>
+            </tr>
+            <tr>
+              <td>LOCALE_ENCODING_MAPPING</td>
             </tr>
           </table>
         </subsection>            
@@ -176,6 +248,13 @@
               <td>BOOLEANINT, Required</td>
             </tr>
             <tr>
+              <td>SECURITY_PRINCIPAL</td>
+              <td>DOMAIN_ID</td>
+              <td>ADD</td>
+              <td></td>
+              <td>INTEGER, Required</td>
+            </tr>
+            <tr>
               <td>SECURITY_PERMISSION</td>
               <td>CLASSNAME</td>
               <td>DROP</td>
@@ -252,6 +331,48 @@
               <td></td>
               <td>VARCHAR(255), Required</td>
             </tr>
+            <tr>
+              <td>PORTLET_APPLICATION</td>
+              <td>DEFAULT_NAMESPACE</td>
+              <td>ADD</td>
+              <td></td>
+              <td>VARCHAR(120)</td>
+            </tr>
+            <tr>
+              <td>PORTLET_APPLICATION</td>
+              <td>RESOURCE_BUNDLE</td>
+              <td>ADD</td>
+              <td></td>
+              <td>VARCHAR(255)</td>
+            </tr>
+            <tr>
+              <td>SSO_SITE</td>
+              <td>DOMAIN_ID</td>
+              <td>ADD</td>
+              <td></td>
+              <td>INTEGER, Required</td>
+            </tr>
+            <tr>
+              <td>PORTLET_DEFINITION</td>
+              <td>EXPIRATION_CACHE</td>
+              <td>MODIFY</td>
+              <td>VARCHAR(30)</td>
+              <td>INTEGER</td>
+            </tr>
+            <tr>
+              <td>PORTLET_DEFINITION</td>
+              <td>CACHE_SCOPE</td>
+              <td>ADD</td>
+              <td></td>
+              <td>VARCHAR(30)</td>
+            </tr>
+            <tr>
+              <td>LANGUAGE</td>
+              <td>SUPPORTED_LOCALE</td>
+              <td>ADD</td>
+              <td></td>
+              <td>BOOLEANINT, Required</td>
+            </tr>
           </table>
         </subsection>
         <subsection name="Added Indexes">
@@ -267,6 +388,18 @@
               <td>UIX_SECURITY_PERMISSION</td> 
               <td>unique</td> 
               <td>PERMISSION_TYPE, NAME</td>                                                            
+            </tr>
+            <tr>
+              <td>SECURITY_DOMAIN</td> 
+              <td>UIX_DOMAIN_NAME</td> 
+              <td>unique</td> 
+              <td>DOMAIN_NAME</td>                                                            
+            </tr>
+            <tr>
+              <td>SSO_SITE</td> 
+              <td>UIX_SITE_NAME</td> 
+              <td>unique</td> 
+              <td>NAME</td>                                                            
             </tr>
           </table>
         </subsection>
@@ -286,7 +419,35 @@
               <td>unique</td> 
               <td>FULL_PATH</td>
               <td>unique</td> 
-              <td>PRINCIPAL_TYPE, PRINCIPAL_NAME</td>
+              <td>PRINCIPAL_TYPE, PRINCIPAL_NAME, DOMAIN_ID</td>
+            </tr>
+          </table>
+        </subsection>
+        <subsection name="Added Foreign Key">
+          <table>
+            <tr>
+              <th>Table</th>
+              <th>Name</th>
+              <th>Column(s)</th>                    
+              <th>Referencing table</th>
+              <th>Referencing column(s)</th>
+              <th>Cascade</th>
+            </tr>
+            <tr>
+              <td>SECURITY_PRINCIPAL</td>
+              <td>FK_SECURITY_DOMAIN_1</td> 
+              <td>DOMAIN_ID</td> 
+              <td>SECURITY_DOMAIN</td> 
+              <td>DOMAIN_ID</td>
+              <td>CASCADE DELETE</td>                                                            
+            </tr>
+            <tr>
+              <td>SSO_SITE</td>
+              <td>FK_SECURITY_DOMAIN_2</td> 
+              <td>DOMAIN_ID</td> 
+              <td>SECURITY_DOMAIN</td> 
+              <td>DOMAIN_ID</td>
+              <td>CASCADE DELETE</td>                                                            
             </tr>
           </table>
         </subsection>
